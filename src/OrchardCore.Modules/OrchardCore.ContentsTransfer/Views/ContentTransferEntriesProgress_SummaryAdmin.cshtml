@@ -1,0 +1,21 @@
+@using OrchardCore.ContentsTransfer
+@using OrchardCore.Entities
+
+@model ContentTransferEntryViewModel
+
+@if (Model.ContentTransferEntry.Status == ContentTransferEntryStatus.Processing)
+{
+    var part = Model.ContentTransferEntry.As<ImportFileProcessStatsPart>();
+
+    @if (part?.TotalRecords > 0)
+    {
+        var process = part.TotalProcessed / part.TotalRecords;
+        <div class="row">
+            <div class="col-12">
+                <div class="progress" role="progressbar" title="@T["Progress"]" aria-label="@T["Progress"]" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress-bar" style="width: @(process)%">@(process)%</div>
+                </div>
+            </div>
+        </div>
+    }
+}

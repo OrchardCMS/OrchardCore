@@ -14,6 +14,7 @@ public class ContentTransferEntryDisplayDriver : DisplayDriver<ContentTransferEn
             Shape("ContentTransferEntriesMeta_SummaryAdmin", new ContentTransferEntryViewModel(entry)).Location("SummaryAdmin", "Meta:20"),
             Shape("ContentTransferEntriesActions_SummaryAdmin", new ContentTransferEntryViewModel(entry)).Location("SummaryAdmin", "Actions:5"),
             Shape("ContentTransferEntriesButtonActions_SummaryAdmin", new ContentTransferEntryViewModel(entry)).Location("SummaryAdmin", "ActionsMenu:10"),
+            Shape("ContentTransferEntriesProgress_SummaryAdmin", new ContentTransferEntryViewModel(entry)).Location("SummaryAdmin", "Progress:5"),
         };
 
         return Combine(results);

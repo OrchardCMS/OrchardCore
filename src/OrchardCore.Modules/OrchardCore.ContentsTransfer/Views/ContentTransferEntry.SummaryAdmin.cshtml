@@ -53,21 +53,13 @@
             }
         </div>
 
-        @if (entry.Status == ContentTransferEntryStatus.Processing)
+        @if (Model.Progress != null)
         {
-            var part = entry.As<ImportFileProcessStatsPart>();
-
-            @if (part?.TotalRecords > 0)
-            {
-                var process = part.TotalProcessed / part.TotalRecords;
-                <div class="row">
-                    <div class="col-12">
-                        <div class="progress" role="progressbar" title="@T["Progress"]" aria-label="@T["Progress"]" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                            <div class="progress-bar" style="width: @(process)%">@(process)%</div>
-                        </div>
-                    </div>
+            <div class="row">
+                <div class="col-12">
+                    @await DisplayAsync(Model.Progress)
                 </div>
-            }
+            </div>
         }
 
     </div>

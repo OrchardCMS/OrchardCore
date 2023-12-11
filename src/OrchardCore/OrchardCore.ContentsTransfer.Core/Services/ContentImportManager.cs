@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Modules;
+using YesSql.Services;
 
 namespace OrchardCore.ContentsTransfer.Services;
 
@@ -61,7 +63,7 @@ public class ContentImportManager : IContentImportManager
             var partContext = new ContentPartImportMapContext()
             {
                 ContentItem = contentItem,
-                ContentPart = part,
+                // ContentPart = part,
                 ContentTypePartDefinition = typePartDefinition,
             };
 
@@ -93,7 +95,7 @@ public class ContentImportManager : IContentImportManager
                     ContentPartFieldDefinition = partFieldDefinition,
                     ContentPart = part,
                     PartName = typePartDefinition.Name ?? partName,
-                    ContentField = field,
+                    // ContentField = field,
                 };
 
                 var fieldHandlers = _contentImportHandlerResolver.GetFieldHandlers(fieldName);
@@ -109,10 +111,7 @@ public class ContentImportManager : IContentImportManager
 
     public async Task ImportAsync(ContentImportContext context)
     {
-        if (context == null)
-        {
-            throw new ArgumentNullException(nameof(context));
-        }
+        ArgumentNullException.ThrowIfNull(context);
 
         await _contentImportHandlers.InvokeAsync(handler => handler.ImportAsync(context), _logger);
 
@@ -120,29 +119,28 @@ public class ContentImportManager : IContentImportManager
         {
             var partName = typePartDefinition.PartDefinition.Name;
             var partActivator = _contentPartFactory.GetTypeActivator(partName);
-            var part = context.ContentItem.Get(partActivator.Type, typePartDefinition.Name) as ContentPart;
-            if (part == null)
-            {
-                part = partActivator.CreateInstance();
-                part.Weld(typePartDefinition.Name, part);
-            }
-
-            var partHandlers = _contentImportHandlerResolver.GetPartHandlers(partName);
 
             var partContext = new ContentPartImportMapContext()
             {
                 ContentItem = context.ContentItem,
-                ContentPart = part,
                 ContentTypePartDefinition = typePartDefinition,
                 Columns = context.Columns,
                 Row = context.Row,
             };
 
+            var partHandlers = _contentImportHandlerResolver.GetPartHandlers(partName);
             await partHandlers.InvokeAsync((handler) => handler.ImportAsync(partContext), _logger);
 
             if (typePartDefinition.PartDefinition?.Fields == null)
             {
                 continue;
+            }
+
+            var part = context.ContentItem.Get(partActivator.Type, typePartDefinition.Name) as ContentPart;
+            if (part == null)
+            {
+                part = partActivator.CreateInstance();
+                part.Weld(typePartDefinition.Name, part);
             }
 
             foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
@@ -163,7 +161,6 @@ public class ContentImportManager : IContentImportManager
                 {
                     ContentPartFieldDefinition = partFieldDefinition,
                     PartName = typePartDefinition.Name ?? partName,
-                    ContentField = field,
                     ContentPart = part,
                     Row = context.Row,
                     Columns = context.Columns,
@@ -244,85 +241,4 @@ public class ContentImportManager : IContentImportManager
             }
         }
     }
-
-    /*
-    public async Task<ContentValidateResult> ValidateAsync(ValidateImportContext context)
-    {
-        if (context == null)
-        {
-            throw new ArgumentNullException(nameof(context));
-        }
-
-        foreach (var typePartDefinition in context.ContentTypeDefinition.Parts)
-        {
-            var partName = typePartDefinition.PartDefinition.Name;
-            var partActivator = _contentPartFactory.GetTypeActivator(partName);
-            var part = context.ContentItem.Get(partActivator.Type, typePartDefinition.Name) as ContentPart;
-
-            if (part == null)
-            {
-                part = partActivator.CreateInstance();
-                part.Weld(typePartDefinition.Name, part);
-            }
-
-            var partHandlers = _contentImportHandlerResolver.GetPartHandlers(partName);
-
-            var partContext = new ValidatePartImportContext()
-            {
-                ContentItem = context.ContentItem,
-                ContentPart = part,
-                ContentTypePartDefinition = typePartDefinition,
-                Columns = context.Columns,
-            };
-
-            await partHandlers.InvokeAsync((handler) => handler.ValidateAsync(partContext), _logger);
-
-            foreach (var error in partContext.ContentValidateResult.Errors)
-            {
-                context.ContentValidateResult.Fail(error);
-            }
-
-            if (typePartDefinition.PartDefinition?.Fields == null)
-            {
-                continue;
-            }
-
-            foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
-            {
-                var fieldName = partFieldDefinition.FieldDefinition.Name;
-
-                var fieldActivator = _contentFieldFactory.GetTypeActivator(fieldName);
-
-                var field = part.Get(fieldActivator.Type, partFieldDefinition.Name) as ContentField;
-
-                if (field == null)
-                {
-                    field = fieldActivator.CreateInstance();
-                    part.Weld(partFieldDefinition.Name, field);
-                }
-
-                var fieldContext = new ValidateFieldImportContext()
-                {
-                    ContentPartFieldDefinition = partFieldDefinition,
-                    PartName = typePartDefinition.Name ?? partName,
-                    ContentField = field,
-                    ContentPart = part,
-                    Columns = context.Columns,
-                    ContentItem = context.ContentItem,
-                };
-
-                var fieldHandlers = _contentImportHandlerResolver.GetFieldHandlers(fieldName);
-
-                await fieldHandlers.InvokeAsync((handler) => handler.ValidateAsync(fieldContext), _logger);
-
-                foreach (var error in fieldContext.ContentValidateResult.Errors)
-                {
-                    context.ContentValidateResult.Fail(error);
-                }
-            }
-        }
-
-        return context.ContentValidateResult;
-    }
-    */
 }

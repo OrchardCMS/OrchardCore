@@ -5,7 +5,5 @@ namespace OrchardCore.ContentsTransfer;
 
 public class ImportContentPartContext
 {
-    public ContentPart ContentPart { get; set; }
-
     public ContentTypePartDefinition ContentTypePartDefinition { get; set; }
 }

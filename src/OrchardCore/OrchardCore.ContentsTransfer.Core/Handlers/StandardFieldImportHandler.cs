@@ -24,60 +24,37 @@ public abstract class StandardFieldImportHandler : ContentImportHandlerBase, ICo
 
     public async Task ImportAsync(ContentFieldImportMapContext context)
     {
-        if (context.ContentItem == null)
-        {
-            throw new ArgumentNullException(nameof(context.ContentItem));
-        }
-
-        if (context.Columns == null)
-        {
-            throw new ArgumentNullException(nameof(context.Columns));
-        }
-
-        if (context.Row == null)
-        {
-            throw new ArgumentNullException(nameof(context.Row));
-        }
+        ArgumentNullException.ThrowIfNull(context, nameof(context));
+        ArgumentNullException.ThrowIfNull(context.ContentItem, nameof(context.ContentItem));
+        ArgumentNullException.ThrowIfNull(context.Columns, nameof(context.Columns));
+        ArgumentNullException.ThrowIfNull(context.Row, nameof(context.Row));
 
         var knownColumns = GetColumns(context);
 
         foreach (DataColumn column in context.Columns)
         {
-            var firstColumn = knownColumns.FirstOrDefault(x => Is(column.ColumnName, x));
+            var knownColumn = knownColumns.FirstOrDefault(x => Is(column.ColumnName, x));
 
-            if (firstColumn == null)
+            if (knownColumn == null)
             {
                 continue;
             }
 
-            var text = context.Row[column]?.ToString();
-
-            await SetValueAsync(context, text);
+            await SetValueAsync(context, context.Row[column]?.ToString());
         }
     }
 
     public async Task ExportAsync(ContentFieldExportMapContext context)
     {
-        if (context == null)
-        {
-            throw new ArgumentNullException(nameof(context.ContentItem));
-        }
+        ArgumentNullException.ThrowIfNull(context, nameof(context));
+        ArgumentNullException.ThrowIfNull(context.ContentItem, nameof(context.ContentItem));
+        ArgumentNullException.ThrowIfNull(context.Row, nameof(context.Row));
 
-        if (context.ContentItem == null)
-        {
-            throw new ArgumentNullException(nameof(context.ContentItem));
-        }
+        var knownColumn = GetColumns(context).FirstOrDefault();
 
-        if (context.Row == null)
+        if (knownColumn != null)
         {
-            throw new ArgumentNullException(nameof(context.Row));
-        }
-
-        var firstColumn = GetColumns(context).FirstOrDefault();
-
-        if (firstColumn != null)
-        {
-            context.Row[firstColumn.Name] = await GetValueAsync(context);
+            context.Row[knownColumn.Name] = await GetValueAsync(context);
         }
     }
 
@@ -88,7 +65,7 @@ public abstract class StandardFieldImportHandler : ContentImportHandlerBase, ICo
         => false;
 
     protected virtual string[] GetValidValues(ImportContentFieldContext context)
-        => Array.Empty<string>();
+        => [];
 
     protected abstract Task<object> GetValueAsync(ContentFieldExportMapContext context);
 

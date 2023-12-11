@@ -372,6 +372,7 @@ public class AdminController : Controller, IUpdateModel
                 EntryId = IdGenerator.GenerateId(),
                 ContentType = contentTypeId,
                 Owner = CurrentUserId(),
+                Author = User.Identity.Name,
                 UploadedFileName = importContent.File.FileName,
                 StoredFileName = storedFileName,
                 Status = ContentTransferEntryStatus.New,

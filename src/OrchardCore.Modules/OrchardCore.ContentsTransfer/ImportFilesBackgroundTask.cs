@@ -9,11 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using OfficeOpenXml;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentsTransfer.Indexes;
 using OrchardCore.ContentsTransfer.Models;
@@ -30,12 +28,6 @@ namespace OrchardCore.ContentsTransfer;
     LockTimeout = 3_000, LockExpiration = 30_000)]
 public class ImportFilesBackgroundTask : IBackgroundTask
 {
-    private static readonly JsonMergeSettings _updateJsonMergeSettings = new JsonMergeSettings
-    {
-        MergeArrayHandling = MergeArrayHandling.Replace,
-        MergeNullValueHandling = MergeNullValueHandling.Ignore,
-    };
-
     private ISession _session;
     private IClock _clock;
     private ILogger _logger;
@@ -63,8 +55,6 @@ public class ImportFilesBackgroundTask : IBackgroundTask
 
         foreach (var entry in entries)
         {
-            entry.Status = ContentTransferEntryStatus.Processing;
-
             var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(entry.ContentType);
 
             if (contentTypeDefinition == null)
@@ -98,22 +88,19 @@ public class ImportFilesBackgroundTask : IBackgroundTask
                 continue;
             }
 
+            entry.Status = ContentTransferEntryStatus.Processing;
+
             var progressPart = entry.As<ImportFileProcessStatsPart>();
 
             progressPart.TotalRecords = dataTable.Rows.Count;
-
+            progressPart.Errors ??= [];
             var contentItems = new Dictionary<int, ContentItem>();
+            var records = new Dictionary<int, DataRow>();
+            var existingRows = new Dictionary<string, KeyValuePair<int, DataRow>>(StringComparer.OrdinalIgnoreCase);
+            var indexOfKeyColumn = dataTable.Columns.IndexOf(nameof(ContentItem.ContentItemId));
 
             foreach (DataRow row in dataTable.Rows)
             {
-                if (row == null || row.ItemArray.All(x => x == null || x is DBNull || string.IsNullOrWhiteSpace(x?.ToString())))
-                {
-                    // Ignore empty rows.
-                    progressPart.TotalProcessed++;
-
-                    continue;
-                }
-
                 var rowIndex = dataTable.Rows.IndexOf(row);
 
                 if (rowIndex > 0 && rowIndex <= progressPart.CurrentRow)
@@ -122,36 +109,122 @@ public class ImportFilesBackgroundTask : IBackgroundTask
                     continue;
                 }
 
+                progressPart.TotalProcessed++;
                 progressPart.CurrentRow = rowIndex;
 
-                var mapContext = new ContentImportContext()
+                if (row == null || row.ItemArray.All(x => x == null || x is DBNull || string.IsNullOrWhiteSpace(x?.ToString())))
                 {
-                    ContentItem = await _contentManager.NewAsync(entry.ContentType),
-                    ContentTypeDefinition = contentTypeDefinition,
-                    Columns = dataTable.Columns,
-                    Row = row,
-                };
+                    // Ignore empty rows.
+                    continue;
+                }
 
-                // Important to import the data first as it could identify existing content item.
-                // ImportAsync could change the content-item id.
-                await contentImportManager.ImportAsync(mapContext);
-
-                contentItems.Add(rowIndex, mapContext.ContentItem);
-
-                if (contentItems.Count == batchSize)
+                if (indexOfKeyColumn > -1)
                 {
-                    await SavePatchAsync(contentItems, progressPart);
+                    var contentItemId = row[indexOfKeyColumn]?.ToString()?.Trim();
+
+                    if (!string.IsNullOrEmpty(contentItemId))
+                    {
+                        existingRows.TryAdd(contentItemId, new KeyValuePair<int, DataRow>(rowIndex, row));
+                    }
+                    else
+                    {
+                        records.Add(rowIndex, row);
+                    }
+                }
+                else
+                {
+                    records.Add(rowIndex, row);
+                }
+
+                if (records.Count + existingRows.Count == batchSize)
+                {
+                    if (existingRows.Count > 0)
+                    {
+                        var existingContentItems = (await _contentManager.GetAsync(existingRows.Keys, VersionOptions.DraftRequired)).ToDictionary(x => x.ContentItemId);
+
+                        foreach (var existingRow in existingRows)
+                        {
+                            ContentItem contentItem;
+                            var isNew = false;
+                            if (!existingContentItems.TryGetValue(existingRow.Key, out contentItem))
+                            {
+                                contentItem = await _contentManager.NewAsync(entry.ContentType);
+                                isNew = true;
+                            }
+
+                            var mapContext = new ContentImportContext()
+                            {
+                                ContentItem = contentItem,
+                                ContentTypeDefinition = contentTypeDefinition,
+                                Columns = dataTable.Columns,
+                                Row = existingRow.Value.Value,
+                            };
+
+                            await contentImportManager.ImportAsync(mapContext);
+
+                            var validationResult = await _contentManager.ValidateAsync(mapContext.ContentItem);
+
+                            if (validationResult.Succeeded)
+                            {
+                                if (isNew)
+                                {
+                                    await _contentManager.CreateAsync(mapContext.ContentItem, VersionOptions.DraftRequired);
+
+                                    mapContext.ContentItem.Owner = entry.Owner;
+                                    mapContext.ContentItem.Author = entry.Author;
+                                }
+                                else
+                                {
+                                    await _contentManager.UpdateAsync(mapContext.ContentItem);
+                                    mapContext.ContentItem.Author = entry.Author;
+                                }
+
+                                await _contentManager.PublishAsync(mapContext.ContentItem);
+                            }
+                            else
+                            {
+                                progressPart.Errors.Add(existingRow.Value.Key);
+                            }
+                        }
+                    }
+
+                    foreach (var record in records)
+                    {
+                        var mapContext = new ContentImportContext()
+                        {
+                            ContentItem = await _contentManager.NewAsync(entry.ContentType),
+                            ContentTypeDefinition = contentTypeDefinition,
+                            Columns = dataTable.Columns,
+                            Row = record.Value,
+                        };
+
+                        await contentImportManager.ImportAsync(mapContext);
+
+                        var validationResult = await _contentManager.ValidateAsync(mapContext.ContentItem);
+
+                        if (validationResult.Succeeded)
+                        {
+                            await _contentManager.CreateAsync(mapContext.ContentItem, VersionOptions.DraftRequired);
+
+                            mapContext.ContentItem.Owner = entry.Owner;
+                            mapContext.ContentItem.Author = entry.Author;
+
+                            await _contentManager.PublishAsync(mapContext.ContentItem);
+                        }
+                        else
+                        {
+                            progressPart.Errors.Add(record.Key);
+                        }
+                    }
+
                     entry.ProcessSaveUtc = _clock.UtcNow;
                     entry.Put(progressPart);
 
                     _session.Save(entry);
                     await _session.SaveChangesAsync();
-
-                    contentItems.Clear();
                 }
             }
 
-            await SavePatchAsync(contentItems, progressPart);
             var nowUtc = _clock.UtcNow;
             entry.ProcessSaveUtc = nowUtc;
             entry.CompletedUtc = nowUtc;
@@ -160,54 +233,6 @@ public class ImportFilesBackgroundTask : IBackgroundTask
 
             _session.Save(entry);
             await _session.SaveChangesAsync();
-
-            contentItems.Clear();
-        }
-    }
-
-    private async Task SavePatchAsync(Dictionary<int, ContentItem> items, ImportFileProcessStatsPart stats)
-    {
-        var existingItemIds = items.Values.Where(x => !string.IsNullOrEmpty(x.ContentItemId)).Select(x => x.ContentItemId).ToList();
-
-        // Attempt to find existing content item.
-        var existingContentItems = (await _contentManager.GetAsync(existingItemIds, VersionOptions.DraftRequired)).ToDictionary(x => x.ContentItemId, x => x);
-
-        foreach (var item in items)
-        {
-            ContentValidateResult validationResult;
-
-            if (existingContentItems.TryGetValue(item.Value.ContentItemId, out var existingContentItem))
-            {
-                // At this point, we are updating existing content item.
-                // Merge new values to existing.
-                existingContentItem.Merge(item, _updateJsonMergeSettings);
-                validationResult = await _contentManager.ValidateAsync(existingContentItem);
-
-                if (validationResult.Succeeded)
-                {
-                    await _contentManager.CreateAsync(existingContentItem, VersionOptions.Draft);
-                    await _contentManager.PublishAsync(existingContentItem);
-
-                    continue;
-                }
-
-                stats.Errors.Add(item.Key);
-
-                continue;
-            }
-
-            // At this point, we are creating a new content item.
-            validationResult = await _contentManager.ValidateAsync(item.Value);
-
-            if (validationResult.Succeeded)
-            {
-                await _contentManager.CreateAsync(item.Value, VersionOptions.Draft);
-                await _contentManager.PublishAsync(item.Value);
-
-                continue;
-            }
-
-            stats.Errors.Add(item.Key);
         }
     }
 

@@ -7,8 +7,6 @@ public class ImportContentFieldContext
 {
     public ContentItem ContentItem { get; set; }
 
-    public ContentField ContentField { get; set; }
-
     public ContentPartFieldDefinition ContentPartFieldDefinition { get; set; }
 
     public string PartName { get; set; }
