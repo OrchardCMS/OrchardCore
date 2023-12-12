@@ -65,7 +65,7 @@ public class Migrations : DataMigration
 
             var rsaSigningSecret = await _secretService.GetOrCreateSecretAsync<RSASecret>(
                 name: $"{Secrets.Signing}.{remoteInstance.ClientName}",
-                configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivatePair));
+                configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
 
             var apiKeySecret = await _secretService.GetOrCreateSecretAsync<TextSecret>(
                 name: $"{Secrets.ApiKey}.{remoteInstance.ClientName}",
@@ -81,7 +81,7 @@ public class Migrations : DataMigration
         {
             var rsaEncryptionSecret = await _secretService.GetOrCreateSecretAsync<RSASecret>(
                 name: $"{Secrets.Encryption}.{remoteClient.ClientName}",
-                configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivatePair));
+                configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
 
             var rsaSigningSecret = await _secretService.GetOrCreateSecretAsync<RSASecret>(
                 name: $"{Secrets.Signing}.{remoteClient.ClientName}",

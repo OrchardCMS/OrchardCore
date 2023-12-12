@@ -74,8 +74,8 @@ public class RSASecretDisplayDriver : DisplayDriver<SecretBase, RSASecret>
                 new()
                 {
                     Text = S["Public / Private Key Pair"],
-                    Value = RSAKeyType.PublicPrivatePair.ToString(),
-                    Selected = model.KeyType == RSAKeyType.PublicPrivatePair,
+                    Value = RSAKeyType.PublicPrivate.ToString(),
+                    Selected = model.KeyType == RSAKeyType.PublicPrivate,
                 },
             };
             model.Context = context;
@@ -104,13 +104,13 @@ public class RSASecretDisplayDriver : DisplayDriver<SecretBase, RSASecret>
                 secret.PrivateKey = null;
             }
 
-            if (model.HasNewKeys && model.KeyType == RSAKeyType.PublicPrivatePair)
+            if (model.HasNewKeys && model.KeyType == RSAKeyType.PublicPrivate)
             {
                 secret.PublicKey = model.NewPublicKey;
                 secret.PrivateKey = model.NewPrivateKey;
             }
 
-            if (model.KeyType == RSAKeyType.PublicPrivatePair)
+            if (model.KeyType == RSAKeyType.PublicPrivate)
             {
                 try
                 {

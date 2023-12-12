@@ -4,7 +4,7 @@ using OrchardCore.Secrets.Models;
 
 namespace OrchardCore.Secrets.ViewModels;
 
-public class SecretBindingViewModel
+public class SecretInfoViewModel
 {
     public string Name { get; set; }
     public string SelectedStore { get; set; }

@@ -35,14 +35,14 @@ public class DatabaseSecretStore : ISecretStore
             throw new ArgumentException($"The type must implement '{nameof(SecretBase)}'.");
         }
 
-        var secretsDocument = await _manager.GetSecretsDocumentAsync();
-        if (secretsDocument.Secrets.TryGetValue(name, out var protectedData))
+        var document = await _manager.GetSecretsAsync();
+        if (!document.Secrets.TryGetValue(name, out var protectedData))
         {
-            var plainText = _protector.Unprotect(protectedData);
-            return JsonConvert.DeserializeObject(plainText, type) as SecretBase;
+            return null;
         }
 
-        return null;
+        var plainText = _protector.Unprotect(protectedData);
+        return JsonConvert.DeserializeObject(plainText, type) as SecretBase;
     }
 
     public Task UpdateSecretAsync(string name, SecretBase secret) =>

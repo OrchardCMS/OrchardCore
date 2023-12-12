@@ -18,13 +18,13 @@ public class SecretServiceTests
 
         var store = Mock.Of<ISecretStore>();
         Mock.Get(store).Setup(s => s.GetSecretAsync("email", typeof(TextSecret))).ReturnsAsync(textSecret);
-        var bindingsManager = Mock.Of<IDocumentManager<SecretBindingsDocument>>();
+        var bindingsManager = Mock.Of<IDocumentManager<SecretInfosDocument>>();
 
-        Mock.Get(bindingsManager).Setup(m => m.GetOrCreateImmutableAsync(It.IsAny<Func<Task<SecretBindingsDocument>>>()))
+        Mock.Get(bindingsManager).Setup(m => m.GetOrCreateImmutableAsync(It.IsAny<Func<Task<SecretInfosDocument>>>()))
             .ReturnsAsync(() =>
             {
-                var document = new SecretBindingsDocument();
-                document.SecretBindings["email"] = new SecretBinding() { Name = "email", Type = typeof(TextSecret).Name };
+                var document = new SecretInfosDocument();
+                document.SecretInfos["email"] = new SecretInfo() { Name = "email", Type = typeof(TextSecret).Name };
                 return document;
             });
 
@@ -32,7 +32,7 @@ public class SecretServiceTests
         secretOptions.SecretTypes.Add(typeof(TextSecret));
         var options = Options.Create(secretOptions);
 
-        var secretService = new SecretService(new SecretBindingsManager(bindingsManager), new[] { store }, options);
+        var secretService = new SecretService(new SecretInfosManager(bindingsManager), new[] { store }, options);
         var secret = await secretService.GetSecretAsync<TextSecret>("email");
 
         Assert.Equal(secret, textSecret);

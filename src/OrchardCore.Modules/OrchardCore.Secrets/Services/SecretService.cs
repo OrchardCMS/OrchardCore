@@ -12,15 +12,15 @@ namespace OrchardCore.Secrets.Services;
 
 public class SecretService : ISecretService
 {
-    private readonly SecretBindingsManager _bindingsManager;
+    private readonly SecretInfosManager _secretInfosManager;
     private readonly IReadOnlyCollection<SecretStoreInfo> _storeInfos;
     private readonly IEnumerable<ISecretStore> _stores;
 
     private readonly Dictionary<string, SecretActivator> _activators = new();
 
-    public SecretService(SecretBindingsManager bindingsManager, IEnumerable<ISecretStore> stores, IOptions<SecretOptions> options)
+    public SecretService(SecretInfosManager secretInfosManager, IEnumerable<ISecretStore> stores, IOptions<SecretOptions> options)
     {
-        _bindingsManager = bindingsManager;
+        _secretInfosManager = secretInfosManager;
 
         _storeInfos = stores.Select(store => new SecretStoreInfo
         {
@@ -52,13 +52,13 @@ public class SecretService : ISecretService
 
     public async Task<SecretBase> GetSecretAsync(string name)
     {
-        var bindings = await GetSecretBindingsAsync();
-        if (!bindings.TryGetValue(name, out var binding))
+        var secretInfos = await GetSecretInfosAsync();
+        if (!secretInfos.TryGetValue(name, out var secretInfo))
         {
             return null;
         }
 
-        return await GetSecretAsync(binding);
+        return await GetSecretAsync(secretInfo);
     }
 
     public TSecret CreateSecret<TSecret>() where TSecret : SecretBase, new() => CreateSecret(typeof(TSecret).Name) as TSecret;
@@ -75,7 +75,7 @@ public class SecretService : ISecretService
             return secret;
         }
 
-        var binding = new SecretBinding
+        var secretInfo = new SecretInfo
         {
             Name = name,
             Store = nameof(DatabaseSecretStore),
@@ -90,121 +90,119 @@ public class SecretService : ISecretService
 
         if (sourceName is not null && sourceName != name && (await GetSecretAsync<TSecret>(sourceName)) is not null)
         {
-            await UpdateSecretAsync(binding, secret, sourceName);
+            await UpdateSecretAsync(secretInfo, secret, sourceName);
         }
         else
         {
-            await UpdateSecretAsync(binding, secret);
+            await UpdateSecretAsync(secretInfo, secret);
         }
 
         return secret;
     }
 
-    public async Task<SecretBase> GetSecretAsync(SecretBinding binding)
+    private async Task<SecretBase> GetSecretAsync(SecretInfo secretInfo)
     {
-        if (!_activators.TryGetValue(binding.Type, out var factory) ||
+        if (!_activators.TryGetValue(secretInfo.Type, out var factory) ||
             !typeof(SecretBase).IsAssignableFrom(factory.Type))
         {
             return null;
         }
 
-        var secretStore = _stores.FirstOrDefault(store => string.Equals(store.Name, binding.Store, StringComparison.OrdinalIgnoreCase));
+        var secretStore = _stores.FirstOrDefault(store => string.Equals(store.Name, secretInfo.Store, StringComparison.OrdinalIgnoreCase));
         if (secretStore is null)
         {
             return null;
         }
 
-        var secret = (await secretStore.GetSecretAsync(binding.Name, factory.Type)) ?? factory.Create();
+        var secret = (await secretStore.GetSecretAsync(secretInfo.Name, factory.Type)) ?? factory.Create();
 
-        secret.Name = binding.Name;
+        secret.Name = secretInfo.Name;
 
         return secret;
     }
 
-    public async Task<IDictionary<string, SecretBinding>> GetSecretBindingsAsync()
+    public async Task<IDictionary<string, SecretInfo>> GetSecretInfosAsync()
     {
-        var secretsDocument = await _bindingsManager.GetSecretBindingsDocumentAsync();
-        return secretsDocument.SecretBindings;
+        var document = await _secretInfosManager.GetSecretInfosAsync();
+        return document.SecretInfos;
     }
 
-    public async Task<IDictionary<string, SecretBinding>> LoadSecretBindingsAsync()
+    public async Task<IDictionary<string, SecretInfo>> LoadSecretInfosAsync()
     {
-        var secretsDocument = await _bindingsManager.LoadSecretBindingsDocumentAsync();
-        return secretsDocument.SecretBindings;
+        var document = await _secretInfosManager.LoadSecretInfosAsync();
+        return document.SecretInfos;
     }
 
     public IReadOnlyCollection<SecretStoreInfo> GetSecretStoreInfos() => _storeInfos;
 
     public async Task UpdateSecretAsync(SecretBase secret)
     {
-        var secretBindings = await GetSecretBindingsAsync();
-        if (!secretBindings.TryGetValue(secret.Name, out var binding))
+        var secretInfos = await GetSecretInfosAsync();
+        if (!secretInfos.TryGetValue(secret.Name, out var secretInfo))
         {
             throw new InvalidOperationException($"The secret '{secret.Name}' doesn't exist.");
         }
 
-        await UpdateSecretAsync(binding, secret);
+        await UpdateSecretAsync(secretInfo, secret);
     }
 
-    public async Task UpdateSecretAsync(SecretBinding binding, SecretBase secret, string sourceName = null)
+    public async Task UpdateSecretAsync(SecretInfo secretInfo, SecretBase secret, string sourceName = null)
     {
-        SecretBinding existingBinding = null;
-        if (sourceName is not null)
-        {
-            var secretBindings = await GetSecretBindingsAsync();
-            if (!secretBindings.TryGetValue(sourceName, out existingBinding))
-            {
-                throw new InvalidOperationException($"The secret '{secret.Name}' doesn't exist.");
-            }
-        }
-
-        if (!string.Equals(binding.Name, binding.Name.ToSafeFullName(), StringComparison.OrdinalIgnoreCase))
+        if (!string.Equals(secretInfo.Name, secretInfo.Name.ToSafeFullName(), StringComparison.OrdinalIgnoreCase))
         {
             throw new InvalidOperationException("The name contains invalid characters.");
         }
 
-        secret.Name = binding.Name;
+        secret.Name = secretInfo.Name;
 
-        var secretStore = _stores.FirstOrDefault(store => string.Equals(store.Name, binding.Store, StringComparison.OrdinalIgnoreCase));
+        var secretStore = _stores.FirstOrDefault(store => string.Equals(store.Name, secretInfo.Store, StringComparison.OrdinalIgnoreCase));
         if (secretStore is not null)
         {
-            // Remove existing binding first.
-            if (existingBinding is not null)
-            {
-                await RemoveSecretAsync(existingBinding);
-            }
+            await RemoveSecretAsync(sourceName ?? secretInfo.Name);
 
-            await _bindingsManager.UpdateSecretBindingAsync(binding.Name, binding);
+            await _secretInfosManager.UpdateSecretInfoAsync(secretInfo.Name, secretInfo);
 
-            // Updating a readonly store is a noop.
             if (!secretStore.IsReadOnly)
             {
-                await secretStore.UpdateSecretAsync(binding.Name, secret);
+                await secretStore.UpdateSecretAsync(secretInfo.Name, secret);
             }
         }
         else
         {
-            throw new InvalidOperationException($"The specified store '{binding.Store}' was not found.");
+            throw new InvalidOperationException($"The specified store '{secretInfo.Store}' was not found.");
         }
     }
 
     public async Task RemoveSecretAsync(string name)
     {
-        var secretBindings = await GetSecretBindingsAsync();
-        if (!secretBindings.TryGetValue(name, out var binding))
+        var secretInfos = await GetSecretInfosAsync();
+        if (!secretInfos.TryGetValue(name, out var secretInfo))
         {
             return;
         }
 
-        await RemoveSecretAsync(binding);
+        await RemoveSecretAsync(secretInfo);
     }
 
-    public async Task RemoveSecretAsync(SecretBinding binding)
+    public async Task<bool> TryRemoveSecretAsync(string name)
     {
-        var store = _stores.FirstOrDefault(store => string.Equals(store.Name, binding.Store, StringComparison.OrdinalIgnoreCase))
-            ?? throw new InvalidOperationException($"The specified store '{binding.Store}' was not found.");
+        var secretInfos = await GetSecretInfosAsync();
+        if (!secretInfos.TryGetValue(name, out var secretInfo))
+        {
+            return false;
+        }
 
-        await _bindingsManager.RemoveSecretBindingAsync(binding.Name);
+        await RemoveSecretAsync(secretInfo);
+
+        return true;
+    }
+
+    private async Task RemoveSecretAsync(SecretInfo secretInfo)
+    {
+        var store = _stores.FirstOrDefault(store => string.Equals(store.Name, secretInfo.Store, StringComparison.OrdinalIgnoreCase))
+            ?? throw new InvalidOperationException($"The specified store '{secretInfo.Store}' was not found.");
+
+        await _secretInfosManager.RemoveSecretInfoAsync(secretInfo.Name);
 
         // Updating a readonly store is a noop.
         if (store.IsReadOnly)
@@ -212,6 +210,6 @@ public class SecretService : ISecretService
             return;
         }
 
-        await store.RemoveSecretAsync(binding.Name);
+        await store.RemoveSecretAsync(secretInfo.Name);
     }
 }

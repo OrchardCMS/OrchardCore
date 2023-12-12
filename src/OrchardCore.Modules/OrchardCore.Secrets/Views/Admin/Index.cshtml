@@ -1,4 +1,4 @@
-@model SecretBindingIndexViewModel
+@model SecretIndexViewModel
 
 @{
     int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
@@ -69,9 +69,9 @@
                             <a asp-action="Delete" asp-route-name="@entry.Name" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                         </div>
                         <a asp-action="Edit" asp-route-name="@entry.Name">@entry.Name</a>
-                        @if (!String.IsNullOrWhiteSpace(entry.SecretBinding.Description))
+                        @if (!String.IsNullOrWhiteSpace(entry.Info.Description))
                         {
-                            <span class="hint dashed">@entry.SecretBinding.Description</span>
+                            <span class="hint dashed">@entry.Info.Description</span>
                         }
                         @await DisplayAsync(entry.Summary)
                     </div>

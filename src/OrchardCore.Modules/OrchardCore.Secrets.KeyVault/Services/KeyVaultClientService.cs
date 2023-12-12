@@ -41,14 +41,9 @@ public class KeyVaultClientService
             var secret = await _client.GetSecretAsync(name);
             return secret.Value.Value;
         }
-        catch (RequestFailedException ex)
+        catch (RequestFailedException ex) when (ex.ErrorCode == "SecretNotFound")
         {
-            if (ex.ErrorCode == "SecretNotFound")
-            {
-                return null;
-            }
-
-            throw;
+            return null;
         }
     }
 
@@ -64,7 +59,13 @@ public class KeyVaultClientService
 
     public async Task RemoveSecretAsync(string name)
     {
-        await _client.StartDeleteSecretAsync(name);
+        try
+        {
+            await _client.StartDeleteSecretAsync(name);
+        }
+        catch (RequestFailedException ex) when (ex.ErrorCode == "SecretNotFound")
+        {
+        }
 
         // Purging on deletion is not supported, the retention period should be configured
         // on any key vault, knowing that the 'soft-delete' feature will be mandatory soon.

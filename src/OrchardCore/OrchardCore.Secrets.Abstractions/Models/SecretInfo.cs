@@ -1,6 +1,6 @@
 namespace OrchardCore.Secrets.Models;
 
-public class SecretBinding
+public class SecretInfo
 {
     public string Name { get; set; }
     public string Store { get; set; }

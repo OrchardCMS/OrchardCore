@@ -23,9 +23,7 @@ public class SelectSecretViewComponent : ViewComponent
 
     public async Task<IViewComponentResult> InvokeAsync(string secretType, string selectedSecret, string htmlId, string htmlName, bool required)
     {
-        var secretBindings = await _secretService.GetSecretBindingsAsync();
-
-        var secrets = secretBindings
+        var secrets = (await _secretService.GetSecretInfosAsync())
             .Where(kv => string.Equals(secretType, kv.Value.Type, StringComparison.OrdinalIgnoreCase))
             .Select(kv => new SelectListItem()
             {

@@ -16,7 +16,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
                 Name = "rsaencryptor",
                 PublicKey = Convert.ToBase64String(rsaEncryptor.ExportRSAPublicKey()),
                 PrivateKey = Convert.ToBase64String(rsaEncryptor.ExportRSAPrivateKey()),
-                KeyType = RSAKeyType.PublicPrivatePair,
+                KeyType = RSAKeyType.PublicPrivate,
             };
 
             using var rsaSigning = RSAGenerator.GenerateRSASecurityKey(2048);
@@ -25,20 +25,20 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
                 Name = "rsasigning",
                 PublicKey = Convert.ToBase64String(rsaSigning.ExportRSAPublicKey()),
                 PrivateKey = Convert.ToBase64String(rsaSigning.ExportRSAPrivateKey()),
-                KeyType = RSAKeyType.PublicPrivatePair,
+                KeyType = RSAKeyType.PublicPrivate,
             };
 
-            var encryptionBinding = new SecretBinding() { Name = "rsaencryptor" };
-            var signingBinding = new SecretBinding() { Name = "rsasigning" };
-            var bindings = new Dictionary<string, SecretBinding>()
+            var encryptionInfo = new SecretInfo() { Name = "rsaencryptor" };
+            var signingInfo = new SecretInfo() { Name = "rsasigning" };
+            var secrets = new Dictionary<string, SecretInfo>()
             {
-                { "rsaencryptor", encryptionBinding },
-                { "rsasigning", signingBinding },
+                { "rsaencryptor", encryptionInfo },
+                { "rsasigning", signingInfo },
             };
 
             var secretService = Mock.Of<ISecretService>();
 
-            Mock.Get(secretService).Setup(s => s.GetSecretBindingsAsync()).ReturnsAsync(bindings);
+            Mock.Get(secretService).Setup(s => s.GetSecretInfosAsync()).ReturnsAsync(secrets);
             Mock.Get(secretService).Setup(s => s.GetSecretAsync<RSASecret>(encryptionSecret.Name)).ReturnsAsync(encryptionSecret);
             Mock.Get(secretService).Setup(s => s.GetSecretAsync<RSASecret>(signingSecret.Name)).ReturnsAsync(signingSecret);
 

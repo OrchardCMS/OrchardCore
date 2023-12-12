@@ -21,7 +21,7 @@ public class SecretProtectionProvider : ISecretProtectionProvider
             ?? throw new InvalidOperationException($"Secret '{signingSecret}' not found.");
 
         // The private key is needed for the signature.
-        if (signingRsaSecret.KeyType != RSAKeyType.PublicPrivatePair)
+        if (signingRsaSecret.KeyType != RSAKeyType.PublicPrivate)
         {
             throw new InvalidOperationException("Secret cannot be used for signing.");
         }

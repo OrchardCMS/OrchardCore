@@ -68,7 +68,7 @@ namespace OrchardCore.Deployment.Remote.Services
 
             var rsaSigningSecret = await _secretService.GetOrCreateSecretAsync<RSASecret>(
                 name: $"{Secrets.Signing}.{clientName}",
-                configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivatePair));
+                configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
 
             var apiSecret = await _secretService.GetOrCreateSecretAsync<TextSecret>(
                 name: $"{Secrets.ApiKey}.{clientName}",
@@ -107,7 +107,7 @@ namespace OrchardCore.Deployment.Remote.Services
 
             var rsaSigningSecret = await _secretService.GetOrCreateSecretAsync<RSASecret>(
                 name: $"{Secrets.Signing}.{clientName}",
-                configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivatePair),
+                configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate),
                 sourceName: $"{Secrets.Signing}.{remoteInstance.ClientName}");
 
             var apiKeySecret = await _secretService.GetOrCreateSecretAsync<TextSecret>(

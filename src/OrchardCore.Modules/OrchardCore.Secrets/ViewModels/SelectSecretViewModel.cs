@@ -11,5 +11,5 @@ public class SelectSecretViewModel
     public string HtmlName { get; set; }
 
     [BindNever]
-    public List<SelectListItem> Secrets { get; set; } = new List<SelectListItem>();
+    public List<SelectListItem> Secrets { get; set; } = [];
 }

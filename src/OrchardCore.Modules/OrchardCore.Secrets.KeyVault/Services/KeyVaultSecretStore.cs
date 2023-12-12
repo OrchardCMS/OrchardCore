@@ -36,15 +36,12 @@ public class KeyVaultSecretStore : ISecretStore
             return null;
         }
 
-        var secret = JsonConvert.DeserializeObject(value, type) as SecretBase;
-
-        return secret;
+        return JsonConvert.DeserializeObject(value, type) as SecretBase;
     }
 
     public Task UpdateSecretAsync(string name, SecretBase secret)
     {
         var value = JsonConvert.SerializeObject(secret);
-
         return _keyVaultClientService.SetSecretAsync(name, value);
     }
 

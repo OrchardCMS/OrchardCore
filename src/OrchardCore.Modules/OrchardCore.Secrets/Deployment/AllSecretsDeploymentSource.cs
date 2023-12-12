@@ -36,12 +36,12 @@ public class AllSecretsDeploymentSource : IDeploymentSource
             throw new InvalidOperationException("You must set a signing rsa secret for the deployment target before exporting secrets.");
         }
 
-        // Secret binding names used for the deployment itself should already exist on both sides.
-        var secretBindings = (await _secretService.GetSecretBindingsAsync()).Where(binding =>
-            !string.Equals(binding.Value.Name, result.EncryptionSecret, StringComparison.OrdinalIgnoreCase) &&
-            !string.Equals(binding.Value.Name, result.SigningSecret, StringComparison.OrdinalIgnoreCase));
+        // Secrets used for the deployment itself should already exist on both sides.
+        var secretInfos = (await _secretService.GetSecretInfosAsync()).Where(secret =>
+            !string.Equals(secret.Value.Name, result.EncryptionSecret, StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(secret.Value.Name, result.SigningSecret, StringComparison.OrdinalIgnoreCase));
 
-        if (!secretBindings.Any())
+        if (!secretInfos.Any())
         {
             return;
         }
@@ -49,38 +49,36 @@ public class AllSecretsDeploymentSource : IDeploymentSource
         var encryptor = await _protectionProvider.CreateEncryptorAsync(result.EncryptionSecret, result.SigningSecret);
 
         var secrets = new Dictionary<string, JObject>();
-        foreach (var binding in secretBindings)
+        foreach (var secretInfo in secretInfos)
         {
             var store = _secretService.GetSecretStoreInfos().FirstOrDefault(store =>
-                string.Equals(store.Name, binding.Value.Store, StringComparison.OrdinalIgnoreCase));
+                string.Equals(store.Name, secretInfo.Value.Store, StringComparison.OrdinalIgnoreCase));
 
             if (store is null)
             {
                 continue;
             }
 
-            var jsonBinding = JObject.FromObject(binding.Value);
+            var jsonSecretInfo = JObject.FromObject(secretInfo.Value);
 
-            // Cleanup binding names that will be deduced from their key.
-            jsonBinding.Remove("Name");
+            // Cleanup secret names that will be deduced from their keys.
+            jsonSecretInfo.Remove("Name");
 
-            var jObject = new JObject(new JProperty("SecretBinding", jsonBinding));
+            var jObject = new JObject(new JProperty("SecretInfo", jsonSecretInfo));
 
-            // When the store is readonly we ship a binding without the secret value.
+            // When the store is readonly we ship the secret info without the secret value.
             if (!store.IsReadOnly)
             {
-                var secret = await _secretService.GetSecretAsync(binding.Value);
+                var secret = await _secretService.GetSecretAsync(secretInfo.Value.Name);
                 if (secret is not null)
                 {
                     var plaintext = JsonConvert.SerializeObject(secret);
                     var encrypted = encryptor.Encrypt(plaintext);
-
-                    // [js: decrypt('theaesencryptionkey', 'theencryptedvalue')]
-                    jObject.Add("Secret", $"[js: decrypt('{encrypted}')]");
+                    jObject.Add("SecretData", encrypted);
                 }
             }
 
-            secrets.Add(binding.Key, jObject);
+            secrets.Add(secretInfo.Key, jObject);
         }
 
         result.Steps.Add(new JObject(

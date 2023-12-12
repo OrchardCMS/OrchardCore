@@ -45,7 +45,7 @@ namespace OrchardCore.Secrets
                 options.SecretTypes.Add(typeof(RSASecret));
             });
 
-            services.AddSingleton<SecretBindingsManager>();
+            services.AddSingleton<SecretInfosManager>();
             services.AddSingleton<SecretsDocumentManager>();
 
             services.AddSingleton<ISecretStore, DatabaseSecretStore>();

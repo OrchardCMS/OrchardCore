@@ -11,8 +11,13 @@ namespace OrchardCore.Secrets.Recipes;
 public class SecretsRecipeStep : IRecipeStepHandler
 {
     private readonly ISecretService _secretService;
+    private readonly ISecretProtectionProvider _protectionProvider;
 
-    public SecretsRecipeStep(ISecretService secretService) => _secretService = secretService;
+    public SecretsRecipeStep(ISecretService secretService, ISecretProtectionProvider protectionProvider)
+    {
+        _secretService = secretService;
+        _protectionProvider = protectionProvider;
+    }
 
     public async Task ExecuteAsync(RecipeExecutionContext context)
     {
@@ -24,22 +29,20 @@ public class SecretsRecipeStep : IRecipeStepHandler
         var secrets = (JObject)context.Step["Secrets"];
         foreach (var kvp in secrets)
         {
-            var binding = kvp.Value["SecretBinding"].ToObject<SecretBinding>();
-            var secret = _secretService.CreateSecret(binding.Type);
+            var secretInfo = kvp.Value["SecretInfo"].ToObject<SecretInfo>();
+            var secret = _secretService.CreateSecret(secretInfo.Type);
 
-            // This will always be plaintext as decrypt has already operated on the secret.
-            var plaintext = kvp.Value["Secret"]?.ToString();
-            if (!string.IsNullOrEmpty(plaintext))
+            var protectedData = kvp.Value["SecretData"]?.ToString();
+            if (!string.IsNullOrEmpty(protectedData))
             {
-                // Rehydrate from plaintext to secret type.
-                secret = JsonConvert.DeserializeObject(plaintext, secret.GetType()) as SecretBase;
+                var protector = await _protectionProvider.CreateDecryptorAsync(protectedData);
+                secret = JsonConvert.DeserializeObject(protector.Decrypt(), secret.GetType()) as SecretBase;
             }
 
-            // Binding names are deduced from their key.
-            binding.Name = kvp.Key;
+            // Secret names are deduced from their key.
+            secretInfo.Name = kvp.Key;
 
-            await _secretService.RemoveSecretAsync(binding);
-            await _secretService.UpdateSecretAsync(binding, secret);
+            await _secretService.UpdateSecretAsync(secretInfo, secret);
         }
     }
 }

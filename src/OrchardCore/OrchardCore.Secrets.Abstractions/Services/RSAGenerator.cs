@@ -37,7 +37,7 @@ public static class RSAGenerator
         using var rsa = RSAGenerator.GenerateRSASecurityKey(2048);
         secret.PublicKey = Convert.ToBase64String(rsa.ExportRSAPublicKey());
 
-        if (keyType == RSAKeyType.PublicPrivatePair)
+        if (keyType == RSAKeyType.PublicPrivate)
         {
             secret.PrivateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey());
         }

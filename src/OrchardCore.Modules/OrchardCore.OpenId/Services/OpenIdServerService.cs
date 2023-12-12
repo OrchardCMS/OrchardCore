@@ -299,7 +299,7 @@ namespace OrchardCore.OpenId.Services
                     var rsa = GenerateRsaSecurityKey(size: 2048);
 
                     rsa.ImportRSAPublicKey(secret.PublicKeyAsBytes(), out _);
-                    if (secret.KeyType == RSAKeyType.PublicPrivatePair)
+                    if (secret.KeyType == RSAKeyType.PublicPrivate)
                     {
                         rsa.ImportRSAPrivateKey(secret.PrivateKeyAsBytes(), out _);
                     }
@@ -395,7 +395,7 @@ namespace OrchardCore.OpenId.Services
                     var rsa = GenerateRsaSecurityKey(size: 2048);
 
                     rsa.ImportRSAPublicKey(secret.PublicKeyAsBytes(), out _);
-                    if (secret.KeyType == RSAKeyType.PublicPrivatePair)
+                    if (secret.KeyType == RSAKeyType.PublicPrivate)
                     {
                         rsa.ImportRSAPrivateKey(secret.PrivateKeyAsBytes(), out _);
                     }

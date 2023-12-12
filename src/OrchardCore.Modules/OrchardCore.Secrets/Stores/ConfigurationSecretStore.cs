@@ -43,7 +43,6 @@ public class ConfigurationSecretStore : ISecretStore
         }
 
         var secret = section.Get(type) as SecretBase;
-
         return Task.FromResult(secret);
     }
 
