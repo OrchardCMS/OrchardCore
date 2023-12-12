@@ -1,6 +1,8 @@
 using MimeKit;
 using OrchardCore.Email;
 using OrchardCore.Email.Services;
+using OrchardCore.Secrets;
+using OrchardCore.Secrets.Models;
 
 namespace OrchardCore.Tests.Email
 {
@@ -265,14 +267,36 @@ namespace OrchardCore.Tests.Email
 
         private static ISmtpService CreateSmtpService(SmtpSettings settings)
         {
+            var secretService = GetSecretServiceMock();
             var options = new Mock<IOptions<SmtpSettings>>();
             options.Setup(o => o.Value).Returns(settings);
-
             var logger = new Mock<ILogger<SmtpService>>();
             var localizer = new Mock<IStringLocalizer<SmtpService>>();
-            var smtp = new SmtpService(options.Object, logger.Object, localizer.Object);
+            var smtp = new SmtpService(secretService, options.Object, logger.Object, localizer.Object);
 
             return smtp;
+        }
+
+        private static ISecretService GetSecretServiceMock()
+        {
+            var passwordSecret = new TextSecret()
+            {
+                Name = "OrchardCore.Email.Secrets.Password",
+                Text = "email.password",
+            };
+
+            var passwordInfo = new SecretInfo() { Name = "OrchardCore.Email.Secrets.Password" };
+            var secrets = new Dictionary<string, SecretInfo>()
+            {
+                { "OrchardCore.Email.Secrets.Password", passwordInfo },
+            };
+
+            var secretService = Mock.Of<ISecretService>();
+
+            Mock.Get(secretService).Setup(s => s.GetSecretInfosAsync()).ReturnsAsync(secrets);
+            Mock.Get(secretService).Setup(s => s.GetSecretAsync<TextSecret>(passwordSecret.Name)).ReturnsAsync(passwordSecret);
+
+            return secretService;
         }
     }
 }

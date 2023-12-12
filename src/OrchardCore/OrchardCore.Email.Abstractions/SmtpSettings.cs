@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 
@@ -65,15 +66,11 @@ namespace OrchardCore.Email
         public string UserName { get; set; }
 
         /// <summary>
-        /// Gets or sets the user password
+        /// Gets or sets the user password.
         /// </summary>
+        [BindNever]
+        [Obsolete("The Password now is persisted in a secret store, will be removed in a future version.")]
         public string Password { get; set; }
-
-        /// <summary>
-        /// Gets or sets the password secret.
-        /// When a secret key is provided, it overrides the <see cref="Password"/> value.
-        /// </summary>
-        public string PasswordSecret { get; set; }
 
         /// <summary>
         /// Gets or sets the proxy server.

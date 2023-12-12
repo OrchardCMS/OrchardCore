@@ -7,8 +7,10 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Email.Services;
+using OrchardCore.Email.ViewModels;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Secrets;
+using OrchardCore.Secrets.Models;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Drivers
@@ -21,19 +23,22 @@ namespace OrchardCore.Email.Drivers
         private readonly ShellSettings _shellSettings;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
+        private readonly ISecretService _secretService;
 
         public SmtpSettingsDisplayDriver(
             IDataProtectionProvider dataProtectionProvider,
             IShellHost shellHost,
             ShellSettings shellSettings,
             IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+            IAuthorizationService authorizationService,
+            ISecretService secretService)
         {
             _dataProtectionProvider = dataProtectionProvider;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
+            _secretService = secretService;
         }
 
         public override async Task<IDisplayResult> EditAsync(SmtpSettings settings, BuildEditorContext context)
@@ -45,9 +50,10 @@ namespace OrchardCore.Email.Drivers
                 return null;
             }
 
+            var secret = await _secretService.GetSecretAsync<TextSecret>(Secrets.Password);
             var shapes = new List<IDisplayResult>
             {
-                Initialize<SmtpSettings>("SmtpSettings_Edit", model =>
+                Initialize<SmtpSettingsEditViewModel>("SmtpSettings_Edit", model =>
                 {
                     model.DefaultSender = settings.DefaultSender;
                     model.DeliveryMethod = settings.DeliveryMethod;
@@ -61,8 +67,7 @@ namespace OrchardCore.Email.Drivers
                     model.RequireCredentials = settings.RequireCredentials;
                     model.UseDefaultCredentials = settings.UseDefaultCredentials;
                     model.UserName = settings.UserName;
-                    model.Password = settings.Password;
-                    model.PasswordSecret = settings.PasswordSecret;
+                    model.Password = secret?.Text;
                     model.IgnoreInvalidSslCertificate = settings.IgnoreInvalidSslCertificate;
                 }).Location("Content:5").OnGroup(GroupId),
             };
@@ -75,7 +80,7 @@ namespace OrchardCore.Email.Drivers
             return Combine(shapes);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(SmtpSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(SmtpSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -86,26 +91,33 @@ namespace OrchardCore.Email.Drivers
 
             if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
             {
-                var previousPassword = section.Password;
-                await context.Updater.TryUpdateModelAsync(section, Prefix);
+                var model = new SmtpSettingsEditViewModel();
 
-                // Restore password if the input is empty, meaning that it has not been reset.
-                if (string.IsNullOrWhiteSpace(section.Password))
+                await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+                var passwordSecret = await _secretService.GetSecretAsync<TextSecret>(Secrets.Password);
+                if (!string.IsNullOrWhiteSpace(model.Password) && model.Password != passwordSecret?.Text)
                 {
-                    section.Password = previousPassword;
+                    passwordSecret = await _secretService.GetOrCreateSecretAsync<TextSecret>(
+                        name: Secrets.Password,
+                        configure: secret => secret.Text = model.Password);
+
+                    if (passwordSecret.Text != model.Password)
+                    {
+                        passwordSecret.Text = model.Password;
+                        await _secretService.UpdateSecretAsync(passwordSecret);
+                    }
+
+                    await _secretService.UpdateSecretAsync(passwordSecret);
                 }
-                else
-                {
-                    // Encrypt the password.
-                    var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration));
-                    section.Password = protector.Protect(section.Password);
-                }
+
+                settings = model;
 
                 // Release the tenant to apply the settings.
                 await _shellHost.ReleaseShellContextAsync(_shellSettings);
             }
 
-            return await EditAsync(section, context);
+            return await EditAsync(settings, context);
         }
     }
 }

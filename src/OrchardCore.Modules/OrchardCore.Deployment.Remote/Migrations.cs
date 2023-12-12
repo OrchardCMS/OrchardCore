@@ -11,22 +11,22 @@ namespace OrchardCore.Deployment.Remote;
 
 public class Migrations : DataMigration
 {
-    private readonly ShellDescriptor _shellDescriptor;
-    private readonly RemoteInstanceService _remoteInstanceService;
     private readonly RemoteClientService _remoteClientService;
+    private readonly RemoteInstanceService _remoteInstanceService;
+    private readonly ShellDescriptor _shellDescriptor;
     private readonly IDataProtector _dataProtector;
     private readonly ILogger _logger;
 
     public Migrations(
-        ShellDescriptor shellDescriptor,
-        RemoteInstanceService remoteInstanceService,
         RemoteClientService remoteClientService,
+        RemoteInstanceService remoteInstanceService,
+        ShellDescriptor shellDescriptor,
         IDataProtectionProvider dataProtectionProvider,
         ILogger<Migrations> logger)
     {
-        _shellDescriptor = shellDescriptor;
-        _remoteInstanceService = remoteInstanceService;
         _remoteClientService = remoteClientService;
+        _remoteInstanceService = remoteInstanceService;
+        _shellDescriptor = shellDescriptor;
 
         _dataProtector = dataProtectionProvider.CreateProtector("OrchardCore.Deployment").ToTimeLimitedDataProtector();
 

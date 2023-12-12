@@ -12,6 +12,8 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
+using OrchardCore.Secrets;
+using OrchardCore.Secrets.Models;
 
 namespace OrchardCore.Email.Services
 {
@@ -24,6 +26,7 @@ namespace OrchardCore.Email.Services
 
         private static readonly char[] _emailsSeparator = new char[] { ',', ';' };
 
+        private readonly ISecretService _secretService;
         private readonly SmtpSettings _options;
         private readonly ILogger _logger;
         protected readonly IStringLocalizer S;
@@ -31,14 +34,17 @@ namespace OrchardCore.Email.Services
         /// <summary>
         /// Initializes a new instance of a <see cref="SmtpService"/>.
         /// </summary>
+        /// <param name="secretService">The <see cref="ISecretService"/>.</param>
         /// <param name="options">The <see cref="IOptions{SmtpSettings}"/>.</param>
         /// <param name="logger">The <see cref="ILogger{SmtpService}"/>.</param>
         /// <param name="stringLocalizer">The <see cref="IStringLocalizer{SmtpService}"/>.</param>
         public SmtpService(
+            ISecretService secretService,
             IOptions<SmtpSettings> options,
             ILogger<SmtpService> logger,
             IStringLocalizer<SmtpService> stringLocalizer)
         {
+            _secretService = secretService;
             _options = options.Value;
             _logger = logger;
             S = stringLocalizer;
@@ -273,7 +279,13 @@ namespace OrchardCore.Email.Services
                 }
                 else if (!string.IsNullOrWhiteSpace(_options.UserName))
                 {
-                    await client.AuthenticateAsync(_options.UserName, _options.Password);
+                    var password = await _secretService.GetSecretAsync<TextSecret>(Secrets.Password);
+                    if (string.IsNullOrEmpty(password?.Text))
+                    {
+                        throw new InvalidOperationException("The Email Password is missing.");
+                    }
+
+                    await client.AuthenticateAsync(_options.UserName, password.Text);
                 }
             }
 
