@@ -8,6 +8,6 @@ namespace OrchardCore.Deployment.Remote.Models
         public string ClientName { get; set; }
 
         [Obsolete("Api keys now are persisted in a secret store, will be removed in a future version.")]
-        public byte[] ProtectedApiKey { get; set; }
+        public byte[] ProtectedApiKey { get; set; } = [];
     }
 }

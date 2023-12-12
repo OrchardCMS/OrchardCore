@@ -6,15 +6,11 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Deployment.Remote.Services;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor.Models;
-using OrchardCore.Secrets;
-using OrchardCore.Secrets.Models;
-using OrchardCore.Secrets.Services;
 
 namespace OrchardCore.Deployment.Remote;
 
 public class Migrations : DataMigration
 {
-    private readonly ISecretService _secretService;
     private readonly ShellDescriptor _shellDescriptor;
     private readonly RemoteInstanceService _remoteInstanceService;
     private readonly RemoteClientService _remoteClientService;
@@ -22,14 +18,12 @@ public class Migrations : DataMigration
     private readonly ILogger _logger;
 
     public Migrations(
-        ISecretService secretService,
         ShellDescriptor shellDescriptor,
         RemoteInstanceService remoteInstanceService,
         RemoteClientService remoteClientService,
         IDataProtectionProvider dataProtectionProvider,
         ILogger<Migrations> logger)
     {
-        _secretService = secretService;
         _shellDescriptor = shellDescriptor;
         _remoteInstanceService = remoteInstanceService;
         _remoteClientService = remoteClientService;
@@ -59,54 +53,26 @@ public class Migrations : DataMigration
         var remoteInstances = (await _remoteInstanceService.LoadRemoteInstanceListAsync()).RemoteInstances;
         foreach (var remoteInstance in remoteInstances)
         {
-            var rsaEncryptionSecret = await _secretService.GetOrCreateSecretAsync<RSASecret>(
-                name: $"{Secrets.Encryption}.{remoteInstance.ClientName}",
-                configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.Public));
-
-            var rsaSigningSecret = await _secretService.GetOrCreateSecretAsync<RSASecret>(
-                name: $"{Secrets.Signing}.{remoteInstance.ClientName}",
-                configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
-
-            var apiKeySecret = await _secretService.GetOrCreateSecretAsync<TextSecret>(
-                name: $"{Secrets.ApiKey}.{remoteInstance.ClientName}",
-                configure: secret => secret.Text = remoteInstance.ApiKey);
-
+            var apiKey = remoteInstance.ApiKey;
             remoteInstance.ApiKey = null;
-
-            await _remoteInstanceService.UpdateRemoteInstanceAsync(remoteInstance, apiKeySecret.Text);
+            await _remoteInstanceService.UpdateRemoteInstanceAsync(remoteInstance, apiKey);
         }
 
         var remoteClients = (await _remoteClientService.GetRemoteClientListAsync()).RemoteClients;
         foreach (var remoteClient in remoteClients)
         {
-            var rsaEncryptionSecret = await _secretService.GetOrCreateSecretAsync<RSASecret>(
-                name: $"{Secrets.Encryption}.{remoteClient.ClientName}",
-                configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
-
-            var rsaSigningSecret = await _secretService.GetOrCreateSecretAsync<RSASecret>(
-                name: $"{Secrets.Signing}.{remoteClient.ClientName}",
-                configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.Public));
-
-            var apiKeySecret = await _secretService.GetOrCreateSecretAsync<TextSecret>(
-                name: $"{Secrets.ApiKey}.{remoteClient.ClientName}",
-                configure: secret =>
-                {
-                    if (remoteClient.ProtectedApiKey?.Length > 0)
-                    {
-                        try
-                        {
-                            secret.Text = Encoding.UTF8.GetString(_dataProtector.Unprotect(remoteClient.ProtectedApiKey));
-                        }
-                        catch
-                        {
-                            _logger.LogError("The Api Key could not be decrypted. It may have been encrypted using a different key.");
-                        }
-                    }
-                });
+            string apiKey = null;
+            try
+            {
+                apiKey = Encoding.UTF8.GetString(_dataProtector.Unprotect(remoteClient.ProtectedApiKey));
+            }
+            catch
+            {
+                _logger.LogError("The Api Key could not be decrypted. It may have been encrypted using a different key.");
+            }
 
             remoteClient.ProtectedApiKey = [];
-
-            await _remoteClientService.UpdateRemoteClientAsync(remoteClient, apiKeySecret.Text);
+            await _remoteClientService.UpdateRemoteClientAsync(remoteClient, apiKey);
         }
     }
 #pragma warning restore CS0618 // Type or member is obsolete

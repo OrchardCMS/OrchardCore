@@ -62,15 +62,15 @@ namespace OrchardCore.Deployment.Remote.Services
 
         public async Task CreateRemoteInstanceAsync(string name, string url, string clientName, string apiKey)
         {
-            var rsaEncryptionSecret = await _secretService.GetOrCreateSecretAsync<RSASecret>(
+            await _secretService.GetOrCreateSecretAsync<RSASecret>(
                 name: $"{Secrets.Encryption}.{clientName}",
                 configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.Public));
 
-            var rsaSigningSecret = await _secretService.GetOrCreateSecretAsync<RSASecret>(
+            await _secretService.GetOrCreateSecretAsync<RSASecret>(
                 name: $"{Secrets.Signing}.{clientName}",
                 configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
 
-            var apiSecret = await _secretService.GetOrCreateSecretAsync<TextSecret>(
+            await _secretService.GetOrCreateSecretAsync<TextSecret>(
                 name: $"{Secrets.ApiKey}.{clientName}",
                 configure: secret => secret.Text = apiKey);
 
@@ -100,12 +100,12 @@ namespace OrchardCore.Deployment.Remote.Services
                 return;
             }
 
-            var rsaEncryptionSecret = await _secretService.GetOrCreateSecretAsync<RSASecret>(
+            await _secretService.GetOrCreateSecretAsync<RSASecret>(
                 name: $"{Secrets.Encryption} .{clientName}",
                 configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.Public),
                 sourceName: $"{Secrets.Encryption}.{remoteInstance.ClientName}");
 
-            var rsaSigningSecret = await _secretService.GetOrCreateSecretAsync<RSASecret>(
+            await _secretService.GetOrCreateSecretAsync<RSASecret>(
                 name: $"{Secrets.Signing}.{clientName}",
                 configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate),
                 sourceName: $"{Secrets.Signing}.{remoteInstance.ClientName}");

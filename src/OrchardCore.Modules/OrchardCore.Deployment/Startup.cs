@@ -9,7 +9,6 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Deployment.Controllers;
 using OrchardCore.Deployment.Core;
 using OrchardCore.Deployment.Deployment;
-using OrchardCore.Deployment.Drivers;
 using OrchardCore.Deployment.Indexes;
 using OrchardCore.Deployment.Recipes;
 using OrchardCore.Deployment.Steps;
@@ -19,8 +18,6 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
-using YesSql.Indexes;
 
 namespace OrchardCore.Deployment
 {
@@ -41,7 +38,6 @@ namespace OrchardCore.Deployment
             services.AddScoped<IPermissionProvider, Permissions>();
 
             services.AddSingleton<IDeploymentTargetProvider, FileDownloadDeploymentTargetProvider>();
-            services.AddScoped<IDisplayDriver<ISite>, FileDownloadDeploymentTargetSettingsDisplayDriver>();
 
             // Custom File deployment step
             services.AddTransient<IDeploymentSource, CustomFileDeploymentSource>();

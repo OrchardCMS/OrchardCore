@@ -7,10 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Admin;
 using OrchardCore.Deployment.Core.Mvc;
 using OrchardCore.Deployment.Core.Services;
-using OrchardCore.Deployment.Models;
 using OrchardCore.Deployment.Services;
 using OrchardCore.Deployment.Steps;
-using OrchardCore.Entities;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Settings;
@@ -48,8 +46,7 @@ namespace OrchardCore.Deployment.Controllers
             }
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
-
-            if (deploymentPlan == null)
+            if (deploymentPlan is null)
             {
                 return NotFound();
             }
@@ -79,15 +76,7 @@ namespace OrchardCore.Deployment.Controllers
                     recipeDescriptor.Tags = (recipeFileDeploymentStep.Tags ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries);
                 }
 
-                var siteSettings = await _siteService.GetSiteSettingsAsync();
-                var fileDownloadDeploymentTargetSettings = siteSettings.As<FileDownloadDeploymentTargetSettings>();
-
-                var deploymentPlanResult = new DeploymentPlanResult(
-                    fileBuilder,
-                    recipeDescriptor,
-                    fileDownloadDeploymentTargetSettings.RsaEncryptionSecret,
-                    fileDownloadDeploymentTargetSettings.RsaSigningSecret);
-
+                var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor, Secrets.Encryption, Secrets.Signing);
                 await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);
                 ZipFile.CreateFromDirectory(fileBuilder.Folder, archiveFileName);
             }

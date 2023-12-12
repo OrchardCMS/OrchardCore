@@ -65,15 +65,15 @@ namespace OrchardCore.Deployment.Remote.Services
 
         public async Task<RemoteClient> CreateRemoteClientAsync(string clientName, string apiKey)
         {
-            var rsaEncryptionSecret = await _secretService.GetOrCreateSecretAsync<RSASecret>(
+            await _secretService.GetOrCreateSecretAsync<RSASecret>(
                 name: $"{Secrets.Encryption}.{clientName}",
                 configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
 
-            var rsaSigningSecret = await _secretService.GetOrCreateSecretAsync<RSASecret>(
+            await _secretService.GetOrCreateSecretAsync<RSASecret>(
                 name: $"{Secrets.Signing}.{clientName}",
                 configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.Public));
 
-            var apiSecret = await _secretService.GetOrCreateSecretAsync<TextSecret>(
+            await _secretService.GetOrCreateSecretAsync<TextSecret>(
                 name: $"{Secrets.ApiKey}.{clientName}",
                 configure: secret => secret.Text = apiKey);
 
@@ -102,12 +102,12 @@ namespace OrchardCore.Deployment.Remote.Services
                 return;
             }
 
-            var rsaEncryptionSecret = await _secretService.GetOrCreateSecretAsync<RSASecret>(
+            await _secretService.GetOrCreateSecretAsync<RSASecret>(
                 name: $"{Secrets.Encryption}.{clientName}",
                 configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate),
                 sourceName: $"{Secrets.Encryption}.{remoteClient.ClientName}");
 
-            var rsaSigningSecret = await _secretService.GetOrCreateSecretAsync<RSASecret>(
+            await _secretService.GetOrCreateSecretAsync<RSASecret>(
                 name: $"{Secrets.Signing}.{clientName}",
                 configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.Public),
                 sourceName: $"{Secrets.Signing}.{remoteClient.ClientName}");
@@ -117,7 +117,7 @@ namespace OrchardCore.Deployment.Remote.Services
                 configure: secret => secret.Text = apiKey,
                 sourceName: $"{Secrets.ApiKey}.{remoteClient.ClientName}");
 
-            if (apiKeySecret.Text != apiKey)
+            if (apiKey is not null && apiKeySecret.Text != apiKey)
             {
                 apiKeySecret.Text = apiKey;
                 await _secretService.UpdateSecretAsync(apiKeySecret);

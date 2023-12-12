@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.Data.Migration;
 using OrchardCore.Deployment.Remote;
 using OrchardCore.Deployment.Remote.Controllers;
 using OrchardCore.Deployment.Remote.Services;
@@ -30,6 +31,7 @@ namespace OrchardCore.Deployment
             services.AddScoped<RemoteClientService>();
             services.AddScoped<IDeploymentTargetProvider, RemoteInstanceDeploymentTargetProvider>();
             services.AddScoped<IPermissionProvider, Permissions>();
+            services.AddDataMigration<Migrations>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
