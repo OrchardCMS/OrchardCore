@@ -9,7 +9,7 @@ namespace OrchardCore.Mvc.Core.Utilities
         {
             if (!typeof(Controller).IsAssignableFrom(controllerType))
             {
-                throw new ArgumentException("The specified type must inherit from " + nameof(Controller), nameof(controllerType));
+                throw new ArgumentException($"The specified type must inherit from '{nameof(Controller)}'", nameof(controllerType));
             }
 
             return controllerType.Name.EndsWith(nameof(Controller), StringComparison.OrdinalIgnoreCase)

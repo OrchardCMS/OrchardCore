@@ -97,7 +97,7 @@ namespace OrchardCore.ContentTypes.Services
         {
             if (string.IsNullOrWhiteSpace(displayName))
             {
-                throw new ArgumentException("The 'displayName' can't be null or empty.", nameof(displayName));
+                throw new ArgumentException($"The '{nameof(displayName)}' can't be null or empty.", nameof(displayName));
             }
 
             if (string.IsNullOrWhiteSpace(name))
@@ -322,7 +322,7 @@ namespace OrchardCore.ContentTypes.Services
         {
             if (string.IsNullOrEmpty(fieldName))
             {
-                throw new ArgumentException($"The '{nameof(fieldName)}' can't be null or empty.");
+                throw new ArgumentException($"The '{nameof(fieldName)}' can't be null or empty.", nameof(fieldName));
             }
 
             var partDefinition = await _contentDefinitionManager.LoadPartDefinitionAsync(partName);
