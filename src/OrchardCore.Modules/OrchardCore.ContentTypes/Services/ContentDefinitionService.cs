@@ -322,7 +322,7 @@ namespace OrchardCore.ContentTypes.Services
         {
             if (string.IsNullOrEmpty(fieldName))
             {
-                throw new ArgumentException($"The '{fieldName}' can't be null or empty.", nameof(fieldName));
+                throw new ArgumentException($"The '{nameof(fieldName)}' can't be null or empty.");
             }
 
             var partDefinition = await _contentDefinitionManager.LoadPartDefinitionAsync(partName);
