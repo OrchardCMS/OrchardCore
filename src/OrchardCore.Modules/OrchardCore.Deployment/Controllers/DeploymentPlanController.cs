@@ -227,7 +227,7 @@ namespace OrchardCore.Deployment.Controllers
             {
                 var deploymentPlan = new DeploymentPlan { Name = model.Name };
 
-                _session.Save(deploymentPlan);
+                await _session.SaveAsync(deploymentPlan);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -294,7 +294,7 @@ namespace OrchardCore.Deployment.Controllers
             {
                 deploymentPlan.Name = model.Name;
 
-                _session.Save(deploymentPlan);
+                await _session.SaveAsync(deploymentPlan);
 
                 await _notifier.SuccessAsync(H["Deployment plan updated successfully."]);
 

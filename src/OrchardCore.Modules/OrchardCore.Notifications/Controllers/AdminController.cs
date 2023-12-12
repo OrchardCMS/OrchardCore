@@ -196,7 +196,7 @@ public class AdminController : Controller, IUpdateModel
 
                             notification.Put(readPart);
 
-                            _session.Save(notification, collection: NotificationConstants.NotificationCollection);
+                            await _session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection);
                             counter++;
                         }
                     }
@@ -217,7 +217,7 @@ public class AdminController : Controller, IUpdateModel
 
                             notification.Put(readPart);
 
-                            _session.Save(notification, collection: NotificationConstants.NotificationCollection);
+                            await _session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection);
                             counter++;
                         }
                     }
@@ -264,7 +264,7 @@ public class AdminController : Controller, IUpdateModel
             readPart.ReadAtUtc = utcNow;
 
             notification.Put(readPart);
-            _session.Save(notification, collection: NotificationConstants.NotificationCollection);
+            await _session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection);
             counter++;
         }
 
@@ -304,7 +304,7 @@ public class AdminController : Controller, IUpdateModel
 
                 notification.Put(readPart);
 
-                _session.Save(notification, collection: NotificationConstants.NotificationCollection);
+                await _session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection);
             }
         }
 

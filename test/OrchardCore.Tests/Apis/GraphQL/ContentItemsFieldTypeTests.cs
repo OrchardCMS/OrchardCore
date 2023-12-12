@@ -78,11 +78,11 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
         private static async Task CreateTablesAsync(IStore store)
         {
-            using (var session = store.CreateSession())
+            await using (var session = store.CreateSession())
             {
                 var builder = new SchemaBuilder(store.Configuration, await session.BeginTransactionAsync());
 
-                builder.CreateMapIndexTable<ContentItemIndex>(table => table
+                await builder.CreateMapIndexTableAsync<ContentItemIndex>(table => table
                     .Column<string>("ContentItemId", c => c.WithLength(26))
                     .Column<string>("ContentItemVersionId", c => c.WithLength(26))
                     .Column<bool>("Latest")
@@ -96,11 +96,11 @@ namespace OrchardCore.Tests.Apis.GraphQL
                     .Column<string>("DisplayText", column => column.Nullable().WithLength(ContentItemIndex.MaxDisplayTextSize))
                 );
 
-                builder.CreateMapIndexTable<AnimalIndex>(table => table
+                await builder.CreateMapIndexTableAsync<AnimalIndex>(table => table
                     .Column<string>(nameof(AnimalIndex.Name))
                 );
 
-                builder.CreateMapIndexTable<AnimalTraitsIndex>(table => table
+                await builder.CreateMapIndexTableAsync<AnimalTraitsIndex>(table => table
                     .Column<bool>(nameof(AnimalTraitsIndex.IsHappy))
                     .Column<bool>(nameof(AnimalTraitsIndex.IsScary))
                 );
@@ -130,7 +130,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             ci.Weld(new AnimalPart { Name = "doug" });
 
             var session = context.RequestServices.GetService<ISession>();
-            session.Save(ci);
+            await session.SaveAsync(ci);
             await session.SaveChangesAsync();
 
             var type = new ContentItemsFieldType("Animal", new Schema(services), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
@@ -166,7 +166,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             ci.Weld(new AnimalPart { Name = "doug" });
 
             var session = context.RequestServices.GetService<ISession>();
-            session.Save(ci);
+            await session.SaveAsync(ci);
             await session.SaveChangesAsync();
 
             var type = new ContentItemsFieldType("Animal", new Schema(services), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
@@ -202,7 +202,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             ci.Weld(new AnimalPart { Name = "doug" });
 
             var session = context.RequestServices.GetService<ISession>();
-            session.Save(ci);
+            await session.SaveAsync(ci);
             await session.SaveChangesAsync();
 
             var type = new ContentItemsFieldType("Animal", new Schema(services), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
@@ -235,7 +235,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             ci.Weld(new Animal { Name = "doug" });
 
             var session = context.RequestServices.GetService<ISession>();
-            session.Save(ci);
+            await session.SaveAsync(ci);
             await session.SaveChangesAsync();
 
             var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
@@ -284,9 +284,9 @@ namespace OrchardCore.Tests.Apis.GraphQL
             ci2.Weld(new Animal { Name = "tommy", IsHappy = false, IsScary = true });
 
             var session = context.RequestServices.GetService<ISession>();
-            session.Save(ci);
-            session.Save(ci1);
-            session.Save(ci2);
+            await session.SaveAsync(ci);
+            await session.SaveAsync(ci1);
+            await session.SaveAsync(ci2);
             await session.SaveChangesAsync();
 
             var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
@@ -321,7 +321,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             ci.Weld(new AnimalPart { Name = "doug" });
 
             var session = context.RequestServices.GetService<ISession>();
-            session.Save(ci);
+            await session.SaveAsync(ci);
             await session.SaveChangesAsync();
 
             var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
@@ -354,7 +354,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             ci.Weld(new AnimalPart { Name = "doug" });
 
             var session = context.RequestServices.GetService<ISession>();
-            session.Save(ci);
+            await session.SaveAsync(ci);
             await session.SaveChangesAsync();
 
             var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
