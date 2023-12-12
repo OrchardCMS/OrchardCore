@@ -68,8 +68,7 @@ namespace OrchardCore.Search.Elasticsearch
             services.Configure<ElasticConnectionOptions>(o => o.ConfigurationExists = true);
             var settings = GetConnectionSettings(elasticConfiguration);
 
-            services.AddSingleton<IElasticClient>(new ElasticClient(settings))
-                .Configure<ElasticServiceOptions, ElasticServiceOptionsSetup>();
+            services.AddSingleton<IElasticClient>(new ElasticClient(settings));
 
             services.Configure<ElasticsearchOptions>(o =>
             {
@@ -151,13 +150,6 @@ namespace OrchardCore.Search.Elasticsearch
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var options = serviceProvider.GetRequiredService<ElasticServiceOptions>();
-
-            if (!options.IsServiceVerified)
-            {
-                return;
-            }
-
             var adminControllerName = typeof(AdminController).ControllerName();
 
             routes.MapAreaControllerRoute(
