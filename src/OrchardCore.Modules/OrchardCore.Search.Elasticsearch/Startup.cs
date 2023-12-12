@@ -254,7 +254,7 @@ namespace OrchardCore.Search.Elasticsearch
                 optionsAreValid = false;
             }
 
-            if (elasticConnectionOptions.Ports.Length == 0)
+            if (elasticConnectionOptions.Ports?.Length == 0)
             {
                 logger.LogError("Elasticsearch is enabled but not active because a port is missing in application configuration.");
                 optionsAreValid = false;
