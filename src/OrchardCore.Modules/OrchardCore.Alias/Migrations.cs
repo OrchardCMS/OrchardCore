@@ -19,7 +19,7 @@ namespace OrchardCore.Alias
 
         public async Task<int> CreateAsync()
         {
-            _contentDefinitionManager.AlterPartDefinition(nameof(AliasPart), builder => builder
+            await _contentDefinitionManager.AlterPartDefinitionAsync(nameof(AliasPart), builder => builder
                 .Attachable()
                 .WithDescription("Provides a way to define custom aliases for content items."));
 

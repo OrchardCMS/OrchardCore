@@ -72,6 +72,7 @@ This will allow for the Razor Pages to be reloaded without the need to recompile
   <PackageReference Include="OrchardCore.Application.Cms.Core.Targets" Version="1.7.2" />
 </ItemGroup>
 ```
+
 This will add the packages from Orchard Core CMS
 
 - Edit the `Program.cs` file to configure OrchardCore CMS services like this:
@@ -84,7 +85,7 @@ builder.Services.AddOrchardCms();
     `builder.Services.AddRazorPages()` must not be called directly as `builder.Services.AddOrchardCms()` already invokes it internally.
 
 - Edit the `Program.cs` file
-- Add `app.UseOrchardCore();` 
+- Add `app.UseOrchardCore();`
 - If any of the following lines exists in your `Program.cs` file, remove them:
 
 ```csharp
@@ -352,7 +353,6 @@ The changes consist in using the `slug` name in both the route and the local pro
 - Open the page `/blogpost/new-day` which should display the exact same result, but using a more SEO and user friendly url.
 
 ### Generating the slug using a custom pattern
-
 
 The __Alias Part__ provides some custom settings in order to let it be generated automatically. In our case we want it to be generated from the __Title__, automatically. To provide such patterns the CMS uses a templating language named __Liquid__, together with some custom functions to manipulate content items' properties. Orchard provides a generally suitable default pattern.
 

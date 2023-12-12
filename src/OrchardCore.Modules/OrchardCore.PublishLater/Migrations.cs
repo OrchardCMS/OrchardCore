@@ -20,7 +20,7 @@ public class Migrations : DataMigration
 
     public async Task<int> CreateAsync()
     {
-        _contentDefinitionManager.AlterPartDefinition(nameof(PublishLaterPart), builder => builder
+        await _contentDefinitionManager.AlterPartDefinitionAsync("PublishLaterPart", builder => builder
             .Attachable()
             .WithDescription("Adds the ability to schedule content items to be published at a given future date and time."));
 

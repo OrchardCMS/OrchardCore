@@ -19,7 +19,7 @@ namespace OrchardCore.Lists
 
         public async Task<int> CreateAsync()
         {
-            _contentDefinitionManager.AlterPartDefinition("ListPart", builder => builder
+            await _contentDefinitionManager.AlterPartDefinitionAsync("ListPart", builder => builder
                 .Attachable()
                 .WithDescription("Add a list behavior."));
 
@@ -53,9 +53,9 @@ namespace OrchardCore.Lists
 
         // Migrate PartSettings. This only needs to run on old content definition schemas.
         // This code can be removed in a later version.
-        public int UpdateFrom1()
+        public async Task<int> UpdateFrom1Async()
         {
-            _contentDefinitionManager.MigratePartSettings<ListPart, ListPartSettings>();
+            await _contentDefinitionManager.MigratePartSettingsAsync<ListPart, ListPartSettings>();
 
             return 2;
         }

@@ -2,7 +2,7 @@
 
 ## Configuring Data Migration
 
-Data Migration classes can be used to alter the content type definitions (like by adding new __types__, or configuring their __parts__ and __fields__), 
+Data Migration classes can be used to alter the content type definitions (like by adding new __types__, or configuring their __parts__ and __fields__),
 initializing recipes or creating indices.
 
 To implement a migration, your class should inherit from the DataMigration class. The initial migration method must be named `public int Create()` or `public Task<int> CreateAsync()`, and it should return a number (e.g., 1). Subsequent migrations should adhere to the convention public int `UpdateFromX()` or `public Task<int> UpdateFromXAsync()`, where `X` represents the number returned by the last migration method. The migration process strictly follows this chain: for instance, `UpdateFrom4()` will only execute if the last migration returned the number `4`. It is crucial not to modify these numbers afterward, as doing so may disrupt migrations for other tenants.
@@ -87,6 +87,7 @@ namespace Members
 ```
 
 ## Additional information
+
 Please refer to separate sections for more details on data migrations:
 
 - [Data Migration of Content Types](../ContentTypes/README.md#migrations)

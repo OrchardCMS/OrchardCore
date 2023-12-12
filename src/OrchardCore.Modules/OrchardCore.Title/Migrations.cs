@@ -28,9 +28,9 @@ namespace OrchardCore.Title
             _logger = logger;
         }
 
-        public int Create()
+        public async Task<int> CreateAsync()
         {
-            _contentDefinitionManager.AlterPartDefinition("TitlePart", builder => builder
+            await _contentDefinitionManager.AlterPartDefinitionAsync("TitlePart", builder => builder
                 .Attachable()
                 .WithDescription("Provides a Title for your content item.")
                 .WithDefaultPosition("0")

@@ -32,7 +32,7 @@ public class NotificationMethodProviderAccessor : INotificationMethodProviderAcc
             if (selectedMethods.Count > 0)
             {
                 return Task.FromResult<IEnumerable<INotificationMethodProvider>>(methods
-                    // Priority matters to horor user preferences.
+                    // Priority matters to honor user preferences.
                     .OrderBy(provider => selectedMethods.IndexOf(provider.Method))
                     .ThenBy(provider => provider.Name.ToString())
                     .ToList());

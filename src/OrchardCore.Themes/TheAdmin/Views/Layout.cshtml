@@ -10,8 +10,9 @@
 @{
     var adminSettings = Site.As<AdminSettings>();
 
-    // Branding is pre-rendered to allow resource injection
+    // Branding and Navbar are pre-rendered to allow resource injection.
     var brandingHtml = await DisplayAsync(await New.AdminBranding());
+    var navbar = await DisplayAsync(await DisplayManager.BuildDisplayAsync<Navbar>(UpdateModelAccessor.ModelUpdater, "DetailAdmin"));
 }
 <!DOCTYPE html>
 <html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-bs-theme="@await ThemeTogglerService.CurrentTheme()" data-tenant="@ThemeTogglerService.CurrentTenant">
@@ -60,7 +61,7 @@
                             }
                         </div>
                     </div>
-                    @await DisplayAsync(await DisplayManager.BuildDisplayAsync<Navbar>(UpdateModelAccessor.ModelUpdater, "DetailAdmin"))
+                    @navbar
                 </div>
             </div>
         </nav>

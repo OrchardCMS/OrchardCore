@@ -22,7 +22,7 @@ namespace OrchardCore.ContentLocalization.Records
 
         public async Task<int> CreateAsync()
         {
-            _contentDefinitionManager.AlterPartDefinition(nameof(LocalizationPart), builder => builder
+            await _contentDefinitionManager.AlterPartDefinitionAsync(nameof(LocalizationPart), builder => builder
                 .Attachable()
                 .WithDescription("Provides a way to create localized version of content."));
 

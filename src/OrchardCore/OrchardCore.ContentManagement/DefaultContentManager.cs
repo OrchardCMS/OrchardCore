@@ -53,7 +53,7 @@ namespace OrchardCore.ContentManagement
 
         public async Task<ContentItem> NewAsync(string contentType)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType);
             contentTypeDefinition ??= new ContentTypeDefinitionBuilder().Named(contentType).Build();
 
             // Create a new kernel for the model instance.
@@ -221,7 +221,7 @@ namespace OrchardCore.ContentManagement
                 if (contentItem.Published)
                 {
                     // We save the previous version further because this call might do a session query.
-                    var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+                    var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
                     // Check if not versionable, meaning we use only one version
                     if (contentTypeDefinition != null && !contentTypeDefinition.IsVersionable())
@@ -314,7 +314,7 @@ namespace OrchardCore.ContentManagement
                     // When draft is required and latest is published a new version is added.
                     if (item.Published)
                     {
-                        var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(item.ContentType);
+                        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(item.ContentType);
 
                         // Check if not versionable, meaning we use only one version.
                         if (contentTypeDefinition != null && !contentTypeDefinition.IsVersionable())

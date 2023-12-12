@@ -19,7 +19,7 @@ namespace OrchardCore.Autoroute
 
         public async Task<int> CreateAsync()
         {
-            _contentDefinitionManager.AlterPartDefinition("AutoroutePart", builder => builder
+            await _contentDefinitionManager.AlterPartDefinitionAsync("AutoroutePart", builder => builder
                 .Attachable()
                 .WithDescription("Provides a custom url for your content item."));
 
@@ -38,9 +38,9 @@ namespace OrchardCore.Autoroute
 
         // Migrate PartSettings. This only needs to run on old content definition schemas.
         // This code can be removed in a later version.
-        public int UpdateFrom1()
+        public async Task<int> UpdateFrom1Async()
         {
-            _contentDefinitionManager.MigratePartSettings<AutoroutePart, AutoroutePartSettings>();
+            await _contentDefinitionManager.MigratePartSettingsAsync<AutoroutePart, AutoroutePartSettings>();
 
             return 2;
         }
