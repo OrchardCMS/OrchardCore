@@ -129,7 +129,7 @@ namespace OrchardCore.Search.Elasticsearch
         {
             var pool = GetConnectionPool(elasticConfiguration);
 
-            var settings = new ConnectionSettings(pool).ThrowExceptions();
+            var settings = new ConnectionSettings(pool);
 
             if (elasticConfiguration.ConnectionType != "CloudConnectionPool" && !string.IsNullOrWhiteSpace(elasticConfiguration.Username) && !string.IsNullOrWhiteSpace(elasticConfiguration.Password))
             {
