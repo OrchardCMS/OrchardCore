@@ -17,8 +17,8 @@ using OrchardCore.Admin;
 using OrchardCore.Admin.Models;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
-using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Deployment;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Commands;
@@ -258,6 +258,14 @@ namespace OrchardCore.Users
 
             services.AddScoped<CustomUserSettingsService>();
             services.AddRecipeExecutionStep<CustomUserSettingsStep>();
+
+            // When the value of LoginViewModel.RememberMe is set to anything else than "true" or "false" by the
+            // client, which is the case with automated cracking attempts, then we'd get a FormatException from the
+            // default model binder.
+            services.AddMvc(options =>
+            {
+                options.ModelBinderProviders.Insert(0, new SafeBoolModelBinderProvider());
+            });
         }
     }
 

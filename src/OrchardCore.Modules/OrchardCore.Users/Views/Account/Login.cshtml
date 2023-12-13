@@ -1,5 +1,4 @@
 @using Microsoft.AspNetCore.Identity
-@using Microsoft.AspNetCore.Mvc.ModelBinding
 @using OrchardCore.Entities
 @using OrchardCore.Settings
 @using OrchardCore.Users
@@ -15,15 +14,6 @@
     var allowResetPassword = (await SiteService.GetSiteSettingsAsync()).As<ResetPasswordSettings>().AllowResetPassword;
     var loginProviders = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
     var disableLocalLogin = (await SiteService.GetSiteSettingsAsync()).As<LoginSettings>().DisableLocalLogin;
-
-    // When the value of the RememberMe field is set to anything else than "true" or "false" by the client, which is
-    // the case with automated cracking attempts, then otherwise we'd get a FormatException from the model binder.
-    if (!ViewContext.ModelState.IsValid &&
-        ViewContext.ModelState.TryGetValue(nameof(LoginViewModel.RememberMe), out var rememberMeValue) &&
-        rememberMeValue.ValidationState == ModelValidationState.Invalid)
-    {
-        rememberMeValue.RawValue = "false";
-    }
 }
 
 <style asp-name="font-awesome" version="6"></style>
