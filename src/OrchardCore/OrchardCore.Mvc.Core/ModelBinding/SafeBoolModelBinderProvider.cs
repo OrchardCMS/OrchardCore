@@ -1,7 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace OrchardCore.Users.Services;
+namespace OrchardCore.Mvc.ModelBinding;
 
 internal class SafeBoolModelBinderProvider : IModelBinderProvider
 {

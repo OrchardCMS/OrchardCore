@@ -258,14 +258,6 @@ namespace OrchardCore.Users
 
             services.AddScoped<CustomUserSettingsService>();
             services.AddRecipeExecutionStep<CustomUserSettingsStep>();
-
-            // When the value of LoginViewModel.RememberMe is set to anything else than "true" or "false" by the
-            // client, which is the case with automated cracking attempts, then we'd get a FormatException from the
-            // default model binder.
-            services.AddMvc(options =>
-            {
-                options.ModelBinderProviders.Insert(0, new SafeBoolModelBinderProvider());
-            });
         }
     }
 

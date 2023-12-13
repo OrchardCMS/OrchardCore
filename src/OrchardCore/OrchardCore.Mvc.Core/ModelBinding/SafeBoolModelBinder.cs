@@ -3,14 +3,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Users.ViewModels;
 
-namespace OrchardCore.Users.Services;
+namespace OrchardCore.Mvc.ModelBinding;
 
 /// <summary>
 /// Model binder to produce a validation error when a Boolean field contains a value that's not a valid bool. The
-/// default model binder would throw a <see cref="FormatException"/>. That's an issue for <see
-/// cref="LoginViewModel.RememberMe"/> that can get invalid values from automated cracking attempts.
+/// default model binder would throw a <see cref="FormatException"/>. That's an issue for e.g. the Users module, see
+/// <see href="https://github.com/OrchardCMS/OrchardCore/issues/14792"/>.
 /// </summary>
 internal class SafeBoolModelBinder : IModelBinder
 {
