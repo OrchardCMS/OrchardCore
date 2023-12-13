@@ -16,7 +16,7 @@ namespace OrchardCore.Deployment
 
         public async Task<int> CreateAsync()
         {
-            SchemaBuilder.CreateMapIndexTable<DeploymentPlanIndex>(table => table
+            await SchemaBuilder.CreateMapIndexTableAsync<DeploymentPlanIndex>(table => table
                 .Column<string>("Name")
             );
 

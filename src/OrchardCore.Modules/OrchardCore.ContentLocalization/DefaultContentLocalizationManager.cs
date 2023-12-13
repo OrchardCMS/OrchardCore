@@ -82,7 +82,7 @@ namespace OrchardCore.ContentLocalization
                 // If the source content item is not yet localized, define its defaults.
                 localizationPart.LocalizationSet = _iidGenerator.GenerateUniqueId();
                 localizationPart.Culture = await _localizationService.GetDefaultCultureAsync();
-                _session.Save(content);
+                await _session.SaveAsync(content);
             }
             else
             {

@@ -52,7 +52,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _session.Save(authorization, collection: OpenIdCollection);
+            await _session.SaveAsync(authorization, collection: OpenIdCollection);
             await _session.SaveChangesAsync();
         }
 
@@ -541,7 +541,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _session.Save(authorization, checkConcurrency: true, collection: OpenIdCollection);
+            await _session.SaveAsync(authorization, checkConcurrency: true, collection: OpenIdCollection);
 
             try
             {

@@ -33,7 +33,7 @@ namespace OrchardCore.Deployment.Remote.Services
             if (_remoteClientList is null)
             {
                 _remoteClientList = new RemoteClientList();
-                _session.Save(_remoteClientList);
+                await _session.SaveAsync(_remoteClientList);
             }
 
             return _remoteClientList;
@@ -86,7 +86,7 @@ namespace OrchardCore.Deployment.Remote.Services
             };
 
             remoteClientList.RemoteClients.Add(remoteClient);
-            _session.Save(remoteClientList);
+            await _session.SaveAsync(remoteClientList);
 
             return remoteClient;
         }
@@ -125,7 +125,7 @@ namespace OrchardCore.Deployment.Remote.Services
 
             remoteClient.ClientName = clientName;
 
-            _session.Save(_remoteClientList);
+            await _session.SaveAsync(_remoteClientList);
         }
     }
 }

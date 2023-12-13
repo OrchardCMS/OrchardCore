@@ -43,7 +43,7 @@ namespace OrchardCore.Taxonomies
                 .WithPart("TaxonomyPart", part => part.WithPosition("4"))
             );
 
-            SchemaBuilder.CreateMapIndexTable<TaxonomyIndex>(table => table
+            await SchemaBuilder.CreateMapIndexTableAsync<TaxonomyIndex>(table => table
                 .Column<string>("TaxonomyContentItemId", c => c.WithLength(26))
                 .Column<string>("ContentItemId", c => c.WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
@@ -54,7 +54,7 @@ namespace OrchardCore.Taxonomies
                 .Column<bool>("Latest", c => c.WithDefault(false))
             );
 
-            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<TaxonomyIndex>(table => table
                 .CreateIndex("IDX_TaxonomyIndex_DocumentId",
                     "DocumentId",
                     "TaxonomyContentItemId",
@@ -66,7 +66,7 @@ namespace OrchardCore.Taxonomies
 
             // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
             // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Published and Latest (1) = 765 (< 768).
-            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<TaxonomyIndex>(table => table
                 .CreateIndex("IDX_TaxonomyIndex_DocumentId_ContentType",
                     "DocumentId",
                     "ContentType(254)",
@@ -106,19 +106,19 @@ namespace OrchardCore.Taxonomies
         }
 
         // This code can be removed in a later version.
-        public int UpdateFrom3()
+        public async Task<int> UpdateFrom3Async()
         {
             // This step has been updated to also add these new columns.
-            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<TaxonomyIndex>(table => table
                 .AddColumn<bool>("Published", c => c.WithDefault(true))
             );
 
-            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<TaxonomyIndex>(table => table
                 .AddColumn<bool>("Latest", c => c.WithDefault(false))
             );
 
             // So that the new indexes can be fully created.
-            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<TaxonomyIndex>(table => table
                 .CreateIndex("IDX_TaxonomyIndex_DocumentId",
                     "DocumentId",
                     "TaxonomyContentItemId",
@@ -130,7 +130,7 @@ namespace OrchardCore.Taxonomies
 
             // The index in MySQL can accommodate up to 768 characters or 3072 bytes.
             // DocumentId (2) + ContentType (254) + ContentPart (254) + ContentField (254) + Published and Latest (1) = 765 (< 768).
-            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<TaxonomyIndex>(table => table
                 .CreateIndex("IDX_TaxonomyIndex_DocumentId_ContentType",
                     "DocumentId",
                     "ContentType(254)",
@@ -145,20 +145,20 @@ namespace OrchardCore.Taxonomies
         }
 
         // This code can be removed in a later version.
-        public int UpdateFrom4()
+        public async Task<int> UpdateFrom4Async()
         {
             // This step run only if the previous one was executed before
             // it was updated, so here we also add the following columns.
-            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<TaxonomyIndex>(table => table
                 .AddColumn<bool>("Published", c => c.WithDefault(true))
             );
 
-            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<TaxonomyIndex>(table => table
                 .AddColumn<bool>("Latest", c => c.WithDefault(false))
             );
 
             // But we create a separate index for these new columns.
-            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<TaxonomyIndex>(table => table
                 .CreateIndex("IDX_TaxonomyIndex_DocumentId_Published",
                     "DocumentId",
                     "Published",
