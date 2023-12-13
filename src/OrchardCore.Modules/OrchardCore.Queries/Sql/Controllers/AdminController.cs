@@ -75,7 +75,6 @@ namespace OrchardCore.Queries.Sql.Controllers
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            await using var connection = _store.Configuration.ConnectionFactory.CreateConnection();
             var dialect = _store.Configuration.SqlDialect;
 
             var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
@@ -89,11 +88,9 @@ namespace OrchardCore.Queries.Sql.Controllers
 
                 try
                 {
-                    using (connection)
-                    {
-                        await connection.OpenAsync();
-                        model.Documents = await connection.QueryAsync(rawQuery, parameters);
-                    }
+                    await using var connection = _store.Configuration.ConnectionFactory.CreateConnection();
+                    await connection.OpenAsync();
+                    model.Documents = await connection.QueryAsync(rawQuery, parameters);
                 }
                 catch (Exception e)
                 {

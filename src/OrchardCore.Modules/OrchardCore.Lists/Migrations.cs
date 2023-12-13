@@ -23,7 +23,7 @@ namespace OrchardCore.Lists
                 .Attachable()
                 .WithDescription("Add a list behavior."));
 
-            SchemaBuilder.CreateMapIndexTable<ContainedPartIndex>(table => table
+            await SchemaBuilder.CreateMapIndexTableAsync<ContainedPartIndex>(table => table
                 .Column<string>("ContentItemId", column => column.WithLength(26))
                 .Column<string>("ListContentItemId", column => column.WithLength(26))
                 .Column<string>("DisplayText")
@@ -34,7 +34,7 @@ namespace OrchardCore.Lists
 
             );
 
-            SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table
                 .CreateIndex("IDX_ContainedPartIndex_DocumentId",
                     "Id",
                     "DocumentId",
@@ -61,9 +61,9 @@ namespace OrchardCore.Lists
         }
 
         // This code can be removed in a later version.
-        public int UpdateFrom2()
+        public async Task<int> UpdateFrom2Async()
         {
-            SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table
                 .CreateIndex("IDX_ContainedPartIndex_DocumentId",
                 "DocumentId",
                 "ListContentItemId",
@@ -74,32 +74,32 @@ namespace OrchardCore.Lists
         }
 
         // This code can be removed in a later version.
-        public int UpdateFrom3()
+        public async Task<int> UpdateFrom3Async()
         {
-            SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table
                 .AddColumn<string>("ContentItemId", column => column.WithLength(26))
             );
 
-            SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table
                 .AddColumn<string>("ListContentType")
             );
 
-            SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table
                 .AddColumn<string>("DisplayText")
             );
 
-            SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table
                 .AddColumn<bool>("Published")
             );
 
-            SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table
                 .AddColumn<bool>("Latest")
             );
-            SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table
                 .DropIndex("IDX_ContainedPartIndex_DocumentId")
             );
 
-            SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table
                 .CreateIndex("IDX_ContainedPartIndex_DocumentId",
                     "Id",
                     "DocumentId",
