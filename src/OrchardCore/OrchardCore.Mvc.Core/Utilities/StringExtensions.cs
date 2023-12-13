@@ -220,35 +220,6 @@ namespace OrchardCore.Mvc.Utilities
         }
 
         /// <summary>
-        /// Generates a safe full name allowing the '.' delimiter.
-        /// </summary>
-        public static string ToSafeFullName(this string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                return string.Empty;
-            }
-
-            name = RemoveDiacritics(name);
-            name = name.Strip(c => !c.IsLetter() && !char.IsDigit(c) && c != '.');
-
-            name = name.Trim();
-
-            // Don't allow non A-Z chars as first letter, as they are not allowed in prefixes.
-            while (name.Length > 0 && !IsLetter(name[0]))
-            {
-                name = name[1..];
-            }
-
-            if (name.Length > 128)
-            {
-                name = name[..128];
-            }
-
-            return name;
-        }
-
-        /// <summary>
         /// Whether the char is a letter between A and Z or not.
         /// </summary>
         public static bool IsLetter(this char c)

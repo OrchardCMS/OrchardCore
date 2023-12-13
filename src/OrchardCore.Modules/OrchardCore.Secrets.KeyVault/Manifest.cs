@@ -7,5 +7,5 @@ using OrchardCore.Modules.Manifest;
     Name = "Azure KeyVault Secrets Store",
     Description = "The Azure KeyVault Secrets module provides a KeyVault store for secrets.",
     Category = "Configuration",
-    Dependencies = new[] { "OrchardCore.Secrets" }
+    Dependencies = ["OrchardCore.Liquid"]
 )]

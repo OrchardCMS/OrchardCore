@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using OrchardCore.Deployment.Remote.Models;
 using OrchardCore.Secrets;
 using OrchardCore.Secrets.Models;
-using OrchardCore.Secrets.Services;
 using YesSql;
 
 namespace OrchardCore.Deployment.Remote.Services
@@ -60,7 +59,7 @@ namespace OrchardCore.Deployment.Remote.Services
             await _secretService.RemoveSecretAsync($"{Secrets.ApiKey}.{remoteClient.ClientName}");
 
             remoteClientList.RemoteClients.Remove(remoteClient);
-            _session.Save(remoteClientList);
+            await _session.SaveAsync(remoteClientList);
         }
 
         public async Task<RemoteClient> CreateRemoteClientAsync(string clientName, string apiKey)

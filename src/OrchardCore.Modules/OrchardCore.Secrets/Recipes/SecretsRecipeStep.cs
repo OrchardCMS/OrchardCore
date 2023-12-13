@@ -39,7 +39,6 @@ public class SecretsRecipeStep : IRecipeStepHandler
                 secret = JsonConvert.DeserializeObject(protector.Decrypt(), secret.GetType()) as SecretBase;
             }
 
-            // Secret names are deduced from their key.
             secretInfo.Name = kvp.Key;
 
             await _secretService.UpdateSecretAsync(secretInfo, secret);

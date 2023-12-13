@@ -11,7 +11,6 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Mvc.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Secrets.Models;
@@ -205,7 +204,7 @@ public class AdminController : Controller
                 ModelState.AddModelError(nameof(SecretInfoViewModel.Name), S["The name is mandatory."]);
             }
 
-            if (!string.Equals(model.Name, model.Name.ToSafeFullName(), StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(model.Name, model.Name.ToSafeSecretName(), StringComparison.OrdinalIgnoreCase))
             {
                 ModelState.AddModelError(nameof(SecretInfoViewModel.Name), S["The name contains invalid characters."]);
             }
@@ -290,7 +289,7 @@ public class AdminController : Controller
 
             if (!model.Name.Equals(sourceName, StringComparison.OrdinalIgnoreCase))
             {
-                if (!string.Equals(model.Name, model.Name.ToSafeFullName(), StringComparison.OrdinalIgnoreCase))
+                if (!string.Equals(model.Name, model.Name.ToSafeSecretName(), StringComparison.OrdinalIgnoreCase))
                 {
                     ModelState.AddModelError(nameof(SecretInfoViewModel.Name), S["The name contains invalid characters."]);
                 }

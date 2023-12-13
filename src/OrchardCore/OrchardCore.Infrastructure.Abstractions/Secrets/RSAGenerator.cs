@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using OrchardCore.Secrets.Models;
 
-namespace OrchardCore.Secrets.Services;
+namespace OrchardCore.Secrets;
 
 public static class RSAGenerator
 {

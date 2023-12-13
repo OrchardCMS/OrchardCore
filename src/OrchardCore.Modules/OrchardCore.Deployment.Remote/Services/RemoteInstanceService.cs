@@ -5,7 +5,6 @@ using OrchardCore.Deployment.Remote.Models;
 using OrchardCore.Documents;
 using OrchardCore.Secrets;
 using OrchardCore.Secrets.Models;
-using OrchardCore.Secrets.Services;
 
 namespace OrchardCore.Deployment.Remote.Services
 {

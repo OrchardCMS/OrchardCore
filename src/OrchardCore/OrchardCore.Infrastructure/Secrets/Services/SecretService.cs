@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
-using OrchardCore.Mvc.Utilities;
 using OrchardCore.Secrets.Models;
 using OrchardCore.Secrets.Options;
 using OrchardCore.Secrets.Stores;
@@ -148,7 +147,7 @@ public class SecretService : ISecretService
 
     public async Task UpdateSecretAsync(SecretInfo secretInfo, SecretBase secret, string sourceName = null)
     {
-        if (!string.Equals(secretInfo.Name, secretInfo.Name.ToSafeFullName(), StringComparison.OrdinalIgnoreCase))
+        if (!string.Equals(secretInfo.Name, secretInfo.Name.ToSafeSecretName(), StringComparison.OrdinalIgnoreCase))
         {
             throw new InvalidOperationException("The name contains invalid characters.");
         }

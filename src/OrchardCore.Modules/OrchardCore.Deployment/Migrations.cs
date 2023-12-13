@@ -3,7 +3,6 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Deployment.Indexes;
 using OrchardCore.Secrets;
 using OrchardCore.Secrets.Models;
-using OrchardCore.Secrets.Services;
 using YesSql.Sql;
 
 namespace OrchardCore.Deployment

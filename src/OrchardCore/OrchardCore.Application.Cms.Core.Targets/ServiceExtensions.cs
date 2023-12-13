@@ -20,6 +20,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddCommands()
 
                 .AddSecurity()
+                .AddSecrets()
                 .AddMvc()
                 .AddIdGeneration()
                 .AddEmailAddressValidator()
