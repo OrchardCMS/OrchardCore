@@ -11,7 +11,7 @@ namespace OrchardCore.Mvc.ModelBinding;
 /// default model binder would throw a <see cref="FormatException"/>. That's an issue for e.g. the Users module, see
 /// <see href="https://github.com/OrchardCMS/OrchardCore/issues/14792"/>.
 /// </summary>
-internal class SafeBoolModelBinder : IModelBinder
+internal sealed class SafeBoolModelBinder : IModelBinder
 {
     public Task BindModelAsync(ModelBindingContext bindingContext)
     {

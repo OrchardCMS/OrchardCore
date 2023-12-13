@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Mvc.ModelBinding;
 
-internal class SafeBoolModelBinderProvider : IModelBinderProvider
+internal sealed class SafeBoolModelBinderProvider : IModelBinderProvider
 {
     public IModelBinder GetBinder(ModelBinderProviderContext context)
     {
