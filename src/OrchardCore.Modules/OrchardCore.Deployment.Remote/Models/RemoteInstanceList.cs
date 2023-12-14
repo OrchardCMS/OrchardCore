@@ -5,6 +5,6 @@ namespace OrchardCore.Deployment.Remote.Models
 {
     public class RemoteInstanceList : Document
     {
-        public List<RemoteInstance> RemoteInstances { get; set; } = [];
+        public List<RemoteInstance> RemoteInstances { get; set; } = new List<RemoteInstance>();;
     }
 }
