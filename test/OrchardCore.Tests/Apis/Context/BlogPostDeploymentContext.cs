@@ -38,6 +38,7 @@ namespace OrchardCore.Tests.Apis.Context
             await UsingTenantScopeAsync(async scope =>
             {
                 var remoteClientService = scope.ServiceProvider.GetRequiredService<RemoteClientService>();
+
                 await remoteClientService.CreateRemoteClientAsync(RemoteDeploymentClientName, RemoteDeploymentApiKey);
             });
         }

@@ -2,10 +2,6 @@ namespace OrchardCore.Workflows.Http.Models
 {
     public class WorkflowPayload
     {
-        public WorkflowPayload()
-        {
-        }
-
         public WorkflowPayload(string workflowId, string activityId)
         {
             WorkflowId = workflowId;
