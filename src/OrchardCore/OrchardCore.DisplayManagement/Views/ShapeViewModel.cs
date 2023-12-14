@@ -27,11 +27,7 @@ namespace OrchardCore.DisplayManagement.Views
 
         public string Position
         {
-            get
-            {
-                return Metadata.Position;
-            }
-
+            get => Metadata.Position;
             set
             {
                 Metadata.Position = value;
@@ -92,8 +88,7 @@ namespace OrchardCore.DisplayManagement.Views
             }
             else
             {
-                var shape = item as IPositioned;
-                if (shape != null)
+                if (item is IPositioned shape)
                 {
                     if (position != null)
                     {
