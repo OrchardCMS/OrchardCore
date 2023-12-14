@@ -24,7 +24,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [Lorem.NET for netstandard](https://github.com/trichards57/Lorem.Universal.NET) | A .NET library for all things random! | 4.0.80 | [MIT](https://github.com/trichards57/Lorem.Universal.NET/blob/master/license.md) |
 | [Lucene.Net](https://github.com/apache/lucenenet) | .NET full-text search engine. | 4.8.0-beta00016 | [Apache-2.0](https://github.com/apache/lucenenet/blob/master/LICENSE.txt) |
 | [MailKit](https://github.com/jstedfast/MailKit) | A cross-platform .NET library for IMAP, POP3, and SMTP. | 4.3.0 | [MIT](https://github.com/jstedfast/MailKit/blob/master/LICENSE) |
-| [Markdig](https://github.com/lunet-io/markdig) | .NET Markdown engine. | 0.33.0 | [BSD-2-Clause](https://github.com/lunet-io/markdig/blob/master/license.txt) |
+| [Markdig](https://github.com/lunet-io/markdig) | .NET Markdown engine. | 0.34.0 | [BSD-2-Clause](https://github.com/lunet-io/markdig/blob/master/license.txt) |
 | [MessagePack](https://github.com/neuecc/MessagePack-CSharp) | Extremely Fast MessagePack Serializer for C# | 2.2.60 | [MIT](https://github.com/neuecc/MessagePack-CSharp/blob/master/LICENSE) |
 | [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web) | Helps creating protected web apps and web APIs with Microsoft identity platform and Azure AD B2C. | 2.16.0 | [MIT](https://github.com/AzureAD/microsoft-identity-web/blob/master/LICENSE) |
 | [Microsoft.SourceLink.GitHub](https://github.com/dotnet/sourcelink) | Source Link enables a great source debugging experience. | 8.0.0 | [MIT](https://github.com/dotnet/sourcelink/blob/main/License.txt) |
