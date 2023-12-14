@@ -27,6 +27,7 @@ internal sealed class SafeBoolModelBinder : IModelBinder
         if (bool.TryParse(valueProviderResult.FirstValue, out bool result))
         {
             bindingContext.Result = ModelBindingResult.Success(result);
+
             return Task.CompletedTask;
         }
 
