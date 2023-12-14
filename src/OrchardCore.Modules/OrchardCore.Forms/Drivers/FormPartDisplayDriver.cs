@@ -1,34 +1,17 @@
-using System;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
 using OrchardCore.Forms.ViewModels;
-using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Forms.Drivers
 {
     public class FormPartDisplayDriver : ContentPartDisplayDriver<FormPart>
     {
-        private readonly IServiceProvider _services;
-        protected readonly IStringLocalizer S;
-
-        public FormPartDisplayDriver(
-            IServiceProvider services,
-            IStringLocalizer<FormPartDisplayDriver> stringLocalizer)
-        {
-            _services = services;
-            S = stringLocalizer;
-        }
-
         public override IDisplayResult Edit(FormPart part)
         {
-            return Initialize<FormPartEditViewModel>("FormPart_Fields_Edit", async m =>
+            return Initialize<FormPartEditViewModel>("FormPart_Fields_Edit", m =>
             {
                 m.Action = part.Action;
                 m.Method = part.Method;
@@ -36,17 +19,6 @@ namespace OrchardCore.Forms.Drivers
                 m.EncType = part.EncType;
                 m.EnableAntiForgeryToken = part.EnableAntiForgeryToken;
                 m.SaveFormLocation = part.SaveFormLocation;
-                m.WorkflowPayload = part.WorkflowPayload;
-
-                m.WorkflowTypes.Insert(0, new SelectListItem() { Text = S["None"], Value = string.Empty });
-
-                var workflowTypeStore = _services.GetService<IWorkflowTypeStore>();
-                if (workflowTypeStore is not null)
-                {
-                    m.WorkflowTypes
-                        .AddRange((await workflowTypeStore.GetByStartActivityAsync("HttpRequestEvent"))
-                        .Select(wf => new SelectListItem() { Text = wf.Name, Value = wf.WorkflowTypeId }));
-                }
             });
         }
 
@@ -62,19 +34,6 @@ namespace OrchardCore.Forms.Drivers
                 part.EncType = viewModel.EncType;
                 part.EnableAntiForgeryToken = viewModel.EnableAntiForgeryToken;
                 part.SaveFormLocation = viewModel.SaveFormLocation;
-
-                part.WorkflowPayload = viewModel.WorkflowPayload;
-                if (part.WorkflowPayload.WorkflowId is not null)
-                {
-                    var workflowTypeStore = _services.GetService<IWorkflowTypeStore>();
-                    if (workflowTypeStore is not null)
-                    {
-                        part.WorkflowPayload.ActivityId = (await workflowTypeStore.GetAsync(part.WorkflowPayload.WorkflowId))
-                            ?.Activities
-                            .FirstOrDefault(a => string.Equals(a.Name, "HttpRequestEvent", StringComparison.OrdinalIgnoreCase))
-                            ?.ActivityId;
-                    }
-                }
             }
 
             return Edit(part);

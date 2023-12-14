@@ -1,20 +1,8 @@
-@using Microsoft.Extensions.Options
-@using OrchardCore
 @using OrchardCore.Forms.ViewModels
-@using OrchardCore.Workflows.Http.Models
-
+@using OrchardCore
 @model FormPartEditViewModel
 
 <div class="@Orchard.GetWrapperClasses()">
-    <label asp-for="WorkflowPayload.WorkflowId" class="@Orchard.GetLabelClasses()">@T["Workflow"]</label>
-    <div class="@Orchard.GetEndClasses()">
-        <select asp-for="WorkflowPayload.WorkflowId" asp-items="Model.WorkflowTypes" class="form-control" asp-validation-class-for="WorkflowPayload.WorkflowId"></select>
-        <span asp-validation-for="WorkflowPayload.WorkflowId"></span>
-        <span class="hint">@T["The workflow containing an http request event activity to submit the form to. A secure URL is generated dynamically."]</span>
-    </div>
-</div>
-
-<div class="@Orchard.GetWrapperClasses() plain-text">
     <label asp-for="Action" class="@Orchard.GetLabelClasses()">@T["Action"]</label>
     <div class="@Orchard.GetEndClasses()">
         <input type="text" asp-for="Action" class="form-control content-preview-text" />
@@ -64,15 +52,3 @@
         </div>
     </div>
 </div>
-
-<script at="Foot">
-    $(function () {
-        $('#@Html.IdFor(m => m.WorkflowPayload.WorkflowId)').on('change', function () {
-            if (this.value === '') {
-                $('#@Html.IdFor(m => m.Action)').closest('.plain-text').show();
-            } else {
-                $('#@Html.IdFor(m => m.Action)').closest('.plain-text').hide();
-            }
-        }).trigger('change');
-    });
-</script>

@@ -3,26 +3,18 @@
 @using OrchardCore.Forms.Models
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore.Workflows
-@using OrchardCore.Workflows.Http
-@using OrchardCore.Workflows.Http.Models
 
 @{
     var formPart = ((ContentItem)Model.ContentItem).As<FormPart>();
-    var encType = formPart.Method == "POST" ? formPart.EncType : string.Empty;
+    string encType = formPart.Method == "POST" ? formPart.EncType : string.Empty;
     var formContentTypeClassName = "form-" + ((string)Model.ContentItem.ContentType).HtmlClassify();
 
     var elementId = ((ContentItem)Model.ContentItem).As<FormElementPart>()?.Id;
-    var formId = string.IsNullOrWhiteSpace(elementId) ? $"form_{Model.ContentItem.ContentItemId}" : elementId;
+    string formId = string.IsNullOrWhiteSpace(elementId) ? $"form_{Model.ContentItem.ContentItemId}" : elementId;
 
-    var action = formPart.Action;
-    var payload = formPart.WorkflowPayload;
-    if (!String.IsNullOrEmpty(payload.WorkflowId) && !String.IsNullOrEmpty(payload.ActivityId))
-    {
-        action = await Url.GenerateHttpRequestEventUrlAsync(payload);
-    }
 }
 
-<form id="@formId" action="@action" method="@formPart.Method" enctype="@encType" class="form-content @formContentTypeClassName">
+<form id="@formId" action="@formPart.Action" method="@formPart.Method" enctype="@encType" class="form-content @formContentTypeClassName">
     @if (formPart.EnableAntiForgeryToken)
     {
         @Html.AntiForgeryToken()

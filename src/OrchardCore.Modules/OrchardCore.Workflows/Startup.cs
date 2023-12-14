@@ -58,7 +58,9 @@ namespace OrchardCore.Workflows
 
             services.AddScoped(typeof(Resolver<>));
             services.AddSingleton<ISecurityTokenService, SecurityTokenService>();
+            services.AddSingleton<ISecretTokenService, SecretTokenService>();
             services.AddScoped<IActivityLibrary, ActivityLibrary>();
+
             services.AddScoped<IWorkflowTypeStore, WorkflowTypeStore>();
             services.AddScoped<IWorkflowStore, WorkflowStore>();
             services.AddScoped<IWorkflowManager, WorkflowManager>();

@@ -1,6 +1,5 @@
 using System.ComponentModel;
 using OrchardCore.ContentManagement;
-using OrchardCore.Workflows.Http.Models;
 
 namespace OrchardCore.Forms.Models
 {
@@ -19,7 +18,5 @@ namespace OrchardCore.Forms.Models
 
         [DefaultValue(true)]
         public bool SaveFormLocation { get; set; } = true;
-
-        public WorkflowPayload WorkflowPayload { get; set; } = new();
     }
 }
