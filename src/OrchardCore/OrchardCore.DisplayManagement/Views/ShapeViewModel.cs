@@ -52,12 +52,14 @@ namespace OrchardCore.DisplayManagement.Views
 
         private bool _sorted = false;
 
-        private List<IPositioned> _items = [];
+        private List<IPositioned> _items;
 
         public IReadOnlyList<IPositioned> Items
         {
             get
             {
+                _items ??= [];
+
                 if (!_sorted)
                 {
                     _items = _items.OrderBy(x => x, FlatPositionComparer.Instance).ToList();
@@ -77,6 +79,7 @@ namespace OrchardCore.DisplayManagement.Views
 
             position ??= string.Empty;
             _sorted = false;
+            _items ??= [];
 
             if (item is IHtmlContent)
             {
