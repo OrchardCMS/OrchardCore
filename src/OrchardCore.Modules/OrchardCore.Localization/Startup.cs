@@ -53,11 +53,12 @@ namespace OrchardCore.Localization
             var localizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
 
             localizationOptions.CultureInfoUseUserOverride = !cultureOptions.IgnoreSystemSettings;
-
-            app.UseRequestLocalization(localizationOptions
+            localizationOptions
                 .SetDefaultCulture(defaultCulture)
                 .AddSupportedCultures(supportedCultures)
-                .AddSupportedUICultures(supportedCultures));
+                .AddSupportedUICultures(supportedCultures);
+
+            app.UseRequestLocalization(localizationOptions);
         }
     }
 
