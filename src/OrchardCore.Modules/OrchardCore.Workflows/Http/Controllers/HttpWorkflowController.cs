@@ -22,7 +22,7 @@ namespace OrchardCore.Workflows.Http.Controllers
         private readonly IWorkflowTypeStore _workflowTypeStore;
         private readonly IWorkflowStore _workflowStore;
         private readonly IActivityLibrary _activityLibrary;
-        private readonly ISecurityTokenService _securityTokenService;
+        private readonly ISecretTokenService _secretTokenService;
         private readonly IAntiforgery _antiforgery;
         private readonly IDistributedLock _distributedLock;
         private readonly ILogger _logger;
@@ -34,7 +34,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             IWorkflowTypeStore workflowTypeStore,
             IWorkflowStore workflowStore,
             IActivityLibrary activityLibrary,
-            ISecurityTokenService securityTokenService,
+            ISecretTokenService secretTokenService,
             IAntiforgery antiforgery,
             IDistributedLock distributedLock,
             ILogger<HttpWorkflowController> logger
@@ -45,7 +45,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             _workflowTypeStore = workflowTypeStore;
             _workflowStore = workflowStore;
             _activityLibrary = activityLibrary;
-            _securityTokenService = securityTokenService;
+            _secretTokenService = secretTokenService;
             _antiforgery = antiforgery;
             _distributedLock = distributedLock;
             _logger = logger;
@@ -67,7 +67,10 @@ namespace OrchardCore.Workflows.Http.Controllers
                 return NotFound();
             }
 
-            var token = _securityTokenService.CreateToken(new WorkflowPayload(workflowType.WorkflowTypeId, activityId), TimeSpan.FromDays(tokenLifeSpan == 0 ? NoExpiryTokenLifespan : tokenLifeSpan));
+            var token = await _secretTokenService.CreateTokenAsync(
+                new WorkflowPayload(workflowType.WorkflowTypeId, activityId),
+                TimeSpan.FromDays(tokenLifeSpan == 0 ? NoExpiryTokenLifespan : tokenLifeSpan));
+
             var url = Url.Action("Invoke", "HttpWorkflow", new { token });
 
             return Ok(url);
@@ -77,7 +80,8 @@ namespace OrchardCore.Workflows.Http.Controllers
         [HttpGet, HttpPost, HttpPut, HttpPatch]
         public async Task<IActionResult> Invoke(string token)
         {
-            if (!_securityTokenService.TryDecryptToken<WorkflowPayload>(token, out var payload))
+            (var valid, var payload) = await _secretTokenService.TryDecryptTokenAsync<WorkflowPayload>(token);
+            if (!valid)
             {
                 _logger.LogWarning("Invalid SAS token provided");
                 return NotFound();
@@ -218,7 +222,8 @@ namespace OrchardCore.Workflows.Http.Controllers
         [HttpGet]
         public async Task<IActionResult> Trigger(string token)
         {
-            if (!_securityTokenService.TryDecryptToken<SignalPayload>(token, out var payload))
+            (var valid, var payload) = await _secretTokenService.TryDecryptTokenAsync<SignalPayload>(token);
+            if (!valid)
             {
                 _logger.LogWarning("Invalid SAS token provided");
                 return NotFound();

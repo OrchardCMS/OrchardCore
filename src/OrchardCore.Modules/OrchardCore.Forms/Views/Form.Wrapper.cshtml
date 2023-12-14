@@ -18,7 +18,7 @@
     var payload = formPart.WorkflowPayload;
     if (!String.IsNullOrEmpty(payload.WorkflowId) && !String.IsNullOrEmpty(payload.ActivityId))
     {
-        action = Url.GenerateHttpRequestEventUrl(payload);
+        action = await Url.GenerateHttpRequestEventUrlAsync(payload);
     }
 }
 

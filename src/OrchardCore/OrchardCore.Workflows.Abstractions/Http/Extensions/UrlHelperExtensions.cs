@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Workflows.Http.Models;
@@ -17,6 +18,19 @@ public static class UrlHelperExtensions
         }
 
         var token = securityTokenService.CreateToken(payload, TimeSpan.FromDays(2));
+
+        return urlHelper.Action("Invoke", "HttpWorkflow", new { area = "OrchardCore.Workflows", token });
+    }
+
+    public static async Task<string> GenerateHttpRequestEventUrlAsync(this IUrlHelper urlHelper, WorkflowPayload payload)
+    {
+        var secretTokenService = urlHelper.ActionContext.HttpContext.RequestServices.GetService<ISecretTokenService>();
+        if (secretTokenService is null)
+        {
+            return null;
+        }
+
+        var token = await secretTokenService.CreateTokenAsync(payload, TimeSpan.FromDays(2));
 
         return urlHelper.Action("Invoke", "HttpWorkflow", new { area = "OrchardCore.Workflows", token });
     }

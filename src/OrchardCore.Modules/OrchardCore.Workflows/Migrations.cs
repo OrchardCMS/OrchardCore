@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using OrchardCore.Data.Migration;
+using OrchardCore.Secrets;
+using OrchardCore.Secrets.Models;
 using OrchardCore.Workflows.Indexes;
 using YesSql.Sql;
 
@@ -8,6 +10,10 @@ namespace OrchardCore.Workflows
 {
     public class Migrations : DataMigration
     {
+        private readonly ISecretService _secretService;
+
+        public Migrations(ISecretService secretService) => _secretService = secretService;
+
         public async Task<int> CreateAsync()
         {
             await SchemaBuilder.CreateMapIndexTableAsync<WorkflowTypeIndex>(table => table
@@ -84,8 +90,16 @@ namespace OrchardCore.Workflows
                     "WorkflowCorrelationId")
             );
 
+            await _secretService.GetOrCreateSecretAsync<RSASecret>(
+                name: Secrets.Encryption,
+                configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+
+            await _secretService.GetOrCreateSecretAsync<RSASecret>(
+                name: Secrets.Signing,
+                configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+
             // Shortcut other migration steps on new content definition schemas.
-            return 3;
+            return 4;
         }
 
         // This code can be removed in a later version.
@@ -146,6 +160,20 @@ namespace OrchardCore.Workflows
             );
 
             return 3;
+        }
+
+        // This code can be removed in a later version.
+        public async Task<int> UpdateFrom3Async()
+        {
+            await _secretService.GetOrCreateSecretAsync<RSASecret>(
+                name: Secrets.Encryption,
+                configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+
+            await _secretService.GetOrCreateSecretAsync<RSASecret>(
+                name: Secrets.Signing,
+                configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+
+            return 4;
         }
     }
 }
