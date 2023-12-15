@@ -364,23 +364,20 @@ namespace OrchardCore.Documents
 
         private async Task<TDocument> GetFromDistributedCacheAsync()
         {
-            byte[] data = null;
-
             if (_isDistributed)
             {
-                data = await _distributedCache.GetAsync(_options.CacheKey);
+                byte[] data = await _distributedCache.GetAsync(_options.CacheKey);
+                if (data == null)
+                {
+                    return null;
+                }
+                return await _options.Serializer.DeserializeAsync<TDocument>(data);
             }
             else if (_memoryCache.TryGetValue<TDocument>(_options.CacheKey, out var cached))
             {
-                data = await _options.Serializer.SerializeAsync(cached);
+                return cached;
             }
-
-            if (data == null)
-            {
-                return null;
-            }
-
-            return await _options.Serializer.DeserializeAsync<TDocument>(data);
+            return null;
         }
 
         private async Task UpdateDistributedCacheAsync(TDocument document)
