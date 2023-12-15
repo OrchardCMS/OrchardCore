@@ -46,7 +46,7 @@ public class AllSecretsDeploymentSource : IDeploymentSource
             return;
         }
 
-        var encryptor = await _protectionProvider.CreateEncryptorAsync(result.EncryptionSecret, result.SigningSecret);
+        var protector = await _protectionProvider.CreateProtectorAsync(result.EncryptionSecret, result.SigningSecret);
 
         var secrets = new Dictionary<string, JObject>();
         foreach (var secretInfo in secretInfos)
@@ -73,7 +73,7 @@ public class AllSecretsDeploymentSource : IDeploymentSource
                 if (secret is not null)
                 {
                     var plaintext = JsonConvert.SerializeObject(secret);
-                    var encrypted = encryptor.Encrypt(plaintext);
+                    var encrypted = protector.Protect(plaintext);
                     jObject.Add("SecretData", encrypted);
                 }
             }

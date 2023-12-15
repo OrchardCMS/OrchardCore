@@ -5,20 +5,20 @@ using OrchardCore.Secrets.Models;
 
 namespace OrchardCore.Secrets.Services;
 
-public class SecretHybridDecryptor : ISecretDecryptor
+public class SecretHybridUnprotector : ISecretUnprotector
 {
     private readonly SecretHybridEnvelope _envelope;
     private readonly RSASecret _encryptionSecret;
     private readonly RSASecret _signingSecret;
 
-    public SecretHybridDecryptor(SecretHybridEnvelope envelope, RSASecret encryptionSecret, RSASecret signingSecret)
+    public SecretHybridUnprotector(SecretHybridEnvelope envelope, RSASecret encryptionSecret, RSASecret signingSecret)
     {
         _envelope = envelope;
         _encryptionSecret = encryptionSecret;
         _signingSecret = signingSecret;
     }
 
-    public string Decrypt()
+    public string Unprotect()
     {
         var protectedBytes = Convert.FromBase64String(_envelope.ProtectedData);
         var signatureBytes = Convert.FromBase64String(_envelope.Signature);
@@ -32,17 +32,24 @@ public class SecretHybridDecryptor : ISecretDecryptor
         }
 
         // The public key has been used for encryption, the matching private key should be used for decryption.
-        using var rsaDecryptor = RSAGenerator.GenerateRSASecurityKey(2048);
-        rsaDecryptor.ImportRSAPrivateKey(_encryptionSecret.PrivateKeyAsBytes(), out _);
-        var aesKey = rsaDecryptor.Decrypt(Convert.FromBase64String(_envelope.Key), RSAEncryptionPadding.Pkcs1);
+        using var rsaDecrypt = RSAGenerator.GenerateRSASecurityKey(2048);
+        rsaDecrypt.ImportRSAPrivateKey(_encryptionSecret.PrivateKeyAsBytes(), out _);
+        var aesKey = rsaDecrypt.Decrypt(Convert.FromBase64String(_envelope.Key), RSAEncryptionPadding.Pkcs1);
 
         using var aes = Aes.Create();
-        using var decryptor = aes.CreateDecryptor(aesKey, Convert.FromBase64String(_envelope.Iv));
+        using var decrypt = aes.CreateDecryptor(aesKey, Convert.FromBase64String(_envelope.Iv));
         using var msDecrypt = new MemoryStream(protectedBytes);
-        using var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read);
+        using var csDecrypt = new CryptoStream(msDecrypt, decrypt, CryptoStreamMode.Read);
         using var srDecrypt = new StreamReader(csDecrypt);
+
         var plaintext = srDecrypt.ReadToEnd();
 
         return plaintext;
+    }
+
+    public string Unprotect(out DateTime? expirationUtc)
+    {
+        expirationUtc = _envelope.ExpirationUtc;
+        return Unprotect();
     }
 }

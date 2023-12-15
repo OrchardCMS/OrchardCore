@@ -9,22 +9,21 @@ namespace OrchardCore.Workflows.Services
     public class SecretTokenService : ISecretTokenService
     {
         private readonly ISecretProtectionProvider _secretProtectionProvider;
-        // private readonly IClock _clock;
+        private readonly IClock _clock;
 
         public SecretTokenService(ISecretProtectionProvider secretProtectionProvider, IClock clock)
         {
             _secretProtectionProvider = secretProtectionProvider;
-            // _clock = clock;
+            _clock = clock;
         }
 
         public async Task<string> CreateTokenAsync<T>(T payload, TimeSpan lifetime)
         {
             var json = JsonConvert.SerializeObject(payload);
 
-            // Todo: Time limited encryptions using the provided lifetime.
-            var encryptor = await _secretProtectionProvider.CreateEncryptorAsync(Secrets.Encryption, Secrets.Signing);
+            var protector = await _secretProtectionProvider.CreateProtectorAsync(Secrets.Encryption, Secrets.Signing);
 
-            return encryptor.Encrypt(json);
+            return protector.Protect(json, _clock.UtcNow.Add(lifetime));
         }
 
         public async Task<(bool, T)> TryDecryptTokenAsync<T>(string token)
@@ -33,14 +32,10 @@ namespace OrchardCore.Workflows.Services
 
             try
             {
-                // Todo: Make time limited decryptions using the provided lifetime.
-                var protector = await _secretProtectionProvider.CreateDecryptorAsync(token);
+                var unprotector = await _secretProtectionProvider.CreateUnprotectorAsync(token);
 
-
-                // Todo: Time limited decryptions providing an expiration.
-                var json = protector.Decrypt();
-
-                // if (_clock.UtcNow < expiration.ToUniversalTime())
+                var json = unprotector.Unprotect(out var expirationUtc);
+                if (expirationUtc.HasValue && _clock.UtcNow < expirationUtc)
                 {
                     payload = JsonConvert.DeserializeObject<T>(json);
                     return (true, payload);

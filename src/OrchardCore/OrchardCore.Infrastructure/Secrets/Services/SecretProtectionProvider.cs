@@ -12,7 +12,7 @@ public class SecretProtectionProvider : ISecretProtectionProvider
 
     public SecretProtectionProvider(ISecretService secretService) => _secretService = secretService;
 
-    public async Task<ISecretEncryptor> CreateEncryptorAsync(string encryptionSecret, string signingSecret)
+    public async Task<ISecretProtector> CreateProtectorAsync(string encryptionSecret, string signingSecret)
     {
         var encryptionRsaSecret = await _secretService.GetSecretAsync<RSASecret>(encryptionSecret)
             ?? throw new InvalidOperationException($"Secret '{encryptionSecret}' not found.");
@@ -26,10 +26,10 @@ public class SecretProtectionProvider : ISecretProtectionProvider
             throw new InvalidOperationException("Secret cannot be used for signing.");
         }
 
-        return new SecretHybridEncryptor(encryptionRsaSecret, signingRsaSecret);
+        return new SecretHybridProtector(encryptionRsaSecret, signingRsaSecret);
     }
 
-    public async Task<ISecretDecryptor> CreateDecryptorAsync(string protectedData)
+    public async Task<ISecretUnprotector> CreateUnprotectorAsync(string protectedData)
     {
         var decoded = Encoding.UTF8.GetString(Convert.FromBase64String(protectedData));
         var envelope = JsonConvert.DeserializeObject<SecretHybridEnvelope>(decoded);
@@ -40,6 +40,6 @@ public class SecretProtectionProvider : ISecretProtectionProvider
         var signingRsaSecret = await _secretService.GetSecretAsync<RSASecret>(envelope.SigningSecret)
             ?? throw new InvalidOperationException($"'{envelope.SigningSecret}' secret not found.");
 
-        return new SecretHybridDecryptor(envelope, encryptionRsaSecret, signingRsaSecret);
+        return new SecretHybridUnprotector(envelope, encryptionRsaSecret, signingRsaSecret);
     }
 }

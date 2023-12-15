@@ -7,18 +7,20 @@ using OrchardCore.Secrets.Models;
 
 namespace OrchardCore.Secrets.Services;
 
-public class SecretHybridEncryptor : ISecretEncryptor
+public class SecretHybridProtector : ISecretProtector
 {
     private readonly RSASecret _encryptionSecret;
     private readonly RSASecret _signingSecret;
 
-    public SecretHybridEncryptor(RSASecret encryptionSecret, RSASecret signingSecret)
+    public SecretHybridProtector(RSASecret encryptionSecret, RSASecret signingSecret)
     {
         _encryptionSecret = encryptionSecret;
         _signingSecret = signingSecret;
     }
 
-    public string Encrypt(string plainText)
+    public string Protect(string plainText) => Protect(plainText, null);
+
+    public string Protect(string plainText, DateTime? expirationUtc)
     {
         byte[] encrypted;
         using var aes = Aes.Create();
@@ -52,6 +54,7 @@ public class SecretHybridEncryptor : ISecretEncryptor
             Signature = Convert.ToBase64String(signature),
             EncryptionSecret = _encryptionSecret.Name,
             SigningSecret = _signingSecret.Name,
+            ExpirationUtc = expirationUtc,
         };
 
         var serialized = JsonConvert.SerializeObject(envelope);
