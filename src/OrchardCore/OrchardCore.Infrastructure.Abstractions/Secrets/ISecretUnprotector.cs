@@ -5,5 +5,5 @@ namespace OrchardCore.Secrets;
 public interface ISecretUnprotector
 {
     string Unprotect();
-    string Unprotect(out DateTime? expirationUtc);
+    string Unprotect(out DateTimeOffset expiration);
 }

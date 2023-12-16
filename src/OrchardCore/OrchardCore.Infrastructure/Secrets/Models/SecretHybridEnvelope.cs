@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Secrets.Models;
 
 public class SecretHybridEnvelope
@@ -10,5 +8,4 @@ public class SecretHybridEnvelope
     public string Signature { get; set; }
     public string EncryptionSecret { get; set; }
     public string SigningSecret { get; set; }
-    public DateTime? ExpirationUtc { get; set; }
 }

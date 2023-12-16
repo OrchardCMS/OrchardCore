@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
+using OrchardCore.Modules;
 using OrchardCore.Secrets.Models;
 using OrchardCore.Secrets.Options;
 using OrchardCore.Secrets.Stores;
@@ -107,7 +108,7 @@ public class SecretService : ISecretService
             return null;
         }
 
-        var secretStore = _stores.FirstOrDefault(store => string.Equals(store.Name, secretInfo.Store, StringComparison.OrdinalIgnoreCase));
+        var secretStore = _stores.FirstOrDefault(store => store.Name.EqualsOrdinalIgnoreCase(secretInfo.Store));
         if (secretStore is null)
         {
             return null;
@@ -154,7 +155,7 @@ public class SecretService : ISecretService
 
         secret.Name = secretInfo.Name;
 
-        var secretStore = _stores.FirstOrDefault(store => string.Equals(store.Name, secretInfo.Store, StringComparison.OrdinalIgnoreCase));
+        var secretStore = _stores.FirstOrDefault(store => store.Name.EqualsOrdinalIgnoreCase(secretInfo.Store));
         if (secretStore is not null)
         {
             await RemoveSecretAsync(sourceName ?? secretInfo.Name);
@@ -198,17 +199,17 @@ public class SecretService : ISecretService
 
     private async Task RemoveSecretAsync(SecretInfo secretInfo)
     {
-        var store = _stores.FirstOrDefault(store => string.Equals(store.Name, secretInfo.Store, StringComparison.OrdinalIgnoreCase))
+        var secretStore = _stores.FirstOrDefault(store => store.Name.EqualsOrdinalIgnoreCase(secretInfo.Store))
             ?? throw new InvalidOperationException($"The specified store '{secretInfo.Store}' was not found.");
 
         await _secretInfosManager.RemoveSecretInfoAsync(secretInfo.Name);
 
         // Updating a readonly store is a noop.
-        if (store.IsReadOnly)
+        if (secretStore.IsReadOnly)
         {
             return;
         }
 
-        await store.RemoveSecretAsync(secretInfo.Name);
+        await secretStore.RemoveSecretAsync(secretInfo.Name);
     }
 }

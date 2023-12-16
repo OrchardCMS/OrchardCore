@@ -34,8 +34,8 @@ namespace OrchardCore.Workflows.Services
             {
                 var unprotector = await _secretProtectionProvider.CreateUnprotectorAsync(token);
 
-                var json = unprotector.Unprotect(out var expirationUtc);
-                if (expirationUtc.HasValue && _clock.UtcNow < expirationUtc)
+                var json = unprotector.Unprotect(out var expiration);
+                if (_clock.UtcNow < expiration.ToUniversalTime())
                 {
                     payload = JsonConvert.DeserializeObject<T>(json);
                     return (true, payload);

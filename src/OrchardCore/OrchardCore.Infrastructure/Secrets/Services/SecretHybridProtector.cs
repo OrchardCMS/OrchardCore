@@ -18,21 +18,25 @@ public class SecretHybridProtector : ISecretProtector
         _signingSecret = signingSecret;
     }
 
-    public string Protect(string plainText) => Protect(plainText, null);
+    public string Protect(string plaintext) => Protect(plaintext, DateTimeOffset.MaxValue);
 
-    public string Protect(string plainText, DateTime? expirationUtc)
+    public string Protect(string plaintext, DateTimeOffset expiration)
     {
+        var plaintextBytes = Encoding.UTF8.GetBytes(plaintext);
+
+        // Prepend the expiration time (as a 64-bit UTC tick count).
+        var plaintextWithHeader = new byte[checked(8 + plaintextBytes.Length)];
+        BitHelpers.WriteUInt64(plaintextWithHeader, 0, (ulong)expiration.UtcTicks);
+        Buffer.BlockCopy(plaintextBytes, 0, plaintextWithHeader, 8, plaintext.Length);
+
         byte[] encrypted;
         using var aes = Aes.Create();
         var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
         using (var msEncrypt = new MemoryStream())
         {
             using var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write);
-            using (var swEncrypt = new StreamWriter(csEncrypt))
-            {
-                swEncrypt.Write(plainText);
-            }
-
+            csEncrypt.Write(plaintextWithHeader, 0, plaintextWithHeader.Length);
+            csEncrypt.FlushFinalBlock();
             encrypted = msEncrypt.ToArray();
         }
 
@@ -54,7 +58,6 @@ public class SecretHybridProtector : ISecretProtector
             Signature = Convert.ToBase64String(signature),
             EncryptionSecret = _encryptionSecret.Name,
             SigningSecret = _signingSecret.Name,
-            ExpirationUtc = expirationUtc,
         };
 
         var serialized = JsonConvert.SerializeObject(envelope);

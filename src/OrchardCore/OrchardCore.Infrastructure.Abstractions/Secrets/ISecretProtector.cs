@@ -4,6 +4,6 @@ namespace OrchardCore.Secrets;
 
 public interface ISecretProtector
 {
-    string Protect(string plainText);
-    string Protect(string plainText, DateTime? expirationUtc);
+    string Protect(string plaintext);
+    string Protect(string plaintext, DateTimeOffset expiration);
 }

@@ -41,8 +41,8 @@ public class DatabaseSecretStore : ISecretStore
             return null;
         }
 
-        var plainText = _protector.Unprotect(protectedData);
-        return JsonConvert.DeserializeObject(plainText, type) as SecretBase;
+        var plaintext = _protector.Unprotect(protectedData);
+        return JsonConvert.DeserializeObject(plaintext, type) as SecretBase;
     }
 
     public Task UpdateSecretAsync(string name, SecretBase secret) =>
