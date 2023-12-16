@@ -12,8 +12,6 @@ namespace OrchardCore.Email.Workflows
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddKeyedScoped<IEmailService, NullEmailService>(nameof(NullEmailService));
-
             services.AddActivity<EmailTask, EmailTaskDisplayDriver>();
         }
     }

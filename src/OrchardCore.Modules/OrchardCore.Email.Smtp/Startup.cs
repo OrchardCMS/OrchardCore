@@ -30,9 +30,10 @@ namespace OrchardCore.Email
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IDisplayDriver<ISite>, SmtpSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddScoped<SmtpEmailService>();
+            services.AddScoped<IEmailService>(sp => sp.GetService<SmtpEmailService>());
 
             services.AddTransient<IConfigureOptions<SmtpEmailSettings>, SmtpEmailSettingsConfiguration>();
-            services.AddKeyedScoped<IEmailService, SmtpEmailService>(nameof(SmtpEmailService));
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
