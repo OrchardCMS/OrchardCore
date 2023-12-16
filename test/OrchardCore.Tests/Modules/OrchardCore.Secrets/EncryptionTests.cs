@@ -49,7 +49,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
         {
             var protectionProvider = new SecretProtectionProvider(GetSecretServiceMock());
             var protector = await protectionProvider.CreateProtectorAsync("rsaencryptor", "rsasigning");
-            var encrypted = protector.Protect("foo");
+            var encrypted = await protector.ProtectAsync("foo");
 
             Assert.True(!string.IsNullOrEmpty(encrypted));
         }
@@ -59,12 +59,12 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
         {
             var protectionProvider = new SecretProtectionProvider(GetSecretServiceMock());
             var protector = await protectionProvider.CreateProtectorAsync("rsaencryptor", "rsasigning");
-            var encrypted = protector.Protect("foo");
+            var encrypted = await protector.ProtectAsync("foo");
 
             var unprotector = await protectionProvider.CreateUnprotectorAsync(encrypted);
-            var decrypted = unprotector.Unprotect();
+            var (Plaintext, _) = await unprotector.UnprotectAsync();
 
-            Assert.Equal("foo", decrypted);
+            Assert.Equal("foo", Plaintext);
         }
 
         [Fact]
@@ -72,13 +72,13 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
         {
             var protectionProvider = new SecretProtectionProvider(GetSecretServiceMock());
             var protector = await protectionProvider.CreateProtectorAsync("rsaencryptor", "rsasigning");
-            var encrypted = protector.Protect("foo");
+            var encrypted = await protector.ProtectAsync("foo");
 
-            // Generate new keys for decryption, which will cause the decryptor to throw.
+            // Generate new keys for decryption, which will cause the unprotector to throw.
             protectionProvider = new SecretProtectionProvider(GetSecretServiceMock());
             var unprotector = await protectionProvider.CreateUnprotectorAsync(encrypted);
 
-            Assert.Throws<CryptographicException>(() => unprotector.Unprotect());
+            await Assert.ThrowsAsync<CryptographicException>(() => unprotector.UnprotectAsync());
         }
     }
 }

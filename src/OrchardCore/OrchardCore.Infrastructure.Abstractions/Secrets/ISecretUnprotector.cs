@@ -1,9 +1,9 @@
 using System;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Secrets;
 
 public interface ISecretUnprotector
 {
-    string Unprotect();
-    string Unprotect(out DateTimeOffset expiration);
+    Task<(string Plaintext, DateTimeOffset Expiration)> UnprotectAsync();
 }

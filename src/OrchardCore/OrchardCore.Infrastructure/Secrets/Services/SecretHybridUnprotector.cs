@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using OrchardCore.Secrets.Models;
 
 namespace OrchardCore.Secrets.Services;
@@ -19,9 +20,7 @@ public class SecretHybridUnprotector : ISecretUnprotector
         _signingSecret = signingSecret;
     }
 
-    public string Unprotect() => Unprotect(out _);
-
-    public string Unprotect(out DateTimeOffset expiration)
+    public async Task<(string Plaintext, DateTimeOffset Expiration)> UnprotectAsync()
     {
         var protectedBytes = Convert.FromBase64String(_envelope.ProtectedData);
         var signatureBytes = Convert.FromBase64String(_envelope.Signature);
@@ -45,25 +44,20 @@ public class SecretHybridUnprotector : ISecretUnprotector
         using var csDecrypt = new CryptoStream(msDecrypt, decrypt, CryptoStreamMode.Read);
 
         var plaintextWithHeader = new byte[checked(protectedBytes.Length)];
-        var decryptedBytesCount = csDecrypt.Read(plaintextWithHeader, 0, protectedBytes.Length);
-        csDecrypt.Flush();
+        var decryptedBytesCount = await csDecrypt.ReadAsync(plaintextWithHeader, 0, protectedBytes.Length);
+        await csDecrypt.FlushAsync();
 
         if (decryptedBytesCount < 8)
         {
-            // Expiration header isn't present.
             throw new CryptographicException("The payload is invalid, the expiration header is missing.");
         }
 
-        // Read expiration time back out of the payload.
         var utcTicksExpiration = BitHelpers.ReadUInt64(plaintextWithHeader, 0);
         var embeddedExpiration = new DateTimeOffset(checked((long)utcTicksExpiration), TimeSpan.Zero /* UTC */);
 
-        // Split and return the payload.
         var plaintextBytes = new byte[decryptedBytesCount - 8];
         Buffer.BlockCopy(plaintextWithHeader, 8, plaintextBytes, 0, plaintextBytes.Length);
 
-        expiration = embeddedExpiration;
-
-        return Encoding.UTF8.GetString(plaintextBytes);
+        return (Encoding.UTF8.GetString(plaintextBytes), embeddedExpiration);
     }
 }

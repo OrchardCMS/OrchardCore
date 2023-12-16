@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using OrchardCore.Secrets.Models;
 
@@ -18,15 +19,14 @@ public class SecretHybridProtector : ISecretProtector
         _signingSecret = signingSecret;
     }
 
-    public string Protect(string plaintext) => Protect(plaintext, DateTimeOffset.MaxValue);
-
-    public string Protect(string plaintext, DateTimeOffset expiration)
+    public async Task<string> ProtectAsync(string plaintext, DateTimeOffset? expiration = null)
     {
+        expiration ??= DateTimeOffset.MaxValue;
         var plaintextBytes = Encoding.UTF8.GetBytes(plaintext);
 
         // Prepend the expiration time (as a 64-bit UTC tick count).
         var plaintextWithHeader = new byte[checked(8 + plaintextBytes.Length)];
-        BitHelpers.WriteUInt64(plaintextWithHeader, 0, (ulong)expiration.UtcTicks);
+        BitHelpers.WriteUInt64(plaintextWithHeader, 0, (ulong)expiration.Value.UtcTicks);
         Buffer.BlockCopy(plaintextBytes, 0, plaintextWithHeader, 8, plaintext.Length);
 
         byte[] encrypted;
@@ -35,8 +35,8 @@ public class SecretHybridProtector : ISecretProtector
         using (var msEncrypt = new MemoryStream())
         {
             using var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write);
-            csEncrypt.Write(plaintextWithHeader, 0, plaintextWithHeader.Length);
-            csEncrypt.FlushFinalBlock();
+            await csEncrypt.WriteAsync(plaintextWithHeader, 0, plaintextWithHeader.Length);
+            await csEncrypt.FlushFinalBlockAsync();
             encrypted = msEncrypt.ToArray();
         }
 

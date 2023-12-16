@@ -36,7 +36,9 @@ public class SecretsRecipeStep : IRecipeStepHandler
             if (!string.IsNullOrEmpty(protectedData))
             {
                 var unprotector = await _protectionProvider.CreateUnprotectorAsync(protectedData);
-                secret = JsonConvert.DeserializeObject(unprotector.Unprotect(), secret.GetType()) as SecretBase;
+                var (Plaintext, _) = await unprotector.UnprotectAsync();
+
+                secret = JsonConvert.DeserializeObject(Plaintext, secret.GetType()) as SecretBase;
             }
 
             secretInfo.Name = kvp.Key;

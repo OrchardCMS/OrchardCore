@@ -73,7 +73,7 @@ public class AllSecretsDeploymentSource : IDeploymentSource
                 if (secret is not null)
                 {
                     var plaintext = JsonConvert.SerializeObject(secret);
-                    var encrypted = protector.Protect(plaintext);
+                    var encrypted = await protector.ProtectAsync(plaintext);
                     jObject.Add("SecretData", encrypted);
                 }
             }

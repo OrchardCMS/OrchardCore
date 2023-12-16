@@ -23,7 +23,7 @@ namespace OrchardCore.Workflows.Services
 
             var protector = await _secretProtectionProvider.CreateProtectorAsync(Secrets.Encryption, Secrets.Signing);
 
-            return protector.Protect(json, _clock.UtcNow.Add(lifetime));
+            return await protector.ProtectAsync(json, _clock.UtcNow.Add(lifetime));
         }
 
         public async Task<(bool, T)> TryDecryptTokenAsync<T>(string token)
@@ -34,10 +34,10 @@ namespace OrchardCore.Workflows.Services
             {
                 var unprotector = await _secretProtectionProvider.CreateUnprotectorAsync(token);
 
-                var json = unprotector.Unprotect(out var expiration);
-                if (_clock.UtcNow < expiration.ToUniversalTime())
+                var (Plaintext, Expiration) = await unprotector.UnprotectAsync();
+                if (_clock.UtcNow < Expiration.ToUniversalTime())
                 {
-                    payload = JsonConvert.DeserializeObject<T>(json);
+                    payload = JsonConvert.DeserializeObject<T>(Plaintext);
                     return (true, payload);
                 }
             }

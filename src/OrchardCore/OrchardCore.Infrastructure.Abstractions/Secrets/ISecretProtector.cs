@@ -1,9 +1,9 @@
 using System;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Secrets;
 
 public interface ISecretProtector
 {
-    string Protect(string plaintext);
-    string Protect(string plaintext, DateTimeOffset expiration);
+    Task<string> ProtectAsync(string plaintext, DateTimeOffset? expiration = null);
 }

@@ -37,6 +37,12 @@ public class SecretProtectionProvider : ISecretProtectionProvider
         var encryptionRsaSecret = await _secretService.GetSecretAsync<RSASecret>(envelope.EncryptionSecret)
             ?? throw new InvalidOperationException($"'{envelope.EncryptionSecret}' secret not found.");
 
+        // The private key is needed for decryption.
+        if (encryptionRsaSecret.KeyType != RSAKeyType.PublicPrivate)
+        {
+            throw new InvalidOperationException("Secret cannot be used for decryption.");
+        }
+
         var signingRsaSecret = await _secretService.GetSecretAsync<RSASecret>(envelope.SigningSecret)
             ?? throw new InvalidOperationException($"'{envelope.SigningSecret}' secret not found.");
 
