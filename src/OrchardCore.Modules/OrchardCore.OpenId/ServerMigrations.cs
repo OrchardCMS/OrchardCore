@@ -36,14 +36,16 @@ public class ServerMigrations : DataMigration
         {
             await UpgradeAsync();
         }
+        else
+        {
+            await _secretService.AddSecretAsync<RSASecret>(
+                name: ServerSecrets.Encryption,
+                configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
 
-        await _secretService.AddSecretAsync<RSASecret>(
-            name: ServerSecrets.Encryption,
-            configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
-
-        await _secretService.AddSecretAsync<RSASecret>(
-            name: ServerSecrets.Signing,
-            configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+            await _secretService.AddSecretAsync<RSASecret>(
+                name: ServerSecrets.Signing,
+                configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+        }
 
         // Shortcut other migration steps on new content definition schemas.
         return 1;
@@ -68,6 +70,12 @@ public class ServerMigrations : DataMigration
                 });
 
         }
+        else
+        {
+            await _secretService.AddSecretAsync<RSASecret>(
+                name: ServerSecrets.Encryption,
+                configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+        }
 
         if (settings.SigningCertificateStoreLocation is not null &&
             settings.SigningCertificateStoreName is not null &&
@@ -82,6 +90,12 @@ public class ServerMigrations : DataMigration
                     secret.Thumbprint = settings.SigningCertificateThumbprint;
                 });
 
+        }
+        else
+        {
+            await _secretService.AddSecretAsync<RSASecret>(
+                name: ServerSecrets.Signing,
+                configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
         }
     }
 }
