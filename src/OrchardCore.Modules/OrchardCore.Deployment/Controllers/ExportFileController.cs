@@ -76,7 +76,7 @@ namespace OrchardCore.Deployment.Controllers
                     recipeDescriptor.Tags = (recipeFileDeploymentStep.Tags ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries);
                 }
 
-                var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor, Secrets.Encryption, Secrets.Signing);
+                var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor, Secrets.Purpose);
                 await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);
                 ZipFile.CreateFromDirectory(fileBuilder.Folder, archiveFileName);
             }

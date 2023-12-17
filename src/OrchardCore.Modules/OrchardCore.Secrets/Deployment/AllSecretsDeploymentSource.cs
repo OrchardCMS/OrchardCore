@@ -26,27 +26,18 @@ public class AllSecretsDeploymentSource : IDeploymentSource
             return;
         }
 
-        if (string.IsNullOrEmpty(result.EncryptionSecret))
-        {
-            throw new InvalidOperationException("You must set an encryption rsa secret for the deployment target before exporting secrets.");
-        }
-
-        if (string.IsNullOrEmpty(result.SigningSecret))
-        {
-            throw new InvalidOperationException("You must set a signing rsa secret for the deployment target before exporting secrets.");
-        }
-
         // Secrets used for the deployment itself should already exist on both sides.
-        var secretInfos = (await _secretService.GetSecretInfosAsync()).Where(secret =>
-            !string.Equals(secret.Value.Name, result.EncryptionSecret, StringComparison.OrdinalIgnoreCase) &&
-            !string.Equals(secret.Value.Name, result.SigningSecret, StringComparison.OrdinalIgnoreCase));
+        var secretInfos = (await _secretService.GetSecretInfosAsync())
+            .Where(secret =>
+                !string.Equals(secret.Value.Name, $"{result.Purpose}.Encryption", StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(secret.Value.Name, $"{result.Purpose}.Signing", StringComparison.OrdinalIgnoreCase));
 
         if (!secretInfos.Any())
         {
             return;
         }
 
-        var protector = await _protectionProvider.CreateProtectorAsync(result.EncryptionSecret, result.SigningSecret);
+        var protector = _protectionProvider.CreateProtector(result.Purpose);
 
         var secrets = new Dictionary<string, JObject>();
         foreach (var secretInfo in secretInfos)

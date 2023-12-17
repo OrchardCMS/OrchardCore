@@ -2,6 +2,6 @@ namespace OrchardCore.Email;
 
 public static class Secrets
 {
-    public const string Namespace = "OrchardCore.Email";
-    public const string Password = $"{Namespace}.Password";
+    public const string Purpose = "OrchardCore.Email";
+    public const string Password = $"{Purpose}.Password";
 }

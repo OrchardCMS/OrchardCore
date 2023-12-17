@@ -81,8 +81,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 var deploymentPlanResult = new DeploymentPlanResult(
                     fileBuilder,
                     new RecipeDescriptor(),
-                    $"{Secrets.Encryption}.{remoteInstance.ClientName}",
-                    $"{Secrets.Signing}.{remoteInstance.ClientName}");
+                    $"{Secrets.Purpose}.{remoteInstance.ClientName}");
 
                 await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);
 
@@ -112,7 +111,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
                     requestContent.Add(new StringContent(remoteInstance.ClientName), nameof(ImportViewModel.ClientName));
 
-                    var secret = await _secretService.GetSecretAsync<TextSecret>($"{Secrets.ApiKey}.{remoteInstance.ClientName}");
+                    var secret = await _secretService.GetSecretAsync<TextSecret>($"{Secrets.Purpose}.{remoteInstance.ClientName}.ApiKey");
                     if (secret is null)
                     {
                         return StatusCode((int)HttpStatusCode.BadRequest, "The Api Key doesn't exist.");

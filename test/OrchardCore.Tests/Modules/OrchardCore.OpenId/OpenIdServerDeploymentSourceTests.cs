@@ -92,7 +92,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
 
             var fileBuilder = new MemoryFileBuilder();
             var descriptor = new RecipeDescriptor();
-            var result = new DeploymentPlanResult(fileBuilder, descriptor, null, null);
+            var result = new DeploymentPlanResult(fileBuilder, descriptor, null);
 
             var deploymentSource = new OpenIdServerDeploymentSource(deployServerServiceMock.Object);
 

@@ -12,7 +12,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
             using var rsaEncryptor = RSAGenerator.GenerateRSASecurityKey(2048);
             var encryptionSecret = new RSASecret()
             {
-                Name = "rsaencryptor",
+                Name = "Tests.Encryption",
                 PublicKey = Convert.ToBase64String(rsaEncryptor.ExportRSAPublicKey()),
                 PrivateKey = Convert.ToBase64String(rsaEncryptor.ExportRSAPrivateKey()),
                 KeyType = RSAKeyType.PublicPrivate,
@@ -21,18 +21,18 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
             using var rsaSigning = RSAGenerator.GenerateRSASecurityKey(2048);
             var signingSecret = new RSASecret()
             {
-                Name = "rsasigning",
+                Name = "Tests.Signing",
                 PublicKey = Convert.ToBase64String(rsaSigning.ExportRSAPublicKey()),
                 PrivateKey = Convert.ToBase64String(rsaSigning.ExportRSAPrivateKey()),
                 KeyType = RSAKeyType.PublicPrivate,
             };
 
-            var encryptionInfo = new SecretInfo() { Name = "rsaencryptor" };
-            var signingInfo = new SecretInfo() { Name = "rsasigning" };
+            var encryptionInfo = new SecretInfo() { Name = "Tests.Encryption" };
+            var signingInfo = new SecretInfo() { Name = "Tests.Signing" };
             var secrets = new Dictionary<string, SecretInfo>()
             {
-                { "rsaencryptor", encryptionInfo },
-                { "rsasigning", signingInfo },
+                { "Tests.Encryption", encryptionInfo },
+                { "Tests.Signing", signingInfo },
             };
 
             var secretService = Mock.Of<ISecretService>();
@@ -48,21 +48,20 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
         public async Task ShouldEncrypt()
         {
             var protectionProvider = new SecretProtectionProvider(GetSecretServiceMock());
-            var protector = await protectionProvider.CreateProtectorAsync("rsaencryptor", "rsasigning");
+            var protector = protectionProvider.CreateProtector("Tests");
             var encrypted = await protector.ProtectAsync("foo");
 
-            Assert.True(!string.IsNullOrEmpty(encrypted));
+            Assert.False(string.IsNullOrEmpty(encrypted));
         }
 
         [Fact]
         public async Task ShouldEncryptThenDecrypt()
         {
             var protectionProvider = new SecretProtectionProvider(GetSecretServiceMock());
-            var protector = await protectionProvider.CreateProtectorAsync("rsaencryptor", "rsasigning");
-            var encrypted = await protector.ProtectAsync("foo");
+            var protector = protectionProvider.CreateProtector("Tests");
 
-            var unprotector = await protectionProvider.CreateUnprotectorAsync(encrypted);
-            var (Plaintext, _) = await unprotector.UnprotectAsync();
+            var encrypted = await protector.ProtectAsync("foo");
+            var (Plaintext, _) = await protector.UnprotectAsync(encrypted);
 
             Assert.Equal("foo", Plaintext);
         }
@@ -71,14 +70,15 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
         public async Task ShouldThrowWhenDecryptingWithBaDKeys()
         {
             var protectionProvider = new SecretProtectionProvider(GetSecretServiceMock());
-            var protector = await protectionProvider.CreateProtectorAsync("rsaencryptor", "rsasigning");
+            var protector = protectionProvider.CreateProtector("Tests");
+
             var encrypted = await protector.ProtectAsync("foo");
 
             // Generate new keys for decryption, which will cause the unprotector to throw.
             protectionProvider = new SecretProtectionProvider(GetSecretServiceMock());
-            var unprotector = await protectionProvider.CreateUnprotectorAsync(encrypted);
+            protector = protectionProvider.CreateProtector("Tests");
 
-            await Assert.ThrowsAsync<CryptographicException>(() => unprotector.UnprotectAsync());
+            await Assert.ThrowsAsync<CryptographicException>(() => protector.UnprotectAsync(encrypted));
         }
     }
 }
