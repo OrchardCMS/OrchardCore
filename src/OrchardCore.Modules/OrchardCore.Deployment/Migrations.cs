@@ -19,26 +19,26 @@ namespace OrchardCore.Deployment
                 .Column<string>("Name")
             );
 
-            await _secretService.GetOrCreateSecretAsync<RSASecret>(
+            await _secretService.AddSecretAsync<RSASecret>(
                 name: Secrets.Encryption,
-                configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+                configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
 
-            await _secretService.GetOrCreateSecretAsync<RSASecret>(
+            await _secretService.AddSecretAsync<RSASecret>(
                 name: Secrets.Signing,
-                configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+                configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
 
             return 2;
         }
 
         public async Task<int> UpdateFrom1Async()
         {
-            await _secretService.GetOrCreateSecretAsync<RSASecret>(
+            await _secretService.AddSecretAsync<RSASecret>(
                 name: Secrets.Encryption,
-                configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+                configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
 
-            await _secretService.GetOrCreateSecretAsync<RSASecret>(
+            await _secretService.AddSecretAsync<RSASecret>(
                 name: Secrets.Signing,
-                configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+                configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
 
             return 2;
         }

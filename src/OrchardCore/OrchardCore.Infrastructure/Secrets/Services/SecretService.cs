@@ -66,7 +66,28 @@ public class SecretService : ISecretService
     public async Task<TSecret> GetSecretAsync<TSecret>(string name) where TSecret : SecretBase, new()
         => await GetSecretAsync(name) as TSecret;
 
-    public async Task<TSecret> GetOrCreateSecretAsync<TSecret>(string name, Action<TSecret> configure = null, string sourceName = null)
+    public async Task<TSecret> AddSecretAsync<TSecret>(string name, Action<TSecret, SecretInfo> configure = null)
+        where TSecret : SecretBase, new()
+    {
+        var secretInfo = new SecretInfo
+        {
+            Name = name,
+            Store = nameof(DatabaseSecretStore),
+            Type = typeof(TSecret).Name,
+        };
+
+        var secret = CreateSecret<TSecret>();
+
+        secret.Name = name;
+
+        configure?.Invoke(secret, secretInfo);
+
+        await UpdateSecretAsync(secretInfo, secret);
+
+        return secret;
+    }
+
+    public async Task<TSecret> GetOrAddSecretAsync<TSecret>(string name, Action<TSecret, SecretInfo> configure = null, string sourceName = null)
         where TSecret : SecretBase, new()
     {
         var secret = await GetSecretAsync<TSecret>(name);
@@ -82,11 +103,11 @@ public class SecretService : ISecretService
             Type = typeof(TSecret).Name,
         };
 
-        secret = CreateSecret(typeof(TSecret).Name) as TSecret;
+        secret = CreateSecret<TSecret>();
 
         secret.Name = name;
 
-        configure?.Invoke(secret);
+        configure?.Invoke(secret, secretInfo);
 
         if (sourceName is not null && sourceName != name && (await GetSecretAsync<TSecret>(sourceName)) is not null)
         {
@@ -173,18 +194,7 @@ public class SecretService : ISecretService
         }
     }
 
-    public async Task RemoveSecretAsync(string name)
-    {
-        var secretInfos = await GetSecretInfosAsync();
-        if (!secretInfos.TryGetValue(name, out var secretInfo))
-        {
-            return;
-        }
-
-        await RemoveSecretAsync(secretInfo);
-    }
-
-    public async Task<bool> TryRemoveSecretAsync(string name)
+    public async Task<bool> RemoveSecretAsync(string name)
     {
         var secretInfos = await GetSecretInfosAsync();
         if (!secretInfos.TryGetValue(name, out var secretInfo))

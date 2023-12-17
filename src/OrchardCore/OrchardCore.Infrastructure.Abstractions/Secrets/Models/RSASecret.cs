@@ -32,7 +32,5 @@ public class RSASecret : SecretBase
     }
 
     public static byte[] KeyAsBytes(string key) =>
-        !String.IsNullOrEmpty(key)
-        ? Convert.FromBase64String(key)
-        : Array.Empty<byte>();
+        !string.IsNullOrEmpty(key) ? Convert.FromBase64String(key) : [];
 }

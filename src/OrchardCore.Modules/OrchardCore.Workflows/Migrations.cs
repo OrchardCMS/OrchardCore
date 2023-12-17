@@ -90,13 +90,13 @@ namespace OrchardCore.Workflows
                     "WorkflowCorrelationId")
             );
 
-            await _secretService.GetOrCreateSecretAsync<RSASecret>(
+            await _secretService.AddSecretAsync<RSASecret>(
                 name: SecretToken.Encryption,
-                configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+                configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
 
-            await _secretService.GetOrCreateSecretAsync<RSASecret>(
+            await _secretService.AddSecretAsync<RSASecret>(
                 name: SecretToken.Signing,
-                configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+                configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
 
             // Shortcut other migration steps on new content definition schemas.
             return 4;
@@ -165,13 +165,13 @@ namespace OrchardCore.Workflows
         // This code can be removed in a later version.
         public async Task<int> UpdateFrom3Async()
         {
-            await _secretService.GetOrCreateSecretAsync<RSASecret>(
+            await _secretService.AddSecretAsync<RSASecret>(
                 name: SecretToken.Encryption,
-                configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+                configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
 
-            await _secretService.GetOrCreateSecretAsync<RSASecret>(
+            await _secretService.AddSecretAsync<RSASecret>(
                 name: SecretToken.Signing,
-                configure: secret => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+                configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
 
             return 4;
         }

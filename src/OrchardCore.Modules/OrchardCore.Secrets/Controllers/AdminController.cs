@@ -342,7 +342,7 @@ public class AdminController : Controller
             return Forbid();
         }
 
-        if (!await _secretService.TryRemoveSecretAsync(name))
+        if (!await _secretService.RemoveSecretAsync(name))
         {
             return NotFound();
         }

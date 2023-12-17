@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -33,9 +32,6 @@ namespace OrchardCore.OpenId.Services
         private readonly ISiteService _siteService;
         private readonly ISecretService _secretService;
         protected readonly IStringLocalizer S;
-
-        private RSA _encryptionRsa;
-        private RSA _signingRsa;
 
         public OpenIdServerService(
             IDataProtectionProvider dataProtectionProvider,
@@ -283,194 +279,90 @@ namespace OrchardCore.OpenId.Services
 
         public async Task<ImmutableArray<SecurityKey>> GetEncryptionKeysAsync()
         {
-            var settings = await GetSettingsAsync();
+            var secret = await _secretService.GetSecretAsync(ServerSecrets.Encryption);
 
-            // If a RSA secret was provided, try to use it first.
-            if (!string.IsNullOrEmpty(settings.EncryptionRsaSecret))
-            {
-                if (_encryptionRsa is not null)
-                {
-                    return ImmutableArray.Create<SecurityKey>(new RsaSecurityKey(_encryptionRsa));
-                }
-
-                var secret = await _secretService.GetSecretAsync<RSASecret>(settings.EncryptionRsaSecret);
-                if (secret is not null)
-                {
-                    var rsa = GenerateRsaSecurityKey(size: 2048);
-
-                    rsa.ImportRSAPublicKey(secret.PublicKeyAsBytes(), out _);
-                    if (secret.KeyType == RSAKeyType.PublicPrivate)
-                    {
-                        rsa.ImportRSAPrivateKey(secret.PrivateKeyAsBytes(), out _);
-                    }
-
-                    _encryptionRsa = rsa;
-
-                    return ImmutableArray.Create<SecurityKey>(new RsaSecurityKey(rsa));
-                }
-
-                _logger.LogWarning("The encryption RSA secret '{SecretName}' could not be found.", settings.EncryptionRsaSecret);
-            }
-
-            // If a certificate was explicitly provided, return it immediately
-            // instead of using the fallback managed certificates logic.
-            else if (settings.EncryptionCertificateStoreLocation != null &&
-                settings.EncryptionCertificateStoreName != null &&
-                !string.IsNullOrEmpty(settings.EncryptionCertificateThumbprint))
+            if (secret is X509Secret x509Secret &&
+                x509Secret.StoreLocation is not null &&
+                x509Secret.StoreName is not null &&
+                !string.IsNullOrEmpty(x509Secret.Thumbprint))
             {
                 var certificate = GetCertificate(
-                    settings.EncryptionCertificateStoreLocation.Value,
-                    settings.EncryptionCertificateStoreName.Value, settings.EncryptionCertificateThumbprint);
+                    x509Secret.StoreLocation.Value,
+                    x509Secret.StoreName.Value,
+                    x509Secret.Thumbprint);
 
-                if (certificate != null)
+                if (certificate is not null)
                 {
-                    return ImmutableArray.Create<SecurityKey>(new X509SecurityKey(certificate));
+                    return [new X509SecurityKey(certificate)];
                 }
 
-                _logger.LogWarning("The encryption certificate '{Thumbprint}' could not be found in the " +
-                                   "{StoreLocation}/{StoreName} store.", settings.EncryptionCertificateThumbprint,
-                                   settings.EncryptionCertificateStoreLocation.Value.ToString(),
-                                   settings.EncryptionCertificateStoreName.Value.ToString());
+                _logger.LogWarning(
+                    "The encryption certificate '{Thumbprint}' could not be found in the {StoreLocation}/{StoreName} store.",
+                    x509Secret.Thumbprint,
+                    x509Secret.StoreLocation.Value.ToString(),
+                    x509Secret.StoreName.Value.ToString());
             }
 
-            try
+            if (secret is not RSASecret rsaSecret)
             {
-                var directory = GetEncryptionCertificateDirectory(_shellOptions.CurrentValue, _shellSettings);
-
-                var certificates = (await GetCertificatesAsync(directory)).Select(tuple => tuple.certificate).ToList();
-                if (certificates.Any(certificate => certificate.NotAfter.AddDays(-7) > DateTime.Now))
-                {
-                    return ImmutableArray.CreateRange<SecurityKey>(
-                        from certificate in certificates
-                        select new X509SecurityKey(certificate));
-                }
-
-                try
-                {
-                    // If the certificates list is empty or only contains certificates about to expire,
-                    // generate a new certificate and add it on top of the list to ensure it's preferred
-                    // by OpenIddict to the other certificates when issuing new IdentityModel tokens.
-                    var certificate = GenerateEncryptionCertificate(_shellSettings);
-                    await PersistCertificateAsync(directory, certificate);
-
-                    certificates.Insert(0, certificate);
-
-                    return certificates.Select(certificate => new X509SecurityKey(certificate)).ToImmutableArray<SecurityKey>();
-                }
-                catch (Exception exception)
-                {
-                    _logger.LogError(exception, "An error occurred while trying to generate a X.509 encryption certificate.");
-                }
-            }
-            catch (Exception exception)
-            {
-                _logger.LogWarning(exception, "An error occurred while trying to retrieve the X.509 encryption certificates.");
+                rsaSecret = await _secretService.AddSecretAsync<RSASecret>(
+                    name: ServerSecrets.Encryption,
+                    configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
             }
 
-            // If none of the previous attempts succeeded, try to generate an ephemeral RSA key
-            // and add it in the tenant memory cache so that future calls to this method return it.
-            return ImmutableArray.Create<SecurityKey>(_memoryCache.GetOrCreate("05A24221-8C15-4E58-A0A7-56EC3E42E783", entry =>
-            {
-                entry.SetPriority(CacheItemPriority.NeverRemove);
+            var rsa = RSAGenerator.GenerateRSASecurityKey(size: 2048);
 
-                return new RsaSecurityKey(GenerateRsaSecurityKey(size: 2048));
-            }));
+            rsa.ImportRSAPublicKey(rsaSecret.PublicKeyAsBytes(), out _);
+            if (rsaSecret.KeyType == RSAKeyType.PublicPrivate)
+            {
+                rsa.ImportRSAPrivateKey(rsaSecret.PrivateKeyAsBytes(), out _);
+            }
+
+            return [new RsaSecurityKey(rsa)];
         }
 
         public async Task<ImmutableArray<SecurityKey>> GetSigningKeysAsync()
         {
-            var settings = await GetSettingsAsync();
+            var secret = await _secretService.GetSecretAsync(ServerSecrets.Signing);
 
-            // If a RSA secret was provided, try to use it first.
-            if (!string.IsNullOrEmpty(settings.SigningRsaSecret))
-            {
-                if (_signingRsa is not null)
-                {
-                    return ImmutableArray.Create<SecurityKey>(new RsaSecurityKey(_signingRsa));
-                }
-
-                var secret = await _secretService.GetSecretAsync<RSASecret>(settings.SigningRsaSecret);
-                if (secret is not null)
-                {
-                    var rsa = GenerateRsaSecurityKey(size: 2048);
-
-                    rsa.ImportRSAPublicKey(secret.PublicKeyAsBytes(), out _);
-                    if (secret.KeyType == RSAKeyType.PublicPrivate)
-                    {
-                        rsa.ImportRSAPrivateKey(secret.PrivateKeyAsBytes(), out _);
-                    }
-
-                    _signingRsa = rsa;
-
-                    return ImmutableArray.Create<SecurityKey>(new RsaSecurityKey(rsa));
-                }
-
-                _logger.LogWarning("The signing RSA secret '{SecretName}' could not be found.", settings.SigningRsaSecret);
-            }
-
-            // If a certificate was explicitly provided, return it immediately
-            // instead of using the fallback managed certificates logic.
-            else if (settings.SigningCertificateStoreLocation != null &&
-                settings.SigningCertificateStoreName != null &&
-                !string.IsNullOrEmpty(settings.SigningCertificateThumbprint))
+            if (secret is X509Secret x509Secret &&
+                x509Secret.StoreLocation is not null &&
+                x509Secret.StoreName is not null &&
+                !string.IsNullOrEmpty(x509Secret.Thumbprint))
             {
                 var certificate = GetCertificate(
-                    settings.SigningCertificateStoreLocation.Value,
-                    settings.SigningCertificateStoreName.Value, settings.SigningCertificateThumbprint);
+                    x509Secret.StoreLocation.Value,
+                    x509Secret.StoreName.Value,
+                    x509Secret.Thumbprint);
 
-                if (certificate != null)
+                if (certificate is not null)
                 {
-                    return ImmutableArray.Create<SecurityKey>(new X509SecurityKey(certificate));
+                    return [new X509SecurityKey(certificate)];
                 }
 
-                _logger.LogWarning("The signing certificate '{Thumbprint}' could not be found in the " +
-                                   "{StoreLocation}/{StoreName} store.", settings.SigningCertificateThumbprint,
-                                   settings.SigningCertificateStoreLocation.Value.ToString(),
-                                   settings.SigningCertificateStoreName.Value.ToString());
+                _logger.LogWarning(
+                    "The signing certificate '{Thumbprint}' could not be found in the {StoreLocation}/{StoreName} store.",
+                    x509Secret.Thumbprint,
+                    x509Secret.StoreLocation.Value.ToString(),
+                    x509Secret.StoreName.Value.ToString());
             }
 
-            try
+            if (secret is not RSASecret rsaSecret)
             {
-                var directory = GetSigningCertificateDirectory(_shellOptions.CurrentValue, _shellSettings);
-
-                var certificates = (await GetCertificatesAsync(directory)).Select(tuple => tuple.certificate).ToList();
-                if (certificates.Any(certificate => certificate.NotAfter.AddDays(-7) > DateTime.Now))
-                {
-                    return ImmutableArray.CreateRange<SecurityKey>(
-                        from certificate in certificates
-                        select new X509SecurityKey(certificate));
-                }
-
-                try
-                {
-                    // If the certificates list is empty or only contains certificates about to expire,
-                    // generate a new certificate and add it on top of the list to ensure it's preferred
-                    // by OpenIddict to the other certificates when issuing new IdentityModel tokens.
-                    var certificate = GenerateSigningCertificate(_shellSettings);
-                    await PersistCertificateAsync(directory, certificate);
-
-                    certificates.Insert(0, certificate);
-
-                    return certificates.Select(certificate => new X509SecurityKey(certificate)).ToImmutableArray<SecurityKey>();
-                }
-                catch (Exception exception)
-                {
-                    _logger.LogError(exception, "An error occurred while trying to generate a X.509 signing certificate.");
-                }
-            }
-            catch (Exception exception)
-            {
-                _logger.LogWarning(exception, "An error occurred while trying to retrieve the X.509 signing certificates.");
+                rsaSecret = await _secretService.AddSecretAsync<RSASecret>(
+                    name: ServerSecrets.Signing,
+                    configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
             }
 
-            // If none of the previous attempts succeeded, try to generate an ephemeral RSA key
-            // and add it in the tenant memory cache so that future calls to this method return it.
-            return ImmutableArray.Create<SecurityKey>(_memoryCache.GetOrCreate("44788774-20E3-4499-86F0-AB7CE2DF97F6", entry =>
-            {
-                entry.SetPriority(CacheItemPriority.NeverRemove);
+            var rsa = RSAGenerator.GenerateRSASecurityKey(size: 2048);
 
-                return new RsaSecurityKey(GenerateRsaSecurityKey(size: 2048));
-            }));
+            rsa.ImportRSAPublicKey(rsaSecret.PublicKeyAsBytes(), out _);
+            if (rsaSecret.KeyType == RSAKeyType.PublicPrivate)
+            {
+                rsa.ImportRSAPrivateKey(rsaSecret.PrivateKeyAsBytes(), out _);
+            }
+
+            return [new RsaSecurityKey(rsa)];
         }
 
         public async Task PruneManagedCertificatesAsync()
@@ -586,6 +478,7 @@ namespace OrchardCore.OpenId.Services
 
                     return new X509Certificate2(path, password, flags);
                 }
+
                 // Some cloud platforms (e.g Azure App Service/Antares) are known to fail to import .pfx files if the
                 // private key is not persisted or marked as exportable. To ensure X.509 certificates can be correctly
                 // read on these platforms, a second pass is made by specifying the PersistKeySet and Exportable flags.
@@ -600,103 +493,9 @@ namespace OrchardCore.OpenId.Services
                         X509KeyStorageFlags.PersistKeySet |
                         X509KeyStorageFlags.Exportable);
                 }
+
                 // Don't swallow exceptions thrown from the catch handler to ensure unrecoverable exceptions
                 // (e.g caused by malformed X.509 certificates or invalid password) are correctly logged.
-            }
-        }
-
-        private static X509Certificate2 GenerateEncryptionCertificate(ShellSettings settings)
-        {
-            var algorithm = GenerateRsaSecurityKey(size: 2048);
-            var certificate = GenerateCertificate(X509KeyUsageFlags.KeyEncipherment, algorithm, settings);
-
-            // Note: setting the friendly name is not supported on Unix machines (including Linux and macOS).
-            // To ensure an exception is not thrown by the property setter, an OS runtime check is used here.
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                certificate.FriendlyName = "OrchardCore OpenID Server Encryption Certificate";
-            }
-
-            return certificate;
-        }
-
-        private static X509Certificate2 GenerateSigningCertificate(ShellSettings settings)
-        {
-            var algorithm = GenerateRsaSecurityKey(size: 2048);
-            var certificate = GenerateCertificate(X509KeyUsageFlags.DigitalSignature, algorithm, settings);
-
-            // Note: setting the friendly name is not supported on Unix machines (including Linux and macOS).
-            // To ensure an exception is not thrown by the property setter, an OS runtime check is used here.
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                certificate.FriendlyName = "OrchardCore OpenID Server Signing Certificate";
-            }
-
-            return certificate;
-        }
-
-        private static X509Certificate2 GenerateCertificate(X509KeyUsageFlags type, RSA algorithm, ShellSettings settings)
-        {
-            var subject = GetSubjectName();
-
-            // Note: ensure the digitalSignature bit is added to the certificate, so that no validation error
-            // is returned to clients that fully validate the certificates chain and their X.509 key usages.
-            var request = new CertificateRequest(subject, algorithm, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-            request.CertificateExtensions.Add(new X509KeyUsageExtension(type, critical: true));
-
-            return request.CreateSelfSigned(DateTimeOffset.UtcNow, DateTimeOffset.UtcNow.AddMonths(3));
-
-            X500DistinguishedName GetSubjectName()
-            {
-                var host = settings.RequestUrlHosts.FirstOrDefault(host => host != "localhost");
-                try
-                {
-                    return new X500DistinguishedName("CN=" + (host ?? "localhost"));
-                }
-                catch
-                {
-                    return new X500DistinguishedName("CN=localhost");
-                }
-            }
-        }
-
-        private static RSA GenerateRsaSecurityKey(int size)
-        {
-            // By default, the default RSA implementation used by .NET Core relies on the newest Windows CNG APIs.
-            // Unfortunately, when a new key is generated using the default RSA.Create() method, it is not bound
-            // to the machine account, which may cause security exceptions when running Orchard on IIS using a
-            // virtual application pool identity or without the profile loading feature enabled (off by default).
-            // To ensure a RSA key can be generated flawlessly, it is manually created using the managed CNG APIs.
-            // For more information, visit https://github.com/openiddict/openiddict-core/issues/204.
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                // Warning: ensure a null key name is specified to ensure the RSA key is not persisted by CNG.
-                var key = CngKey.Create(CngAlgorithm.Rsa, keyName: null, new CngKeyCreationParameters
-                {
-                    ExportPolicy = CngExportPolicies.AllowPlaintextExport,
-                    KeyCreationOptions = CngKeyCreationOptions.MachineKey,
-                    Parameters = { new CngProperty("Length", BitConverter.GetBytes(size), CngPropertyOptions.None) }
-                });
-
-                return new RSACng(key);
-            }
-
-            return RSA.Create(size);
-        }
-
-        private async Task PersistCertificateAsync(DirectoryInfo directory, X509Certificate2 certificate)
-        {
-            var password = GeneratePassword();
-            var path = Path.Combine(directory.FullName, Guid.NewGuid().ToString());
-
-            await File.WriteAllBytesAsync(Path.ChangeExtension(path, ".pfx"), certificate.Export(X509ContentType.Pfx, password));
-            await File.WriteAllTextAsync(Path.ChangeExtension(path, ".pwd"), _dataProtector.Protect(password));
-
-            static string GeneratePassword()
-            {
-                Span<byte> data = stackalloc byte[256 / 8];
-                RandomNumberGenerator.Fill(data);
-                return Convert.ToBase64String(data, Base64FormattingOptions.None);
             }
         }
     }

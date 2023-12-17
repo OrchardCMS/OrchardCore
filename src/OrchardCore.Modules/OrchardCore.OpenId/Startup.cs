@@ -18,6 +18,7 @@ using OpenIddict.Validation.AspNetCore;
 using OpenIddict.Validation.DataProtection;
 using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
+using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell.Builders;
@@ -169,6 +170,7 @@ namespace OrchardCore.OpenId
                 });
 
             services.TryAddSingleton<IOpenIdServerService, OpenIdServerService>();
+            services.AddDataMigration<ServerMigrations>();
 
             // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
             services.TryAddEnumerable(new[]

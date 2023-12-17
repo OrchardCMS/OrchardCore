@@ -58,9 +58,9 @@ public class Migrations : DataMigration
             return;
         }
 
-        await _secretService.GetOrCreateSecretAsync<TextSecret>(
+        await _secretService.AddSecretAsync<TextSecret>(
             name: Secrets.Password,
-            configure: secret => secret.Text = settings.Password);
+            configure: (secret, info) => secret.Text = settings.Password);
 
         var siteSettings = await _siteService.LoadSiteSettingsAsync();
         siteSettings.Alter<SmtpSettings>(nameof(SmtpSettings), settings =>

@@ -98,17 +98,17 @@ namespace OrchardCore.Email.Drivers
                 var passwordSecret = await _secretService.GetSecretAsync<TextSecret>(Secrets.Password);
                 if (!string.IsNullOrWhiteSpace(model.Password) && model.Password != passwordSecret?.Text)
                 {
-                    passwordSecret = await _secretService.GetOrCreateSecretAsync<TextSecret>(
-                        name: Secrets.Password,
-                        configure: secret => secret.Text = model.Password);
-
-                    if (passwordSecret.Text != model.Password)
+                    if (passwordSecret is null)
+                    {
+                        await _secretService.AddSecretAsync<TextSecret>(
+                            name: Secrets.Password,
+                            configure: (secret, info) => secret.Text = model.Password);
+                    }
+                    else
                     {
                         passwordSecret.Text = model.Password;
                         await _secretService.UpdateSecretAsync(passwordSecret);
                     }
-
-                    await _secretService.UpdateSecretAsync(passwordSecret);
                 }
 
                 settings = model;
