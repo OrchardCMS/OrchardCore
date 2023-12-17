@@ -41,7 +41,7 @@ public class SecretsRecipeStep : IRecipeStepHandler
 
             secretInfo.Name = kvp.Key;
 
-            await _secretService.UpdateSecretAsync(secretInfo, secret);
+            await _secretService.UpdateSecretAsync(secret, secretInfo);
         }
     }
 }

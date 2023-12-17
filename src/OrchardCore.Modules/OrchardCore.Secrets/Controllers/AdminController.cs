@@ -222,7 +222,7 @@ public class AdminController : Controller
 
         if (ModelState.IsValid)
         {
-            var secretInfo = new SecretInfo
+            var info = new SecretInfo
             {
                 Name = model.Name,
                 Store = model.SelectedStore,
@@ -230,7 +230,7 @@ public class AdminController : Controller
                 Type = model.Type,
             };
 
-            await _secretService.UpdateSecretAsync(secretInfo, secret);
+            await _secretService.UpdateSecretAsync(secret, info);
             await _notifier.SuccessAsync(H["Secret added successfully."]);
 
             return RedirectToAction(nameof(Index));
@@ -312,7 +312,7 @@ public class AdminController : Controller
 
         if (ModelState.IsValid)
         {
-            var secretInfo = new SecretInfo
+            var info = new SecretInfo
             {
                 Name = model.Name,
                 Store = model.SelectedStore,
@@ -320,7 +320,7 @@ public class AdminController : Controller
                 Type = model.Type,
             };
 
-            await _secretService.UpdateSecretAsync(secretInfo, secret, sourceName);
+            await _secretService.UpdateSecretAsync(secret, info, sourceName);
 
             return RedirectToAction(nameof(Index));
         }

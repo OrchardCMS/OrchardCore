@@ -66,16 +66,16 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email.Workflows
                 Text = "email.password",
             };
 
-            var passwordInfo = new SecretInfo() { Name = "OrchardCore.Email.Secrets.Password" };
+            var info = new SecretInfo() { Name = "OrchardCore.Email.Secrets.Password" };
             var secrets = new Dictionary<string, SecretInfo>()
             {
-                { "OrchardCore.Email.Secrets.Password", passwordInfo },
+                { "OrchardCore.Email.Secrets.Password", info },
             };
 
             var secretService = Mock.Of<ISecretService>();
 
             Mock.Get(secretService).Setup(s => s.GetSecretInfosAsync()).ReturnsAsync(secrets);
-            Mock.Get(secretService).Setup(s => s.GetSecretAsync<TextSecret>(passwordSecret.Name)).ReturnsAsync(passwordSecret);
+            Mock.Get(secretService).Setup(s => s.GetSecretAsync(passwordSecret.Name)).ReturnsAsync(passwordSecret);
 
             return secretService;
         }

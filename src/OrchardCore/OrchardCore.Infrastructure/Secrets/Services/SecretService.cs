@@ -61,64 +61,63 @@ public class SecretService : ISecretService
         return await GetSecretAsync(secretInfo);
     }
 
-    public TSecret CreateSecret<TSecret>() where TSecret : SecretBase, new() => CreateSecret(typeof(TSecret).Name) as TSecret;
-
-    public async Task<TSecret> GetSecretAsync<TSecret>(string name) where TSecret : SecretBase, new()
-        => await GetSecretAsync(name) as TSecret;
-
-    public async Task<TSecret> AddSecretAsync<TSecret>(string name, Action<TSecret, SecretInfo> configure = null)
-        where TSecret : SecretBase, new()
+    public async Task<IDictionary<string, SecretInfo>> GetSecretInfosAsync()
     {
-        var secretInfo = new SecretInfo
-        {
-            Name = name,
-            Store = nameof(DatabaseSecretStore),
-            Type = typeof(TSecret).Name,
-        };
-
-        var secret = CreateSecret<TSecret>();
-
-        secret.Name = name;
-
-        configure?.Invoke(secret, secretInfo);
-
-        await UpdateSecretAsync(secretInfo, secret);
-
-        return secret;
+        var document = await _secretInfosManager.GetSecretInfosAsync();
+        return document.SecretInfos;
     }
 
-    public async Task<TSecret> GetOrAddSecretAsync<TSecret>(string name, Action<TSecret, SecretInfo> configure = null, string sourceName = null)
-        where TSecret : SecretBase, new()
+    public async Task<IDictionary<string, SecretInfo>> LoadSecretInfosAsync()
     {
-        var secret = await GetSecretAsync<TSecret>(name);
-        if (secret is not null)
+        var document = await _secretInfosManager.LoadSecretInfosAsync();
+        return document.SecretInfos;
+    }
+
+    public IReadOnlyCollection<SecretStoreInfo> GetSecretStoreInfos() => _storeInfos;
+
+    public async Task UpdateSecretAsync(SecretBase secret, SecretInfo info = null, string source = null)
+    {
+        if (info is null)
         {
-            return secret;
+            var secretInfos = await GetSecretInfosAsync();
+            if (!secretInfos.TryGetValue(secret.Name, out info))
+            {
+                throw new InvalidOperationException($"The secret '{secret.Name}' doesn't exist.");
+            }
+        }
+        else if (!info.Name.EqualsOrdinalIgnoreCase(info.Name.ToSafeSecretName()))
+        {
+            throw new InvalidOperationException($"The secret name '{info.Name}' contains invalid characters.");
         }
 
-        var secretInfo = new SecretInfo
+        secret.Name = info.Name;
+
+        info.Store ??= nameof(DatabaseSecretStore);
+
+        var secretStore = _stores.FirstOrDefault(store => store.Name.EqualsOrdinalIgnoreCase(info.Store))
+            ?? throw new InvalidOperationException($"The specified store '{info.Store}' was not found.");
+
+        await RemoveSecretAsync(source ?? info.Name);
+
+        await _secretInfosManager.UpdateSecretInfoAsync(info.Name, info);
+
+        if (!secretStore.IsReadOnly)
         {
-            Name = name,
-            Store = nameof(DatabaseSecretStore),
-            Type = typeof(TSecret).Name,
-        };
-
-        secret = CreateSecret<TSecret>();
-
-        secret.Name = name;
-
-        configure?.Invoke(secret, secretInfo);
-
-        if (sourceName is not null && sourceName != name && (await GetSecretAsync<TSecret>(sourceName)) is not null)
-        {
-            await UpdateSecretAsync(secretInfo, secret, sourceName);
+            await secretStore.UpdateSecretAsync(info.Name, secret);
         }
-        else
+    }
+
+    public async Task<bool> RemoveSecretAsync(string name)
+    {
+        var secretInfos = await GetSecretInfosAsync();
+        if (!secretInfos.TryGetValue(name, out var secretInfo))
         {
-            await UpdateSecretAsync(secretInfo, secret);
+            return false;
         }
 
-        return secret;
+        await RemoveSecretAsync(secretInfo);
+
+        return true;
     }
 
     private async Task<SecretBase> GetSecretAsync(SecretInfo secretInfo)
@@ -142,71 +141,6 @@ public class SecretService : ISecretService
         return secret;
     }
 
-    public async Task<IDictionary<string, SecretInfo>> GetSecretInfosAsync()
-    {
-        var document = await _secretInfosManager.GetSecretInfosAsync();
-        return document.SecretInfos;
-    }
-
-    public async Task<IDictionary<string, SecretInfo>> LoadSecretInfosAsync()
-    {
-        var document = await _secretInfosManager.LoadSecretInfosAsync();
-        return document.SecretInfos;
-    }
-
-    public IReadOnlyCollection<SecretStoreInfo> GetSecretStoreInfos() => _storeInfos;
-
-    public async Task UpdateSecretAsync(SecretBase secret)
-    {
-        var secretInfos = await GetSecretInfosAsync();
-        if (!secretInfos.TryGetValue(secret.Name, out var secretInfo))
-        {
-            throw new InvalidOperationException($"The secret '{secret.Name}' doesn't exist.");
-        }
-
-        await UpdateSecretAsync(secretInfo, secret);
-    }
-
-    public async Task UpdateSecretAsync(SecretInfo secretInfo, SecretBase secret, string sourceName = null)
-    {
-        if (!string.Equals(secretInfo.Name, secretInfo.Name.ToSafeSecretName(), StringComparison.OrdinalIgnoreCase))
-        {
-            throw new InvalidOperationException("The name contains invalid characters.");
-        }
-
-        secret.Name = secretInfo.Name;
-
-        var secretStore = _stores.FirstOrDefault(store => store.Name.EqualsOrdinalIgnoreCase(secretInfo.Store));
-        if (secretStore is not null)
-        {
-            await RemoveSecretAsync(sourceName ?? secretInfo.Name);
-
-            await _secretInfosManager.UpdateSecretInfoAsync(secretInfo.Name, secretInfo);
-
-            if (!secretStore.IsReadOnly)
-            {
-                await secretStore.UpdateSecretAsync(secretInfo.Name, secret);
-            }
-        }
-        else
-        {
-            throw new InvalidOperationException($"The specified store '{secretInfo.Store}' was not found.");
-        }
-    }
-
-    public async Task<bool> RemoveSecretAsync(string name)
-    {
-        var secretInfos = await GetSecretInfosAsync();
-        if (!secretInfos.TryGetValue(name, out var secretInfo))
-        {
-            return false;
-        }
-
-        await RemoveSecretAsync(secretInfo);
-
-        return true;
-    }
-
     private async Task RemoveSecretAsync(SecretInfo secretInfo)
     {
         var secretStore = _stores.FirstOrDefault(store => store.Name.EqualsOrdinalIgnoreCase(secretInfo.Store))
@@ -214,7 +148,6 @@ public class SecretService : ISecretService
 
         await _secretInfosManager.RemoveSecretInfoAsync(secretInfo.Name);
 
-        // Updating a readonly store is a noop.
         if (secretStore.IsReadOnly)
         {
             return;

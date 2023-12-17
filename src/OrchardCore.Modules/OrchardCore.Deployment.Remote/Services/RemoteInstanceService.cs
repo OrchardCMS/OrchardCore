@@ -102,17 +102,17 @@ namespace OrchardCore.Deployment.Remote.Services
             await _secretService.GetOrAddSecretAsync<RSASecret>(
                 name: $"{Secrets.Purpose}.{clientName}.Encryption",
                 configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.Public),
-                sourceName: $"{Secrets.Purpose}.{remoteInstance.ClientName}.Encryption");
+                source: $"{Secrets.Purpose}.{remoteInstance.ClientName}.Encryption");
 
             await _secretService.GetOrAddSecretAsync<RSASecret>(
                 name: $"{Secrets.Purpose}.{clientName}.Signing",
                 configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate),
-                sourceName: $"{Secrets.Purpose}.{remoteInstance.ClientName}.Signing");
+                source: $"{Secrets.Purpose}.{remoteInstance.ClientName}.Signing");
 
             var apiKeySecret = await _secretService.GetOrAddSecretAsync<TextSecret>(
                 name: $"{Secrets.Purpose}.{clientName}.ApiKey",
                 configure: (secret, info) => secret.Text = apiKey,
-                sourceName: $"{Secrets.Purpose}.{remoteInstance.ClientName}.ApiKey");
+                source: $"{Secrets.Purpose}.{remoteInstance.ClientName}.ApiKey");
 
             if (apiKeySecret.Text != apiKey)
             {

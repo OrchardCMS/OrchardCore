@@ -8,18 +8,10 @@ namespace OrchardCore.Secrets;
 public interface ISecretService
 {
     SecretBase CreateSecret(string typeName);
-    TSecret CreateSecret<TSecret>() where TSecret : SecretBase, new();
     Task<SecretBase> GetSecretAsync(string name);
-    Task<TSecret> GetSecretAsync<TSecret>(string name) where TSecret : SecretBase, new();
-    Task<TSecret> AddSecretAsync<TSecret>(string name, Action<TSecret, SecretInfo> configure = null) where TSecret : SecretBase, new();
-
-    Task<TSecret> GetOrAddSecretAsync<TSecret>(string name, Action<TSecret, SecretInfo> configure = null, string sourceName = null)
-        where TSecret : SecretBase, new();
-
-    Task<bool> RemoveSecretAsync(string name);
     Task<IDictionary<string, SecretInfo>> GetSecretInfosAsync();
     Task<IDictionary<string, SecretInfo>> LoadSecretInfosAsync();
     IReadOnlyCollection<SecretStoreInfo> GetSecretStoreInfos();
-    Task UpdateSecretAsync(SecretBase secret);
-    Task UpdateSecretAsync(SecretInfo secretInfo, SecretBase secret, string sourceName = null);
+    Task UpdateSecretAsync(SecretBase secret, SecretInfo info = null, string source = null);
+    Task<bool> RemoveSecretAsync(string name);
 }

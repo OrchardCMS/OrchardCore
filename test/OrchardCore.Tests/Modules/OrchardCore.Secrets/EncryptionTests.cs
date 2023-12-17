@@ -38,8 +38,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
             var secretService = Mock.Of<ISecretService>();
 
             Mock.Get(secretService).Setup(s => s.GetSecretInfosAsync()).ReturnsAsync(secrets);
-            Mock.Get(secretService).Setup(s => s.GetSecretAsync<RSASecret>(encryptionSecret.Name)).ReturnsAsync(encryptionSecret);
-            Mock.Get(secretService).Setup(s => s.GetSecretAsync<RSASecret>(signingSecret.Name)).ReturnsAsync(signingSecret);
+            Mock.Get(secretService).Setup(s => s.GetSecretAsync(encryptionSecret.Name)).ReturnsAsync(encryptionSecret);
+            Mock.Get(secretService).Setup(s => s.GetSecretAsync(signingSecret.Name)).ReturnsAsync(signingSecret);
 
             return secretService;
         }
