@@ -403,7 +403,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
             {
                 token.Status = Statuses.Revoked;
 
-                _session.Save(token, checkConcurrency: false, collection: OpenIdCollection);
+                await _session.SaveAsync(token, checkConcurrency: false, collection: OpenIdCollection);
             }
 
             await _session.SaveChangesAsync();
