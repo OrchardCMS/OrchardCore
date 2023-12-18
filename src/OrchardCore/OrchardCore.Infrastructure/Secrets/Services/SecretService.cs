@@ -91,8 +91,8 @@ public class SecretService : ISecretService
         }
 
         secret.Name = info.Name;
-
         info.Store ??= nameof(DatabaseSecretStore);
+        info.Type ??= secret.GetType().Name;
 
         var secretStore = _stores.FirstOrDefault(store => store.Name.EqualsOrdinalIgnoreCase(info.Store))
             ?? throw new InvalidOperationException($"The specified store '{info.Store}' was not found.");
@@ -110,49 +110,49 @@ public class SecretService : ISecretService
     public async Task<bool> RemoveSecretAsync(string name)
     {
         var secretInfos = await GetSecretInfosAsync();
-        if (!secretInfos.TryGetValue(name, out var secretInfo))
+        if (!secretInfos.TryGetValue(name, out var info))
         {
             return false;
         }
 
-        await RemoveSecretAsync(secretInfo);
+        await RemoveSecretAsync(info);
 
         return true;
     }
 
-    private async Task<SecretBase> GetSecretAsync(SecretInfo secretInfo)
+    private async Task<SecretBase> GetSecretAsync(SecretInfo info)
     {
-        if (!_activators.TryGetValue(secretInfo.Type, out var factory) ||
+        if (!_activators.TryGetValue(info.Type, out var factory) ||
             !typeof(SecretBase).IsAssignableFrom(factory.Type))
         {
             return null;
         }
 
-        var secretStore = _stores.FirstOrDefault(store => store.Name.EqualsOrdinalIgnoreCase(secretInfo.Store));
+        var secretStore = _stores.FirstOrDefault(store => store.Name.EqualsOrdinalIgnoreCase(info.Store));
         if (secretStore is null)
         {
             return null;
         }
 
-        var secret = (await secretStore.GetSecretAsync(secretInfo.Name, factory.Type)) ?? factory.Create();
+        var secret = (await secretStore.GetSecretAsync(info.Name, factory.Type)) ?? factory.Create();
 
-        secret.Name = secretInfo.Name;
+        secret.Name = info.Name;
 
         return secret;
     }
 
-    private async Task RemoveSecretAsync(SecretInfo secretInfo)
+    private async Task RemoveSecretAsync(SecretInfo info)
     {
-        var secretStore = _stores.FirstOrDefault(store => store.Name.EqualsOrdinalIgnoreCase(secretInfo.Store))
-            ?? throw new InvalidOperationException($"The specified store '{secretInfo.Store}' was not found.");
+        var secretStore = _stores.FirstOrDefault(store => store.Name.EqualsOrdinalIgnoreCase(info.Store))
+            ?? throw new InvalidOperationException($"The specified store '{info.Store}' was not found.");
 
-        await _secretInfosManager.RemoveSecretInfoAsync(secretInfo.Name);
+        await _secretInfosManager.RemoveSecretInfoAsync(info.Name);
 
         if (secretStore.IsReadOnly)
         {
             return;
         }
 
-        await secretStore.RemoveSecretAsync(secretInfo.Name);
+        await secretStore.RemoveSecretAsync(info.Name);
     }
 }

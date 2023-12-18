@@ -11,6 +11,7 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Secrets.Models;
@@ -175,7 +176,6 @@ public class AdminController : Controller
 
         var model = new SecretInfoViewModel
         {
-            Type = type,
             Editor = await _displayManager.BuildEditorAsync(secret, _updateModelAccessor.ModelUpdater, isNew: true, "", ""),
             StoreInfos = _secretService.GetSecretStoreInfos(),
         };
@@ -199,23 +199,7 @@ public class AdminController : Controller
 
         if (ModelState.IsValid)
         {
-            if (string.IsNullOrWhiteSpace(model.Name))
-            {
-                ModelState.AddModelError(nameof(SecretInfoViewModel.Name), S["The name is mandatory."]);
-            }
-
-            if (!string.Equals(model.Name, model.Name.ToSafeSecretName(), StringComparison.OrdinalIgnoreCase))
-            {
-                ModelState.AddModelError(nameof(SecretInfoViewModel.Name), S["The name contains invalid characters."]);
-            }
-
-            var secretInfos = await _secretService.LoadSecretInfosAsync();
-
-            // Do not check the stores as a readonly store would already have the key value.
-            if (secretInfos.ContainsKey(model.Name))
-            {
-                ModelState.AddModelError(nameof(SecretInfoViewModel.Name), S["A secret with the same name already exists."]);
-            }
+            await ValidateViewModelAsync(model);
         }
 
         dynamic editor = await _displayManager.UpdateEditorAsync(secret, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "");
@@ -227,7 +211,6 @@ public class AdminController : Controller
                 Name = model.Name,
                 Store = model.SelectedStore,
                 Description = model.Description,
-                Type = model.Type,
             };
 
             await _secretService.UpdateSecretAsync(secret, info);
@@ -261,9 +244,8 @@ public class AdminController : Controller
         var model = new SecretInfoViewModel
         {
             Name = name,
-            Description = secretInfo.Description,
             SelectedStore = secretInfo.Store,
-            Type = secretInfo.Type,
+            Description = secretInfo.Description,
             Editor = await _displayManager.BuildEditorAsync(secret, _updateModelAccessor.ModelUpdater, isNew: false, "", ""),
             StoreInfos = _secretService.GetSecretStoreInfos(),
         };
@@ -279,26 +261,9 @@ public class AdminController : Controller
             return Forbid();
         }
 
-        var secretInfos = await _secretService.LoadSecretInfosAsync();
         if (ModelState.IsValid)
         {
-            if (string.IsNullOrWhiteSpace(model.Name))
-            {
-                ModelState.AddModelError(nameof(SecretInfoViewModel.Name), S["The name is mandatory."]);
-            }
-
-            if (!model.Name.Equals(sourceName, StringComparison.OrdinalIgnoreCase))
-            {
-                if (!string.Equals(model.Name, model.Name.ToSafeSecretName(), StringComparison.OrdinalIgnoreCase))
-                {
-                    ModelState.AddModelError(nameof(SecretInfoViewModel.Name), S["The name contains invalid characters."]);
-                }
-
-                if (secretInfos.ContainsKey(model.Name))
-                {
-                    ModelState.AddModelError(nameof(SecretInfoViewModel.Name), S["A secret with the same name already exists."]);
-                }
-            }
+            await ValidateViewModelAsync(model, sourceName);
         }
 
         var secret = await _secretService.GetSecretAsync(sourceName);
@@ -317,7 +282,6 @@ public class AdminController : Controller
                 Name = model.Name,
                 Store = model.SelectedStore,
                 Description = model.Description,
-                Type = model.Type,
             };
 
             await _secretService.UpdateSecretAsync(secret, info, sourceName);
@@ -350,5 +314,27 @@ public class AdminController : Controller
         await _notifier.SuccessAsync(H["Secret deleted successfully."]);
 
         return RedirectToAction(nameof(Index));
+    }
+
+    private async Task ValidateViewModelAsync(SecretInfoViewModel model, string sourceName = null)
+    {
+        if (string.IsNullOrWhiteSpace(model.Name))
+        {
+            ModelState.AddModelError(nameof(SecretInfoViewModel.Name), S["The secret name is mandatory."]);
+        }
+
+        if (sourceName is null || !model.Name.EqualsOrdinalIgnoreCase(sourceName))
+        {
+            if (!model.Name.EqualsOrdinalIgnoreCase(model.Name.ToSafeSecretName()))
+            {
+                ModelState.AddModelError(nameof(SecretInfoViewModel.Name), S["The secret name contains invalid characters."]);
+            }
+
+            var secretInfos = await _secretService.LoadSecretInfosAsync();
+            if (secretInfos.ContainsKey(model.Name))
+            {
+                ModelState.AddModelError(nameof(SecretInfoViewModel.Name), S["A secret with the same name already exists."]);
+            }
+        }
     }
 }

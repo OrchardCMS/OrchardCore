@@ -268,7 +268,7 @@ namespace OrchardCore.Email.Services
 
             await OnMessageSendingAsync(client, message);
 
-            await client.ConnectAsync(_options.Host, _options.Port, secureSocketOptions);
+            // await client.ConnectAsync(_options.Host, _options.Port, secureSocketOptions);
 
             if (_options.RequireCredentials)
             {
@@ -279,13 +279,13 @@ namespace OrchardCore.Email.Services
                 }
                 else if (!string.IsNullOrWhiteSpace(_options.UserName))
                 {
-                    var password = await _secretService.GetSecretAsync<TextSecret>(Secrets.Password);
-                    if (string.IsNullOrEmpty(password?.Text))
+                    var secret = await _secretService.GetSecretAsync<TextSecret>(Secrets.Password);
+                    if (string.IsNullOrEmpty(secret?.Text))
                     {
                         throw new InvalidOperationException("The Email Password is missing.");
                     }
 
-                    await client.AuthenticateAsync(_options.UserName, password.Text);
+                    await client.AuthenticateAsync(_options.UserName, secret.Text);
                 }
             }
 

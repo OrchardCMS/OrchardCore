@@ -40,11 +40,13 @@ public class ServerMigrations : DataMigration
         {
             await _secretService.AddSecretAsync<RSASecret>(
                 name: ServerSecrets.Encryption,
-                configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+                configure: (secret, info) =>
+                    RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
 
             await _secretService.AddSecretAsync<RSASecret>(
                 name: ServerSecrets.Signing,
-                configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+                configure: (secret, info) =>
+                    RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
         }
 
         // Shortcut other migration steps on new content definition schemas.
@@ -74,7 +76,8 @@ public class ServerMigrations : DataMigration
         {
             await _secretService.AddSecretAsync<RSASecret>(
                 name: ServerSecrets.Encryption,
-                configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+                configure: (secret, info) =>
+                    RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
         }
 
         if (settings.SigningCertificateStoreLocation is not null &&
@@ -95,7 +98,8 @@ public class ServerMigrations : DataMigration
         {
             await _secretService.AddSecretAsync<RSASecret>(
                 name: ServerSecrets.Signing,
-                configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+                configure: (secret, info) =>
+                    RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
         }
     }
 }

@@ -29,8 +29,8 @@ public class SecretsRecipeStep : IRecipeStepHandler
         var secrets = (JObject)context.Step["Secrets"];
         foreach (var kvp in secrets)
         {
-            var secretInfo = kvp.Value["SecretInfo"].ToObject<SecretInfo>();
-            var secret = _secretService.CreateSecret(secretInfo.Type);
+            var info = kvp.Value["SecretInfo"].ToObject<SecretInfo>();
+            var secret = _secretService.CreateSecret(info.Type);
 
             var protectedData = kvp.Value["SecretData"]?.ToString();
             if (!string.IsNullOrEmpty(protectedData))
@@ -39,9 +39,9 @@ public class SecretsRecipeStep : IRecipeStepHandler
                 secret = JsonConvert.DeserializeObject(Plaintext, secret.GetType()) as SecretBase;
             }
 
-            secretInfo.Name = kvp.Key;
+            info.Name = kvp.Key;
 
-            await _secretService.UpdateSecretAsync(secret, secretInfo);
+            await _secretService.UpdateSecretAsync(secret, info);
         }
     }
 }

@@ -9,7 +9,7 @@
 
     <div class="mb-3" asp-validation-class-for="Name">
         <label asp-for="Name">@T["Name"]</label>
-        <input asp-for="Name" class="form-control" autofocus required />
+        <input asp-for="Name" class="form-control" autofocus required readonly />
         <span asp-validation-for="Name"></span>
         <span class="hint">@T["The name of the secret."]</span>
     </div>

@@ -35,6 +35,8 @@ using OrchardCore.OpenId.Services.Handlers;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.Tasks;
 using OrchardCore.Recipes.Services;
+using OrchardCore.Secrets.Models;
+using OrchardCore.Secrets.Options;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
@@ -170,7 +172,6 @@ namespace OrchardCore.OpenId
                 });
 
             services.TryAddSingleton<IOpenIdServerService, OpenIdServerService>();
-            services.AddDataMigration<ServerMigrations>();
 
             // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
             services.TryAddEnumerable(new[]
@@ -197,6 +198,12 @@ namespace OrchardCore.OpenId
                 ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictServerOptions>, OpenIdServerConfiguration>(),
                 ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictServerAspNetCoreOptions>, OpenIdServerConfiguration>(),
                 ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictServerDataProtectionOptions>, OpenIdServerConfiguration>()
+            });
+
+            services.AddDataMigration<ServerMigrations>();
+            services.Configure<SecretOptions>(options =>
+            {
+                options.SecretTypes.Add(typeof(X509Secret));
             });
         }
 

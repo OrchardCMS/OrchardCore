@@ -20,11 +20,14 @@ namespace OrchardCore.Email.Services
             options.PickupDirectoryLocation = settings.PickupDirectoryLocation;
             options.Host = settings.Host;
             options.Port = settings.Port;
+            options.ProxyHost = settings.ProxyHost;
+            options.ProxyPort = settings.ProxyPort;
             options.EncryptionMethod = settings.EncryptionMethod;
             options.AutoSelectEncryption = settings.AutoSelectEncryption;
             options.RequireCredentials = settings.RequireCredentials;
             options.UseDefaultCredentials = settings.UseDefaultCredentials;
             options.UserName = settings.UserName;
+            options.IgnoreInvalidSslCertificate = settings.IgnoreInvalidSslCertificate;
         }
     }
 }

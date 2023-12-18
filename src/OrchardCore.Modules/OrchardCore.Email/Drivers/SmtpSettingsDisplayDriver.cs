@@ -95,10 +95,10 @@ namespace OrchardCore.Email.Drivers
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                var passwordSecret = await _secretService.GetSecretAsync<TextSecret>(Secrets.Password);
-                if (!string.IsNullOrWhiteSpace(model.Password) && model.Password != passwordSecret?.Text)
+                var secret = await _secretService.GetSecretAsync<TextSecret>(Secrets.Password);
+                if (!string.IsNullOrWhiteSpace(model.Password) && model.Password != secret?.Text)
                 {
-                    if (passwordSecret is null)
+                    if (secret is null)
                     {
                         await _secretService.AddSecretAsync<TextSecret>(
                             name: Secrets.Password,
@@ -106,12 +106,24 @@ namespace OrchardCore.Email.Drivers
                     }
                     else
                     {
-                        passwordSecret.Text = model.Password;
-                        await _secretService.UpdateSecretAsync(passwordSecret);
+                        secret.Text = model.Password;
+                        await _secretService.UpdateSecretAsync(secret);
                     }
                 }
 
-                settings = model;
+                settings.DefaultSender = model.DefaultSender;
+                settings.DeliveryMethod = model.DeliveryMethod;
+                settings.PickupDirectoryLocation = model.PickupDirectoryLocation;
+                settings.Host = model.Host;
+                settings.Port = model.Port;
+                settings.ProxyHost = model.ProxyHost;
+                settings.ProxyPort = model.ProxyPort;
+                settings.EncryptionMethod = model.EncryptionMethod;
+                settings.AutoSelectEncryption = model.AutoSelectEncryption;
+                settings.RequireCredentials = model.RequireCredentials;
+                settings.UseDefaultCredentials = model.UseDefaultCredentials;
+                settings.UserName = model.UserName;
+                settings.IgnoreInvalidSslCertificate = model.IgnoreInvalidSslCertificate;
 
                 // Release the tenant to apply the settings.
                 await _shellHost.ReleaseShellContextAsync(_shellSettings);
