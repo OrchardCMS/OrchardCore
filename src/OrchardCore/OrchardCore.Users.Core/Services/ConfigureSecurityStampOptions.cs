@@ -6,9 +6,9 @@ using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Users.Services;
 
-public class ConfigureSecurityStampOptions : IConfigureOptions<SecurityStampValidatorOptions>
+public class ConfigureSecurityStampOptions : IPostConfigureOptions<SecurityStampValidatorOptions>
 {
-    public void Configure(SecurityStampValidatorOptions options)
+    public void PostConfigure(string name, SecurityStampValidatorOptions options)
     {
         options.OnRefreshingPrincipal = principalContaxt =>
         {
