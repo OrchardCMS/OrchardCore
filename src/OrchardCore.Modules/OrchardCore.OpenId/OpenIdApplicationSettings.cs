@@ -44,14 +44,14 @@ namespace OrchardCore.OpenId
             descriptor.ClientId = model.ClientId;
             descriptor.ConsentType = model.ConsentType;
             descriptor.DisplayName = model.DisplayName;
-            descriptor.Type = model.Type;
+            descriptor.ClientType = model.Type;
 
             if (!string.IsNullOrEmpty(model.ClientSecret))
             {
                 descriptor.ClientSecret = model.ClientSecret;
             }
 
-            if (string.Equals(descriptor.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(descriptor.ClientType, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
             {
                 descriptor.ClientSecret = null;
             }
