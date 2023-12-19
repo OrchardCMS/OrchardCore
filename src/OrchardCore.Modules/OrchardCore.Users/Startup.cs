@@ -206,7 +206,7 @@ namespace OrchardCore.Users
                 options.LogoutPath = "/" + userOptions.Value.LogoffPath;
                 options.AccessDeniedPath = "/Error/403";
             });
-
+            services.AddTransient<IPostConfigureOptions<SecurityStampValidatorOptions>, ConfigureSecurityStampOptions>();
             services.AddDataMigration<Migrations>();
 
             services.AddScoped<IUserClaimsProvider, EmailClaimsProvider>();
