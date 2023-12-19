@@ -10,13 +10,13 @@ public class ConfigureSecurityStampOptions : IPostConfigureOptions<SecurityStamp
 {
     public void PostConfigure(string name, SecurityStampValidatorOptions options)
     {
-        options.OnRefreshingPrincipal = principalContaxt =>
+        options.OnRefreshingPrincipal = principalContext =>
         {
-            var currentIdentity = principalContaxt.CurrentPrincipal?.Identities?.FirstOrDefault();
+            var currentIdentity = principalContext.CurrentPrincipal?.Identities?.FirstOrDefault();
 
-            if (currentIdentity is not null && principalContaxt.NewPrincipal.Identities is not null)
+            if (currentIdentity is not null && principalContext.NewPrincipal.Identities is not null)
             {
-                var newIdentity = principalContaxt.NewPrincipal.Identities.First();
+                var newIdentity = principalContext.NewPrincipal.Identities.First();
 
                 foreach (var claim in currentIdentity.Claims)
                 {
