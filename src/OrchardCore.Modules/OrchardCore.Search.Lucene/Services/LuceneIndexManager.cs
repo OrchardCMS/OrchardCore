@@ -377,7 +377,7 @@ namespace OrchardCore.Search.Lucene
                 // Lucene is not thread safe on this call.
                 lock (_synLock)
                 {
-                    return LStore.FSDirectory.Open(path);
+                    return FSDirectory.Open(path);
                 }
             }
         }
