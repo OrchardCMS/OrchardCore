@@ -429,7 +429,7 @@ namespace OrchardCore.Search.Lucene
             var pool = _indexPools.GetOrAdd(indexName, n =>
             {
                 var path = new DirectoryInfo(PathExtensions.Combine(_rootPath, indexName));
-                var reader = DirectoryReader.Open(LStore.FSDirectory.Open(path));
+                var reader = DirectoryReader.Open(FSDirectory.Open(path));
                 return new IndexReaderPool(reader);
             });
 
