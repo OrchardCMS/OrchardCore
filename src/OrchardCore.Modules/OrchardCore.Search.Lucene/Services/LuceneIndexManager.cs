@@ -362,7 +362,7 @@ namespace OrchardCore.Search.Lucene
             return doc;
         }
 
-        private LStore.BaseDirectory CreateDirectory(string indexName)
+        private BaseDirectory CreateDirectory(string indexName)
         {
             lock (this)
             {
