@@ -396,7 +396,7 @@ namespace OrchardCore.Search.Lucene
                         var config = new IndexWriterConfig(LuceneSettings.DefaultVersion, analyzer)
                         {
                             OpenMode = OpenMode.CREATE_OR_APPEND,
-                            WriteLockTimeout = LStore.Lock.LOCK_POLL_INTERVAL * 3
+                            WriteLockTimeout = LuceneLock.LOCK_POLL_INTERVAL * 3
                         };
 
                         writer = new IndexWriterWrapper(directory, config);
