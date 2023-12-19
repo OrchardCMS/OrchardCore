@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>OrchardCore.Search.Azure.CognitiveSearch</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Azure Cognitive Search Core</Title>
+    <Description>
+      $(OCCMSDescription)
+
+      Core Implementation for Azure Cognitive Search module.
+    </Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Search.Documents" />
+    <PackageReference Include="Microsoft.Extensions.Azure" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.ContentLocalization.Abstractions\OrchardCore.ContentLocalization.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.ContentManagement.Abstractions\OrchardCore.ContentManagement.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.ContentPreview.Abstractions\OrchardCore.ContentPreview.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Contents.Core\OrchardCore.Contents.Core.csproj" />
+    <ProjectReference Include="..\OrchardCore.Indexing.Abstractions\OrchardCore.Indexing.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Search.Abstractions\OrchardCore.Search.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Search.Azure.CognitiveSearch.Abstractions\OrchardCore.Search.Azure.CognitiveSearch.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

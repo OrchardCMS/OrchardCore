@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>OrchardCore.Search.Azure.CognitiveSearch</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Azure Cognitive Search Search Abstractions</Title>
+    <Description>
+      $(OCCMSDescription)
+
+      Abstractions for Azure Cognitive Search.
+    </Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Abstractions</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+</Project>
