@@ -156,7 +156,7 @@ public class AzureEmailService(
         List<EmailAddress> bccRecipients = null;
         if (recipients.Bcc.Count > 0)
         {
-            ccRecipients = [.. recipients.Bcc.Select(r => new EmailAddress(r))];
+            bccRecipients = [.. recipients.Bcc.Select(r => new EmailAddress(r))];
         }
 
         var content = new EmailContent(message.Subject);
