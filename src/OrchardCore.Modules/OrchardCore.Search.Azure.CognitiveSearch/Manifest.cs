@@ -17,14 +17,3 @@ using OrchardCore.Modules.Manifest;
     ],
     Category = "Search"
 )]
-
-[assembly: Feature(
-    Id = "OrchardCore.Search.Azure.CognitiveSearch.Worker",
-    Name = "Azure Cognitive Search Worker",
-    Description = "Provides a background task to keep indices in sync with other instances.",
-    Dependencies =
-    [
-        "OrchardCore.Search.Elasticsearch",
-    ],
-    Category = "Search"
-)]
