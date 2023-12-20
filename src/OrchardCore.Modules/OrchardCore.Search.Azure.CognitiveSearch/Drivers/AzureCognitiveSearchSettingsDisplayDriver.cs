@@ -13,7 +13,6 @@ using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Search.Azure.CognitiveSearch.Models;
 using OrchardCore.Search.Azure.CognitiveSearch.Services;
 using OrchardCore.Search.Azure.CognitiveSearch.ViewModels;
-using OrchardCore.Search.Elasticsearch;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Azure.CognitiveSearch.Drivers;

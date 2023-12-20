@@ -5,23 +5,17 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Azure.CognitiveSearch.Models;
 using OrchardCore.Search.Azure.CognitiveSearch.Services;
-using OrchardCore.Search.Elasticsearch;
 using OrchardCore.Security;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Azure.CognitiveSearch.Handlers;
 
-public class AzureCognitiveSearchAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
+public class AzureCognitiveSearchAuthorizationHandler(IServiceProvider serviceProvider) : AuthorizationHandler<PermissionRequirement>
 {
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IServiceProvider _serviceProvider = serviceProvider;
 
     private IAuthorizationService _authorizationService;
     private ISiteService _siteService;
-
-    public AzureCognitiveSearchAuthorizationHandler(IServiceProvider serviceProvider)
-    {
-        _serviceProvider = serviceProvider;
-    }
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
     {

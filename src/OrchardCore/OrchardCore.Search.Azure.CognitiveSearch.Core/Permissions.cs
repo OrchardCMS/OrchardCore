@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Search.Azure.CognitiveSearch.Services;
-using OrchardCore.Search.Elasticsearch;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Search.Azure.CognitiveSearch;

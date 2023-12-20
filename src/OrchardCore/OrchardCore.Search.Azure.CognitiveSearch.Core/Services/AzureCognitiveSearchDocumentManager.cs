@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Azure.Search.Documents;
 using Azure.Search.Documents.Models;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Contents.Indexing;
 using OrchardCore.Indexing;
 
 namespace OrchardCore.Search.Azure.CognitiveSearch.Services;
@@ -12,13 +11,16 @@ namespace OrchardCore.Search.Azure.CognitiveSearch.Services;
 public class AzureCognitiveSearchDocumentManager
 {
     private readonly SearchClientFactory _searchClientFactory;
+    private readonly AzureCognitiveSearchIndexManager _indexManager;
     private readonly ILogger _logger;
 
     public AzureCognitiveSearchDocumentManager(
         SearchClientFactory searchClientFactory,
+        AzureCognitiveSearchIndexManager indexManager,
         ILogger<AzureCognitiveSearchDocumentManager> logger)
     {
         _searchClientFactory = searchClientFactory;
+        _indexManager = indexManager;
         _logger = logger;
     }
 
@@ -26,12 +28,7 @@ public class AzureCognitiveSearchDocumentManager
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(searchText, nameof(searchText));
 
-        var client = _searchClientFactory.Create(indexName);
-
-        if (client is null)
-        {
-            throw new Exception("Endpoint is missing from Azure Cognative Search Settings");
-        }
+        var client = GetSearchClient(indexName);
 
         var searchResult = await client.SearchAsync<SearchDocument>(searchText, searchOptions);
         var docs = new List<SearchDocument>();
@@ -67,12 +64,7 @@ public class AzureCognitiveSearchDocumentManager
         ArgumentException.ThrowIfNullOrWhiteSpace(searchText, nameof(searchText));
         ArgumentNullException.ThrowIfNull(action);
 
-        var client = _searchClientFactory.Create(indexName);
-
-        if (client is null)
-        {
-            throw new Exception("Endpoint is missing from Azure Cognative Search Settings");
-        }
+        var client = GetSearchClient(indexName);
 
         var searchResult = await client.SearchAsync<SearchDocument>(searchText, searchOptions);
         var counter = 0L;
@@ -88,15 +80,10 @@ public class AzureCognitiveSearchDocumentManager
 
     public async Task DeleteDocumentsAsync(string indexName, IEnumerable<string> contentItemIds)
     {
-        var client = _searchClientFactory.Create(indexName);
-
-        if (client is null)
-        {
-            return;
-        }
-
         try
         {
+            var client = GetSearchClient(indexName);
+
             await client.DeleteDocumentsAsync(IndexingConstants.ContentItemIdKey, contentItemIds);
         }
         catch (Exception ex)
@@ -132,7 +119,7 @@ public class AzureCognitiveSearchDocumentManager
 
         try
         {
-            var client = _searchClientFactory.Create(indexName);
+            var client = GetSearchClient(indexName);
 
             await client.DeleteDocumentsAsync(IndexingConstants.ContentItemIdKey, contentItemIds);
         }
@@ -144,15 +131,10 @@ public class AzureCognitiveSearchDocumentManager
 
     public async Task MergeOrUploadDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments)
     {
-        var client = _searchClientFactory.Create(indexName);
-
-        if (client is null)
-        {
-            return;
-        }
-
         try
         {
+            var client = GetSearchClient(indexName);
+
             await client.MergeOrUploadDocumentsAsync(CreateSearchDocuments(indexDocuments));
         }
         catch (Exception ex)
@@ -163,15 +145,10 @@ public class AzureCognitiveSearchDocumentManager
 
     public async Task UploadDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments)
     {
-        var client = _searchClientFactory.Create(indexName);
-
-        if (client is null)
-        {
-            return;
-        }
-
         try
         {
+            var client = GetSearchClient(indexName);
+
             await client.UploadDocumentsAsync(CreateSearchDocuments(indexDocuments));
         }
         catch (Exception ex)
@@ -279,4 +256,17 @@ public class AzureCognitiveSearchDocumentManager
         doc[key] = values;
     }
 
+    private SearchClient GetSearchClient(string indexName)
+    {
+        var fullIndexName = _indexManager.GetFullIndexName(indexName);
+
+        var client = _searchClientFactory.Create(fullIndexName);
+
+        if (client is null)
+        {
+            throw new Exception("Endpoint is missing from Azure Cognative Search Settings");
+        }
+
+        return client;
+    }
 }

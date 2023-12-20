@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Search.Elasticsearch;
+namespace OrchardCore.Search.Azure.CognitiveSearch;
 
 public class AzureCognitiveSearchIndexPermissionHelper
 {

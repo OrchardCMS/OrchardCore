@@ -9,6 +9,4 @@ public class AzureCognitiveSearchSettings
     public string[] DefaultSearchFields { get; set; } = FullTextField;
 
     public string SearchIndex { get; set; }
-
-    public string IndexAnalyzerName { get; set; }
 }

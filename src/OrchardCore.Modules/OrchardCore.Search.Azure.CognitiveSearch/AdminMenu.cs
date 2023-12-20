@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 using OrchardCore.Search.Azure.CognitiveSearch.Drivers;
-using OrchardCore.Search.Elasticsearch;
 
 namespace OrchardCore.Search.Azure.CognitiveSearch;
 
