@@ -93,7 +93,7 @@ public class AzureEmailService(
     };
 
     /// <inheritdoc/>
-    public async override Task<EmailResult> SendAsync(MailMessage message)
+    public override async Task<EmailResult> SendAsync(MailMessage message)
     {
         ArgumentNullException.ThrowIfNull(message);
 
