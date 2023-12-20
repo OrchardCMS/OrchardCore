@@ -88,7 +88,7 @@ public class AzureEmailService(
         { ".xlsb", "application/vnd.ms-excel.sheet.binary.macroEnabled.12" },
         { ".xlsm", "application/vnd.ms-excel.sheet.macroEnabled.12" },
         { ".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" },
-        { ".xml", "application/xml, text/xml" },
+        { ".xml", "application/xml" },
         { ".zip", "application/zip" }
     };
 
