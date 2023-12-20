@@ -31,7 +31,6 @@
     <ProjectReference Include="..\OrchardCore.Indexing.Abstractions\OrchardCore.Indexing.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Search.Abstractions\OrchardCore.Search.Abstractions.csproj" />
-    <ProjectReference Include="..\OrchardCore.Search.Azure.CognitiveSearch.Abstractions\OrchardCore.Search.Azure.CognitiveSearch.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>
