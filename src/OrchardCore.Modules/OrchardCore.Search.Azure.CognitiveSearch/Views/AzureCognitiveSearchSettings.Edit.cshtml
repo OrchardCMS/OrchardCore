@@ -1,3 +1,4 @@
+@using OrchardCore.Search.Azure.CognitiveSearch
 @using OrchardCore.Search.Azure.CognitiveSearch.Models
 @using OrchardCore.Search.Azure.CognitiveSearch.ViewModels
 
@@ -21,5 +22,5 @@
     <label asp-for="SearchFields" class="form-label">@T["Default searched fields"]</label>
     <input asp-for="SearchFields" class="form-control" />
     <span asp-validation-for="SearchFields"></span>
-    <span class="hint">@T["A comma separated list of fields to use during search. The default value is {0}.", "<code>" + AzureCognitiveSearchSettings.FullTextField + "</code>"]</span>
+    <span class="hint">@T["A comma separated list of fields to use during search. Leave blank to search all fields."]</span>
 </div>

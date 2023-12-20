@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Azure.Search.Documents;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Contents.Indexing;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Azure.CognitiveSearch.Models;
 using OrchardCore.Settings;
@@ -42,7 +41,7 @@ public class AzureCognitiveSearchService : ISearchService
         var result = new SearchResult();
         if (string.IsNullOrEmpty(index))
         {
-            _logger.LogWarning("Azure Cognitive Search: Couldn't execute search. No serach provider settings was defined.");
+            _logger.LogWarning("Azure Cognitive Search: Couldn't execute search. No search provider settings was defined.");
 
             return result;
         }
@@ -52,7 +51,7 @@ public class AzureCognitiveSearchService : ISearchService
 
         if (searchSettings.DefaultSearchFields?.Length == 0)
         {
-            _logger.LogWarning("Azure Cognitive Search: Couldn't execute search. No serach provider settings was defined.");
+            _logger.LogWarning("Azure Cognitive Search: Couldn't execute search. No search provider settings was defined.");
 
             return result;
         }
@@ -66,18 +65,21 @@ public class AzureCognitiveSearchService : ISearchService
                 Size = size,
             };
 
-            foreach (var field in searchSettings.DefaultSearchFields)
+            if (searchSettings.DefaultSearchFields?.Length > 0)
             {
-                searchOptions.SearchFields.Add(field);
+                foreach (var field in searchSettings.DefaultSearchFields)
+                {
+                    searchOptions.SearchFields.Add(field);
+                }
             }
 
-            await _searchDocumentManager.SearchAsync(indexName, "*", (doc) =>
+            await _searchDocumentManager.SearchAsync(index, term, (doc) =>
             {
-                if (doc.TryGetValue(IndexingConstants.ContentItemIdKey, out var contentItemId))
+                if (doc.TryGetValue(CognitiveIndexingConstants.ContentItemIdKey, out var contentItemId))
                 {
                     result.ContentItemIds.Add(contentItemId.ToString());
                 }
-            });
+            }, searchOptions);
 
             result.Success = true;
         }

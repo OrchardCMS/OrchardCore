@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace OrchardCore.Search.Azure.CognitiveSearch.Models;
 
-public class CognitiveSearchSettings
+public class CognitiveSearchIndexSettings
 {
     [JsonIgnore]
     public string IndexName { get; set; }

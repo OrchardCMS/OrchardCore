@@ -12,13 +12,13 @@ public class CognitiveSearchIndexSettingsService
     /// <summary>
     /// Loads the index settings document from the store for updating and that should not be cached.
     /// </summary>
-    public Task<CognitiveSearchSettingsDocument> LoadDocumentAsync()
+    public Task<CognitiveSearchIndexSettingsDocument> LoadDocumentAsync()
         => DocumentManager.GetOrCreateMutableAsync();
 
     /// <summary>
     /// Gets the index settings document from the cache for sharing and that should not be updated.
     /// </summary>
-    public async Task<CognitiveSearchSettingsDocument> GetDocumentAsync()
+    public async Task<CognitiveSearchIndexSettingsDocument> GetDocumentAsync()
     {
         var document = await DocumentManager.GetOrCreateImmutableAsync();
 
@@ -30,10 +30,10 @@ public class CognitiveSearchIndexSettingsService
         return document;
     }
 
-    public async Task<IEnumerable<CognitiveSearchSettings>> GetSettingsAsync()
+    public async Task<IEnumerable<CognitiveSearchIndexSettings>> GetSettingsAsync()
         => (await GetDocumentAsync()).IndexSettings.Values;
 
-    public async Task<CognitiveSearchSettings> GetSettingsAsync(string indexName)
+    public async Task<CognitiveSearchIndexSettings> GetSettingsAsync(string indexName)
     {
         var document = await GetDocumentAsync();
 
@@ -45,7 +45,7 @@ public class CognitiveSearchIndexSettingsService
         return null;
     }
 
-    public async Task UpdateIndexAsync(CognitiveSearchSettings settings)
+    public async Task UpdateIndexAsync(CognitiveSearchIndexSettings settings)
     {
         var document = await LoadDocumentAsync();
         document.IndexSettings[settings.IndexName] = settings;
@@ -59,6 +59,6 @@ public class CognitiveSearchIndexSettingsService
         await DocumentManager.UpdateAsync(document);
     }
 
-    private static IDocumentManager<CognitiveSearchSettingsDocument> DocumentManager
-        => ShellScope.Services.GetRequiredService<IDocumentManager<CognitiveSearchSettingsDocument>>();
+    private static IDocumentManager<CognitiveSearchIndexSettingsDocument> DocumentManager
+        => ShellScope.Services.GetRequiredService<IDocumentManager<CognitiveSearchIndexSettingsDocument>>();
 }

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Azure.Search.Documents;
 using Azure.Search.Documents.Models;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Contents.Indexing;
 using OrchardCore.Indexing;
 
 namespace OrchardCore.Search.Azure.CognitiveSearch.Services;
@@ -11,16 +12,27 @@ namespace OrchardCore.Search.Azure.CognitiveSearch.Services;
 public class AzureCognitiveSearchDocumentManager
 {
     private readonly SearchClientFactory _searchClientFactory;
-    private readonly AzureCognitiveSearchIndexManager _indexManager;
+    private readonly AzureCognitiveSearchIndexManager _searchIndexManager;
     private readonly ILogger _logger;
+    private readonly static Dictionary<string, string> _fieldMaps = new()
+    {
+        { IndexingConstants.OwnerKey, CognitiveIndexingConstants.OwnerKey },
+        { IndexingConstants.FullTextKey, CognitiveIndexingConstants.FullTextKey },
+        { IndexingConstants.DisplayTextAnalyzedKey, CognitiveIndexingConstants.DisplayTextAnalyzedKey },
+        { IndexingConstants.ContentTypeKey, CognitiveIndexingConstants.ContentTypeKey },
+        { IndexingConstants.LatestKey, CognitiveIndexingConstants.LatestKey },
+        { IndexingConstants.PublishedUtcKey, CognitiveIndexingConstants.PublishedUtcKey },
+        { IndexingConstants.CreatedUtcKey, CognitiveIndexingConstants.CreatedUtcKey },
+        { IndexingConstants.ModifiedUtcKey, CognitiveIndexingConstants.ModifiedUtcKey },
+    };
 
     public AzureCognitiveSearchDocumentManager(
         SearchClientFactory searchClientFactory,
-        AzureCognitiveSearchIndexManager indexManager,
+        AzureCognitiveSearchIndexManager searchIndexManager,
         ILogger<AzureCognitiveSearchDocumentManager> logger)
     {
         _searchClientFactory = searchClientFactory;
-        _indexManager = indexManager;
+        _searchIndexManager = searchIndexManager;
         _logger = logger;
     }
 
@@ -40,10 +52,9 @@ public class AzureCognitiveSearchDocumentManager
         return docs;
     }
 
-    public Task<IEnumerable<SearchDocument>> SearchAsync(string indexName, string searchText, int start, int size, string[] fields)
+    public Task<IEnumerable<SearchDocument>> SearchAsync(string indexName, string searchText, int start, int size, string[] fields = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(searchText, nameof(searchText));
-        ArgumentNullException.ThrowIfNull(fields, nameof(fields));
 
         var searchOptions = new SearchOptions()
         {
@@ -51,9 +62,12 @@ public class AzureCognitiveSearchDocumentManager
             Size = size,
         };
 
-        foreach (var field in fields)
+        if (fields?.Length > 0)
         {
-            searchOptions.SearchFields.Add(field);
+            foreach (var field in fields)
+            {
+                searchOptions.SearchFields.Add(field);
+            }
         }
 
         return SearchAsync(indexName, searchText, searchOptions);
@@ -84,11 +98,11 @@ public class AzureCognitiveSearchDocumentManager
         {
             var client = GetSearchClient(indexName);
 
-            await client.DeleteDocumentsAsync(IndexingConstants.ContentItemIdKey, contentItemIds);
+            await client.DeleteDocumentsAsync(CognitiveIndexingConstants.ContentItemIdKey, contentItemIds);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unable to delete documents from Azure Cognative Search Settings");
+            _logger.LogError(ex, "Unable to delete documents from Azure Cognitive Search Settings");
         }
     }
 
@@ -101,7 +115,7 @@ public class AzureCognitiveSearchDocumentManager
             // Match-all documents.
             var totalRecords = SearchAsync(indexName, "*", (doc) =>
             {
-                if (doc.TryGetValue(IndexingConstants.ContentItemIdKey, out var contentItemId))
+                if (doc.TryGetValue(CognitiveIndexingConstants.ContentItemIdKey, out var contentItemId))
                 {
                     contentItemIds.Add(contentItemId.ToString());
                 }
@@ -109,7 +123,7 @@ public class AzureCognitiveSearchDocumentManager
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unable to search documents using Azure Cognative Search");
+            _logger.LogError(ex, "Unable to search documents using Azure Cognitive Search");
         }
 
         if (contentItemIds.Count == 0)
@@ -121,11 +135,11 @@ public class AzureCognitiveSearchDocumentManager
         {
             var client = GetSearchClient(indexName);
 
-            await client.DeleteDocumentsAsync(IndexingConstants.ContentItemIdKey, contentItemIds);
+            await client.DeleteDocumentsAsync(CognitiveIndexingConstants.ContentItemIdKey, contentItemIds);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unable to delete documents from Azure Cognative Search Settings");
+            _logger.LogError(ex, "Unable to delete documents from Azure Cognitive Search Settings");
         }
     }
 
@@ -135,11 +149,13 @@ public class AzureCognitiveSearchDocumentManager
         {
             var client = GetSearchClient(indexName);
 
-            await client.MergeOrUploadDocumentsAsync(CreateSearchDocuments(indexDocuments));
+            var docs = CreateSearchDocuments(indexDocuments);
+
+            var response = await client.MergeOrUploadDocumentsAsync(docs);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unable to delete documents from Azure Cognative Search Settings");
+            _logger.LogError(ex, "Unable to delete documents from Azure Cognitive Search Settings");
         }
     }
 
@@ -149,11 +165,13 @@ public class AzureCognitiveSearchDocumentManager
         {
             var client = GetSearchClient(indexName);
 
-            await client.UploadDocumentsAsync(CreateSearchDocuments(indexDocuments));
+            var docs = CreateSearchDocuments(indexDocuments);
+
+            await client.UploadDocumentsAsync(docs);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unable to delete documents from Azure Cognative Search Settings");
+            _logger.LogError(ex, "Unable to delete documents from Azure Cognitive Search Settings");
         }
     }
 
@@ -169,18 +187,34 @@ public class AzureCognitiveSearchDocumentManager
     {
         var doc = new SearchDocument()
             {
-                { IndexingConstants.ContentItemIdKey, documentIndex.ContentItemId },
-                { IndexingConstants.ContentItemVersionIdKey, documentIndex.ContentItemVersionId }
+                { CognitiveIndexingConstants.ContentItemIdKey, documentIndex.ContentItemId },
+                { CognitiveIndexingConstants.ContentItemVersionIdKey, documentIndex.ContentItemVersionId },
             };
+
+        var properties = new List<KeyValuePair<string, string>>();
 
         foreach (var entry in documentIndex.Entries)
         {
+            if (!_fieldMaps.TryGetValue(entry.Name, out var key))
+            {
+                var stringValue = entry.Value?.ToString();
+
+                if (string.IsNullOrEmpty(stringValue))
+                {
+                    continue;
+                }
+
+                properties.Add(new KeyValuePair<string, string>(entry.Name.Replace(".", "__"), stringValue));
+
+                continue;
+            }
+
             switch (entry.Type)
             {
                 case DocumentIndex.Types.Boolean:
                     if (entry.Value is bool boolValue)
                     {
-                        AddValue(doc, entry.Name, boolValue);
+                        AddValue(doc, key, boolValue);
                     }
                     break;
 
@@ -188,11 +222,11 @@ public class AzureCognitiveSearchDocumentManager
 
                     if (entry.Value is DateTimeOffset offsetValue)
                     {
-                        AddValue(doc, entry.Name, offsetValue);
+                        AddValue(doc, key, offsetValue);
                     }
                     else if (entry.Value is DateTime dateTimeValue)
                     {
-                        AddValue(doc, entry.Name, dateTimeValue.ToUniversalTime());
+                        AddValue(doc, key, dateTimeValue.ToUniversalTime());
                     }
 
                     break;
@@ -200,7 +234,7 @@ public class AzureCognitiveSearchDocumentManager
                 case DocumentIndex.Types.Integer:
                     if (entry.Value != null && long.TryParse(entry.Value.ToString(), out var value))
                     {
-                        AddValue(doc, entry.Name, value);
+                        AddValue(doc, key, value);
                     }
 
                     break;
@@ -208,7 +242,7 @@ public class AzureCognitiveSearchDocumentManager
                 case DocumentIndex.Types.Number:
                     if (entry.Value != null)
                     {
-                        AddValue(doc, entry.Name, Convert.ToDouble(entry.Value));
+                        AddValue(doc, key, Convert.ToDouble(entry.Value));
                     }
                     break;
 
@@ -219,12 +253,14 @@ public class AzureCognitiveSearchDocumentManager
 
                         if (!string.IsNullOrEmpty(stringValue))
                         {
-                            AddValue(doc, entry.Name, stringValue);
+                            AddValue(doc, key, stringValue);
                         }
                     }
                     break;
             }
         }
+
+        doc[CognitiveIndexingConstants.Properties] = properties;
 
         return doc;
     }
@@ -258,13 +294,13 @@ public class AzureCognitiveSearchDocumentManager
 
     private SearchClient GetSearchClient(string indexName)
     {
-        var fullIndexName = _indexManager.GetFullIndexName(indexName);
+        var fullIndexName = _searchIndexManager.GetFullIndexName(indexName);
 
         var client = _searchClientFactory.Create(fullIndexName);
 
         if (client is null)
         {
-            throw new Exception("Endpoint is missing from Azure Cognative Search Settings");
+            throw new Exception("Endpoint is missing from Azure Cognitive Search Settings");
         }
 
         return client;

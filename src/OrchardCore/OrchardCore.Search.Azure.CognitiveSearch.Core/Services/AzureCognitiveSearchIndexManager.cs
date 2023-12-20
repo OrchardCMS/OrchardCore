@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Azure;
@@ -21,10 +22,10 @@ public class AzureCognitiveSearchIndexManager(
     private readonly ILogger _logger = logger;
     private readonly ShellSettings _shellSettings = shellSettings;
     private readonly AzureCognitiveSearchOptions _azureCognitiveSearchOptions = azureCognitiveSearchOptions.Value;
+
     private string _indexPrefix;
 
-
-    public async Task<bool> CreateAsync(CognitiveSearchSettings settings)
+    public async Task<bool> CreateAsync(CognitiveSearchIndexSettings settings)
     {
         if (await ExistsAsync(settings.IndexName))
         {
@@ -35,43 +36,79 @@ public class AzureCognitiveSearchIndexManager(
         {
             var fullIndexName = GetFullIndexName(settings.IndexName);
 
+            var searchFields = new List<SearchField>()
+            {
+                new SimpleField(CognitiveIndexingConstants.ContentItemIdKey, SearchFieldDataType.String)
+                {
+                    IsKey = true,
+                    IsFilterable = true,
+                    IsSortable = true,
+                },
+                new SimpleField(CognitiveIndexingConstants.ContentItemVersionIdKey, SearchFieldDataType.String)
+                {
+                    IsFilterable = true,
+                    IsSortable = true,
+                },
+                new SimpleField(CognitiveIndexingConstants.OwnerKey, SearchFieldDataType.String)
+                {
+                    IsFilterable = true,
+                    IsSortable = true,
+                },
+                new SimpleField(CognitiveIndexingConstants.CreatedUtcKey, SearchFieldDataType.DateTimeOffset)
+                {
+                    IsFilterable = true,
+                    IsSortable = true,
+                },
+                new SimpleField(CognitiveIndexingConstants.LatestKey, SearchFieldDataType.Boolean)
+                {
+                    IsFilterable = true,
+                    IsSortable = true,
+                },
+                new SimpleField(CognitiveIndexingConstants.ModifiedUtcKey, SearchFieldDataType.DateTimeOffset)
+                {
+                    IsFilterable = true,
+                    IsSortable = true,
+                },
+                new SimpleField(CognitiveIndexingConstants.PublishedUtcKey, SearchFieldDataType.DateTimeOffset)
+                {
+                    IsFilterable = true,
+                    IsSortable = true,
+                },
+                new SimpleField(CognitiveIndexingConstants.ContentTypeKey, SearchFieldDataType.String)
+                {
+                    IsFilterable = true,
+                    IsSortable = true,
+                },
+                new SearchableField(CognitiveIndexingConstants.FullTextKey)
+                {
+                    AnalyzerName = settings.AnalyzerName,
+                },
+                new SearchableField(CognitiveIndexingConstants.DisplayTextAnalyzedKey)
+                {
+                    AnalyzerName = settings.AnalyzerName,
+                },
+                new ComplexField(CognitiveIndexingConstants.Properties, true)
+                {
+                    Fields =
+                    {
+                        new SimpleField("Key", SearchFieldDataType.String)
+                        {
+                             IsFilterable = true,
+                        },
+                        new SearchableField("Value")
+                        {
+                            AnalyzerName = settings.AnalyzerName,
+                        },
+                    }
+                },
+            };
+
             var searchIndex = new SearchIndex(fullIndexName)
             {
-                Fields =
-                {
-                    new SimpleField(IndexingConstants.ContentItemIdKey, SearchFieldDataType.String)
-                    {
-                        IsKey = true,
-                        IsFilterable = true,
-                        IsSortable = true,
-                    },
-                    new SimpleField(IndexingConstants.ContentItemVersionIdKey, SearchFieldDataType.String)
-                    {
-                        IsFilterable = true,
-                        IsSortable = true,
-                    },
-                    new SimpleField(IndexingConstants.OwnerKey, SearchFieldDataType.String)
-                    {
-                        IsFilterable = true,
-                        IsSortable = true,
-                    },
-                    new SearchableField(IndexingConstants.FullTextKey)
-                    {
-                        AnalyzerName = settings.AnalyzerName,
-                    },
-                    new SearchableField(IndexingConstants.DisplayTextKey)
-                    {
-                        AnalyzerName = settings.AnalyzerName,
-                    },
-                    new SimpleField(IndexingConstants.ContentTypeKey, SearchFieldDataType.String)
-                    {
-                        IsFilterable = true,
-                        IsSortable = true,
-                    },
-                },
+                Fields = searchFields,
                 Suggesters =
                 {
-                    new SearchSuggester("sg", IndexingConstants.FullTextKey),
+                    new SearchSuggester("sg", CognitiveIndexingConstants.FullTextKey),
                 },
             };
 
@@ -81,7 +118,7 @@ public class AzureCognitiveSearchIndexManager(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unable to create index in Azure Cognitive Serach.");
+            _logger.LogError(ex, "Unable to create index in Azure Cognitive Search.");
         }
 
         return false;
@@ -103,12 +140,12 @@ public class AzureCognitiveSearchIndexManager(
         {
             if (e.Status != 404)
             {
-                _logger.LogError(e, "Unable to get index from Azure Cognitive Serach.");
+                _logger.LogError(e, "Unable to get index from Azure Cognitive Search.");
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unable to get index from Azure Cognitive Serach.");
+            _logger.LogError(ex, "Unable to get index from Azure Cognitive Search.");
         }
 
         return null;
@@ -132,7 +169,7 @@ public class AzureCognitiveSearchIndexManager(
         return true;
     }
 
-    private bool TryGetSafePrefix(string indexName, out string safePrefix)
+    private static bool TryGetSafePrefix(string indexName, out string safePrefix)
     {
         if (string.IsNullOrWhiteSpace(indexName))
         {
@@ -205,7 +242,7 @@ public class AzureCognitiveSearchIndexManager(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unable to delete index from Azure Cognitive Serach.");
+            _logger.LogError(ex, "Unable to delete index from Azure Cognitive Search.");
         }
 
         return false;

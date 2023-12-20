@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace OrchardCore.Search.Azure.CognitiveSearch.ViewModels;
 
-public class CognativeSearchSettingsViewModel
+public class CognitiveSearchSettingsViewModel
 {
     public string IndexName { get; set; }
 

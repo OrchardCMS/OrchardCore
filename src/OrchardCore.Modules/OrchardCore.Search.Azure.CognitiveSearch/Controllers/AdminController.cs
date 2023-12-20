@@ -173,7 +173,7 @@ public class AdminController : Controller
         }
 
         var IsCreate = string.IsNullOrWhiteSpace(indexName);
-        var settings = new CognitiveSearchSettings();
+        var settings = new CognitiveSearchIndexSettings();
 
         if (!IsCreate)
         {
@@ -185,7 +185,7 @@ public class AdminController : Controller
             }
         }
 
-        var model = new CognativeSearchSettingsViewModel
+        var model = new CognitiveSearchSettingsViewModel
         {
             IsCreate = IsCreate,
             IndexName = IsCreate ? string.Empty : settings.IndexName,
@@ -206,7 +206,7 @@ public class AdminController : Controller
     }
 
     [HttpPost, ActionName("Edit")]
-    public async Task<ActionResult> EditPost(CognativeSearchSettingsViewModel model, string[] indexedContentTypes)
+    public async Task<ActionResult> EditPost(CognitiveSearchSettingsViewModel model, string[] indexedContentTypes)
     {
         if (!await _authorizationService.AuthorizeAsync(User, AzureCognitiveSearchIndexPermissionHelper.ManageAzureCognitiveSearchIndexes))
         {
@@ -219,14 +219,14 @@ public class AdminController : Controller
         {
             if (await _azureCognitiveSearchIndexManager.ExistsAsync(model.IndexName))
             {
-                ModelState.AddModelError(nameof(CognativeSearchSettingsViewModel.IndexName), S["An index named '{0}' already exists.", model.IndexName]);
+                ModelState.AddModelError(nameof(CognitiveSearchSettingsViewModel.IndexName), S["An index named '{0}' already exists.", model.IndexName]);
             }
         }
         else
         {
             if (!await _azureCognitiveSearchIndexManager.ExistsAsync(model.IndexName))
             {
-                ModelState.AddModelError(nameof(CognativeSearchSettingsViewModel.IndexName), S["An index named '{0}' doesn't exist.", model.IndexName]);
+                ModelState.AddModelError(nameof(CognitiveSearchSettingsViewModel.IndexName), S["An index named '{0}' doesn't exist.", model.IndexName]);
             }
         }
 
@@ -241,7 +241,7 @@ public class AdminController : Controller
         {
             try
             {
-                var settings = new CognitiveSearchSettings
+                var settings = new CognitiveSearchIndexSettings
                 {
                     IndexName = model.IndexName,
                     AnalyzerName = model.AnalyzerName,
@@ -286,7 +286,7 @@ public class AdminController : Controller
         {
             try
             {
-                var settings = new CognitiveSearchSettings
+                var settings = new CognitiveSearchIndexSettings
                 {
                     IndexName = model.IndexName,
                     AnalyzerName = model.AnalyzerName,
@@ -325,7 +325,7 @@ public class AdminController : Controller
     }
 
     [HttpPost]
-    public async Task<ActionResult> Delete(CognativeSearchSettingsViewModel model)
+    public async Task<ActionResult> Delete(CognitiveSearchSettingsViewModel model)
     {
         if (!await _authorizationService.AuthorizeAsync(User, AzureCognitiveSearchIndexPermissionHelper.ManageAzureCognitiveSearchIndexes))
         {
@@ -347,7 +347,7 @@ public class AdminController : Controller
         return RedirectToAction("Index");
     }
 
-    private void PopulateMenuOptions(CognativeSearchSettingsViewModel model)
+    private void PopulateMenuOptions(CognitiveSearchSettingsViewModel model)
     {
         model.Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
             .Select(x => new SelectListItem { Text = $"{x.Name} ({x.DisplayName})", Value = x.Name });
@@ -356,20 +356,20 @@ public class AdminController : Controller
             .Select(x => new SelectListItem { Text = x, Value = x });
     }
 
-    private void ValidateModel(CognativeSearchSettingsViewModel model)
+    private void ValidateModel(CognitiveSearchSettingsViewModel model)
     {
         if (model.IndexedContentTypes == null || model.IndexedContentTypes.Length < 1)
         {
-            ModelState.AddModelError(nameof(CognativeSearchSettingsViewModel.IndexedContentTypes), S["At least one content type is required."]);
+            ModelState.AddModelError(nameof(CognitiveSearchSettingsViewModel.IndexedContentTypes), S["At least one content type is required."]);
         }
 
         if (string.IsNullOrWhiteSpace(model.IndexName))
         {
-            ModelState.AddModelError(nameof(CognativeSearchSettingsViewModel.IndexName), S["The index name is required."]);
+            ModelState.AddModelError(nameof(CognitiveSearchSettingsViewModel.IndexName), S["The index name is required."]);
         }
         else if (!_azureCognitiveSearchIndexManager.TryGetSafeName(model.IndexName, out var indexName) || indexName != model.IndexName)
         {
-            ModelState.AddModelError(nameof(CognativeSearchSettingsViewModel.IndexName), S["The index name contains unallowed chars."]);
+            ModelState.AddModelError(nameof(CognitiveSearchSettingsViewModel.IndexName), S["The index name contains not allowed chars."]);
         }
     }
 }
