@@ -100,7 +100,7 @@ namespace OrchardCore.Media.Services
                 }
                 finally
                 {
-                    _workers.TryRemove(subPathValue, out var writeTask);
+                    _workers.TryRemove(path, out var writeTask);
                 }
             }, LazyThreadSafetyMode.ExecutionAndPublication)).Value;
 
