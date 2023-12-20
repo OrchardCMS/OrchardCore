@@ -311,7 +311,7 @@ namespace OrchardCore.Layers.Controllers
 
             contentItem.Apply(layerMetadata);
 
-            _session.Save(contentItem);
+            await _session.SaveAsync(contentItem);
 
             // In case the moved contentItem is the draft for a published contentItem we update it's position too.
             // We do that because we want the position of published and draft version to be the same.
@@ -332,7 +332,7 @@ namespace OrchardCore.Layers.Controllers
 
                     publishedContentItem.Apply(layerMetadata);
 
-                    _session.Save(publishedContentItem);
+                    await _session.SaveAsync(publishedContentItem);
                 }
             }
 

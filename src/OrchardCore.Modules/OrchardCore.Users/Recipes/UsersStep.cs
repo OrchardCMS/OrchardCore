@@ -60,7 +60,7 @@ public class UsersStep : IRecipeStepHandler
             user.PhoneNumberConfirmed = importedUser.PhoneNumberConfirmed;
             user.RoleNames = importedUser.RoleNames;
 
-            _session.Save(user);
+            await _session.SaveAsync(user);
         }
     }
 }

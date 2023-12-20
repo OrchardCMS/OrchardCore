@@ -99,7 +99,7 @@ namespace OrchardCore.Shells.Database.Configuration
 
                 document.ShellsSettings = tenantsSettings;
 
-                session.Save(document, checkConcurrency: true);
+                await session.SaveAsync(document, checkConcurrency: true);
             });
         }
 
@@ -114,7 +114,7 @@ namespace OrchardCore.Shells.Database.Configuration
                 if (document is not null)
                 {
                     document.ShellsSettings.Remove(tenant);
-                    session.Save(document, checkConcurrency: true);
+                    await session.SaveAsync(document, checkConcurrency: true);
                 }
             });
         }
@@ -139,7 +139,7 @@ namespace OrchardCore.Shells.Database.Configuration
                         return;
                     }
 
-                    session.Save(document, checkConcurrency: true);
+                    await session.SaveAsync(document, checkConcurrency: true);
                 }
             });
 
