@@ -82,7 +82,7 @@ namespace OrchardCore.Demo.Controllers
                 model.DueDate = viewModel.DueDate;
                 model.IsCompleted = viewModel.IsCompleted;
 
-                _session.Save(model);
+                await _session.SaveAsync(model);
 
                 if (Url.IsLocalUrl(returnUrl))
                 {

@@ -13,7 +13,6 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Settings;

@@ -112,7 +112,7 @@ namespace OrchardCore.Deployment.Controllers
             {
                 step.Id = model.DeploymentStepId;
                 deploymentPlan.DeploymentSteps.Add(step);
-                _session.Save(deploymentPlan);
+                await _session.SaveAsync(deploymentPlan);
 
                 await _notifier.SuccessAsync(H["Deployment plan step added successfully."]);
                 return RedirectToAction("Display", "DeploymentPlan", new { id = model.DeploymentPlanId });
@@ -185,7 +185,7 @@ namespace OrchardCore.Deployment.Controllers
 
             if (ModelState.IsValid)
             {
-                _session.Save(deploymentPlan);
+                await _session.SaveAsync(deploymentPlan);
 
                 await _notifier.SuccessAsync(H["Deployment plan step updated successfully."]);
                 return RedirectToAction("Display", "DeploymentPlan", new { id = model.DeploymentPlanId });
@@ -221,7 +221,7 @@ namespace OrchardCore.Deployment.Controllers
             }
 
             deploymentPlan.DeploymentSteps.Remove(step);
-            _session.Save(deploymentPlan);
+            await _session.SaveAsync(deploymentPlan);
 
             await _notifier.SuccessAsync(H["Deployment step deleted successfully."]);
 
@@ -254,7 +254,7 @@ namespace OrchardCore.Deployment.Controllers
 
             deploymentPlan.DeploymentSteps.Insert(newIndex, step);
 
-            _session.Save(deploymentPlan);
+            await _session.SaveAsync(deploymentPlan);
 
             return Ok();
         }
