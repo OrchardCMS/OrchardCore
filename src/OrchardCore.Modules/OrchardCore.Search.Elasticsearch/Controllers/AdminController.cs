@@ -21,6 +21,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Liquid;
+using OrchardCore.Localization;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Search.Elasticsearch.Core.Models;
@@ -48,6 +49,7 @@ namespace OrchardCore.Search.Elasticsearch
         private readonly ILogger _logger;
         private readonly IOptions<TemplateOptions> _templateOptions;
         private readonly IShapeFactory _shapeFactory;
+        private readonly ILocalizationService _localizationService;
 
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
@@ -68,9 +70,9 @@ namespace OrchardCore.Search.Elasticsearch
             ILogger<AdminController> logger,
             IOptions<TemplateOptions> templateOptions,
             IShapeFactory shapeFactory,
+            ILocalizationService localizationService,
             IStringLocalizer<AdminController> stringLocalizer,
-            IHtmlLocalizer<AdminController> htmlLocalizer
-            )
+            IHtmlLocalizer<AdminController> htmlLocalizer)
         {
             _session = session;
             _siteService = siteService;
@@ -86,8 +88,8 @@ namespace OrchardCore.Search.Elasticsearch
             _notifier = notifier;
             _logger = logger;
             _templateOptions = templateOptions;
-
             _shapeFactory = shapeFactory;
+            _localizationService = localizationService;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
@@ -182,7 +184,7 @@ namespace OrchardCore.Search.Elasticsearch
                 StoreSourceData = settings.StoreSourceData
             };
 
-            PopulateMenuOptions(model);
+            await PopulateMenuOptionsAsync(model);
 
             return View(model);
         }
@@ -214,7 +216,7 @@ namespace OrchardCore.Search.Elasticsearch
 
             if (!ModelState.IsValid)
             {
-                PopulateMenuOptions(model);
+                await PopulateMenuOptionsAsync(model);
 
                 return View(model);
             }
@@ -243,7 +245,7 @@ namespace OrchardCore.Search.Elasticsearch
                     await _notifier.ErrorAsync(H["An error occurred while creating the index."]);
                     _logger.LogError(e, "An error occurred while creating index: {indexName}.", _elasticIndexManager.GetFullIndexName(model.IndexName));
 
-                    PopulateMenuOptions(model);
+                    await PopulateMenuOptionsAsync(model);
 
                     return View(model);
                 }
@@ -271,7 +273,7 @@ namespace OrchardCore.Search.Elasticsearch
                     await _notifier.ErrorAsync(H["An error occurred while editing the index."]);
                     _logger.LogError(e, "An error occurred while editing index: {indexName}.", _elasticIndexManager.GetFullIndexName(model.IndexName));
 
-                    PopulateMenuOptions(model);
+                    await PopulateMenuOptionsAsync(model);
 
                     return View(model);
                 }
@@ -559,10 +561,15 @@ namespace OrchardCore.Search.Elasticsearch
             }
         }
 
-        private void PopulateMenuOptions(ElasticIndexSettingsViewModel model)
+        private async Task PopulateMenuOptionsAsync(ElasticIndexSettingsViewModel model)
         {
-            model.Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
-                .Select(x => new SelectListItem { Text = $"{x.Name} ({x.DisplayName})", Value = x.Name });
+             var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
+
+             model.Cultures = supportedCultures.Select(c => new SelectListItem
+             {
+                 Text = $"{c} ({CultureInfo.GetCultureInfo(c).DisplayName})",
+                 Value = c
+             });
 
             model.Analyzers = _elasticSearchOptions.Analyzers
                 .Select(x => new SelectListItem { Text = x.Key, Value = x.Key });
