@@ -72,11 +72,6 @@ public class AzureCognitiveSearchSettingsDisplayDriver : SectionDisplayDriver<IS
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        if (string.IsNullOrEmpty(model.SearchFields))
-        {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.SearchFields), S["Search Fields is required."]);
-        }
-
         if (string.IsNullOrEmpty(model.SearchIndex))
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.SearchIndex), S["Search Index is required."]);

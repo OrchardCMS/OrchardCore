@@ -13,7 +13,9 @@
 
 <div class="mb-3" asp-validation-class-for="SearchIndex">
     <label asp-for="SearchIndex" class="form-label">@T["Default search index"]</label>
-    <select asp-for="SearchIndex" class="form-select" asp-items="Model.SearchIndexes"></select>
+    <select asp-for="SearchIndex" class="form-select" asp-items="Model.SearchIndexes">
+        <option value="">@T["Select an index"]</option>
+    </select>
     <span asp-validation-for="SearchIndex"></span>
     <span class="hint">@T["The default index to use for the search page."]</span>
 </div>
