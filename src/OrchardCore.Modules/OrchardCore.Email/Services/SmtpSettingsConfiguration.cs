@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Mappings;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Services
@@ -10,15 +11,18 @@ namespace OrchardCore.Email.Services
         private readonly ISiteService _site;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
         public SmtpSettingsConfiguration(
             ISiteService site,
             IDataProtectionProvider dataProtectionProvider,
-            ILogger<SmtpSettingsConfiguration> logger)
+            ILogger<SmtpSettingsConfiguration> logger,
+            IMapper mapper)
         {
             _site = site;
             _dataProtectionProvider = dataProtectionProvider;
             _logger = logger;
+            _mapper = mapper;
         }
 
         public void Configure(SmtpSettings options)
@@ -27,20 +31,7 @@ namespace OrchardCore.Email.Services
                 .GetAwaiter().GetResult()
                 .As<SmtpSettings>();
 
-            options.DefaultSender = settings.DefaultSender;
-            options.DeliveryMethod = settings.DeliveryMethod;
-            options.PickupDirectoryLocation = settings.PickupDirectoryLocation;
-            options.Host = settings.Host;
-            options.Port = settings.Port;
-            options.ProxyHost = settings.ProxyHost;
-            options.ProxyPort = settings.ProxyPort;
-            options.EncryptionMethod = settings.EncryptionMethod;
-            options.AutoSelectEncryption = settings.AutoSelectEncryption;
-            options.RequireCredentials = settings.RequireCredentials;
-            options.UseDefaultCredentials = settings.UseDefaultCredentials;
-            options.UserName = settings.UserName;
-            options.Password = settings.Password;
-            options.IgnoreInvalidSslCertificate = settings.IgnoreInvalidSslCertificate;
+            options = _mapper.Map<SmtpSettings>(settings);
 
             // Decrypt the password
             if (!string.IsNullOrWhiteSpace(settings.Password))
