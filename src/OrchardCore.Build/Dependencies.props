@@ -48,8 +48,8 @@
     <PackageManagement Include="NJsonSchema" Version="10.9.0" />
     <PackageManagement Include="NLog.Web.AspNetCore" Version="5.3.7" />
     <PackageManagement Include="NodaTime" Version="3.1.9" />
-    <PackageManagement Include="OpenIddict.AspNetCore" Version="4.10.1" />
-    <PackageManagement Include="OpenIddict.Core" Version="4.10.1" />
+    <PackageManagement Include="OpenIddict.AspNetCore" Version="5.0.0" />
+    <PackageManagement Include="OpenIddict.Core" Version="5.0.0" />
     <PackageManagement Include="OrchardCore.Translations.All" Version="1.7.1" />
     <PackageManagement Include="PdfPig" Version="0.1.8" />
     <PackageManagement Include="Serilog.AspNetCore" Version="7.0.0" />

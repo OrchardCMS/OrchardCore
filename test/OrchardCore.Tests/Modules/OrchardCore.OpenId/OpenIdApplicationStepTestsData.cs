@@ -13,9 +13,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 {
                     ClientId = "a1",
                     ClientSecret = "test-secret",
+                    ClientType = "confidential",
                     ConsentType = "explicit",
-                    DisplayName = "Test Application",
-                    Type = "confidential",
+                    DisplayName = "Test Application"
                 },
                 new[] { new Uri("https://localhost:111/logout-redirect"), new Uri("https://localhost:222/logout-redirect") },
                 new[] { new Uri("https://localhost:111/redirect"), new Uri("https://localhost:222/redirect") },
@@ -35,9 +35,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 {
                     ClientId = "a2",
                     ClientSecret = "test-secret",
+                    ClientType = "confidential",
                     ConsentType = "explicit",
-                    DisplayName = "Test Application",
-                    Type = "confidential",
+                    DisplayName = "Test Application"
                 },
                 new[] { new Uri("https://localhost/logout-redirect") },
                 new[] { new Uri("https://localhost/redirect") },

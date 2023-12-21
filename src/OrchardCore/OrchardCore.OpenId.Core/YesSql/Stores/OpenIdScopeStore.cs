@@ -44,10 +44,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual async ValueTask CreateAsync(TScope scope, CancellationToken cancellationToken)
         {
-            if (scope == null)
-            {
-                throw new ArgumentNullException(nameof(scope));
-            }
+            ArgumentNullException.ThrowIfNull(scope);
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -58,10 +55,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual async ValueTask DeleteAsync(TScope scope, CancellationToken cancellationToken)
         {
-            if (scope == null)
-            {
-                throw new ArgumentNullException(nameof(scope));
-            }
+            ArgumentNullException.ThrowIfNull(scope);
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -72,10 +66,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual async ValueTask<TScope> FindByIdAsync(string identifier, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(identifier))
-            {
-                throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
-            }
+            ArgumentException.ThrowIfNullOrEmpty(identifier);
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -85,10 +76,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual async ValueTask<TScope> FindByNameAsync(string name, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentException("The scope name cannot be null or empty.", nameof(name));
-            }
+            ArgumentException.ThrowIfNullOrEmpty(name);
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -112,10 +100,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual async ValueTask<TScope> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(identifier))
-            {
-                throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
-            }
+            ArgumentException.ThrowIfNullOrEmpty(identifier);
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -125,10 +110,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual IAsyncEnumerable<TScope> FindByResourceAsync(string resource, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(resource))
-            {
-                throw new ArgumentException("The resource cannot be null or empty.", nameof(resource));
-            }
+            ArgumentException.ThrowIfNullOrEmpty(resource);
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -146,10 +128,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<string> GetDescriptionAsync(TScope scope, CancellationToken cancellationToken)
         {
-            if (scope == null)
-            {
-                throw new ArgumentNullException(nameof(scope));
-            }
+            ArgumentNullException.ThrowIfNull(scope);
 
             return new ValueTask<string>(scope.Description);
         }
@@ -158,10 +137,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         public virtual ValueTask<ImmutableDictionary<CultureInfo, string>> GetDescriptionsAsync(
             TScope scope, CancellationToken cancellationToken)
         {
-            if (scope == null)
-            {
-                throw new ArgumentNullException(nameof(scope));
-            }
+            ArgumentNullException.ThrowIfNull(scope);
 
             if (scope.Descriptions == null)
             {
@@ -174,10 +150,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<string> GetDisplayNameAsync(TScope scope, CancellationToken cancellationToken)
         {
-            if (scope == null)
-            {
-                throw new ArgumentNullException(nameof(scope));
-            }
+            ArgumentNullException.ThrowIfNull(scope);
 
             return new ValueTask<string>(scope.DisplayName);
         }
@@ -186,10 +159,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         public virtual ValueTask<ImmutableDictionary<CultureInfo, string>> GetDisplayNamesAsync(
             TScope scope, CancellationToken cancellationToken)
         {
-            if (scope == null)
-            {
-                throw new ArgumentNullException(nameof(scope));
-            }
+            ArgumentNullException.ThrowIfNull(scope);
 
             if (scope.DisplayNames == null)
             {
@@ -202,10 +172,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<string> GetIdAsync(TScope scope, CancellationToken cancellationToken)
         {
-            if (scope == null)
-            {
-                throw new ArgumentNullException(nameof(scope));
-            }
+            ArgumentNullException.ThrowIfNull(scope);
 
             return new ValueTask<string>(scope.ScopeId);
         }
@@ -213,10 +180,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<string> GetNameAsync(TScope scope, CancellationToken cancellationToken)
         {
-            if (scope == null)
-            {
-                throw new ArgumentNullException(nameof(scope));
-            }
+            ArgumentNullException.ThrowIfNull(scope);
 
             return new ValueTask<string>(scope.Name);
         }
@@ -224,10 +188,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<string> GetPhysicalIdAsync(TScope scope, CancellationToken cancellationToken)
         {
-            if (scope == null)
-            {
-                throw new ArgumentNullException(nameof(scope));
-            }
+            ArgumentNullException.ThrowIfNull(scope);
 
             return new ValueTask<string>(scope.Id.ToString(CultureInfo.InvariantCulture));
         }
@@ -235,10 +196,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<ImmutableDictionary<string, JsonElement>> GetPropertiesAsync(TScope scope, CancellationToken cancellationToken)
         {
-            if (scope == null)
-            {
-                throw new ArgumentNullException(nameof(scope));
-            }
+            ArgumentNullException.ThrowIfNull(scope);
 
             if (scope.Properties == null)
             {
@@ -252,10 +210,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<ImmutableArray<string>> GetResourcesAsync(TScope scope, CancellationToken cancellationToken)
         {
-            if (scope == null)
-            {
-                throw new ArgumentNullException(nameof(scope));
-            }
+            ArgumentNullException.ThrowIfNull(scope);
 
             return new ValueTask<ImmutableArray<string>>(scope.Resources);
         }
@@ -291,10 +246,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask SetDescriptionAsync(TScope scope, string description, CancellationToken cancellationToken)
         {
-            if (scope == null)
-            {
-                throw new ArgumentNullException(nameof(scope));
-            }
+            ArgumentNullException.ThrowIfNull(scope);
 
             scope.Description = description;
 
@@ -305,10 +257,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         public virtual ValueTask SetDescriptionsAsync(TScope scope,
             ImmutableDictionary<CultureInfo, string> descriptions, CancellationToken cancellationToken)
         {
-            if (scope == null)
-            {
-                throw new ArgumentNullException(nameof(scope));
-            }
+            ArgumentNullException.ThrowIfNull(scope);
 
             scope.Descriptions = descriptions;
 
@@ -318,10 +267,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask SetDisplayNameAsync(TScope scope, string name, CancellationToken cancellationToken)
         {
-            if (scope == null)
-            {
-                throw new ArgumentNullException(nameof(scope));
-            }
+            ArgumentNullException.ThrowIfNull(scope);
 
             scope.DisplayName = name;
 
@@ -332,10 +278,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         public virtual ValueTask SetDisplayNamesAsync(TScope scope,
             ImmutableDictionary<CultureInfo, string> names, CancellationToken cancellationToken)
         {
-            if (scope == null)
-            {
-                throw new ArgumentNullException(nameof(scope));
-            }
+            ArgumentNullException.ThrowIfNull(scope);
 
             scope.DisplayNames = names;
 
@@ -345,10 +288,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask SetNameAsync(TScope scope, string name, CancellationToken cancellationToken)
         {
-            if (scope == null)
-            {
-                throw new ArgumentNullException(nameof(scope));
-            }
+            ArgumentNullException.ThrowIfNull(scope);
 
             scope.Name = name;
 
@@ -358,10 +298,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask SetPropertiesAsync(TScope scope, ImmutableDictionary<string, JsonElement> properties, CancellationToken cancellationToken)
         {
-            if (scope == null)
-            {
-                throw new ArgumentNullException(nameof(scope));
-            }
+            ArgumentNullException.ThrowIfNull(scope);
 
             if (properties == null || properties.IsEmpty)
             {
@@ -382,10 +319,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask SetResourcesAsync(TScope scope, ImmutableArray<string> resources, CancellationToken cancellationToken)
         {
-            if (scope == null)
-            {
-                throw new ArgumentNullException(nameof(scope));
-            }
+            ArgumentNullException.ThrowIfNull(scope);
 
             scope.Resources = resources;
 
@@ -395,10 +329,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual async ValueTask UpdateAsync(TScope scope, CancellationToken cancellationToken)
         {
-            if (scope == null)
-            {
-                throw new ArgumentNullException(nameof(scope));
-            }
+            ArgumentNullException.ThrowIfNull(scope);
 
             cancellationToken.ThrowIfCancellationRequested();
 
