@@ -23,6 +23,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
     public class ElasticIndexingService
     {
         private const int BatchSize = 100;
+
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
@@ -67,7 +68,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     return;
                 }
 
-                // Find the lowest task id to process
+                // Find the lowest task id to process.
                 foreach (var indexSetting in indexSettingsList)
                 {
                     var taskId = await _indexManager.GetLastTaskId(indexSetting.IndexName);
@@ -100,15 +101,15 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
             do
             {
-                // Create a scope for the content manager
+                // Create a scope for the content manager.
                 var shellScope = await _shellHost.GetScopeAsync(_shellSettings);
 
                 await shellScope.UsingAsync(async scope =>
                 {
-                    // Load the next batch of tasks
+                    // Load the next batch of tasks.
                     batch = (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, BatchSize)).ToArray();
 
-                    if (!batch.Any())
+                    if (batch.Length == 0)
                     {
                         return;
                     }
@@ -116,26 +117,23 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
                     var indexHandlers = scope.ServiceProvider.GetServices<IContentItemIndexHandler>();
 
-                    // Pre-load all content items to prevent SELECT N+1
+                    // Pre-load all content items to prevent SELECT N+1.
                     var updatedContentItemIds = batch
                         .Where(x => x.Type == IndexingTaskTypes.Update)
                         .Select(x => x.ContentItemId)
                         .ToArray();
 
-                    var allPublished = new Dictionary<string, ContentItem>();
-                    var allLatest = new Dictionary<string, ContentItem>();
-
                     var allPublishedContentItems = await contentManager.GetAsync(updatedContentItemIds);
-                    allPublished = allPublishedContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId, v => v);
-                    var allLatestContentItems = await contentManager.GetAsync(updatedContentItemIds, latest: true);
-                    allLatest = allLatestContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemVersionId, v => v);
+                    var allPublished = allPublishedContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId);
+                    var allLatestContentItems = await contentManager.GetAsync(updatedContentItemIds, VersionOptions.Latest);
+                    var allLatest = allLatestContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemVersionId);
 
-                    // Group all DocumentIndex by index to batch update them
+                    // Group all DocumentIndex by index to batch update them.
                     var updatedDocumentsByIndex = new Dictionary<string, List<DocumentIndex>>();
 
                     foreach (var index in allIndices)
                     {
-                        updatedDocumentsByIndex[index.Key] = new List<DocumentIndex>();
+                        updatedDocumentsByIndex[index.Key] = [];
                     }
 
                     if (indexName != null)
@@ -185,10 +183,10 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                                 var context = !settings.IndexLatest ? publishedIndexContext : latestIndexContext;
 
-                                //We index only if we actually found a content item in the database
+                                // We index only if we actually found a content item in the database.
                                 if (context == null)
                                 {
-                                    //TODO purge these content items from IndexingTask table
+                                    // TODO purge these content items from IndexingTask table.
                                     continue;
                                 }
 
@@ -196,7 +194,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                                 var culture = cultureAspect.HasCulture ? cultureAspect.Culture.Name : null;
                                 var ignoreIndexedCulture = settings.Culture != "any" && culture != settings.Culture;
 
-                                // Ignore if the content item content type or culture is not indexed in this index
+                                // Ignore if the content item content type or culture is not indexed in this index.
                                 if (!settings.IndexedContentTypes.Contains(context.ContentItem.ContentType) || ignoreIndexedCulture)
                                 {
                                     continue;
@@ -207,20 +205,20 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                         }
                     }
 
-                    // Delete all the existing documents
+                    // Delete all the existing documents.
                     foreach (var index in updatedDocumentsByIndex)
                     {
                         var deletedDocuments = updatedDocumentsByIndex[index.Key].Select(x => x.ContentItemId);
                         await _indexManager.DeleteDocumentsAsync(index.Key, deletedDocuments);
                     }
 
-                    // Submits all the new documents to the index
+                    // Submits all the new documents to the index.
                     foreach (var index in updatedDocumentsByIndex)
                     {
                         await _indexManager.StoreDocumentsAsync(index.Key, updatedDocumentsByIndex[index.Key]);
                     }
 
-                    // Update task ids
+                    // Update task ids.
                     lastTaskId = batch.Last().Id;
 
                     foreach (var indexStatus in allIndices)
@@ -236,7 +234,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         }
 
         /// <summary>
-        /// Creates a new index
+        /// Creates a new index.
         /// </summary>
         public async Task CreateIndexAsync(ElasticIndexSettings elasticIndexSettings)
         {
@@ -245,24 +243,22 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         }
 
         /// <summary>
-        /// Update an existing index
+        /// Update an existing index.
         /// </summary>
         public Task UpdateIndexAsync(ElasticIndexSettings elasticIndexSettings)
-        {
-            return _elasticIndexSettingsService.UpdateIndexAsync(elasticIndexSettings);
-        }
+            => _elasticIndexSettingsService.UpdateIndexAsync(elasticIndexSettings);
 
         /// <summary>
-        /// Deletes permanently an index
+        /// Deletes permanently an index.
         /// </summary>
         public async Task<bool> DeleteIndexAsync(string indexName)
         {
-            //Delete the Elasticsearch Index first
+            // Delete the Elasticsearch Index first.
             var result = await _indexManager.DeleteIndex(indexName);
 
             if (result)
             {
-                //Now delete it's setting
+                // Now delete it's setting.
                 await _elasticIndexSettingsService.DeleteIndexAsync(indexName);
             }
 
@@ -296,10 +292,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             {
                 return siteSettings.As<ElasticSettings>();
             }
-            else
-            {
-                return new ElasticSettings();
-            }
+
+            return new ElasticSettings();
         }
 
         /// <summary>
