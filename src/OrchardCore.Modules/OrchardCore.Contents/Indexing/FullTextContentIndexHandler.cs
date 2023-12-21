@@ -18,7 +18,8 @@ namespace OrchardCore.Contents.Indexing
 
             foreach (var segment in result.Segments)
             {
-                stringBuilder.Append(segment).Append(" ");
+                stringBuilder.Append(segment);
+                stringBuilder.Append(" ");
             }
 
             var value = stringBuilder.ToString();
