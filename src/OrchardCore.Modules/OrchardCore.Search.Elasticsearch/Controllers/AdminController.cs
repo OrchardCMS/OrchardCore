@@ -276,7 +276,7 @@ namespace OrchardCore.Search.Elasticsearch
                     return View(model);
                 }
 
-                await _notifier.SuccessAsync(H["Index <em>{0}</em> modified successfully, <strong>please consider doing a rebuild on the index.</strong>", model.IndexName]);
+                await _notifier.SuccessAsync(H["Index <em>{0}</em> modified successfully, <strong>please consider rebuilding the index.</strong>", model.IndexName]);
             }
 
             return RedirectToAction(nameof(Index));
