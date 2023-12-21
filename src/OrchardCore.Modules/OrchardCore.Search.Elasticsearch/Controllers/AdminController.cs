@@ -51,6 +51,7 @@ namespace OrchardCore.Search.Elasticsearch
         private readonly INotifier _notifier;
         private readonly ILogger _logger;
         private readonly IOptions<TemplateOptions> _templateOptions;
+        private readonly ILocalizationService _localizationService;
 
         public AdminController(
             ISession session,
@@ -69,8 +70,8 @@ namespace OrchardCore.Search.Elasticsearch
             IOptions<ElasticsearchOptions> elasticSearchOptions,
             INotifier notifier,
             ILogger<AdminController> logger,
-            IOptions<TemplateOptions> templateOptions
-            )
+            IOptions<TemplateOptions> templateOptions,
+            ILocalizationService localizationService)
         {
             _session = session;
             _siteService = siteService;
@@ -89,6 +90,7 @@ namespace OrchardCore.Search.Elasticsearch
             _notifier = notifier;
             _logger = logger;
             _templateOptions = templateOptions;
+            _localizationService = localizationService;
         }
 
         public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
@@ -209,8 +211,13 @@ namespace OrchardCore.Search.Elasticsearch
 
             if (!ModelState.IsValid)
             {
-                model.Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
-                    .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name });
+                var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
+
+                model.Cultures = supportedCultures.Select(c => new SelectListItem
+                {
+                    Text = $"{c} ({CultureInfo.GetCultureInfo(c).DisplayName})",
+                    Value = c
+                });
 
                 model.Analyzers = _elasticSearchOptions.Analyzers
                     .Select(x => new SelectListItem { Text = x.Key, Value = x.Key });
