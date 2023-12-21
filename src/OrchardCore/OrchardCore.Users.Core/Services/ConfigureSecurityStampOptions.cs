@@ -10,6 +10,8 @@ public class ConfigureSecurityStampOptions : IPostConfigureOptions<SecurityStamp
 {
     public void PostConfigure(string name, SecurityStampValidatorOptions options)
     {
+        // While updating the principal, any customized claims set using IUserClaimsProvider
+        // or obtained from an external identity will persist and transfer to the refreshed/new principal.
         options.OnRefreshingPrincipal = principalContext =>
         {
             var currentIdentity = principalContext.CurrentPrincipal?.Identities?.FirstOrDefault();
