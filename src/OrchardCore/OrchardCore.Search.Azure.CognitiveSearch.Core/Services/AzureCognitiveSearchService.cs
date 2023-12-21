@@ -23,7 +23,8 @@ public class AzureCognitiveSearchService : ISearchService
         _logger = logger;
     }
 
-    public const string Key = "AzureCognitiveSearch";
+    public const string Key = "Azure Cognitive Search";
+
     private readonly ISiteService _siteService;
     private readonly AzureCognitiveSearchDocumentManager _searchDocumentManager;
     private readonly CognitiveSearchIndexSettingsService _cognitiveSearchIndexSettingsService;

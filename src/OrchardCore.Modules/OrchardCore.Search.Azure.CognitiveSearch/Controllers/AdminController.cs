@@ -274,11 +274,14 @@ public class AdminController : Controller
                     await _cognitiveSearchIndexSettingsService.UpdateIndexAsync(settings);
 
                     await _notifier.SuccessAsync(H["Index <em>{0}</em> created successfully.", model.IndexName]);
+
+                    return RedirectToAction("Index");
                 }
             }
             catch (Exception e)
             {
                 await _notifier.ErrorAsync(H["An error occurred while creating the index."]);
+
                 _logger.LogError(e, "An error occurred while creating an index.");
             }
         }
