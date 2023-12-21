@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <PackageReference Include="HtmlSanitizer" />
+    <PackageReference Include="Mapster" />
     <PackageReference Include="MimeKit" />
   </ItemGroup>
 
