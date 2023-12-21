@@ -40,7 +40,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
                 {
                     var elasticIndexSettings = index.ToObject<Dictionary<string, ElasticIndexSettings>>().FirstOrDefault();
 
-                    if (!await _elasticIndexManager.Exists(elasticIndexSettings.Key))
+                    if (!await _elasticIndexManager.ExistsAsync(elasticIndexSettings.Key))
                     {
                         elasticIndexSettings.Value.IndexName = elasticIndexSettings.Key;
                         await _elasticIndexingService.CreateIndexAsync(elasticIndexSettings.Value);

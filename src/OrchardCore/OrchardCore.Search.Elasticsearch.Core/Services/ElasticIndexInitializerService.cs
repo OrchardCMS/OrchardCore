@@ -51,7 +51,7 @@ namespace OrchardCore.Search.Elasticsearch
 
                     foreach (var settings in elasticIndexSettings)
                     {
-                        if (!await indexManager.Exists(settings.IndexName))
+                        if (!await indexManager.ExistsAsync(settings.IndexName))
                         {
                             await elasticIndexingService.CreateIndexAsync(settings);
                             await elasticIndexingService.ProcessContentItemsAsync(settings.IndexName);
