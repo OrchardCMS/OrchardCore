@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
-using OrchardCore.Search.Elasticsearch.Drivers;
 
 namespace OrchardCore.Search.Elasticsearch
 {
@@ -23,7 +22,7 @@ namespace OrchardCore.Search.Elasticsearch
             }
 
             builder
-                .Add(S["Search"], "7", search => search
+                .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
                     .AddClass("elasticsearch").Id("Elasticsearch")
                     .Add(S["Indexing"], S["Indexing"].PrefixPosition(), import => import
                         .Add(S["Elasticsearch Indices"], S["Elasticsearch Indices"].PrefixPosition(), indexes => indexes
@@ -33,13 +32,10 @@ namespace OrchardCore.Search.Elasticsearch
                         .Add(S["Run Elasticsearch Query"], S["Run Elasticsearch Query"].PrefixPosition(), queries => queries
                             .Action("Query", "Admin", new { area = "OrchardCore.Search.Elasticsearch" })
                             .Permission(Permissions.ManageElasticIndexes)
-                            .LocalNav()))
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["Elasticsearch"], S["Elasticsearch"].PrefixPosition(), entry => entry
-                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ElasticSettingsDisplayDriver.GroupId })
-                             .Permission(Permissions.ManageElasticIndexes)
-                             .LocalNav()
-                        )));
+                            .LocalNav()
+                            )
+                        )
+                    );
 
             return Task.CompletedTask;
         }

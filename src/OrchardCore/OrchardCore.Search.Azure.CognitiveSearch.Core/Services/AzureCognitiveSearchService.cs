@@ -8,27 +8,19 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Azure.CognitiveSearch.Services;
 
-public class AzureCognitiveSearchService : ISearchService
+public class AzureCognitiveSearchService(
+    ISiteService siteService,
+    AzureCognitiveSearchDocumentManager searchDocumentManager,
+    CognitiveSearchIndexSettingsService cognitiveSearchIndexSettingsService,
+    ILogger<AzureCognitiveSearchService> logger
+        ) : ISearchService
 {
-    public AzureCognitiveSearchService(
-        ISiteService siteService,
-        AzureCognitiveSearchDocumentManager searchDocumentManager,
-        CognitiveSearchIndexSettingsService cognitiveSearchIndexSettingsService,
-        ILogger<AzureCognitiveSearchService> logger
-        )
-    {
-        _siteService = siteService;
-        _searchDocumentManager = searchDocumentManager;
-        _cognitiveSearchIndexSettingsService = cognitiveSearchIndexSettingsService;
-        _logger = logger;
-    }
-
     public const string Key = "Azure Cognitive Search";
 
-    private readonly ISiteService _siteService;
-    private readonly AzureCognitiveSearchDocumentManager _searchDocumentManager;
-    private readonly CognitiveSearchIndexSettingsService _cognitiveSearchIndexSettingsService;
-    private readonly ILogger<AzureCognitiveSearchService> _logger;
+    private readonly ISiteService _siteService = siteService;
+    private readonly AzureCognitiveSearchDocumentManager _searchDocumentManager = searchDocumentManager;
+    private readonly CognitiveSearchIndexSettingsService _cognitiveSearchIndexSettingsService = cognitiveSearchIndexSettingsService;
+    private readonly ILogger<AzureCognitiveSearchService> _logger = logger;
 
     public string Name => Key;
 

@@ -31,7 +31,6 @@ public class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddAzureCognitiveSearchServices(_shellConfiguration);
-        services.AddScoped<IDisplayDriver<ISite>, AzureCognitiveSearchSettingsDisplayDriver>();
         services.AddScoped<INavigationProvider, AdminMenu>();
     }
 
@@ -60,6 +59,7 @@ public class SearchStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddScoped<IDisplayDriver<ISite>, AzureCognitiveSearchSettingsDisplayDriver>();
         services.AddScoped<ISearchService, AzureCognitiveSearchService>();
     }
 }

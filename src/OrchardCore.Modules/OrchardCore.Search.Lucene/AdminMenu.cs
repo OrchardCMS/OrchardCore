@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
-using OrchardCore.Search.Lucene.Drivers;
 
 namespace OrchardCore.Search.Lucene
 {
@@ -33,13 +32,10 @@ namespace OrchardCore.Search.Lucene
                         .Add(S["Run Lucene Query"], S["Run Lucene Query"].PrefixPosition(), queries => queries
                             .Action("Query", "Admin", new { area = "OrchardCore.Search.Lucene" })
                             .Permission(Permissions.ManageLuceneIndexes)
-                            .LocalNav()))
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["Lucene"], S["Lucene"].PrefixPosition(), entry => entry
-                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LuceneSettingsDisplayDriver.GroupId })
-                             .Permission(Permissions.ManageLuceneIndexes)
-                             .LocalNav()
-                        )));
+                            .LocalNav()
+                            )
+                        )
+                    );
 
             return Task.CompletedTask;
         }

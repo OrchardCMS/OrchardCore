@@ -107,7 +107,8 @@ public class AzureCognitiveSearchOptions
 
     public AzureKeyCredential Credential { get; set; }
 
-    public string IndexPrefix { get; set; }
+    // Environment prefix for all of the indexes.
+    public string IndexesPrefix { get; set; }
 
     public string[] Analyzers { get; set; } = DefaultAnalyzers;
 }

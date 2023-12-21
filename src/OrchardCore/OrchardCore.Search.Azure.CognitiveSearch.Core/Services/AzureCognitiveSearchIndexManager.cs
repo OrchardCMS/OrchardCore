@@ -210,9 +210,9 @@ public class AzureCognitiveSearchIndexManager(
         {
             var builder = new StringBuilder();
 
-            if (!string.IsNullOrWhiteSpace(_azureCognitiveSearchOptions.IndexPrefix))
+            if (!string.IsNullOrWhiteSpace(_azureCognitiveSearchOptions.IndexesPrefix))
             {
-                builder.Append(_azureCognitiveSearchOptions.IndexPrefix.ToLowerInvariant());
+                builder.Append(_azureCognitiveSearchOptions.IndexesPrefix.ToLowerInvariant());
                 builder.Append('-');
             }
 

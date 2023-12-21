@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Modules;
 using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Search.Lucene.ViewModels;
 using OrchardCore.Settings;
@@ -14,7 +15,6 @@ namespace OrchardCore.Search.Lucene.Drivers
 {
     public class LuceneSettingsDisplayDriver : SectionDisplayDriver<ISite, LuceneSettings>
     {
-        public const string GroupId = "lucene";
         private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
@@ -28,6 +28,8 @@ namespace OrchardCore.Search.Lucene.Drivers
             _luceneIndexSettingsService = luceneIndexSettingsService;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
+
+            Prefix = nameof(LuceneSettings);
         }
 
         public override async Task<IDisplayResult> EditAsync(LuceneSettings settings, BuildEditorContext context)
@@ -45,11 +47,18 @@ namespace OrchardCore.Search.Lucene.Drivers
                     model.SearchFields = string.Join(", ", settings.DefaultSearchFields ?? Array.Empty<string>());
                     model.SearchIndexes = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName);
                     model.AllowLuceneQueriesInSearch = settings.AllowLuceneQueriesInSearch;
-                }).Location("Content:2").OnGroup(GroupId);
+                }).Location("Content:2#Lucene;15")
+                .Prefix(Prefix)
+                .OnGroup(SearchConstants.SearchSettingsGroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(LuceneSettings section, BuildEditorContext context)
         {
+            if (!SearchConstants.SearchSettingsGroupId.EqualsOrdinalIgnoreCase(context.GroupId))
+            {
+                return null;
+            }
+
             var user = _httpContextAccessor.HttpContext?.User;
 
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageLuceneIndexes))
@@ -57,18 +66,25 @@ namespace OrchardCore.Search.Lucene.Drivers
                 return null;
             }
 
-            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
-            {
-                var model = new LuceneSettingsViewModel();
+            var model = new LuceneSettingsViewModel();
 
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                section.SearchIndex = model.SearchIndex;
-                section.DefaultSearchFields = model.SearchFields?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                section.AllowLuceneQueriesInSearch = model.AllowLuceneQueriesInSearch;
-            }
+            section.SearchIndex = model.SearchIndex;
+            section.DefaultSearchFields = model.SearchFields?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            section.AllowLuceneQueriesInSearch = model.AllowLuceneQueriesInSearch;
 
             return await EditAsync(section, context);
+        }
+
+        protected override void BuildPrefix(ISite model, string htmlFieldPrefix)
+        {
+            Prefix = typeof(LuceneSettings).Name;
+
+            if (!string.IsNullOrEmpty(htmlFieldPrefix))
+            {
+                Prefix = htmlFieldPrefix + "." + Prefix;
+            }
         }
     }
 }

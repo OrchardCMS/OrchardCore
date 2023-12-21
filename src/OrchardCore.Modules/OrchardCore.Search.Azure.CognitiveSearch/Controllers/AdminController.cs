@@ -85,18 +85,19 @@ public class AdminController : Controller
             return Forbid();
         }
 
-        var indices = (await _cognitiveSearchIndexSettingsService.GetSettingsAsync()).Select(i => new IndexViewModel { Name = i.IndexName }).ToList();
+        var indexes = (await _cognitiveSearchIndexSettingsService.GetSettingsAsync()).Select(i => new IndexViewModel { Name = i.IndexName }).ToList();
 
-        var siteSettings = await _siteService.GetSiteSettingsAsync();
-        var pager = new Pager(pagerParameters, siteSettings.PageSize);
-        var results = indices;
+        var totalIndexes = indexes.Count;
 
         if (!string.IsNullOrWhiteSpace(options.Search))
         {
-            results = results.Where(q => q.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
+            indexes = indexes.Where(q => q.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
         }
 
-        results = results
+        var siteSettings = await _siteService.GetSiteSettingsAsync();
+        var pager = new Pager(pagerParameters, siteSettings.PageSize);
+
+        indexes = indexes
             .Skip(pager.GetStartIndex())
             .Take(pager.PageSize).ToList();
 
@@ -106,12 +107,12 @@ public class AdminController : Controller
         {
             pager.Page,
             pager.PageSize,
-            TotalItemCount = indices.Count
+            TotalItemCount = totalIndexes
         }));
 
         var model = new AdminIndexViewModel
         {
-            Indexes = results,
+            Indexes = indexes,
             Options = options,
             Pager = pagerShape
         };
@@ -123,7 +124,7 @@ public class AdminController : Controller
         return View(model);
     }
 
-    [HttpPost, ActionName("Index")]
+    [HttpPost, ActionName(nameof(Index))]
     [FormValueRequired("submit.Filter")]
     public ActionResult IndexFilterPOST(AdminIndexViewModel model)
     {
@@ -132,7 +133,7 @@ public class AdminController : Controller
             });
     }
 
-    [HttpPost, ActionName("Index")]
+    [HttpPost, ActionName(nameof(Index))]
     [FormValueRequired("submit.BulkAction")]
     public async Task<ActionResult> IndexPost(ContentOptions options, IEnumerable<string> itemIds)
     {
@@ -205,7 +206,7 @@ public class AdminController : Controller
         return View(model);
     }
 
-    [HttpPost, ActionName("Edit")]
+    [HttpPost, ActionName(nameof(Edit))]
     public async Task<ActionResult> EditPost(CognitiveSearchSettingsViewModel model, string[] indexedContentTypes)
     {
         if (!await _authorizationService.AuthorizeAsync(User, AzureCognitiveSearchIndexPermissionHelper.ManageAzureCognitiveSearchIndexes))
@@ -219,14 +220,14 @@ public class AdminController : Controller
         {
             if (await _azureCognitiveSearchIndexManager.ExistsAsync(model.IndexName))
             {
-                ModelState.AddModelError(nameof(CognitiveSearchSettingsViewModel.IndexName), S["An index named '{0}' already exists.", model.IndexName]);
+                ModelState.AddModelError(nameof(CognitiveSearchSettingsViewModel.IndexName), S["An index named <em>{0}</em> already exists.", model.IndexName]);
             }
         }
         else
         {
             if (!await _azureCognitiveSearchIndexManager.ExistsAsync(model.IndexName))
             {
-                ModelState.AddModelError(nameof(CognitiveSearchSettingsViewModel.IndexName), S["An index named '{0}' doesn't exist.", model.IndexName]);
+                ModelState.AddModelError(nameof(CognitiveSearchSettingsViewModel.IndexName), S["An index named <em>{0}</em> doesn't exist.", model.IndexName]);
             }
         }
 
@@ -275,14 +276,14 @@ public class AdminController : Controller
 
                     await _notifier.SuccessAsync(H["Index <em>{0}</em> created successfully.", model.IndexName]);
 
-                    return RedirectToAction("Index");
+                    return RedirectToAction(nameof(Index));
                 }
             }
             catch (Exception e)
             {
                 await _notifier.ErrorAsync(H["An error occurred while creating the index."]);
 
-                _logger.LogError(e, "An error occurred while creating an index.");
+                _logger.LogError(e, "An error occurred while creating an index {indexName}.", _azureCognitiveSearchIndexManager.GetFullIndexName(model.IndexName));
             }
         }
         else
@@ -311,14 +312,14 @@ public class AdminController : Controller
 
                 await _cognitiveSearchIndexSettingsService.UpdateIndexAsync(settings);
 
-                await _notifier.SuccessAsync(H["Index <em>{0}</em> modified successfully, <strong>please consider doing a rebuild on the index.</strong>", model.IndexName]);
+                await _notifier.SuccessAsync(H["Index <em>{0}</em> modified successfully.", model.IndexName]);
 
                 return RedirectToAction("Index");
             }
             catch (Exception e)
             {
                 await _notifier.ErrorAsync(H["An error occurred while editing the index."]);
-                _logger.LogError(e, "An error occurred while editing an index.");
+                _logger.LogError(e, "An error occurred while editing an index {indexName}.", _azureCognitiveSearchIndexManager.GetFullIndexName(model.IndexName));
             }
         }
 
@@ -344,10 +345,10 @@ public class AdminController : Controller
         }
         else
         {
-            await _notifier.ErrorAsync(H["An error occurred while deleting the index.", model.IndexName]);
+            await _notifier.ErrorAsync(H["An error occurred while deleting the <em>{0}</em> index.", model.IndexName]);
         }
 
-        return RedirectToAction("Index");
+        return RedirectToAction(nameof(Index));
     }
 
     private void PopulateMenuOptions(CognitiveSearchSettingsViewModel model)
@@ -372,7 +373,7 @@ public class AdminController : Controller
         }
         else if (!_azureCognitiveSearchIndexManager.TryGetSafeName(model.IndexName, out var indexName) || indexName != model.IndexName)
         {
-            ModelState.AddModelError(nameof(CognitiveSearchSettingsViewModel.IndexName), S["The index name contains not allowed chars."]);
+            ModelState.AddModelError(nameof(CognitiveSearchSettingsViewModel.IndexName), S["The index name contains forbidden characters."]);
         }
     }
 }

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Search.Azure.CognitiveSearch.Models;
 using OrchardCore.Search.Azure.CognitiveSearch.Services;
@@ -19,8 +20,6 @@ namespace OrchardCore.Search.Azure.CognitiveSearch.Drivers;
 
 public class AzureCognitiveSearchSettingsDisplayDriver : SectionDisplayDriver<ISite, AzureCognitiveSearchSettings>
 {
-    public const string GroupId = "azure-cognitive-search";
-
     private static readonly char[] _separator = [',', ' '];
     private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
     {
@@ -52,13 +51,14 @@ public class AzureCognitiveSearchSettingsDisplayDriver : SectionDisplayDriver<IS
             model.SearchIndexes = (await _cognitiveSearchIndexSettingsService.GetSettingsAsync())
             .Select(x => new SelectListItem(x.IndexName, x.IndexName))
             .ToList();
-        }).Location("Content:2")
+        }).Location("Content:2#Azure Cognitive Search;5")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureCognitiveSearchIndexPermissionHelper.ManageAzureCognitiveSearchIndexes))
-        .OnGroup(GroupId);
+        .Prefix(Prefix)
+        .OnGroup(SearchConstants.SearchSettingsGroupId);
 
     public override async Task<IDisplayResult> UpdateAsync(AzureCognitiveSearchSettings section, BuildEditorContext context)
     {
-        if (!string.Equals(GroupId, context.GroupId, StringComparison.OrdinalIgnoreCase))
+        if (!SearchConstants.SearchSettingsGroupId.EqualsOrdinalIgnoreCase(context.GroupId))
         {
             return null;
         }
@@ -90,5 +90,15 @@ public class AzureCognitiveSearchSettingsDisplayDriver : SectionDisplayDriver<IS
         section.DefaultSearchFields = model.SearchFields?.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
 
         return await EditAsync(section, context);
+    }
+
+    protected override void BuildPrefix(ISite model, string htmlFieldPrefix)
+    {
+        Prefix = typeof(AzureCognitiveSearchSettings).Name;
+
+        if (!string.IsNullOrEmpty(htmlFieldPrefix))
+        {
+            Prefix = htmlFieldPrefix + "." + Prefix;
+        }
     }
 }

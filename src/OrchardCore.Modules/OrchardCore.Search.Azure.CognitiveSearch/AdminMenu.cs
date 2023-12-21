@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
-using OrchardCore.Search.Azure.CognitiveSearch.Drivers;
 
 namespace OrchardCore.Search.Azure.CognitiveSearch;
 
@@ -23,20 +22,17 @@ public class AdminMenu : INavigationProvider
         }
 
         builder
-            .Add(S["Search"], S["Search"].PrefixPosition(), search => search
+            .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
                 .AddClass("azurecognitiveservice")
                 .Id("azurecognitiveservice")
                 .Add(S["Indexing"], S["Indexing"].PrefixPosition(), indexing => indexing
                     .Add(S["Azure Cognitive Indices"], S["Azure Cognitive Indices"].PrefixPosition(), indexes => indexes
                         .Action("Index", "Admin", new { area = "OrchardCore.Search.Azure.CognitiveSearch" })
                         .Permission(AzureCognitiveSearchIndexPermissionHelper.ManageAzureCognitiveSearchIndexes)
-                        .LocalNav()))
-                .Add(S["Settings"], settings => settings
-                    .Add(S["Azure Cognitive Search"], S["Azure Cognitive Search"].PrefixPosition(), entry => entry
-                         .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = AzureCognitiveSearchSettingsDisplayDriver.GroupId })
-                         .Permission(AzureCognitiveSearchIndexPermissionHelper.ManageAzureCognitiveSearchIndexes)
-                         .LocalNav()
-                    )));
+                        .LocalNav()
+                        )
+                    )
+                );
 
         return Task.CompletedTask;
     }
