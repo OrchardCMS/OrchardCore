@@ -69,7 +69,7 @@ namespace OrchardCore.Search.Elasticsearch
             ILogger<AdminController> logger,
             IOptions<TemplateOptions> templateOptions,
             IShapeFactory shapeFactory,
-            ILocalizationService localizationService
+            ILocalizationService localizationService,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer)
         {
