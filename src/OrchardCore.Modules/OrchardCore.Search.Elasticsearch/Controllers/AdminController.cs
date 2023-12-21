@@ -21,6 +21,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Liquid;
+using OrchardCore.Localization;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Search.Elasticsearch.Core.Models;
@@ -244,7 +245,7 @@ namespace OrchardCore.Search.Elasticsearch
                     await _notifier.ErrorAsync(H["An error occurred while creating the index."]);
                     _logger.LogError(e, "An error occurred while creating index: {indexName}.", _elasticIndexManager.GetFullIndexName(model.IndexName));
 
-                    PopulateMenuOptions(model);
+                    await PopulateMenuOptionsAsync(model);
 
                     return View(model);
                 }
@@ -272,7 +273,7 @@ namespace OrchardCore.Search.Elasticsearch
                     await _notifier.ErrorAsync(H["An error occurred while editing the index."]);
                     _logger.LogError(e, "An error occurred while editing index: {indexName}.", _elasticIndexManager.GetFullIndexName(model.IndexName));
 
-                    PopulateMenuOptions(model);
+                    await PopulateMenuOptionsAsync(model);
 
                     return View(model);
                 }
