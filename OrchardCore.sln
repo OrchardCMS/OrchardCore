@@ -507,9 +507,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Sms", "src\Orch
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Sms.Core", "src\OrchardCore\OrchardCore.Sms.Core\OrchardCore.Sms.Core.csproj", "{20356393-B16D-466C-8203-877A534E287D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Search.Azure.CognitiveSearch", "src\OrchardCore.Modules\OrchardCore.Search.Azure.CognitiveSearch\OrchardCore.Search.Azure.CognitiveSearch.csproj", "{5527BACF-FA5D-4617-978B-7EDE8942E6F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Search.AzureAI", "src\OrchardCore.Modules\OrchardCore.Search.AzureAI\OrchardCore.Search.AzureAI.csproj", "{5527BACF-FA5D-4617-978B-7EDE8942E6F6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Search.Azure.CognitiveSearch.Core", "src\OrchardCore\OrchardCore.Search.Azure.CognitiveSearch.Core\OrchardCore.Search.Azure.CognitiveSearch.Core.csproj", "{E9428DE8-5D81-4359-BF84-31435041FF1A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Search.AzureAI.Core", "src\OrchardCore\OrchardCore.Search.AzureAI.Core\OrchardCore.Search.AzureAI.Core.csproj", "{E9428DE8-5D81-4359-BF84-31435041FF1A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

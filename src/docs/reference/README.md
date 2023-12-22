@@ -135,7 +135,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 
 ### Search, Indexing, Querying
 
-- [AzureCognitiveService](modules/AzureCognitiveService/README.md)
+- [AzureAIService](modules/AzureAIService/README.md)
 - [SQL](modules/SQLIndexing/README.md)
 - [Lucene](modules/Lucene/README.md)
 - [Elasticsearch](modules/Elasticsearch/README.md)
