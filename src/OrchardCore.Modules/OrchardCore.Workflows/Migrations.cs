@@ -91,12 +91,12 @@ namespace OrchardCore.Workflows
             );
 
             await _secretService.AddSecretAsync<RSASecret>(
-                name: SecretToken.Encryption,
-                configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+                TokenSecrets.Encryption,
+                (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
 
             await _secretService.AddSecretAsync<RSASecret>(
-                name: SecretToken.Signing,
-                configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+                TokenSecrets.Signing,
+                (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
 
             // Shortcut other migration steps on new content definition schemas.
             return 4;
@@ -166,12 +166,12 @@ namespace OrchardCore.Workflows
         public async Task<int> UpdateFrom3Async()
         {
             await _secretService.AddSecretAsync<RSASecret>(
-                name: SecretToken.Encryption,
-                configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+                TokenSecrets.Encryption,
+                (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
 
             await _secretService.AddSecretAsync<RSASecret>(
-                name: SecretToken.Signing,
-                configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+                TokenSecrets.Signing,
+                (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
 
             return 4;
         }

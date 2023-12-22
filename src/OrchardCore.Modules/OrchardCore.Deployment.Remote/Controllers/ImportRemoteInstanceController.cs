@@ -45,7 +45,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 return StatusCode((int)HttpStatusCode.BadRequest, "The remote client was not provided.");
             }
 
-            var secret = await _secretService.GetSecretAsync<TextSecret>($"{Secrets.Purpose}.{model.ClientName}.ApiKey");
+            var secret = await _secretService.GetSecretAsync<TextSecret>($"{RemoteSecrets.Purpose}.{model.ClientName}.ApiKey");
             if (secret is null || secret.Text != model.ApiKey)
             {
                 return StatusCode((int)HttpStatusCode.BadRequest, "The Api Key was not recognized.");

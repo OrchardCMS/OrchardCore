@@ -20,11 +20,11 @@ namespace OrchardCore.Deployment
             );
 
             await _secretService.AddSecretAsync<RSASecret>(
-                name: Secrets.Encryption,
+                name: DeploymentSecrets.Encryption,
                 configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
 
             await _secretService.AddSecretAsync<RSASecret>(
-                name: Secrets.Signing,
+                name: DeploymentSecrets.Signing,
                 configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
 
             return 2;
@@ -33,11 +33,11 @@ namespace OrchardCore.Deployment
         public async Task<int> UpdateFrom1Async()
         {
             await _secretService.AddSecretAsync<RSASecret>(
-                name: Secrets.Encryption,
+                name: DeploymentSecrets.Encryption,
                 configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
 
             await _secretService.AddSecretAsync<RSASecret>(
-                name: Secrets.Signing,
+                name: DeploymentSecrets.Signing,
                 configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
 
             return 2;

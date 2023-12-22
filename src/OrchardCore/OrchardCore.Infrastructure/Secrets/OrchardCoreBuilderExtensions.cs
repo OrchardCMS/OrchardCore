@@ -29,6 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddSingleton<ISecretStore, ConfigurationSecretStore>();
 
                 services.AddSingleton<ISecretProtectionProvider, SecretProtectionProvider>();
+                services.AddSingleton<ISecretTokenService, SecretTokenService>();
             });
         }
     }

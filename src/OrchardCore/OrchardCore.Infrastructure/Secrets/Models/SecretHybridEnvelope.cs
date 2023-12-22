@@ -8,5 +8,5 @@ public class SecretHybridEnvelope
     public string Signature { get; set; }
     public string EncryptionSecret { get; set; }
     public string SigningSecret { get; set; }
-    public long Expiration { get; set; }
+    public string Expiration { get; set; }
 }

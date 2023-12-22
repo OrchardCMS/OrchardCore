@@ -2,9 +2,8 @@ using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using OrchardCore.Modules;
-using OrchardCore.Secrets;
 
-namespace OrchardCore.Workflows.Services;
+namespace OrchardCore.Secrets.Services;
 
 public class SecretTokenService : ISecretTokenService
 {
@@ -13,7 +12,7 @@ public class SecretTokenService : ISecretTokenService
 
     public SecretTokenService(ISecretProtectionProvider secretProtectionProvider, IClock clock)
     {
-        _secretProtector = secretProtectionProvider.CreateProtector(SecretToken.Purpose);
+        _secretProtector = secretProtectionProvider.CreateProtector(TokenSecrets.Purpose);
         _clock = clock;
     }
 

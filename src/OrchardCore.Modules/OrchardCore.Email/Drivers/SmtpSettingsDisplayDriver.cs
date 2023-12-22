@@ -50,7 +50,7 @@ namespace OrchardCore.Email.Drivers
                 return null;
             }
 
-            var secret = await _secretService.GetSecretAsync<TextSecret>(Secrets.Password);
+            var secret = await _secretService.GetSecretAsync<TextSecret>(EmailSecrets.Password);
             var shapes = new List<IDisplayResult>
             {
                 Initialize<SmtpSettingsEditViewModel>("SmtpSettings_Edit", model =>
@@ -95,14 +95,14 @@ namespace OrchardCore.Email.Drivers
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                var secret = await _secretService.GetSecretAsync<TextSecret>(Secrets.Password);
+                var secret = await _secretService.GetSecretAsync<TextSecret>(EmailSecrets.Password);
                 if (!string.IsNullOrWhiteSpace(model.Password) && model.Password != secret?.Text)
                 {
                     if (secret is null)
                     {
                         await _secretService.AddSecretAsync<TextSecret>(
-                            name: Secrets.Password,
-                            configure: (secret, info) => secret.Text = model.Password);
+                            EmailSecrets.Password,
+                            (secret, info) => secret.Text = model.Password);
                     }
                     else
                     {

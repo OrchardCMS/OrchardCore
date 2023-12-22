@@ -50,12 +50,14 @@ public class SecretHybridProtector : ISecretProtector
         byte[] encrypted;
         using var aes = Aes.Create();
         var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
-
         using (var msEncrypt = new MemoryStream())
         {
             using var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write);
             using (var swEncrypt = new StreamWriter(csEncrypt))
-            await swEncrypt.WriteAsync(plaintext);
+            {
+                await swEncrypt.WriteAsync(plaintext);
+            }
+
             encrypted = msEncrypt.ToArray();
         }
 
@@ -69,6 +71,10 @@ public class SecretHybridProtector : ISecretProtector
         rsaSigner.ImportRSAPrivateKey(_signingRSASecret.PrivateKeyAsBytes(), out _);
         var signature = rsaSigner.SignData(encrypted, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
 
+        expiration ??= DateTimeOffset.MaxValue;
+        var expirationBytes = new byte[checked(8)];
+        BitHelpers.WriteUInt64(expirationBytes, 0, (ulong)expiration.Value.UtcTicks);
+
         var envelope = new SecretHybridEnvelope
         {
             Key = Convert.ToBase64String(rsaEncryptedAesKey),
@@ -77,7 +83,7 @@ public class SecretHybridProtector : ISecretProtector
             Signature = Convert.ToBase64String(signature),
             EncryptionSecret = _encryptionSecret,
             SigningSecret = _signingSecret,
-            Expiration = (expiration ??= DateTimeOffset.MaxValue).UtcTicks,
+            Expiration = Convert.ToBase64String(expirationBytes),
         };
 
         var serialized = JsonConvert.SerializeObject(envelope);
@@ -124,7 +130,10 @@ public class SecretHybridProtector : ISecretProtector
         using var srDecrypt = new StreamReader(csDecrypt);
 
         var plaintext = await srDecrypt.ReadToEndAsync();
-        var expiration = new DateTimeOffset(envelope.Expiration, TimeSpan.Zero /* UTC */);
+
+        var expirationBytes = Convert.FromBase64String(envelope.Expiration);
+        var utcTicksExpiration = BitHelpers.ReadUInt64(expirationBytes, 0);
+        var expiration = new DateTimeOffset(checked((long)utcTicksExpiration), TimeSpan.Zero /* UTC */);
 
         return (plaintext, expiration);
     }
