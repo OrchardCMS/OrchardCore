@@ -81,8 +81,6 @@ namespace OrchardCore.Search.Lucene
             services.AddRecipeExecutionStep<LuceneIndexStep>();
             services.AddRecipeExecutionStep<LuceneIndexRebuildStep>();
             services.AddRecipeExecutionStep<LuceneIndexResetStep>();
-            services.AddScoped<LuceneSearchService>();
-            services.AddScoped<ISearchService>(sp => sp.GetRequiredService<LuceneSearchService>());
             services.AddScoped<IAuthorizationHandler, LuceneAuthorizationHandler>();
         }
 
@@ -124,6 +122,15 @@ namespace OrchardCore.Search.Lucene
                 pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Reset/{id}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Reset) }
             );
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Search")]
+    public class SearchStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<ISearchService, LuceneSearchService>();
         }
     }
 
