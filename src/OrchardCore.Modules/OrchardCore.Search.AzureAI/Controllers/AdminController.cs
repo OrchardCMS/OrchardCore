@@ -29,11 +29,11 @@ public class AdminController : Controller
 {
     private readonly ISiteService _siteService;
     private readonly IAuthorizationService _authorizationService;
-    private readonly AzureAIIndexManager _indexManager;
+    private readonly AzureAISearchIndexManager _indexManager;
     private readonly AzureAIIndexSettingsService _indexSettingsService;
     private readonly IContentManager _contentManager;
     private readonly IShapeFactory _shapeFactory;
-    private readonly AzureAIOptions _azureAIOptions;
+    private readonly AzureAISearchDefaultOptions _azureAIOptions;
     private readonly INotifier _notifier;
     private readonly IEnumerable<IContentItemIndexHandler> _contentItemIndexHandlers;
     private readonly ILogger _logger;
@@ -44,11 +44,11 @@ public class AdminController : Controller
     public AdminController(
         ISiteService siteService,
         IAuthorizationService authorizationService,
-        AzureAIIndexManager indeManager,
+        AzureAISearchIndexManager indeManager,
         AzureAIIndexSettingsService indexSettingsService,
         IContentManager contentManager,
         IShapeFactory shapeFactory,
-        IOptions<AzureAIOptions> azureAIOptions,
+        IOptions<AzureAISearchDefaultOptions> azureAIOptions,
         INotifier notifier,
         IEnumerable<IContentItemIndexHandler> contentItemIndexHandlers,
         ILogger<AdminController> logger,
@@ -73,7 +73,7 @@ public class AdminController : Controller
 
     public async Task<IActionResult> Index(AzureAIIndexOptions options, PagerParameters pagerParameters)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, AzureAIIndexPermissionHelper.ManageAzureAIIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
         {
             return Forbid();
         }
@@ -111,7 +111,7 @@ public class AdminController : Controller
         };
 
         model.Options.ContentsBulkAction = [
-            new SelectListItem(S["Delete"], nameof(AzureAIIndexBulkAction.Remove)),
+            new SelectListItem(S["Delete"], nameof(AzureAISearchIndexBulkAction.Remove)),
         ];
 
         return View(model);
@@ -132,7 +132,7 @@ public class AdminController : Controller
     [FormValueRequired("submit.BulkAction")]
     public async Task<ActionResult> IndexPost(AzureAIIndexOptions options, IEnumerable<string> itemIds)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, AzureAIIndexPermissionHelper.ManageAzureAIIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
         {
             return Forbid();
         }
@@ -144,9 +144,9 @@ public class AdminController : Controller
 
             switch (options.BulkAction)
             {
-                case AzureAIIndexBulkAction.None:
+                case AzureAISearchIndexBulkAction.None:
                     break;
-                case AzureAIIndexBulkAction.Remove:
+                case AzureAISearchIndexBulkAction.Remove:
                     foreach (var item in checkedContentItems)
                     {
                         await _indexManager.DeleteAsync(item.IndexName);
@@ -165,13 +165,13 @@ public class AdminController : Controller
 
     public async Task<ActionResult> Edit(string indexName = null)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, AzureAIIndexPermissionHelper.ManageAzureAIIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
         {
             return Forbid();
         }
 
         var IsCreate = string.IsNullOrWhiteSpace(indexName);
-        var settings = new AzureAIIndexSettings();
+        var settings = new AzureAISearchIndexSettings();
 
         if (!IsCreate)
         {
@@ -195,7 +195,7 @@ public class AdminController : Controller
 
         if (string.IsNullOrEmpty(model.AnalyzerName))
         {
-            model.AnalyzerName = AzureAIOptions.DefaultAnalyzer;
+            model.AnalyzerName = AzureAISearchDefaultOptions.DefaultAnalyzer;
         }
 
         PopulateMenuOptions(model);
@@ -206,7 +206,7 @@ public class AdminController : Controller
     [HttpPost, ActionName(nameof(Edit))]
     public async Task<ActionResult> EditPost(AzureAISettingsViewModel model, string[] indexedContentTypes)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, AzureAIIndexPermissionHelper.ManageAzureAIIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
         {
             return Forbid();
         }
@@ -239,7 +239,7 @@ public class AdminController : Controller
         {
             try
             {
-                var settings = new AzureAIIndexSettings
+                var settings = new AzureAISearchIndexSettings
                 {
                     IndexName = model.IndexName,
                     AnalyzerName = model.AnalyzerName,
@@ -251,12 +251,12 @@ public class AdminController : Controller
 
                 if (string.IsNullOrEmpty(settings.AnalyzerName))
                 {
-                    settings.AnalyzerName = AzureAIOptions.DefaultAnalyzer;
+                    settings.AnalyzerName = AzureAISearchDefaultOptions.DefaultAnalyzer;
                 }
 
                 if (string.IsNullOrEmpty(settings.QueryAnalyzerName))
                 {
-                    settings.QueryAnalyzerName = AzureAIOptions.DefaultAnalyzer;
+                    settings.QueryAnalyzerName = AzureAISearchDefaultOptions.DefaultAnalyzer;
                 }
 
                 await SetMappingsAsync(settings);
@@ -287,7 +287,7 @@ public class AdminController : Controller
         {
             try
             {
-                var settings = new AzureAIIndexSettings
+                var settings = new AzureAISearchIndexSettings
                 {
                     IndexName = model.IndexName,
                     AnalyzerName = model.AnalyzerName,
@@ -299,12 +299,12 @@ public class AdminController : Controller
 
                 if (string.IsNullOrEmpty(settings.AnalyzerName))
                 {
-                    settings.AnalyzerName = AzureAIOptions.DefaultAnalyzer;
+                    settings.AnalyzerName = AzureAISearchDefaultOptions.DefaultAnalyzer;
                 }
 
                 if (string.IsNullOrEmpty(settings.QueryAnalyzerName))
                 {
-                    settings.QueryAnalyzerName = AzureAIOptions.DefaultAnalyzer;
+                    settings.QueryAnalyzerName = AzureAISearchDefaultOptions.DefaultAnalyzer;
                 }
 
                 await _indexSettingsService.UpdateIndexAsync(settings);
@@ -328,7 +328,7 @@ public class AdminController : Controller
     [HttpPost]
     public async Task<ActionResult> Delete(AzureAISettingsViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, AzureAIIndexPermissionHelper.ManageAzureAIIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
         {
             return Forbid();
         }
@@ -352,7 +352,7 @@ public class AdminController : Controller
     [HttpPost]
     public async Task<ActionResult> Rebuild(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, AzureAIIndexPermissionHelper.ManageAzureAIIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
         {
             return Forbid();
         }
@@ -413,19 +413,19 @@ public class AdminController : Controller
         }
     }
 
-    private async Task SetMappingsAsync(AzureAIIndexSettings settings)
+    private async Task SetMappingsAsync(AzureAISearchIndexSettings settings)
     {
         settings.IndexMappings = [];
         foreach (var contentType in settings.IndexedContentTypes)
         {
             var contentItem = await _contentManager.NewAsync(contentType);
             var index = new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId);
-            var buildIndexContext = new BuildIndexContext(index, contentItem, [contentType], new AzureAIContentIndexSettings());
+            var buildIndexContext = new BuildIndexContext(index, contentItem, [contentType], new AzureAISearchContentIndexSettings());
             await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger);
 
             foreach (var entry in index.Entries)
             {
-                settings.IndexMappings.Add(new AzureAIIndexMap(entry.Name, entry.Type, entry.Options));
+                settings.IndexMappings.Add(new AzureAISearchIndexMap(entry.Name, entry.Type, entry.Options));
             }
         }
     }

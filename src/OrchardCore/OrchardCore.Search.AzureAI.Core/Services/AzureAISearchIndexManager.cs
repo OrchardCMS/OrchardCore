@@ -16,10 +16,10 @@ using static OrchardCore.Indexing.DocumentIndex;
 
 namespace OrchardCore.Search.AzureAI.Services;
 
-public class AzureAIIndexManager(
+public class AzureAISearchIndexManager(
     SearchIndexClient client,
-    ILogger<AzureAIIndexManager> logger,
-    IOptions<AzureAIOptions> azureAIOptions,
+    ILogger<AzureAISearchIndexManager> logger,
+    IOptions<AzureAISearchDefaultOptions> azureAIOptions,
     IMemoryCache memoryCache,
     ShellSettings shellSettings)
 {
@@ -31,9 +31,9 @@ public class AzureAIIndexManager(
     private readonly ILogger _logger = logger;
     private readonly IMemoryCache _memoryCache = memoryCache;
     private readonly ShellSettings _shellSettings = shellSettings;
-    private readonly AzureAIOptions _azureAIOptions = azureAIOptions.Value;
+    private readonly AzureAISearchDefaultOptions _azureAIOptions = azureAIOptions.Value;
 
-    public async Task<bool> CreateAsync(AzureAIIndexSettings settings)
+    public async Task<bool> CreateAsync(AzureAISearchIndexSettings settings)
     {
         if (await ExistsAsync(settings.IndexName))
         {
@@ -186,7 +186,7 @@ public class AzureAIIndexManager(
         return false;
     }
 
-    public async Task RebuildIndexAsync(AzureAIIndexSettings settings)
+    public async Task RebuildIndexAsync(AzureAISearchIndexSettings settings)
     {
         try
         {
@@ -204,7 +204,7 @@ public class AzureAIIndexManager(
         }
     }
 
-    private SearchIndex GetSearchIndex(string fullIndexName, AzureAIIndexSettings settings)
+    private SearchIndex GetSearchIndex(string fullIndexName, AzureAISearchIndexSettings settings)
     {
         var searchFields = new List<SearchField>()
         {

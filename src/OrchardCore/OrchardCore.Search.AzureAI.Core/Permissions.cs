@@ -13,14 +13,14 @@ public class Permissions(AzureAIIndexSettingsService indexSettingsService) : IPe
     {
         var permissions = new List<Permission>()
         {
-            AzureAIIndexPermissionHelper.ManageAzureAIIndexes,
+            AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes,
         };
 
         var elasticIndexSettings = await _indexSettingsService.GetSettingsAsync();
 
         foreach (var index in elasticIndexSettings)
         {
-            permissions.Add(AzureAIIndexPermissionHelper.GetPermission(index.IndexName));
+            permissions.Add(AzureAISearchIndexPermissionHelper.GetPermission(index.IndexName));
         }
 
         return permissions;
@@ -36,7 +36,7 @@ public class Permissions(AzureAIIndexSettingsService indexSettingsService) : IPe
                 Name = "Administrator",
                 Permissions = new[]
                 {
-                    AzureAIIndexPermissionHelper.ManageAzureAIIndexes,
+                    AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes,
                 },
             },
         };

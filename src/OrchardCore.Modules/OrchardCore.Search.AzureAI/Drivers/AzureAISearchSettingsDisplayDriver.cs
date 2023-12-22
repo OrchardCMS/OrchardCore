@@ -48,7 +48,7 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
             .Select(x => new SelectListItem(x.IndexName, x.IndexName))
             .ToList();
         }).Location("Content:2#Azure AI Search;5")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAIIndexPermissionHelper.ManageAzureAIIndexes))
+        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
         .Prefix(Prefix)
         .OnGroup(SearchConstants.SearchSettingsGroupId);
 
@@ -59,7 +59,7 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
             return null;
         }
 
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AzureAIIndexPermissionHelper.ManageAzureAIIndexes))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
         {
             return null;
         }

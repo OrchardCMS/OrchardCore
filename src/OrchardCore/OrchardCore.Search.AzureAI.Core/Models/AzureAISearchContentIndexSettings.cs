@@ -2,7 +2,7 @@ using OrchardCore.Indexing;
 
 namespace OrchardCore.Search.AzureAI.Models;
 
-public class AzureAIContentIndexSettings : IContentIndexSettings
+public class AzureAISearchContentIndexSettings : IContentIndexSettings
 {
     public bool Included { get; set; }
 

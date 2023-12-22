@@ -14,11 +14,11 @@ namespace OrchardCore.Search.AzureAI.Services;
 
 public class AzureAIIndexDocumentManager(
     SearchClientFactory searchClientFactory,
-    AzureAIIndexManager indexManager,
+    AzureAISearchIndexManager indexManager,
     ILogger<AzureAIIndexDocumentManager> logger)
 {
     private readonly SearchClientFactory _searchClientFactory = searchClientFactory;
-    private readonly AzureAIIndexManager _indexManager = indexManager;
+    private readonly AzureAISearchIndexManager _indexManager = indexManager;
     private readonly ILogger _logger = logger;
 
     public async Task<IEnumerable<SearchDocument>> SearchAsync(string indexName, string searchText, SearchOptions searchOptions = null)
@@ -130,7 +130,7 @@ public class AzureAIIndexDocumentManager(
         }
     }
 
-    public async Task MergeOrUploadDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments, AzureAIIndexSettings indexSettings)
+    public async Task MergeOrUploadDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments, AzureAISearchIndexSettings indexSettings)
     {
         ArgumentNullException.ThrowIfNull(indexDocuments, nameof(indexDocuments));
         ArgumentNullException.ThrowIfNull(indexSettings, nameof(indexSettings));
@@ -149,7 +149,7 @@ public class AzureAIIndexDocumentManager(
         }
     }
 
-    public async Task UploadDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments, AzureAIIndexSettings indexSettings)
+    public async Task UploadDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments, AzureAISearchIndexSettings indexSettings)
     {
         ArgumentNullException.ThrowIfNull(indexDocuments, nameof(indexDocuments));
         ArgumentNullException.ThrowIfNull(indexSettings, nameof(indexSettings));
@@ -168,7 +168,7 @@ public class AzureAIIndexDocumentManager(
         }
     }
 
-    private IEnumerable<SearchDocument> CreateSearchDocuments(IEnumerable<DocumentIndex> indexDocuments, AzureAIIndexSettings indexSettings)
+    private IEnumerable<SearchDocument> CreateSearchDocuments(IEnumerable<DocumentIndex> indexDocuments, AzureAISearchIndexSettings indexSettings)
     {
         foreach (var indexDocument in indexDocuments)
         {
@@ -176,7 +176,7 @@ public class AzureAIIndexDocumentManager(
         }
     }
 
-    private SearchDocument CreateSearchDocument(DocumentIndex documentIndex, AzureAIIndexSettings indexSettings)
+    private SearchDocument CreateSearchDocument(DocumentIndex documentIndex, AzureAISearchIndexSettings indexSettings)
     {
         var doc = new SearchDocument()
         {
@@ -248,7 +248,7 @@ public class AzureAIIndexDocumentManager(
                         if (!string.IsNullOrEmpty(stringValue))
                         {
                             // Only full-test field is single string value. All others, support a collection of strings.
-                            if (key == AzureAIIndexManager.FullTextKey)
+                            if (key == AzureAISearchIndexManager.FullTextKey)
                             {
                                 doc.TryAdd(key, stringValue);
                             }

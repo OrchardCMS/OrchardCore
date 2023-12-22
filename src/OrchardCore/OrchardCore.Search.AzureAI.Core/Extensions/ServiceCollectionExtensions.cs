@@ -18,24 +18,34 @@ public static class ServiceCollectionExtensions
     {
         var section = configuration.GetSection("OrchardCore_AzureAISearch");
 
-        var options = section.Get<AzureAIOptions>();
+        var options = section.Get<AzureAISearchDefaultOptions>();
 
-        if (string.IsNullOrWhiteSpace(options.Endpoint) || string.IsNullOrWhiteSpace(options.Credential?.Key))
+        if (string.IsNullOrWhiteSpace(options?.Endpoint) || string.IsNullOrWhiteSpace(options?.Credential?.Key))
         {
-            logger.LogError("Azure AI Search module is enabled. However, the connection settings are not provided.");
+            logger.LogError("Azure AI Search module is enabled. However, the connection settings are not provided in configuration file..");
 
             return false;
         }
 
-        services.Configure<AzureAIOptions>(section);
+        services.Configure<AzureAISearchDefaultOptions>(opts =>
+        {
+            opts.Endpoint = options.Endpoint;
+            opts.Credential = options.Credential;
+            opts.IndexesPrefix = options.IndexesPrefix;
+            opts.Analyzers = options.Analyzers == null || options.Analyzers.Length == 0
+            ? AzureAISearchDefaultOptions.DefaultAnalyzers
+            : options.Analyzers;
+            opts.SetConfigurationExists(true);
+        });
+
         services.AddAzureClients(builder =>
         {
             builder.AddSearchIndexClient(section);
         });
         services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddScoped<IAuthorizationHandler, AzureAIAuthorizationHandler>();
-        services.AddScoped<IContentHandler, AzureAIIndexingContentHandler>();
-        services.AddScoped<AzureAIIndexManager>();
+        services.AddScoped<IAuthorizationHandler, AzureAISearchAuthorizationHandler>();
+        services.AddScoped<IContentHandler, AzureAISearchIndexingContentHandler>();
+        services.AddScoped<AzureAISearchIndexManager>();
         services.AddScoped<AzureAIIndexDocumentManager>();
         services.AddSingleton<AzureAIIndexSettingsService>();
         services.AddSingleton<SearchClientFactory>();

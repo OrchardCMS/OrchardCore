@@ -4,11 +4,11 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Search.AzureAI;
 
-public class AzureAIIndexPermissionHelper
+public class AzureAISearchIndexPermissionHelper
 {
-    public static readonly Permission ManageAzureAIIndexes = new("ManageAzureAIIndexes", "Manage Azure AI Search Indexes");
+    public static readonly Permission ManageAzureAISearchIndexes = new("ManageAzureAISearchIndexes", "Manage Azure AI Search Indexes");
 
-    private static readonly Permission _indexPermissionTemplate = new("ManageAzureAIIndex_{0}", "Query Azure AI Search '{0}' Index", new[] { ManageAzureAIIndexes });
+    private static readonly Permission _indexPermissionTemplate = new("ManageAzureAISearchIndex_{0}", "Query Azure AI Search '{0}' Index", new[] { ManageAzureAISearchIndexes });
 
     private static readonly Dictionary<string, Permission> _permissions = [];
 

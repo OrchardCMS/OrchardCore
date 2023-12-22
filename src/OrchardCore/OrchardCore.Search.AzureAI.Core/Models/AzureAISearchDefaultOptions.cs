@@ -3,7 +3,7 @@ using Azure.Search.Documents.Indexes.Models;
 
 namespace OrchardCore.Search.AzureAI.Models;
 
-public class AzureAIOptions
+public class AzureAISearchDefaultOptions
 {
     public const string DefaultAnalyzer = LexicalAnalyzerName.Values.StandardLucene;
 
@@ -110,5 +110,13 @@ public class AzureAIOptions
     // Environment prefix for all of the indexes.
     public string IndexesPrefix { get; set; }
 
-    public string[] Analyzers { get; set; } = DefaultAnalyzers;
+    public string[] Analyzers { get; set; }
+
+    private bool _configurationExists;
+
+    public void SetConfigurationExists(bool configurationExists)
+        => _configurationExists = configurationExists;
+
+    public bool IsConfigurationExists()
+        => _configurationExists;
 }

@@ -6,7 +6,7 @@ namespace OrchardCore.Search.AzureAI.ViewModels;
 
 public class AzureAIIndexOptions
 {
-    public AzureAIIndexBulkAction BulkAction { get; set; }
+    public AzureAISearchIndexBulkAction BulkAction { get; set; }
 
     public string Search { get; set; }
 

@@ -17,7 +17,7 @@ using OrchardCore.Search.AzureAI.Services;
 
 namespace OrchardCore.Search.AzureAI.Handlers;
 
-public class AzureAIIndexingContentHandler(IHttpContextAccessor httpContextAccessor) : ContentHandlerBase
+public class AzureAISearchIndexingContentHandler(IHttpContextAccessor httpContextAccessor) : ContentHandlerBase
 {
     private readonly List<ContentContextBase> _contexts = [];
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
@@ -62,7 +62,7 @@ public class AzureAIIndexingContentHandler(IHttpContextAccessor httpContextAcces
         var contentItemIndexHandlers = services.GetServices<IContentItemIndexHandler>();
 
         var indexSettingsService = services.GetRequiredService<AzureAIIndexSettingsService>();
-        var logger = services.GetRequiredService<ILogger<AzureAIIndexingContentHandler>>();
+        var logger = services.GetRequiredService<ILogger<AzureAISearchIndexingContentHandler>>();
         var indexDocumentManager = services.GetRequiredService<AzureAIIndexDocumentManager>();
 
         // Multiple items may have been updated in the same scope, e.g through a recipe.
@@ -106,7 +106,7 @@ public class AzureAIIndexingContentHandler(IHttpContextAccessor httpContextAcces
                     else
                     {
                         var index = new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId);
-                        var buildIndexContext = new BuildIndexContext(index, contentItem, [contentItem.ContentType], new AzureAIContentIndexSettings());
+                        var buildIndexContext = new BuildIndexContext(index, contentItem, [contentItem.ContentType], new AzureAISearchContentIndexSettings());
                         await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), logger);
                         await indexDocumentManager.MergeOrUploadDocumentsAsync(indexSettings.IndexName, new DocumentIndex[] { buildIndexContext.DocumentIndex }, indexSettings);
                     }

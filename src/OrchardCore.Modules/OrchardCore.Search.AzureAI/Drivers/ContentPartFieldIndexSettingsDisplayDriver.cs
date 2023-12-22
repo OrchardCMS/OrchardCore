@@ -17,23 +17,23 @@ public class ContentPartFieldIndexSettingsDisplayDriver(IAuthorizationService au
 
     public override async Task<IDisplayResult> EditAsync(ContentPartFieldDefinition contentPartFieldDefinition, IUpdateModel updater)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAIIndexPermissionHelper.ManageAzureAIIndexes))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
         {
             return null;
         }
 
-        return Initialize<AzureAIContentIndexSettings>("AzureAIContentIndexSettings_Edit", model => contentPartFieldDefinition.GetSettings<AzureAIContentIndexSettings>())
+        return Initialize<AzureAISearchContentIndexSettings>("AzureAISearchContentIndexSettings_Edit", model => contentPartFieldDefinition.GetSettings<AzureAISearchContentIndexSettings>())
             .Location("Content:10");
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition contentPartFieldDefinition, UpdatePartFieldEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAIIndexPermissionHelper.ManageAzureAIIndexes))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
         {
             return null;
         }
 
-        var model = new AzureAIContentIndexSettings();
+        var model = new AzureAISearchContentIndexSettings();
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 

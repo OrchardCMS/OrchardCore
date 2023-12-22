@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace OrchardCore.Search.AzureAI.Models;
 
-public class AzureAIIndexSettings
+public class AzureAISearchIndexSettings
 {
     [JsonIgnore]
     public string IndexName { get; set; }
@@ -18,5 +18,5 @@ public class AzureAIIndexSettings
 
     public string Culture { get; set; }
 
-    public IList<AzureAIIndexMap> IndexMappings { get; set; }
+    public IList<AzureAISearchIndexMap> IndexMappings { get; set; }
 }

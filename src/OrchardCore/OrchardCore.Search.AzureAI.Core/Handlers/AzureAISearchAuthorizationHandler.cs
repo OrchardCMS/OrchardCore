@@ -10,7 +10,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.AzureAI.Handlers;
 
-public class AzureAIAuthorizationHandler(IServiceProvider serviceProvider) : AuthorizationHandler<PermissionRequirement>
+public class AzureAISearchAuthorizationHandler(IServiceProvider serviceProvider) : AuthorizationHandler<PermissionRequirement>
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
 
@@ -42,7 +42,7 @@ public class AzureAIAuthorizationHandler(IServiceProvider serviceProvider) : Aut
         {
             _authorizationService ??= _serviceProvider?.GetService<IAuthorizationService>();
 
-            var permission = AzureAIIndexPermissionHelper.GetPermission(indexName);
+            var permission = AzureAISearchIndexPermissionHelper.GetPermission(indexName);
 
             if (await _authorizationService.AuthorizeAsync(context.User, permission))
             {

@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using OrchardCore.Indexing;
 using static OrchardCore.Indexing.DocumentIndex;
 
 namespace OrchardCore.Search.AzureAI.Models;
 
-public class AzureAIIndexMap
+public class AzureAISearchIndexMap
 {
     public string Key { get; set; }
 
@@ -12,12 +12,12 @@ public class AzureAIIndexMap
 
     public DocumentIndexOptions Options { get; set; }
 
-    public AzureAIIndexMap()
+    public AzureAISearchIndexMap()
     {
 
     }
 
-    public AzureAIIndexMap(string key, Types type)
+    public AzureAISearchIndexMap(string key, Types type)
     {
         ArgumentException.ThrowIfNullOrEmpty(key, nameof(key));
 
@@ -25,7 +25,7 @@ public class AzureAIIndexMap
         Type = type;
     }
 
-    public AzureAIIndexMap(string key, Types type, DocumentIndexOptions options)
+    public AzureAISearchIndexMap(string key, Types type, DocumentIndexOptions options)
         : this(key, type)
     {
         Options = options;

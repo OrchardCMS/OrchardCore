@@ -23,7 +23,7 @@ public class AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer) : INavigatio
                 .Add(S["Indexing"], S["Indexing"].PrefixPosition(), indexing => indexing
                     .Add(S["Azure AI Indices"], S["Azure AI Indices"].PrefixPosition(), indexes => indexes
                         .Action("Index", "Admin", new { area = "OrchardCore.Search.AzureAI" })
-                        .Permission(AzureAIIndexPermissionHelper.ManageAzureAIIndexes)
+                        .Permission(AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes)
                         .LocalNav()
                         )
                     )

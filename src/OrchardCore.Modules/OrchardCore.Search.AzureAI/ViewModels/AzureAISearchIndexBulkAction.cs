@@ -1,6 +1,6 @@
 namespace OrchardCore.Search.AzureAI.ViewModels;
 
-public enum AzureAIIndexBulkAction
+public enum AzureAISearchIndexBulkAction
 {
     None,
     Remove

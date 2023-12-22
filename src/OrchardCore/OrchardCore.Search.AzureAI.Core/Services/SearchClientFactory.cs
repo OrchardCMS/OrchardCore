@@ -8,11 +8,11 @@ using OrchardCore.Search.AzureAI.Models;
 namespace OrchardCore.Search.AzureAI.Services;
 
 public class SearchClientFactory(
-    IOptions<AzureAIOptions> azureAIOptions,
+    IOptions<AzureAISearchDefaultOptions> azureAIOptions,
     ILogger<SearchClientFactory> logger)
 {
     private readonly ConcurrentDictionary<string, SearchClient> _clients = [];
-    private readonly AzureAIOptions _azureAIOptions = azureAIOptions.Value;
+    private readonly AzureAISearchDefaultOptions _azureAIOptions = azureAIOptions.Value;
     private readonly ILogger _logger = logger;
 
     public SearchClient Create(string indexFullName)

@@ -12,13 +12,13 @@ public class AzureAIIndexSettingsService
     /// <summary>
     /// Loads the index settings document from the store for updating and that should not be cached.
     /// </summary>
-    public Task<AzureAIIndexSettingsDocument> LoadDocumentAsync()
+    public Task<AzureAISearchIndexSettingsDocument> LoadDocumentAsync()
         => DocumentManager.GetOrCreateMutableAsync();
 
     /// <summary>
     /// Gets the index settings document from the cache for sharing and that should not be updated.
     /// </summary>
-    public async Task<AzureAIIndexSettingsDocument> GetDocumentAsync()
+    public async Task<AzureAISearchIndexSettingsDocument> GetDocumentAsync()
     {
         var document = await DocumentManager.GetOrCreateImmutableAsync();
 
@@ -30,10 +30,10 @@ public class AzureAIIndexSettingsService
         return document;
     }
 
-    public async Task<IEnumerable<AzureAIIndexSettings>> GetSettingsAsync()
+    public async Task<IEnumerable<AzureAISearchIndexSettings>> GetSettingsAsync()
         => (await GetDocumentAsync()).IndexSettings.Values;
 
-    public async Task<AzureAIIndexSettings> GetSettingsAsync(string indexName)
+    public async Task<AzureAISearchIndexSettings> GetSettingsAsync(string indexName)
     {
         var document = await GetDocumentAsync();
 
@@ -45,7 +45,7 @@ public class AzureAIIndexSettingsService
         return null;
     }
 
-    public async Task UpdateIndexAsync(AzureAIIndexSettings settings)
+    public async Task UpdateIndexAsync(AzureAISearchIndexSettings settings)
     {
         var document = await LoadDocumentAsync();
         document.IndexSettings[settings.IndexName] = settings;
@@ -59,6 +59,6 @@ public class AzureAIIndexSettingsService
         await DocumentManager.UpdateAsync(document);
     }
 
-    private static IDocumentManager<AzureAIIndexSettingsDocument> DocumentManager
-        => ShellScope.Services.GetRequiredService<IDocumentManager<AzureAIIndexSettingsDocument>>();
+    private static IDocumentManager<AzureAISearchIndexSettingsDocument> DocumentManager
+        => ShellScope.Services.GetRequiredService<IDocumentManager<AzureAISearchIndexSettingsDocument>>();
 }
