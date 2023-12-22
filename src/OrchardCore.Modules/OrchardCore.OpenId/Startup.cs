@@ -35,8 +35,6 @@ using OrchardCore.OpenId.Services.Handlers;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.Tasks;
 using OrchardCore.Recipes.Services;
-using OrchardCore.Secrets.Models;
-using OrchardCore.Secrets.Options;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
@@ -201,10 +199,6 @@ namespace OrchardCore.OpenId
             });
 
             services.AddDataMigration<ServerMigrations>();
-            services.Configure<SecretOptions>(options =>
-            {
-                options.SecretTypes.Add(typeof(X509Secret));
-            });
         }
 
         public override async ValueTask ConfigureAsync(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

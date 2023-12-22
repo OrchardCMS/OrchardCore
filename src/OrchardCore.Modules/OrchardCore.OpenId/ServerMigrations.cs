@@ -39,14 +39,12 @@ public class ServerMigrations : DataMigration
         else
         {
             await _secretService.AddSecretAsync<RSASecret>(
-                name: ServerSecrets.Encryption,
-                configure: (secret, info) =>
-                    RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+                ServerSecrets.Encryption,
+                (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
 
             await _secretService.AddSecretAsync<RSASecret>(
-                name: ServerSecrets.Signing,
-                configure: (secret, info) =>
-                    RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+                ServerSecrets.Signing,
+                (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
         }
 
         // Shortcut other migration steps on new content definition schemas.
@@ -63,8 +61,8 @@ public class ServerMigrations : DataMigration
             !string.IsNullOrEmpty(settings.EncryptionCertificateThumbprint))
         {
             await _secretService.AddSecretAsync<X509Secret>(
-                name: ServerSecrets.Encryption,
-                configure: (secret, info) =>
+                ServerSecrets.Encryption,
+                (secret, info) =>
                 {
                     secret.StoreLocation = settings.EncryptionCertificateStoreLocation;
                     secret.StoreName = settings.EncryptionCertificateStoreName;
@@ -75,9 +73,8 @@ public class ServerMigrations : DataMigration
         else
         {
             await _secretService.AddSecretAsync<RSASecret>(
-                name: ServerSecrets.Encryption,
-                configure: (secret, info) =>
-                    RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+                ServerSecrets.Encryption,
+                (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
         }
 
         if (settings.SigningCertificateStoreLocation is not null &&
@@ -85,8 +82,8 @@ public class ServerMigrations : DataMigration
             !string.IsNullOrEmpty(settings.SigningCertificateThumbprint))
         {
             await _secretService.AddSecretAsync<X509Secret>(
-                name: ServerSecrets.Signing,
-                configure: (secret, info) =>
+                ServerSecrets.Signing,
+                (secret, info) =>
                 {
                     secret.StoreLocation = settings.SigningCertificateStoreLocation;
                     secret.StoreName = settings.SigningCertificateStoreName;
@@ -97,9 +94,8 @@ public class ServerMigrations : DataMigration
         else
         {
             await _secretService.AddSecretAsync<RSASecret>(
-                name: ServerSecrets.Signing,
-                configure: (secret, info) =>
-                    RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+                ServerSecrets.Signing,
+                (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
         }
     }
 }

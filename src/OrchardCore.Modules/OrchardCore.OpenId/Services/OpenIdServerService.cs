@@ -306,8 +306,8 @@ namespace OrchardCore.OpenId.Services
             if (secret is not RSASecret rsaSecret)
             {
                 rsaSecret = await _secretService.AddSecretAsync<RSASecret>(
-                    name: ServerSecrets.Encryption,
-                    configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+                    ServerSecrets.Encryption,
+                    (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
             }
 
             var rsa = RSAGenerator.GenerateRSASecurityKey(size: 2048);
@@ -350,8 +350,8 @@ namespace OrchardCore.OpenId.Services
             if (secret is not RSASecret rsaSecret)
             {
                 rsaSecret = await _secretService.AddSecretAsync<RSASecret>(
-                    name: ServerSecrets.Signing,
-                    configure: (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+                    ServerSecrets.Signing,
+                    (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
             }
 
             var rsa = RSAGenerator.GenerateRSASecurityKey(size: 2048);
