@@ -12,11 +12,11 @@ namespace OrchardCore.ContentFields.Indexing
             var settings = context.ContentPartFieldDefinition.GetSettings<NumericFieldSettings>();
             var options = context.Settings.ToOptions();
 
-            var isInt = settings.Scale == 0;
+            var isInteger = settings.Scale == 0;
 
             foreach (var key in context.Keys)
             {
-                if (isInt)
+                if (isInteger)
                 {
                     context.DocumentIndex.Set(key, (int?)field.Value, options);
 
