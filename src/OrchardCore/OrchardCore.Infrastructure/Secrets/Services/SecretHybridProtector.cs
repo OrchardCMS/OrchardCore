@@ -47,22 +47,15 @@ public class SecretHybridProtector : ISecretProtector
             throw new InvalidOperationException($"Secret '{_signingSecret}' cannot be used for signing.");
         }
 
-        expiration ??= DateTimeOffset.MaxValue;
-        var plaintextBytes = Encoding.UTF8.GetBytes(plaintext);
-
-        // Prepend the expiration time (as a 64-bit UTC tick count).
-        var plaintextWithHeader = new byte[checked(8 + plaintextBytes.Length)];
-        BitHelpers.WriteUInt64(plaintextWithHeader, 0, (ulong)expiration.Value.UtcTicks);
-        Buffer.BlockCopy(plaintextBytes, 0, plaintextWithHeader, 8, plaintext.Length);
-
         byte[] encrypted;
         using var aes = Aes.Create();
         var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+
         using (var msEncrypt = new MemoryStream())
         {
             using var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write);
-            await csEncrypt.WriteAsync(plaintextWithHeader, 0, plaintextWithHeader.Length);
-            await csEncrypt.FlushFinalBlockAsync();
+            using (var swEncrypt = new StreamWriter(csEncrypt))
+            await swEncrypt.WriteAsync(plaintext);
             encrypted = msEncrypt.ToArray();
         }
 
@@ -84,6 +77,7 @@ public class SecretHybridProtector : ISecretProtector
             Signature = Convert.ToBase64String(signature),
             EncryptionSecret = _encryptionSecret,
             SigningSecret = _signingSecret,
+            Expiration = (expiration ??= DateTimeOffset.MaxValue).UtcTicks,
         };
 
         var serialized = JsonConvert.SerializeObject(envelope);
@@ -124,25 +118,14 @@ public class SecretHybridProtector : ISecretProtector
         var aesKey = rsaDecrypt.Decrypt(Convert.FromBase64String(envelope.Key), RSAEncryptionPadding.Pkcs1);
 
         using var aes = Aes.Create();
-        using var msDecrypt = new MemoryStream(protectedBytes);
         using var decrypt = aes.CreateDecryptor(aesKey, Convert.FromBase64String(envelope.Iv));
+        using var msDecrypt = new MemoryStream(protectedBytes);
         using var csDecrypt = new CryptoStream(msDecrypt, decrypt, CryptoStreamMode.Read);
+        using var srDecrypt = new StreamReader(csDecrypt);
 
-        var plaintextWithHeader = new byte[checked(protectedBytes.Length)];
-        var decryptedBytesCount = await csDecrypt.ReadAsync(plaintextWithHeader, 0, protectedBytes.Length);
-        await csDecrypt.FlushAsync();
+        var plaintext = await srDecrypt.ReadToEndAsync();
+        var expiration = new DateTimeOffset(envelope.Expiration, TimeSpan.Zero /* UTC */);
 
-        if (decryptedBytesCount < 8)
-        {
-            throw new CryptographicException("The payload is invalid, the expiration header is missing.");
-        }
-
-        var utcTicksExpiration = BitHelpers.ReadUInt64(plaintextWithHeader, 0);
-        var embeddedExpiration = new DateTimeOffset(checked((long)utcTicksExpiration), TimeSpan.Zero /* UTC */);
-
-        var plaintextBytes = new byte[decryptedBytesCount - 8];
-        Buffer.BlockCopy(plaintextWithHeader, 8, plaintextBytes, 0, plaintextBytes.Length);
-
-        return (Encoding.UTF8.GetString(plaintextBytes), embeddedExpiration);
+        return (plaintext, expiration);
     }
 }
