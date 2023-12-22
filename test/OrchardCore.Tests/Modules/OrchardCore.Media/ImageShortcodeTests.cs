@@ -5,7 +5,6 @@ using OrchardCore.Media.Events;
 using OrchardCore.Media.Shortcodes;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Shortcodes.Services;
-using Shortcodes;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media
 {
