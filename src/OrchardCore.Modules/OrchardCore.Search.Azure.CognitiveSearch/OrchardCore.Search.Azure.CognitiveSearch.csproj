@@ -7,7 +7,7 @@
     <Description>
       $(OCCMSDescription)
 
-      Creates Azure Cognitive Search Search indexes to support search scenarios, introduces a preconfigured container-enabled content type.
+      Creates Azure Cognitive Search indexes to support search scenarios, introduces a preconfigured container-enabled content type.
     </Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>

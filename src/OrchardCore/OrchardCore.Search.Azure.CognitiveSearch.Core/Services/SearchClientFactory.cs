@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using Azure.Search.Documents;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -9,7 +9,7 @@ namespace OrchardCore.Search.Azure.CognitiveSearch.Services;
 
 public class SearchClientFactory
 {
-    private readonly Dictionary<string, SearchClient> _clients = [];
+    private readonly ConcurrentDictionary<string, SearchClient> _clients = [];
     private readonly AzureCognitiveSearchOptions _azureCognitiveSearchOptions;
     private readonly ILogger _logger;
 
@@ -28,14 +28,14 @@ public class SearchClientFactory
         {
             if (!Uri.TryCreate(_azureCognitiveSearchOptions.Endpoint, UriKind.Absolute, out var endpoint))
             {
-                _logger.LogError("Endpoint is missing from Azure Cognative Search Settings.");
+                _logger.LogError("Endpoint is missing from Azure Cognitive Search Settings.");
 
                 return null;
             }
 
             client = new SearchClient(endpoint, indexFullName, _azureCognitiveSearchOptions.Credential);
 
-            _clients[indexFullName] = client;
+            _clients.TryAdd(indexFullName, client);
         }
 
         return client;

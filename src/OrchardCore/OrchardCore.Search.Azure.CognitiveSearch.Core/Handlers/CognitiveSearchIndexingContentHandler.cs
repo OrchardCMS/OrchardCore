@@ -66,7 +66,7 @@ public class CognitiveSearchIndexingContentHandler : ContentHandlerBase
         var contentManager = services.GetRequiredService<IContentManager>();
         var contentItemIndexHandlers = services.GetServices<IContentItemIndexHandler>();
 
-        var indexSettingsService = services.GetRequiredService<CognitiveSearchIndexSettingsService>();
+        var indexSettingsService = services.GetRequiredService<AzureCognitiveSearchIndexSettingsService>();
         var logger = services.GetRequiredService<ILogger<CognitiveSearchIndexingContentHandler>>();
         var searchDocumentManager = services.GetRequiredService<AzureCognitiveSearchDocumentManager>();
 
@@ -113,7 +113,7 @@ public class CognitiveSearchIndexingContentHandler : ContentHandlerBase
                         var index = new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId);
                         var buildIndexContext = new BuildIndexContext(index, contentItem, [contentItem.ContentType], new CognitiveSearchContentIndexSettings());
                         await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), logger);
-                        await searchDocumentManager.MergeOrUploadDocumentsAsync(indexSettings.IndexName, new DocumentIndex[] { buildIndexContext.DocumentIndex });
+                        await searchDocumentManager.MergeOrUploadDocumentsAsync(indexSettings.IndexName, new DocumentIndex[] { buildIndexContext.DocumentIndex }, indexSettings);
                     }
                 }
             }

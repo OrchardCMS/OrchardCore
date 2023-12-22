@@ -1,40 +1,25 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Azure.Search.Documents;
 using Azure.Search.Documents.Models;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Indexing;
+using OrchardCore.Modules;
+using OrchardCore.Search.Azure.CognitiveSearch.Models;
 
 namespace OrchardCore.Search.Azure.CognitiveSearch.Services;
 
-public class AzureCognitiveSearchDocumentManager
+public class AzureCognitiveSearchDocumentManager(
+    SearchClientFactory searchClientFactory,
+    AzureCognitiveSearchIndexManager searchIndexManager,
+    ILogger<AzureCognitiveSearchDocumentManager> logger)
 {
-    private readonly SearchClientFactory _searchClientFactory;
-    private readonly AzureCognitiveSearchIndexManager _searchIndexManager;
-    private readonly ILogger _logger;
-    private readonly static Dictionary<string, string> _fieldMaps = new()
-    {
-        { IndexingConstants.OwnerKey, CognitiveIndexingConstants.OwnerKey },
-        { IndexingConstants.FullTextKey, CognitiveIndexingConstants.FullTextKey },
-        { IndexingConstants.DisplayTextAnalyzedKey, CognitiveIndexingConstants.DisplayTextAnalyzedKey },
-        { IndexingConstants.ContentTypeKey, CognitiveIndexingConstants.ContentTypeKey },
-        { IndexingConstants.LatestKey, CognitiveIndexingConstants.LatestKey },
-        { IndexingConstants.PublishedUtcKey, CognitiveIndexingConstants.PublishedUtcKey },
-        { IndexingConstants.CreatedUtcKey, CognitiveIndexingConstants.CreatedUtcKey },
-        { IndexingConstants.ModifiedUtcKey, CognitiveIndexingConstants.ModifiedUtcKey },
-    };
-
-    public AzureCognitiveSearchDocumentManager(
-        SearchClientFactory searchClientFactory,
-        AzureCognitiveSearchIndexManager searchIndexManager,
-        ILogger<AzureCognitiveSearchDocumentManager> logger)
-    {
-        _searchClientFactory = searchClientFactory;
-        _searchIndexManager = searchIndexManager;
-        _logger = logger;
-    }
+    private readonly SearchClientFactory _searchClientFactory = searchClientFactory;
+    private readonly AzureCognitiveSearchIndexManager _searchIndexManager = searchIndexManager;
+    private readonly ILogger _logger = logger;
 
     public async Task<IEnumerable<SearchDocument>> SearchAsync(string indexName, string searchText, SearchOptions searchOptions = null)
     {
@@ -94,11 +79,13 @@ public class AzureCognitiveSearchDocumentManager
 
     public async Task DeleteDocumentsAsync(string indexName, IEnumerable<string> contentItemIds)
     {
+        ArgumentNullException.ThrowIfNull(contentItemIds, nameof(contentItemIds));
+
         try
         {
             var client = GetSearchClient(indexName);
 
-            await client.DeleteDocumentsAsync(CognitiveIndexingConstants.ContentItemIdKey, contentItemIds);
+            await client.DeleteDocumentsAsync(IndexingConstants.ContentItemIdKey, contentItemIds);
         }
         catch (Exception ex)
         {
@@ -115,7 +102,7 @@ public class AzureCognitiveSearchDocumentManager
             // Match-all documents.
             var totalRecords = SearchAsync(indexName, "*", (doc) =>
             {
-                if (doc.TryGetValue(CognitiveIndexingConstants.ContentItemIdKey, out var contentItemId))
+                if (doc.TryGetValue(IndexingConstants.ContentItemIdKey, out var contentItemId))
                 {
                     contentItemIds.Add(contentItemId.ToString());
                 }
@@ -135,7 +122,7 @@ public class AzureCognitiveSearchDocumentManager
         {
             var client = GetSearchClient(indexName);
 
-            await client.DeleteDocumentsAsync(CognitiveIndexingConstants.ContentItemIdKey, contentItemIds);
+            await client.DeleteDocumentsAsync(IndexingConstants.ContentItemIdKey, contentItemIds);
         }
         catch (Exception ex)
         {
@@ -143,13 +130,16 @@ public class AzureCognitiveSearchDocumentManager
         }
     }
 
-    public async Task MergeOrUploadDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments)
+    public async Task MergeOrUploadDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments, AzureCognitiveSearchIndexSettings indexSettings)
     {
+        ArgumentNullException.ThrowIfNull(indexDocuments, nameof(indexDocuments));
+        ArgumentNullException.ThrowIfNull(indexSettings, nameof(indexSettings));
+
         try
         {
             var client = GetSearchClient(indexName);
 
-            var docs = CreateSearchDocuments(indexDocuments);
+            var docs = CreateSearchDocuments(indexDocuments, indexSettings);
 
             var response = await client.MergeOrUploadDocumentsAsync(docs);
         }
@@ -159,13 +149,16 @@ public class AzureCognitiveSearchDocumentManager
         }
     }
 
-    public async Task UploadDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments)
+    public async Task UploadDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments, AzureCognitiveSearchIndexSettings indexSettings)
     {
+        ArgumentNullException.ThrowIfNull(indexDocuments, nameof(indexDocuments));
+        ArgumentNullException.ThrowIfNull(indexSettings, nameof(indexSettings));
+
         try
         {
             var client = GetSearchClient(indexName);
 
-            var docs = CreateSearchDocuments(indexDocuments);
+            var docs = CreateSearchDocuments(indexDocuments, indexSettings);
 
             await client.UploadDocumentsAsync(docs);
         }
@@ -175,37 +168,31 @@ public class AzureCognitiveSearchDocumentManager
         }
     }
 
-    private static IEnumerable<SearchDocument> CreateSearchDocuments(IEnumerable<DocumentIndex> indexDocuments)
+    private IEnumerable<SearchDocument> CreateSearchDocuments(IEnumerable<DocumentIndex> indexDocuments, AzureCognitiveSearchIndexSettings indexSettings)
     {
         foreach (var indexDocument in indexDocuments)
         {
-            yield return CreateSearchDocument(indexDocument);
+            yield return CreateSearchDocument(indexDocument, indexSettings);
         }
     }
 
-    private static SearchDocument CreateSearchDocument(DocumentIndex documentIndex)
+    private SearchDocument CreateSearchDocument(DocumentIndex documentIndex, AzureCognitiveSearchIndexSettings indexSettings)
     {
         var doc = new SearchDocument()
-            {
-                { CognitiveIndexingConstants.ContentItemIdKey, documentIndex.ContentItemId },
-                { CognitiveIndexingConstants.ContentItemVersionIdKey, documentIndex.ContentItemVersionId },
-            };
-
-        var properties = new List<KeyValuePair<string, string>>();
+        {
+            { IndexingConstants.ContentItemIdKey, documentIndex.ContentItemId },
+            { IndexingConstants.ContentItemVersionIdKey, documentIndex.ContentItemVersionId },
+        };
 
         foreach (var entry in documentIndex.Entries)
         {
-            if (!_fieldMaps.TryGetValue(entry.Name, out var key))
+            if (!_searchIndexManager.TryGetSafeFieldName(entry.Name, out var key))
             {
-                var stringValue = entry.Value?.ToString();
+                continue;
+            }
 
-                if (string.IsNullOrEmpty(stringValue))
-                {
-                    continue;
-                }
-
-                properties.Add(new KeyValuePair<string, string>(entry.Name.Replace(".", "__"), stringValue));
-
+            if (!indexSettings.IndexMappings.Any(map => key.EqualsOrdinalIgnoreCase(map.Key)))
+            {
                 continue;
             }
 
@@ -214,7 +201,7 @@ public class AzureCognitiveSearchDocumentManager
                 case DocumentIndex.Types.Boolean:
                     if (entry.Value is bool boolValue)
                     {
-                        AddValue(doc, key, boolValue);
+                        doc.TryAdd(key, boolValue);
                     }
                     break;
 
@@ -222,11 +209,11 @@ public class AzureCognitiveSearchDocumentManager
 
                     if (entry.Value is DateTimeOffset offsetValue)
                     {
-                        AddValue(doc, key, offsetValue);
+                        doc.TryAdd(key, offsetValue);
                     }
                     else if (entry.Value is DateTime dateTimeValue)
                     {
-                        AddValue(doc, key, dateTimeValue.ToUniversalTime());
+                        doc.TryAdd(key, dateTimeValue.ToUniversalTime());
                     }
 
                     break;
@@ -234,7 +221,7 @@ public class AzureCognitiveSearchDocumentManager
                 case DocumentIndex.Types.Integer:
                     if (entry.Value != null && long.TryParse(entry.Value.ToString(), out var value))
                     {
-                        AddValue(doc, key, value);
+                        doc.TryAdd(key, value);
                     }
 
                     break;
@@ -242,7 +229,14 @@ public class AzureCognitiveSearchDocumentManager
                 case DocumentIndex.Types.Number:
                     if (entry.Value != null)
                     {
-                        AddValue(doc, key, Convert.ToDouble(entry.Value));
+                        doc.TryAdd(key, Convert.ToDouble(entry.Value));
+                    }
+                    break;
+
+                case DocumentIndex.Types.GeoPoint:
+                    if (entry.Value != null)
+                    {
+                        doc.TryAdd(key, entry.Value);
                     }
                     break;
 
@@ -253,43 +247,29 @@ public class AzureCognitiveSearchDocumentManager
 
                         if (!string.IsNullOrEmpty(stringValue))
                         {
-                            AddValue(doc, key, stringValue);
+                            // Only full-test field is single string value. All others, support a collection of strings.
+                            if (key == AzureCognitiveSearchIndexManager.FullTextKey)
+                            {
+                                doc.TryAdd(key, stringValue);
+                            }
+                            else
+                            {
+                                if (!doc.TryGetValue(key, out var obj) || obj is not List<string> existingValue)
+                                {
+                                    existingValue = [];
+                                }
+
+                                existingValue.Add(stringValue);
+
+                                doc[key] = existingValue;
+                            }
                         }
                     }
                     break;
             }
         }
 
-        doc[CognitiveIndexingConstants.Properties] = properties;
-
         return doc;
-    }
-
-    private static void AddValue(SearchDocument doc, string key, object value)
-    {
-        if (doc.TryAdd(key, value))
-        {
-            return;
-        }
-
-        // At this point, we know that a value already exists.
-        if (doc[key] is List<object> list)
-        {
-            list.Add(value);
-
-            doc[key] = list;
-
-            return;
-        }
-
-        // Convert the existing value to a list of values.
-        var values = new List<object>()
-            {
-                doc[key],
-                value,
-            };
-
-        doc[key] = values;
     }
 
     private SearchClient GetSearchClient(string indexName)

@@ -71,6 +71,7 @@
                         </div>
                         <div class="float-end">
                             <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-IndexName="@entry.Name">@T["Edit"]</a>
+                            <a class="btn btn-warning btn-sm" asp-action="Rebuild" asp-route-id="@entry.Name" data-title="@T["Rebuild Index"]" data-message="@T["Your index will be rebuilt, which might alter some services during the process. Continue?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-url-af="UnsafeUrl">@T["Rebuild"]</a>
                             <a class="btn btn-danger btn-sm" type="button" asp-action="Delete" asp-route-IndexName="@entry.Name" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                         </div>
                     </div>

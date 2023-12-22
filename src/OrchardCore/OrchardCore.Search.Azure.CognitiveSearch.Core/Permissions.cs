@@ -7,9 +7,9 @@ namespace OrchardCore.Search.Azure.CognitiveSearch;
 
 public class Permissions : IPermissionProvider
 {
-    private readonly CognitiveSearchIndexSettingsService _cognitiveSearchIndexSettingsService;
+    private readonly AzureCognitiveSearchIndexSettingsService _cognitiveSearchIndexSettingsService;
 
-    public Permissions(CognitiveSearchIndexSettingsService cognitiveSearchIndexSettingsService)
+    public Permissions(AzureCognitiveSearchIndexSettingsService cognitiveSearchIndexSettingsService)
     {
         _cognitiveSearchIndexSettingsService = cognitiveSearchIndexSettingsService;
     }

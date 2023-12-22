@@ -1,6 +1,6 @@
 namespace OrchardCore.Search.Azure.CognitiveSearch.ViewModels;
 
-public enum ContentsBulkAction
+public enum AzureCognitiveIndexBulkAction
 {
     None,
     Remove

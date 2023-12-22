@@ -7,7 +7,7 @@ public class AdminIndexViewModel
 {
     public IEnumerable<IndexViewModel> Indexes { get; set; }
 
-    public ContentOptions Options { get; set; } = new();
+    public AzureCognitiveIndexOptions Options { get; set; } = new();
 
     [BindNever]
     public dynamic Pager { get; set; }

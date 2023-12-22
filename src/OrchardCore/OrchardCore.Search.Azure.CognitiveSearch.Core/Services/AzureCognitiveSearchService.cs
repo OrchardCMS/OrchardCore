@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Azure.Search.Documents;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Contents.Indexing;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Azure.CognitiveSearch.Models;
 using OrchardCore.Settings;
@@ -11,7 +12,7 @@ namespace OrchardCore.Search.Azure.CognitiveSearch.Services;
 public class AzureCognitiveSearchService(
     ISiteService siteService,
     AzureCognitiveSearchDocumentManager searchDocumentManager,
-    CognitiveSearchIndexSettingsService cognitiveSearchIndexSettingsService,
+    AzureCognitiveSearchIndexSettingsService cognitiveSearchIndexSettingsService,
     ILogger<AzureCognitiveSearchService> logger
         ) : ISearchService
 {
@@ -19,7 +20,7 @@ public class AzureCognitiveSearchService(
 
     private readonly ISiteService _siteService = siteService;
     private readonly AzureCognitiveSearchDocumentManager _searchDocumentManager = searchDocumentManager;
-    private readonly CognitiveSearchIndexSettingsService _cognitiveSearchIndexSettingsService = cognitiveSearchIndexSettingsService;
+    private readonly AzureCognitiveSearchIndexSettingsService _cognitiveSearchIndexSettingsService = cognitiveSearchIndexSettingsService;
     private readonly ILogger<AzureCognitiveSearchService> _logger = logger;
 
     public string Name => Key;
@@ -68,7 +69,7 @@ public class AzureCognitiveSearchService(
 
             await _searchDocumentManager.SearchAsync(index, term, (doc) =>
             {
-                if (doc.TryGetValue(CognitiveIndexingConstants.ContentItemIdKey, out var contentItemId))
+                if (doc.TryGetValue(IndexingConstants.ContentItemIdKey, out var contentItemId))
                 {
                     result.ContentItemIds.Add(contentItemId.ToString());
                 }

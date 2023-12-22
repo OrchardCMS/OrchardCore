@@ -26,7 +26,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IContentHandler, CognitiveSearchIndexingContentHandler>();
         services.AddScoped<AzureCognitiveSearchIndexManager>();
         services.AddScoped<AzureCognitiveSearchDocumentManager>();
-        services.AddSingleton<CognitiveSearchIndexSettingsService>();
+        services.AddSingleton<AzureCognitiveSearchIndexSettingsService>();
         services.AddSingleton<SearchClientFactory>();
     }
 }

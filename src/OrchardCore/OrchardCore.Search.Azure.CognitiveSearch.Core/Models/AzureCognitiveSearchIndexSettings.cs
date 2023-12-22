@@ -1,8 +1,9 @@
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace OrchardCore.Search.Azure.CognitiveSearch.Models;
 
-public class CognitiveSearchIndexSettings
+public class AzureCognitiveSearchIndexSettings
 {
     [JsonIgnore]
     public string IndexName { get; set; }
@@ -16,4 +17,6 @@ public class CognitiveSearchIndexSettings
     public string[] IndexedContentTypes { get; set; }
 
     public string Culture { get; set; }
+
+    public IList<AzureCognitiveSearchIndexMap> IndexMappings { get; set; }
 }

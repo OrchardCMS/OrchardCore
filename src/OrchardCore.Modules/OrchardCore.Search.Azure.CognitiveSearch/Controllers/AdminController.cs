@@ -12,10 +12,13 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Indexing;
 using OrchardCore.Liquid;
+using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Search.Azure.CognitiveSearch.Models;
@@ -34,11 +37,13 @@ public class AdminController : Controller
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly AzureCognitiveSearchIndexManager _azureCognitiveSearchIndexManager;
-    private readonly CognitiveSearchIndexSettingsService _cognitiveSearchIndexSettingsService;
+    private readonly AzureCognitiveSearchIndexSettingsService _cognitiveSearchIndexSettingsService;
+    private readonly IContentManager _contentManager;
     private readonly JavaScriptEncoder _javaScriptEncoder;
     private readonly IShapeFactory _shapeFactory;
     private readonly AzureCognitiveSearchOptions _azureCognitiveSearchOptions;
     private readonly INotifier _notifier;
+    private readonly IEnumerable<IContentItemIndexHandler> _contentItemIndexHandlers;
     private readonly ILogger _logger;
 
     protected readonly IStringLocalizer S;
@@ -51,11 +56,13 @@ public class AdminController : Controller
         IContentDefinitionManager contentDefinitionManager,
         IAuthorizationService authorizationService,
         AzureCognitiveSearchIndexManager azureCognitiveSearchIndexManager,
-        CognitiveSearchIndexSettingsService cognitiveSearchIndexSettingsService,
+        AzureCognitiveSearchIndexSettingsService cognitiveSearchIndexSettingsService,
+        IContentManager contentManager,
         JavaScriptEncoder javaScriptEncoder,
         IShapeFactory shapeFactory,
         IOptions<AzureCognitiveSearchOptions> azureCognitiveSearchOptions,
         INotifier notifier,
+        IEnumerable<IContentItemIndexHandler> contentItemIndexHandlers,
         ILogger<AdminController> logger,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer
@@ -68,17 +75,19 @@ public class AdminController : Controller
         _authorizationService = authorizationService;
         _azureCognitiveSearchIndexManager = azureCognitiveSearchIndexManager;
         _cognitiveSearchIndexSettingsService = cognitiveSearchIndexSettingsService;
+        _contentManager = contentManager;
         _javaScriptEncoder = javaScriptEncoder;
         _shapeFactory = shapeFactory;
         _azureCognitiveSearchOptions = azureCognitiveSearchOptions.Value;
         _notifier = notifier;
+        _contentItemIndexHandlers = contentItemIndexHandlers;
         _logger = logger;
 
         S = stringLocalizer;
         H = htmlLocalizer;
     }
 
-    public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(AzureCognitiveIndexOptions options, PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, AzureCognitiveSearchIndexPermissionHelper.ManageAzureCognitiveSearchIndexes))
         {
@@ -118,7 +127,7 @@ public class AdminController : Controller
         };
 
         model.Options.ContentsBulkAction = [
-            new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
+            new SelectListItem(S["Delete"], nameof(AzureCognitiveIndexBulkAction.Remove)),
         ];
 
         return View(model);
@@ -128,14 +137,16 @@ public class AdminController : Controller
     [FormValueRequired("submit.Filter")]
     public ActionResult IndexFilterPOST(AdminIndexViewModel model)
     {
-        return RedirectToAction("Index", new RouteValueDictionary {
+        return RedirectToAction("Index",
+            new RouteValueDictionary
+            {
                 { "Options.Search", model.Options.Search }
             });
     }
 
     [HttpPost, ActionName(nameof(Index))]
     [FormValueRequired("submit.BulkAction")]
-    public async Task<ActionResult> IndexPost(ContentOptions options, IEnumerable<string> itemIds)
+    public async Task<ActionResult> IndexPost(AzureCognitiveIndexOptions options, IEnumerable<string> itemIds)
     {
         if (!await _authorizationService.AuthorizeAsync(User, AzureCognitiveSearchIndexPermissionHelper.ManageAzureCognitiveSearchIndexes))
         {
@@ -149,14 +160,16 @@ public class AdminController : Controller
 
             switch (options.BulkAction)
             {
-                case ContentsBulkAction.None:
+                case AzureCognitiveIndexBulkAction.None:
                     break;
-                case ContentsBulkAction.Remove:
+                case AzureCognitiveIndexBulkAction.Remove:
                     foreach (var item in checkedContentItems)
                     {
                         await _azureCognitiveSearchIndexManager.DeleteAsync(item.IndexName);
                     }
+
                     await _notifier.SuccessAsync(H["Indices successfully removed."]);
+
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Unknown bulk action");
@@ -174,7 +187,7 @@ public class AdminController : Controller
         }
 
         var IsCreate = string.IsNullOrWhiteSpace(indexName);
-        var settings = new CognitiveSearchIndexSettings();
+        var settings = new AzureCognitiveSearchIndexSettings();
 
         if (!IsCreate)
         {
@@ -242,7 +255,7 @@ public class AdminController : Controller
         {
             try
             {
-                var settings = new CognitiveSearchIndexSettings
+                var settings = new AzureCognitiveSearchIndexSettings
                 {
                     IndexName = model.IndexName,
                     AnalyzerName = model.AnalyzerName,
@@ -261,6 +274,8 @@ public class AdminController : Controller
                 {
                     settings.QueryAnalyzerName = AzureCognitiveSearchOptions.DefaultAnalyzer;
                 }
+
+                await SetMappingsAsync(settings);
 
                 // We call Rebuild in order to reset the index state cursor too in case the same index
                 // name was also used previously.
@@ -290,7 +305,7 @@ public class AdminController : Controller
         {
             try
             {
-                var settings = new CognitiveSearchIndexSettings
+                var settings = new AzureCognitiveSearchIndexSettings
                 {
                     IndexName = model.IndexName,
                     AnalyzerName = model.AnalyzerName,
@@ -351,6 +366,46 @@ public class AdminController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [HttpPost]
+    public async Task<ActionResult> Rebuild(string id)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, AzureCognitiveSearchIndexPermissionHelper.ManageAzureCognitiveSearchIndexes))
+        {
+            return Forbid();
+        }
+
+        if (!await _azureCognitiveSearchIndexManager.ExistsAsync(id))
+        {
+            return NotFound();
+        }
+
+        var settings = await _cognitiveSearchIndexSettingsService.GetSettingsAsync(id);
+
+        if (settings == null)
+        {
+            return NotFound();
+        }
+
+        await SetMappingsAsync(settings);
+
+        await _azureCognitiveSearchIndexManager.RebuildIndexAsync(settings);
+
+        if (settings.QueryAnalyzerName != settings.AnalyzerName)
+        {
+            // Query Analyzer may be different until the index in rebuilt.
+            // Since the index is rebuilt, lets make sure we query using the same analyzer.
+            settings.QueryAnalyzerName = settings.AnalyzerName;
+
+            await _cognitiveSearchIndexSettingsService.UpdateIndexAsync(settings);
+        }
+
+        // await _azureCognitiveSearchIndexManager.ProcessContentItemsAsync(id);
+
+        await _notifier.SuccessAsync(H["Index <em>{0}</em> rebuilt successfully.", id]);
+
+        return RedirectToAction("Index");
+    }
+
     private void PopulateMenuOptions(CognitiveSearchSettingsViewModel model)
     {
         model.Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
@@ -374,6 +429,23 @@ public class AdminController : Controller
         else if (!_azureCognitiveSearchIndexManager.TryGetSafeName(model.IndexName, out var indexName) || indexName != model.IndexName)
         {
             ModelState.AddModelError(nameof(CognitiveSearchSettingsViewModel.IndexName), S["The index name contains forbidden characters."]);
+        }
+    }
+
+    private async Task SetMappingsAsync(AzureCognitiveSearchIndexSettings settings)
+    {
+        settings.IndexMappings = [];
+        foreach (var contentType in settings.IndexedContentTypes)
+        {
+            var contentItem = await _contentManager.NewAsync(contentType);
+            var index = new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId);
+            var buildIndexContext = new BuildIndexContext(index, contentItem, [contentType], new CognitiveSearchContentIndexSettings());
+            await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger);
+
+            foreach (var entry in index.Entries)
+            {
+                settings.IndexMappings.Add(new AzureCognitiveSearchIndexMap(entry.Name, entry.Type, entry.Options));
+            }
         }
     }
 }

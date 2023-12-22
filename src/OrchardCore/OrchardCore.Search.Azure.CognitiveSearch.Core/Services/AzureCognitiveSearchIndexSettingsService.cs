@@ -7,18 +7,18 @@ using OrchardCore.Search.Azure.CognitiveSearch.Models;
 
 namespace OrchardCore.Search.Azure.CognitiveSearch.Services;
 
-public class CognitiveSearchIndexSettingsService
+public class AzureCognitiveSearchIndexSettingsService
 {
     /// <summary>
     /// Loads the index settings document from the store for updating and that should not be cached.
     /// </summary>
-    public Task<CognitiveSearchIndexSettingsDocument> LoadDocumentAsync()
+    public Task<AzureCognitiveSearchIndexSettingsDocument> LoadDocumentAsync()
         => DocumentManager.GetOrCreateMutableAsync();
 
     /// <summary>
     /// Gets the index settings document from the cache for sharing and that should not be updated.
     /// </summary>
-    public async Task<CognitiveSearchIndexSettingsDocument> GetDocumentAsync()
+    public async Task<AzureCognitiveSearchIndexSettingsDocument> GetDocumentAsync()
     {
         var document = await DocumentManager.GetOrCreateImmutableAsync();
 
@@ -30,10 +30,10 @@ public class CognitiveSearchIndexSettingsService
         return document;
     }
 
-    public async Task<IEnumerable<CognitiveSearchIndexSettings>> GetSettingsAsync()
+    public async Task<IEnumerable<AzureCognitiveSearchIndexSettings>> GetSettingsAsync()
         => (await GetDocumentAsync()).IndexSettings.Values;
 
-    public async Task<CognitiveSearchIndexSettings> GetSettingsAsync(string indexName)
+    public async Task<AzureCognitiveSearchIndexSettings> GetSettingsAsync(string indexName)
     {
         var document = await GetDocumentAsync();
 
@@ -45,7 +45,7 @@ public class CognitiveSearchIndexSettingsService
         return null;
     }
 
-    public async Task UpdateIndexAsync(CognitiveSearchIndexSettings settings)
+    public async Task UpdateIndexAsync(AzureCognitiveSearchIndexSettings settings)
     {
         var document = await LoadDocumentAsync();
         document.IndexSettings[settings.IndexName] = settings;
@@ -59,6 +59,6 @@ public class CognitiveSearchIndexSettingsService
         await DocumentManager.UpdateAsync(document);
     }
 
-    private static IDocumentManager<CognitiveSearchIndexSettingsDocument> DocumentManager
-        => ShellScope.Services.GetRequiredService<IDocumentManager<CognitiveSearchIndexSettingsDocument>>();
+    private static IDocumentManager<AzureCognitiveSearchIndexSettingsDocument> DocumentManager
+        => ShellScope.Services.GetRequiredService<IDocumentManager<AzureCognitiveSearchIndexSettingsDocument>>();
 }

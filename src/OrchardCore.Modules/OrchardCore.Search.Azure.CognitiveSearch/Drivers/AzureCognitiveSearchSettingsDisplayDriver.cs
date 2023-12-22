@@ -25,13 +25,13 @@ public class AzureCognitiveSearchSettingsDisplayDriver : SectionDisplayDriver<IS
     {
         WriteIndented = true,
     };
-    private readonly CognitiveSearchIndexSettingsService _cognitiveSearchIndexSettingsService;
+    private readonly AzureCognitiveSearchIndexSettingsService _cognitiveSearchIndexSettingsService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     protected readonly IStringLocalizer S;
 
     public AzureCognitiveSearchSettingsDisplayDriver(
-        CognitiveSearchIndexSettingsService cognitiveSearchIndexSettingsService,
+        AzureCognitiveSearchIndexSettingsService cognitiveSearchIndexSettingsService,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IStringLocalizer<AzureCognitiveSearchSettingsDisplayDriver> stringLocalizer
