@@ -58,7 +58,7 @@ namespace OrchardCore.OpenId.YesSql.Models
         /// Gets or sets the JSON Web Key Set associated with the current application.
         /// </summary>
         // TODO: change the property type to JsonWebKeySet after migrating to System.Text.Json.
-        public JObject JsonWebKeySet { get; set; }
+        public JsonObject JsonWebKeySet { get; set; }
 
         /// <summary>
         /// Gets or sets the permissions associated with the application.

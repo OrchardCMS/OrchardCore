@@ -41,7 +41,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
             }
         }
 
-        private async Task ProcessFeatureDescriptorAsync(ShapeTableBuilder builder, IFeatureInfo featureDescriptor)
+        private Task ProcessFeatureDescriptorAsync(ShapeTableBuilder builder, IFeatureInfo featureDescriptor)
         {
             // TODO : (ngm) Replace with configuration Provider and read from that.
             // Dont use JSON Deserializer directly.
@@ -58,6 +58,8 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
                     ProcessPlacementFile(builder, featureDescriptor, placementFile);
                 }
             }
+
+            return Task.CompletedTask;
         }
 
         private void ProcessPlacementFile(ShapeTableBuilder builder, IFeatureInfo featureDescriptor, PlacementFile placementFile)
