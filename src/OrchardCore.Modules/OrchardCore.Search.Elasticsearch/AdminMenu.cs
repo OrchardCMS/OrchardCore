@@ -25,6 +25,8 @@ public class AdminMenu(IStringLocalizer<AdminMenu> localizer) : INavigationProvi
                         .Permission(Permissions.ManageElasticIndexes)
                         .LocalNav()
                         )
+                    )
+                .Add(S["Queries"], S["Queries"].PrefixPosition(), import => import
                     .Add(S["Run Elasticsearch Query"], S["Run Elasticsearch Query"].PrefixPosition(), queries => queries
                         .Action("Query", "Admin", new { area = "OrchardCore.Search.Elasticsearch" })
                         .Permission(Permissions.ManageElasticIndexes)

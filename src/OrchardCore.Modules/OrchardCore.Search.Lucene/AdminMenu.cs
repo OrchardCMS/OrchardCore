@@ -25,6 +25,8 @@ public class AdminMenu(IStringLocalizer<AdminMenu> localizer) : INavigationProvi
                         .Permission(Permissions.ManageLuceneIndexes)
                         .LocalNav()
                      )
+                )
+            .Add(S["Queries"], S["Queries"].PrefixPosition(), import => import
                     .Add(S["Run Lucene Query"], S["Run Lucene Query"].PrefixPosition(), queries => queries
                         .Action("Query", "Admin", new { area = "OrchardCore.Search.Lucene" })
                         .Permission(Permissions.ManageLuceneIndexes)

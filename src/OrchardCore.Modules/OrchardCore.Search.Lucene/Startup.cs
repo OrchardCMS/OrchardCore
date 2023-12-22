@@ -69,7 +69,6 @@ namespace OrchardCore.Search.Lucene
                 o.Analyzers.Add(new LuceneAnalyzer(LuceneSettings.StandardAnalyzer,
                     new StandardAnalyzer(LuceneSettings.DefaultVersion))));
 
-            services.AddScoped<IDisplayDriver<ISite>, LuceneSettingsDisplayDriver>();
             services.AddScoped<IDisplayDriver<Query>, LuceneQueryDisplayDriver>();
 
             services.AddScoped<IContentHandler, LuceneIndexingContentHandler>();
@@ -131,6 +130,7 @@ namespace OrchardCore.Search.Lucene
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<ISearchService, LuceneSearchService>();
+            services.AddScoped<IDisplayDriver<ISite>, LuceneSettingsDisplayDriver>();
         }
     }
 
