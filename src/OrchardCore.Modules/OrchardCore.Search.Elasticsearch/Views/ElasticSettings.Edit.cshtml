@@ -1,10 +1,11 @@
+@using OrchardCore.Contents.Indexing
 @using OrchardCore.Search.Elasticsearch.Core.Models
 
 @model ElasticSettingsViewModel
 
 @if (!Model.SearchIndexes.Any())
 {
-    <div class="alert alert-warning">@T["You need to create at least an index to set as the Search index."]</div>
+    <div class="alert alert-warning">@T["No indices exist! Please create at least one index to configure Elasticsearch service."]</div>
 
     return;
 }
@@ -38,7 +39,7 @@
     <label asp-for="SearchFields" class="form-label">@T["Default searched fields"]</label>
     <input asp-for="SearchFields" class="form-control" />
     <span asp-validation-for="SearchFields"></span>
-    <span class="hint">@T["A comma separated list of fields to use for search pages. The default value is <code>Content.ContentItem.FullText</code>."]</span>
+    <span class="hint">@T["A comma separated list of fields to use for search pages. The default value is <code>{0}</code>.", IndexingConstants.FullTextKey]</span>
 </div>
 
 <script at="Foot">

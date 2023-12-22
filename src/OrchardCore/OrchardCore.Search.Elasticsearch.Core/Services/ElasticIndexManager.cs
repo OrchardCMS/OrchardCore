@@ -23,8 +23,10 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
     /// <summary>
     /// Provides methods to manage Elasticsearch indices.
     /// </summary>
-    public sealed class ElasticIndexManager : IDisposable
+    public sealed class ElasticIndexManager
     {
+        private const string _separator = "_";
+
         private readonly IElasticClient _elasticClient;
         private readonly ShellSettings _shellSettings;
         private readonly IClock _clock;
@@ -32,12 +34,11 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         private readonly ElasticsearchOptions _elasticsearchOptions;
         private readonly ConcurrentDictionary<string, DateTime> _timestamps = new(StringComparer.OrdinalIgnoreCase);
         private readonly string _lastTaskId = "last_task_id";
-        private readonly string[] _ignoredFields = Array.Empty<string>();
         private readonly Dictionary<string, Func<IAnalyzer>> _analyzerGetter = new(StringComparer.OrdinalIgnoreCase)
         {
             { "standard", () => new StandardAnalyzer() },
             { "simple", () => new SimpleAnalyzer() },
-            { "keyword" , () => new KeywordAnalyzer() },
+            { "keyword", () => new KeywordAnalyzer() },
             { "whitespace", () => new WhitespaceAnalyzer() },
             { "pattern", () => new PatternAnalyzer() },
             { "language", () => new LanguageAnalyzer() },
@@ -45,8 +46,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             { "custom", () => new CustomAnalyzer() },
             { "stop", () => new StopAnalyzer() },
         };
-        private static readonly List<char> _charsToRemove = new()
-        {
+        private static readonly List<char> _charsToRemove =
+        [
             '\\',
             '/',
             '*',
@@ -60,10 +61,9 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             '#',
             ':',
             '.',
-        };
+        ];
 
         private string _indexPrefix;
-        private bool _disposed;
 
         public ElasticIndexManager(
             IElasticClient elasticClient,
@@ -92,7 +92,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         public async Task<bool> CreateIndexAsync(ElasticIndexSettings elasticIndexSettings)
         {
             //Get Index name scoped by ShellName
-            if (await Exists(elasticIndexSettings.IndexName))
+            if (await ExistsAsync(elasticIndexSettings.IndexName))
             {
                 return true;
             }
@@ -219,7 +219,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                         continue;
                     }
 
-                    var key = analyzerProperty.Key.Replace("_", string.Empty);
+                    var key = analyzerProperty.Key.Replace(_separator, string.Empty);
 
                     var property = properties.FirstOrDefault(p => p.Name.Equals(key, StringComparison.OrdinalIgnoreCase));
 
@@ -359,7 +359,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
         public async Task<bool> DeleteIndex(string indexName)
         {
-            if (await Exists(indexName))
+            if (await ExistsAsync(indexName))
             {
                 var result = await _elasticClient.Indices.DeleteAsync(GetFullIndexName(indexName));
 
@@ -372,7 +372,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// <summary>
         /// Verify if an index exists for the current tenant.
         /// </summary>
-        public async Task<bool> Exists(string indexName)
+        public async Task<bool> ExistsAsync(string indexName)
         {
             if (string.IsNullOrWhiteSpace(indexName))
             {
@@ -446,7 +446,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         {
             var elasticTopDocs = new ElasticTopDocs();
 
-            if (await Exists(indexName))
+            if (await ExistsAsync(indexName))
             {
                 var fullIndexName = GetFullIndexName(indexName);
 
@@ -504,7 +504,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// </summary>
         public async Task SearchAsync(string indexName, Func<IElasticClient, Task> elasticClient)
         {
-            if (await Exists(indexName))
+            if (await ExistsAsync(indexName))
             {
                 await elasticClient(_elasticClient);
 
@@ -512,21 +512,16 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             }
         }
 
-        private Dictionary<string, object> CreateElasticDocument(DocumentIndex documentIndex)
+        private static Dictionary<string, object> CreateElasticDocument(DocumentIndex documentIndex)
         {
             var entries = new Dictionary<string, object>
             {
-                { "ContentItemId", documentIndex.ContentItemId },
-                { "ContentItemVersionId", documentIndex.ContentItemVersionId }
+                { IndexingConstants.ContentItemIdKey, documentIndex.ContentItemId },
+                { IndexingConstants.ContentItemVersionIdKey, documentIndex.ContentItemVersionId }
             };
 
             foreach (var entry in documentIndex.Entries)
             {
-                if (Array.Exists(_ignoredFields, x => entry.Name.Contains(x)))
-                {
-                    continue;
-                }
-
                 switch (entry.Type)
                 {
                     case DocumentIndex.Types.Boolean:
@@ -583,12 +578,9 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
         public string GetFullIndexName(string indexName)
         {
-            if (string.IsNullOrEmpty(indexName))
-            {
-                throw new ArgumentException($"{nameof(indexName)} cannot be null or empty.");
-            }
+            ArgumentException.ThrowIfNullOrEmpty(indexName, nameof(indexName));
 
-            return GetIndexPrefix() + "_" + indexName;
+            return GetIndexPrefix() + _separator + indexName;
         }
 
         private static void AddValue(Dictionary<string, object> entries, string key, object value)
@@ -631,20 +623,10 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                 parts.Add(_shellSettings.Name.ToLowerInvariant());
 
-                _indexPrefix = string.Join("_", parts);
+                _indexPrefix = string.Join(_separator, parts);
             }
 
             return _indexPrefix;
-        }
-
-        public void Dispose()
-        {
-            if (_disposed)
-            {
-                return;
-            }
-
-            _disposed = true;
         }
     }
 }

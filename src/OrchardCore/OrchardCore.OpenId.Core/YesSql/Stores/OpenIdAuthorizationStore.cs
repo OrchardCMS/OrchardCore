@@ -44,24 +44,18 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual async ValueTask CreateAsync(TAuthorization authorization, CancellationToken cancellationToken)
         {
-            if (authorization == null)
-            {
-                throw new ArgumentNullException(nameof(authorization));
-            }
+            ArgumentNullException.ThrowIfNull(authorization);
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _session.Save(authorization, collection: OpenIdCollection);
+            await _session.SaveAsync(authorization, collection: OpenIdCollection);
             await _session.SaveChangesAsync();
         }
 
         /// <inheritdoc/>
         public virtual async ValueTask DeleteAsync(TAuthorization authorization, CancellationToken cancellationToken)
         {
-            if (authorization == null)
-            {
-                throw new ArgumentNullException(nameof(authorization));
-            }
+            ArgumentNullException.ThrowIfNull(authorization);
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -73,15 +67,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
         public virtual IAsyncEnumerable<TAuthorization> FindAsync(
             string subject, string client, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(subject))
-            {
-                throw new ArgumentException("The subject cannot be null or empty.", nameof(subject));
-            }
-
-            if (string.IsNullOrEmpty(client))
-            {
-                throw new ArgumentException("The client cannot be null or empty.", nameof(client));
-            }
+            ArgumentException.ThrowIfNullOrEmpty(subject);
+            ArgumentException.ThrowIfNullOrEmpty(client);
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -94,20 +81,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
         public virtual IAsyncEnumerable<TAuthorization> FindAsync(
             string subject, string client, string status, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(subject))
-            {
-                throw new ArgumentException("The subject cannot be null or empty.", nameof(subject));
-            }
-
-            if (string.IsNullOrEmpty(client))
-            {
-                throw new ArgumentException("The client identifier cannot be null or empty.", nameof(client));
-            }
-
-            if (string.IsNullOrEmpty(status))
-            {
-                throw new ArgumentException("The status cannot be null or empty.", nameof(client));
-            }
+            ArgumentException.ThrowIfNullOrEmpty(subject);
+            ArgumentException.ThrowIfNullOrEmpty(client);
+            ArgumentException.ThrowIfNullOrEmpty(status);
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -121,25 +97,10 @@ namespace OrchardCore.OpenId.YesSql.Stores
             string subject, string client,
             string status, string type, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(subject))
-            {
-                throw new ArgumentException("The subject cannot be null or empty.", nameof(subject));
-            }
-
-            if (string.IsNullOrEmpty(client))
-            {
-                throw new ArgumentException("The client identifier cannot be null or empty.", nameof(client));
-            }
-
-            if (string.IsNullOrEmpty(status))
-            {
-                throw new ArgumentException("The status cannot be null or empty.", nameof(client));
-            }
-
-            if (string.IsNullOrEmpty(type))
-            {
-                throw new ArgumentException("The type cannot be null or empty.", nameof(client));
-            }
+            ArgumentException.ThrowIfNullOrEmpty(subject);
+            ArgumentException.ThrowIfNullOrEmpty(client);
+            ArgumentException.ThrowIfNullOrEmpty(status);
+            ArgumentException.ThrowIfNullOrEmpty(type);
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -167,10 +128,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         public virtual IAsyncEnumerable<TAuthorization> FindByApplicationIdAsync(
             string identifier, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(identifier))
-            {
-                throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
-            }
+            ArgumentException.ThrowIfNullOrEmpty(identifier);
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -182,10 +140,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual async ValueTask<TAuthorization> FindByIdAsync(string identifier, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(identifier))
-            {
-                throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
-            }
+            ArgumentException.ThrowIfNullOrEmpty(identifier);
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -197,10 +152,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual async ValueTask<TAuthorization> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(identifier))
-            {
-                throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
-            }
+            ArgumentException.ThrowIfNullOrEmpty(identifier);
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -211,10 +163,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         public virtual IAsyncEnumerable<TAuthorization> FindBySubjectAsync(
             string subject, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(subject))
-            {
-                throw new ArgumentException("The subject cannot be null or empty.", nameof(subject));
-            }
+            ArgumentException.ThrowIfNullOrEmpty(subject);
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -226,10 +175,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<string> GetApplicationIdAsync(TAuthorization authorization, CancellationToken cancellationToken)
         {
-            if (authorization == null)
-            {
-                throw new ArgumentNullException(nameof(authorization));
-            }
+            ArgumentNullException.ThrowIfNull(authorization);
 
             return new ValueTask<string>(authorization.ApplicationId);
         }
@@ -243,10 +189,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<DateTimeOffset?> GetCreationDateAsync(TAuthorization authorization, CancellationToken cancellationToken)
         {
-            if (authorization == null)
-            {
-                throw new ArgumentNullException(nameof(authorization));
-            }
+            ArgumentNullException.ThrowIfNull(authorization);
 
             if (authorization.CreationDate is null)
             {
@@ -259,10 +202,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<string> GetIdAsync(TAuthorization authorization, CancellationToken cancellationToken)
         {
-            if (authorization == null)
-            {
-                throw new ArgumentNullException(nameof(authorization));
-            }
+            ArgumentNullException.ThrowIfNull(authorization);
 
             return new ValueTask<string>(authorization.AuthorizationId);
         }
@@ -270,10 +210,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<string> GetPhysicalIdAsync(TAuthorization authorization, CancellationToken cancellationToken)
         {
-            if (authorization == null)
-            {
-                throw new ArgumentNullException(nameof(authorization));
-            }
+            ArgumentNullException.ThrowIfNull(authorization);
 
             return new ValueTask<string>(authorization.Id.ToString(CultureInfo.InvariantCulture));
         }
@@ -281,10 +218,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<ImmutableDictionary<string, JsonElement>> GetPropertiesAsync(TAuthorization authorization, CancellationToken cancellationToken)
         {
-            if (authorization == null)
-            {
-                throw new ArgumentNullException(nameof(authorization));
-            }
+            ArgumentNullException.ThrowIfNull(authorization);
 
             if (authorization.Properties == null)
             {
@@ -298,10 +232,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<ImmutableArray<string>> GetScopesAsync(TAuthorization authorization, CancellationToken cancellationToken)
         {
-            if (authorization == null)
-            {
-                throw new ArgumentNullException(nameof(authorization));
-            }
+            ArgumentNullException.ThrowIfNull(authorization);
 
             return new ValueTask<ImmutableArray<string>>(authorization.Scopes);
         }
@@ -309,10 +240,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<string> GetStatusAsync(TAuthorization authorization, CancellationToken cancellationToken)
         {
-            if (authorization == null)
-            {
-                throw new ArgumentNullException(nameof(authorization));
-            }
+            ArgumentNullException.ThrowIfNull(authorization);
 
             return new ValueTask<string>(authorization.Status);
         }
@@ -320,10 +248,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<string> GetSubjectAsync(TAuthorization authorization, CancellationToken cancellationToken)
         {
-            if (authorization == null)
-            {
-                throw new ArgumentNullException(nameof(authorization));
-            }
+            ArgumentNullException.ThrowIfNull(authorization);
 
             return new ValueTask<string>(authorization.Subject);
         }
@@ -331,10 +256,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<string> GetTypeAsync(TAuthorization authorization, CancellationToken cancellationToken)
         {
-            if (authorization == null)
-            {
-                throw new ArgumentNullException(nameof(authorization));
-            }
+            ArgumentNullException.ThrowIfNull(authorization);
 
             return new ValueTask<string>(authorization.Type);
         }
@@ -368,30 +290,32 @@ namespace OrchardCore.OpenId.YesSql.Stores
             => throw new NotSupportedException();
 
         /// <inheritdoc/>
-        public virtual async ValueTask PruneAsync(DateTimeOffset threshold, CancellationToken cancellationToken)
+        public virtual async ValueTask<long> PruneAsync(DateTimeOffset threshold, CancellationToken cancellationToken)
         {
             // Note: YesSql doesn't support set-based deletes, which prevents removing entities
             // in a single command without having to retrieve and materialize them first.
             // To work around this limitation, entities are manually listed and deleted using a batch logic.
 
-            IList<Exception> exceptions = null;
+            List<Exception> exceptions = null;
+
+            var result = 0L;
 
             for (var i = 0; i < 1000; i++)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var authorizations = await _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
+                var authorizations = (await _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
                     authorization => authorization.CreationDate < threshold.UtcDateTime &&
                                     (authorization.Status != OpenIddictConstants.Statuses.Valid ||
                                     (authorization.Type == OpenIddictConstants.AuthorizationTypes.AdHoc &&
                                      authorization.AuthorizationId.IsNotIn<OpenIdTokenIndex>(
                                          token => token.AuthorizationId,
                                          token => token.Id != 0))),
-                    collection: OpenIdCollection).Take(100).ListAsync();
+                    collection: OpenIdCollection).Take(100).ListAsync()).ToList();
 
-                if (!authorizations.Any())
+                if (authorizations.Count is 0)
                 {
-                    return;
+                    break;
                 }
 
                 foreach (var authorization in authorizations)
@@ -406,25 +330,27 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 catch (Exception exception)
                 {
                     exceptions ??= new List<Exception>(capacity: 1);
-
                     exceptions.Add(exception);
+
+                    continue;
                 }
+
+                result += authorizations.Count;
             }
 
             if (exceptions != null)
             {
                 throw new AggregateException("An error occurred while pruning authorizations.", exceptions);
             }
+
+            return result;
         }
 
         /// <inheritdoc/>
         public virtual ValueTask SetApplicationIdAsync(TAuthorization authorization,
             string identifier, CancellationToken cancellationToken)
         {
-            if (authorization == null)
-            {
-                throw new ArgumentNullException(nameof(authorization));
-            }
+            ArgumentNullException.ThrowIfNull(authorization);
 
             if (string.IsNullOrEmpty(identifier))
             {
@@ -438,12 +364,10 @@ namespace OrchardCore.OpenId.YesSql.Stores
             return default;
         }
 
-        public ValueTask SetCreationDateAsync(TAuthorization authorization, DateTimeOffset? date, CancellationToken cancellationToken)
+        /// <inheritdoc/>
+        public virtual ValueTask SetCreationDateAsync(TAuthorization authorization, DateTimeOffset? date, CancellationToken cancellationToken)
         {
-            if (authorization == null)
-            {
-                throw new ArgumentNullException(nameof(authorization));
-            }
+            ArgumentNullException.ThrowIfNull(authorization);
 
             authorization.CreationDate = date?.UtcDateTime;
 
@@ -453,10 +377,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask SetPropertiesAsync(TAuthorization authorization, ImmutableDictionary<string, JsonElement> properties, CancellationToken cancellationToken)
         {
-            if (authorization == null)
-            {
-                throw new ArgumentNullException(nameof(authorization));
-            }
+            ArgumentNullException.ThrowIfNull(authorization);
 
             if (properties == null || properties.IsEmpty)
             {
@@ -474,10 +395,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         public virtual ValueTask SetScopesAsync(TAuthorization authorization,
             ImmutableArray<string> scopes, CancellationToken cancellationToken)
         {
-            if (authorization == null)
-            {
-                throw new ArgumentNullException(nameof(authorization));
-            }
+            ArgumentNullException.ThrowIfNull(authorization);
 
             authorization.Scopes = scopes;
 
@@ -488,10 +406,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         public virtual ValueTask SetStatusAsync(TAuthorization authorization,
             string status, CancellationToken cancellationToken)
         {
-            if (authorization == null)
-            {
-                throw new ArgumentNullException(nameof(authorization));
-            }
+            ArgumentNullException.ThrowIfNull(authorization);
 
             authorization.Status = status;
 
@@ -502,10 +417,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         public virtual ValueTask SetSubjectAsync(TAuthorization authorization,
             string subject, CancellationToken cancellationToken)
         {
-            if (authorization == null)
-            {
-                throw new ArgumentNullException(nameof(authorization));
-            }
+            ArgumentNullException.ThrowIfNull(authorization);
 
             authorization.Subject = subject;
 
@@ -516,10 +428,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         public virtual ValueTask SetTypeAsync(TAuthorization authorization,
             string type, CancellationToken cancellationToken)
         {
-            if (authorization == null)
-            {
-                throw new ArgumentNullException(nameof(authorization));
-            }
+            ArgumentNullException.ThrowIfNull(authorization);
 
             authorization.Type = type;
 
@@ -529,14 +438,11 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual async ValueTask UpdateAsync(TAuthorization authorization, CancellationToken cancellationToken)
         {
-            if (authorization == null)
-            {
-                throw new ArgumentNullException(nameof(authorization));
-            }
+            ArgumentNullException.ThrowIfNull(authorization);
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _session.Save(authorization, checkConcurrency: true, collection: OpenIdCollection);
+            await _session.SaveAsync(authorization, checkConcurrency: true, collection: OpenIdCollection);
 
             try
             {

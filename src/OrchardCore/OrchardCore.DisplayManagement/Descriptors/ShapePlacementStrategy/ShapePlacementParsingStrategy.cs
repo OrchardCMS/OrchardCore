@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Environment.Extensions;
@@ -13,7 +14,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
     /// <summary>
     /// This component discovers and announces the shape alterations implied by the contents of the Placement.json files
     /// </summary>
-    public class ShapePlacementParsingStrategy : IShapeTableHarvester
+    public class ShapePlacementParsingStrategy : ShapeTableProvider, IShapeTableHarvester
     {
         private readonly IHostEnvironment _hostingEnvironment;
         private readonly IShellFeaturesManager _shellFeaturesManager;
@@ -29,18 +30,18 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
             _placementParseMatchProviders = placementParseMatchProviders;
         }
 
-        public void Discover(ShapeTableBuilder builder)
+        public override async ValueTask DiscoverAsync(ShapeTableBuilder builder)
         {
-            var enabledFeatures = _shellFeaturesManager.GetEnabledFeaturesAsync().GetAwaiter().GetResult()
+            var enabledFeatures = (await _shellFeaturesManager.GetEnabledFeaturesAsync())
                 .Where(Feature => !builder.ExcludedFeatureIds.Contains(Feature.Id));
 
             foreach (var featureDescriptor in enabledFeatures)
             {
-                ProcessFeatureDescriptor(builder, featureDescriptor);
+                await ProcessFeatureDescriptorAsync(builder, featureDescriptor);
             }
         }
 
-        private void ProcessFeatureDescriptor(ShapeTableBuilder builder, IFeatureInfo featureDescriptor)
+        private async Task ProcessFeatureDescriptorAsync(ShapeTableBuilder builder, IFeatureInfo featureDescriptor)
         {
             // TODO : (ngm) Replace with configuration Provider and read from that.
             // Dont use JSON Deserializer directly.

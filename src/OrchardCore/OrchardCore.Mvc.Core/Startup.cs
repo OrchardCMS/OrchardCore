@@ -82,6 +82,8 @@ namespace OrchardCore.Mvc
 
                 // Custom model binder to testing purpose
                 options.ModelBinderProviders.Insert(0, new CheckMarkModelBinderProvider());
+
+                options.ModelBinderProviders.Insert(0, new SafeBoolModelBinderProvider());
             });
 
             // Add a route endpoint selector policy.

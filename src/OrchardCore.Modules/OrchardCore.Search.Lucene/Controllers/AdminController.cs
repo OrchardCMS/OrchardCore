@@ -51,6 +51,7 @@ namespace OrchardCore.Search.Lucene.Controllers
         protected readonly IHtmlLocalizer H;
         private readonly ILogger _logger;
         private readonly IOptions<TemplateOptions> _templateOptions;
+        private readonly ILocalizationService _localizationService;
 
         public AdminController(
             ISession session,
@@ -69,7 +70,8 @@ namespace OrchardCore.Search.Lucene.Controllers
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             ILogger<AdminController> logger,
-            IOptions<TemplateOptions> templateOptions)
+            IOptions<TemplateOptions> templateOptions,
+            ILocalizationService localizationService)
         {
             _session = session;
             _luceneIndexManager = luceneIndexManager;
@@ -83,12 +85,12 @@ namespace OrchardCore.Search.Lucene.Controllers
             _notifier = notifier;
             _pagerOptions = pagerOptions.Value;
             _javaScriptEncoder = javaScriptEncoder;
-
             New = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
             _logger = logger;
             _templateOptions = templateOptions;
+            _localizationService = localizationService;
         }
 
         public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
@@ -208,8 +210,14 @@ namespace OrchardCore.Search.Lucene.Controllers
 
             if (!ModelState.IsValid)
             {
-                model.Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
-                    .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name }).Prepend(new SelectListItem { Text = S["Any culture"], Value = "any" });
+                var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
+
+                model.Cultures = supportedCultures
+                    .Select(c => new SelectListItem
+                    {
+                        Text = $"{c} ({CultureInfo.GetCultureInfo(c).DisplayName})",
+                        Value = c
+                    }).Prepend(new SelectListItem { Text = S["Any culture"], Value = "any" });
                 model.Analyzers = _luceneAnalyzerManager.GetAnalyzers()
                     .Select(x => new SelectListItem { Text = x.Name, Value = x.Name });
                 return View(model);

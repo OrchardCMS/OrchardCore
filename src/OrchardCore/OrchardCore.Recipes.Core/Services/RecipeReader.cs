@@ -10,7 +10,6 @@ namespace OrchardCore.Recipes.Services
         public async Task<RecipeDescriptor> GetRecipeDescriptorAsync(string recipeBasePath, IFileInfo recipeFileInfo, IFileProvider recipeFileProvider)
         {
             // TODO: Try to optimize by only reading the required metadata instead of the whole file.
-
             using var stream = recipeFileInfo.CreateReadStream();
 
             var recipeDescriptor = await JsonSerializer.DeserializeAsync<RecipeDescriptor>(stream, JOptions.Default);

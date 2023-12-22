@@ -42,7 +42,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
 
                         if (elasticIndexSettings != null)
                         {
-                            if (!await elasticIndexManager.Exists(indexName))
+                            if (!await elasticIndexManager.ExistsAsync(indexName))
                             {
                                 await elasticIndexingService.CreateIndexAsync(elasticIndexSettings);
                             }

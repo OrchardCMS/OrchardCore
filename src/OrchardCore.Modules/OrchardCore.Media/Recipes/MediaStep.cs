@@ -80,7 +80,7 @@ namespace OrchardCore.Media.Recipes
                     }
                     finally
                     {
-                        stream?.Dispose();
+                        await stream.DisposeAsync();
                     }
                 }
             }

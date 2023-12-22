@@ -69,7 +69,7 @@ namespace OrchardCore.Shells.Database.Configuration
 
                     document.ShellConfigurations = configurations;
 
-                    session.Save(document, checkConcurrency: true);
+                    await session.SaveAsync(document, checkConcurrency: true);
                 }
             });
 
@@ -116,7 +116,8 @@ namespace OrchardCore.Shells.Database.Configuration
 
                 configurations[tenant] = configData.ToJsonObject();
                 document.ShellConfigurations = configurations;
-                session.Save(document, checkConcurrency: true);
+
+                await session.SaveAsync(document, checkConcurrency: true);
             });
         }
 
@@ -131,7 +132,7 @@ namespace OrchardCore.Shells.Database.Configuration
                 if (document is not null)
                 {
                     document.ShellConfigurations.Remove(tenant);
-                    session.Save(document, checkConcurrency: true);
+                    await session.SaveAsync(document, checkConcurrency: true);
                 }
             });
         }

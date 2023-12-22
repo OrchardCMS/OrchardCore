@@ -56,7 +56,6 @@ namespace OrchardCore.OpenId.YesSql.Models
         /// <summary>
         /// Gets or sets the resources associated with the current scope.
         /// </summary>
-        public ImmutableArray<string> Resources { get; set; }
-            = ImmutableArray.Create<string>();
+        public ImmutableArray<string> Resources { get; set; } = [];
     }
 }

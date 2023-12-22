@@ -66,7 +66,7 @@ public class CustomUserSettingsStep : IRecipeStepHandler
                 user.Properties[contentItem.ContentType] = userSetting;
             }
 
-            _session.Save(user);
+            await _session.SaveAsync(user);
         }
     }
 }

@@ -72,7 +72,7 @@ namespace Microsoft.Extensions.Configuration
             if (string.IsNullOrEmpty(path))
             {
                 // throw new ArgumentException(SR.Error_InvalidFilePath, nameof(path));
-                throw new ArgumentException($"File path must be a non-empty string.", nameof(path));
+                throw new ArgumentException("File path must be a non-empty string.", nameof(path));
             }
 
             return builder.AddTenantJsonFile(s =>

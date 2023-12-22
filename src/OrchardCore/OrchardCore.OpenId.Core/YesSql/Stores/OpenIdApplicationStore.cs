@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
 using OrchardCore.OpenId.Abstractions.Stores;
 using OrchardCore.OpenId.YesSql.Indexes;
@@ -42,24 +43,18 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual async ValueTask CreateAsync(TApplication application, CancellationToken cancellationToken)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _session.Save(application, collection: OpenIdCollection);
+            await _session.SaveAsync(application, collection: OpenIdCollection);
             await _session.SaveChangesAsync();
         }
 
         /// <inheritdoc/>
         public virtual async ValueTask DeleteAsync(TApplication application, CancellationToken cancellationToken)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -70,10 +65,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual async ValueTask<TApplication> FindByIdAsync(string identifier, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(identifier))
-            {
-                throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
-            }
+            ArgumentException.ThrowIfNullOrEmpty(identifier);
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -83,10 +75,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual async ValueTask<TApplication> FindByClientIdAsync(string identifier, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(identifier))
-            {
-                throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
-            }
+            ArgumentException.ThrowIfNullOrEmpty(identifier);
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -96,10 +85,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual async ValueTask<TApplication> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(identifier))
-            {
-                throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
-            }
+            ArgumentException.ThrowIfNullOrEmpty(identifier);
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -109,10 +95,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual IAsyncEnumerable<TApplication> FindByPostLogoutRedirectUriAsync(string uri, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(uri))
-            {
-                throw new ArgumentException("The URI cannot be null or empty.", nameof(uri));
-            }
+            ArgumentException.ThrowIfNullOrEmpty(uri);
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -124,16 +107,20 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual IAsyncEnumerable<TApplication> FindByRedirectUriAsync(string uri, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(uri))
-            {
-                throw new ArgumentException("The URI cannot be null or empty.", nameof(uri));
-            }
+            ArgumentException.ThrowIfNullOrEmpty(uri);
 
             cancellationToken.ThrowIfCancellationRequested();
 
             return _session.Query<TApplication, OpenIdAppByRedirectUriIndex>(
                 index => index.RedirectUri == uri,
                 collection: OpenIdCollection).ToAsyncEnumerable();
+        }
+
+        public virtual ValueTask<string> GetApplicationTypeAsync(TApplication application, CancellationToken cancellationToken)
+        {
+            ArgumentNullException.ThrowIfNull(application);
+
+            return new ValueTask<string>(application.ApplicationType);
         }
 
         /// <inheritdoc/>
@@ -145,10 +132,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<string> GetClientIdAsync(TApplication application, CancellationToken cancellationToken)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             return new ValueTask<string>(application.ClientId);
         }
@@ -156,10 +140,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<string> GetClientSecretAsync(TApplication application, CancellationToken cancellationToken)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             return new ValueTask<string>(application.ClientSecret);
         }
@@ -167,10 +148,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<string> GetClientTypeAsync(TApplication application, CancellationToken cancellationToken)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             return new ValueTask<string>(application.Type);
         }
@@ -178,10 +156,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<string> GetConsentTypeAsync(TApplication application, CancellationToken cancellationToken)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             return new ValueTask<string>(application.ConsentType);
         }
@@ -189,10 +164,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<string> GetDisplayNameAsync(TApplication application, CancellationToken cancellationToken)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             return new ValueTask<string>(application.DisplayName);
         }
@@ -201,10 +173,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         public virtual ValueTask<ImmutableDictionary<CultureInfo, string>> GetDisplayNamesAsync(
             TApplication application, CancellationToken cancellationToken)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             if (application.DisplayNames == null)
             {
@@ -217,21 +186,27 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<string> GetIdAsync(TApplication application, CancellationToken cancellationToken)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             return new ValueTask<string>(application.ApplicationId);
+        }
+
+        public virtual ValueTask<JsonWebKeySet> GetJsonWebKeySetAsync(TApplication application, CancellationToken cancellationToken)
+        {
+            ArgumentNullException.ThrowIfNull(application);
+
+            if (application.JsonWebKeySet is null)
+            {
+                return new ValueTask<JsonWebKeySet>(result: null);
+            }
+
+            return new ValueTask<JsonWebKeySet>(JsonSerializer.Deserialize<JsonWebKeySet>(application.JsonWebKeySet.ToString()));
         }
 
         /// <inheritdoc/>
         public virtual ValueTask<ImmutableArray<string>> GetPermissionsAsync(TApplication application, CancellationToken cancellationToken)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             return new ValueTask<ImmutableArray<string>>(application.Permissions);
         }
@@ -239,10 +214,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<string> GetPhysicalIdAsync(TApplication application, CancellationToken cancellationToken)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             return new ValueTask<string>(application.Id.ToString(CultureInfo.InvariantCulture));
         }
@@ -250,10 +222,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<ImmutableArray<string>> GetPostLogoutRedirectUrisAsync(TApplication application, CancellationToken cancellationToken)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             return new ValueTask<ImmutableArray<string>>(application.PostLogoutRedirectUris);
         }
@@ -261,10 +230,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<ImmutableDictionary<string, JsonElement>> GetPropertiesAsync(TApplication application, CancellationToken cancellationToken)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             if (application.Properties == null)
             {
@@ -278,10 +244,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<ImmutableArray<string>> GetRedirectUrisAsync(TApplication application, CancellationToken cancellationToken)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             return new ValueTask<ImmutableArray<string>>(application.RedirectUris);
         }
@@ -289,12 +252,17 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<ImmutableArray<string>> GetRequirementsAsync(TApplication application, CancellationToken cancellationToken)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             return new ValueTask<ImmutableArray<string>>(application.Requirements);
+        }
+
+        /// <inheritdoc/>
+        public virtual ValueTask<ImmutableDictionary<string, string>> GetSettingsAsync(TApplication application, CancellationToken cancellationToken)
+        {
+            ArgumentNullException.ThrowIfNull(application);
+
+            return new ValueTask<ImmutableDictionary<string, string>>(application.Settings);
         }
 
         /// <inheritdoc/>
@@ -326,13 +294,20 @@ namespace OrchardCore.OpenId.YesSql.Stores
             => throw new NotSupportedException();
 
         /// <inheritdoc/>
+        public virtual ValueTask SetApplicationTypeAsync(TApplication application, string type, CancellationToken cancellationToken)
+        {
+            ArgumentNullException.ThrowIfNull(application);
+
+            application.ApplicationType = type;
+
+            return default;
+        }
+
+        /// <inheritdoc/>
         public virtual ValueTask SetClientIdAsync(TApplication application,
             string identifier, CancellationToken cancellationToken)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             application.ClientId = identifier;
 
@@ -342,10 +317,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask SetClientSecretAsync(TApplication application, string secret, CancellationToken cancellationToken)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             application.ClientSecret = secret;
 
@@ -355,10 +327,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask SetClientTypeAsync(TApplication application, string type, CancellationToken cancellationToken)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             application.Type = type;
 
@@ -368,10 +337,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask SetConsentTypeAsync(TApplication application, string type, CancellationToken cancellationToken)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             application.ConsentType = type;
 
@@ -381,10 +347,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask SetDisplayNameAsync(TApplication application, string name, CancellationToken cancellationToken)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             application.DisplayName = name;
 
@@ -394,10 +357,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask SetDisplayNamesAsync(TApplication application, ImmutableDictionary<CultureInfo, string> names, CancellationToken cancellationToken)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             application.DisplayNames = names;
 
@@ -405,12 +365,30 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
+        public virtual ValueTask SetJsonWebKeySetAsync(TApplication application, JsonWebKeySet set, CancellationToken cancellationToken)
+        {
+            ArgumentNullException.ThrowIfNull(application);
+
+            if (set is not null)
+            {
+                application.JsonWebKeySet = JObject.Parse(JsonSerializer.Serialize(set, new JsonSerializerOptions
+                {
+                    Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                    WriteIndented = false
+                }));
+
+                return default;
+            }
+
+            application.JsonWebKeySet = null;
+
+            return default;
+        }
+
+        /// <inheritdoc/>
         public virtual ValueTask SetPermissionsAsync(TApplication application, ImmutableArray<string> permissions, CancellationToken cancellationToken)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             application.Permissions = permissions;
 
@@ -421,10 +399,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         public virtual ValueTask SetPostLogoutRedirectUrisAsync(TApplication application,
             ImmutableArray<string> uris, CancellationToken cancellationToken)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             application.PostLogoutRedirectUris = uris;
 
@@ -434,10 +409,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask SetPropertiesAsync(TApplication application, ImmutableDictionary<string, JsonElement> properties, CancellationToken cancellationToken)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             if (properties == null || properties.IsEmpty)
             {
@@ -455,10 +427,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         public virtual ValueTask SetRedirectUrisAsync(TApplication application,
             ImmutableArray<string> uris, CancellationToken cancellationToken)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             application.RedirectUris = uris;
 
@@ -469,10 +438,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         public virtual ValueTask SetRequirementsAsync(TApplication application,
             ImmutableArray<string> requirements, CancellationToken cancellationToken)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             application.Requirements = requirements;
 
@@ -480,16 +446,24 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
+        public virtual ValueTask SetSettingsAsync(TApplication application,
+            ImmutableDictionary<string, string> settings, CancellationToken cancellationToken)
+        {
+            ArgumentNullException.ThrowIfNull(application);
+
+            application.Settings = settings;
+
+            return default;
+        }
+
+        /// <inheritdoc/>
         public virtual async ValueTask UpdateAsync(TApplication application, CancellationToken cancellationToken)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _session.Save(application, checkConcurrency: true, collection: OpenIdCollection);
+            await _session.SaveAsync(application, checkConcurrency: true, collection: OpenIdCollection);
 
             try
             {
@@ -507,10 +481,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<ImmutableArray<string>> GetRolesAsync(TApplication application, CancellationToken cancellationToken)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             return new ValueTask<ImmutableArray<string>>(application.Roles);
         }
@@ -518,10 +489,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual IAsyncEnumerable<TApplication> ListInRoleAsync(string role, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(role))
-            {
-                throw new ArgumentException("The role name cannot be null or empty.", nameof(role));
-            }
+            ArgumentException.ThrowIfNullOrEmpty(role);
 
             return _session.Query<TApplication, OpenIdAppByRoleNameIndex>(index => index.RoleName == role, collection: OpenIdCollection).ToAsyncEnumerable();
         }
@@ -529,10 +497,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask SetRolesAsync(TApplication application, ImmutableArray<string> roles, CancellationToken cancellationToken)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             application.Roles = roles;
 
