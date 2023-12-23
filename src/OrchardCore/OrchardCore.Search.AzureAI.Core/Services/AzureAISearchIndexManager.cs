@@ -90,7 +90,7 @@ public class AzureAISearchIndexManager(
     /// Makes sure that the index names are compliant with Azure AI Search specifications.
     /// <see href="https://learn.microsoft.com/en-us/rest/api/searchservice/naming-rules"/>.
     /// </summary>
-    public static bool TryGetSafeName(string indexName, out string safeName)
+    public static bool TryGetSafeIndexName(string indexName, out string safeName)
     {
         if (!TryGetSafePrefix(indexName, out var safePrefix) || safePrefix.Length < 2)
         {
@@ -192,7 +192,7 @@ public class AzureAISearchIndexManager(
         return false;
     }
 
-    public async Task RebuildIndexAsync(AzureAISearchIndexSettings settings)
+    public async Task RebuildAsync(AzureAISearchIndexSettings settings)
     {
         try
         {

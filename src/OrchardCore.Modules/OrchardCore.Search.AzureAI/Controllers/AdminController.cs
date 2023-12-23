@@ -17,7 +17,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Indexing;
-using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Search.AzureAI.Models;
@@ -35,6 +34,7 @@ public class AdminController : Controller
     private readonly AzureAISearchIndexSettingsService _indexSettingsService;
     private readonly IContentManager _contentManager;
     private readonly IShapeFactory _shapeFactory;
+    private readonly AzureAIIndexDocumentManager _azureAIIndexDocumentManager;
     private readonly AzureAISearchDefaultOptions _azureAIOptions;
     private readonly INotifier _notifier;
     private readonly IEnumerable<IContentItemIndexHandler> _contentItemIndexHandlers;
@@ -50,6 +50,7 @@ public class AdminController : Controller
         AzureAISearchIndexSettingsService indexSettingsService,
         IContentManager contentManager,
         IShapeFactory shapeFactory,
+        AzureAIIndexDocumentManager azureAIIndexDocumentManager,
         IOptions<AzureAISearchDefaultOptions> azureAIOptions,
         INotifier notifier,
         IEnumerable<IContentItemIndexHandler> contentItemIndexHandlers,
@@ -64,6 +65,7 @@ public class AdminController : Controller
         _indexSettingsService = indexSettingsService;
         _contentManager = contentManager;
         _shapeFactory = shapeFactory;
+        _azureAIIndexDocumentManager = azureAIIndexDocumentManager;
         _azureAIOptions = azureAIOptions.Value;
         _notifier = notifier;
         _contentItemIndexHandlers = contentItemIndexHandlers;
@@ -219,11 +221,11 @@ public class AdminController : Controller
                     settings.QueryAnalyzerName = settings.AnalyzerName;
                 }
 
-                await SetMappingsAsync(settings);
+                settings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(settings.IndexedContentTypes);
 
                 await _indexManager.CreateAsync(settings);
 
-                await _indexSettingsService.UpdateIndexAsync(settings);
+                await _indexSettingsService.UpdateAsync(settings);
 
                 await AsyncContentItemsAsync(settings.IndexName);
 
@@ -250,7 +252,7 @@ public class AdminController : Controller
             return Forbid();
         }
 
-        var settings = await _indexSettingsService.GetSettingsAsync(indexName);
+        var settings = await _indexSettingsService.GetAsync(indexName);
 
         if (settings == null)
         {
@@ -296,7 +298,7 @@ public class AdminController : Controller
 
         if (ModelState.IsValid)
         {
-            var settings = await _indexSettingsService.GetSettingsAsync(model.IndexName);
+            var settings = await _indexSettingsService.GetAsync(model.IndexName);
 
             if (settings == null)
             {
@@ -321,7 +323,7 @@ public class AdminController : Controller
                     settings.QueryAnalyzerName = settings.AnalyzerName;
                 }
 
-                await SetMappingsAsync(settings);
+                settings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(settings.IndexedContentTypes);
 
                 if (!await _indexManager.CreateAsync(settings))
                 {
@@ -329,7 +331,7 @@ public class AdminController : Controller
                 }
                 else
                 {
-                    await _indexSettingsService.UpdateIndexAsync(settings);
+                    await _indexSettingsService.UpdateAsync(settings);
 
                     await _notifier.SuccessAsync(H["Index <em>{0}</em> created successfully.", model.IndexName]);
 
@@ -365,13 +367,13 @@ public class AdminController : Controller
         {
             // At this point we know that the index does not exists on remote server. Let's delete it locally.
 
-            await _indexSettingsService.DeleteIndexAsync(indexName);
+            await _indexSettingsService.DeleteAsync(indexName);
 
             await _notifier.SuccessAsync(H["Index <em>{0}</em> deleted successfully.", indexName]);
         }
         else if (await _indexManager.DeleteAsync(indexName))
         {
-            await _indexSettingsService.DeleteIndexAsync(indexName);
+            await _indexSettingsService.DeleteAsync(indexName);
 
             await _notifier.SuccessAsync(H["Index <em>{0}</em> deleted successfully.", indexName]);
         }
@@ -391,7 +393,7 @@ public class AdminController : Controller
             return Forbid();
         }
 
-        var settings = await _indexSettingsService.GetSettingsAsync(indexName);
+        var settings = await _indexSettingsService.GetAsync(indexName);
 
         if (settings == null)
         {
@@ -403,11 +405,11 @@ public class AdminController : Controller
             return NotFound();
         }
 
-        await SetMappingsAsync(settings);
+        settings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(settings.IndexedContentTypes);
 
-        await _indexSettingsService.UpdateIndexAsync(settings);
+        await _indexSettingsService.UpdateAsync(settings);
 
-        await _indexManager.RebuildIndexAsync(settings);
+        await _indexManager.RebuildAsync(settings);
 
         await AsyncContentItemsAsync(settings.IndexName);
 
@@ -424,7 +426,7 @@ public class AdminController : Controller
             return Forbid();
         }
 
-        var settings = await _indexSettingsService.GetSettingsAsync(indexName);
+        var settings = await _indexSettingsService.GetAsync(indexName);
 
         if (settings == null)
         {
@@ -438,9 +440,9 @@ public class AdminController : Controller
 
         settings.SetLastTaskId(0);
 
-        await SetMappingsAsync(settings);
+        settings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(settings.IndexedContentTypes);
 
-        await _indexSettingsService.UpdateIndexAsync(settings);
+        await _indexSettingsService.UpdateAsync(settings);
 
         await AsyncContentItemsAsync(settings.IndexName);
 
@@ -448,7 +450,6 @@ public class AdminController : Controller
 
         return RedirectToAction(nameof(Index));
     }
-
 
     private static Task AsyncContentItemsAsync(string indexName)
         => HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("sync-content-items-azureai", async (scope) =>
@@ -464,22 +465,5 @@ public class AdminController : Controller
 
         model.Analyzers = _azureAIOptions.Analyzers
             .Select(x => new SelectListItem { Text = x, Value = x });
-    }
-
-    private async Task SetMappingsAsync(AzureAISearchIndexSettings settings)
-    {
-        settings.IndexMappings = [];
-        foreach (var contentType in settings.IndexedContentTypes)
-        {
-            var contentItem = await _contentManager.NewAsync(contentType);
-            var index = new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId);
-            var buildIndexContext = new BuildIndexContext(index, contentItem, [contentType], new AzureAISearchContentIndexSettings());
-            await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger);
-
-            foreach (var entry in index.Entries)
-            {
-                settings.IndexMappings.Add(new AzureAISearchIndexMap(entry.Name, entry.Type, entry.Options));
-            }
-        }
     }
 }

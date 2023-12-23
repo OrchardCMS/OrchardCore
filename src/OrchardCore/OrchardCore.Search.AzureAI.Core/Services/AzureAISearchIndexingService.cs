@@ -44,20 +44,19 @@ public class AzureAISearchIndexingService
         _logger = logger;
     }
 
-
-    public async Task ProcessContentItemsAsync(string indexName = default)
+    public async Task ProcessContentItemsAsync(params string[] indexNames)
     {
         var lastTaskId = long.MaxValue;
         var indexSettings = new List<AzureAISearchIndexSettings>();
         var indexesDocument = await _azureAISearchIndexSettingsService.LoadDocumentAsync();
 
-        if (string.IsNullOrEmpty(indexName))
+        if (indexNames == null || indexNames.Length == 0)
         {
             indexSettings = new List<AzureAISearchIndexSettings>(indexesDocument.IndexSettings.Values);
         }
         else
         {
-            indexSettings = indexesDocument.IndexSettings.Where(x => x.Key == indexName)
+            indexSettings = indexesDocument.IndexSettings.Where(x => indexNames.Contains(x.Key, StringComparer.OrdinalIgnoreCase))
                 .Select(x => x.Value)
                 .ToList();
         }
@@ -222,7 +221,7 @@ public class AzureAISearchIndexingService
                 {
                     // We know none of the previous batches failed to update this index.
                     settings.SetLastTaskId(lastTaskId);
-                    await _azureAISearchIndexSettingsService.UpdateIndexAsync(settings);
+                    await _azureAISearchIndexSettingsService.UpdateAsync(settings);
                 }
             }
         }

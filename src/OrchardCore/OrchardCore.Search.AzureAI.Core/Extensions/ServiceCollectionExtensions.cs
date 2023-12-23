@@ -5,8 +5,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Recipes;
 using OrchardCore.Search.AzureAI.Handlers;
 using OrchardCore.Search.AzureAI.Models;
+using OrchardCore.Search.AzureAI.Recipes;
 using OrchardCore.Search.AzureAI.Services;
 using OrchardCore.Security.Permissions;
 
@@ -50,6 +52,10 @@ public static class ServiceCollectionExtensions
         services.AddScoped<AzureAISearchIndexingService>();
         services.AddSingleton<AzureAISearchIndexSettingsService>();
         services.AddSingleton<SearchClientFactory>();
+
+        services.AddRecipeExecutionStep<AzureAISearchIndexRebuildStep>();
+        services.AddRecipeExecutionStep<AzureAISearchIndexResetStep>();
+        services.AddRecipeExecutionStep<AzureAISearchIndexSettingsStep>();
 
         return true;
     }

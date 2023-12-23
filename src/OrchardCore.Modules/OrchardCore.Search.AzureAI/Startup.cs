@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
@@ -13,6 +14,7 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.AzureAI.Controllers;
+using OrchardCore.Search.AzureAI.Deployment;
 using OrchardCore.Search.AzureAI.Drivers;
 using OrchardCore.Search.AzureAI.Models;
 using OrchardCore.Search.AzureAI.Services;
@@ -112,3 +114,25 @@ public class ContentTypesStartup : StartupBase
     }
 }
 
+[RequireFeatures("OrchardCore.Deployment")]
+public class DeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddTransient<IDeploymentSource, AzureAISearchIndexDeploymentSource>();
+        services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AzureAISearchIndexDeploymentStep>());
+        services.AddScoped<IDisplayDriver<DeploymentStep>, AzureAISearchIndexDeploymentStepDriver>();
+
+        services.AddTransient<IDeploymentSource, AzureAISearchSettingsDeploymentSource>();
+        services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AzureAISearchSettingsDeploymentStep>());
+        services.AddScoped<IDisplayDriver<DeploymentStep>, AzureAISearchSettingsDeploymentStepDriver>();
+
+        services.AddTransient<IDeploymentSource, AzureAISearchIndexRebuildDeploymentSource>();
+        services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AzureAISearchIndexRebuildDeploymentStep>());
+        services.AddScoped<IDisplayDriver<DeploymentStep>, AzureAISearchIndexRebuildDeploymentStepDriver>();
+
+        services.AddTransient<IDeploymentSource, AzureAISearchIndexResetDeploymentSource>();
+        services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AzureAISearchIndexResetDeploymentStep>());
+        services.AddScoped<IDisplayDriver<DeploymentStep>, AzureAISearchIndexResetDeploymentStepDriver>();
+    }
+}

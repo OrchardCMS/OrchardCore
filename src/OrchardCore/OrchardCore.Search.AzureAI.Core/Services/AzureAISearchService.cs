@@ -40,7 +40,7 @@ public class AzureAISearchService(
             return result;
         }
 
-        var indexSettings = await _indexSettingsService.GetSettingsAsync(index);
+        var indexSettings = await _indexSettingsService.GetAsync(index);
         result.Latest = indexSettings.IndexLatest;
 
         try

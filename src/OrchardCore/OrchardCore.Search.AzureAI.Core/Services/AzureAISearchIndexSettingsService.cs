@@ -33,7 +33,7 @@ public class AzureAISearchIndexSettingsService
     public async Task<IEnumerable<AzureAISearchIndexSettings>> GetSettingsAsync()
         => (await GetDocumentAsync()).IndexSettings.Values;
 
-    public async Task<AzureAISearchIndexSettings> GetSettingsAsync(string indexName)
+    public async Task<AzureAISearchIndexSettings> GetAsync(string indexName)
     {
         var document = await GetDocumentAsync();
 
@@ -45,14 +45,14 @@ public class AzureAISearchIndexSettingsService
         return null;
     }
 
-    public async Task UpdateIndexAsync(AzureAISearchIndexSettings settings)
+    public async Task UpdateAsync(AzureAISearchIndexSettings settings)
     {
         var document = await LoadDocumentAsync();
         document.IndexSettings[settings.IndexName] = settings;
         await DocumentManager.UpdateAsync(document);
     }
 
-    public async Task DeleteIndexAsync(string indexName)
+    public async Task DeleteAsync(string indexName)
     {
         var document = await LoadDocumentAsync();
         document.IndexSettings.Remove(indexName);

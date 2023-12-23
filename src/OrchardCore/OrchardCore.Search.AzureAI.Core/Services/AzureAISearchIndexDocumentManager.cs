@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Azure.Search.Documents;
 using Azure.Search.Documents.Models;
 using Microsoft.Extensions.Logging;
+using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
@@ -16,11 +17,15 @@ public class AzureAIIndexDocumentManager(
     SearchClientFactory searchClientFactory,
     AzureAISearchIndexManager indexManager,
     IIndexingTaskManager indexingTaskManager,
+    IContentManager contentManager,
+    IEnumerable<IContentItemIndexHandler> contentItemIndexHandlers,
     ILogger<AzureAIIndexDocumentManager> logger)
 {
     private readonly SearchClientFactory _searchClientFactory = searchClientFactory;
     private readonly AzureAISearchIndexManager _indexManager = indexManager;
     private readonly IIndexingTaskManager _indexingTaskManager = indexingTaskManager;
+    private readonly IContentManager _contentManager = contentManager;
+    private readonly IEnumerable<IContentItemIndexHandler> _contentItemIndexHandlers = contentItemIndexHandlers;
     private readonly ILogger _logger = logger;
 
     public async Task<IEnumerable<SearchDocument>> SearchAsync(string indexName, string searchText, SearchOptions searchOptions = null)
@@ -163,6 +168,28 @@ public class AzureAIIndexDocumentManager(
         {
             _logger.LogError(ex, "Unable to delete documents from Azure AI Search Settings");
         }
+    }
+
+    public async Task<IList<AzureAISearchIndexMap>> GetMappingsAsync(string[] idexedContentTypes)
+    {
+        ArgumentNullException.ThrowIfNull(idexedContentTypes, nameof(idexedContentTypes));
+
+        var mapping = new List<AzureAISearchIndexMap>();
+
+        foreach (var contentType in idexedContentTypes)
+        {
+            var contentItem = await _contentManager.NewAsync(contentType);
+            var index = new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId);
+            var buildIndexContext = new BuildIndexContext(index, contentItem, [contentType], new AzureAISearchContentIndexSettings());
+            await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger);
+
+            foreach (var entry in index.Entries)
+            {
+                mapping.Add(new AzureAISearchIndexMap(entry.Name, entry.Type, entry.Options));
+            }
+        }
+
+        return mapping;
     }
 
     private IEnumerable<SearchDocument> CreateSearchDocuments(IEnumerable<DocumentIndex> indexDocuments, IList<AzureAISearchIndexMap> mappings)
