@@ -12,7 +12,7 @@ public class SecretTokenService : ISecretTokenService
 
     public SecretTokenService(ISecretProtectionProvider secretProtectionProvider, IClock clock)
     {
-        _secretProtector = secretProtectionProvider.CreateProtector(TokenSecrets.Purpose);
+        _secretProtector = secretProtectionProvider.CreateProtector(TokenSecret.Namespace);
         _clock = clock;
     }
 

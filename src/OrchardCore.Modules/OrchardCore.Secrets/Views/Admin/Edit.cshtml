@@ -1,9 +1,11 @@
 @model SecretInfoViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Secret"])</h1></zone>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit {0}", Model.Type])</h1></zone>
 
 <div asp-validation-summary="All"></div>
 <form asp-action="Edit" method="post">
+
+    <input type="hidden" asp-for="Type" />
 
     <input type="hidden" value="@Model.Name" name="sourceName" />
 
@@ -23,7 +25,7 @@
     @if (Model.StoreInfos.Count > 0)
     {
         <div class="mb-3 w-md-50" asp-validation-class-for="SelectedStore">
-            <label asp-for="SelectedStore">@T["Store"]</label>
+            <label asp-for="SelectedStore">@T["Secret Store"]</label>
             <select class="form-control" asp-for="SelectedStore">
                 @foreach (var storeEntry in Model.StoreInfos)
                 {

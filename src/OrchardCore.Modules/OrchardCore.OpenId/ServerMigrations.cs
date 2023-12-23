@@ -39,11 +39,11 @@ public class ServerMigrations : DataMigration
         else
         {
             await _secretService.AddSecretAsync<RSASecret>(
-                ServerSecrets.Encryption,
+                ServerSecret.Encryption,
                 (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
 
             await _secretService.AddSecretAsync<RSASecret>(
-                ServerSecrets.Signing,
+                ServerSecret.Signing,
                 (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
         }
 
@@ -61,7 +61,7 @@ public class ServerMigrations : DataMigration
             !string.IsNullOrEmpty(settings.EncryptionCertificateThumbprint))
         {
             await _secretService.AddSecretAsync<X509Secret>(
-                ServerSecrets.Encryption,
+                ServerSecret.Encryption,
                 (secret, info) =>
                 {
                     secret.StoreLocation = settings.EncryptionCertificateStoreLocation;
@@ -73,7 +73,7 @@ public class ServerMigrations : DataMigration
         else
         {
             await _secretService.AddSecretAsync<RSASecret>(
-                ServerSecrets.Encryption,
+                ServerSecret.Encryption,
                 (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
         }
 
@@ -82,7 +82,7 @@ public class ServerMigrations : DataMigration
             !string.IsNullOrEmpty(settings.SigningCertificateThumbprint))
         {
             await _secretService.AddSecretAsync<X509Secret>(
-                ServerSecrets.Signing,
+                ServerSecret.Signing,
                 (secret, info) =>
                 {
                     secret.StoreLocation = settings.SigningCertificateStoreLocation;
@@ -94,7 +94,7 @@ public class ServerMigrations : DataMigration
         else
         {
             await _secretService.AddSecretAsync<RSASecret>(
-                ServerSecrets.Signing,
+                ServerSecret.Signing,
                 (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
         }
     }

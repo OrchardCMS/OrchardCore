@@ -279,7 +279,7 @@ namespace OrchardCore.OpenId.Services
 
         public async Task<ImmutableArray<SecurityKey>> GetEncryptionKeysAsync()
         {
-            var secret = await _secretService.GetSecretAsync(ServerSecrets.Encryption);
+            var secret = await _secretService.GetSecretAsync(ServerSecret.Encryption);
 
             if (secret is X509Secret x509Secret &&
                 x509Secret.StoreLocation is not null &&
@@ -306,7 +306,7 @@ namespace OrchardCore.OpenId.Services
             if (secret is not RSASecret rsaSecret)
             {
                 rsaSecret = await _secretService.AddSecretAsync<RSASecret>(
-                    ServerSecrets.Encryption,
+                    ServerSecret.Encryption,
                     (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
             }
 
@@ -323,7 +323,7 @@ namespace OrchardCore.OpenId.Services
 
         public async Task<ImmutableArray<SecurityKey>> GetSigningKeysAsync()
         {
-            var secret = await _secretService.GetSecretAsync(ServerSecrets.Signing);
+            var secret = await _secretService.GetSecretAsync(ServerSecret.Signing);
 
             if (secret is X509Secret x509Secret &&
                 x509Secret.StoreLocation is not null &&
@@ -350,7 +350,7 @@ namespace OrchardCore.OpenId.Services
             if (secret is not RSASecret rsaSecret)
             {
                 rsaSecret = await _secretService.AddSecretAsync<RSASecret>(
-                    ServerSecrets.Signing,
+                    ServerSecret.Signing,
                     (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
             }
 

@@ -279,7 +279,7 @@ namespace OrchardCore.Email.Services
                 }
                 else if (!string.IsNullOrWhiteSpace(_options.UserName))
                 {
-                    var secret = await _secretService.GetSecretAsync<TextSecret>(EmailSecrets.Password);
+                    var secret = await _secretService.GetSecretAsync<TextSecret>(EmailSecret.Password);
                     if (string.IsNullOrEmpty(secret?.Text))
                     {
                         throw new InvalidOperationException("The Email Password is missing.");

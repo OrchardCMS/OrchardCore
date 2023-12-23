@@ -32,8 +32,9 @@ namespace OrchardCore.Secrets
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddScoped<IDisplayManager<SecretBase>, DisplayManager<SecretBase>>();
-            services.AddScoped<IDisplayDriver<SecretBase>, TextSecretDisplayDriver>();
             services.AddScoped<IDisplayDriver<SecretBase>, RSASecretDisplayDriver>();
+            services.AddScoped<IDisplayDriver<SecretBase>, TextSecretDisplayDriver>();
+            services.AddScoped<IDisplayDriver<SecretBase>, X509SecretDisplayDriver>();
 
             services.AddRecipeExecutionStep<SecretsRecipeStep>();
             services.AddTransient<IDeploymentSource, AllSecretsDeploymentSource>();

@@ -28,7 +28,7 @@ public class AdminController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly IDisplayManager<SecretBase> _displayManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
-    private readonly SecretOptions _secretsOptions;
+    private readonly SecretOptions _secretOptions;
     private readonly ISiteService _siteService;
     private readonly INotifier _notifier;
 
@@ -41,7 +41,7 @@ public class AdminController : Controller
         IAuthorizationService authorizationService,
         IDisplayManager<SecretBase> displayManager,
         IUpdateModelAccessor updateModelAccessor,
-        IOptions<SecretOptions> secretsOptions,
+        IOptions<SecretOptions> secretOptions,
         ISiteService siteService,
         INotifier notifier,
         IShapeFactory shapeFactory,
@@ -52,7 +52,7 @@ public class AdminController : Controller
         _secretService = secretService;
         _displayManager = displayManager;
         _updateModelAccessor = updateModelAccessor;
-        _secretsOptions = secretsOptions.Value;
+        _secretOptions = secretOptions.Value;
         _siteService = siteService;
         _notifier = notifier;
         New = shapeFactory;
@@ -87,7 +87,7 @@ public class AdminController : Controller
         var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
 
         var thumbnails = new Dictionary<string, dynamic>();
-        foreach (var type in _secretsOptions.SecretTypes)
+        foreach (var type in _secretOptions.Types)
         {
             var secret = _secretService.CreateSecret(type.Name);
             dynamic thumbnail = await _displayManager.BuildDisplayAsync(secret, _updateModelAccessor.ModelUpdater, "Thumbnail");
@@ -178,6 +178,7 @@ public class AdminController : Controller
         {
             Editor = await _displayManager.BuildEditorAsync(secret, _updateModelAccessor.ModelUpdater, isNew: true, "", ""),
             StoreInfos = _secretService.GetSecretStoreInfos(),
+            Type = type,
         };
 
         return View(model);
@@ -211,6 +212,7 @@ public class AdminController : Controller
                 Name = model.Name,
                 Store = model.SelectedStore,
                 Description = model.Description,
+                Type = model.Type,
             };
 
             await _secretService.UpdateSecretAsync(secret, info);
@@ -248,6 +250,7 @@ public class AdminController : Controller
             Description = secretInfo.Description,
             Editor = await _displayManager.BuildEditorAsync(secret, _updateModelAccessor.ModelUpdater, isNew: false, "", ""),
             StoreInfos = _secretService.GetSecretStoreInfos(),
+            Type = secretInfo.Type,
         };
 
         return View(model);
@@ -282,6 +285,7 @@ public class AdminController : Controller
                 Name = model.Name,
                 Store = model.SelectedStore,
                 Description = model.Description,
+                Type = model.Type,
             };
 
             await _secretService.UpdateSecretAsync(secret, info, sourceName);

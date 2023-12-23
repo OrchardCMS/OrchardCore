@@ -29,15 +29,15 @@ public class AllSecretsDeploymentSource : IDeploymentSource
         // Secrets used for the deployment itself should already exist on both sides.
         var secretInfos = (await _secretService.GetSecretInfosAsync())
             .Where(secret =>
-                !string.Equals(secret.Value.Name, $"{result.Purpose}.Encryption", StringComparison.OrdinalIgnoreCase) &&
-                !string.Equals(secret.Value.Name, $"{result.Purpose}.Signing", StringComparison.OrdinalIgnoreCase));
+                !string.Equals(secret.Value.Name, $"{result.SecretNamespace}.Encryption", StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(secret.Value.Name, $"{result.SecretNamespace}.Signing", StringComparison.OrdinalIgnoreCase));
 
         if (!secretInfos.Any())
         {
             return;
         }
 
-        var protector = _protectionProvider.CreateProtector(result.Purpose);
+        var protector = _protectionProvider.CreateProtector(result.SecretNamespace);
 
         var secrets = new Dictionary<string, JObject>();
         foreach (var secretInfo in secretInfos)

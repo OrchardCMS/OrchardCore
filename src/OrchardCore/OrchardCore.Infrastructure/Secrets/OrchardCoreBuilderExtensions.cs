@@ -18,9 +18,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddSingleton<ISecretService, SecretService>();
                 services.Configure<SecretOptions>(options =>
                 {
-                    options.SecretTypes.Add(typeof(RSASecret));
-                    options.SecretTypes.Add(typeof(TextSecret));
-                    options.SecretTypes.Add(typeof(X509Secret));
+                    options.Types.Add(typeof(RSASecret));
+                    options.Types.Add(typeof(TextSecret));
+                    options.Types.Add(typeof(X509Secret));
                 });
 
                 services.AddSingleton<SecretInfosManager>();

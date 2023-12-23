@@ -13,10 +13,10 @@ namespace OrchardCore.Deployment
     /// </summary>
     public class DeploymentPlanResult
     {
-        public DeploymentPlanResult(IFileBuilder fileBuilder, RecipeDescriptor recipeDescriptor, string purpose)
+        public DeploymentPlanResult(IFileBuilder fileBuilder, RecipeDescriptor recipeDescriptor, string secretNamespace)
         {
             FileBuilder = fileBuilder;
-            Purpose = purpose;
+            SecretNamespace = secretNamespace;
 
             Recipe = new JObject
             {
@@ -35,7 +35,7 @@ namespace OrchardCore.Deployment
         public JObject Recipe { get; }
         public IList<JObject> Steps { get; } = new List<JObject>();
         public IFileBuilder FileBuilder { get; }
-        public string Purpose { get; }
+        public string SecretNamespace { get; }
 
         public async Task FinalizeAsync()
         {

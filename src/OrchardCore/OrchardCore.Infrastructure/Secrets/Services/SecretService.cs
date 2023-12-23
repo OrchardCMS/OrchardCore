@@ -32,7 +32,7 @@ public class SecretService : ISecretService
 
         _stores = stores;
 
-        foreach (var type in options.Value.SecretTypes)
+        foreach (var type in options.Value.Types)
         {
             var activatorType = typeof(SecretActivator<>).MakeGenericType(type);
             var activator = (SecretActivator)Activator.CreateInstance(activatorType);

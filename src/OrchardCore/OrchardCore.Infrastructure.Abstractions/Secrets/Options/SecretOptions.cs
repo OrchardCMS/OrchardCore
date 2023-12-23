@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using OrchardCore.Secrets.Models;
 
 namespace OrchardCore.Secrets.Options;
 
@@ -10,7 +9,12 @@ namespace OrchardCore.Secrets.Options;
 public class SecretOptions
 {
     /// <summary>
-    /// The list of <see cref="SecretBase"/> types.
+    /// The list of secret types.
     /// </summary>
-    public IList<Type> SecretTypes { get; set; } = new List<Type>();
+    public IList<Type> Types { get; set; } = new List<Type>();
+
+    /// <summary>
+    /// The list of secret purposes.
+    /// </summary>
+    public IList<string> Purposes { get; set; } = new List<string>();
 }

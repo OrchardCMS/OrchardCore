@@ -29,7 +29,7 @@ public class SecretServiceTests
             });
 
         var secretOptions = new SecretOptions();
-        secretOptions.SecretTypes.Add(typeof(TextSecret));
+        secretOptions.Types.Add(typeof(TextSecret));
         var options = Options.Create(secretOptions);
 
         var secretService = new SecretService(new SecretInfosManager(bindingsManager), new[] { store }, options);
