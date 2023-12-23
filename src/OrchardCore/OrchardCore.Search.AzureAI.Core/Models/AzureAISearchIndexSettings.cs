@@ -19,4 +19,12 @@ public class AzureAISearchIndexSettings
     public string Culture { get; set; }
 
     public IList<AzureAISearchIndexMap> IndexMappings { get; set; }
+
+    private long _lastTaskId = 0;
+
+    public long GetLastTaskId()
+        => _lastTaskId;
+
+    public void SetLastTaskId(long lastTaskId)
+        => _lastTaskId = lastTaskId;
 }

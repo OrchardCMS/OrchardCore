@@ -61,7 +61,7 @@ public class AzureAISearchIndexingContentHandler(IHttpContextAccessor httpContex
         var contentManager = services.GetRequiredService<IContentManager>();
         var contentItemIndexHandlers = services.GetServices<IContentItemIndexHandler>();
 
-        var indexSettingsService = services.GetRequiredService<AzureAIIndexSettingsService>();
+        var indexSettingsService = services.GetRequiredService<AzureAISearchIndexSettingsService>();
         var logger = services.GetRequiredService<ILogger<AzureAISearchIndexingContentHandler>>();
         var indexDocumentManager = services.GetRequiredService<AzureAIIndexDocumentManager>();
 

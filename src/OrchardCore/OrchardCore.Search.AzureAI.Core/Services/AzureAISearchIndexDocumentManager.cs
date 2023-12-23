@@ -15,10 +15,12 @@ namespace OrchardCore.Search.AzureAI.Services;
 public class AzureAIIndexDocumentManager(
     SearchClientFactory searchClientFactory,
     AzureAISearchIndexManager indexManager,
+    IIndexingTaskManager indexingTaskManager,
     ILogger<AzureAIIndexDocumentManager> logger)
 {
     private readonly SearchClientFactory _searchClientFactory = searchClientFactory;
     private readonly AzureAISearchIndexManager _indexManager = indexManager;
+    private readonly IIndexingTaskManager _indexingTaskManager = indexingTaskManager;
     private readonly ILogger _logger = logger;
 
     public async Task<IEnumerable<SearchDocument>> SearchAsync(string indexName, string searchText, SearchOptions searchOptions = null)
@@ -130,7 +132,7 @@ public class AzureAIIndexDocumentManager(
         }
     }
 
-    public async Task MergeOrUploadDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments, AzureAISearchIndexSettings indexSettings)
+    public async Task<bool> MergeOrUploadDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments, AzureAISearchIndexSettings indexSettings)
     {
         ArgumentNullException.ThrowIfNull(indexDocuments, nameof(indexDocuments));
         ArgumentNullException.ThrowIfNull(indexSettings, nameof(indexSettings));
@@ -142,11 +144,15 @@ public class AzureAIIndexDocumentManager(
             var docs = CreateSearchDocuments(indexDocuments, indexSettings);
 
             var response = await client.MergeOrUploadDocumentsAsync(docs);
+
+            return true;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unable to delete documents from Azure AI Search Settings");
         }
+
+        return false;
     }
 
     public async Task UploadDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments, AzureAISearchIndexSettings indexSettings)
@@ -167,6 +173,7 @@ public class AzureAIIndexDocumentManager(
             _logger.LogError(ex, "Unable to delete documents from Azure AI Search Settings");
         }
     }
+
 
     private IEnumerable<SearchDocument> CreateSearchDocuments(IEnumerable<DocumentIndex> indexDocuments, AzureAISearchIndexSettings indexSettings)
     {

@@ -20,14 +20,14 @@ namespace OrchardCore.Search.AzureAI.Drivers;
 public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, AzureAISearchSettings>
 {
     private static readonly char[] _separator = [',', ' '];
-    private readonly AzureAIIndexSettingsService _indexSettingsService;
+    private readonly AzureAISearchIndexSettingsService _indexSettingsService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
     protected readonly IStringLocalizer S;
 
     public AzureAISearchSettingsDisplayDriver(
-        AzureAIIndexSettingsService indexSettingsService,
+        AzureAISearchIndexSettingsService indexSettingsService,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IStringLocalizer<AzureAISearchSettingsDisplayDriver> stringLocalizer

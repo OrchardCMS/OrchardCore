@@ -47,7 +47,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IContentHandler, AzureAISearchIndexingContentHandler>();
         services.AddScoped<AzureAISearchIndexManager>();
         services.AddScoped<AzureAIIndexDocumentManager>();
-        services.AddSingleton<AzureAIIndexSettingsService>();
+        services.AddScoped<AzureAISearchIndexingService>();
+        services.AddSingleton<AzureAISearchIndexSettingsService>();
         services.AddSingleton<SearchClientFactory>();
 
         return true;

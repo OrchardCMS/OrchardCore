@@ -5,9 +5,9 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Search.AzureAI;
 
-public class Permissions(AzureAIIndexSettingsService indexSettingsService) : IPermissionProvider
+public class Permissions(AzureAISearchIndexSettingsService indexSettingsService) : IPermissionProvider
 {
-    private readonly AzureAIIndexSettingsService _indexSettingsService = indexSettingsService;
+    private readonly AzureAISearchIndexSettingsService _indexSettingsService = indexSettingsService;
 
     public async Task<IEnumerable<Permission>> GetPermissionsAsync()
     {

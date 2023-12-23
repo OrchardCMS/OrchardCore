@@ -8,9 +8,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.BackgroundJobs;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
@@ -30,7 +32,7 @@ public class AdminController : Controller
     private readonly ISiteService _siteService;
     private readonly IAuthorizationService _authorizationService;
     private readonly AzureAISearchIndexManager _indexManager;
-    private readonly AzureAIIndexSettingsService _indexSettingsService;
+    private readonly AzureAISearchIndexSettingsService _indexSettingsService;
     private readonly IContentManager _contentManager;
     private readonly IShapeFactory _shapeFactory;
     private readonly AzureAISearchDefaultOptions _azureAIOptions;
@@ -45,7 +47,7 @@ public class AdminController : Controller
         ISiteService siteService,
         IAuthorizationService authorizationService,
         AzureAISearchIndexManager indeManager,
-        AzureAIIndexSettingsService indexSettingsService,
+        AzureAISearchIndexSettingsService indexSettingsService,
         IContentManager contentManager,
         IShapeFactory shapeFactory,
         IOptions<AzureAISearchDefaultOptions> azureAIOptions,
@@ -273,6 +275,12 @@ public class AdminController : Controller
 
                     await _notifier.SuccessAsync(H["Index <em>{0}</em> created successfully.", model.IndexName]);
 
+                    await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("sync-existing-content-items-azureai", async (scope) =>
+                    {
+                        var indexingService = scope.ServiceProvider.GetRequiredService<AzureAISearchIndexingService>();
+                        await indexingService.ProcessContentItemsAsync(model.IndexName);
+                    });
+
                     return RedirectToAction(nameof(Index));
                 }
             }
@@ -381,6 +389,12 @@ public class AdminController : Controller
 
             await _indexSettingsService.UpdateIndexAsync(settings);
         }
+
+        await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("sync-existing-content-items-azureai", async (scope) =>
+        {
+            var indexingService = scope.ServiceProvider.GetRequiredService<AzureAISearchIndexingService>();
+            await indexingService.ProcessContentItemsAsync(settings.IndexName);
+        });
 
         await _notifier.SuccessAsync(H["Index <em>{0}</em> rebuilt successfully.", id]);
 

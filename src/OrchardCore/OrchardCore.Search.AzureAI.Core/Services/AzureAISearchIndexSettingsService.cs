@@ -7,7 +7,7 @@ using OrchardCore.Search.AzureAI.Models;
 
 namespace OrchardCore.Search.AzureAI.Services;
 
-public class AzureAIIndexSettingsService
+public class AzureAISearchIndexSettingsService
 {
     /// <summary>
     /// Loads the index settings document from the store for updating and that should not be cached.

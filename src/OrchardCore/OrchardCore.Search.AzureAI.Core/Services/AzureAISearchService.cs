@@ -12,7 +12,7 @@ namespace OrchardCore.Search.AzureAI.Services;
 public class AzureAISearchService(
     ISiteService siteService,
     AzureAIIndexDocumentManager indexDocumentManager,
-    AzureAIIndexSettingsService indexSettingsService,
+    AzureAISearchIndexSettingsService indexSettingsService,
     ILogger<AzureAISearchService> logger
         ) : ISearchService
 {
@@ -20,7 +20,7 @@ public class AzureAISearchService(
 
     private readonly ISiteService _siteService = siteService;
     private readonly AzureAIIndexDocumentManager _indexDocumentManager = indexDocumentManager;
-    private readonly AzureAIIndexSettingsService _indexSettingsService = indexSettingsService;
+    private readonly AzureAISearchIndexSettingsService _indexSettingsService = indexSettingsService;
     private readonly ILogger<AzureAISearchService> _logger = logger;
 
     public string Name => Key;
