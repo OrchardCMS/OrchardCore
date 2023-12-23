@@ -39,27 +39,6 @@ public class AzureAIIndexDocumentManager(
         return docs;
     }
 
-    public Task<IEnumerable<SearchDocument>> SearchAsync(string indexName, string searchText, int start, int size, string[] fields = null)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(searchText, nameof(searchText));
-
-        var searchOptions = new SearchOptions()
-        {
-            Skip = start,
-            Size = size,
-        };
-
-        if (fields?.Length > 0)
-        {
-            foreach (var field in fields)
-            {
-                searchOptions.SearchFields.Add(field);
-            }
-        }
-
-        return SearchAsync(indexName, searchText, searchOptions);
-    }
-
     public async Task<long?> SearchAsync(string indexName, string searchText, Action<SearchDocument> action, SearchOptions searchOptions = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(searchText, nameof(searchText));
@@ -101,6 +80,9 @@ public class AzureAIIndexDocumentManager(
 
         try
         {
+            var searchOptions = new SearchOptions();
+            searchOptions.Select.Add(IndexingConstants.ContentItemIdKey);
+
             // Match-all documents.
             var totalRecords = SearchAsync(indexName, "*", (doc) =>
             {
@@ -108,7 +90,7 @@ public class AzureAIIndexDocumentManager(
                 {
                     contentItemIds.Add(contentItemId.ToString());
                 }
-            });
+            }, searchOptions);
         }
         catch (Exception ex)
         {
@@ -132,18 +114,27 @@ public class AzureAIIndexDocumentManager(
         }
     }
 
-    public async Task<bool> MergeOrUploadDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments, AzureAISearchIndexSettings indexSettings)
+    public async Task<bool> MergeOrUploadDocumentsAsync(string indexName, IList<DocumentIndex> indexDocuments, AzureAISearchIndexSettings indexSettings)
     {
         ArgumentNullException.ThrowIfNull(indexDocuments, nameof(indexDocuments));
         ArgumentNullException.ThrowIfNull(indexSettings, nameof(indexSettings));
 
+        if (indexDocuments.Count == 0)
+        {
+            return true;
+        }
+
         try
         {
             var client = GetSearchClient(indexName);
+            var pages = indexDocuments.PagesOf(32000);
 
-            var docs = CreateSearchDocuments(indexDocuments, indexSettings);
+            foreach (var page in pages)
+            {
+                var docs = CreateSearchDocuments(page, indexSettings.IndexMappings);
 
-            var response = await client.MergeOrUploadDocumentsAsync(docs);
+                var response = await client.MergeOrUploadDocumentsAsync(docs);
+            }
 
             return true;
         }
@@ -164,7 +155,7 @@ public class AzureAIIndexDocumentManager(
         {
             var client = GetSearchClient(indexName);
 
-            var docs = CreateSearchDocuments(indexDocuments, indexSettings);
+            var docs = CreateSearchDocuments(indexDocuments, indexSettings.IndexMappings);
 
             await client.UploadDocumentsAsync(docs);
         }
@@ -174,16 +165,15 @@ public class AzureAIIndexDocumentManager(
         }
     }
 
-
-    private IEnumerable<SearchDocument> CreateSearchDocuments(IEnumerable<DocumentIndex> indexDocuments, AzureAISearchIndexSettings indexSettings)
+    private IEnumerable<SearchDocument> CreateSearchDocuments(IEnumerable<DocumentIndex> indexDocuments, IList<AzureAISearchIndexMap> mappings)
     {
         foreach (var indexDocument in indexDocuments)
         {
-            yield return CreateSearchDocument(indexDocument, indexSettings);
+            yield return CreateSearchDocument(indexDocument, mappings);
         }
     }
 
-    private SearchDocument CreateSearchDocument(DocumentIndex documentIndex, AzureAISearchIndexSettings indexSettings)
+    private SearchDocument CreateSearchDocument(DocumentIndex documentIndex, IList<AzureAISearchIndexMap> mappings)
     {
         var doc = new SearchDocument()
         {
@@ -193,12 +183,12 @@ public class AzureAIIndexDocumentManager(
 
         foreach (var entry in documentIndex.Entries)
         {
-            if (!_indexManager.TryGetSafeFieldName(entry.Name, out var key))
+            if (!mappings.Any(map => entry.Name.EqualsOrdinalIgnoreCase(map.Key)))
             {
                 continue;
             }
 
-            if (!indexSettings.IndexMappings.Any(map => key.EqualsOrdinalIgnoreCase(map.Key)))
+            if (!AzureAISearchIndexManager.TryGetSafeFieldName(entry.Name, out var key))
             {
                 continue;
             }
@@ -252,10 +242,12 @@ public class AzureAIIndexDocumentManager(
                     {
                         var stringValue = Convert.ToString(entry.Value);
 
-                        if (!string.IsNullOrEmpty(stringValue))
+                        if (!string.IsNullOrEmpty(stringValue) && stringValue != "NULL")
                         {
-                            // Only full-test field is single string value. All others, support a collection of strings.
-                            if (key == AzureAISearchIndexManager.FullTextKey)
+                            // Only full-test and display-text and keyword fields contains single string. All others, support a collection of strings.
+                            if (key == AzureAISearchIndexManager.FullTextKey
+                                || key == AzureAISearchIndexManager.DisplayTextAnalyzedKey
+                                || entry.Options.HasFlag(DocumentIndexOptions.Keyword))
                             {
                                 doc.TryAdd(key, stringValue);
                             }

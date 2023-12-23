@@ -56,10 +56,38 @@ public class Startup(ILogger<Startup> logger, IShellConfiguration shellConfigura
         );
 
         routes.MapAreaControllerRoute(
+            name: "AzureAISearch.Create",
+            areaName: "OrchardCore.Search.AzureAI",
+            pattern: _adminOptions.AdminUrlPrefix + "/azure-search/Create",
+            defaults: new { controller = adminControllerName, action = nameof(AdminController.Create) }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "AzureAISearch.Edit",
+            areaName: "OrchardCore.Search.AzureAI",
+            pattern: _adminOptions.AdminUrlPrefix + "/azure-search/Edit/{indexName}",
+            defaults: new { controller = adminControllerName, action = nameof(AdminController.Edit) }
+        );
+
+        routes.MapAreaControllerRoute(
             name: "AzureAISearch.Delete",
             areaName: "OrchardCore.Search.AzureAI",
-            pattern: _adminOptions.AdminUrlPrefix + "/azure-search/Delete/{id}",
+            pattern: _adminOptions.AdminUrlPrefix + "/azure-search/Delete/{indexName}",
             defaults: new { controller = adminControllerName, action = nameof(AdminController.Delete) }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "AzureAISearch.Reset",
+            areaName: "OrchardCore.Search.AzureAI",
+            pattern: _adminOptions.AdminUrlPrefix + "/azure-search/Reset/{indexName}",
+            defaults: new { controller = adminControllerName, action = nameof(AdminController.Reset) }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "AzureAISearch.Rebuild",
+            areaName: "OrchardCore.Search.AzureAI",
+            pattern: _adminOptions.AdminUrlPrefix + "/azure-search/Rebuild/{indexName}",
+            defaults: new { controller = adminControllerName, action = nameof(AdminController.Rebuild) }
         );
     }
 }

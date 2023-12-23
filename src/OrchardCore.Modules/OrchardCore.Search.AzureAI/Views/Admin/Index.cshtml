@@ -24,7 +24,7 @@
                     </div>
                 </div>
                 <div class="col-auto">
-                    <a asp-route-action="Edit" class="btn btn-secondary create" role="button">@T["Add Index"]</a>
+                    <a asp-route-action="Create" class="btn btn-secondary create" role="button">@T["Add Index"]</a>
                 </div>
             </div>
         </div>
@@ -59,20 +59,25 @@
             </li>
             @foreach (var entry in Model.Indexes)
             {
-                <li class="list-group-item">
-                    <div class="w-100">
-                        <div class="form-check float-start">
-                            <input type="checkbox" class="form-check-input" value="@entry.Name" name="itemIds" id="itemIds-@entry.Name">
-                            <label class="form-check-label" for="itemIds-@entry.Name">&nbsp;</label>
+                <li class="list-group-item list-group-item-action">
+                    <div class="row">
+                        <div class="col-lg col-12 title d-flex align-items-center">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" value="@entry.Name" name="itemIds" id="itemIds-@entry.Name">
+                                <label class="form-check-label" for="itemIds-@entry.Name">&nbsp;</label>
+                            </div>
+                            <div>
+                                <h5 class="mb-0">@entry.Name</h5>
+                            </div>
                         </div>
-                        <div class="float-start">
-                            <h5>@entry.Name</h5>
-                            <p>@entry.AnalyzerName</p>
-                        </div>
-                        <div class="float-end">
-                            <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-IndexName="@entry.Name">@T["Edit"]</a>
-                            <a class="btn btn-warning btn-sm" asp-action="Rebuild" asp-route-id="@entry.Name" data-title="@T["Rebuild Index"]" data-message="@T["Your index will be rebuilt, which might alter some services during the process. Continue?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-url-af="UnsafeUrl">@T["Rebuild"]</a>
-                            <a class="btn btn-danger btn-sm" type="button" asp-action="Delete" asp-route-IndexName="@entry.Name" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+
+                        <div class="col-lg-auto col-12 d-flex justify-content-end">
+                            <div class="actions">
+                                <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-IndexName="@entry.Name">@T["Edit"]</a>
+                                <a asp-action="Reset" asp-route-indexName="@entry.Name" class="btn btn-primary btn-sm" data-title="@T["Reset Index"]" data-message="@T["This will restart the indexing of all content items. Continue?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary" data-url-af="UnsafeUrl">@T["Reset"]</a>
+                                <a class="btn btn-warning btn-sm" asp-action="Rebuild" asp-route-indexName="@entry.Name" data-title="@T["Rebuild Index"]" data-message="@T["Your index will be rebuilt, which might alter some services during the process. Continue?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-url-af="UnsafeUrl">@T["Rebuild"]</a>
+                                <a class="btn btn-danger btn-sm" type="button" asp-action="Delete" asp-route-IndexName="@entry.Name" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                            </div>
                         </div>
                     </div>
                 </li>

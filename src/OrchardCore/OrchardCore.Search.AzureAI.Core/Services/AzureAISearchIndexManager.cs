@@ -26,6 +26,7 @@ public class AzureAISearchIndexManager(
     public const string OwnerKey = "Content__ContentItem__Owner";
     public const string AuthorKey = "Content__ContentItem__Author";
     public const string FullTextKey = "Content__ContentItem__FullText";
+    public const string DisplayTextAnalyzedKey = "Content__ContentItem__DisplayText__Analyzed";
 
     private readonly SearchIndexClient _client = client;
     private readonly ILogger _logger = logger;
@@ -89,7 +90,7 @@ public class AzureAISearchIndexManager(
     /// Makes sure that the index names are compliant with Azure AI Search specifications.
     /// <see href="https://learn.microsoft.com/en-us/rest/api/searchservice/naming-rules"/>.
     /// </summary>
-    public bool TryGetSafeName(string indexName, out string safeName)
+    public static bool TryGetSafeName(string indexName, out string safeName)
     {
         if (!TryGetSafePrefix(indexName, out var safePrefix) || safePrefix.Length < 2)
         {
@@ -110,9 +111,14 @@ public class AzureAISearchIndexManager(
         return GetIndexPrefix() + '-' + indexName;
     }
 
-    public bool TryGetSafeFieldName(string fieldName, out string safeName)
+    public static bool TryGetSafeFieldName(string fieldName, out string safeName)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(fieldName, nameof(fieldName));
+        if (string.IsNullOrEmpty(fieldName))
+        {
+            safeName = null;
+
+            return false;
+        }
 
         while (!char.IsLetter(fieldName[0]))
         {
@@ -192,11 +198,6 @@ public class AzureAISearchIndexManager(
         {
             await DeleteAsync(settings.IndexName);
             await CreateAsync(settings);
-
-            // CreateOrUpdateIndexAsync does not allow you to update existing index.
-            // var fullIndexName = GetFullIndexName(settings.IndexName);
-            // var indexOptions = GetSearchIndex(fullIndexName, settings);
-            // await _client.CreateOrUpdateIndexAsync(indexOptions, allowIndexDowntime: true, onlyIfUnchanged: true);
         }
         catch (Exception ex)
         {
@@ -204,7 +205,7 @@ public class AzureAISearchIndexManager(
         }
     }
 
-    private SearchIndex GetSearchIndex(string fullIndexName, AzureAISearchIndexSettings settings)
+    private static SearchIndex GetSearchIndex(string fullIndexName, AzureAISearchIndexSettings settings)
     {
         var searchFields = new List<SearchField>()
         {
@@ -223,6 +224,10 @@ public class AzureAISearchIndexManager(
             {
                 IsFilterable = true,
                 IsSortable = true,
+            },
+            new SearchableField(DisplayTextAnalyzedKey)
+            {
+                AnalyzerName = settings.AnalyzerName,
             },
             new SearchableField(FullTextKey)
             {

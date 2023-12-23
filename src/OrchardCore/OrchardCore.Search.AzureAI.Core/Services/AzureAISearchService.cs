@@ -53,6 +53,8 @@ public class AzureAISearchService(
                 Size = size,
             };
 
+            searchOptions.Select.Add(IndexingConstants.ContentItemIdKey);
+
             if (searchSettings.DefaultSearchFields?.Length > 0)
             {
                 foreach (var field in searchSettings.DefaultSearchFields)
