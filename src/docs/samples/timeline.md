@@ -1,1 +1,1 @@
-[timeline(timeline.yaml)]
+[timeline(./docs/samples/timeline.yaml)]
