@@ -60,7 +60,11 @@ public class Migrations : DataMigration
 
         await _secretService.AddSecretAsync<TextSecret>(
             EmailSecret.Password,
-            (secret, info) => secret.Text = settings.Password);
+            (secret, info) =>
+            {
+                secret.Text = settings.Password;
+                info.Description = "Email Secret holding a Password.";
+            });
 
         var siteSettings = await _siteService.LoadSiteSettingsAsync();
         siteSettings.Alter<SmtpSettings>(nameof(SmtpSettings), settings =>

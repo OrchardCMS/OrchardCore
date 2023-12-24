@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Secrets.Deployment;
 
@@ -26,11 +27,11 @@ public class AllSecretsDeploymentSource : IDeploymentSource
             return;
         }
 
-        // Secrets used for the deployment itself should already exist on both sides.
+        // Deployment secrets should already exist on both sides.
         var secretInfos = (await _secretService.GetSecretInfosAsync())
             .Where(secret =>
-                !string.Equals(secret.Value.Name, $"{result.SecretNamespace}.Encryption", StringComparison.OrdinalIgnoreCase) &&
-                !string.Equals(secret.Value.Name, $"{result.SecretNamespace}.Signing", StringComparison.OrdinalIgnoreCase));
+                !secret.Value.Name.EqualsOrdinalIgnoreCase($"{result.SecretNamespace}.Encryption") &&
+                !secret.Value.Name.EqualsOrdinalIgnoreCase($"{result.SecretNamespace}.Signing"));
 
         if (!secretInfos.Any())
         {

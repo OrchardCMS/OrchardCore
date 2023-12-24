@@ -15,13 +15,14 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             return builder.ConfigureServices(services =>
             {
-                services.AddSingleton<ISecretService, SecretService>();
-                services.Configure<SecretOptions>(options =>
-                {
-                    options.Types.Add(typeof(RSASecret));
-                    options.Types.Add(typeof(TextSecret));
-                    options.Types.Add(typeof(X509Secret));
-                });
+                services
+                    .AddSingleton<ISecretService, SecretService>()
+                    .Configure<SecretOptions>(options =>
+                    {
+                        options.Types.Add(typeof(RSASecret));
+                        options.Types.Add(typeof(TextSecret));
+                        options.Types.Add(typeof(X509Secret));
+                    });
 
                 services.AddSingleton<SecretInfosManager>();
                 services.AddSingleton<SecretsDocumentManager>();

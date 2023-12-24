@@ -41,7 +41,7 @@ public class SecretHybridProtector : ISecretProtector
         _signingRSASecret ??= await _secretService.GetSecretAsync<RSASecret>(_signingSecret)
             ?? throw new InvalidOperationException($"Secret '{_signingSecret}' not found.");
 
-        // The private key is needed for the signature.
+        // The private key is needed for signing.
         if (_signingRSASecret.KeyType != RSAKeyType.PublicPrivate)
         {
             throw new InvalidOperationException($"Secret '{_signingSecret}' cannot be used for signing.");

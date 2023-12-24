@@ -36,16 +36,22 @@ public class ServerMigrations : DataMigration
         {
             await UpgradeAsync();
         }
-        else
-        {
-            await _secretService.AddSecretAsync<RSASecret>(
-                ServerSecret.Encryption,
-                (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
 
-            await _secretService.AddSecretAsync<RSASecret>(
-                ServerSecret.Signing,
-                (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
-        }
+        await _secretService.AddSecretAsync<RSASecret>(
+            ServerSecret.Encryption,
+            (secret, info) =>
+            {
+                RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate);
+                info.Description = "OpenId Server Secret holding a raw RSA key to be used for encryption.";
+            });
+
+        await _secretService.AddSecretAsync<RSASecret>(
+            ServerSecret.Signing,
+            (secret, info) =>
+            {
+                RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate);
+                info.Description = "OpenId Server Secret holding a raw RSA key to be used for signing.";
+            });
 
         // Shortcut other migration steps on new content definition schemas.
         return 1;
@@ -61,20 +67,15 @@ public class ServerMigrations : DataMigration
             !string.IsNullOrEmpty(settings.EncryptionCertificateThumbprint))
         {
             await _secretService.AddSecretAsync<X509Secret>(
-                ServerSecret.Encryption,
+                ServerSecret.X509Encryption,
                 (secret, info) =>
                 {
                     secret.StoreLocation = settings.EncryptionCertificateStoreLocation;
                     secret.StoreName = settings.EncryptionCertificateStoreName;
                     secret.Thumbprint = settings.EncryptionCertificateThumbprint;
+                    info.Description = "OpenId Server Secret allowing to use an X509 certificate for encryption.";
                 });
 
-        }
-        else
-        {
-            await _secretService.AddSecretAsync<RSASecret>(
-                ServerSecret.Encryption,
-                (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
         }
 
         if (settings.SigningCertificateStoreLocation is not null &&
@@ -82,20 +83,15 @@ public class ServerMigrations : DataMigration
             !string.IsNullOrEmpty(settings.SigningCertificateThumbprint))
         {
             await _secretService.AddSecretAsync<X509Secret>(
-                ServerSecret.Signing,
+                ServerSecret.X509Signing,
                 (secret, info) =>
                 {
                     secret.StoreLocation = settings.SigningCertificateStoreLocation;
                     secret.StoreName = settings.SigningCertificateStoreName;
                     secret.Thumbprint = settings.SigningCertificateThumbprint;
+                    info.Description = "OpenId Server Secret allowing to use an X509 certificate for signing.";
                 });
 
-        }
-        else
-        {
-            await _secretService.AddSecretAsync<RSASecret>(
-                ServerSecret.Signing,
-                (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
         }
     }
 }

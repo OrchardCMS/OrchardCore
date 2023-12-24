@@ -10,16 +10,16 @@ namespace OrchardCore.Secrets.Stores;
 
 public class DatabaseSecretStore : ISecretStore
 {
-    private readonly SecretsDocumentManager _manager;
+    private readonly SecretsDocumentManager _documentManager;
     private readonly IDataProtector _protector;
     protected readonly IStringLocalizer S;
 
     public DatabaseSecretStore(
-        SecretsDocumentManager manager,
+        SecretsDocumentManager documentManager,
         IDataProtectionProvider dataProtectionProvider,
         IStringLocalizer<DatabaseSecretStore> localizer)
     {
-        _manager = manager;
+        _documentManager = documentManager;
         _protector = dataProtectionProvider.CreateProtector(nameof(DatabaseSecretStore));
         S = localizer;
     }
@@ -35,7 +35,7 @@ public class DatabaseSecretStore : ISecretStore
             throw new ArgumentException($"The type must implement '{nameof(SecretBase)}'.");
         }
 
-        var document = await _manager.GetSecretsAsync();
+        var document = await _documentManager.GetSecretsAsync();
         if (!document.Secrets.TryGetValue(name, out var protectedData))
         {
             return null;
@@ -46,7 +46,7 @@ public class DatabaseSecretStore : ISecretStore
     }
 
     public Task UpdateSecretAsync(string name, SecretBase secret) =>
-        _manager.UpdateSecretAsync(name, _protector.Protect(JsonConvert.SerializeObject(secret)));
+        _documentManager.UpdateSecretAsync(name, _protector.Protect(JsonConvert.SerializeObject(secret)));
 
-    public Task RemoveSecretAsync(string name) => _manager.RemoveSecretAsync(name);
+    public Task RemoveSecretAsync(string name) => _documentManager.RemoveSecretAsync(name);
 }

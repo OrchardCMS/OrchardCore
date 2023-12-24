@@ -21,11 +21,19 @@ namespace OrchardCore.Deployment
 
             await _secretService.AddSecretAsync<RSASecret>(
                 DeploymentSecret.Encryption,
-                (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+                (secret, info) =>
+                {
+                    RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate);
+                    info.Description = "Deployment Secret holding a raw RSA key to be used for encryption.";
+                });
 
             await _secretService.AddSecretAsync<RSASecret>(
                 DeploymentSecret.Signing,
-                (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+                (secret, info) =>
+                {
+                    RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate);
+                    info.Description = "Deployment Secret holding a raw RSA key to be used for signing.";
+                });
 
             return 2;
         }
@@ -34,11 +42,19 @@ namespace OrchardCore.Deployment
         {
             await _secretService.AddSecretAsync<RSASecret>(
                 DeploymentSecret.Encryption,
-                (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+                (secret, info) =>
+                {
+                    RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate);
+                    info.Description = "Deployment Secret holding a raw RSA key to be used for encryption.";
+                });
 
             await _secretService.AddSecretAsync<RSASecret>(
                 DeploymentSecret.Signing,
-                (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
+                (secret, info) =>
+                {
+                    RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate);
+                    info.Description = "Deployment Secret holding a raw RSA key to be used for signing.";
+                });
 
             return 2;
         }

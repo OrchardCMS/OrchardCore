@@ -90,11 +90,11 @@ namespace OrchardCore.Workflows
                     "WorkflowCorrelationId")
             );
 
-            await _secretService.AddSecretAsync<RSASecret>(
+            await _secretService.GetOrAddSecretAsync<RSASecret>(
                 TokenSecret.Encryption,
                 (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
 
-            await _secretService.AddSecretAsync<RSASecret>(
+            await _secretService.GetOrAddSecretAsync<RSASecret>(
                 TokenSecret.Signing,
                 (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
 
@@ -165,11 +165,11 @@ namespace OrchardCore.Workflows
         // This code can be removed in a later version.
         public async Task<int> UpdateFrom3Async()
         {
-            await _secretService.AddSecretAsync<RSASecret>(
+            await _secretService.GetOrAddSecretAsync<RSASecret>(
                 TokenSecret.Encryption,
                 (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
 
-            await _secretService.AddSecretAsync<RSASecret>(
+            await _secretService.GetOrAddSecretAsync<RSASecret>(
                 TokenSecret.Signing,
                 (secret, info) => RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate));
 
