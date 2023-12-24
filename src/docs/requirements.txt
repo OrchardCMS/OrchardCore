@@ -5,4 +5,4 @@ mkdocs-git-revision-date-localized-plugin>=1.2.2
 pymdown-extensions>=10.5
 mkdocs-exclude>=1.0.2
 mdx_truly_sane_lists>=1.2
-neoteroi-mkdocs==1.0.3
+neoteroi-mkdocs>=1.0.4
