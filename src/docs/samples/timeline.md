@@ -1,1 +1,0 @@
-[timeline(src/docs/samples/timeline.json)]
