@@ -2,20 +2,17 @@
     {
         "title": "Launch",
         "content": "First implementation.",
-        "icon": ":fontawesome-rocket:",
         "sub_title": "2022-Q1"
     },
     {
         "title": "One",
         "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-        "icon": ":octicons-sun-16:",
         "key": "cyan",
         "sub_title": "2022-Q2"
     },
     {
         "title": "Two",
         "content": "Lorem ipsum dolor sit amet.",
-        "icon": ":material-github:",
         "sub_title": "2022-Q3"
     },
     {
