@@ -46,7 +46,7 @@ edit_uri: edit/main/src/
 docs_dir: src
 
 extra_css:
-  - assets/css/neoteroi-mkdocs.css
+  - docs/assets/css/neoteroi-mkdocs.css
 
 # Extensions
 markdown_extensions:
