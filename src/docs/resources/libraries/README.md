@@ -35,7 +35,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json) | Json.NET is a popular high-performance JSON framework for .NET | 13.0.3 | [MIT](https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md) |
 | [NJsonSchema](https://github.com/RicoSuter/NJsonSchema) | JSON Schema reader, generator and validator for .NET | 10.9.0 | [MIT](https://github.com/RicoSuter/NJsonSchema/blob/master/LICENSE.md) |
 | [NLog.Web.AspNetCore](https://github.com/NLog/NLog.Web/tree/master/src/NLog.Web.AspNetCore) | NLog integration for ASP.NET. | 5.3.7 | [BSD-3-Clause](https://github.com/NLog/NLog.Web/blob/master/LICENSE) |
-| [Noda Time](https://github.com/nodatime/nodatime) | A better date and time API for .NET. | 3.1.9 | [Apache-2.0](https://github.com/nodatime/nodatime/blob/master/LICENSE.txt) |
+| [Noda Time](https://github.com/nodatime/nodatime) | A better date and time API for .NET. | 3.1.10 | [Apache-2.0](https://github.com/nodatime/nodatime/blob/master/LICENSE.txt) |
 | [OpenIddict](https://github.com/openiddict/openiddict-core) | Flexible and versatile OAuth 2.0/OpenID Connect stack for .NET. | 5.0.1 | [Apache-2.0](https://github.com/openiddict/openiddict-core/blob/dev/LICENSE.md)) |
 | [PdfPig](https://github.com/UglyToad/PdfPig/) | Library to read and extract text and other content from PDF files. | 0.1.8 | [Apache-2.0](https://github.com/UglyToad/PdfPig/blob/master/LICENSE) |
 | [Serilog.AspNetCore](https://github.com/serilog/serilog-aspnetcore) | Serilog integration for ASP.NET Core. | 7.0.0 | [Apache-2.0](https://github.com/serilog/serilog-aspnetcore/blob/dev/LICENSE) |
@@ -97,4 +97,4 @@ The below table lists the different Tests libraries:
 | [VS Test SDK](https://github.com/microsoft/vstest/) | Visual Studio Test Platform. | 17.8.0 | [MIT](https://github.com/microsoft/vstest/blob/master/LICENSE) |
 | [xUnit](https://github.com/xunit/xunit) | Free, open source, community-focused unit testing tool for the .NET Framework. | 2.6.3 | [MIT](https://github.com/xunit/xunit/blob/main/LICENSE) |
 | [xUnit Analyzers](https://github.com/xunit/xunit.analyzers) | Roslyn analyzers for xUnit.net. | 1.8.0 | [MIT](https://github.com/xunit/xunit.analyzers/blob/main/LICENSE) |
-| [xUnit VS runner](https://github.com/xunit/visualstudio.xunit) | VSTest runner for xUnit.net. | 2.5.5 | [MIT](https://github.com/xunit/visualstudio.xunit/blob/main/License.txt) |
+| [xUnit VS runner](https://github.com/xunit/visualstudio.xunit) | VSTest runner for xUnit.net. | 2.5.6 | [MIT](https://github.com/xunit/visualstudio.xunit/blob/main/License.txt) |
