@@ -45,6 +45,9 @@ edit_uri: edit/main/src/
 # Options
 docs_dir: src
 
+extra_css:
+  - assets/css/neoteroi-mkdocs.css
+
 # Extensions
 markdown_extensions:
   - markdown.extensions.admonition
@@ -55,6 +58,7 @@ markdown_extensions:
   # - mdx_truly_sane_lists:
   #     nested_indent: 2
   #     truly_sane: True
+  - neoteroi.timeline
   - pymdownx.b64
   - pymdownx.caret
   - pymdownx.details
@@ -259,3 +263,5 @@ nav:
       - 1.0.0-beta3: docs/releases/1.0.0-beta3.md
       - 1.0.0-beta2: docs/releases/1.0.0-beta2.md
       - 1.0.0-beta1: docs/releases/1.0.0-beta1.md
+  - Samples:
+      - Timeline: docs/samples/timeline.md
