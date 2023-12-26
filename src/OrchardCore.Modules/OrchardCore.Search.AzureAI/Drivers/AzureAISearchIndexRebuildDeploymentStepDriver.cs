@@ -16,35 +16,31 @@ public class AzureAISearchIndexRebuildDeploymentStepDriver(AzureAISearchIndexSet
     private readonly AzureAISearchIndexSettingsService _indexSettingsService = indexSettingsService;
 
     public override IDisplayResult Display(AzureAISearchIndexRebuildDeploymentStep step)
-    {
-        return
-            Combine(
-                View("AzureAISearchIndexRebuildDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                View("AzureAISearchIndexRebuildDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-            );
-    }
+        => Combine(
+            View("AzureAISearchIndexRebuildDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+            View("AzureAISearchIndexRebuildDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+        );
 
     public override IDisplayResult Edit(AzureAISearchIndexRebuildDeploymentStep step)
-    {
-        return Initialize<AzureAISearchIndexRebuildDeploymentStepViewModel>("AzureAISearchIndexRebuildDeploymentStep_Fields_Edit", async model =>
+        => Initialize<AzureAISearchIndexRebuildDeploymentStepViewModel>("AzureAISearchIndexRebuildDeploymentStep_Fields_Edit", async model =>
         {
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.Indices;
             model.AllIndexNames = (await _indexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
         }).Location("Content");
-    }
 
-    public override async Task<IDisplayResult> UpdateAsync(AzureAISearchIndexRebuildDeploymentStep rebuildIndexStep, IUpdateModel updater)
+    public override async Task<IDisplayResult> UpdateAsync(AzureAISearchIndexRebuildDeploymentStep step, IUpdateModel updater)
     {
-        rebuildIndexStep.Indices = [];
+        step.Indices = [];
 
-        await updater.TryUpdateModelAsync(rebuildIndexStep, Prefix, step => step.Indices, step => step.IncludeAll);
+        await updater.TryUpdateModelAsync(step, Prefix, p => p.IncludeAll, p => p.Indices);
 
-        if (rebuildIndexStep.IncludeAll)
+        if (step.IncludeAll)
         {
-            rebuildIndexStep.Indices = [];
+            // Clear index names if the user select include all.
+            step.Indices = [];
         }
 
-        return Edit(rebuildIndexStep);
+        return Edit(step);
     }
 }

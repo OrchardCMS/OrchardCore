@@ -15,37 +15,32 @@ public class AzureAISearchIndexResetDeploymentStepDriver(AzureAISearchIndexSetti
 {
     private readonly AzureAISearchIndexSettingsService _indexSettingsService = indexSettingsService;
 
-
     public override IDisplayResult Display(AzureAISearchIndexResetDeploymentStep step)
-    {
-        return
-            Combine(
-                View("AzureAISearchIndexResetDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                View("AzureAISearchIndexResetDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-            );
-    }
+        => Combine(
+            View("AzureAISearchIndexResetDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+            View("AzureAISearchIndexResetDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+        );
 
     public override IDisplayResult Edit(AzureAISearchIndexResetDeploymentStep step)
-    {
-        return Initialize<AzureAISearchIndexResetDeploymentStepViewModel>("AzureAISearchIndexResetDeploymentStep_Fields_Edit", async model =>
+        => Initialize<AzureAISearchIndexResetDeploymentStepViewModel>("AzureAISearchIndexResetDeploymentStep_Fields_Edit", async model =>
         {
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.Indices;
             model.AllIndexNames = (await _indexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
         }).Location("Content");
-    }
 
-    public override async Task<IDisplayResult> UpdateAsync(AzureAISearchIndexResetDeploymentStep resetIndexStep, IUpdateModel updater)
+    public override async Task<IDisplayResult> UpdateAsync(AzureAISearchIndexResetDeploymentStep step, IUpdateModel updater)
     {
-        resetIndexStep.Indices = [];
+        step.Indices = [];
 
-        await updater.TryUpdateModelAsync(resetIndexStep, Prefix, step => step.Indices, step => step.IncludeAll);
+        await updater.TryUpdateModelAsync(step, Prefix, p => p.IncludeAll, p => p.Indices);
 
-        if (resetIndexStep.IncludeAll)
+        if (step.IncludeAll)
         {
-            resetIndexStep.Indices = [];
+            // Clear index names if the user select include all.
+            step.Indices = [];
         }
 
-        return Edit(resetIndexStep);
+        return Edit(step);
     }
 }

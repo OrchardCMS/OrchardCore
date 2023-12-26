@@ -10,18 +10,16 @@ public class AzureAISearchIndexResetDeploymentSource : IDeploymentSource
 
     public Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
     {
-        var elasticIndexResetStep = step as AzureAISearchIndexResetDeploymentStep;
-
-        if (elasticIndexResetStep == null)
+        if (step is not AzureAISearchIndexResetDeploymentStep resetStep)
         {
             return Task.CompletedTask;
         }
 
-        var indicesToReset = elasticIndexResetStep.IncludeAll ? [] : elasticIndexResetStep.Indices;
+        var indicesToReset = resetStep.IncludeAll ? [] : resetStep.Indices;
 
         result.Steps.Add(new JObject(
         new JProperty("name", Name),
-            new JProperty("includeAll", elasticIndexResetStep.IncludeAll),
+            new JProperty("includeAll", resetStep.IncludeAll),
             new JProperty("Indices", new JArray(indicesToReset))
         ));
 

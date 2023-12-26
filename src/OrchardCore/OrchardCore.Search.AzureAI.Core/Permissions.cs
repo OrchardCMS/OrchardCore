@@ -16,9 +16,9 @@ public class Permissions(AzureAISearchIndexSettingsService indexSettingsService)
             AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes,
         };
 
-        var elasticIndexSettings = await _indexSettingsService.GetSettingsAsync();
+        var indexSettings = await _indexSettingsService.GetSettingsAsync();
 
-        foreach (var index in elasticIndexSettings)
+        foreach (var index in indexSettings)
         {
             permissions.Add(AzureAISearchIndexPermissionHelper.GetPermission(index.IndexName));
         }

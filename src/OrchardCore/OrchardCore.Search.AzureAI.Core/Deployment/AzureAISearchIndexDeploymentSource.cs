@@ -8,20 +8,13 @@ using OrchardCore.Search.AzureAI.Services;
 
 namespace OrchardCore.Search.AzureAI.Deployment;
 
-public class AzureAISearchIndexDeploymentSource : IDeploymentSource
+public class AzureAISearchIndexDeploymentSource(AzureAISearchIndexSettingsService indexSettingsService) : IDeploymentSource
 {
-    private readonly AzureAISearchIndexSettingsService _indexSettingsService;
-
-    public AzureAISearchIndexDeploymentSource(AzureAISearchIndexSettingsService indexSettingsService)
-    {
-        _indexSettingsService = indexSettingsService;
-    }
+    private readonly AzureAISearchIndexSettingsService _indexSettingsService = indexSettingsService;
 
     public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
     {
-        var elasticIndexStep = step as AzureAISearchIndexDeploymentStep;
-
-        if (elasticIndexStep == null)
+        if (step is not AzureAISearchIndexDeploymentStep settingsStep)
         {
             return;
         }
@@ -29,7 +22,7 @@ public class AzureAISearchIndexDeploymentSource : IDeploymentSource
         var indexSettings = await _indexSettingsService.GetSettingsAsync();
 
         var data = new JArray();
-        var indicesToAdd = elasticIndexStep.IncludeAll ? indexSettings.Select(x => x.IndexName).ToArray() : elasticIndexStep.IndexNames;
+        var indicesToAdd = settingsStep.IncludeAll ? indexSettings.Select(x => x.IndexName).ToArray() : settingsStep.IndexNames;
 
         foreach (var index in indexSettings)
         {

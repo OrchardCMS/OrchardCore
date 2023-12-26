@@ -10,17 +10,16 @@ public class AzureAISearchIndexRebuildDeploymentSource : IDeploymentSource
 
     public Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
     {
-        var elasticIndexRebuildStep = step as AzureAISearchIndexRebuildDeploymentStep;
-        if (elasticIndexRebuildStep == null)
+        if (step is not AzureAISearchIndexRebuildDeploymentStep rebuildStep)
         {
             return Task.CompletedTask;
         }
 
-        var indicesToRebuild = elasticIndexRebuildStep.IncludeAll ? [] : elasticIndexRebuildStep.Indices;
+        var indicesToRebuild = rebuildStep.IncludeAll ? [] : rebuildStep.Indices;
 
         result.Steps.Add(new JObject(
             new JProperty("name", Name),
-            new JProperty("includeAll", elasticIndexRebuildStep.IncludeAll),
+            new JProperty("includeAll", rebuildStep.IncludeAll),
             new JProperty("Indices", new JArray(indicesToRebuild))
         ));
 

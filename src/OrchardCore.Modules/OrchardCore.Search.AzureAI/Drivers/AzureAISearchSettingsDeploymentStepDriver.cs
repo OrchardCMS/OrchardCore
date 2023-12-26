@@ -8,12 +8,10 @@ namespace OrchardCore.Search.AzureAI.Drivers;
 public class AzureAISearchSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, AzureAISearchSettingsDeploymentStep>
 {
     public override IDisplayResult Display(AzureAISearchSettingsDeploymentStep step)
-    {
-        return Combine(
+        => Combine(
             View("AzureAISearchSettingsDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
             View("AzureAISearchSettingsDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
         );
-    }
 
     public override IDisplayResult Edit(AzureAISearchSettingsDeploymentStep step)
     {

@@ -21,33 +21,40 @@ public class AzureAISearchIndexResetStep : IRecipeStepHandler
 
         var model = context.Step.ToObject<AzureAISearchIndexResetDeploymentStep>();
 
-        if (model != null && (model.IncludeAll || model.Indices.Length > 0))
+        if (model == null)
         {
-            await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync(AzureAISearchIndexRebuildDeploymentSource.Name, async scope =>
-            {
-                var searchIndexingService = scope.ServiceProvider.GetService<AzureAISearchIndexingService>();
-                var indexSettingsService = scope.ServiceProvider.GetService<AzureAISearchIndexSettingsService>();
-                var indexManager = scope.ServiceProvider.GetRequiredService<AzureAISearchIndexManager>();
-                var indexDocumentManager = scope.ServiceProvider.GetRequiredService<AzureAIIndexDocumentManager>();
-
-                var indexSettings = model.IncludeAll
-                ? await indexSettingsService.GetSettingsAsync()
-                : (await indexSettingsService.GetSettingsAsync()).Where(x => model.Indices.Contains(x.IndexName, StringComparer.OrdinalIgnoreCase));
-
-                foreach (var settings in indexSettings)
-                {
-                    settings.SetLastTaskId(0);
-                    settings.IndexMappings = await indexDocumentManager.GetMappingsAsync(settings.IndexedContentTypes);
-                    await indexSettingsService.UpdateAsync(settings);
-
-                    if (!await indexManager.ExistsAsync(settings.IndexName))
-                    {
-                        await indexManager.CreateAsync(settings);
-                    }
-                }
-
-                await searchIndexingService.ProcessContentItemsAsync(indexSettings.Select(settings => settings.IndexName).ToArray());
-            });
+            return;
         }
+
+        if (!model.IncludeAll && (model.Indices == null || model.Indices.Length == 0))
+        {
+            return;
+        }
+
+        await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync(AzureAISearchIndexRebuildDeploymentSource.Name, async scope =>
+        {
+            var searchIndexingService = scope.ServiceProvider.GetService<AzureAISearchIndexingService>();
+            var indexSettingsService = scope.ServiceProvider.GetService<AzureAISearchIndexSettingsService>();
+            var indexManager = scope.ServiceProvider.GetRequiredService<AzureAISearchIndexManager>();
+            var indexDocumentManager = scope.ServiceProvider.GetRequiredService<AzureAIIndexDocumentManager>();
+
+            var indexSettings = model.IncludeAll
+            ? await indexSettingsService.GetSettingsAsync()
+            : (await indexSettingsService.GetSettingsAsync()).Where(x => model.Indices.Contains(x.IndexName, StringComparer.OrdinalIgnoreCase));
+
+            foreach (var settings in indexSettings)
+            {
+                settings.SetLastTaskId(0);
+                settings.IndexMappings = await indexDocumentManager.GetMappingsAsync(settings.IndexedContentTypes);
+                await indexSettingsService.UpdateAsync(settings);
+
+                if (!await indexManager.ExistsAsync(settings.IndexName))
+                {
+                    await indexManager.CreateAsync(settings);
+                }
+            }
+
+            await searchIndexingService.ProcessContentItemsAsync(indexSettings.Select(settings => settings.IndexName).ToArray());
+        });
     }
 }

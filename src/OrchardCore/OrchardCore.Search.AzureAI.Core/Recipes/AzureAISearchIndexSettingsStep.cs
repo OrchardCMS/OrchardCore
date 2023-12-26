@@ -31,37 +31,37 @@ public class AzureAISearchIndexSettingsStep(
 
         foreach (var index in indices)
         {
-            var elasticIndexSettings = index.ToObject<AzureAISearchIndexSettings>();
+            var indexSettings = index.ToObject<AzureAISearchIndexSettings>();
 
-            if (!AzureAISearchIndexManager.TryGetSafeIndexName(elasticIndexSettings.IndexName, out var indexName))
+            if (!AzureAISearchIndexManager.TryGetSafeIndexName(indexSettings.IndexName, out var indexName))
             {
-                _logger.LogError("Invalid index name was provided in the recipe step. IndexName: {indexName}.", elasticIndexSettings.IndexName);
+                _logger.LogError("Invalid index name was provided in the recipe step. IndexName: {indexName}.", indexSettings.IndexName);
 
                 continue;
             }
 
-            elasticIndexSettings.IndexName = indexName;
+            indexSettings.IndexName = indexName;
 
-            if (!await _indexManager.ExistsAsync(elasticIndexSettings.IndexName))
+            if (!await _indexManager.ExistsAsync(indexSettings.IndexName))
             {
-                if (string.IsNullOrWhiteSpace(elasticIndexSettings.AnalyzerName))
+                if (string.IsNullOrWhiteSpace(indexSettings.AnalyzerName))
                 {
-                    elasticIndexSettings.AnalyzerName = AzureAISearchDefaultOptions.DefaultAnalyzer;
+                    indexSettings.AnalyzerName = AzureAISearchDefaultOptions.DefaultAnalyzer;
                 }
 
-                if (string.IsNullOrEmpty(elasticIndexSettings.QueryAnalyzerName))
+                if (string.IsNullOrEmpty(indexSettings.QueryAnalyzerName))
                 {
-                    elasticIndexSettings.QueryAnalyzerName = elasticIndexSettings.AnalyzerName;
+                    indexSettings.QueryAnalyzerName = indexSettings.AnalyzerName;
                 }
 
-                if (elasticIndexSettings.IndexedContentTypes == null || elasticIndexSettings.IndexedContentTypes.Length == 0)
+                if (indexSettings.IndexedContentTypes == null || indexSettings.IndexedContentTypes.Length == 0)
                 {
-                    _logger.LogError("No {fieldName} were provided in the recipe step. IndexName: {indexName}.", nameof(elasticIndexSettings.IndexedContentTypes), elasticIndexSettings.IndexName);
+                    _logger.LogError("No {fieldName} were provided in the recipe step. IndexName: {indexName}.", nameof(indexSettings.IndexedContentTypes), indexSettings.IndexName);
 
                     continue;
                 }
 
-                await _indexManager.CreateAsync(elasticIndexSettings);
+                await _indexManager.CreateAsync(indexSettings);
             }
         }
     }

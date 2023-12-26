@@ -5,6 +5,7 @@ namespace OrchardCore.Search.AzureAI.ViewModels;
 
 public class AdminIndexViewModel
 {
+    [BindNever]
     public IEnumerable<IndexViewModel> Indexes { get; set; }
 
     public AzureAIIndexOptions Options { get; set; } = new();

@@ -15,6 +15,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.BackgroundJobs;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Indexing;
 using OrchardCore.Navigation;
@@ -70,7 +71,6 @@ public class AdminController : Controller
         _notifier = notifier;
         _contentItemIndexHandlers = contentItemIndexHandlers;
         _logger = logger;
-
         S = stringLocalizer;
         H = htmlLocalizer;
     }
@@ -82,7 +82,9 @@ public class AdminController : Controller
             return Forbid();
         }
 
-        var indexes = (await _indexSettingsService.GetSettingsAsync()).Select(i => new IndexViewModel { Name = i.IndexName }).ToList();
+        var indexes = (await _indexSettingsService.GetSettingsAsync())
+            .Select(i => new IndexViewModel { Name = i.IndexName })
+            .ToList();
 
         var totalIndexes = indexes.Count;
 
@@ -100,12 +102,7 @@ public class AdminController : Controller
 
         // Maintain previous route data when generating page links
         var routeData = new RouteData();
-        var pagerShape = await _shapeFactory.CreateAsync("Pager", Arguments.From(new
-        {
-            pager.Page,
-            pager.PageSize,
-            TotalItemCount = totalIndexes
-        }));
+        var pagerShape = await _shapeFactory.PagerAsync(pager, totalIndexes);
 
         var model = new AdminIndexViewModel
         {
