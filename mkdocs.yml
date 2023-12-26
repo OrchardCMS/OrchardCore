@@ -259,3 +259,7 @@ nav:
       - 1.0.0-beta3: docs/releases/1.0.0-beta3.md
       - 1.0.0-beta2: docs/releases/1.0.0-beta2.md
       - 1.0.0-beta1: docs/releases/1.0.0-beta1.md
+  - Community:
+      - Overview: docs/community/README.md
+      - Honorable Members:
+          - Jean-Thierry Kéchichian: docs/community/jean-thierry/README.md
