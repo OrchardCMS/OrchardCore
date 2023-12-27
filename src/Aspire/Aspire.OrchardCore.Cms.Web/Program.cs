@@ -1,8 +1,13 @@
+using OrchardCore.Logging;
+
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Host.UseNLogHost();
+builder.AddServiceDefaults();
+
 builder.Services
-    .AddOrchardCore()
-    .AddMvc();
+    .AddOrchardCms()
+    .AddSetupFeatures("OrchardCore.AutoSetup");
 
 var app = builder.Build();
 
@@ -14,5 +19,6 @@ if (!app.Environment.IsDevelopment())
 app.UseStaticFiles();
 
 app.UseOrchardCore();
+
 
 await app.RunAsync();
