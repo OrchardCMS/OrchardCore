@@ -2,6 +2,6 @@ mkdocs>=1.5.3
 mkdocs-material>=9.5.3
 mkdocs-git-authors-plugin>=0.7.2
 mkdocs-git-revision-date-localized-plugin>=1.2.2
-pymdown-extensions>=10.5
+pymdown-extensions>=10.6
 mkdocs-exclude>=1.0.2
 mdx_truly_sane_lists>=1.2
