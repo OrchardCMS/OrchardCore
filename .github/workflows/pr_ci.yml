@@ -24,6 +24,9 @@ jobs:
     - uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '8.0.x'
+    - name: Setup Aspire
+      run: |
+        dotnet workload install aspire
     - name: Build
       run: |
         dotnet build -c Release
