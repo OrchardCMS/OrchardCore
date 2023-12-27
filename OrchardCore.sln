@@ -507,13 +507,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Sms", "src\Orch
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Sms.Core", "src\OrchardCore\OrchardCore.Sms.Core\OrchardCore.Sms.Core.csproj", "{20356393-B16D-466C-8203-877A534E287D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aspire.AppHost", "src\Aspire\Aspire.AppHost\Aspire.AppHost.csproj", "{B8A5D532-1F7D-40ED-B6B0-BE36C8B81D91}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aspire.AppHost", "src\Aspire\Aspire.AppHost\Aspire.AppHost.csproj", "{B8A5D532-1F7D-40ED-B6B0-BE36C8B81D91}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aspire.ServiceDefaults", "src\Aspire\Aspire.ServiceDefaults\Aspire.ServiceDefaults.csproj", "{C2BB6BBB-4F5F-4D2F-975D-D50DD38FCABF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Aspire", "Aspire", "{5DC4B8E4-9BE0-4B57-8065-7DC0A44DBD20}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aspire.OrchardCore.Cms.Web", "src\Aspire\Aspire.OrchardCore.Cms.Web\Aspire.OrchardCore.Cms.Web.csproj", "{3DE87BB4-BA03-4C02-861F-6EE51898E682}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aspire.OrchardCore.Mvc.Web", "src\Aspire\Aspire.OrchardCore.Mvc.Web\Aspire.OrchardCore.Mvc.Web.csproj", "{59D2CC21-A422-42D5-8118-C16B7EE52F77}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1355,6 +1357,10 @@ Global
 		{3DE87BB4-BA03-4C02-861F-6EE51898E682}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3DE87BB4-BA03-4C02-861F-6EE51898E682}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3DE87BB4-BA03-4C02-861F-6EE51898E682}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59D2CC21-A422-42D5-8118-C16B7EE52F77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59D2CC21-A422-42D5-8118-C16B7EE52F77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59D2CC21-A422-42D5-8118-C16B7EE52F77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59D2CC21-A422-42D5-8118-C16B7EE52F77}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1590,6 +1596,7 @@ Global
 		{C2BB6BBB-4F5F-4D2F-975D-D50DD38FCABF} = {5DC4B8E4-9BE0-4B57-8065-7DC0A44DBD20}
 		{5DC4B8E4-9BE0-4B57-8065-7DC0A44DBD20} = {275E087F-A4E2-4A7B-A924-ED68E3A52086}
 		{3DE87BB4-BA03-4C02-861F-6EE51898E682} = {5DC4B8E4-9BE0-4B57-8065-7DC0A44DBD20}
+		{59D2CC21-A422-42D5-8118-C16B7EE52F77} = {5DC4B8E4-9BE0-4B57-8065-7DC0A44DBD20}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}

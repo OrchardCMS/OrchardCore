@@ -11,6 +11,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Remove="Views\_ViewImports.cshtml" />
+    <EmbeddedResource Remove="Views\_ViewStart.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Views\_ViewImports.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Views\_ViewStart.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
