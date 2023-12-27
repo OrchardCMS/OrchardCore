@@ -24,7 +24,7 @@ jobs:
     - uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '8.0.x'
-        dotnet-quality: 'manifests'
+        dotnet-quality: 'preview'
     - name: Update Workload
       run: |
         dotnet workload update --from-previous-sdk
