@@ -23,17 +23,16 @@ public class AzureAISearchIndexSettingsStep(
             return;
         }
 
-        var indices = context.Step["Indices"];
-        if (indices == null)
+        if (context.Step["Indices"] is null)
         {
             return;
         }
 
-        foreach (var index in indices)
+        foreach (var index in context.Step["Indices"])
         {
             var indexSettings = index.ToObject<AzureAISearchIndexSettings>();
 
-            if (!AzureAISearchIndexManager.TryGetSafeIndexName(indexSettings.IndexName, out var indexName))
+            if (!AzureAISearchIndexNamingHelper.TryGetSafeIndexName(indexSettings.IndexName, out var indexName))
             {
                 _logger.LogError("Invalid index name was provided in the recipe step. IndexName: {indexName}.", indexSettings.IndexName);
 

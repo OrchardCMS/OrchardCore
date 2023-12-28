@@ -107,16 +107,7 @@ public class AzureAIIndexDocumentManager(
             return;
         }
 
-        try
-        {
-            var client = GetSearchClient(indexName);
-
-            await client.DeleteDocumentsAsync(IndexingConstants.ContentItemIdKey, contentItemIds);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Unable to delete documents from Azure AI Search Settings");
-        }
+        await DeleteDocumentsAsync(indexName, contentItemIds);
     }
 
     public async Task<bool> MergeOrUploadDocumentsAsync(string indexName, IList<DocumentIndex> indexDocuments, AzureAISearchIndexSettings indexSettings)
@@ -132,11 +123,15 @@ public class AzureAIIndexDocumentManager(
         try
         {
             var client = GetSearchClient(indexName);
+
+            // The dictionary key should be indexingKey Not AzureFieldKey.
+            var maps = indexSettings.IndexMappings.ToDictionary(x => x.IndexingKey);
+
             var pages = indexDocuments.PagesOf(32000);
 
             foreach (var page in pages)
             {
-                var docs = CreateSearchDocuments(page, indexSettings.IndexMappings);
+                var docs = CreateSearchDocuments(page, maps);
 
                 var response = await client.MergeOrUploadDocumentsAsync(docs);
             }
@@ -160,9 +155,17 @@ public class AzureAIIndexDocumentManager(
         {
             var client = GetSearchClient(indexName);
 
-            var docs = CreateSearchDocuments(indexDocuments, indexSettings.IndexMappings);
+            // The dictionary key should be indexingKey Not AzureFieldKey.
+            var maps = indexSettings.IndexMappings.ToDictionary(x => x.IndexingKey);
 
-            await client.UploadDocumentsAsync(docs);
+            var pages = indexDocuments.PagesOf(32000);
+
+            foreach (var page in pages)
+            {
+                var docs = CreateSearchDocuments(page, maps);
+
+                var response = await client.UploadDocumentsAsync(docs);
+            }
         }
         catch (Exception ex)
         {
@@ -170,13 +173,13 @@ public class AzureAIIndexDocumentManager(
         }
     }
 
-    public async Task<IList<AzureAISearchIndexMap>> GetMappingsAsync(string[] idexedContentTypes)
+    public async Task<IList<AzureAISearchIndexMap>> GetMappingsAsync(string[] indexedContentTypes)
     {
-        ArgumentNullException.ThrowIfNull(idexedContentTypes, nameof(idexedContentTypes));
+        ArgumentNullException.ThrowIfNull(indexedContentTypes, nameof(indexedContentTypes));
 
         var mapping = new List<AzureAISearchIndexMap>();
 
-        foreach (var contentType in idexedContentTypes)
+        foreach (var contentType in indexedContentTypes)
         {
             var contentItem = await _contentManager.NewAsync(contentType);
             var index = new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId);
@@ -185,14 +188,22 @@ public class AzureAIIndexDocumentManager(
 
             foreach (var entry in index.Entries)
             {
-                mapping.Add(new AzureAISearchIndexMap(entry.Name, entry.Type, entry.Options));
+                if (!AzureAISearchIndexNamingHelper.TryGetSafeFieldName(entry.Name, out var fieldKey))
+                {
+                    continue;
+                }
+
+                mapping.Add(new AzureAISearchIndexMap(fieldKey, entry.Type, entry.Options)
+                {
+                    IndexingKey = entry.Name,
+                });
             }
         }
 
         return mapping;
     }
 
-    private IEnumerable<SearchDocument> CreateSearchDocuments(IEnumerable<DocumentIndex> indexDocuments, IList<AzureAISearchIndexMap> mappings)
+    private IEnumerable<SearchDocument> CreateSearchDocuments(IEnumerable<DocumentIndex> indexDocuments, Dictionary<string, AzureAISearchIndexMap> mappings)
     {
         foreach (var indexDocument in indexDocuments)
         {
@@ -200,7 +211,7 @@ public class AzureAIIndexDocumentManager(
         }
     }
 
-    private SearchDocument CreateSearchDocument(DocumentIndex documentIndex, IList<AzureAISearchIndexMap> mappings)
+    private SearchDocument CreateSearchDocument(DocumentIndex documentIndex, Dictionary<string, AzureAISearchIndexMap> mappings)
     {
         var doc = new SearchDocument()
         {
@@ -210,12 +221,7 @@ public class AzureAIIndexDocumentManager(
 
         foreach (var entry in documentIndex.Entries)
         {
-            if (!mappings.Any(map => entry.Name.EqualsOrdinalIgnoreCase(map.Key)))
-            {
-                continue;
-            }
-
-            if (!AzureAISearchIndexManager.TryGetSafeFieldName(entry.Name, out var key))
+            if (!mappings.TryGetValue(entry.Name, out var map))
             {
                 continue;
             }
@@ -225,7 +231,7 @@ public class AzureAIIndexDocumentManager(
                 case DocumentIndex.Types.Boolean:
                     if (entry.Value is bool boolValue)
                     {
-                        doc.TryAdd(key, boolValue);
+                        doc.TryAdd(map.AzureFieldKey, boolValue);
                     }
                     break;
 
@@ -233,11 +239,11 @@ public class AzureAIIndexDocumentManager(
 
                     if (entry.Value is DateTimeOffset offsetValue)
                     {
-                        doc.TryAdd(key, offsetValue);
+                        doc.TryAdd(map.AzureFieldKey, offsetValue);
                     }
                     else if (entry.Value is DateTime dateTimeValue)
                     {
-                        doc.TryAdd(key, dateTimeValue.ToUniversalTime());
+                        doc.TryAdd(map.AzureFieldKey, dateTimeValue.ToUniversalTime());
                     }
 
                     break;
@@ -245,7 +251,7 @@ public class AzureAIIndexDocumentManager(
                 case DocumentIndex.Types.Integer:
                     if (entry.Value != null && long.TryParse(entry.Value.ToString(), out var value))
                     {
-                        doc.TryAdd(key, value);
+                        doc.TryAdd(map.AzureFieldKey, value);
                     }
 
                     break;
@@ -253,14 +259,14 @@ public class AzureAIIndexDocumentManager(
                 case DocumentIndex.Types.Number:
                     if (entry.Value != null)
                     {
-                        doc.TryAdd(key, Convert.ToDouble(entry.Value));
+                        doc.TryAdd(map.AzureFieldKey, Convert.ToDouble(entry.Value));
                     }
                     break;
 
                 case DocumentIndex.Types.GeoPoint:
                     if (entry.Value != null)
                     {
-                        doc.TryAdd(key, entry.Value);
+                        doc.TryAdd(map.AzureFieldKey, entry.Value);
                     }
                     break;
 
@@ -272,22 +278,22 @@ public class AzureAIIndexDocumentManager(
                         if (!string.IsNullOrEmpty(stringValue) && stringValue != "NULL")
                         {
                             // Only full-test and display-text and keyword fields contains single string. All others, support a collection of strings.
-                            if (key == AzureAISearchIndexManager.FullTextKey
-                                || key == AzureAISearchIndexManager.DisplayTextAnalyzedKey
+                            if (map.AzureFieldKey == AzureAISearchIndexManager.FullTextKey
+                                || map.AzureFieldKey == AzureAISearchIndexManager.DisplayTextAnalyzedKey
                                 || entry.Options.HasFlag(DocumentIndexOptions.Keyword))
                             {
-                                doc.TryAdd(key, stringValue);
+                                doc.TryAdd(map.AzureFieldKey, stringValue);
                             }
                             else
                             {
-                                if (!doc.TryGetValue(key, out var obj) || obj is not List<string> existingValue)
+                                if (!doc.TryGetValue(map.AzureFieldKey, out var obj) || obj is not List<string> existingValue)
                                 {
                                     existingValue = [];
                                 }
 
                                 existingValue.Add(stringValue);
 
-                                doc[key] = existingValue;
+                                doc[map.AzureFieldKey] = existingValue;
                             }
                         }
                     }
@@ -302,12 +308,7 @@ public class AzureAIIndexDocumentManager(
     {
         var fullIndexName = _indexManager.GetFullIndexName(indexName);
 
-        var client = _searchClientFactory.Create(fullIndexName);
-
-        if (client is null)
-        {
-            throw new Exception("Endpoint is missing from Azure AI Search Settings");
-        }
+        var client = _searchClientFactory.Create(fullIndexName) ?? throw new Exception("Endpoint is missing from Azure AI Search Settings");
 
         return client;
     }

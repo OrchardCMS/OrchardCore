@@ -92,7 +92,6 @@ public class AzureAISearchIndexingService
                 break;
             }
 
-            // Pre-load all content items to prevent SELECT N+1.
             var updatedContentItemIds = tasks
                 .Where(x => x.Type == IndexingTaskTypes.Update)
                 .Select(x => x.ContentItemId)

@@ -6,7 +6,9 @@ namespace OrchardCore.Search.AzureAI.Models;
 
 public class AzureAISearchIndexMap
 {
-    public string Key { get; set; }
+    public string IndexingKey { get; set; }
+
+    public string AzureFieldKey { get; set; }
 
     public Types Type { get; set; }
 
@@ -17,16 +19,16 @@ public class AzureAISearchIndexMap
 
     }
 
-    public AzureAISearchIndexMap(string key, Types type)
+    public AzureAISearchIndexMap(string azureFieldKey, Types type)
     {
-        ArgumentException.ThrowIfNullOrEmpty(key, nameof(key));
+        ArgumentException.ThrowIfNullOrEmpty(azureFieldKey, nameof(azureFieldKey));
 
-        Key = key;
+        AzureFieldKey = azureFieldKey;
         Type = type;
     }
 
-    public AzureAISearchIndexMap(string key, Types type, DocumentIndexOptions options)
-        : this(key, type)
+    public AzureAISearchIndexMap(string azureFieldKey, Types type, DocumentIndexOptions options)
+        : this(azureFieldKey, type)
     {
         Options = options;
     }
