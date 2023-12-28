@@ -101,10 +101,11 @@ public class AdminController : Controller
             .Take(pager.PageSize).ToList();
 
         // Maintain previous route data when generating page links.S
-        var routeValues = new RouteValueDictionary();
+        RouteValueDictionary routeValues = null;
 
         if (!string.IsNullOrWhiteSpace(options.Search))
         {
+            routeValues = [];
             routeValues.TryAdd("Options.Search", options.Search);
         }
 
