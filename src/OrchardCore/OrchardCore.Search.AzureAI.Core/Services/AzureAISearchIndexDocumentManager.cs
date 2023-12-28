@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Azure.Search.Documents;
 using Azure.Search.Documents.Models;
@@ -18,6 +17,7 @@ public class AzureAIIndexDocumentManager(
     AzureAISearchIndexManager indexManager,
     IIndexingTaskManager indexingTaskManager,
     IContentManager contentManager,
+    IEnumerable<IAzureAISearchDocumentEvents> documentEvents,
     IEnumerable<IContentItemIndexHandler> contentItemIndexHandlers,
     ILogger<AzureAIIndexDocumentManager> logger)
 {
@@ -25,6 +25,7 @@ public class AzureAIIndexDocumentManager(
     private readonly AzureAISearchIndexManager _indexManager = indexManager;
     private readonly IIndexingTaskManager _indexingTaskManager = indexingTaskManager;
     private readonly IContentManager _contentManager = contentManager;
+    private readonly IEnumerable<IAzureAISearchDocumentEvents> _documentEvents = documentEvents;
     private readonly IEnumerable<IContentItemIndexHandler> _contentItemIndexHandlers = contentItemIndexHandlers;
     private readonly ILogger _logger = logger;
 
@@ -125,7 +126,7 @@ public class AzureAIIndexDocumentManager(
             var client = GetSearchClient(indexName);
 
             // The dictionary key should be indexingKey Not AzureFieldKey.
-            var maps = indexSettings.IndexMappings.ToDictionary(x => x.IndexingKey);
+            var maps = indexSettings.GetMaps();
 
             var pages = indexDocuments.PagesOf(32000);
 
@@ -133,7 +134,9 @@ public class AzureAIIndexDocumentManager(
             {
                 var docs = CreateSearchDocuments(page, maps);
 
-                var response = await client.MergeOrUploadDocumentsAsync(docs);
+                await _documentEvents.InvokeAsync(handler => handler.MergingOrUploadingAsync(docs), _logger);
+
+                await client.MergeOrUploadDocumentsAsync(docs);
             }
 
             return true;
@@ -155,8 +158,7 @@ public class AzureAIIndexDocumentManager(
         {
             var client = GetSearchClient(indexName);
 
-            // The dictionary key should be indexingKey Not AzureFieldKey.
-            var maps = indexSettings.IndexMappings.ToDictionary(x => x.IndexingKey);
+            var maps = indexSettings.GetMaps();
 
             var pages = indexDocuments.PagesOf(32000);
 
@@ -164,7 +166,9 @@ public class AzureAIIndexDocumentManager(
             {
                 var docs = CreateSearchDocuments(page, maps);
 
-                var response = await client.UploadDocumentsAsync(docs);
+                await _documentEvents.InvokeAsync(handler => handler.UploadingAsync(docs), _logger);
+
+                await client.UploadDocumentsAsync(docs);
             }
         }
         catch (Exception ex)

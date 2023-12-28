@@ -148,7 +148,6 @@ public class AzureAISearchIndexingService
 
                     if (publishedIndexContext == null && latestIndexContext == null)
                     {
-                        // TODO purge these content items from IndexingTask table.
                         continue;
                     }
 
@@ -165,7 +164,6 @@ public class AzureAISearchIndexingService
                         // We index only if we actually found a content item in the database.
                         if (context == null)
                         {
-                            // TODO purge these content items from IndexingTask table.
                             continue;
                         }
 
