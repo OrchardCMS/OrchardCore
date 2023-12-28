@@ -109,16 +109,15 @@ public class AdminController : Controller
             routeValues.TryAdd("Options.Search", options.Search);
         }
 
-        var pagerShape = await _shapeFactory.PagerAsync(pager, totalIndexes, routeValues);
-
         var model = new AdminIndexViewModel
         {
             Indexes = indexes,
             Options = options,
-            Pager = pagerShape
+            Pager = await _shapeFactory.PagerAsync(pager, totalIndexes, routeValues)
         };
 
-        model.Options.ContentsBulkAction = [
+        model.Options.ContentsBulkAction =
+        [
             new SelectListItem(S["Delete"], nameof(AzureAISearchIndexBulkAction.Remove)),
         ];
 
@@ -456,7 +455,7 @@ public class AdminController : Controller
     }
 
     private static Task AsyncContentItemsAsync(string indexName)
-        => HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("sync-content-items-azureai", async (scope) =>
+        => HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("sync-content-items-azure-ai-" + indexName, async (scope) =>
         {
             var indexingService = scope.ServiceProvider.GetRequiredService<AzureAISearchIndexingService>();
             await indexingService.ProcessContentItemsAsync(indexName);
