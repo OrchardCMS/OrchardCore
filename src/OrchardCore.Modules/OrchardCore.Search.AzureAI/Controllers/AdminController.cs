@@ -47,7 +47,7 @@ public class AdminController : Controller
     public AdminController(
         ISiteService siteService,
         IAuthorizationService authorizationService,
-        AzureAISearchIndexManager indeManager,
+        AzureAISearchIndexManager indexManager,
         AzureAISearchIndexSettingsService indexSettingsService,
         IContentManager contentManager,
         IShapeFactory shapeFactory,
@@ -62,7 +62,7 @@ public class AdminController : Controller
     {
         _siteService = siteService;
         _authorizationService = authorizationService;
-        _indexManager = indeManager;
+        _indexManager = indexManager;
         _indexSettingsService = indexSettingsService;
         _contentManager = contentManager;
         _shapeFactory = shapeFactory;
@@ -100,9 +100,15 @@ public class AdminController : Controller
             .Skip(pager.GetStartIndex())
             .Take(pager.PageSize).ToList();
 
-        // Maintain previous route data when generating page links
-        var routeData = new RouteData();
-        var pagerShape = await _shapeFactory.PagerAsync(pager, totalIndexes);
+        // Maintain previous route data when generating page links.S
+        var routeValues = new RouteValueDictionary();
+
+        if (!string.IsNullOrWhiteSpace(options.Search))
+        {
+            routeValues.TryAdd("Options.Search", options.Search);
+        }
+
+        var pagerShape = await _shapeFactory.PagerAsync(pager, totalIndexes, routeValues);
 
         var model = new AdminIndexViewModel
         {
