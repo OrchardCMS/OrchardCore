@@ -1,7 +1,10 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
-builder.AddProject<Projects.Aspire_OrchardCore_Cms_Web>("OrchardCore CMS App");
+var redis = builder.AddRedisContainer("Redis", 50963);
+
+builder.AddProject<Projects.Aspire_OrchardCore_Cms_Web>("OrchardCore CMS App")
+    .WithReference(redis);
 
 builder.AddProject<Projects.Aspire_OrchardCore_Mvc_Web>("OrchardCore MVC App");
 
-builder.Build().Run();
+await builder.Build().RunAsync();

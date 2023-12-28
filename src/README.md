@@ -104,6 +104,11 @@ For more details on the various development tools we recommend for using with Or
 
 Docker images and parameters can be found at <https://hub.docker.com/u/orchardproject/>
 
+### .NET Aspire
+
+The configuration of the OrchardCore solution is tailored for execution within the Aspire project. To initiate the Aspire project rather than the CMS directly, designate the `Aspire.AppHost` project as the startup project of the solution, then launch it. To run the Aspire project, [install .NET Aspire](https://learn.microsoft.com/en-us/dotnet/aspire/fundamentals/setup-tooling?tabs=visual-studio) on your local machine. Ensure you have Docker Desktop installed, and you are using Visual Studio version 17.9.0 or later
+
+
 ## Showcasing Orchard Core CMS
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Gfy5SCACyL8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

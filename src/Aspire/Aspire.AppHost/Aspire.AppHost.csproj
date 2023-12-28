@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting" Version="8.0.0-preview.1.23557.2" />
+    <PackageReference Include="Aspire.StackExchange.Redis" Version="8.0.0-preview.2.23619.3" />
   </ItemGroup>
 
   <ItemGroup>
