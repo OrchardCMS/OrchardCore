@@ -2,7 +2,7 @@
 
 Orchard Core consists of two distinct projects:
 
-- __Orchard Core Framework__: An application framework for building modular, multi-tenant applications on ASP.NET Core.
+- __Orchard Core Framework__: An application framework for building modular, multi-tenant applications using ASP.NET Core 8.
 - __Orchard Core CMS__: A Web Content Management System (CMS) built on top of the Orchard Core Framework.
 
 [![Join the chat at https://gitter.im/OrchardCMS/OrchardCore](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/OrchardCMS/OrchardCore?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
@@ -32,7 +32,7 @@ Nightly (main):
 
 ### 1.8.0
 
-The software is finished -- and by finished, we mean there are no show-stopping, little-children-killing bugs in it. That we know of. There are probably numerous lower-priority bugs triaged into the next point release or service pack, as well.
+The software is completed, meaning there are no critical bugs that could cause major issues. However, there may be some lower-priority bugs addressed in upcoming releases or service packs.
 
 Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki/Roadmap).
 
