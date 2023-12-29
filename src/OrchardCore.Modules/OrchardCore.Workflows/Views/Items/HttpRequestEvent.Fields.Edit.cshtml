@@ -41,10 +41,10 @@
 
 
 <div class="mb-3" asp-validation-class-for="FormLocationKey">
-    <label asp-for="FormLocationKey" class="form-label">@T["Form Location"]</label>
+    <label asp-for="FormLocationKey" class="form-label">@T["Form Location Key"]</label>
     <input type="text" asp-for="FormLocationKey" class="form-control" />
     <span asp-validation-for="FormLocationKey"></span>
-    <span class="hint">@T["This key serves to differentiate the current form's location. Leave blank if the workflow handles a single form event."]</span>
+    <span class="hint">@T["This key name is used to store and then retrieve the current form's location. Leave blank if the workflow doesn't handle any form or a single one."]</span>
 </div>
 
 <script depends-on="jQuery" asp-src="~/OrchardCore.Workflows/Scripts/orchard.http-request-event-editor.min.js" debug-src="~/OrchardCore.Workflows/Scripts/orchard.http-request-event-editor.js" at="Foot"></script>
