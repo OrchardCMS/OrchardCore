@@ -365,7 +365,6 @@ public class AdminController : Controller
         if (!exists)
         {
             // At this point we know that the index does not exists on remote server. Let's delete it locally.
-
             await _indexSettingsService.DeleteAsync(indexName);
 
             await _notifier.SuccessAsync(H["Index <em>{0}</em> deleted successfully.", indexName]);
