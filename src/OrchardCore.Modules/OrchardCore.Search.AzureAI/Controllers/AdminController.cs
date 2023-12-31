@@ -225,13 +225,9 @@ public class AdminController : Controller
                 }
 
                 settings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(settings.IndexedContentTypes);
-
                 await _indexManager.CreateAsync(settings);
-
                 await _indexSettingsService.UpdateAsync(settings);
-
                 await AsyncContentItemsAsync(settings.IndexName);
-
                 await _notifier.SuccessAsync(H["Index <em>{0}</em> created successfully.", model.IndexName]);
 
                 return RedirectToAction(nameof(Index));
@@ -409,13 +405,9 @@ public class AdminController : Controller
         }
 
         settings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(settings.IndexedContentTypes);
-
         await _indexSettingsService.UpdateAsync(settings);
-
         await _indexManager.RebuildAsync(settings);
-
         await AsyncContentItemsAsync(settings.IndexName);
-
         await _notifier.SuccessAsync(H["Index <em>{0}</em> rebuilt successfully.", indexName]);
 
         return RedirectToAction(nameof(Index));
@@ -442,13 +434,9 @@ public class AdminController : Controller
         }
 
         settings.SetLastTaskId(0);
-
         settings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(settings.IndexedContentTypes);
-
         await _indexSettingsService.UpdateAsync(settings);
-
         await AsyncContentItemsAsync(settings.IndexName);
-
         await _notifier.SuccessAsync(H["Index <em>{0}</em> reset successfully.", indexName]);
 
         return RedirectToAction(nameof(Index));

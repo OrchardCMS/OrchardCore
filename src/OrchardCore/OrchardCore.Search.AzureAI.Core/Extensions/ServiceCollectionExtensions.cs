@@ -44,6 +44,7 @@ public static class ServiceCollectionExtensions
         {
             builder.AddSearchIndexClient(section);
         });
+
         services.AddScoped<IPermissionProvider, Permissions>();
         services.AddScoped<IAuthorizationHandler, AzureAISearchAuthorizationHandler>();
         services.AddScoped<IContentHandler, AzureAISearchIndexingContentHandler>();

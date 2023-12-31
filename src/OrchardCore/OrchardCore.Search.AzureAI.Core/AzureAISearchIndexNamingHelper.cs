@@ -16,6 +16,7 @@ public class AzureAISearchIndexNamingHelper
 
             return false;
         }
+
         if (safePrefix.Length > 128)
         {
             safeName = safePrefix[..128];
