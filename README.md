@@ -10,7 +10,7 @@ Orchard Core consists of two distinct projects:
 [![Documentation](https://readthedocs.org/projects/orchardcore/badge/)](https://docs.orchardcore.net/)
 [![Crowdin](https://badges.crowdin.net/orchard-core/localized.svg)](https://crowdin.com/project/orchard-core)
 
-## Local communities
+## Local Communities
 
 中文资源
 
@@ -18,7 +18,7 @@ Orchard Core consists of two distinct projects:
 
 ## Build Status
 
-Stable (release/1.7.2): 
+Stable (release/1.8.0): 
 
 [![Build status](https://github.com/OrchardCMS/OrchardCore/actions/workflows/release_ci.yml/badge.svg)](https://github.com/OrchardCMS/OrchardCore/actions?query=workflow%3A%22Release+-+CI%22)
 [![NuGet](https://img.shields.io/nuget/v/OrchardCore.Application.Cms.Targets.svg)](https://www.nuget.org/packages/OrchardCore.Application.Cms.Targets)
@@ -30,7 +30,7 @@ Nightly (main):
 
 ## Status
 
-### 1.7.2
+### 1.8.0
 
 The software is finished -- and by finished, we mean there are no show-stopping, little-children-killing bugs in it. That we know of. There are probably numerous lower-priority bugs triaged into the next point release or service pack, as well.
 
@@ -40,7 +40,7 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki
 
 - Clone the repository using the command `git clone https://github.com/OrchardCMS/OrchardCore.git` and checkout the `main` branch.
 
-### Command line
+### Command Line
 
 - Install the latest version of the .NET SDK from this page <https://dotnet.microsoft.com/download>
 - Next, navigate to `./OrchardCore/src/OrchardCore.Cms.Web`.
@@ -49,9 +49,9 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki
 
 ### Visual Studio
 
-- Download Visual Studio 2022 (v17.5+) from https://www.visualstudio.com/downloads/
-- Open `OrchardCore.sln` and wait for Visual Studio to restore all Nuget packages.
-- Ensure `OrchardCore.Cms.Web` is the startup project and run it.
+- Download Visual Studio 2022 (v17.5+) from <https://www.visualstudio.com/downloads>.
+- Launch the solution by clicking on `OrchardCore.sln`. Give Visual Studio time to restore all missing Nuget packages.
+- Ensure `OrchardCore.Cms.Web` is set as the startup project. Then run the app.
 
 ### Docker
 
