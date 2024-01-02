@@ -20,7 +20,7 @@ Before enabling the service, you'll need to configure the connection to the serv
 
 Then navigate to `Search` > `Indexing` > `Azure AI Indices` to add an index.
 
-![azure-ai-search-index](https://github.com/OrchardCMS/OrchardCore/assets/24724371/d54abc32-55e7-4a9f-b619-3736446219d4)
+![image](images/management.gif)
 
 ## Recipes 
 
@@ -92,4 +92,8 @@ When the Search module is enabled along with Azure AI Search, you'll be able to 
 
 To configure the frontend site search settings, navigate to `Search` > `Settings`. On the `Content` tab, change the default search provider to `Azure AI Search`. Then click on the `Azure AI Search` tab select the default search index to use.
 
-![azure-ai-search](https://github.com/OrchardCMS/OrchardCore/assets/24724371/4f3877e5-e601-4bc8-80c8-2c9897a249c2)
+### Using the Search Feature to Perform Full-Text Search
+![image](images/frontend-search.gif)
+
+### Frontend Search Settings
+![image](images/settings.gif)
