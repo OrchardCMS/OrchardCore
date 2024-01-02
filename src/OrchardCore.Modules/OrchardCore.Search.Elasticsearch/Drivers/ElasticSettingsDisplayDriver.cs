@@ -11,6 +11,7 @@ using Nest;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
@@ -21,8 +22,6 @@ namespace OrchardCore.Search.Elasticsearch.Drivers;
 
 public class ElasticSettingsDisplayDriver : SectionDisplayDriver<ISite, ElasticSettings>
 {
-    public const string GroupId = "elasticsearch";
-
     private static readonly char[] _separator = [',', ' '];
     private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
     {
@@ -62,13 +61,14 @@ public class ElasticSettingsDisplayDriver : SectionDisplayDriver<ISite, ElasticS
                 new(S["Query String Query"], ElasticSettings.QueryStringSearchType),
                 new(S["Custom Query"], ElasticSettings.CustomSearchType),
             ];
-        }).Location("Content:2")
+        }).Location("Content:2#Elasticsearch;10")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageElasticIndexes))
-        .OnGroup(GroupId);
+        .Prefix(Prefix)
+        .OnGroup(SearchConstants.SearchSettingsGroupId);
 
     public override async Task<IDisplayResult> UpdateAsync(ElasticSettings section, BuildEditorContext context)
     {
-        if (!string.Equals(GroupId, context.GroupId, StringComparison.OrdinalIgnoreCase))
+        if (!SearchConstants.SearchSettingsGroupId.EqualsOrdinalIgnoreCase(context.GroupId))
         {
             return null;
         }
@@ -115,5 +115,15 @@ public class ElasticSettingsDisplayDriver : SectionDisplayDriver<ISite, ElasticS
         }
 
         return await EditAsync(section, context);
+    }
+
+    protected override void BuildPrefix(ISite model, string htmlFieldPrefix)
+    {
+        Prefix = typeof(ElasticSettings).Name;
+
+        if (!string.IsNullOrEmpty(htmlFieldPrefix))
+        {
+            Prefix = htmlFieldPrefix + "." + Prefix;
+        }
     }
 }

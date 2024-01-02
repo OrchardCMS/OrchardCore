@@ -69,10 +69,7 @@ namespace OrchardCore.Search.Lucene
                 o.Analyzers.Add(new LuceneAnalyzer(LuceneSettings.StandardAnalyzer,
                     new StandardAnalyzer(LuceneSettings.DefaultVersion))));
 
-            services.AddScoped<IDisplayDriver<ISite>, LuceneSettingsDisplayDriver>();
             services.AddScoped<IDisplayDriver<Query>, LuceneQueryDisplayDriver>();
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
 
             services.AddScoped<IContentHandler, LuceneIndexingContentHandler>();
             services.AddLuceneQueries();
@@ -133,6 +130,7 @@ namespace OrchardCore.Search.Lucene
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<ISearchService, LuceneSearchService>();
+            services.AddScoped<IDisplayDriver<ISite>, LuceneSettingsDisplayDriver>();
         }
     }
 
@@ -176,6 +174,16 @@ namespace OrchardCore.Search.Lucene
             services.AddScoped<IContentPickerResultProvider, LuceneContentPickerResultProvider>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldLuceneEditorSettingsDriver>();
             services.AddShapeAttributes<LuceneContentPickerShapeProvider>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.ContentTypes")]
+    public class ContentTypesStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
         }
     }
 }
