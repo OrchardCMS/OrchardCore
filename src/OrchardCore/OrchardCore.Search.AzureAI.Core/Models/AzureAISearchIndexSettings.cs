@@ -9,6 +9,9 @@ public class AzureAISearchIndexSettings
     [JsonIgnore]
     public string IndexName { get; set; }
 
+    [JsonIgnore]
+    public string IndexFullName { get; set; }
+
     public string AnalyzerName { get; set; }
 
     public string QueryAnalyzerName { get; set; }

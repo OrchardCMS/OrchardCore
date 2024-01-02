@@ -127,13 +127,12 @@ public class AdminController : Controller
     [HttpPost, ActionName(nameof(Index))]
     [FormValueRequired("submit.Filter")]
     public ActionResult IndexFilterPOST(AdminIndexViewModel model)
-    {
-        return RedirectToAction(nameof(Index),
+        => RedirectToAction(nameof(Index),
             new RouteValueDictionary
             {
                 { "Options.Search", model.Options.Search }
             });
-    }
+    
 
     [HttpPost, ActionName(nameof(Index))]
     [FormValueRequired("submit.BulkAction")]
@@ -163,7 +162,7 @@ public class AdminController : Controller
 
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Unknown bulk action");
+                    throw new ArgumentOutOfRangeException(options.BulkAction.ToString(), "Unknown bulk action");
             }
         }
 
@@ -207,6 +206,7 @@ public class AdminController : Controller
                 var settings = new AzureAISearchIndexSettings
                 {
                     IndexName = model.IndexName,
+                    IndexFullName = _indexManager.GetFullIndexName(model.IndexName),
                     AnalyzerName = model.AnalyzerName,
                     QueryAnalyzerName = model.AnalyzerName,
                     IndexLatest = model.IndexLatest,
