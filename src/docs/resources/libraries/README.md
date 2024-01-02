@@ -19,7 +19,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [HtmlSanitizer](https://github.com/mganss/HtmlSanitizer) | Cleans HTML to avoid XSS attacks. | 8.1.812-beta | [MIT](https://github.com/mganss/HtmlSanitizer/blob/master/LICENSE.md) |
 | [Image Sharp](https://github.com/SixLabors/ImageSharp.Web) | Middleware for ASP.NET-Core for image manipulation. | 3.1.0 |[Apache-2.0](https://github.com/SixLabors/ImageSharp.Web/blob/master/LICENSE) |
 | [Irony.Core](https://github.com/daxnet/irony) | A modified version of the Irony project with .NET Core support | 1.0.7 | [MIT](https://github.com/daxnet/irony/blob/master/LICENSE) |
-| [Jint](https://github.com/sebastienros/jint) | Javascript Interpreter for .NET. | 3.0.0-beta-2057 | [MIT](https://github.com/sebastienros/jint/blob/dev/LICENSE) |
+| [Jint](https://github.com/sebastienros/jint) | Javascript Interpreter for .NET. | 3.0.0-beta-2058 | [MIT](https://github.com/sebastienros/jint/blob/dev/LICENSE) |
 | [libphonenumber-csharp](https://github.com/twcclegg/libphonenumber-csharp) | .NET library for parsing, formatting, and validating international phone numbers | 8.13.27 | [Apache-2.0](https://github.com/twcclegg/libphonenumber-csharp/blob/main/LICENSE) |
 | [Lorem.NET for netstandard](https://github.com/trichards57/Lorem.Universal.NET) | A .NET library for all things random! | 4.0.80 | [MIT](https://github.com/trichards57/Lorem.Universal.NET/blob/master/license.md) |
 | [Lucene.Net](https://github.com/apache/lucenenet) | .NET full-text search engine. | 4.8.0-beta00016 | [Apache-2.0](https://github.com/apache/lucenenet/blob/master/LICENSE.txt) |
@@ -32,9 +32,11 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [MiniProfiler](https://github.com/MiniProfiler/dotnet) | A simple but effective mini-profiler for ASP.NET (and Core) websites | 4.3.8 | [MIT](https://github.com/MiniProfiler/dotnet/blob/main/LICENSE.txt) |
 | [NCrontab](https://github.com/atifaziz/NCrontab) | Crontab for .NET | 3.3.3 | [Apache-2.0](https://github.com/atifaziz/NCrontab/blob/master/COPYING.txt) |
 | [NEST](https://github.com/elastic/elasticsearch-net) | .NET Library for Elasticsearch | 7.17.5 | [Apache-2.0](https://github.com/elastic/elasticsearch-net/blob/main/LICENSE.txt) |
+| [Azure.Search.Documents](https://github.com/Azure/azure-sdk-for-net/blob/Azure.Search.Documents_11.5.1/sdk/search/Azure.Search.Documents/README.md) | Azure AI Search client library for .NET | 11.5.1 | [MIT](https://github.com/AzureAD/microsoft-identity-web/blob/master/LICENSE) |
+| [Microsoft.Extensions.Azure](https://github.com/Azure/azure-sdk-for-net/blob/Microsoft.Extensions.Azure_1.7.1/sdk/extensions/Microsoft.Extensions.Azure/README.md) | Azure client library integration for ASP.NET Core | 1.7.1 | [MIT](https://github.com/AzureAD/microsoft-identity-web/blob/master/LICENSE) |
 | [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json) | Json.NET is a popular high-performance JSON framework for .NET | 13.0.3 | [MIT](https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md) |
 | [NJsonSchema](https://github.com/RicoSuter/NJsonSchema) | JSON Schema reader, generator and validator for .NET | 10.9.0 | [MIT](https://github.com/RicoSuter/NJsonSchema/blob/master/LICENSE.md) |
-| [NLog.Web.AspNetCore](https://github.com/NLog/NLog.Web/tree/master/src/NLog.Web.AspNetCore) | NLog integration for ASP.NET. | 5.3.7 | [BSD-3-Clause](https://github.com/NLog/NLog.Web/blob/master/LICENSE) |
+| [NLog.Web.AspNetCore](https://github.com/NLog/NLog.Web/tree/master/src/NLog.Web.AspNetCore) | NLog integration for ASP.NET. | 5.3.8 | [BSD-3-Clause](https://github.com/NLog/NLog.Web/blob/master/LICENSE) |
 | [Noda Time](https://github.com/nodatime/nodatime) | A better date and time API for .NET. | 3.1.10 | [Apache-2.0](https://github.com/nodatime/nodatime/blob/master/LICENSE.txt) |
 | [OpenIddict](https://github.com/openiddict/openiddict-core) | Flexible and versatile OAuth 2.0/OpenID Connect stack for .NET. | 5.0.1 | [Apache-2.0](https://github.com/openiddict/openiddict-core/blob/dev/LICENSE.md)) |
 | [PdfPig](https://github.com/UglyToad/PdfPig/) | Library to read and extract text and other content from PDF files. | 0.1.8 | [Apache-2.0](https://github.com/UglyToad/PdfPig/blob/master/LICENSE) |

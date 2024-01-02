@@ -3,9 +3,11 @@
   <PropertyGroup>
     <!-- NuGet properties-->
     <Title>Target for Modular OrchardCore CMS Application</Title>
-    <Description>$(OCCMSDescription)
+    <Description>
+      $(OCCMSDescription)
 
-    Converts the application into a modular OrchardCore CMS application with TheAdmin theme but without any front-end Themes.</Description>
+      Converts the application into a modular OrchardCore CMS application with TheAdmin theme but without any front-end Themes.
+    </Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS CMS</PackageTags>
   </PropertyGroup>
 
@@ -98,8 +100,9 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Roles\OrchardCore.Roles.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Scripting\OrchardCore.Scripting.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Search\OrchardCore.Search.csproj" PrivateAssets="none" />
-    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Search.Lucene\OrchardCore.Search.Lucene.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Search.AzureAI\OrchardCore.Search.AzureAI.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Search.Elasticsearch\OrchardCore.Search.Elasticsearch.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Search.Lucene\OrchardCore.Search.Lucene.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Security\OrchardCore.Security.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Seo\OrchardCore.Seo.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Settings\OrchardCore.Settings.csproj" PrivateAssets="none" />
