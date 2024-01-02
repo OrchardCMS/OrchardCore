@@ -92,4 +92,4 @@ When the Search module is enabled along with Azure AI Search, you'll be able to 
 
 To configure the frontend site search settings, navigate to `Search` > `Settings`. On the `Content` tab, change the default search provider to `Azure AI Search`. Then click on the `Azure AI Search` tab select the default search index to use.
 
-![azure-ai-search-rearching](https://github.com/OrchardCMS/OrchardCore/assets/24724371/4f3877e5-e601-4bc8-80c8-2c9897a249c2)
+![azure-ai-search](https://github.com/OrchardCMS/OrchardCore/assets/24724371/4f3877e5-e601-4bc8-80c8-2c9897a249c2)
