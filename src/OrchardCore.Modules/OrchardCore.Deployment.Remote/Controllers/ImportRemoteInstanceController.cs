@@ -2,14 +2,14 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
 using OrchardCore.Deployment.Remote.Services;
 using OrchardCore.Deployment.Remote.ViewModels;
 using OrchardCore.Deployment.Services;
+using OrchardCore.Secrets;
+using OrchardCore.Secrets.Models;
 
 namespace OrchardCore.Deployment.Remote.Controllers
 {
@@ -17,16 +17,16 @@ namespace OrchardCore.Deployment.Remote.Controllers
     {
         private readonly RemoteClientService _remoteClientService;
         private readonly IDeploymentManager _deploymentManager;
-        private readonly IDataProtector _dataProtector;
+        private readonly ISecretService _secretService;
 
         public ImportRemoteInstanceController(
-            IDataProtectionProvider dataProtectionProvider,
             RemoteClientService remoteClientService,
-            IDeploymentManager deploymentManager)
+            IDeploymentManager deploymentManager,
+            ISecretService secretService)
         {
-            _deploymentManager = deploymentManager;
             _remoteClientService = remoteClientService;
-            _dataProtector = dataProtectionProvider.CreateProtector("OrchardCore.Deployment").ToTimeLimitedDataProtector();
+            _deploymentManager = deploymentManager;
+            _secretService = secretService;
         }
 
         /// <remarks>
@@ -39,18 +39,16 @@ namespace OrchardCore.Deployment.Remote.Controllers
         {
             var remoteClientList = await _remoteClientService.GetRemoteClientListAsync();
 
-            var remoteClient = remoteClientList.RemoteClients.FirstOrDefault(x => x.ClientName == model.ClientName);
-
-            if (remoteClient == null)
+            var remoteClient = remoteClientList.RemoteClients.FirstOrDefault(remote => remote.ClientName == model.ClientName);
+            if (remoteClient is null)
             {
-                return StatusCode((int)HttpStatusCode.BadRequest, "The remote client was not provided");
+                return StatusCode((int)HttpStatusCode.BadRequest, "The remote client was not provided.");
             }
 
-            var apiKey = Encoding.UTF8.GetString(_dataProtector.Unprotect(remoteClient.ProtectedApiKey));
-
-            if (model.ApiKey != apiKey || model.ClientName != remoteClient.ClientName)
+            var secret = await _secretService.GetSecretAsync<TextSecret>($"{RemoteSecret.Namespace}.{model.ClientName}.ApiKey");
+            if (secret is null || secret.Text != model.ApiKey)
             {
-                return StatusCode((int)HttpStatusCode.BadRequest, "The Api Key was not recognized");
+                return StatusCode((int)HttpStatusCode.BadRequest, "The Api Key was not recognized.");
             }
 
             // Create a temporary filename to save the archive

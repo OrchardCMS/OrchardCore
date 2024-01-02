@@ -3,14 +3,21 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Deployment.Remote.Models;
 using OrchardCore.Documents;
+using OrchardCore.Secrets;
+using OrchardCore.Secrets.Models;
 
 namespace OrchardCore.Deployment.Remote.Services
 {
     public class RemoteInstanceService
     {
         private readonly IDocumentManager<RemoteInstanceList> _documentManager;
+        private readonly ISecretService _secretService;
 
-        public RemoteInstanceService(IDocumentManager<RemoteInstanceList> documentManager) => _documentManager = documentManager;
+        public RemoteInstanceService(IDocumentManager<RemoteInstanceList> documentManager, ISecretService secretService)
+        {
+            _documentManager = documentManager;
+            _secretService = secretService;
+        }
 
         /// <summary>
         /// Loads the remote instances document from the store for updating and that should not be cached.
@@ -37,45 +44,114 @@ namespace OrchardCore.Deployment.Remote.Services
         public async Task DeleteRemoteInstanceAsync(string id)
         {
             var remoteInstanceList = await LoadRemoteInstanceListAsync();
-            var remoteInstance = FindRemoteInstance(remoteInstanceList, id);
 
-            if (remoteInstance != null)
+            var remoteInstance = FindRemoteInstance(remoteInstanceList, id);
+            if (remoteInstance is null)
             {
-                remoteInstanceList.RemoteInstances.Remove(remoteInstance);
-                await _documentManager.UpdateAsync(remoteInstanceList);
+                return;
             }
+
+            await _secretService.RemoveSecretAsync($"{RemoteSecret.Namespace}.{remoteInstance.ClientName}.Encryption");
+            await _secretService.RemoveSecretAsync($"{RemoteSecret.Namespace}.{remoteInstance.ClientName}.Signing");
+            await _secretService.RemoveSecretAsync($"{RemoteSecret.Namespace}.{remoteInstance.ClientName}.ApiKey");
+
+            remoteInstanceList.RemoteInstances.Remove(remoteInstance);
+            await _documentManager.UpdateAsync(remoteInstanceList);
         }
 
         public async Task CreateRemoteInstanceAsync(string name, string url, string clientName, string apiKey)
         {
-            var remoteInstanceList = await LoadRemoteInstanceListAsync();
+            await _secretService.GetOrAddSecretAsync<RSASecret>(
+                $"{RemoteSecret.Namespace}.{clientName}.Encryption",
+                (secret, info) =>
+                {
+                    RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.Public);
+                    info.Description = "Remote Instance Secret holding a raw RSA key to be used for encryption.";
+                });
 
-            remoteInstanceList.RemoteInstances.Add(new RemoteInstance
+            await _secretService.GetOrAddSecretAsync<RSASecret>(
+                $"{RemoteSecret.Namespace}.{clientName}.Signing",
+                (secret, info) =>
+                {
+                    RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate);
+                    info.Description = "Remote Instance Secret holding a raw RSA key to be used for signing.";
+                });
+
+            await _secretService.GetOrAddSecretAsync<TextSecret>(
+                $"{RemoteSecret.Namespace}.{clientName}.ApiKey",
+                (secret, info) =>
+                {
+                    secret.Text = apiKey;
+                    info.Description = "Remote Instance Secret holding an Api Key.";
+                });
+
+            var remoteInstanceList = await LoadRemoteInstanceListAsync();
+            var remoteInstance = new RemoteInstance
             {
                 Id = Guid.NewGuid().ToString("n"),
                 Name = name,
                 Url = url,
                 ClientName = clientName,
-                ApiKey = apiKey,
-            });
+            };
 
+            remoteInstanceList.RemoteInstances.Add(remoteInstance);
             await _documentManager.UpdateAsync(remoteInstanceList);
         }
 
-        public async Task UpdateRemoteInstance(string id, string name, string url, string clientName, string apiKey)
+        public Task UpdateRemoteInstanceAsync(RemoteInstance remoteInstance, string apiKey) =>
+            UpdateRemoteInstanceAsync(remoteInstance.Id, remoteInstance.Name, remoteInstance.Url, remoteInstance.ClientName, apiKey);
+
+        public async Task UpdateRemoteInstanceAsync(string id, string name, string url, string clientName, string apiKey)
         {
             var remoteInstanceList = await LoadRemoteInstanceListAsync();
+
             var remoteInstance = FindRemoteInstance(remoteInstanceList, id);
+            if (remoteInstance is null)
+            {
+                return;
+            }
+
+            await _secretService.GetOrAddSecretAsync<RSASecret>(
+                $"{RemoteSecret.Namespace}.{clientName}.Encryption",
+                (secret, info) =>
+                {
+                    RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.Public);
+                    info.Description = "Remote Instance Secret holding a raw RSA key to be used for encryption.";
+                },
+                source: $"{RemoteSecret.Namespace}.{remoteInstance.ClientName}.Encryption");
+
+            await _secretService.GetOrAddSecretAsync<RSASecret>(
+                $"{RemoteSecret.Namespace}.{clientName}.Signing",
+                (secret, info) =>
+                {
+                    RSAGenerator.ConfigureRSASecretKeys(secret, RSAKeyType.PublicPrivate);
+                    info.Description = "Remote Instance Secret holding a raw RSA key to be used for signing.";
+                },
+                source: $"{RemoteSecret.Namespace}.{remoteInstance.ClientName}.Signing");
+
+            var apiKeySecret = await _secretService.GetOrAddSecretAsync<TextSecret>(
+                $"{RemoteSecret.Namespace}.{clientName}.ApiKey",
+                (secret, info) =>
+                {
+                    secret.Text = apiKey;
+                    info.Description = "Remote Instance Secret holding an Api Key.";
+                },
+                source: $"{RemoteSecret.Namespace}.{remoteInstance.ClientName}.ApiKey");
+
+            if (apiKeySecret.Text != apiKey)
+            {
+                apiKeySecret.Text = apiKey;
+                await _secretService.UpdateSecretAsync(apiKeySecret);
+            }
 
             remoteInstance.Name = name;
             remoteInstance.Url = url;
             remoteInstance.ClientName = clientName;
-            remoteInstance.ApiKey = apiKey;
 
             await _documentManager.UpdateAsync(remoteInstanceList);
         }
 
         private static RemoteInstance FindRemoteInstance(RemoteInstanceList remoteInstanceList, string id) =>
-            remoteInstanceList.RemoteInstances.FirstOrDefault(x => string.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase));
+            remoteInstanceList.RemoteInstances.FirstOrDefault(remote => string.Equals(remote.Id, id, StringComparison.OrdinalIgnoreCase));
     }
 }

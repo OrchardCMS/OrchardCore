@@ -11,6 +11,7 @@ using OrchardCore.Deployment.Services;
 using OrchardCore.Deployment.Steps;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Recipes.Models;
+using OrchardCore.Settings;
 using YesSql;
 
 namespace OrchardCore.Deployment.Controllers
@@ -21,15 +22,18 @@ namespace OrchardCore.Deployment.Controllers
         private readonly IDeploymentManager _deploymentManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
+        private readonly ISiteService _siteService;
 
         public ExportFileController(
             IAuthorizationService authorizationService,
             ISession session,
-            IDeploymentManager deploymentManager)
+            IDeploymentManager deploymentManager,
+            ISiteService siteService)
         {
             _authorizationService = authorizationService;
             _deploymentManager = deploymentManager;
             _session = session;
+            _siteService = siteService;
         }
 
         [HttpPost]
@@ -42,8 +46,7 @@ namespace OrchardCore.Deployment.Controllers
             }
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
-
-            if (deploymentPlan == null)
+            if (deploymentPlan is null)
             {
                 return NotFound();
             }
@@ -56,7 +59,9 @@ namespace OrchardCore.Deployment.Controllers
                 archiveFileName = fileBuilder.Folder + ".zip";
 
                 var recipeDescriptor = new RecipeDescriptor();
-                var recipeFileDeploymentStep = deploymentPlan.DeploymentSteps.FirstOrDefault(ds => ds.Name == nameof(RecipeFileDeploymentStep)) as RecipeFileDeploymentStep;
+
+                var recipeFileDeploymentStep = deploymentPlan.DeploymentSteps.FirstOrDefault(
+                    ds => ds.Name == nameof(RecipeFileDeploymentStep)) as RecipeFileDeploymentStep;
 
                 if (recipeFileDeploymentStep != null)
                 {
@@ -71,7 +76,7 @@ namespace OrchardCore.Deployment.Controllers
                     recipeDescriptor.Tags = (recipeFileDeploymentStep.Tags ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries);
                 }
 
-                var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor);
+                var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor, DeploymentSecret.Namespace);
                 await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);
                 ZipFile.CreateFromDirectory(fileBuilder.Folder, archiveFileName);
             }

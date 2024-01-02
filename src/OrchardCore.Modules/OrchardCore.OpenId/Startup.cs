@@ -18,6 +18,7 @@ using OpenIddict.Validation.AspNetCore;
 using OpenIddict.Validation.DataProtection;
 using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
+using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell.Builders;
@@ -196,6 +197,8 @@ namespace OrchardCore.OpenId
                 ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictServerAspNetCoreOptions>, OpenIdServerConfiguration>(),
                 ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictServerDataProtectionOptions>, OpenIdServerConfiguration>()
             });
+
+            services.AddDataMigration<ServerMigrations>();
         }
 
         public override async ValueTask ConfigureAsync(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

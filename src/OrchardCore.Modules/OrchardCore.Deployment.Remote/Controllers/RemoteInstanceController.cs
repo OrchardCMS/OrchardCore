@@ -16,38 +16,44 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
+using OrchardCore.Secrets;
+using OrchardCore.Secrets.Models;
 
 namespace OrchardCore.Deployment.Remote.Controllers
 {
     [Admin]
     public class RemoteInstanceController : Controller
     {
+        private readonly RemoteInstanceService _remoteInstanceService;
+        private readonly ISecretService _secretService;
         private readonly IAuthorizationService _authorizationService;
         private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
-        private readonly RemoteInstanceService _service;
 
         protected readonly dynamic New;
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
 
         public RemoteInstanceController(
-            RemoteInstanceService service,
+            RemoteInstanceService remoteInstanceService,
+            ISecretService secretService,
             IAuthorizationService authorizationService,
             IOptions<PagerOptions> pagerOptions,
+            INotifier notifier,
             IShapeFactory shapeFactory,
             IStringLocalizer<RemoteInstanceController> stringLocalizer,
-            IHtmlLocalizer<RemoteInstanceController> htmlLocalizer,
-            INotifier notifier
+            IHtmlLocalizer<RemoteInstanceController> htmlLocalizer
             )
         {
+            _remoteInstanceService = remoteInstanceService;
+            _secretService = secretService;
             _authorizationService = authorizationService;
             _pagerOptions = pagerOptions.Value;
+            _notifier = notifier;
+
             New = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
-            _notifier = notifier;
-            _service = service;
         }
 
         public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
@@ -59,7 +65,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
-            var remoteInstances = (await _service.GetRemoteInstanceListAsync()).RemoteInstances;
+            var remoteInstances = (await _remoteInstanceService.GetRemoteInstanceListAsync()).RemoteInstances;
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
@@ -79,11 +85,12 @@ namespace OrchardCore.Deployment.Remote.Controllers
             {
                 RemoteInstances = remoteInstances,
                 Pager = pagerShape,
-                Options = options
+                Options = options,
             };
 
-            model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
+            model.Options.ContentsBulkAction = new List<SelectListItem>()
+            {
+                new() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) },
             };
 
             return View(model);
@@ -93,8 +100,9 @@ namespace OrchardCore.Deployment.Remote.Controllers
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(RemoteInstanceIndexViewModel model)
         {
-            return RedirectToAction(nameof(Index), new RouteValueDictionary {
-                { "Options.Search", model.Options.Search }
+            return RedirectToAction(nameof(Index), new RouteValueDictionary
+            {
+                { "Options.Search", model.Options.Search },
             });
         }
 
@@ -125,7 +133,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             if (ModelState.IsValid)
             {
-                await _service.CreateRemoteInstanceAsync(model.Name, model.Url, model.ClientName, model.ApiKey);
+                await _remoteInstanceService.CreateRemoteInstanceAsync(model.Name, model.Url, model.ClientName, model.ApiKey);
 
                 await _notifier.SuccessAsync(H["Remote instance created successfully."]);
                 return RedirectToAction(nameof(Index));
@@ -142,20 +150,20 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 return Forbid();
             }
 
-            var remoteInstance = await _service.GetRemoteInstanceAsync(id);
-
-            if (remoteInstance == null)
+            var remoteInstance = await _remoteInstanceService.GetRemoteInstanceAsync(id);
+            if (remoteInstance is null)
             {
                 return NotFound();
             }
 
+            var secret = await _secretService.GetSecretAsync<TextSecret>($"{RemoteSecret.Namespace}.{remoteInstance.ClientName}.ApiKey");
             var model = new EditRemoteInstanceViewModel
             {
                 Id = remoteInstance.Id,
                 Name = remoteInstance.Name,
+                Url = remoteInstance.Url,
                 ClientName = remoteInstance.ClientName,
-                ApiKey = remoteInstance.ApiKey,
-                Url = remoteInstance.Url
+                ApiKey = secret?.Text,
             };
 
             return View(model);
@@ -169,9 +177,8 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 return Forbid();
             }
 
-            var remoteInstance = await _service.LoadRemoteInstanceAsync(model.Id);
-
-            if (remoteInstance == null)
+            var remoteInstance = await _remoteInstanceService.LoadRemoteInstanceAsync(model.Id);
+            if (remoteInstance is null)
             {
                 return NotFound();
             }
@@ -183,7 +190,12 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             if (ModelState.IsValid)
             {
-                await _service.UpdateRemoteInstance(model.Id, model.Name, model.Url, model.ClientName, model.ApiKey);
+                await _remoteInstanceService.UpdateRemoteInstanceAsync(
+                    model.Id,
+                    model.Name,
+                    model.Url,
+                    model.ClientName,
+                    model.ApiKey);
 
                 await _notifier.SuccessAsync(H["Remote instance updated successfully."]);
 
@@ -202,14 +214,14 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 return Forbid();
             }
 
-            var remoteInstance = await _service.LoadRemoteInstanceAsync(id);
+            var remoteInstance = await _remoteInstanceService.LoadRemoteInstanceAsync(id);
 
             if (remoteInstance == null)
             {
                 return NotFound();
             }
 
-            await _service.DeleteRemoteInstanceAsync(id);
+            await _remoteInstanceService.DeleteRemoteInstanceAsync(id);
 
             await _notifier.SuccessAsync(H["Remote instance deleted successfully."]);
 
@@ -218,7 +230,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
         [HttpPost, ActionName("Index")]
         [FormValueRequired("submit.BulkAction")]
-        public async Task<ActionResult> IndexPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
+        public async Task<ActionResult> IndexPost(ContentOptions options, IEnumerable<string> itemIds)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageRemoteInstances))
             {
@@ -227,7 +239,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             if (itemIds?.Count() > 0)
             {
-                var remoteInstances = (await _service.LoadRemoteInstanceListAsync()).RemoteInstances;
+                var remoteInstances = (await _remoteInstanceService.LoadRemoteInstanceListAsync()).RemoteInstances;
                 var checkedContentItems = remoteInstances.Where(x => itemIds.Contains(x.Id)).ToList();
 
                 switch (options.BulkAction)
@@ -237,12 +249,12 @@ namespace OrchardCore.Deployment.Remote.Controllers
                     case ContentsBulkAction.Remove:
                         foreach (var item in checkedContentItems)
                         {
-                            await _service.DeleteRemoteInstanceAsync(item.Id);
+                            await _remoteInstanceService.DeleteRemoteInstanceAsync(item.Id);
                         }
                         await _notifier.SuccessAsync(H["Remote instances successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
+                        throw new InvalidOperationException($"Invalid bulk action '{options.BulkAction}'.");
                 }
             }
 

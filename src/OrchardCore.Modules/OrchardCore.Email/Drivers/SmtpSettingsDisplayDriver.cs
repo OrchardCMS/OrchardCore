@@ -7,8 +7,10 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Email.Services;
+using OrchardCore.Email.ViewModels;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Secrets;
+using OrchardCore.Secrets.Models;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Drivers
@@ -21,19 +23,22 @@ namespace OrchardCore.Email.Drivers
         private readonly ShellSettings _shellSettings;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
+        private readonly ISecretService _secretService;
 
         public SmtpSettingsDisplayDriver(
             IDataProtectionProvider dataProtectionProvider,
             IShellHost shellHost,
             ShellSettings shellSettings,
             IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+            IAuthorizationService authorizationService,
+            ISecretService secretService)
         {
             _dataProtectionProvider = dataProtectionProvider;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
+            _secretService = secretService;
         }
 
         public override async Task<IDisplayResult> EditAsync(SmtpSettings settings, BuildEditorContext context)
@@ -45,9 +50,10 @@ namespace OrchardCore.Email.Drivers
                 return null;
             }
 
+            var secret = await _secretService.GetSecretAsync<TextSecret>(EmailSecret.Password);
             var shapes = new List<IDisplayResult>
             {
-                Initialize<SmtpSettings>("SmtpSettings_Edit", model =>
+                Initialize<SmtpSettingsEditViewModel>("SmtpSettings_Edit", model =>
                 {
                     model.DefaultSender = settings.DefaultSender;
                     model.DeliveryMethod = settings.DeliveryMethod;
@@ -61,12 +67,12 @@ namespace OrchardCore.Email.Drivers
                     model.RequireCredentials = settings.RequireCredentials;
                     model.UseDefaultCredentials = settings.UseDefaultCredentials;
                     model.UserName = settings.UserName;
-                    model.Password = settings.Password;
+                    model.Password = secret?.Text;
                     model.IgnoreInvalidSslCertificate = settings.IgnoreInvalidSslCertificate;
                 }).Location("Content:5").OnGroup(GroupId),
             };
 
-            if (settings?.DefaultSender != null)
+            if (settings.DefaultSender != null)
             {
                 shapes.Add(Dynamic("SmtpSettings_TestButton").Location("Actions").OnGroup(GroupId));
             }
@@ -74,7 +80,7 @@ namespace OrchardCore.Email.Drivers
             return Combine(shapes);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(SmtpSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(SmtpSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -85,26 +91,45 @@ namespace OrchardCore.Email.Drivers
 
             if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
             {
-                var previousPassword = section.Password;
-                await context.Updater.TryUpdateModelAsync(section, Prefix);
+                var model = new SmtpSettingsEditViewModel();
 
-                // Restore password if the input is empty, meaning that it has not been reset.
-                if (string.IsNullOrWhiteSpace(section.Password))
+                await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+                var secret = await _secretService.GetSecretAsync<TextSecret>(EmailSecret.Password);
+                if (!string.IsNullOrWhiteSpace(model.Password) && model.Password != secret?.Text)
                 {
-                    section.Password = previousPassword;
+                    if (secret is null)
+                    {
+                        await _secretService.AddSecretAsync<TextSecret>(
+                            EmailSecret.Password,
+                            (secret, info) => secret.Text = model.Password);
+                    }
+                    else
+                    {
+                        secret.Text = model.Password;
+                        await _secretService.UpdateSecretAsync(secret);
+                    }
                 }
-                else
-                {
-                    // encrypt the password
-                    var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration));
-                    section.Password = protector.Protect(section.Password);
-                }
+
+                settings.DefaultSender = model.DefaultSender;
+                settings.DeliveryMethod = model.DeliveryMethod;
+                settings.PickupDirectoryLocation = model.PickupDirectoryLocation;
+                settings.Host = model.Host;
+                settings.Port = model.Port;
+                settings.ProxyHost = model.ProxyHost;
+                settings.ProxyPort = model.ProxyPort;
+                settings.EncryptionMethod = model.EncryptionMethod;
+                settings.AutoSelectEncryption = model.AutoSelectEncryption;
+                settings.RequireCredentials = model.RequireCredentials;
+                settings.UseDefaultCredentials = model.UseDefaultCredentials;
+                settings.UserName = model.UserName;
+                settings.IgnoreInvalidSslCertificate = model.IgnoreInvalidSslCertificate;
 
                 // Release the tenant to apply the settings.
                 await _shellHost.ReleaseShellContextAsync(_shellSettings);
             }
 
-            return await EditAsync(section, context);
+            return await EditAsync(settings, context);
         }
     }
 }

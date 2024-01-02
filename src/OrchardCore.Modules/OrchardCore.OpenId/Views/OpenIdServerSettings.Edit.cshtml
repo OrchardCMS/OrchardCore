@@ -126,7 +126,23 @@
     <span class="hint">@T["The base URL of the identity server (this site). If none is provided, a default value based on the site host is automatically computed."]</span>
 </div>
 
-<div class="mb-3" asp-validation-class-for="EncryptionCertificateStoreLocation">
+<div class="mb-3" asp-validation-class-for="EncryptionRsaSecret">
+    <label asp-for="EncryptionRsaSecret" class="form-label">@T["Encryption RSA secret"]</label>
+    @await Component.InvokeAsync(
+            "SelectSecret",
+            new
+            {
+                secretType = "RsaSecret",
+                selectedSecret = Model.EncryptionRsaSecret,
+                htmlId = Html.IdFor(m => m.EncryptionRsaSecret),
+                htmlName = Html.NameFor(m => m.EncryptionRsaSecret),
+                required = false,
+            })
+    <span asp-validation-for="EncryptionRsaSecret"></span>
+    <span class="hint">@T["The secret holding a raw RSA key to use for encryption."]</span>
+</div>
+
+<div class="mb-3 certificate" asp-validation-class-for="EncryptionCertificateStoreLocation">
     <label asp-for="EncryptionCertificateStoreLocation" class="form-label">@T["Encryption Certificate Store Location"]</label>
     <select asp-for="EncryptionCertificateStoreLocation" class="form-select">
         <option value="">@T["None"]</option>
@@ -140,7 +156,7 @@
     <span class="hint">@T["Select the encryption certificate location."]</span>
 </div>
 
-<div class="mb-3" asp-validation-class-for="EncryptionCertificateStoreName">
+<div class="mb-3 certificate" asp-validation-class-for="EncryptionCertificateStoreName">
     <label asp-for="EncryptionCertificateStoreName" class="form-label">@T["Encryption Certificate Store Name"]</label>
     <select asp-for="EncryptionCertificateStoreName" class="form-select">
         <option value="">@T["None"]</option>
@@ -154,7 +170,7 @@
     <span class="hint">@T["Select the encryption certificate store."]</span>
 </div>
 
-<div class="mb-3" asp-validation-class-for="EncryptionCertificateThumbprint">
+<div class="mb-3 certificate" asp-validation-class-for="EncryptionCertificateThumbprint">
     @if (Model.AvailableCertificates.Count != 0)
     {
         <label asp-for="EncryptionCertificateThumbprint" class="form-label">@T["Encryption Certificate"]</label>
@@ -190,7 +206,23 @@
     }
 </div>
 
-<div class="mb-3" asp-validation-class-for="SigningCertificateStoreLocation">
+<div class="mb-3" asp-validation-class-for="SigningRsaSecret">
+    <label asp-for="SigningRsaSecret" class="form-label">@T["Signing RSA secret"]</label>
+    @await Component.InvokeAsync(
+            "SelectSecret",
+            new
+            {
+                secretType = "RsaSecret",
+                selectedSecret = Model.SigningRsaSecret,
+                htmlId = Html.IdFor(m => m.SigningRsaSecret),
+                htmlName = Html.NameFor(m => m.SigningRsaSecret),
+                required = false,
+            })
+    <span asp-validation-for="SigningRsaSecret"></span>
+    <span class="hint">@T["The secret holding a raw RSA key to use for signing."]</span>
+</div>
+
+<div class="mb-3 certificate" asp-validation-class-for="SigningCertificateStoreLocation">
     <label asp-for="SigningCertificateStoreLocation" class="form-label">@T["Signing Certificate Store Location"]</label>
     <select asp-for="SigningCertificateStoreLocation" class="form-select">
         <option value="">@T["None"]</option>
@@ -204,7 +236,7 @@
     <span class="hint">@T["Select the signing certificate location."]</span>
 </div>
 
-<div class="mb-3" asp-validation-class-for="SigningCertificateStoreName">
+<div class="mb-3 certificate" asp-validation-class-for="SigningCertificateStoreName">
     <label asp-for="SigningCertificateStoreName" class="form-label">@T["Signing Certificate Store Name"]</label>
     <select asp-for="SigningCertificateStoreName" class="form-select">
         <option value="">@T["None"]</option>
@@ -218,7 +250,7 @@
     <span class="hint">@T["Select the signing certificate store."]</span>
 </div>
 
-<div class="mb-3" asp-validation-class-for="SigningCertificateThumbprint">
+<div class="mb-3 certificate" asp-validation-class-for="SigningCertificateThumbprint">
     @if (Model.AvailableCertificates.Count != 0)
     {
         <label asp-for="SigningCertificateThumbprint" class="form-label">@T["Signing Certificate"]</label>
@@ -439,6 +471,30 @@
                 allowRefreshTokenFlow.parent().parent().collapse("hide");
             }
         }
+
+        $('#@Html.IdFor(m => m.EncryptionRsaSecret)').on('change', function () {
+            if (this.value === '') {
+                $('#@Html.IdFor(m => m.EncryptionCertificateStoreLocation)').closest('.certificate').show();
+                $('#@Html.IdFor(m => m.EncryptionCertificateStoreName)').closest('.certificate').show();
+                $('#@Html.IdFor(m => m.EncryptionCertificateThumbprint)').closest('.certificate').show();
+            } else {
+                $('#@Html.IdFor(m => m.EncryptionCertificateStoreLocation)').closest('.certificate').hide();
+                $('#@Html.IdFor(m => m.EncryptionCertificateStoreName)').closest('.certificate').hide();
+                $('#@Html.IdFor(m => m.EncryptionCertificateThumbprint)').closest('.certificate').hide();
+            }
+        }).trigger('change');
+
+        $('#@Html.IdFor(m => m.SigningRsaSecret)').on('change', function () {
+            if (this.value === '') {
+                $('#@Html.IdFor(m => m.SigningCertificateStoreLocation)').closest('.certificate').show();
+                $('#@Html.IdFor(m => m.SigningCertificateStoreName)').closest('.certificate').show();
+                $('#@Html.IdFor(m => m.SigningCertificateThumbprint)').closest('.certificate').show();
+            } else {
+                $('#@Html.IdFor(m => m.SigningCertificateStoreLocation)').closest('.certificate').hide();
+                $('#@Html.IdFor(m => m.SigningCertificateStoreName)').closest('.certificate').hide();
+                $('#@Html.IdFor(m => m.SigningCertificateThumbprint)').closest('.certificate').hide();
+            }
+        }).trigger('change');
     };
     //]]>
 </script>

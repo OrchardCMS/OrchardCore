@@ -8,7 +8,7 @@ namespace OrchardCore.Workflows.Http.Models
             ActivityId = activityId;
         }
 
-        public string WorkflowId { get; private set; }
-        public string ActivityId { get; private set; }
+        public string WorkflowId { get; set; }
+        public string ActivityId { get; set; }
     }
 }

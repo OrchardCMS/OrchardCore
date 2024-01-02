@@ -1,6 +1,6 @@
-using System;
 using System.IO;
 using System.IO.Compression;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -14,6 +14,8 @@ using OrchardCore.Deployment.Services;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Recipes.Models;
+using OrchardCore.Secrets;
+using OrchardCore.Secrets.Models;
 using YesSql;
 
 namespace OrchardCore.Deployment.Remote.Controllers
@@ -23,25 +25,28 @@ namespace OrchardCore.Deployment.Remote.Controllers
     {
         private static readonly HttpClient _httpClient = new();
 
+        private readonly RemoteInstanceService _remoteInstanceService;
         private readonly IDeploymentManager _deploymentManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
-        private readonly RemoteInstanceService _service;
+        private readonly ISecretService _secretService;
         private readonly INotifier _notifier;
         protected readonly IHtmlLocalizer H;
 
         public ExportRemoteInstanceController(
+            RemoteInstanceService remoteInstanceService,
             IAuthorizationService authorizationService,
-            ISession session,
-            RemoteInstanceService service,
             IDeploymentManager deploymentManager,
+            ISecretService secretService,
+            ISession session,
             INotifier notifier,
             IHtmlLocalizer<ExportRemoteInstanceController> localizer)
         {
+            _remoteInstanceService = remoteInstanceService;
             _authorizationService = authorizationService;
             _deploymentManager = deploymentManager;
+            _secretService = secretService;
             _session = session;
-            _service = service;
             _notifier = notifier;
             H = localizer;
         }
@@ -55,27 +60,29 @@ namespace OrchardCore.Deployment.Remote.Controllers
             }
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
-
-            if (deploymentPlan == null)
+            if (deploymentPlan is null)
             {
                 return NotFound();
             }
 
-            var remoteInstance = await _service.GetRemoteInstanceAsync(remoteInstanceId);
-
-            if (remoteInstance == null)
+            var remoteInstance = await _remoteInstanceService.GetRemoteInstanceAsync(remoteInstanceId);
+            if (remoteInstance is null)
             {
                 return NotFound();
             }
 
             string archiveFileName;
-            var filename = deploymentPlan.Name.ToSafeName() + ".zip";
 
+            var filename = deploymentPlan.Name.ToSafeName() + ".zip";
             using (var fileBuilder = new TemporaryFileBuilder())
             {
                 archiveFileName = PathExtensions.Combine(Path.GetTempPath(), filename);
 
-                var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, new RecipeDescriptor());
+                var deploymentPlanResult = new DeploymentPlanResult(
+                    fileBuilder,
+                    new RecipeDescriptor(),
+                    $"{RemoteSecret.Namespace}.{remoteInstance.ClientName}");
+
                 await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);
 
                 if (System.IO.File.Exists(archiveFileName))
@@ -87,29 +94,44 @@ namespace OrchardCore.Deployment.Remote.Controllers
             }
 
             HttpResponseMessage response;
-
             try
             {
                 using (var requestContent = new MultipartFormDataContent())
                 {
                     requestContent.Add(new StreamContent(
-                        new FileStream(archiveFileName,
-                        FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 1, FileOptions.Asynchronous | FileOptions.SequentialScan)
-                    ),
-                        nameof(ImportViewModel.Content), Path.GetFileName(archiveFileName));
+                        new FileStream(
+                            archiveFileName,
+                            FileMode.Open,
+                            FileAccess.Read,
+                            FileShare.ReadWrite,
+                            1,
+                            FileOptions.Asynchronous | FileOptions.SequentialScan)),
+                        nameof(ImportViewModel.Content),
+                        Path.GetFileName(archiveFileName));
+
                     requestContent.Add(new StringContent(remoteInstance.ClientName), nameof(ImportViewModel.ClientName));
-                    requestContent.Add(new StringContent(remoteInstance.ApiKey), nameof(ImportViewModel.ApiKey));
+
+                    var secret = await _secretService.GetSecretAsync<TextSecret>($"{RemoteSecret.Namespace}.{remoteInstance.ClientName}.ApiKey");
+                    if (secret is null)
+                    {
+                        return StatusCode((int)HttpStatusCode.BadRequest, "The Api Key doesn't exist.");
+                    }
+
+                    requestContent.Add(new StringContent(secret.Text), nameof(ImportViewModel.ApiKey));
 
                     response = await _httpClient.PostAsync(remoteInstance.Url, requestContent);
                 }
 
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                if (response.StatusCode == HttpStatusCode.OK)
                 {
                     await _notifier.SuccessAsync(H["Deployment executed successfully."]);
                 }
                 else
                 {
-                    await _notifier.ErrorAsync(H["An error occurred while sending the deployment to the remote instance: \"{0} ({1})\"", response.ReasonPhrase, (int)response.StatusCode]);
+                    await _notifier.ErrorAsync(
+                        H["An error occurred while sending the deployment to the remote instance: \"{0} ({1})\".",
+                        response.ReasonPhrase,
+                        (int)response.StatusCode]);
                 }
             }
             finally
