@@ -87,6 +87,122 @@ If you are running on Azure App Services or if you are using Elasticsearch, then
 The Lucene module provides a management UI and APIs for querying Lucene data using ElasticSearch Queries.
 See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html>
 
+## Recipe step
+
+Lucene indices can be created during recipe execution using the `ElasticIndexSettings` step.  
+Here is a sample step:
+
+```json
+{
+  "steps":[
+    {
+      "name":"LuceneIndexSettings",
+      "Indices":[
+        {
+          "Search":{
+            "AnalyzerName":"standardanalyzer",
+            "IndexLatest":false,
+            "Culture":"",
+            "StoreSourceData":false,
+            "IndexedContentTypes":[
+              "Article",
+              "BlogPost"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+## Lucene settings recipe step
+
+Here is an example for setting default search settings:
+
+```json
+{
+  "steps":[
+    {
+      // Create the search settings.
+      "name":"Settings",
+      "LuceneSettings":{
+        "SearchIndex":"search",
+        "DefaultSearchFields":[
+          "Content.ContentItem.FullText"
+        ],
+        "AllowLuceneQueriesInSearch":false
+      }
+    }
+  ]
+}
+```
+
+### Reset Lucene Index Step
+
+This Reset Index Step resets an Lucene index.
+Restarts the indexing process from the beginning in order to update current content items.
+It doesn't delete existing entries from the index.
+
+```json
+{
+  "steps":[
+    {
+      "name":"lucene-index-reset",
+      "Indices":[
+        "IndexName1",
+        "IndexName2"
+      ]
+    }
+  ]
+}
+```
+
+To reset all indices:
+
+```json
+{
+  "steps":[
+    {
+      "name":"lucene-index-reset",
+      "IncludeAll":true
+    }
+  ]
+}
+```
+
+### Rebuild Lucene Index Step
+
+This Rebuild Index Step rebuilds an Lucene index.
+Deletes and recreates the full index content.
+
+```json
+{
+  "steps":[
+    {
+      "name":"lucene-index-rebuild",
+      "Indices":[
+        "IndexName1",
+        "IndexName2"
+      ]
+    }
+  ]
+}
+```
+
+To rebuild all indices:
+
+```json
+{
+  "steps":[
+    {
+      "name":"lucene-index-rebuild",
+      "IncludeAll":true
+    }
+  ]
+}
+```
+
 ### Query Filters
 
 Query filters are used to retrieve records from Lucene without taking care of the boost values on them. So, it is retrieving records just like a SQL database would do.

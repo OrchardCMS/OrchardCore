@@ -17,6 +17,8 @@ namespace OrchardCore.Search.Elasticsearch.Services;
 
 public class ElasticsearchService : ISearchService
 {
+    public const string Key = "Elasticsearch";
+
     private readonly ISiteService _siteService;
     private readonly ElasticIndexManager _elasticIndexManager;
     private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
@@ -47,15 +49,18 @@ public class ElasticsearchService : ISearchService
         _logger = logger;
     }
 
-    public string Name => "Elasticsearch";
+    public string Name => Key;
 
     public async Task<SearchResult> SearchAsync(string indexName, string term, int start, int pageSize)
     {
-        var index = !string.IsNullOrWhiteSpace(indexName) ? indexName.Trim() : await DefaultIndexAsync();
+        var siteSettings = await _siteService.GetSiteSettingsAsync();
+        var searchSettings = siteSettings.As<ElasticSettings>();
+
+        var index = !string.IsNullOrWhiteSpace(indexName) ? indexName.Trim() : searchSettings.SearchIndex;
 
         var result = new SearchResult();
 
-        if (index == null || !await _elasticIndexManager.Exists(index))
+        if (index == null || !await _elasticIndexManager.ExistsAsync(index))
         {
             _logger.LogWarning("Elasticsearch: Couldn't execute search. The search index doesn't exist.");
 
@@ -65,12 +70,9 @@ public class ElasticsearchService : ISearchService
         var elasticIndexSettings = await _elasticIndexSettingsService.GetSettingsAsync(index);
         result.Latest = elasticIndexSettings.IndexLatest;
 
-        var siteSettings = await _siteService.GetSiteSettingsAsync();
-        var searchSettings = siteSettings.As<ElasticSettings>();
-
         if (searchSettings.DefaultSearchFields == null || searchSettings.DefaultSearchFields.Length == 0)
         {
-            _logger.LogWarning("Elasticsearch: Couldn't execute search. No serach provider settings was defined.");
+            _logger.LogWarning("Elasticsearch: Couldn't execute search. No search provider settings was defined.");
 
             return result;
         }
@@ -124,12 +126,5 @@ public class ElasticsearchService : ISearchService
         }
 
         return result;
-    }
-
-    private async Task<string> DefaultIndexAsync()
-    {
-        var siteSettings = await _siteService.GetSiteSettingsAsync();
-
-        return siteSettings.As<ElasticSettings>().SearchIndex;
     }
 }

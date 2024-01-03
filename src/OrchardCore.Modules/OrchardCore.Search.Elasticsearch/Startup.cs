@@ -115,12 +115,7 @@ namespace OrchardCore.Search.Elasticsearch
             services.AddElasticServices();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IDisplayDriver<ISite>, ElasticSettingsDisplayDriver>();
             services.AddScoped<IDisplayDriver<Query>, ElasticQueryDisplayDriver>();
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
-            services.AddScoped<ElasticsearchService>();
-            services.AddScoped<ISearchService>(sp => sp.GetRequiredService<ElasticsearchService>());
             services.AddScoped<IAuthorizationHandler, ElasticsearchAuthorizationHandler>();
         }
 
@@ -259,6 +254,16 @@ namespace OrchardCore.Search.Elasticsearch
         }
     }
 
+    [RequireFeatures("OrchardCore.Search")]
+    public class SearchStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<ISearchService, ElasticsearchService>();
+            services.AddScoped<IDisplayDriver<ISite>, ElasticSettingsDisplayDriver>();
+        }
+    }
+
     [RequireFeatures("OrchardCore.Deployment")]
     public class DeploymentStartup : StartupBase
     {
@@ -299,6 +304,16 @@ namespace OrchardCore.Search.Elasticsearch
             services.AddScoped<IContentPickerResultProvider, ElasticContentPickerResultProvider>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldElasticEditorSettingsDriver>();
             services.AddShapeAttributes<ElasticContentPickerShapeProvider>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.ContentTypes")]
+    public class ContentTypesStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
         }
     }
 }
