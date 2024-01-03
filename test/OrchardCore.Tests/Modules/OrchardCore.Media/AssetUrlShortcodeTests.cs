@@ -33,7 +33,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
                 cdnBaseUrl,
                 Enumerable.Empty<IMediaEventHandler>(),
                 Enumerable.Empty<IMediaCreatingEventHandler>(),
-                Mock.Of<ILogger<DefaultMediaFileStore>>());
+                new FakeLogger<DefaultMediaFileStore>());
 
             var sanitizer = new HtmlSanitizerService(Options.Create(new HtmlSanitizerOptions()));
 

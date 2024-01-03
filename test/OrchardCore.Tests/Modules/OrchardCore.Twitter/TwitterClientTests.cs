@@ -66,7 +66,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Twitter
                 );
 
             var mockTwitterClient = new Mock<TwitterClient>(
-                new HttpClient(_mockFakeHttpMessageHandler.Object), Mock.Of<ILogger<TwitterClient>>())
+                new HttpClient(_mockFakeHttpMessageHandler.Object), new FakeLogger<TwitterClient>())
             {
                 CallBase = true,
             };

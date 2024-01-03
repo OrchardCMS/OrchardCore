@@ -46,9 +46,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email.Workflows
         private static ISmtpService CreateSmtpService(SmtpSettings settings)
         {
             var options = new Mock<IOptions<SmtpSettings>>();
-            var logger = new Mock<ILogger<SmtpService>>();
+            var logger = new FakeLogger<SmtpService>();
             var localizer = new Mock<IStringLocalizer<SmtpService>>();
-            var smtp = new SmtpService(options.Object, logger.Object, localizer.Object);
+            var smtp = new SmtpService(options.Object, logger, localizer.Object);
 
             options.Setup(o => o.Value).Returns(settings);
 

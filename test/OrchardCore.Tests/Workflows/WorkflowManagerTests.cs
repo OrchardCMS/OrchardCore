@@ -83,7 +83,7 @@ namespace OrchardCore.Tests.Workflows
             return new JavaScriptWorkflowScriptEvaluator(
                 scriptingManager,
                 workflowContextHandlers.Resolve(),
-                new Mock<ILogger<JavaScriptWorkflowScriptEvaluator>>().Object
+                new FakeLogger<JavaScriptWorkflowScriptEvaluator>()
             );
         }
 
@@ -100,9 +100,9 @@ namespace OrchardCore.Tests.Workflows
             var workflowIdGenerator = new Mock<IWorkflowIdGenerator>();
             workflowIdGenerator.Setup(x => x.GenerateUniqueId(It.IsAny<Workflow>())).Returns(IdGenerator.GenerateId());
             var distributedLock = new Mock<IDistributedLock>();
-            var workflowManagerLogger = new Mock<ILogger<WorkflowManager>>();
-            var workflowContextLogger = new Mock<ILogger<WorkflowExecutionContext>>();
-            var missingActivityLogger = new Mock<ILogger<MissingActivity>>();
+            var workflowManagerLogger = new FakeLogger<WorkflowManager>();
+            var workflowContextLogger = new FakeLogger<WorkflowExecutionContext>();
+            var missingActivityLogger = new FakeLogger<MissingActivity>();
             var missingActivityLocalizer = new Mock<IStringLocalizer<MissingActivity>>();
             var clock = new Mock<IClock>();
             var workflowFaultHandler = new Mock<IWorkflowFaultHandler>();
@@ -114,8 +114,8 @@ namespace OrchardCore.Tests.Workflows
                 workflowValueSerializers,
                 workflowFaultHandler.Object,
                 distributedLock.Object,
-                workflowManagerLogger.Object,
-                missingActivityLogger.Object,
+                workflowManagerLogger,
+                missingActivityLogger,
                 missingActivityLocalizer.Object,
                 clock.Object
                 );

@@ -268,9 +268,9 @@ namespace OrchardCore.Tests.Email
             var options = new Mock<IOptions<SmtpSettings>>();
             options.Setup(o => o.Value).Returns(settings);
 
-            var logger = new Mock<ILogger<SmtpService>>();
+            var logger = new FakeLogger<SmtpService>();
             var localizer = new Mock<IStringLocalizer<SmtpService>>();
-            var smtp = new SmtpService(options.Object, logger.Object, localizer.Object);
+            var smtp = new SmtpService(options.Object, logger, localizer.Object);
 
             return smtp;
         }

@@ -29,12 +29,12 @@ namespace OrchardCore.Recipes
                     .Returns(GetScopeAsync);
 
                 var recipeEventHandlers = new List<IRecipeEventHandler> { new RecipeEventHandler() };
-                var loggerMock = new Mock<ILogger<RecipeExecutor>>();
+                var logger = new FakeLogger<RecipeExecutor>();
                 var recipeExecutor = new RecipeExecutor(
                     shellHostMock.Object,
                     scope.ShellContext.Settings,
                     recipeEventHandlers,
-                    loggerMock.Object);
+                    logger);
 
                 // Act
                 var executionId = Guid.NewGuid().ToString("n");

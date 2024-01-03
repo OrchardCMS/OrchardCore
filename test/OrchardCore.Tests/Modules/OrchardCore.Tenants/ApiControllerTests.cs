@@ -174,7 +174,7 @@ public class ApiControllerTests
             Enumerable.Empty<DatabaseProvider>(),
             tenantValidator,
             Mock.Of<IStringLocalizer<ApiController>>(),
-            Mock.Of<ILogger<ApiController>>())
+            new FakeLogger<ApiController>())
         {
             ControllerContext = new ControllerContext { HttpContext = CreateHttpContext() }
         };

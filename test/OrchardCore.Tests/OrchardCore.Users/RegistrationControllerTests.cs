@@ -166,7 +166,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 Mock.Of<IAuthorizationService>(),
                 mockSiteService,
                 Mock.Of<INotifier>(),
-                Mock.Of<ILogger<RegistrationController>>(),
+                new FakeLogger<RegistrationController>(),
                 Mock.Of<IHtmlLocalizer<RegistrationController>>(),
                 mockStringLocalizer.Object)
             {
