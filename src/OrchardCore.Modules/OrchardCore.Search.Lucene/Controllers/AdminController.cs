@@ -46,12 +46,13 @@ namespace OrchardCore.Search.Lucene.Controllers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly PagerOptions _pagerOptions;
         private readonly JavaScriptEncoder _javaScriptEncoder;
-        protected readonly dynamic New;
-        protected readonly IStringLocalizer S;
-        protected readonly IHtmlLocalizer H;
+        private readonly IShapeFactory _shapeFactory;
         private readonly ILogger _logger;
         private readonly IOptions<TemplateOptions> _templateOptions;
         private readonly ILocalizationService _localizationService;
+
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
 
         public AdminController(
             ISession session,
@@ -85,7 +86,7 @@ namespace OrchardCore.Search.Lucene.Controllers
             _notifier = notifier;
             _pagerOptions = pagerOptions.Value;
             _javaScriptEncoder = javaScriptEncoder;
-            New = shapeFactory;
+            _shapeFactory = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
             _logger = logger;
@@ -116,8 +117,15 @@ namespace OrchardCore.Search.Lucene.Controllers
                 .Take(pager.PageSize).ToList();
 
             // Maintain previous route data when generating page links
+
             var routeData = new RouteData();
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
+
+            if (!string.IsNullOrEmpty(options.Search))
+            {
+                routeData.Values.TryAdd("Options.Search", options.Search);
+            }
+
+            var pagerShape = await _shapeFactory.PagerAsync(pager, count, routeData);
 
             var model = new AdminIndexViewModel
             {
@@ -126,11 +134,12 @@ namespace OrchardCore.Search.Lucene.Controllers
                 Pager = pagerShape
             };
 
-            model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Reset"], Value = nameof(ContentsBulkAction.Reset) },
-                new SelectListItem() { Text = S["Rebuild"], Value = nameof(ContentsBulkAction.Rebuild) },
-                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
-            };
+            model.Options.ContentsBulkAction =
+            [
+                new SelectListItem(S["Reset"], nameof(ContentsBulkAction.Reset)),
+                new SelectListItem(S["Rebuild"], nameof(ContentsBulkAction.Rebuild)),
+                new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
+            ];
 
             return View(model);
         }
