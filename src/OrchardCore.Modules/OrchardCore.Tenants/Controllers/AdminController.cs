@@ -162,7 +162,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (!string.IsNullOrEmpty(options.Category))
             {
-                routeData.Values.TryAdd("Options.Category", options.Search);
+                routeData.Values.TryAdd("Options.Category", options.Category);
             }
 
             if (!string.IsNullOrEmpty(options.Search))
@@ -181,9 +181,9 @@ namespace OrchardCore.Tenants.Controllers
 
             // We populate the SelectLists
             model.Options.TenantsCategories = allSettings
-                .GroupBy(t => t["Category"])
-                .Where(t => !string.IsNullOrEmpty(t.Key))
-                .Select(t => new SelectListItem(t.Key, t.Key, string.Equals(options.Category, t.Key, StringComparison.OrdinalIgnoreCase)))
+                .GroupBy(settings => settings["Category"])
+                .Where(group => !string.IsNullOrEmpty(group.Key))
+                .Select(group => new SelectListItem(group.Key, group.Key, string.Equals(options.Category, group.Key, StringComparison.OrdinalIgnoreCase)))
                 .ToList();
 
             model.Options.TenantsCategories.Insert(0, new SelectListItem(

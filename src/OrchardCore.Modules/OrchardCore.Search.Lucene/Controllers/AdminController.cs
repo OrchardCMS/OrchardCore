@@ -34,6 +34,8 @@ namespace OrchardCore.Search.Lucene.Controllers
 {
     public class AdminController : Controller
     {
+        private const string _optionsSearch = "Options.Search";
+
         private readonly ISession _session;
         private readonly LuceneIndexManager _luceneIndexManager;
         private readonly LuceneIndexingService _luceneIndexingService;
@@ -114,24 +116,22 @@ namespace OrchardCore.Search.Lucene.Controllers
 
             results = results
                 .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize).ToList();
+                .Take(pager.PageSize)
+                .ToList();
 
-            // Maintain previous route data when generating page links
-
+            // Maintain previous route data when generating page links.
             var routeData = new RouteData();
 
             if (!string.IsNullOrEmpty(options.Search))
             {
-                routeData.Values.TryAdd("Options.Search", options.Search);
+                routeData.Values.TryAdd(_optionsSearch, options.Search);
             }
-
-            var pagerShape = await _shapeFactory.PagerAsync(pager, count, routeData);
 
             var model = new AdminIndexViewModel
             {
                 Indexes = results,
                 Options = options,
-                Pager = pagerShape
+                Pager = await _shapeFactory.PagerAsync(pager, count, routeData)
             };
 
             model.Options.ContentsBulkAction =
@@ -144,14 +144,13 @@ namespace OrchardCore.Search.Lucene.Controllers
             return View(model);
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(AdminIndexViewModel model)
-        {
-            return RedirectToAction(nameof(Index), new RouteValueDictionary {
-                { "Options.Search", model.Options.Search }
+            => RedirectToAction(nameof(Index), new RouteValueDictionary
+            {
+                { _optionsSearch, model.Options.Search }
             });
-        }
 
         public async Task<ActionResult> Edit(string indexName = null)
         {
@@ -176,7 +175,7 @@ namespace OrchardCore.Search.Lucene.Controllers
             var model = new LuceneIndexSettingsViewModel
             {
                 IsCreate = IsCreate,
-                IndexName = IsCreate ? "" : settings.IndexName,
+                IndexName = IsCreate ? string.Empty : settings.IndexName,
                 AnalyzerName = IsCreate ? "standardanalyzer" : settings.AnalyzerName,
                 IndexLatest = settings.IndexLatest,
                 Culture = settings.Culture,
@@ -192,7 +191,7 @@ namespace OrchardCore.Search.Lucene.Controllers
             return View(model);
         }
 
-        [HttpPost, ActionName("Edit")]
+        [HttpPost, ActionName(nameof(Edit))]
         public async Task<ActionResult> EditPost(LuceneIndexSettingsViewModel model, string[] indexedContentTypes)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLuceneIndexes))
@@ -336,23 +335,21 @@ namespace OrchardCore.Search.Lucene.Controllers
 
             var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(model.IndexName);
 
-            if (luceneIndexSettings != null)
-            {
-                try
-                {
-                    await _luceneIndexingService.DeleteIndexAsync(model.IndexName);
-
-                    await _notifier.SuccessAsync(H["Index <em>{0}</em> deleted successfully.", model.IndexName]);
-                }
-                catch (Exception e)
-                {
-                    await _notifier.ErrorAsync(H["An error occurred while deleting the index."]);
-                    _logger.LogError(e, "An error occurred while deleting the index '{IndexName}'.", model.IndexName);
-                }
-            }
-            else
+            if (luceneIndexSettings == null)
             {
                 return NotFound();
+            }
+
+            try
+            {
+                await _luceneIndexingService.DeleteIndexAsync(model.IndexName);
+
+                await _notifier.SuccessAsync(H["Index <em>{0}</em> deleted successfully.", model.IndexName]);
+            }
+            catch (Exception e)
+            {
+                await _notifier.ErrorAsync(H["An error occurred while deleting the index."]);
+                _logger.LogError(e, "An error occurred while deleting the index '{IndexName}'.", model.IndexName);
             }
 
             return RedirectToAction(nameof(Index));
@@ -436,7 +433,7 @@ namespace OrchardCore.Search.Lucene.Controllers
             return View(model);
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.BulkAction")]
         public async Task<ActionResult> IndexPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
         {
@@ -489,7 +486,7 @@ namespace OrchardCore.Search.Lucene.Controllers
                         }
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
+                        throw new ArgumentOutOfRangeException(options.BulkAction.ToString(), "Invalid bulk action.");
                 }
             }
 
@@ -509,7 +506,7 @@ namespace OrchardCore.Search.Lucene.Controllers
             }
             else if (model.IndexName.ToSafeName() != model.IndexName)
             {
-                ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexName), S["The index name contains unallowed chars."]);
+                ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexName), S["The index name contains forbidden characters."]);
             }
         }
     }
