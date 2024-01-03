@@ -72,13 +72,13 @@ namespace OrchardCore.DisplayManagement.TagHelpers
                 }
             }
 
-            if (!properties.ContainsKey("Content"))
+            if (!properties.ContainsKey("HtmlContent"))
             {
                 var content = await output.GetChildContentAsync(useCachedResult: false);
                 var html = content.GetContent();
                 if (!string.IsNullOrWhiteSpace(html))
                 {
-                    properties.Add("Content", new HtmlString(html));
+                    properties.Add("HtmlContent", new HtmlString(html));
                 }
             }
 

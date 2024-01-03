@@ -25,11 +25,12 @@
 
 <shape type="EmbedContentInShape">
     The inner HTML of the <code>&lt;shape&gt;</code> tag helper is converted into HTML and then passed to the shape as
-    the <code>IHtmlContent Content</code> model property.
+    the <code>IHtmlContent HtmlContent</code> model property.
     <shape type="TestContentPartA" Line="Sample Data" Creating="Now" Processing="Later" />
     Even other shapes!
 </shape>
 
-<shape type="EmbedContentInShape" content="If an attribute called 'Content' already exists, it takes priority to preserve backwards compatibility.">
+<shape type="EmbedContentInShape"
+       prop-HtmlContent="If an attribute called 'HtmlContent' already exists, it takes priority to preserve backwards compatibility.">
     This content is ignored.
 </shape>
