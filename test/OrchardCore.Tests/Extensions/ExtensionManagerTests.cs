@@ -36,7 +36,7 @@ namespace OrchardCore.Tests.Extensions
                 new[] { new ExtensionPriorityStrategy() },
                 new TypeFeatureProvider(),
                 _moduleFeatureProvider,
-                new NullLogger<ExtensionManager>()
+                new FakeLogger<ExtensionManager>()
                 );
 
             _themeScopedExtensionManager = new ExtensionManager(
@@ -45,7 +45,7 @@ namespace OrchardCore.Tests.Extensions
                 new[] { new ExtensionPriorityStrategy() },
                 new TypeFeatureProvider(),
                 _themeFeatureProvider,
-                new NullLogger<ExtensionManager>()
+                new FakeLogger<ExtensionManager>()
                 );
 
             _moduleThemeScopedExtensionManager = new ExtensionManager(
@@ -54,7 +54,7 @@ namespace OrchardCore.Tests.Extensions
                 new[] { new ExtensionPriorityStrategy() },
                 new TypeFeatureProvider(),
                 _themeFeatureProvider,
-                new NullLogger<ExtensionManager>()
+                new FakeLogger<ExtensionManager>()
                 );
         }
 

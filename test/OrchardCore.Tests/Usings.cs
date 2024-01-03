@@ -46,6 +46,7 @@ global using Microsoft.Extensions.Hosting;
 global using Microsoft.Extensions.Localization;
 global using Microsoft.Extensions.Logging;
 global using Microsoft.Extensions.Logging.Abstractions;
+global using Microsoft.Extensions.Logging.Testing;
 global using Microsoft.Extensions.Options;
 global using Microsoft.Extensions.Primitives;
 global using Moq;
