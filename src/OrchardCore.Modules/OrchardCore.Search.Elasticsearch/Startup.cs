@@ -120,10 +120,7 @@ namespace OrchardCore.Search.Elasticsearch
             services.AddElasticServices();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IDisplayDriver<ISite>, ElasticSettingsDisplayDriver>();
             services.AddScoped<IDisplayDriver<Query>, ElasticQueryDisplayDriver>();
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
             services.AddScoped<IAuthorizationHandler, ElasticsearchAuthorizationHandler>();
         }
 
@@ -268,6 +265,7 @@ namespace OrchardCore.Search.Elasticsearch
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<ISearchService, ElasticsearchService>();
+            services.AddScoped<IDisplayDriver<ISite>, ElasticSettingsDisplayDriver>();
         }
     }
 
@@ -311,6 +309,16 @@ namespace OrchardCore.Search.Elasticsearch
             services.AddScoped<IContentPickerResultProvider, ElasticContentPickerResultProvider>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldElasticEditorSettingsDriver>();
             services.AddShapeAttributes<ElasticContentPickerShapeProvider>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.ContentTypes")]
+    public class ContentTypesStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
         }
     }
 }
