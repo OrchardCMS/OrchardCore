@@ -83,7 +83,7 @@ public class DbConnectionValidator : IDbConnectionValidator
 
         var factory = GetFactory(context.DatabaseProvider, connectionString);
 
-        using var connection = factory.CreateConnection();
+        await using var connection = factory.CreateConnection();
 
         // Prevent from creating an empty locked 'Sqlite' file.
         if (provider.Value == DatabaseProviderValue.Sqlite &&

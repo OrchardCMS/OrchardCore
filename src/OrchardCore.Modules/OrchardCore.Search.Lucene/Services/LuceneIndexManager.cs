@@ -12,6 +12,7 @@ using Lucene.Net.Search;
 using Lucene.Net.Spatial.Prefix;
 using Lucene.Net.Spatial.Prefix.Tree;
 using Lucene.Net.Store;
+using LuceneLock = Lucene.Net.Store.Lock;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Contents.Indexing;
@@ -395,7 +396,7 @@ namespace OrchardCore.Search.Lucene
                         var config = new IndexWriterConfig(LuceneSettings.DefaultVersion, analyzer)
                         {
                             OpenMode = OpenMode.CREATE_OR_APPEND,
-                            WriteLockTimeout = Lock.LOCK_POLL_INTERVAL * 3
+                            WriteLockTimeout = LuceneLock.LOCK_POLL_INTERVAL * 3
                         };
 
                         writer = new IndexWriterWrapper(directory, config);

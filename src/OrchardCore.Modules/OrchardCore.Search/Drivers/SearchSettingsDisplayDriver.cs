@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Modules;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Models;
 using OrchardCore.Search.ViewModels;
@@ -17,7 +18,9 @@ namespace OrchardCore.Search.Drivers
 {
     public class SearchSettingsDisplayDriver : SectionDisplayDriver<ISite, SearchSettings>
     {
-        public const string GroupId = "search";
+        [Obsolete("This property should not be used. Instead use  SearchConstants.SearchSettingsGroupId.")]
+        public const string GroupId = SearchConstants.SearchSettingsGroupId;
+
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
         private readonly IServiceProvider _serviceProvider;
@@ -50,11 +53,16 @@ namespace OrchardCore.Search.Drivers
                 model.Placeholder = settings.Placeholder;
                 model.PageTitle = settings.PageTitle;
                 model.ProviderName = settings.ProviderName;
-            }).Location("Content:2").OnGroup(GroupId);
+            }).Location("Content:2").OnGroup(SearchConstants.SearchSettingsGroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(SearchSettings section, BuildEditorContext context)
         {
+            if (!SearchConstants.SearchSettingsGroupId.EqualsOrdinalIgnoreCase(context.GroupId))
+            {
+                return null;
+            }
+
             var user = _httpContextAccessor.HttpContext?.User;
 
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageSearchSettings))
@@ -62,16 +70,13 @@ namespace OrchardCore.Search.Drivers
                 return null;
             }
 
-            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
-            {
-                var model = new SearchSettingsViewModel();
+            var model = new SearchSettingsViewModel();
 
-                if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-                {
-                    section.ProviderName = model.ProviderName;
-                    section.Placeholder = model.Placeholder;
-                    section.PageTitle = model.PageTitle;
-                }
+            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+            {
+                section.ProviderName = model.ProviderName;
+                section.Placeholder = model.Placeholder;
+                section.PageTitle = model.PageTitle;
             }
 
             return await EditAsync(section, context);
