@@ -16,7 +16,6 @@ using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.AzureAI.Controllers;
 using OrchardCore.Search.AzureAI.Deployment;
 using OrchardCore.Search.AzureAI.Drivers;
-using OrchardCore.Search.AzureAI.Models;
 using OrchardCore.Search.AzureAI.Services;
 using OrchardCore.Settings;
 
@@ -31,23 +30,12 @@ public class Startup(ILogger<Startup> logger, IShellConfiguration shellConfigura
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        if (!services.TryAddAzureAISearchServices(_shellConfiguration, _logger))
-        {
-            return;
-        }
-
+        services.TryAddAzureAISearchServices(_shellConfiguration, _logger);
         services.AddScoped<INavigationProvider, AdminMenu>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        var options = serviceProvider.GetRequiredService<IOptions<AzureAISearchDefaultOptions>>().Value;
-
-        if (!options.IsConfigurationExists())
-        {
-            return;
-        }
-
         var adminControllerName = typeof(AdminController).ControllerName();
 
         routes.MapAreaControllerRoute(
