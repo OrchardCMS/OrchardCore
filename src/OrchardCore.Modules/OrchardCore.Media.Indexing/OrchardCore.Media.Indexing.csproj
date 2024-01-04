@@ -7,7 +7,7 @@
     <Description>
       $(OCCMSDescription)
 
-      The media module adds media indexing support.
+      The media module adds media indexing support for various files.
     </Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS ContentManagement</PackageTags>
   </PropertyGroup>
