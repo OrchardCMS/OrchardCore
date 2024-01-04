@@ -27,17 +27,20 @@ namespace OrchardCore.Tenants.Controllers
     [Admin]
     public class FeatureProfilesController : Controller
     {
+        private const string _optionsSearch = "Options.Search";
+
         private readonly IAuthorizationService _authorizationService;
         private readonly FeatureProfilesManager _featureProfilesManager;
         private readonly INotifier _notifier;
         private readonly PagerOptions _pagerOptions;
+        private readonly IShapeFactory _shapeFactory;
+
         protected readonly IStringLocalizer S;
-        protected readonly dynamic New;
         protected readonly IHtmlLocalizer H;
 
         public FeatureProfilesController(
             IAuthorizationService authorizationService,
-            FeatureProfilesManager featueProfilesManager,
+            FeatureProfilesManager featureProfilesManager,
             INotifier notifier,
             IOptions<PagerOptions> pagerOptions,
             IShapeFactory shapeFactory,
@@ -46,10 +49,10 @@ namespace OrchardCore.Tenants.Controllers
             )
         {
             _authorizationService = authorizationService;
-            _featureProfilesManager = featueProfilesManager;
+            _featureProfilesManager = featureProfilesManager;
             _notifier = notifier;
             _pagerOptions = pagerOptions.Value;
-            New = shapeFactory;
+            _shapeFactory = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
@@ -77,7 +80,15 @@ namespace OrchardCore.Tenants.Controllers
                 .Skip(pager.GetStartIndex())
                 .Take(pager.PageSize).ToList();
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
+            // Maintain previous route data when generating page links.
+            var routeData = new RouteData();
+
+            if (!string.IsNullOrEmpty(options.Search))
+            {
+                routeData.Values.TryAdd(_optionsSearch, options.Search);
+            }
+
+            var pagerShape = await _shapeFactory.PagerAsync(pager, count, routeData);
 
             var model = new FeatureProfilesIndexViewModel
             {
@@ -91,22 +102,21 @@ namespace OrchardCore.Tenants.Controllers
                 Pager = pagerShape
             };
 
-            model.Options.ContentsBulkAction = new List<SelectListItem>()
-            {
-                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
-            };
+            model.Options.ContentsBulkAction =
+            [
+                new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
+            ];
 
-            return View("Index", model);
+            return View(model);
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(FeatureProfilesIndexViewModel model)
-        {
-            return RedirectToAction(nameof(Index), new RouteValueDictionary {
-                { "Options.Search", model.Options.Search }
+            => RedirectToAction(nameof(Index), new RouteValueDictionary
+            {
+                { _optionsSearch, model.Options.Search }
             });
-        }
 
         public async Task<IActionResult> Create()
         {
@@ -123,7 +133,7 @@ namespace OrchardCore.Tenants.Controllers
             return View(viewModel);
         }
 
-        [HttpPost, ActionName("Create")]
+        [HttpPost, ActionName(nameof(Create))]
         public async Task<IActionResult> CreatePost(FeatureProfileViewModel model, string submit)
         {
             return await ProcessSaveAsync(model, submit, true, async (profile) =>
