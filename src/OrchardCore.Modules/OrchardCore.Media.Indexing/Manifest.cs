@@ -22,7 +22,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Media.Indexing.MicrosoftOffice",
     Name = "Microsoft Office Media Indexing",
-    Description = "Provides a way to index Microsoft Word and Power Point files in search providers.",
+    Description = "Provides a way to index Microsoft Office files including Word and Power Point files in search providers",
     Dependencies =
     [
         "OrchardCore.Media.Indexing"
