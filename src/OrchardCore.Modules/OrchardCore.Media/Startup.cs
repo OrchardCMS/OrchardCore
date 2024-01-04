@@ -23,7 +23,6 @@ using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.Environment.Shell;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.FileSystem;
-using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Media.Controllers;
 using OrchardCore.Media.Core;
@@ -33,7 +32,6 @@ using OrchardCore.Media.Events;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.Filters;
 using OrchardCore.Media.Handlers;
-using OrchardCore.Media.Indexing;
 using OrchardCore.Media.Liquid;
 using OrchardCore.Media.Processing;
 using OrchardCore.Media.Recipes;
@@ -175,8 +173,6 @@ namespace OrchardCore.Media
             services.AddScoped<IContentHandler, AttachedMediaFieldContentHandler>();
             services.AddScoped<IModularTenantEvents, TempDirCleanerService>();
             services.AddDataMigration<Migrations>();
-            services.AddScoped<IContentFieldIndexHandler, MediaFieldIndexHandler>();
-            services.AddMediaFileTextProvider<PdfMediaFileTextProvider>(".pdf");
             services.AddRecipeExecutionStep<MediaStep>();
 
             // MIME types
@@ -398,18 +394,6 @@ namespace OrchardCore.Media
             services.AddTransient<IDeploymentSource, AllMediaProfilesDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllMediaProfilesDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllMediaProfilesDeploymentStepDriver>();
-        }
-    }
-
-    [Feature("OrchardCore.Media.Indexing")]
-    public class MediaIndexingStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddMediaFileTextProvider<TextMediaFileTextProvider>(".txt");
-            services.AddMediaFileTextProvider<TextMediaFileTextProvider>(".md");
-            services.AddMediaFileTextProvider<WordDocumentMediaFileTextProvider>(".docx");
-            services.AddMediaFileTextProvider<PresentationDocumentMediaFileTextProvider>(".pptx");
         }
     }
 
