@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Data.Migration;
 using OrchardCore.Entities;
@@ -16,21 +15,17 @@ public class Migrations : DataMigration
     private readonly ISiteService _siteService;
     private readonly ISecretService _secretService;
     private readonly ShellDescriptor _shellDescriptor;
-    private readonly IDataProtector _dataProtector;
     private readonly ILogger _logger;
 
     public Migrations(
         ISiteService siteService,
         ISecretService secretService,
         ShellDescriptor shellDescriptor,
-        IDataProtectionProvider dataProtectionProvider,
         ILogger<Migrations> logger)
     {
         _siteService = siteService;
         _secretService = secretService;
         _shellDescriptor = shellDescriptor;
-
-        _dataProtector = dataProtectionProvider.CreateProtector("OrchardCore.Email").ToTimeLimitedDataProtector();
 
         _logger = logger;
     }

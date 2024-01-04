@@ -2,12 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Email.ViewModels;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Secrets;
 using OrchardCore.Secrets.Models;
@@ -18,7 +16,6 @@ namespace OrchardCore.Email.Drivers
     public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSettings>
     {
         public const string GroupId = "email";
-        private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -26,14 +23,12 @@ namespace OrchardCore.Email.Drivers
         private readonly ISecretService _secretService;
 
         public SmtpSettingsDisplayDriver(
-            IDataProtectionProvider dataProtectionProvider,
             IShellHost shellHost,
             ShellSettings shellSettings,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
             ISecretService secretService)
         {
-            _dataProtectionProvider = dataProtectionProvider;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
             _httpContextAccessor = httpContextAccessor;
