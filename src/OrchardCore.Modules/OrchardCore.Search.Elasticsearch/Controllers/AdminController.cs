@@ -34,6 +34,8 @@ namespace OrchardCore.Search.Elasticsearch
 {
     public class AdminController : Controller
     {
+        private const string _optionsSearch = "Options.Search";
+
         private readonly ISession _session;
         private readonly ISiteService _siteService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
@@ -121,12 +123,13 @@ namespace OrchardCore.Search.Elasticsearch
 
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();
-            var pagerShape = await _shapeFactory.CreateAsync("Pager", Arguments.From(new
+
+            if (!string.IsNullOrEmpty(options.Search))
             {
-                pager.Page,
-                pager.PageSize,
-                TotalItemCount = totalIndexes
-            }));
+                routeData.Values.TryAdd(_optionsSearch, options.Search);
+            }
+
+            var pagerShape = await _shapeFactory.PagerAsync(pager, totalIndexes, routeData);
 
             var model = new AdminIndexViewModel
             {
@@ -135,7 +138,8 @@ namespace OrchardCore.Search.Elasticsearch
                 Pager = pagerShape
             };
 
-            model.Options.ContentsBulkAction = [
+            model.Options.ContentsBulkAction =
+            [
                 new SelectListItem(S["Reset"], nameof(ContentsBulkAction.Reset)),
                 new SelectListItem(S["Rebuild"], nameof(ContentsBulkAction.Rebuild)),
                 new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
@@ -147,11 +151,10 @@ namespace OrchardCore.Search.Elasticsearch
         [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(AdminIndexViewModel model)
-        {
-            return RedirectToAction(nameof(Index), new RouteValueDictionary {
-                { "Options.Search", model.Options.Search }
+            => RedirectToAction(nameof(Index), new RouteValueDictionary
+            {
+                { _optionsSearch, model.Options.Search }
             });
-        }
 
         public async Task<ActionResult> Edit(string indexName = null)
         {
@@ -563,13 +566,13 @@ namespace OrchardCore.Search.Elasticsearch
 
         private async Task PopulateMenuOptionsAsync(ElasticIndexSettingsViewModel model)
         {
-             var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
+            var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
 
-             model.Cultures = supportedCultures.Select(c => new SelectListItem
-             {
-                 Text = $"{c} ({CultureInfo.GetCultureInfo(c).DisplayName})",
-                 Value = c
-             });
+            model.Cultures = supportedCultures.Select(c => new SelectListItem
+            {
+                Text = $"{c} ({CultureInfo.GetCultureInfo(c).DisplayName})",
+                Value = c
+            });
 
             model.Analyzers = _elasticSearchOptions.Analyzers
                 .Select(x => new SelectListItem { Text = x.Key, Value = x.Key });

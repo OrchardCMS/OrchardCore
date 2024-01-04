@@ -25,7 +25,7 @@ namespace OrchardCore.Sitemaps.Controllers
         private readonly ISitemapManager _sitemapManager;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly INotifier _notifier;
-        protected readonly dynamic New;
+
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
 
@@ -36,7 +36,6 @@ namespace OrchardCore.Sitemaps.Controllers
             ISitemapManager sitemapManager,
             IUpdateModelAccessor updateModelAccessor,
             INotifier notifier,
-            IShapeFactory shapeFactory,
             IStringLocalizer<SourceController> stringLocalizer,
             IHtmlLocalizer<SourceController> htmlLocalizer)
         {
@@ -46,7 +45,6 @@ namespace OrchardCore.Sitemaps.Controllers
             _sitemapManager = sitemapManager;
             _updateModelAccessor = updateModelAccessor;
             _notifier = notifier;
-            New = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
