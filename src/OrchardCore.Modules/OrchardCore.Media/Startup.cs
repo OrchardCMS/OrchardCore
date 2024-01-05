@@ -23,6 +23,7 @@ using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.Environment.Shell;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.FileSystem;
+using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Media.Controllers;
 using OrchardCore.Media.Core;
@@ -32,6 +33,7 @@ using OrchardCore.Media.Events;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.Filters;
 using OrchardCore.Media.Handlers;
+using OrchardCore.Media.Indexing;
 using OrchardCore.Media.Liquid;
 using OrchardCore.Media.Processing;
 using OrchardCore.Media.Recipes;
@@ -394,6 +396,25 @@ namespace OrchardCore.Media
             services.AddTransient<IDeploymentSource, AllMediaProfilesDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllMediaProfilesDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllMediaProfilesDeploymentStepDriver>();
+        }
+    }
+
+    [Feature("OrchardCore.Media.Indexing")]
+    public class MediaIndexingStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IContentFieldIndexHandler, MediaFieldIndexHandler>();
+        }
+    }
+
+    [Feature("OrchardCore.Media.Indexing.Text")]
+    public class TextIndexingStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddMediaFileTextProvider<TextMediaFileTextProvider>(".txt");
+            services.AddMediaFileTextProvider<TextMediaFileTextProvider>(".md");
         }
     }
 
