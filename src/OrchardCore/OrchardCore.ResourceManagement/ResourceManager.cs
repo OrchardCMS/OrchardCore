@@ -207,7 +207,7 @@ namespace OrchardCore.ResourceManagement
                         }
 
                         // Use the highest version of all matches. Resources that don't specify a version have the lowest priority.
-                        if (resource == null || resource.Version == null || new Version(resource.Version) < version)
+                        if (resource?.Version is null || new Version(resource.Version) < version)
                         {
                             resource = resourceDefinition;
                         }
