@@ -513,7 +513,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Search.AzureAI.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Media.Indexing.Pdf", "src\OrchardCore.Modules\OrchardCore.Media.Indexing.Pdf\OrchardCore.Media.Indexing.Pdf.csproj", "{95187E6A-5B74-4475-8FEB-758ACD012DCC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Media.Indexing.MicrosoftOffice", "src\OrchardCore.Modules\OrchardCore.Media.Indexing.MicrosoftOffice\OrchardCore.Media.Indexing.MicrosoftOffice.csproj", "{47777735-7432-4CCA-A8C5-672E9EE65121}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Media.Indexing.OpenXML", "src\OrchardCore.Modules\OrchardCore.Media.Indexing.OpenXML\OrchardCore.Media.Indexing.OpenXML.csproj", "{47777735-7432-4CCA-A8C5-672E9EE65121}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

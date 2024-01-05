@@ -1,8 +1,8 @@
 using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
-    Name = "Microsoft Office Media Indexing",
-    Description = "Provides a way to index Microsoft Office files including Word and Power Point files in search providers",
+    Name = "OpenXML Media Indexing",
+    Description = "Provides a way to index Office files such as Word and Power Point in search providers",
     Dependencies =
     [
         "OrchardCore.Media.Indexing"

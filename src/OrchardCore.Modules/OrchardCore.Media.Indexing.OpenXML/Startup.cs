@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Media.Indexing.MicrosoftOffice;
+namespace OrchardCore.Media.Indexing.OpenXML;
 
 public class Startup : StartupBase
 {
