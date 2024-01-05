@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <!-- NuGet properties-->
-    <Title>OrchardCore Microsoft Office files Indexing</Title>
+    <Title>OrchardCore OpenXML files Indexing</Title>
     <Description>
       $(OCCMSDescription)
 
-      The media module adds Microsoft Office files indexing support.
+      The media module adds OpenXML files indexing support.
     </Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS ContentManagement</PackageTags>
   </PropertyGroup>
