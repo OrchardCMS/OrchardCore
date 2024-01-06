@@ -12,8 +12,8 @@ Alternatively, you can configure the Azure Search AI service for all your tenant
     "OrchardCore_AzureAISearch":{
       "Endpoint":"https://[search service name].search.windows.net",
       "IndexesPrefix":"", // Specify value to prefix all indexes. If using the same instance for production and staging, provide the environment name here to prevent naming conflicts.
-      "AuthenticationType": "ApiKey", // Either 'Default' for managed-identity authentication or 'ApiKey' for  key-based authentication.
-      "ConfigurationType": "File",  // 'UI' is the default value; each tenant sets service configurations through the admin dashboard. 'File' uses the appsettings file connection for all tenants. 'UIThenFile' uses appsettings but allows custom UI settings.
+      "AuthenticationType":"ApiKey", // Either 'Default' for managed-identity authentication or 'ApiKey' for  key-based authentication.
+      "ConfigurationType":"File",  // 'UI' is the default value; each tenant sets service configurations through the admin dashboard. 'File' uses the appsettings file connection for all tenants. 'UIThenFile' uses appsettings but allows custom UI settings.
       "Credential":{
         "Key":"the server key goes here"
       }
