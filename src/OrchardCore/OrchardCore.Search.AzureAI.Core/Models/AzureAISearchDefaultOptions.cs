@@ -105,6 +105,10 @@ public class AzureAISearchDefaultOptions
 
     public string Endpoint { get; set; }
 
+    public AzureAIAuthenticationType AuthenticationType { get; set; }
+
+    public AzureAIConfigurationType ConfigurationType { get; set; }
+
     public AzureKeyCredential Credential { get; set; }
 
     // Environment prefix for all of the indexes.

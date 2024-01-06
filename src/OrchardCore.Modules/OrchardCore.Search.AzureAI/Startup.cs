@@ -32,6 +32,7 @@ public class Startup(ILogger<Startup> logger, IShellConfiguration shellConfigura
     {
         services.TryAddAzureAISearchServices(_shellConfiguration, _logger);
         services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddScoped<IDisplayDriver<ISite>, AzureAISearchDefaultSettingsDisplayDriver>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

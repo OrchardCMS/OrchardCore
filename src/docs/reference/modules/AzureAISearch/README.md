@@ -2,14 +2,18 @@
 
 The Azure AI Search module allows you to manage Azure AI Search indices.
 
-Before enabling the service, you'll need to configure the connection to the server. You can do that by adding the following into `appsettings.json` file
+Before enabling the service, you'll need to configure the connection to the server. By default, you can navigate to `Search` >> `Settings` click on `Azure AI Search` and provide the Azure Search AI service info.
+
+Alternatively, you can configure the Azure Search AI service for all your tenants from the `appsettings.json` file by adding the following
 
 ```
 {
   "OrchardCore":{
     "OrchardCore_AzureAISearch":{
       "Endpoint":"https://[search service name].search.windows.net",
-      "IndexesPrefix":"",
+      "IndexesPrefix":"", // Specify value to prefix all indexes. If using the same instance for production and staging, provide the environment name here to prevent naming conflicts.
+      "AuthenticationType": "ApiKey", // Either 'Default' for managed-identity authentication or 'ApiKey' for  key-based authentication.
+      "ConfigurationType": "File",  // 'UI' is the default value; each tenant sets service configurations through the admin dashboard. 'File' uses the appsettings file connection for all tenants. 'UIThenFile' uses appsettings but allows custom UI settings.
       "Credential":{
         "Key":"the server key goes here"
       }

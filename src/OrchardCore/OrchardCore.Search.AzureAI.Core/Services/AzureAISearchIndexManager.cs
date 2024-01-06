@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Azure;
-using Azure.Search.Documents.Indexes;
 using Azure.Search.Documents.Indexes.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -17,7 +16,7 @@ using static OrchardCore.Indexing.DocumentIndex;
 namespace OrchardCore.Search.AzureAI.Services;
 
 public class AzureAISearchIndexManager(
-    SearchIndexClient client,
+    SearchIndexClientAccessor clientAccessor,
     ILogger<AzureAISearchIndexManager> logger,
     IOptions<AzureAISearchDefaultOptions> azureAIOptions,
     IEnumerable<IAzureAISearchIndexEvents> indexEvents,
@@ -31,7 +30,7 @@ public class AzureAISearchIndexManager(
 
     private const string _prefixCacheKey = "AzureAISearchIndexesPrefix";
 
-    private readonly SearchIndexClient _client = client;
+    private readonly SearchIndexClientAccessor _clientAccessor = clientAccessor;
     private readonly ILogger _logger = logger;
     private readonly IEnumerable<IAzureAISearchIndexEvents> _indexEvents = indexEvents;
     private readonly IMemoryCache _memoryCache = memoryCache;
@@ -53,7 +52,7 @@ public class AzureAISearchIndexManager(
 
             var searchIndex = GetSearchIndex(context.IndexFullName, settings);
 
-            var response = await _client.CreateIndexAsync(searchIndex);
+            var response = await _clientAccessor.Get().CreateIndexAsync(searchIndex);
 
             await _indexEvents.InvokeAsync((handler, ctx) => handler.CreatedAsync(ctx), context, _logger);
 
@@ -75,7 +74,7 @@ public class AzureAISearchIndexManager(
         try
         {
             var indexFullName = GetFullIndexName(indexName);
-            var response = await _client.GetIndexAsync(indexFullName);
+            var response = await _clientAccessor.Get().GetIndexAsync(indexFullName);
 
             return response?.Value;
         }
@@ -107,7 +106,7 @@ public class AzureAISearchIndexManager(
 
             await _indexEvents.InvokeAsync((handler, ctx) => handler.RemovingAsync(ctx), context, _logger);
 
-            var response = await _client.DeleteIndexAsync(context.IndexFullName);
+            var response = await _clientAccessor.Get().DeleteIndexAsync(context.IndexFullName);
 
             await _indexEvents.InvokeAsync((handler, ctx) => handler.RemovedAsync(ctx), context, _logger);
 
@@ -131,12 +130,12 @@ public class AzureAISearchIndexManager(
 
             if (await ExistsAsync(settings.IndexName))
             {
-                await _client.DeleteIndexAsync(context.IndexFullName);
+                await _clientAccessor.Get().DeleteIndexAsync(context.IndexFullName);
             }
 
             var searchIndex = GetSearchIndex(context.IndexFullName, settings);
 
-            var response = await _client.CreateIndexAsync(searchIndex);
+            var response = await _clientAccessor.Get().CreateIndexAsync(searchIndex);
 
             await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuiltAsync(ctx), context, _logger);
         }
@@ -197,11 +196,11 @@ public class AzureAISearchIndexManager(
                 IsFilterable = true,
                 IsSortable = true,
             },
-            new SearchableField(DisplayTextAnalyzedKey)
+            new SearchableField(DisplayTextAnalyzedKey, true)
             {
                 AnalyzerName = settings.AnalyzerName,
             },
-            new SearchableField(FullTextKey)
+            new SearchableField(FullTextKey, true)
             {
                 AnalyzerName = settings.AnalyzerName,
             },

@@ -29,7 +29,7 @@ namespace OrchardCore.Search
                         .Permission(Permissions.ManageSearchSettings)
                         .LocalNav()
                         )
-                    );
+                    , priority: 100);
 
             return Task.CompletedTask;
         }

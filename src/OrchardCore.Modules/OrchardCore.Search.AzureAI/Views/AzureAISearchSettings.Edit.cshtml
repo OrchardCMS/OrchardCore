@@ -6,12 +6,17 @@
 @model AzureAISearchSettingsViewModel
 @inject IOptions<AzureAISearchDefaultOptions> AzureAIOptions
 
-@if (!AzureAIOptions.Value.IsConfigurationExists())
+@if (!AzureAIOptions.Value.IsConfigurationExists() && AzureAIOptions.Value.ConfigurationType == AzureAIConfigurationType.File)
 {
     <div class="alert alert-danger" role="alert">
-        @T["Azure AI Search has not been configured yet."]
+        @T["Azure AI Search is not configured. Update the appsettings file with Azure Search AI service information."]
     </div>
 
+    return;
+}
+
+@if (!AzureAIOptions.Value.IsConfigurationExists())
+{
     return;
 }
 

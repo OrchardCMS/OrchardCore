@@ -29,6 +29,16 @@ public class AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer) : INavigatio
                     )
                 );
 
+        builder
+            .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
+                .AddClass("search").Id("search")
+                .Add(S["Settings"], S["Settings"].PrefixPosition(), settings => settings
+                    .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SearchConstants.SearchSettingsGroupId })
+                    .Permission(AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes)
+                    .LocalNav()
+                    )
+                );
+
         return Task.CompletedTask;
     }
 }
