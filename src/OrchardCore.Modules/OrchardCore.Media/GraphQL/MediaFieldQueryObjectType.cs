@@ -28,6 +28,20 @@ namespace OrchardCore.Media.GraphQL
                 });
 
             Field<ListGraphType<StringGraphType>, IEnumerable<string>>()
+                .Name("fileNames")
+                .Description("the media fileNames")
+                .PagingArguments()
+                .Resolve(x =>
+                {
+                    var fileNames = x.Page(x.Source.GetAttachedFileNames());
+                    if (fileNames is null)
+                    {
+                        return Array.Empty<string>();
+                    }
+                    return fileNames;
+                });
+
+            Field<ListGraphType<StringGraphType>, IEnumerable<string>>()
                 .Name("urls")
                 .Description("the absolute urls of the media items")
                 .PagingArguments()
