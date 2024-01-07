@@ -24,6 +24,7 @@ namespace OrchardCore.Media.GraphQL
                     {
                         return Array.Empty<string>();
                     }
+
                     return x.Page(x.Source.Paths);
                 });
 
@@ -38,6 +39,7 @@ namespace OrchardCore.Media.GraphQL
                     {
                         return Array.Empty<string>();
                     }
+
                     return x.Page(fileNames);
                 });
 
@@ -53,6 +55,7 @@ namespace OrchardCore.Media.GraphQL
                     }
                     var paths = x.Page(x.Source.Paths);
                     var mediaFileStore = x.RequestServices.GetService<IMediaFileStore>();
+
                     return paths.Select(p => mediaFileStore.MapPathToPublicUrl(p));
                 });
 
@@ -97,6 +100,7 @@ namespace OrchardCore.Media.GraphQL
             Field<StringGraphType>("url", "the url name of the media file item", resolve: x => x.Source.Url);
         }
     }
+
     public class MediaFileItem
     {
         public string FileName { get; set; }
