@@ -30,7 +30,7 @@ namespace OrchardCore.Media.GraphQL
 
             Field<ListGraphType<StringGraphType>, IEnumerable<string>>()
                 .Name("fileNames")
-                .Description("the media fileNames")
+                .Description("the media file names")
                 .PagingArguments()
                 .Resolve(x =>
                 {
