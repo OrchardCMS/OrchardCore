@@ -184,7 +184,11 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             var configurer = new FieldConfigurerImpl(existingField, _part);
             // Assume that the display name is the same as the field name.
             // Set the display name before invoking the given action, to allow the action to set the display-name explicitly.
-            configurer.WithDisplayName(fieldName);
+            if (string.IsNullOrEmpty(existingField.DisplayName()))
+            {
+                configurer.WithDisplayName(fieldName);
+            }
+
 
             await configurationAsync(configurer);
 
