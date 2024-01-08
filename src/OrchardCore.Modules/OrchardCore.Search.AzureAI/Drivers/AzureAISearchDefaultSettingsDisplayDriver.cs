@@ -65,18 +65,17 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
 
         return Initialize<AzureAISearchDefaultSettingsViewModel>("AzureAISearchDefaultSettings_Edit", model =>
         {
-            model.ConfigurationsAreOptional = _searchOptions.IsFileConfigurationExists();
-
             model.AuthenticationTypes = new[]
             {
                 new SelectListItem(S["Default"], nameof(AzureAIAuthenticationType.Default)),
                 new SelectListItem(S["API Key"], nameof(AzureAIAuthenticationType.ApiKey)),
             };
+
+            model.ConfigurationsAreOptional = _searchOptions.IsFileConfigurationExists();
             model.AuthenticationType = settings.AuthenticationType;
             model.UseCustomConfiguration = settings.UseCustomConfiguration;
             model.Endpoint = settings.Endpoint;
             model.ApiKeyExists = !string.IsNullOrEmpty(settings.ApiKey);
-
         }).Location("Content")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
         .OnGroup(GroupId);
@@ -84,12 +83,7 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
 
     public override async Task<IDisplayResult> UpdateAsync(AzureAISearchDefaultSettings settings, BuildEditorContext context)
     {
-        if (!GroupId.EqualsOrdinalIgnoreCase(context.GroupId))
-        {
-            return null;
-        }
-
-        if (_searchOptions.DisableUIConfiguration)
+        if (!GroupId.EqualsOrdinalIgnoreCase(context.GroupId) || _searchOptions.DisableUIConfiguration)
         {
             return null;
         }

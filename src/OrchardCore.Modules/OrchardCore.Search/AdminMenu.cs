@@ -28,7 +28,8 @@ namespace OrchardCore.Search
                         .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SearchConstants.SearchSettingsGroupId })
                         .Permission(Permissions.ManageSearchSettings)
                         .LocalNav()
-                        ));
+                        )
+                    );
 
             return Task.CompletedTask;
         }
