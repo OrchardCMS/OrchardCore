@@ -107,7 +107,7 @@ public class AzureAISearchDefaultOptions
 
     public AzureAIAuthenticationType AuthenticationType { get; set; }
 
-    public AzureAIConfigurationType ConfigurationType { get; set; }
+    public bool DisableUIConfiguration { get; set; }
 
     public AzureKeyCredential Credential { get; set; }
 
@@ -123,4 +123,12 @@ public class AzureAISearchDefaultOptions
 
     public bool IsConfigurationExists()
         => _configurationExists;
+
+    private bool _fileConfigurationExists;
+
+    public void SetFileConfigurationExists(bool fileConfigurationExists)
+        => _fileConfigurationExists = fileConfigurationExists;
+
+    public bool IsFileConfigurationExists()
+        => _fileConfigurationExists;
 }

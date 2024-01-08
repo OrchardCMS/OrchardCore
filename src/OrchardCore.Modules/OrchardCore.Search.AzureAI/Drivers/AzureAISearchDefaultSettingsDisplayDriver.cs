@@ -21,6 +21,8 @@ namespace OrchardCore.Search.AzureAI.Drivers;
 
 public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<ISite, AzureAISearchDefaultSettings>
 {
+    public const string GroupId = "azureAISearch";
+
     private static readonly char[] _separator = [',', ' '];
 
     private readonly AzureAISearchIndexSettingsService _indexSettingsService;
@@ -56,14 +58,14 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
 
     public override IDisplayResult Edit(AzureAISearchDefaultSettings settings)
     {
-        if (_searchOptions.ConfigurationType == AzureAIConfigurationType.File)
+        if (_searchOptions.DisableUIConfiguration)
         {
             return null;
         }
 
         return Initialize<AzureAISearchDefaultSettingsViewModel>("AzureAISearchDefaultSettings_Edit", model =>
         {
-            model.ConfigurationsAreOptional = _searchOptions.ConfigurationType == AzureAIConfigurationType.UIThenFile;
+            model.ConfigurationsAreOptional = _searchOptions.IsFileConfigurationExists();
 
             model.AuthenticationTypes = new[]
             {
@@ -75,20 +77,19 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
             model.Endpoint = settings.Endpoint;
             model.ApiKeyExists = !string.IsNullOrEmpty(settings.ApiKey);
 
-        }).Location("Content:10#Azure AI Search;5")
+        }).Location("Content")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
-        .Prefix(Prefix)
-        .OnGroup(SearchConstants.SearchSettingsGroupId);
+        .OnGroup(GroupId);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(AzureAISearchDefaultSettings settings, BuildEditorContext context)
     {
-        if (!SearchConstants.SearchSettingsGroupId.EqualsOrdinalIgnoreCase(context.GroupId))
+        if (!GroupId.EqualsOrdinalIgnoreCase(context.GroupId))
         {
             return null;
         }
 
-        if (_searchOptions.ConfigurationType == AzureAIConfigurationType.File)
+        if (_searchOptions.DisableUIConfiguration)
         {
             return null;
         }
@@ -102,7 +103,7 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
 
         if (await context.Updater.TryUpdateModelAsync(model, Prefix))
         {
-            if (_searchOptions.ConfigurationType == AzureAIConfigurationType.UI)
+            if (!_searchOptions.IsFileConfigurationExists())
             {
                 model.UseCustomConfiguration = true;
             }
@@ -153,15 +154,5 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
         }
 
         return Edit(settings);
-    }
-
-    protected override void BuildPrefix(ISite model, string htmlFieldPrefix)
-    {
-        Prefix = typeof(AzureAISearchSettings).Name;
-
-        if (!string.IsNullOrEmpty(htmlFieldPrefix))
-        {
-            Prefix = htmlFieldPrefix + "." + Prefix;
-        }
     }
 }

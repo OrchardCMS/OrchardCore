@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -25,7 +24,6 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
     private readonly AzureAISearchIndexSettingsService _indexSettingsService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly AzureAISearchDefaultOptions _azureAIOptions;
 
     protected readonly IStringLocalizer S;
 
@@ -33,14 +31,12 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
         AzureAISearchIndexSettingsService indexSettingsService,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IOptions<AzureAISearchDefaultOptions> azureAIOptions,
         IStringLocalizer<AzureAISearchSettingsDisplayDriver> stringLocalizer
         )
     {
         _indexSettingsService = indexSettingsService;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
-        _azureAIOptions = azureAIOptions.Value;
         S = stringLocalizer;
     }
 
@@ -52,7 +48,7 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
             model.SearchIndexes = (await _indexSettingsService.GetSettingsAsync())
             .Select(x => new SelectListItem(x.IndexName, x.IndexName))
             .ToList();
-        }).Location("Content:5#Azure AI Search;5")
+        }).Location("Content:2#Azure AI Search;5")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
         .Prefix(Prefix)
         .OnGroup(SearchConstants.SearchSettingsGroupId);
@@ -73,18 +69,15 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
 
         if (await context.Updater.TryUpdateModelAsync(model, Prefix))
         {
-            var hasSearchIndex = !string.IsNullOrEmpty(model.SearchIndex);
-
-            if (_azureAIOptions.IsConfigurationExists() && !hasSearchIndex)
+            if (string.IsNullOrEmpty(model.SearchIndex))
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.SearchIndex), S["Search Index is required."]);
             }
-
-            if (context.Updater.ModelState.IsValid)
+            else
             {
                 var indexes = await _indexSettingsService.GetSettingsAsync();
 
-                if (hasSearchIndex && !indexes.Any(index => index.IndexName == model.SearchIndex))
+                if (!indexes.Any(index => index.IndexName == model.SearchIndex))
                 {
                     context.Updater.ModelState.AddModelError(Prefix, nameof(model.SearchIndex), S["Invalid Search Index value."]);
                 }
@@ -94,7 +87,7 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
             section.DefaultSearchFields = model.SearchFields?.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
         }
 
-        return Edit(section);
+        return await EditAsync(section, context);
     }
 
     protected override void BuildPrefix(ISite model, string htmlFieldPrefix)

@@ -25,21 +25,22 @@ public class AzureAISearchDefaultOptionsConfigurations : IConfigureOptions<Azure
 
     public async void Configure(AzureAISearchDefaultOptions options)
     {
-        var ops = _shellConfiguration.GetSection("OrchardCore_AzureAISearch").Get<AzureAISearchDefaultOptions>();
+        var fileOptions = _shellConfiguration.GetSection("OrchardCore_AzureAISearch").Get<AzureAISearchDefaultOptions>()
+            ?? new AzureAISearchDefaultOptions();
 
-        if (ops is not null)
-        {
-            // These settings should always be consumed from the app settings file never the UI.
-            options.ConfigurationType = ops.ConfigurationType;
-        }
+        // This should be called first to set whether or not the file configs are set or not.
+        options.SetFileConfigurationExists(HasConnectionInfo(fileOptions));
 
-        options.Analyzers = ops?.Analyzers == null || ops.Analyzers.Length == 0
+        // The DisableUIConfiguration should always be set using the file options only.
+        options.DisableUIConfiguration = fileOptions.DisableUIConfiguration;
+
+        options.Analyzers = fileOptions.Analyzers == null || fileOptions.Analyzers.Length == 0
             ? AzureAISearchDefaultOptions.DefaultAnalyzers
-            : ops.Analyzers;
+            : fileOptions.Analyzers;
 
-        if (options.ConfigurationType == AzureAIConfigurationType.File)
+        if (fileOptions.DisableUIConfiguration)
         {
-            LoadFileSettings(options, ops);
+            InitializeFromFileSettings(options, fileOptions);
         }
         else
         {
@@ -48,34 +49,34 @@ public class AzureAISearchDefaultOptionsConfigurations : IConfigureOptions<Azure
             var site = await _siteService.GetSiteSettingsAsync();
             var settings = site.As<AzureAISearchDefaultSettings>();
 
-            if (options.ConfigurationType == AzureAIConfigurationType.UI || settings.UseCustomConfiguration)
+            if (settings.UseCustomConfiguration)
             {
-                LoadUISettings(options, settings);
+                InitializeFromUISettings(options, settings);
             }
             else
             {
                 // At this point, we are allowed to use file configs.
-                LoadFileSettings(options, ops);
+                InitializeFromFileSettings(options, fileOptions);
             }
         }
 
-        options.SetConfigurationExists(!string.IsNullOrEmpty(options.Endpoint));
+        options.SetConfigurationExists(HasConnectionInfo(options));
     }
 
-    private static void LoadFileSettings(AzureAISearchDefaultOptions options, AzureAISearchDefaultOptions ops)
+    private static void InitializeFromFileSettings(AzureAISearchDefaultOptions options, AzureAISearchDefaultOptions ops)
     {
         options.IndexesPrefix = ops.IndexesPrefix;
         options.Endpoint = ops.Endpoint;
         options.AuthenticationType = ops.AuthenticationType;
 
-        if (ops.AuthenticationType == AzureAIAuthenticationType.ApiKey || !string.IsNullOrWhiteSpace(ops.Credential?.Key))
+        if (!string.IsNullOrWhiteSpace(ops.Credential?.Key))
         {
             options.AuthenticationType = AzureAIAuthenticationType.ApiKey;
             options.Credential = ops.Credential;
         }
     }
 
-    private void LoadUISettings(AzureAISearchDefaultOptions options, AzureAISearchDefaultSettings settings)
+    private void InitializeFromUISettings(AzureAISearchDefaultOptions options, AzureAISearchDefaultSettings settings)
     {
         options.IndexesPrefix = null;
         options.Endpoint = settings.Endpoint;
@@ -87,5 +88,15 @@ public class AzureAISearchDefaultOptionsConfigurations : IConfigureOptions<Azure
 
             options.Credential = new Azure.AzureKeyCredential(protector.Unprotect(settings.ApiKey));
         }
+    }
+
+    private static bool HasConnectionInfo(AzureAISearchDefaultOptions options)
+    {
+        if (string.IsNullOrEmpty(options.Endpoint))
+        {
+            return false;
+        }
+
+        return options.AuthenticationType == AzureAIAuthenticationType.Default || !string.IsNullOrEmpty(options.Credential?.Key);
     }
 }

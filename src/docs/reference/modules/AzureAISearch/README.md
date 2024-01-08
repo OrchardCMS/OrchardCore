@@ -2,7 +2,7 @@
 
 The Azure AI Search module allows you to manage Azure AI Search indices.
 
-Before enabling the service, you'll need to configure the connection to the server. By default, you can navigate to `Search` >> `Settings` click on `Azure AI Search` and provide the Azure Search AI service info.
+Before enabling the service, you'll need to configure the connection to the server. By default, you can navigate to `Configurations` >> `Settings` >> `Azure AI Search` and provide the Azure Search AI service info.
 
 Alternatively, you can configure the Azure Search AI service for all your tenants from the `appsettings.json` file by adding the following
 
@@ -13,7 +13,7 @@ Alternatively, you can configure the Azure Search AI service for all your tenant
       "Endpoint":"https://[search service name].search.windows.net",
       "IndexesPrefix":"", // Specify value to prefix all indexes. If using the same instance for production and staging, provide the environment name here to prevent naming conflicts.
       "AuthenticationType":"ApiKey", // Either 'Default' for managed-identity authentication or 'ApiKey' for  key-based authentication.
-      "ConfigurationType":"File",  // 'UI' is the default value; each tenant sets service configurations through the admin dashboard. 'File' uses the appsettings file connection for all tenants. 'UIThenFile' uses appsettings but allows custom UI settings.
+      "DisableUIConfiguration":false, // Enabling this option will globally disable per-tenant UI configuration. This implies that all tenants will utilize the settings specified in the appsettings.
       "Credential":{
         "Key":"the server key goes here"
       }
@@ -94,7 +94,7 @@ To rebuild all indices:
 
 When the Search module is enabled along with Azure AI Search, you'll be able to use run the frontend site search against your Azure AI Search indices.
 
-To configure the frontend site search settings, navigate to `Search` > `Settings`. On the `Content` tab, change the default search provider to `Azure AI Search`. Then click on the `Azure AI Search` tab select the default search index to use.
+To configure the frontend site search settings, navigate to `Search` >> `Settings`. On the `Content` tab, change the default search provider to `Azure AI Search`. Then click on the `Azure AI Search` tab select the default search index to use.
 
 ### Using the Search Feature to Perform Full-Text Search
 ![image](images/frontend-search.gif)
