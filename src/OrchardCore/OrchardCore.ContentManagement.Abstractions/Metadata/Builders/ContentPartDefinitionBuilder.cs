@@ -134,11 +134,16 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             {
                 existingField = new ContentPartFieldDefinition(null, fieldName, new JObject());
             }
+
             var configurer = new FieldConfigurerImpl(existingField, _part);
-            // Assume that the display name is the same as the field name.
-            // Set the display name before invoking the given action, to allow the action to set the display-name explicitly.
-            configurer.WithDisplayName(fieldName);
+
             configuration(configurer);
+
+            if (string.IsNullOrEmpty(existingField.DisplayName()))
+            {
+                // If there is not display name, let's use the field name as the display name.
+                configurer.WithDisplayName(fieldName);
+            }
             _fields.Add(configurer.Build());
             return this;
         }
@@ -182,15 +187,14 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
 
             var configurer = new FieldConfigurerImpl(existingField, _part);
-            // Assume that the display name is the same as the field name.
-            // Set the display name before invoking the given action, to allow the action to set the display-name explicitly.
-            if (string.IsNullOrEmpty(existingField.DisplayName()))
-            {
-                configurer.WithDisplayName(fieldName);
-            }
-
 
             await configurationAsync(configurer);
+            
+            if (string.IsNullOrEmpty(existingField.DisplayName()))
+            {
+                // If there is not display name, let's use the field name as the display name.
+                configurer.WithDisplayName(fieldName);
+            }
 
             _fields.Add(configurer.Build());
 
