@@ -28,6 +28,40 @@ Then navigate to `Search` > `Indexing` > `Azure AI Indices` to add an index.
 
 ## Recipes 
 
+### Creating Azure AI Search Index Step
+
+The `Create Index Step` create an Azure AI Search index if one does not already exists. It will also index all the content items starting at the beginning. 
+
+```json
+{
+  "steps":[
+    {
+      "name":"azureai-index-create",
+      "Indices":[
+        {
+            "IndexName": "articles",
+            "IndexLatest": false,
+            "IndexedContentTypes": [
+                "Article"
+            ],
+            "AnalyzerName":"standard.lucene",
+            "Culture": "any"
+        },
+        {
+            "IndexName": "blogs",
+            "IndexLatest": false,
+            "IndexedContentTypes": [
+                "Blog"
+            ],
+            "AnalyzerName":"standard.lucene",
+            "Culture": "any"
+        }
+      ]
+    }
+  ]
+}
+```
+
 ### Reset Azure AI Search Index Step
 
 The `Reset Index Step` resets an Azure AI Search index. Restarts the indexing process from the beginning in order to update current content items. It doesn't delete existing entries from the index.
