@@ -1,10 +1,12 @@
 using System;
 using System.IO;
+using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -21,6 +23,8 @@ using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
+using SixLabors.ImageSharp.Web.Caching;
+using SixLabors.ImageSharp.Web.Caching.Azure;
 
 namespace OrchardCore.Media.Azure
 {
@@ -150,6 +154,48 @@ namespace OrchardCore.Media.Azure
             }
 
             return optionsAreValid;
+        }
+    }
+
+    [Feature("OrchardCore.Media.Azure.ImageSharpImageCache")]
+    public class ImageSharpAzureBlobCacheStartup : Modules.StartupBase
+    {
+        private static readonly object _containerCreateLock = new();
+
+        private readonly IShellConfiguration _configuration;
+
+        private static bool _containerCreated;
+
+        // This is needed to be greater than OrchardCore.Media's 0 to replace the IImageCache implementation registered
+        // there.
+        public override int Order => 5;
+
+        public ImageSharpAzureBlobCacheStartup(IShellConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            // Following https://docs.sixlabors.com/articles/imagesharp.web/imagecaches.html we'd use
+            // SetCache<AzureBlobStorageCache>() but that's only available on IImageSharpBuilder after AddImageSharp(),
+            // what happens in OrchardCore.Media. Thus, an explicit Replace() is necessary.
+            services.Configure<AzureBlobStorageCacheOptions>(options =>
+            {
+                _configuration
+                    .GetSection("OrchardCore_Media_Azure").GetSection("ImageSharp").GetSection("AzureBlobStorageCacheOptions")
+                    .Bind(options);
+
+                lock (_containerCreateLock)
+                {
+                    if (!_containerCreated)
+                    {
+                        AzureBlobStorageCache.CreateIfNotExists(options, PublicAccessType.None);
+                        _containerCreated = true;
+                    }
+                }
+            })
+            .Replace(ServiceDescriptor.Singleton<IImageCache, AzureBlobStorageCache>());
         }
     }
 }

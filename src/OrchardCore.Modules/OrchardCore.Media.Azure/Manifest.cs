@@ -17,3 +17,14 @@ using OrchardCore.Modules.Manifest;
     },
     Category = "Hosting"
 )]
+
+[assembly: Feature(
+    Id = "OrchardCore.Media.Azure.ImageSharpImageCache",
+    Name = "Azure Media ImageSharp Image Cache",
+    Description = "Enables support for storing cached images resized via ImageSharp in Microsoft Azure Blob Storage.",
+    Dependencies = new[]
+    {
+        "OrchardCore.Media"
+    },
+    Category = "Hosting"
+)]
