@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Azure;
 using Azure.Storage.Blobs;
@@ -10,7 +9,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Media.Azure
+namespace OrchardCore.Media.Azure.Services
 {
     public class MediaBlobContainerTenantEvents : ModularTenantEvents
     {
@@ -48,8 +47,8 @@ namespace OrchardCore.Media.Azure
 
             try
             {
-                var _blobContainer = new BlobContainerClient(_options.ConnectionString, _options.ContainerName);
-                var response = await _blobContainer.CreateIfNotExistsAsync(PublicAccessType.None);
+                var blobContainer = new BlobContainerClient(_options.ConnectionString, _options.ContainerName);
+                var response = await blobContainer.CreateIfNotExistsAsync(PublicAccessType.None);
 
                 _logger.LogDebug("Azure Media Storage container {ContainerName} created.", _options.ContainerName);
             }
@@ -71,9 +70,9 @@ namespace OrchardCore.Media.Azure
 
             try
             {
-                var _blobContainer = new BlobContainerClient(_options.ConnectionString, _options.ContainerName);
+                var blobContainer = new BlobContainerClient(_options.ConnectionString, _options.ContainerName);
 
-                var response = await _blobContainer.DeleteIfExistsAsync();
+                var response = await blobContainer.DeleteIfExistsAsync();
                 if (!response.Value)
                 {
                     _logger.LogError("Unable to remove the Azure Media Storage Container {ContainerName}.", _options.ContainerName);

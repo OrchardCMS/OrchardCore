@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 
-namespace OrchardCore.Media.Azure
+namespace OrchardCore.Media.Azure.Services
 {
     public class MediaBlobStorageOptionsConfiguration : IConfigureOptions<MediaBlobStorageOptions>
     {
@@ -14,7 +14,7 @@ namespace OrchardCore.Media.Azure
         private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
-        // Local instance since it can be discarded once the startup is over
+        // Local instance since it can be discarded once the startup is over.
         private readonly FluidParser _fluidParser = new();
 
         public MediaBlobStorageOptionsConfiguration(
@@ -55,7 +55,7 @@ namespace OrchardCore.Media.Azure
             {
                 var template = _fluidParser.Parse(options.ContainerName);
 
-                // container name must be lowercase
+                // Container name must be lowercase.
                 options.ContainerName = template.Render(templateContext, NullEncoder.Default).ToLower();
                 options.ContainerName = options.ContainerName.Replace("\r", string.Empty).Replace("\n", string.Empty);
             }

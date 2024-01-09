@@ -1,12 +1,10 @@
 using System;
 using System.IO;
-using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -16,6 +14,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.AzureBlob;
+using OrchardCore.Media.Azure.Services;
 using OrchardCore.Media.Core;
 using OrchardCore.Media.Core.Events;
 using OrchardCore.Media.Events;
@@ -160,42 +159,60 @@ namespace OrchardCore.Media.Azure
     [Feature("OrchardCore.Media.Azure.ImageSharpImageCache")]
     public class ImageSharpAzureBlobCacheStartup : Modules.StartupBase
     {
-        private static readonly object _containerCreateLock = new();
-
         private readonly IShellConfiguration _configuration;
+        private readonly ILogger _logger;
 
-        private static bool _containerCreated;
+        public ImageSharpAzureBlobCacheStartup(IShellConfiguration configuration, ILogger<ImageSharpAzureBlobCacheStartup> logger)
+        {
+            _configuration = configuration;
+            _logger = logger;
+        }
 
         // This is needed to be greater than OrchardCore.Media's 0 to replace the IImageCache implementation registered
         // there.
         public override int Order => 5;
 
-        public ImageSharpAzureBlobCacheStartup(IShellConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IConfigureOptions<ImageSharpImageCacheOptions>, ImageSharpImageCacheOptionsConfiguration>();
+            services.AddTransient<IConfigureOptions<AzureBlobStorageCacheOptions>, AzureBlobStorageCacheOptionsConfiguration>();
+
+            // Only replace default implementation if options are valid.
+            var connectionString = _configuration[$"OrchardCore_Media_Azure_ImageSharp_Cache:{nameof(ImageSharpImageCacheOptions.ConnectionString)}"];
+            var containerName = _configuration[$"OrchardCore_Media_Azure_ImageSharp_Cache:{nameof(ImageSharpImageCacheOptions.ContainerName)}"];
+
+            if (!CheckOptions(connectionString, containerName))
+            {
+                return;
+            }
+
             // Following https://docs.sixlabors.com/articles/imagesharp.web/imagecaches.html we'd use
             // SetCache<AzureBlobStorageCache>() but that's only available on IImageSharpBuilder after AddImageSharp(),
             // what happens in OrchardCore.Media. Thus, an explicit Replace() is necessary.
-            services.Configure<AzureBlobStorageCacheOptions>(options =>
-            {
-                _configuration
-                    .GetSection("OrchardCore_Media_Azure").GetSection("ImageSharp").GetSection("AzureBlobStorageCacheOptions")
-                    .Bind(options);
+            services.Replace(ServiceDescriptor.Singleton<IImageCache, AzureBlobStorageCache>());
 
-                lock (_containerCreateLock)
-                {
-                    if (!_containerCreated)
-                    {
-                        AzureBlobStorageCache.CreateIfNotExists(options, PublicAccessType.None);
-                        _containerCreated = true;
-                    }
-                }
-            })
-            .Replace(ServiceDescriptor.Singleton<IImageCache, AzureBlobStorageCache>());
+            services.AddScoped<IModularTenantEvents, ImageSharpImageCacheTenantEvents>();
+        }
+
+        private bool CheckOptions(string connectionString, string containerName)
+        {
+            var optionsAreValid = true;
+
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                _logger.LogError(
+                    "Azure Media ImageSharp Image Cache is enabled but not active because the 'ConnectionString' is missing or empty in application configuration.");
+                optionsAreValid = false;
+            }
+
+            if (string.IsNullOrWhiteSpace(containerName))
+            {
+                _logger.LogError(
+                    "Azure Media ImageSharp Image Cache is enabled but not active because the 'ContainerName' is missing or empty in application configuration.");
+                optionsAreValid = false;
+            }
+
+            return optionsAreValid;
         }
     }
 }
