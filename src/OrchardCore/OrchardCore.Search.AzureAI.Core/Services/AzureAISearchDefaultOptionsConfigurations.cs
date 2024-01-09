@@ -1,3 +1,4 @@
+using Azure;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -9,6 +10,8 @@ namespace OrchardCore.Search.AzureAI.Services;
 
 public class AzureAISearchDefaultOptionsConfigurations : IConfigureOptions<AzureAISearchDefaultOptions>
 {
+    public const string ProtectorName = "AzureAISearch";
+
     private readonly IShellConfiguration _shellConfiguration;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ISiteService _siteService;
@@ -83,9 +86,9 @@ public class AzureAISearchDefaultOptionsConfigurations : IConfigureOptions<Azure
 
         if (settings.AuthenticationType == AzureAIAuthenticationType.ApiKey)
         {
-            var protector = _dataProtectionProvider.CreateProtector("AzureAISearch");
+            var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
 
-            options.Credential = new Azure.AzureKeyCredential(protector.Unprotect(settings.ApiKey));
+            options.Credential = new AzureKeyCredential(protector.Unprotect(settings.ApiKey));
         }
     }
 

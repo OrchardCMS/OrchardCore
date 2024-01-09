@@ -38,7 +38,7 @@
 
     <div class="mb-3@(Model.AuthenticationType == AzureAIAuthenticationType.ApiKey ? string.Empty : " d-none")" asp-validation-class-for="ApiKey" id="@apiKeyWrapperHtmlId">
         <label asp-for="ApiKey" class="form-label">@T["Api Key"]</label>
-        <input type="url" asp-for="ApiKey" class="form-control" placeholder="@(Model.ApiKeyExists ? T["API key stored. Leave blank for current key or enter a new one"] : T["Provide an authentication key"])" />
+        <input type="text" asp-for="ApiKey" class="form-control" placeholder="@(Model.ApiKeyExists ? T["API key stored. Leave blank for current key or enter a new one"] : T["Provide an authentication key"])" />
         <span asp-validation-for="ApiKey"></span>
     </div>
 </div>

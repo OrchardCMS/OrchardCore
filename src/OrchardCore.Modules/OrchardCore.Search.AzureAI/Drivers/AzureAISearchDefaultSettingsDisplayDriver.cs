@@ -128,7 +128,7 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
                     }
                     else if (hasNewKey)
                     {
-                        var protector = _dataProtectionProvider.CreateProtector("AzureAISearch");
+                        var protector = _dataProtectionProvider.CreateProtector(AzureAISearchDefaultOptionsConfigurations.ProtectorName);
 
                         settings.ApiKey = protector.Protect(model.ApiKey);
                     }

@@ -32,6 +32,7 @@ public class AzureAIIndexDocumentManager(
 
     public async Task<IEnumerable<SearchDocument>> SearchAsync(string indexName, string searchText, SearchOptions searchOptions = null)
     {
+        ArgumentException.ThrowIfNullOrEmpty(indexName, nameof(indexName));
         ArgumentException.ThrowIfNullOrWhiteSpace(searchText, nameof(searchText));
 
         var client = GetSearchClient(indexName);
@@ -48,6 +49,7 @@ public class AzureAIIndexDocumentManager(
 
     public async Task<long?> SearchAsync(string indexName, string searchText, Action<SearchDocument> action, SearchOptions searchOptions = null)
     {
+        ArgumentException.ThrowIfNullOrEmpty(indexName, nameof(indexName));
         ArgumentException.ThrowIfNullOrWhiteSpace(searchText, nameof(searchText));
         ArgumentNullException.ThrowIfNull(action);
 
@@ -62,11 +64,12 @@ public class AzureAIIndexDocumentManager(
             counter++;
         }
 
-        return searchResult.Value.TotalCount ?? counter;
+        return searchResult.Value?.TotalCount ?? counter;
     }
 
     public async Task DeleteDocumentsAsync(string indexName, IEnumerable<string> contentItemIds)
     {
+        ArgumentException.ThrowIfNullOrEmpty(indexName, nameof(indexName));
         ArgumentNullException.ThrowIfNull(contentItemIds, nameof(contentItemIds));
 
         try
@@ -114,6 +117,7 @@ public class AzureAIIndexDocumentManager(
 
     public async Task<bool> MergeOrUploadDocumentsAsync(string indexName, IList<DocumentIndex> indexDocuments, AzureAISearchIndexSettings indexSettings)
     {
+        ArgumentException.ThrowIfNullOrEmpty(indexName, nameof(indexName));
         ArgumentNullException.ThrowIfNull(indexDocuments, nameof(indexDocuments));
         ArgumentNullException.ThrowIfNull(indexSettings, nameof(indexSettings));
 
@@ -152,6 +156,7 @@ public class AzureAIIndexDocumentManager(
 
     public async Task UploadDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments, AzureAISearchIndexSettings indexSettings)
     {
+        ArgumentException.ThrowIfNullOrEmpty(indexName, nameof(indexName));
         ArgumentNullException.ThrowIfNull(indexDocuments, nameof(indexDocuments));
         ArgumentNullException.ThrowIfNull(indexSettings, nameof(indexSettings));
 
