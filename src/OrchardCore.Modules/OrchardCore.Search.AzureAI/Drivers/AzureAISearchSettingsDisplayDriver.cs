@@ -91,7 +91,7 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
 
             var fields = model.SearchFields?.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
 
-            if (section.SearchIndex != model.SearchIndex || !AreSame(section.DefaultSearchFields, fields))
+            if (section.SearchIndex != model.SearchIndex || !AreTheSame(section.DefaultSearchFields, fields))
             {
                 section.SearchIndex = model.SearchIndex;
                 section.DefaultSearchFields = fields;
@@ -106,7 +106,17 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
         return Edit(section);
     }
 
-    private static bool AreSame(string[] a, string[] b)
+    protected override void BuildPrefix(ISite model, string htmlFieldPrefix)
+    {
+        Prefix = typeof(AzureAISearchSettings).Name;
+
+        if (!string.IsNullOrEmpty(htmlFieldPrefix))
+        {
+            Prefix = htmlFieldPrefix + "." + Prefix;
+        }
+    }
+
+    private static bool AreTheSame(string[] a, string[] b)
     {
         if (a == null && b == null)
         {
@@ -121,15 +131,5 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
         var combine = a.Intersect(b).ToList();
 
         return combine.Count == a.Length && combine.Count == b.Length;
-    }
-
-    protected override void BuildPrefix(ISite model, string htmlFieldPrefix)
-    {
-        Prefix = typeof(AzureAISearchSettings).Name;
-
-        if (!string.IsNullOrEmpty(htmlFieldPrefix))
-        {
-            Prefix = htmlFieldPrefix + "." + Prefix;
-        }
     }
 }

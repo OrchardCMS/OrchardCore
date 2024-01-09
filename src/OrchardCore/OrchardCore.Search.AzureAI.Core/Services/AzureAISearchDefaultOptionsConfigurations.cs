@@ -65,16 +65,17 @@ public class AzureAISearchDefaultOptionsConfigurations : IConfigureOptions<Azure
         options.SetConfigurationExists(HasConnectionInfo(options));
     }
 
-    private static void InitializeFromFileSettings(AzureAISearchDefaultOptions options, AzureAISearchDefaultOptions ops)
+    private static void InitializeFromFileSettings(AzureAISearchDefaultOptions options, AzureAISearchDefaultOptions fileOptions)
     {
-        options.IndexesPrefix = ops.IndexesPrefix;
-        options.Endpoint = ops.Endpoint;
-        options.AuthenticationType = ops.AuthenticationType;
+        options.IndexesPrefix = fileOptions.IndexesPrefix;
+        options.Endpoint = fileOptions.Endpoint;
+        options.AuthenticationType = fileOptions.AuthenticationType;
+        options.IdentityClientId = fileOptions.IdentityClientId;
 
-        if (!string.IsNullOrWhiteSpace(ops.Credential?.Key))
+        if (!string.IsNullOrWhiteSpace(fileOptions.Credential?.Key))
         {
             options.AuthenticationType = AzureAIAuthenticationType.ApiKey;
-            options.Credential = ops.Credential;
+            options.Credential = fileOptions.Credential;
         }
     }
 
@@ -89,6 +90,11 @@ public class AzureAISearchDefaultOptionsConfigurations : IConfigureOptions<Azure
             var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
 
             options.Credential = new AzureKeyCredential(protector.Unprotect(settings.ApiKey));
+        }
+
+        if (settings.AuthenticationType == AzureAIAuthenticationType.ManagedIdentity)
+        {
+            options.IdentityClientId = settings.IdentityClientId;
         }
     }
 

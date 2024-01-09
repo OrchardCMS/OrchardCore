@@ -15,6 +15,8 @@ public class AzureAISearchDefaultSettingsViewModel
 
     public string ApiKey { get; set; }
 
+    public string IdentityClientId { get; set; }
+
     public bool UseCustomConfiguration { get; set; }
 
     [BindNever]

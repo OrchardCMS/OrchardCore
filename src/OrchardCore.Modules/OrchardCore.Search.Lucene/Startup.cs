@@ -80,7 +80,6 @@ namespace OrchardCore.Search.Lucene
             services.AddRecipeExecutionStep<LuceneIndexStep>();
             services.AddRecipeExecutionStep<LuceneIndexRebuildStep>();
             services.AddRecipeExecutionStep<LuceneIndexResetStep>();
-            services.AddScoped<IAuthorizationHandler, LuceneAuthorizationHandler>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -131,6 +130,7 @@ namespace OrchardCore.Search.Lucene
         {
             services.AddScoped<ISearchService, LuceneSearchService>();
             services.AddScoped<IDisplayDriver<ISite>, LuceneSettingsDisplayDriver>();
+            services.AddScoped<IAuthorizationHandler, LuceneAuthorizationHandler>();
         }
     }
 

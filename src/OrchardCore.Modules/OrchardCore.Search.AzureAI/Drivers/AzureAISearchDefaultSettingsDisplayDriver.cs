@@ -68,6 +68,7 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
             model.AuthenticationTypes = new[]
             {
                 new SelectListItem(S["Default"], nameof(AzureAIAuthenticationType.Default)),
+                new SelectListItem(S["Managed Identity"], nameof(AzureAIAuthenticationType.ManagedIdentity)),
                 new SelectListItem(S["API Key"], nameof(AzureAIAuthenticationType.ApiKey)),
             };
 
@@ -75,6 +76,7 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
             model.AuthenticationType = settings.AuthenticationType;
             model.UseCustomConfiguration = settings.UseCustomConfiguration;
             model.Endpoint = settings.Endpoint;
+            model.IdentityClientId = settings.IdentityClientId;
             model.ApiKeyExists = !string.IsNullOrEmpty(settings.ApiKey);
         }).Location("Content")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
@@ -108,6 +110,7 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
             {
                 settings.AuthenticationType = model.AuthenticationType.Value;
                 settings.Endpoint = model.Endpoint;
+                settings.IdentityClientId = model.IdentityClientId?.Trim();
 
                 if (string.IsNullOrWhiteSpace(model.Endpoint))
                 {
@@ -141,6 +144,7 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
                 (_searchOptions.Credential?.Key != model.ApiKey
                 || _searchOptions.Endpoint != settings.Endpoint
                 || _searchOptions.AuthenticationType != settings.AuthenticationType
+                || _searchOptions.IdentityClientId != settings.IdentityClientId
                 || useCustomConfigurationChanged))
             {
                 await _shellHost.ReleaseShellContextAsync(_shellSettings);

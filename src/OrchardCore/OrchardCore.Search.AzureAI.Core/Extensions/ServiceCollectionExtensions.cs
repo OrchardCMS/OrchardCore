@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,7 +34,6 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<SearchIndexClientAccessor>();
 
         services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddScoped<IAuthorizationHandler, AzureAISearchAuthorizationHandler>();
         services.AddScoped<IContentHandler, AzureAISearchIndexingContentHandler>();
         services.AddScoped<AzureAISearchIndexManager>();
         services.AddScoped<AzureAIIndexDocumentManager>();

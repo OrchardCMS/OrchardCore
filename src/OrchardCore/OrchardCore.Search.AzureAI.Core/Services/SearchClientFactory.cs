@@ -38,6 +38,12 @@ public class SearchClientFactory(
             {
                 client = new SearchClient(endpoint, indexFullName, _defaultOptions.Credential);
             }
+            else if (_defaultOptions.AuthenticationType == AzureAIAuthenticationType.ManagedIdentity)
+            {
+                var identity = new ManagedIdentityCredential(_defaultOptions.IdentityClientId);
+
+                client = new SearchClient(endpoint, indexFullName, identity);
+            }
             else
             {
                 client = new SearchClient(endpoint, indexFullName, new DefaultAzureCredential());

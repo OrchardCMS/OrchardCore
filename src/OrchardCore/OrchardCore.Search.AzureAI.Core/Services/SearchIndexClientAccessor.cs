@@ -20,6 +20,12 @@ public class SearchIndexClientAccessor(IOptions<AzureAISearchDefaultOptions> def
             {
                 _instance = new SearchIndexClient(new Uri(_defaultOptions.Endpoint), _defaultOptions.Credential);
             }
+            else if (_defaultOptions.AuthenticationType == AzureAIAuthenticationType.ManagedIdentity)
+            {
+                var identity = new ManagedIdentityCredential(_defaultOptions.IdentityClientId);
+
+                _instance = new SearchIndexClient(new Uri(_defaultOptions.Endpoint), identity);
+            }
             else
             {
                 _instance = new SearchIndexClient(new Uri(_defaultOptions.Endpoint), new DefaultAzureCredential());

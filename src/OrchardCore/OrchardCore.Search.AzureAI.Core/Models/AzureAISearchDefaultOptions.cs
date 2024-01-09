@@ -116,6 +116,8 @@ public class AzureAISearchDefaultOptions
 
     public string[] Analyzers { get; set; }
 
+    public string IdentityClientId { get; set; }
+
     private bool _configurationExists;
 
     public void SetConfigurationExists(bool configurationExists)
