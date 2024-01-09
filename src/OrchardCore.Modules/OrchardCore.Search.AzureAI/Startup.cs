@@ -92,6 +92,7 @@ public class SearchStartup : StartupBase
     {
         services.AddScoped<IDisplayDriver<ISite>, AzureAISearchSettingsDisplayDriver>();
         services.AddScoped<ISearchService, AzureAISearchService>();
+        services.AddScoped<IAuthorizationHandler, AzureAISearchAuthorizationHandler>();
     }
 }
 
