@@ -9,13 +9,13 @@ More information about `dotnet new` can be found at <https://docs.microsoft.com/
 Once the .NET Core SDK has been installed, type the following command to install the templates for creating Orchard Core web applications:
 
 ```CMD
-dotnet new install OrchardCore.ProjectTemplates::1.8.0
+dotnet new install OrchardCore.ProjectTemplates::1.8.1
 ```
 
 This will use the most stable release of Orchard Core. In order to use the latest `main` branch of Orchard Core, the following command can be used:
 
 ```CMD
-dotnet new install OrchardCore.ProjectTemplates::1.8.0-* --nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json  
+dotnet new install OrchardCore.ProjectTemplates::1.8.1-* --nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json  
 ```
 
 ## Create a new website
@@ -25,7 +25,7 @@ dotnet new install OrchardCore.ProjectTemplates::1.8.0-* --nuget-source https://
 #### Generate an Orchard Cms Web Application
 
 !!! warning
-    Due to a bug in the current published version, the following `dotnet new` commands will require the extra argument `--orchard-version 1.8.0`. For instance, instead of typing `dotnet new occms` use `dotnet new occms --orchard-version 1.8.0`
+    Due to a bug in the current published version, the following `dotnet new` commands will require the extra argument `--orchard-version 1.8.1`. For instance, instead of typing `dotnet new occms` use `dotnet new occms --orchard-version 1.8.1`
 
 ```CMD
 dotnet new occms
@@ -47,7 +47,7 @@ Options:
 
   -ov|--orchard-version  Specifies which version of Orchard Core packages to use.
                          string - Optional
-                         Default: 1.8.0
+                         Default: 1.8.1
 ```
 
 Logging can be ignored with this command:
@@ -134,7 +134,7 @@ Options:
 
   -ov|--orchard-version  Specifies which version of Orchard Core packages to use.
                          string - Optional
-                         Default: 1.8.0
+                         Default: 1.8.1
 ```
 
 ```CMD
