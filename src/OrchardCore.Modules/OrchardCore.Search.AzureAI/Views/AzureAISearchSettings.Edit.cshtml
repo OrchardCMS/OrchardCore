@@ -1,12 +1,25 @@
+@using Microsoft.Extensions.Options
 @using OrchardCore.Search.AzureAI
 @using OrchardCore.Search.AzureAI.Models
 @using OrchardCore.Search.AzureAI.ViewModels
 
 @model AzureAISearchSettingsViewModel
+@inject IOptions<AzureAISearchDefaultOptions> AzureAIOptions
+
+@if (!AzureAIOptions.Value.IsConfigurationExists())
+{
+    <div class="alert alert-danger" role="alert">
+        @T["Azure AI Search has not been configured yet."]
+    </div>
+
+    return;
+}
 
 @if (Model.SearchIndexes == null || Model.SearchIndexes?.Count == 0)
 {
-    <div class="alert alert-warning">@T["No indices exist! Please create at least one index to configure Azure AI Search service."]</div>
+    <div class="alert alert-warning" role="alert">
+        @T["No indices exist! Please create at least one index to configure Azure AI Search service."]
+    </div>
 
     return;
 }

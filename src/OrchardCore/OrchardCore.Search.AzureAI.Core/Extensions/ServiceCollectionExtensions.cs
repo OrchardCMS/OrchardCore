@@ -21,12 +21,11 @@ public static class ServiceCollectionExtensions
         var section = configuration.GetSection("OrchardCore_AzureAISearch");
 
         var options = section.Get<AzureAISearchDefaultOptions>();
-
+        var configExists = true;
         if (string.IsNullOrWhiteSpace(options?.Endpoint) || string.IsNullOrWhiteSpace(options?.Credential?.Key))
         {
-            logger.LogError("Azure AI Search module is enabled. However, the connection settings are not provided in configuration file..");
-
-            return false;
+            configExists = false;
+            logger.LogError("Azure AI Search module is enabled. However, the connection settings are not provided in configuration file.");
         }
 
         services.Configure<AzureAISearchDefaultOptions>(opts =>
@@ -37,7 +36,7 @@ public static class ServiceCollectionExtensions
             opts.Analyzers = options.Analyzers == null || options.Analyzers.Length == 0
             ? AzureAISearchDefaultOptions.DefaultAnalyzers
             : options.Analyzers;
-            opts.SetConfigurationExists(true);
+            opts.SetConfigurationExists(configExists);
         });
 
         services.AddAzureClients(builder =>
@@ -58,6 +57,6 @@ public static class ServiceCollectionExtensions
         services.AddRecipeExecutionStep<AzureAISearchIndexResetStep>();
         services.AddRecipeExecutionStep<AzureAISearchIndexSettingsStep>();
 
-        return true;
+        return configExists;
     }
 }
