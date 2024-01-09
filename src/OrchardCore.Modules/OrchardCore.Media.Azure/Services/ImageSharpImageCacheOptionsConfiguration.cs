@@ -1,10 +1,10 @@
 using System;
-using Fluid;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Media.Azure.Helpers;
 
 namespace OrchardCore.Media.Azure.Services;
 
@@ -13,9 +13,7 @@ internal class ImageSharpImageCacheOptionsConfiguration : IConfigureOptions<Imag
     private readonly IShellConfiguration _shellConfiguration;
     private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
-
-    // Local instance since it can be discarded once the startup is over.
-    private readonly FluidParser _fluidParser = new();
+    private readonly FluidParserHelper<ImageSharpImageCacheOptions> _fluidParserHelper;
 
     public ImageSharpImageCacheOptionsConfiguration(
         IShellConfiguration shellConfiguration,
@@ -25,6 +23,7 @@ internal class ImageSharpImageCacheOptionsConfiguration : IConfigureOptions<Imag
         _shellConfiguration = shellConfiguration;
         _shellSettings = shellSettings;
         _logger = logger;
+        _fluidParserHelper = new(shellSettings);
     }
 
     public void Configure(ImageSharpImageCacheOptions options)
@@ -36,25 +35,10 @@ internal class ImageSharpImageCacheOptionsConfiguration : IConfigureOptions<Imag
         options.CreateContainer = section.GetValue(nameof(options.CreateContainer), true);
         options.RemoveContainer = section.GetValue(nameof(options.RemoveContainer), false);
 
-        var templateOptions = new TemplateOptions();
-        var templateContext = new TemplateContext(templateOptions);
-        templateOptions.MemberAccessStrategy.Register<ShellSettings>();
-        templateOptions.MemberAccessStrategy.Register<ImageSharpImageCacheOptions>();
-        templateContext.SetValue("ShellSettings", _shellSettings);
-
-        ParseContainerName(options, templateContext);
-    }
-
-    private void ParseContainerName(ImageSharpImageCacheOptions options, TemplateContext templateContext)
-    {
-        // Use Fluid directly as this is transient and cannot invoke _liquidTemplateManager.
         try
         {
-            var template = _fluidParser.Parse(options.ContainerName);
-
             // Container name must be lowercase.
-            options.ContainerName = template.Render(templateContext, NullEncoder.Default).ToLower();
-            options.ContainerName = options.ContainerName.Replace("\r", string.Empty).Replace("\n", string.Empty);
+            options.ContainerName = _fluidParserHelper.ParseAndFormat(options.ContainerName).ToLower();
         }
         catch (Exception ex)
         {

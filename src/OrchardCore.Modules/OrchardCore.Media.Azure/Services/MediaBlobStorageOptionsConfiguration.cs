@@ -1,31 +1,30 @@
 using System;
-using Fluid;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Media.Azure.Helpers;
 
 namespace OrchardCore.Media.Azure.Services
 {
-    public class MediaBlobStorageOptionsConfiguration : IConfigureOptions<MediaBlobStorageOptions>
+    internal class MediaBlobStorageOptionsConfiguration : IConfigureOptions<MediaBlobStorageOptions>
     {
         private readonly IShellConfiguration _shellConfiguration;
         private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
-
-        // Local instance since it can be discarded once the startup is over.
-        private readonly FluidParser _fluidParser = new();
+        private readonly FluidParserHelper<MediaBlobStorageOptionsConfiguration> _fluidParserHelper;
 
         public MediaBlobStorageOptionsConfiguration(
             IShellConfiguration shellConfiguration,
             ShellSettings shellSettings,
             ILogger<MediaBlobStorageOptionsConfiguration> logger
-            )
+        )
         {
             _shellConfiguration = shellConfiguration;
             _shellSettings = shellSettings;
             _logger = logger;
+            _fluidParserHelper = new(shellSettings);
         }
 
         public void Configure(MediaBlobStorageOptions options)
@@ -38,42 +37,20 @@ namespace OrchardCore.Media.Azure.Services
             options.CreateContainer = section.GetValue(nameof(options.CreateContainer), true);
             options.RemoveContainer = section.GetValue(nameof(options.RemoveContainer), false);
 
-            var templateOptions = new TemplateOptions();
-            var templateContext = new TemplateContext(templateOptions);
-            templateOptions.MemberAccessStrategy.Register<ShellSettings>();
-            templateOptions.MemberAccessStrategy.Register<MediaBlobStorageOptions>();
-            templateContext.SetValue("ShellSettings", _shellSettings);
-
-            ParseContainerName(options, templateContext);
-            ParseBasePath(options, templateContext);
-        }
-
-        private void ParseContainerName(MediaBlobStorageOptions options, TemplateContext templateContext)
-        {
-            // Use Fluid directly as this is transient and cannot invoke _liquidTemplateManager.
             try
             {
-                var template = _fluidParser.Parse(options.ContainerName);
-
                 // Container name must be lowercase.
-                options.ContainerName = template.Render(templateContext, NullEncoder.Default).ToLower();
-                options.ContainerName = options.ContainerName.Replace("\r", string.Empty).Replace("\n", string.Empty);
+                options.ContainerName = _fluidParserHelper.ParseAndFormat(options.ContainerName).ToLower();
             }
             catch (Exception e)
             {
                 _logger.LogCritical(e, "Unable to parse Azure Media Storage container name.");
                 throw;
             }
-        }
 
-        private void ParseBasePath(MediaBlobStorageOptions options, TemplateContext templateContext)
-        {
             try
             {
-                var template = _fluidParser.Parse(options.BasePath);
-
-                options.BasePath = template.Render(templateContext, NullEncoder.Default);
-                options.BasePath = options.BasePath.Replace("\r", string.Empty).Replace("\n", string.Empty);
+                options.BasePath = _fluidParserHelper.ParseAndFormat(options.BasePath);
             }
             catch (Exception e)
             {
