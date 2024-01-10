@@ -74,7 +74,6 @@ namespace OrchardCore.Media.GraphQL
                     var mediaFileStore = x.RequestServices.GetService<IMediaFileStore>();
                     var urls = paths.Select(p => mediaFileStore.MapPathToPublicUrl(p)).ToArray();
                     var fileNames = x.Page(x.Source?.GetAttachedFileNames()).ToArray();
-
                     var items = new List<MediaFileItem>();
                     for (int i = 0; i < paths.Length; i++)
                     {
