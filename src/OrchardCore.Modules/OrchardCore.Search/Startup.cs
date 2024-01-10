@@ -1,4 +1,5 @@
 using System;
+using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +17,7 @@ using OrchardCore.Search.Deployment;
 using OrchardCore.Search.Drivers;
 using OrchardCore.Search.Migrations;
 using OrchardCore.Search.Models;
+using OrchardCore.Search.ViewModels;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
@@ -58,6 +60,20 @@ namespace OrchardCore.Search
             services.AddTransient<IDeploymentSource, SearchSettingsDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<SearchSettingsDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, SearchSettingsDeploymentStepDriver>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Liquid")]
+    public class LiquidStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<SearchIndexViewModel>();
+                o.MemberAccessStrategy.Register<SearchFormViewModel>();
+                o.MemberAccessStrategy.Register<SearchResultsViewModel>();
+            });
         }
     }
 }
