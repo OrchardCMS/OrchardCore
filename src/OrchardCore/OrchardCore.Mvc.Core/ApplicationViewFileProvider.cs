@@ -56,7 +56,7 @@ namespace OrchardCore.Mvc
                 if (tokenizer.Any(s => s == "Pages" || s == "Views"))
                 {
                     // Resolve the subpath relative to the application's module root.
-                    var folderSubPath = folder.Substring(Application.ModuleRoot.Length);
+                    var folderSubPath = folder[Application.ModuleRoot.Length..];
 
                     // And serve the contents from the physical application root folder.
                     return new PhysicalDirectoryContents(Application.Root + folderSubPath);
@@ -79,7 +79,7 @@ namespace OrchardCore.Mvc
             if (path.StartsWith(Application.ModuleRoot, StringComparison.Ordinal))
             {
                 // Resolve the subpath relative to the application's module.
-                var fileSubPath = path.Substring(Application.ModuleRoot.Length);
+                var fileSubPath = path[Application.ModuleRoot.Length..];
 
                 // And serve the file from the physical application root folder.
                 return new PhysicalFileInfo(new FileInfo(Application.Root + fileSubPath));
@@ -101,7 +101,7 @@ namespace OrchardCore.Mvc
             if (path.StartsWith(Application.ModuleRoot, StringComparison.Ordinal))
             {
                 // Resolve the subpath relative to the application's module.
-                var fileSubPath = path.Substring(Application.ModuleRoot.Length);
+                var fileSubPath = path[Application.ModuleRoot.Length..];
 
                 // And watch the application file from the physical application root folder.
                 return new PollingFileChangeToken(new FileInfo(Application.Root + fileSubPath));
@@ -110,9 +110,6 @@ namespace OrchardCore.Mvc
             return NullChangeToken.Singleton;
         }
 
-        private string NormalizePath(string path)
-        {
-            return path.Replace('\\', '/').Trim('/');
-        }
+        private static string NormalizePath(string path) => path.Replace('\\', '/').Trim('/');
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Fluid;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -14,8 +14,8 @@ public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOption
     private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
 
-    // Local instance since it can be discarded once the startup is over
-    private readonly FluidParser _fluidParser = new ();
+    // Local instance since it can be discarded once the startup is over.
+    private readonly FluidParser _fluidParser = new();
 
     public AwsStorageOptionsConfiguration(
         IShellConfiguration shellConfiguration,
@@ -50,8 +50,8 @@ public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOption
 
             options.BucketName = template
                 .Render(templateContext, NullEncoder.Default)
-                .Replace("\r", String.Empty)
-                .Replace("\n", String.Empty)
+                .Replace("\r", string.Empty)
+                .Replace("\n", string.Empty)
                 .Trim();
         }
         catch (Exception e)
@@ -69,8 +69,8 @@ public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOption
 
             options.BasePath = template
                 .Render(templateContext, NullEncoder.Default)
-                .Replace("\r", String.Empty)
-                .Replace("\n", String.Empty)
+                .Replace("\r", string.Empty)
+                .Replace("\n", string.Empty)
                 .Trim();
         }
         catch (Exception e)

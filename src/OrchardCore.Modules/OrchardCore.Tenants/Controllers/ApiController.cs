@@ -17,13 +17,13 @@ using OrchardCore.Abstractions.Setup;
 using OrchardCore.Data;
 using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Setup.Services;
+using OrchardCore.Tenants.Models;
 using OrchardCore.Tenants.Services;
 using OrchardCore.Tenants.ViewModels;
 
@@ -47,7 +47,7 @@ namespace OrchardCore.Tenants.Controllers
         private readonly TenantsOptions _tenantsOptions;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly ITenantValidator _tenantValidator;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
         private readonly ILogger _logger;
 
         public ApiController(
@@ -86,7 +86,7 @@ namespace OrchardCore.Tenants.Controllers
 
         [HttpPost]
         [Route("create")]
-        public async Task<IActionResult> Create(CreateApiViewModel model)
+        public async Task<IActionResult> Create(TenantApiModel model)
         {
             if (!_currentShellSettings.IsDefaultShell())
             {
@@ -98,44 +98,97 @@ namespace OrchardCore.Tenants.Controllers
                 return this.ChallengeOrForbid("Api");
             }
 
-            // Creates a default shell settings based on the configuration.
-            var shellSettings = _shellSettingsManager.CreateDefaultSettings();
-
-            shellSettings.Name = model.Name;
-            shellSettings.RequestUrlHost = model.RequestUrlHost;
-            shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
-            shellSettings.State = TenantState.Uninitialized;
-
-            shellSettings["ConnectionString"] = model.ConnectionString;
-            shellSettings["TablePrefix"] = model.TablePrefix;
-            shellSettings["Schema"] = model.Schema;
-            shellSettings["DatabaseProvider"] = model.DatabaseProvider;
-            shellSettings["Secret"] = Guid.NewGuid().ToString();
-            shellSettings["RecipeName"] = model.RecipeName;
-            shellSettings["FeatureProfile"] = model.FeatureProfile;
-
-            model.IsNewTenant = true;
-
-            ModelState.AddModelErrors(await _tenantValidator.ValidateAsync(model));
+            await ValidateModelAsync(model, isNewTenant: !_shellHost.TryGetSettings(model.Name, out var settings));
 
             if (ModelState.IsValid)
             {
-                if (_shellHost.TryGetSettings(model.Name, out var settings))
+                if (model.IsNewTenant)
                 {
-                    // Site already exists, return 201 for indempotency purpose
+                    // Creates a default shell settings based on the configuration.
+                    using var shellSettings = _shellSettingsManager
+                        .CreateDefaultSettings()
+                        .AsUninitialized()
+                        .AsDisposable();
+
+                    shellSettings.Name = model.Name;
+                    shellSettings.RequestUrlHost = model.RequestUrlHost;
+                    shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
+
+                    shellSettings["Category"] = model.Category;
+                    shellSettings["Description"] = model.Description;
+                    shellSettings["ConnectionString"] = model.ConnectionString;
+                    shellSettings["TablePrefix"] = model.TablePrefix;
+                    shellSettings["Schema"] = model.Schema;
+                    shellSettings["DatabaseProvider"] = model.DatabaseProvider;
+                    shellSettings["Secret"] = Guid.NewGuid().ToString();
+                    shellSettings["RecipeName"] = model.RecipeName;
+                    shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
+
+                    await _shellHost.UpdateShellSettingsAsync(shellSettings);
+                    var reloadedSettings = _shellHost.GetSettings(shellSettings.Name);
+
+                    var token = CreateSetupToken(reloadedSettings);
+
+                    return Ok(GetEncodedUrl(reloadedSettings, token));
+                }
+                else
+                {
+                    // Site already exists, return 201 for idempotency purposes.
 
                     var token = CreateSetupToken(settings);
 
                     return Created(GetEncodedUrl(settings, token), null);
                 }
-                else
+            }
+
+            return BadRequest(ModelState);
+        }
+
+        [HttpPost]
+        [Route("edit")]
+        public async Task<IActionResult> Edit(TenantApiModel model)
+        {
+            if (!_currentShellSettings.IsDefaultShell())
+            {
+                return Forbid();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
+            {
+                return this.ChallengeOrForbid("Api");
+            }
+
+            if (ModelState.IsValid)
+            {
+                await ValidateModelAsync(model, isNewTenant: false);
+            }
+
+            if (!_shellHost.TryGetSettings(model.Name, out var shellSettings))
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                shellSettings["Description"] = model.Description;
+                shellSettings["Category"] = model.Category;
+                shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
+                shellSettings.RequestUrlHost = model.RequestUrlHost;
+                shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
+
+                if (shellSettings.IsUninitialized())
                 {
-                    await _shellHost.UpdateShellSettingsAsync(shellSettings);
-
-                    var token = CreateSetupToken(shellSettings);
-
-                    return Ok(GetEncodedUrl(shellSettings, token));
+                    shellSettings["DatabaseProvider"] = model.DatabaseProvider;
+                    shellSettings["TablePrefix"] = model.TablePrefix;
+                    shellSettings["Schema"] = model.Schema;
+                    shellSettings["ConnectionString"] = model.ConnectionString;
+                    shellSettings["RecipeName"] = model.RecipeName;
+                    shellSettings["Secret"] = Guid.NewGuid().ToString();
                 }
+
+                await _shellHost.UpdateShellSettingsAsync(shellSettings);
+
+                return Ok();
             }
 
             return BadRequest(ModelState);
@@ -160,13 +213,12 @@ namespace OrchardCore.Tenants.Controllers
                 return NotFound();
             }
 
-            if (shellSettings.State != TenantState.Running)
+            if (!shellSettings.IsRunning())
             {
                 return BadRequest(S["You can only disable a Running tenant."]);
             }
 
-            shellSettings.State = TenantState.Disabled;
-            await _shellHost.UpdateShellSettingsAsync(shellSettings);
+            await _shellHost.UpdateShellSettingsAsync(shellSettings.AsDisabled());
 
             return Ok();
         }
@@ -190,13 +242,12 @@ namespace OrchardCore.Tenants.Controllers
                 return NotFound();
             }
 
-            if (shellSettings.State != TenantState.Disabled)
+            if (!shellSettings.IsDisabled())
             {
                 return BadRequest(S["You can only enable a Disabled tenant."]);
             }
 
-            shellSettings.State = TenantState.Running;
-            await _shellHost.UpdateShellSettingsAsync(shellSettings);
+            await _shellHost.UpdateShellSettingsAsync(shellSettings.AsRunning());
 
             return Ok();
         }
@@ -244,7 +295,7 @@ namespace OrchardCore.Tenants.Controllers
 
         [HttpPost]
         [Route("setup")]
-        public async Task<ActionResult> Setup(SetupApiViewModel model)
+        public async Task<ActionResult> Setup(SetupApiViewModel model, [FromForm] IFormFile recipe = null)
         {
             if (!_currentShellSettings.IsDefaultShell())
             {
@@ -256,13 +307,13 @@ namespace OrchardCore.Tenants.Controllers
                 return this.ChallengeOrForbid("Api");
             }
 
-            if (!String.IsNullOrEmpty(model.UserName) && model.UserName.Any(c => !_identityOptions.User.AllowedUserNameCharacters.Contains(c)))
+            if (!string.IsNullOrEmpty(model.UserName) && model.UserName.Any(c => !_identityOptions.User.AllowedUserNameCharacters.Contains(c)))
             {
                 ModelState.AddModelError(nameof(model.UserName), S["User name '{0}' is invalid, can only contain letters or digits.", model.UserName]);
             }
 
             // Only add additional error if attribute validation has passed.
-            if (!String.IsNullOrEmpty(model.Email) && !_emailAddressValidator.Validate(model.Email))
+            if (!string.IsNullOrEmpty(model.Email) && !_emailAddressValidator.Validate(model.Email))
             {
                 ModelState.AddModelError(nameof(model.Email), S["The email is invalid."]);
             }
@@ -277,24 +328,24 @@ namespace OrchardCore.Tenants.Controllers
                 ModelState.AddModelError(nameof(SetupApiViewModel.Name), S["Tenant not found: '{0}'", model.Name]);
             }
 
-            if (shellSettings.State == TenantState.Running)
+            if (shellSettings.IsRunning())
             {
                 return Created(GetEncodedUrl(shellSettings, null), null);
             }
 
-            if (shellSettings.State != TenantState.Uninitialized)
+            if (!shellSettings.IsUninitialized())
             {
                 return BadRequest(S["The tenant can't be setup."]);
             }
 
             var databaseProvider = shellSettings["DatabaseProvider"];
 
-            if (String.IsNullOrEmpty(databaseProvider))
+            if (string.IsNullOrEmpty(databaseProvider))
             {
                 databaseProvider = model.DatabaseProvider;
             }
 
-            if (String.IsNullOrEmpty(databaseProvider))
+            if (string.IsNullOrEmpty(databaseProvider))
             {
                 return BadRequest(S["The database provider is not defined."]);
             }
@@ -307,51 +358,51 @@ namespace OrchardCore.Tenants.Controllers
 
             var tablePrefix = shellSettings["TablePrefix"];
 
-            if (String.IsNullOrEmpty(tablePrefix))
+            if (string.IsNullOrEmpty(tablePrefix))
             {
                 tablePrefix = model.TablePrefix;
             }
 
             var schema = shellSettings["Schema"];
 
-            if (String.IsNullOrEmpty(schema))
+            if (string.IsNullOrEmpty(schema))
             {
                 schema = model.Schema;
             }
 
             var connectionString = shellSettings["connectionString"];
 
-            if (String.IsNullOrEmpty(connectionString))
+            if (string.IsNullOrEmpty(connectionString))
             {
                 connectionString = model.ConnectionString;
             }
 
-            if (selectedProvider.HasConnectionString && String.IsNullOrEmpty(connectionString))
+            if (selectedProvider.HasConnectionString && string.IsNullOrEmpty(connectionString))
             {
                 return BadRequest(S["The connection string is required for this database provider."]);
             }
 
             var recipeName = shellSettings["RecipeName"];
 
-            if (String.IsNullOrEmpty(recipeName))
+            if (string.IsNullOrEmpty(recipeName))
             {
                 recipeName = model.RecipeName;
             }
 
             RecipeDescriptor recipeDescriptor = null;
 
-            if (String.IsNullOrEmpty(recipeName))
+            if (string.IsNullOrEmpty(recipeName))
             {
-                if (model.Recipe == null)
+                if (recipe == null)
                 {
-                    return BadRequest(S["Either 'Recipe' or 'RecipeName' is required."]);
+                    return BadRequest(S["Either a 'recipe' file or 'RecipeName' is required."]);
                 }
 
                 var tempFilename = Path.GetTempFileName();
 
                 using (var fs = System.IO.File.Create(tempFilename))
                 {
-                    await model.Recipe.CopyToAsync(fs);
+                    await recipe.CopyToAsync(fs);
                 }
 
                 var fileProvider = new PhysicalFileProvider(Path.GetDirectoryName(tempFilename));
@@ -359,14 +410,14 @@ namespace OrchardCore.Tenants.Controllers
                 recipeDescriptor = new RecipeDescriptor
                 {
                     FileProvider = fileProvider,
-                    BasePath = String.Empty,
+                    BasePath = string.Empty,
                     RecipeFileInfo = fileProvider.GetFileInfo(Path.GetFileName(tempFilename))
                 };
             }
             else
             {
                 var setupRecipes = await _setupService.GetSetupRecipesAsync();
-                recipeDescriptor = setupRecipes.FirstOrDefault(x => String.Equals(x.Name, recipeName, StringComparison.OrdinalIgnoreCase));
+                recipeDescriptor = setupRecipes.FirstOrDefault(x => string.Equals(x.Name, recipeName, StringComparison.OrdinalIgnoreCase));
 
                 if (recipeDescriptor == null)
                 {
@@ -396,8 +447,8 @@ namespace OrchardCore.Tenants.Controllers
 
             var executionId = await _setupService.SetupAsync(setupContext);
 
-            // Check if a component in the Setup failed
-            if (setupContext.Errors.Any())
+            // Check if a component in the Setup failed.
+            if (setupContext.Errors.Count > 0)
             {
                 foreach (var error in setupContext.Errors)
                 {
@@ -415,14 +466,14 @@ namespace OrchardCore.Tenants.Controllers
             var host = shellSettings.RequestUrlHosts.FirstOrDefault();
             var hostString = host != null ? new HostString(host) : Request.Host;
 
-            var pathString = HttpContext.Features.Get<ShellContextFeature>().OriginalPathBase;
-            if (!String.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
+            var pathString = HttpContext.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? PathString.Empty;
+            if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
             {
                 pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
             }
 
             var queryString = QueryString.Empty;
-            if (!String.IsNullOrEmpty(token))
+            if (!string.IsNullOrEmpty(token))
             {
                 queryString = QueryString.Create("token", token);
             }
@@ -437,6 +488,13 @@ namespace OrchardCore.Tenants.Controllers
             var token = dataProtector.Protect(shellSettings["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
 
             return token;
+        }
+
+        private async Task ValidateModelAsync(TenantApiModel model, bool isNewTenant)
+        {
+            model.IsNewTenant = isNewTenant;
+
+            ModelState.AddModelErrors(await _tenantValidator.ValidateAsync(model));
         }
     }
 }

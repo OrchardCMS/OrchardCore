@@ -6,8 +6,6 @@ namespace OrchardCore.Modules.Manifest
 {
     using static StringSplitOptions;
 
-#pragma warning disable IDE0049 // Use framework type
-    // #pragma warning restore IDE0049
     /// <summary>
     /// Defines a Feature in a Module, can be used multiple times.
     /// If at least one Feature is defined, the Module default feature is ignored.
@@ -71,22 +69,22 @@ namespace OrchardCore.Modules.Manifest
         /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public FeatureAttribute(
-            string id
-            , string description
-            , string featureDependencies
-            , object defaultTenant
-            , object alwaysEnabled
-            , object enabledByDependencyOnly
+            string id,
+            string description,
+            string featureDependencies,
+            object defaultTenant,
+            object alwaysEnabled,
+            object enabledByDependencyOnly
         ) : this(
-            id
-            , default
-            , default
-            , default
-            , description
-            , featureDependencies
-            , defaultTenant
-            , alwaysEnabled
-            , enabledByDependencyOnly
+            id,
+            default,
+            default,
+            default,
+            description,
+            featureDependencies,
+            defaultTenant,
+            alwaysEnabled,
+            enabledByDependencyOnly
         )
         {
         }
@@ -107,23 +105,23 @@ namespace OrchardCore.Modules.Manifest
         /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public FeatureAttribute(
-            string id
-            , string name
-            , string description
-            , string featureDependencies
-            , object defaultTenant
-            , object alwaysEnabled
-            , object enabledByDependencyOnly
+            string id,
+            string name,
+            string description,
+            string featureDependencies,
+            object defaultTenant,
+            object alwaysEnabled,
+            object enabledByDependencyOnly
         ) : this(
-            id
-            , name
-            , default
-            , default
-            , description
-            , featureDependencies
-            , defaultTenant
-            , alwaysEnabled
-            , enabledByDependencyOnly
+            id,
+            name,
+            default,
+            default,
+            description,
+            featureDependencies,
+            defaultTenant,
+            alwaysEnabled,
+            enabledByDependencyOnly
         )
         {
         }
@@ -146,21 +144,21 @@ namespace OrchardCore.Modules.Manifest
         /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public FeatureAttribute(
-            string id
-            , string name
-            , string category
-            , string priority
-            , string description
-            , string featureDependencies
-            , object defaultTenant
-            , object alwaysEnabled
-            , object enabledByDependencyOnly
+            string id,
+            string name,
+            string category,
+            string priority,
+            string description,
+            string featureDependencies,
+            object defaultTenant,
+            object alwaysEnabled,
+            object enabledByDependencyOnly
         )
         {
             Id = id;
             Name = name;
             Category = category ?? DefaultCategory;
-            Priority = priority ?? String.Empty;
+            Priority = priority ?? string.Empty;
             Description = description ?? DefaultDescription;
             DelimitedDependencies = featureDependencies ?? DefaultFeatureDependencies;
 
@@ -175,7 +173,7 @@ namespace OrchardCore.Modules.Manifest
         /// <summary>
         /// Whether the feature exists based on the <see cref="Id"/>.
         /// </summary>
-        public virtual bool Exists => !String.IsNullOrEmpty(Id);
+        public virtual bool Exists => !string.IsNullOrEmpty(Id);
 
         private string _id;
 
@@ -188,7 +186,7 @@ namespace OrchardCore.Modules.Manifest
             set
             {
                 // Guards setting Id with strictly invalid values.
-                if (String.IsNullOrEmpty(value))
+                if (string.IsNullOrEmpty(value))
                 {
                     throw new InvalidOperationException($"When '{nameof(Id)}' has been provided it should not be null or empty.")
                     {
@@ -204,12 +202,12 @@ namespace OrchardCore.Modules.Manifest
 
         /// <summary>
         /// Returns the <see cref="string"/> <paramref name="s"/> as is, or <c>null</c> when that
-        /// or <see cref="String.Empty"/>.
+        /// or <see cref="string.Empty"/>.
         /// </summary>
         /// <param name="s">The string value to consider.</param>
         /// <returns>The <paramref name="s"/> value as is, or Null when either that or Empty.</returns>
-        /// <see cref="String.IsNullOrEmpty(string?)"/>
-        internal static string StringOrNull(string s) => String.IsNullOrEmpty(s) ? null : s;
+        /// <see cref="string.IsNullOrEmpty(string?)"/>
+        internal static string StringOrNull(string s) => string.IsNullOrEmpty(s) ? null : s;
 
         /// <summary>
         /// Gets or sets the human readable or canonical feature name. <see cref="Id"/> will be
@@ -248,7 +246,7 @@ namespace OrchardCore.Modules.Manifest
         /// <returns>The first or default Description with optional back stop features.</returns>
         internal virtual string Describe(params FeatureAttribute[] additionalFeatures)
         {
-            static bool IsNotNullOrEmpty(string s) => !String.IsNullOrEmpty(s);
+            static bool IsNotNullOrEmpty(string s) => !string.IsNullOrEmpty(s);
             var firstOrDefaultResult = GetValues(this).Concat(additionalFeatures)
                 .Select(feature => feature.Description)
                 .FirstOrDefault(IsNotNullOrEmpty);
@@ -267,7 +265,7 @@ namespace OrchardCore.Modules.Manifest
         /// perspective. Also common are comma (&apos;,&apos;) and space (&apos; &apos;)
         /// delimiters.
         /// </summary>
-        /// <see cref="String.Split(char[], StringSplitOptions)"/>
+        /// <see cref="string.Split(char[], StringSplitOptions)"/>
         internal protected static char[] ListDelims { get; } = GetValues(';', ',', ' ').ToArray();
 
         /// <summary>
@@ -346,7 +344,7 @@ namespace OrchardCore.Modules.Manifest
         /// <returns>The Category normalized across This instance and optional Module.</returns>
         internal virtual string Categorize(params FeatureAttribute[] additionalFeatures)
         {
-            static bool IsNotNullOrEmpty(string s) => !String.IsNullOrEmpty(s);
+            static bool IsNotNullOrEmpty(string s) => !string.IsNullOrEmpty(s);
             var categories = GetValues(this).Concat(additionalFeatures).Select(feature => feature.Category);
             var category = categories.FirstOrDefault(IsNotNullOrEmpty);
             // TODO: MWP: 'Uncategorized'? or is empty acceptable here?

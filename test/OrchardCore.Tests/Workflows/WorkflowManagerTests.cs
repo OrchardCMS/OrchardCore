@@ -61,7 +61,7 @@ namespace OrchardCore.Tests.Workflows
             Assert.Equal(expectedSum, (double)workflowExecutionContext.Output["Sum"]);
         }
 
-        private IServiceProvider CreateServiceProvider()
+        private static IServiceProvider CreateServiceProvider()
         {
             var services = new ServiceCollection();
             services.AddScoped(typeof(Resolver<>));
@@ -72,12 +72,12 @@ namespace OrchardCore.Tests.Workflows
             return services.BuildServiceProvider();
         }
 
-        private IWorkflowScriptEvaluator CreateWorkflowScriptEvaluator(IServiceProvider serviceProvider)
+        private static IWorkflowScriptEvaluator CreateWorkflowScriptEvaluator(IServiceProvider serviceProvider)
         {
             var memoryCache = new MemoryCache(new MemoryCacheOptions());
             var javaScriptEngine = new JavaScriptEngine(memoryCache);
             var workflowContextHandlers = new Resolver<IEnumerable<IWorkflowExecutionContextHandler>>(serviceProvider);
-            var globalMethodProviders = new IGlobalMethodProvider[0];
+            var globalMethodProviders = Array.Empty<IGlobalMethodProvider>();
             var scriptingManager = new DefaultScriptingManager(new[] { javaScriptEngine }, globalMethodProviders);
 
             return new JavaScriptWorkflowScriptEvaluator(
@@ -87,7 +87,7 @@ namespace OrchardCore.Tests.Workflows
             );
         }
 
-        private WorkflowManager CreateWorkflowManager(
+        private static WorkflowManager CreateWorkflowManager(
             IServiceProvider serviceProvider,
             IEnumerable<IActivity> activities,
             WorkflowType workflowType
@@ -105,17 +105,20 @@ namespace OrchardCore.Tests.Workflows
             var missingActivityLogger = new Mock<ILogger<MissingActivity>>();
             var missingActivityLocalizer = new Mock<IStringLocalizer<MissingActivity>>();
             var clock = new Mock<IClock>();
+            var workflowFaultHandler = new Mock<IWorkflowFaultHandler>();
             var workflowManager = new WorkflowManager(
                 activityLibrary.Object,
                 workflowTypeStore.Object,
                 workflowStore.Object,
                 workflowIdGenerator.Object,
                 workflowValueSerializers,
+                workflowFaultHandler.Object,
                 distributedLock.Object,
                 workflowManagerLogger.Object,
                 missingActivityLogger.Object,
                 missingActivityLocalizer.Object,
-                clock.Object);
+                clock.Object
+                );
 
             foreach (var activity in activities)
             {

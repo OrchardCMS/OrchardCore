@@ -14,7 +14,7 @@ public static class AwsStorageOptionsExtension
 {
     public static IEnumerable<ValidationResult> Validate(this AwsStorageOptions options)
     {
-        if (String.IsNullOrWhiteSpace(options.BucketName))
+        if (string.IsNullOrWhiteSpace(options.BucketName))
         {
             yield return new ValidationResult(Constants.ValidationMessages.BucketNameIsEmpty);
         }
@@ -37,14 +37,14 @@ public static class AwsStorageOptionsExtension
             return options;
         }
 
-        options.BucketName = section.GetValue(nameof(options.BucketName), String.Empty);
-        options.BasePath = section.GetValue(nameof(options.BasePath), String.Empty);
+        options.BucketName = section.GetValue(nameof(options.BucketName), string.Empty);
+        options.BasePath = section.GetValue(nameof(options.BasePath), string.Empty);
         options.CreateBucket = section.GetValue(nameof(options.CreateBucket), false);
         options.RemoveBucket = section.GetValue(nameof(options.RemoveBucket), false);
 
         try
         {
-            // Binding AWS Options
+            // Binding AWS Options.
             options.AwsOptions = shellConfiguration.GetAWSOptions("OrchardCore_Media_AmazonS3");
 
             // In case Credentials sections was specified, trying to add BasicAWSCredential to AWSOptions
@@ -52,11 +52,11 @@ public static class AwsStorageOptionsExtension
             var credentials = section.GetSection("Credentials");
             if (credentials.Exists())
             {
-                var secretKey = credentials.GetValue(Constants.AwsCredentialParamNames.SecretKey, String.Empty);
-                var accessKey = credentials.GetValue(Constants.AwsCredentialParamNames.AccessKey, String.Empty);
+                var secretKey = credentials.GetValue(Constants.AwsCredentialParamNames.SecretKey, string.Empty);
+                var accessKey = credentials.GetValue(Constants.AwsCredentialParamNames.AccessKey, string.Empty);
 
-                if (!String.IsNullOrWhiteSpace(accessKey) ||
-                    !String.IsNullOrWhiteSpace(secretKey))
+                if (!string.IsNullOrWhiteSpace(accessKey) ||
+                    !string.IsNullOrWhiteSpace(secretKey))
                 {
                     var awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
                     options.AwsOptions.Credentials = awsCredentials;
@@ -67,7 +67,7 @@ public static class AwsStorageOptionsExtension
         }
         catch (ConfigurationException ex)
         {
-            logger.LogCritical(ex, ex.Message);
+            logger.LogCritical(ex, "Failed to configure AWS options.");
             throw;
         }
     }

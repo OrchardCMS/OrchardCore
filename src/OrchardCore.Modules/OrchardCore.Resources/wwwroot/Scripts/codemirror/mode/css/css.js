@@ -3,7 +3,7 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
@@ -137,9 +137,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       return states[state.context.type](type, stream, state);
     }
     function popAndPass(type, stream, state, n) {
-      for (var i = n || 1; i > 0; i--) {
-        state.context = state.context.prev;
-      }
+      for (var i = n || 1; i > 0; i--) state.context = state.context.prev;
       return pass(type, stream, state);
     }
 

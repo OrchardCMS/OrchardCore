@@ -5,13 +5,13 @@
 <form asp-action="Index" method="post" class="no-multisubmit">
     <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
 
-    <div class="card bg-primary mb-3 position-sticky action-bar">
+    <div class="card text-bg-theme mb-3 position-sticky action-bar">
         <div class="card-body">
 
             <div class="row gx-3">
                 <div class="col">
                     <div class="has-search">
-                        <i class="fa fa-search form-control-feedback" aria-hidden="true"></i>
+                        <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
                         <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
                     </div>
                 </div>
@@ -21,7 +21,7 @@
     </div>
 
     <ul class="list-group">
-        <li class="list-group-item bg-primary">
+        <li class="list-group-item text-bg-theme">
             <div class="row gx-3">
                 <div class="col">
                 </div>
@@ -34,33 +34,33 @@
         </li>
         @if (Model.Tasks.Count > 0)
         {
-            foreach (var settings in Model.Tasks.Select(t => t.Settings))
+            foreach (var task in Model.Tasks)
             {
                 <li class="list-group-item">
                     <div class="d-flex">
                         <div class="me-auto">
-                            <span class="text-primary" title="@T["Settings"]"><i class="fa fa-cog" aria-hidden="true"></i></span>
-                            <span class="text-primary"><a asp-action="Edit" asp-route-name="@settings.Name">@settings.Title</a></span>
+                            <span class="text-primary" title="@T["Settings"]"><i class="fa-solid fa-cog" aria-hidden="true"></i></span>
+                            <span class="text-primary"><a asp-action="Edit" asp-route-name="@task.Name">@task.Title</a></span>
                         </div>
                         <div>
-                            <a asp-action="Edit" asp-route-name="@settings.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                            <a asp-action="Edit" asp-route-name="@task.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
 
-                            @if (settings.Enable)
+                            @if (task.Enable)
                             {
-                                <a asp-action="Disable" asp-route-name="@settings.Name" class="btn btn-sm btn-danger" data-url-af="UnsafeUrl">@T["Disable"]</a>
+                                <a asp-action="Disable" asp-route-name="@task.Name" class="btn btn-sm btn-danger" data-url-af="UnsafeUrl">@T["Disable"]</a>
                             }
                             else
                             {
-                                <a asp-action="Enable" asp-route-name="@settings.Name" class="btn btn-sm btn-success" data-url-af="UnsafeUrl">@T["Enable"]</a>
+                                <a asp-action="Enable" asp-route-name="@task.Name" class="btn btn-sm btn-success" data-url-af="UnsafeUrl">@T["Enable"]</a>
                             }
                         </div>
                     </div>
 
-                    @if (!String.IsNullOrWhiteSpace(settings.Description))
+                    @if (!string.IsNullOrWhiteSpace(task.Description))
                     {
                         <div class="row">
                             <div class="col">
-                                <p class="mb-0"><small class="text-muted">@settings.Description</small></p>
+                                <p class="mb-0"><small class="text-muted">@task.Description</small></p>
                             </div>
                         </div>
                     }
@@ -81,7 +81,7 @@
 
 @await DisplayAsync(Model.Pager)
 
-<script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
+<script asp-name="bootstrap-select" depends-on="bootstrap" at="Foot"></script>
 
 <script at="Foot">
     $(function () {

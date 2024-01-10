@@ -67,7 +67,7 @@ namespace OrchardCore.Media.Azure
                 {
                     var hostingEnvironment = serviceProvider.GetRequiredService<IWebHostEnvironment>();
 
-                    if (String.IsNullOrWhiteSpace(hostingEnvironment.WebRootPath))
+                    if (string.IsNullOrWhiteSpace(hostingEnvironment.WebRootPath))
                     {
                         throw new MediaConfigurationException("The wwwroot folder for serving cache media files is missing.");
                     }
@@ -114,7 +114,7 @@ namespace OrchardCore.Media.Azure
 
                     var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext
                         ?.Features.Get<ShellContextFeature>()
-                        ?.OriginalPathBase;
+                        ?.OriginalPathBase ?? PathString.Empty;
 
                     if (originalPathBase.HasValue)
                     {
@@ -137,13 +137,13 @@ namespace OrchardCore.Media.Azure
         {
             var optionsAreValid = true;
 
-            if (String.IsNullOrWhiteSpace(connectionString))
+            if (string.IsNullOrWhiteSpace(connectionString))
             {
                 logger.LogError("Azure Media Storage is enabled but not active because the 'ConnectionString' is missing or empty in application configuration.");
                 optionsAreValid = false;
             }
 
-            if (String.IsNullOrWhiteSpace(containerName))
+            if (string.IsNullOrWhiteSpace(containerName))
             {
                 logger.LogError("Azure Media Storage is enabled but not active because the 'ContainerName' is missing or empty in application configuration.");
                 optionsAreValid = false;

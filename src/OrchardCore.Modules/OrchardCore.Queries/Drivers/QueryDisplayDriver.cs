@@ -12,7 +12,7 @@ namespace OrchardCore.Queries.Drivers
     public class QueryDisplayDriver : DisplayDriver<Query>
     {
         private readonly IQueryManager _queryManager;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public QueryDisplayDriver(IQueryManager queryManager, IStringLocalizer<QueryDisplayDriver> stringLocalizer)
         {
@@ -64,7 +64,7 @@ namespace OrchardCore.Queries.Drivers
         {
             await updater.TryUpdateModelAsync(model, Prefix, m => m.Name, m => m.Source, m => m.Schema);
 
-            if (String.IsNullOrEmpty(model.Name))
+            if (string.IsNullOrEmpty(model.Name))
             {
                 updater.ModelState.AddModelError(nameof(model.Name), S["Name is required"]);
             }
@@ -73,7 +73,7 @@ namespace OrchardCore.Queries.Drivers
                 updater.ModelState.AddModelError(nameof(model.Schema), S["Invalid schema JSON supplied."]);
             }
             var safeName = model.Name.ToSafeName();
-            if (String.IsNullOrEmpty(safeName) || model.Name != safeName)
+            if (string.IsNullOrEmpty(safeName) || model.Name != safeName)
             {
                 updater.ModelState.AddModelError(nameof(model.Name), S["Name contains illegal characters"]);
             }

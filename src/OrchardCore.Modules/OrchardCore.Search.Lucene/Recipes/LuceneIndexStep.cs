@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
+using OrchardCore.Search.Lucene.Model;
 
 namespace OrchardCore.Search.Lucene.Recipes
 {
@@ -28,7 +28,7 @@ namespace OrchardCore.Search.Lucene.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "lucene-index", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "lucene-index", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }

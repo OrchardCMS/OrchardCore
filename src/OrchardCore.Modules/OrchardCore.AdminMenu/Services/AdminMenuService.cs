@@ -26,7 +26,7 @@ namespace OrchardCore.AdminMenu.Services
         {
             var adminMenuList = await LoadAdminMenuListAsync();
 
-            var preexisting = adminMenuList.AdminMenu.FirstOrDefault(x => String.Equals(x.Id, tree.Id, StringComparison.OrdinalIgnoreCase));
+            var preexisting = adminMenuList.AdminMenu.FirstOrDefault(x => string.Equals(x.Id, tree.Id, StringComparison.OrdinalIgnoreCase));
 
             // it's new? add it
             if (preexisting == null)
@@ -44,14 +44,14 @@ namespace OrchardCore.AdminMenu.Services
 
         public Models.AdminMenu GetAdminMenuById(AdminMenuList adminMenuList, string id)
         {
-            return adminMenuList.AdminMenu.FirstOrDefault(x => String.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase));
+            return adminMenuList.AdminMenu.FirstOrDefault(x => string.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase));
         }
 
         public async Task<int> DeleteAsync(Models.AdminMenu tree)
         {
             var adminMenuList = await LoadAdminMenuListAsync();
 
-            var count = adminMenuList.AdminMenu.RemoveAll(x => String.Equals(x.Id, tree.Id, StringComparison.OrdinalIgnoreCase));
+            var count = adminMenuList.AdminMenu.RemoveAll(x => string.Equals(x.Id, tree.Id, StringComparison.OrdinalIgnoreCase));
 
             await _documentManager.UpdateAsync(adminMenuList);
 

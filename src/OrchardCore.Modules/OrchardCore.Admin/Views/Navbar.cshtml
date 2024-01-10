@@ -1,0 +1,8 @@
+@if (Model.Content == null)
+{
+    return;
+}
+
+<ul class="navbar-nav user-top-navbar">
+    @await DisplayAsync(Model.Content)
+</ul>

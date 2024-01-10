@@ -18,7 +18,7 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
 {
     public class AuditTrailContentEventDisplayDriver : AuditTrailEventSectionDisplayDriver<AuditTrailContentEvent>
     {
-        private readonly Dictionary<string, string> _latestVersionId = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _latestVersionId = new();
         private readonly IAuditTrailManager _auditTrailManager;
         private readonly ISession _session;
 

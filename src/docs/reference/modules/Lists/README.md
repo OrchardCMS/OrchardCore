@@ -97,6 +97,6 @@ The indexed data in Lucene before Orchard Core 1.1 was:
 
 After 1.1 this has changed for also including the display order, so it is now:
 
-`"Content.ContentItem.ContainedPart.ListContentItemId"`   
+`"Content.ContentItem.ContainedPart.ListContentItemId"`
 and  
 `"Content.ContentItem.ContainedPart.Order"`

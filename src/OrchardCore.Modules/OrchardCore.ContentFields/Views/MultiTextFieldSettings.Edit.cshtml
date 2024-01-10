@@ -10,7 +10,7 @@
 
 <div class="mb-3">
     <div class="row col-sm-6">
-        <label asp-for="Hint">@T["Hint"]</label>
+        <label asp-for="Hint" class="form-label">@T["Hint"]</label>
         <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
         <span class="hint">@T["The hint text to display for this field on the editor."]</span>
     </div>
@@ -48,16 +48,16 @@
                 </td>
                 <td class="text-center">
                     <a v-on:click="remove(index)" href="javascript:void(0)" title="@T["Remove element from list"]" class="btn">
-                        <i class="fas fa-times" aria-hidden="true"></i>
+                        <i class="fa-solid fa-times" aria-hidden="true"></i>
                     </a>
                 </td>
-                <td class="text-center"><div class="btn cursor-move"><i class="fas fa-arrows-alt" aria-hidden="true"></i></div></td>
+                <td class="text-center"><div class="btn cursor-move"><i class="fa-solid fa-arrows-alt" aria-hidden="true"></i></div></td>
             </tr>
         </draggable>
         <tfoot>
             <tr>
                 <td class="col-sm-12 text-center" colspan="5">
-                    <a v-on:click="add()" class="btn btn-light w-100 btn-sm"><i class="fas fa-plus small" aria-hidden="true"></i> @T["Add an option"]</a>
+                    <a v-on:click="add()" class="btn btn-light w-100 btn-sm"><i class="fa-solid fa-plus small" aria-hidden="true"></i> @T["Add an option"]</a>
                     <input class="form-control" id="@Html.IdFor(m => m.Options)" name="@Html.NameFor(m => m.Options)" type="hidden" v-bind:value="getOptionsFormattedList()" />
                 </td>
             </tr>
@@ -75,12 +75,12 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="options-textarea">@T["Options"]</label>
+                        <label for="options-textarea" class="form-label">@T["Options"]</label>
                         <textarea id="options-textarea" name="options-textarea" rows="8" class="form-control" v-bind:value="JSON.stringify(data.options)" v-on:input="data.options = JSON.parse($event.target.value)"></textarea>
                         <span class="hint">@T["A JSON representation of the allowed values, e.g. {0}", "[ { name: 'First option', value: 'option1' }, { name: 'Second option', value: 'option2' } ]"]</span>
                     </div>
                     <div class="mb-3">
-                        <label for="options-defaultvalue">@T["Default value"]</label>
+                        <label for="options-defaultvalue" class="form-label">@T["Default value"]</label>
                         <input id="options-defaultvalue" name="options-defaultvalue" class="form-control" type="text" v-model="data.selected" />
                         <span class="hint">@T["(Optional) The default to assign to the text field."]</span>
                     </div>
@@ -97,8 +97,8 @@
 <div id="@Html.IdFor(m => m)">
     <div class="row">
         <div class="col-sm-6">
-            <label asp-for="Options">@T["Options"]</label>
-            <a href="javascript:void(0)" v-on:click="showModal" class="float-end" title="@T["Edit Data"]"><i class="fas fa-edit" aria-hidden="true"></i></a>
+            <label asp-for="Options" class="form-label">@T["Options"]</label>
+            <a href="javascript:void(0)" v-on:click="showModal" class="float-end" title="@T["Edit Data"]"><i class="fa-solid fa-edit" aria-hidden="true"></i></a>
             <options-table :data="sharedState"></options-table>
             <options-modal :data="sharedState" v-on:reload-data="reloadData()"></options-modal>
         </div>

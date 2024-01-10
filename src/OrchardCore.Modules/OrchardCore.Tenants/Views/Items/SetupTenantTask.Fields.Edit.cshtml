@@ -2,58 +2,58 @@
 @model SetupTenantTaskViewModel
 
 <div class="mb-3" asp-validation-class-for="TenantNameExpression">
-    <label asp-for="TenantNameExpression">@T["Tenant name"] <span asp-validation-for="TenantNameExpression"></span></label>
+    <label asp-for="TenantNameExpression" class="form-label">@T["Tenant name"] <span asp-validation-for="TenantNameExpression"></span></label>
     <input type="text" asp-for="TenantNameExpression" class="form-control code" autofocus />
     <span class="hint">@T["Select the name of tenant to setup."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="SiteNameExpression">
-    <label asp-for="SiteNameExpression">@T["Site name"] <span asp-validation-for="SiteNameExpression"></span></label>
+    <label asp-for="SiteNameExpression" class="form-label">@T["Site name"] <span asp-validation-for="SiteNameExpression"></span></label>
     <input type="text" asp-for="SiteNameExpression" class="form-control code" />
 </div>
 
 <div class="mb-3" asp-validation-class-for="AdminUsernameExpression">
-    <label asp-for="AdminUsernameExpression">@T["Admin user name"] <span asp-validation-for="AdminUsernameExpression"></span></label>
+    <label asp-for="AdminUsernameExpression" class="form-label">@T["Admin user name"] <span asp-validation-for="AdminUsernameExpression"></span></label>
     <input type="text" asp-for="AdminUsernameExpression" class="form-control code" />
 </div>
 
 <div class="mb-3" asp-validation-class-for="AdminEmailExpression">
-    <label asp-for="AdminEmailExpression">@T["Admin email"] <span asp-validation-for="AdminEmailExpression"></span></label>
+    <label asp-for="AdminEmailExpression" class="form-label">@T["Admin email"] <span asp-validation-for="AdminEmailExpression"></span></label>
     <input type="text" asp-for="AdminEmailExpression" class="form-control code" />
 </div>
 <div class="mb-3" asp-validation-class-for="AdminPasswordExpression">
-    <label asp-for="AdminPasswordExpression">@T["Admin password"] <span asp-validation-for="AdminPasswordExpression"></span></label>
+    <label asp-for="AdminPasswordExpression" class="form-label">@T["Admin password"] <span asp-validation-for="AdminPasswordExpression"></span></label>
     <input type="text" asp-for="AdminPasswordExpression" class="form-control code" />
 </div>
 
 <div class="mb-3" asp-validation-class-for="DatabaseProviderExpression">
-    <label asp-for="DatabaseProviderExpression">@T["What type of database to use?"] <span asp-validation-for="DatabaseProviderExpression"></span></label>
+    <label asp-for="DatabaseProviderExpression" class="form-label">@T["What type of database to use?"] <span asp-validation-for="DatabaseProviderExpression"></span></label>
     <input type="text" asp-for="DatabaseProviderExpression" class="form-control code" />
 </div>
 
 <div class="mb-3" asp-validation-class-for="DatabaseTablePrefixExpression">
-    <label asp-for="DatabaseTablePrefixExpression">@T["Table Prefix"] <span asp-validation-for="DatabaseTablePrefixExpression"></span></label>
+    <label asp-for="DatabaseTablePrefixExpression" class="form-label">@T["Table Prefix"] <span asp-validation-for="DatabaseTablePrefixExpression"></span></label>
     <input type="text" asp-for="DatabaseTablePrefixExpression" class="form-control code" />
 </div>
 
 <div class="mb-3" asp-validation-class-for="DatabaseConnectionStringExpression">
-    <label asp-for="DatabaseConnectionStringExpression">@T["Connection string"] <span asp-validation-for="DatabaseConnectionStringExpression"></span></label>
+    <label asp-for="DatabaseConnectionStringExpression" class="form-label">@T["Connection string"] <span asp-validation-for="DatabaseConnectionStringExpression"></span></label>
     <input type="text" asp-for="DatabaseConnectionStringExpression" class="form-control code" />
 </div>
 
 <div class="mb-3" asp-validation-class-for="DatabaseSchemaExpression">
-    <label asp-for="DatabaseTablePrefixExpression">@T["Schema"] <span asp-validation-for="DatabaseSchemaExpression"></span></label>
+    <label asp-for="DatabaseTablePrefixExpression" class="form-label">@T["Schema"] <span asp-validation-for="DatabaseSchemaExpression"></span></label>
     <input type="text" asp-for="DatabaseSchemaExpression" class="form-control code" />
     <div class="hint">@T["When left blank, the default value on the server will be used."] @T["For example, '{0}' for SQL Server.", "dbo"]</div>
 </div>
 
 <div class="mb-3" asp-validation-class-for="RecipeNameExpression">
-    <label asp-for="RecipeNameExpression">@T["Recipe"] <span asp-validation-for="RecipeNameExpression"></span></label>
+    <label asp-for="RecipeNameExpression" class="form-label">@T["Recipe"] <span asp-validation-for="RecipeNameExpression"></span></label>
     <input type="text" asp-for="RecipeNameExpression" class="form-control code" />
 </div>
 
 <style asp-name="codemirror"></style>
-<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
 <script asp-name="codemirror-addon-mode-simple" at="Foot"></script>

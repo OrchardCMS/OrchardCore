@@ -1,6 +1,5 @@
 using OrchardCore.Shortcodes.Providers;
 using OrchardCore.Shortcodes.Services;
-using Shortcodes;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Shortcodes
 {

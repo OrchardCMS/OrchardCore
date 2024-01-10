@@ -7,10 +7,10 @@ namespace OrchardCore.Queries
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageQueries = new Permission("ManageQueries", "Manage queries");
-        public static readonly Permission ExecuteApiAll = new Permission("ExecuteApiAll", "Execute Api - All queries", new[] { ManageQueries });
+        public static readonly Permission ManageQueries = new("ManageQueries", "Manage queries");
+        public static readonly Permission ExecuteApiAll = new("ExecuteApiAll", "Execute Api - All queries", new[] { ManageQueries });
 
-        private static readonly Permission ExecuteApi = new Permission("ExecuteApi_{0}", "Execute Api - {0}", new[] { ManageQueries, ExecuteApiAll });
+        private static readonly Permission _executeApi = new("ExecuteApi_{0}", "Execute Api - {0}", new[] { ManageQueries, ExecuteApiAll });
 
         private readonly IQueryManager _queryManager;
 
@@ -34,23 +34,25 @@ namespace OrchardCore.Queries
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
         {
             return new[] {
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Administrator",
-                    Permissions = new[] { ManageQueries }
+                    Permissions = new[] { ManageQueries },
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Editor",
-                    Permissions = new[] { ManageQueries }
-                }
+                    Permissions = new[] { ManageQueries },
+                },
             };
         }
 
         public static Permission CreatePermissionForQuery(string name)
         {
             return new Permission(
-                    String.Format(ExecuteApi.Name, name),
-                    String.Format(ExecuteApi.Description, name),
-                    ExecuteApi.ImpliedBy
+                    string.Format(_executeApi.Name, name),
+                    string.Format(_executeApi.Description, name),
+                    _executeApi.ImpliedBy
                 );
         }
     }

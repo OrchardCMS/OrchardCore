@@ -35,18 +35,18 @@ namespace OrchardCore.Contents.Handlers
             _serviceProvider = serviceProvider;
         }
 
-        public override Task GetContentItemAspectAsync(ContentItemAspectContext context)
+        public override async Task GetContentItemAspectAsync(ContentItemAspectContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
 
             if (contentTypeDefinition == null)
             {
-                return Task.CompletedTask;
+                return;
             }
 
-            return context.ForAsync<FullTextAspect>(async fullTextAspect =>
+            await context.ForAsync<FullTextAspect>(async fullTextAspect =>
             {
-                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+                var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
                 var settings = contentTypeDefinition.GetSettings<FullTextAspectSettings>();
 
                 if (settings.IncludeDisplayText)
@@ -69,7 +69,7 @@ namespace OrchardCore.Contents.Handlers
                     }
                 }
 
-                if (settings.IncludeFullTextTemplate && !String.IsNullOrEmpty(settings.FullTextTemplate))
+                if (settings.IncludeFullTextTemplate && !string.IsNullOrEmpty(settings.FullTextTemplate))
                 {
                     var result = await _liquidTemplateManager.RenderStringAsync(settings.FullTextTemplate, NullEncoder.Default, context.ContentItem,
                         new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(context.ContentItem) });

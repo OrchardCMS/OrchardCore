@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using OrchardCore.Admin;
 using OrchardCore.Cors.Services;
@@ -23,7 +22,7 @@ namespace OrchardCore.Cors.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly CorsService _corsService;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer<AdminController> H;
+        protected readonly IHtmlLocalizer H;
 
         public AdminController(
             IShellHost shellHost,

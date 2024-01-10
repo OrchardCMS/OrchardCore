@@ -1,5 +1,5 @@
 @model EditRoleViewModel
-@using OrchardCore.Roles.ViewModels;
+@using OrchardCore.Roles.ViewModels
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Role {0}", Model.Name])</h1></zone>
 
@@ -17,7 +17,7 @@
 <form asp-action="Edit" method="post" class="no-multisubmit">
     <h2>@T["Edit Role Detail"]</h2>
     <div class="mb-3" asp-validation-class-for="RoleDescription">
-        <label asp-for="RoleDescription">@T["Role description"]</label>
+        <label asp-for="RoleDescription" class="form-label">@T["Role description"]</label>
         <input asp-for="RoleDescription" class="form-control" />
     </div>
     <hr class="my-3">
@@ -37,7 +37,7 @@
         <fieldset class="permissions-list">
             <legend>
                 <span>@group.Key.Title</span>
-                @if (!String.IsNullOrEmpty(group.Key.Source))
+                @if (!string.IsNullOrEmpty(group.Key.Source))
                 {
                     <span class="hint">(@group.Key.Source)</span>
                 }
@@ -60,7 +60,7 @@
                                 @if (permission.IsSecurityCritical)
                                 {
                                     <div class="float-end">
-                                        <span class="badge bg-danger" data-bs-toggle="tooltip" data-html="true" title="@T["This permission could allow a user to elevate their other permissions. Grant it with extreme consideration."]">@T["Security Critical"]</span>
+                                        <span class="badge text-bg-danger" data-bs-toggle="tooltip" data-html="true" title="@T["This permission could allow a user to elevate their other permissions. Grant it with extreme consideration."]">@T["Security Critical"]</span>
                                     </div>
                                 }
                             </td>
@@ -90,10 +90,10 @@
 </form>
 
 <script at="Foot">
-    $(function() {
+    $(function () {
         var searchBox = $('#search-box');
         // On each keypress filter the list of roles
-        searchBox.keyup(function(e) {
+        searchBox.keyup(function (e) {
             var search = $(this).val().toLowerCase();
 
             // On ESC, clear the search box and display all roles
@@ -103,7 +103,7 @@
                 $('.permissions-list > table > tbody > tr').toggle(true);
             }
             else {
-                $('.permissions-list > table > tbody > tr').each(function() {
+                $('.permissions-list > table > tbody > tr').each(function () {
                     var text = $(this).data('text').toLowerCase();
                     var found = text.indexOf(search) > -1;
                     $(this).toggle(found);
@@ -114,7 +114,7 @@
                 });
 
                 // Hide any section without visible permission
-                $('.permissions-list').each(function() {
+                $('.permissions-list').each(function () {
                     var list = $(this);
                     var hasVisiblePermissions = list.find('table > tbody > tr:visible').length > 0;
                     list.toggle(hasVisiblePermissions);

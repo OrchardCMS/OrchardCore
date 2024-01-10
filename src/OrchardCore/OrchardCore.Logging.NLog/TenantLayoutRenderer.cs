@@ -8,7 +8,7 @@ using OrchardCore.Environment.Shell.Scope;
 namespace OrchardCore.Logging
 {
     /// <summary>
-    /// Print the tenant name
+    /// Print the tenant name.
     /// </summary>
     [LayoutRenderer(LayoutRendererName)]
     public class TenantLayoutRenderer : AspNetLayoutRendererBase
@@ -19,11 +19,8 @@ namespace OrchardCore.Logging
         {
             var tenantName = ShellScope.Context?.Settings.Name;
 
-            if (tenantName == null)
-            {
-                // If there is no ShellContext in the Features then the log is rendered from the Host.
-                tenantName = HttpContextAccessor.HttpContext.Features.Get<ShellContextFeature>()?.ShellContext.Settings.Name ?? "None";
-            }
+            // If there is no ShellContext in the Features then the log is rendered from the Host.
+            tenantName ??= HttpContextAccessor.HttpContext.Features.Get<ShellContextFeature>()?.ShellContext.Settings.Name ?? "None";
 
             builder.Append(tenantName);
         }
