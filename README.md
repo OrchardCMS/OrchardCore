@@ -52,7 +52,7 @@ Docker images and parameters can be found at <https://hub.docker.com/u/orchardpr
 
 It's great that you're thinking about contributing to Orchard Core! You'd join [our wonderful community of contributors](https://docs.orchardcore.net/en/latest/docs/community/).
 
-First, clone the repository using the command `git clone https://github.com/OrchardCMS/OrchardCore.git` and checkout the `main` branch. Then, you have multiple options, see below. And when you're read, head over to [our contribution guide](CONTRIBUTING.md).
+First, clone the repository using the command `git clone https://github.com/OrchardCMS/OrchardCore.git` and checkout the `main` branch. Then, you have multiple options, see below. And when you're ready, head over to [our contribution guide](CONTRIBUTING.md).
 
 ### Command Line
 
