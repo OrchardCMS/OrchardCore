@@ -42,6 +42,7 @@ jobs:
         title: Monthly issue metrics report
         token: ${{ secrets.GITHUB_TOKEN }}
         content-filepath: ./issue_metrics.md
+        labels: community metrics
 
     - name: Compute Pull Request Metrics
       uses: github/issue-metrics@v2
@@ -56,3 +57,4 @@ jobs:
         title: Monthly pull request metrics report
         token: ${{ secrets.GITHUB_TOKEN }}
         content-filepath: ./issue_metrics.md
+        labels: community metrics
