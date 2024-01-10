@@ -1,0 +1,20 @@
+name: Update Contributor Map
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - issue/OCORE-138
+  schedule:
+    - cron: "0 8 * * 1"
+    
+jobs:
+  create-and-push-contributor-map:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Update Contributor Map
+        uses: tunaitis/contributor-map@0d8dd542f4458fedd8a90d6a04fc2ec890a1f87c
+        with:
+            repository: facebbook/react
+            output: dsrc/docs/community/contributors/images/contributors-map.svg
