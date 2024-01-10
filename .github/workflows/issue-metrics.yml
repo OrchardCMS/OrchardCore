@@ -43,16 +43,16 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         content-filepath: ./issue_metrics.md
 
-      - name: Compute Pull Request Metrics
-        uses: github/issue-metrics@v2
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SEARCH_QUERY: 'repo:OrchardCMS/OrchardCore is:pr -label:dontmerge -label:notready -is:draft created:${{ env.last_month }}'
-  
-      - name: Create Issue
-        # v4.0.1
-        uses: peter-evans/create-issue-from-file@433e51abf769039ee20ba1293a088ca19d573b7f
-        with:
-          title: Monthly pull request metrics report
-          token: ${{ secrets.GITHUB_TOKEN }}
-          content-filepath: ./issue_metrics.md
+    - name: Compute Pull Request Metrics
+      uses: github/issue-metrics@v2
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SEARCH_QUERY: 'repo:OrchardCMS/OrchardCore is:pr -label:dontmerge -label:notready -is:draft created:${{ env.last_month }}'
+
+    - name: Create Issue
+      # v4.0.1
+      uses: peter-evans/create-issue-from-file@433e51abf769039ee20ba1293a088ca19d573b7f
+      with:
+        title: Monthly pull request metrics report
+        token: ${{ secrets.GITHUB_TOKEN }}
+        content-filepath: ./issue_metrics.md
