@@ -39,7 +39,7 @@ jobs:
       # v4.0.1
       uses: peter-evans/create-issue-from-file@433e51abf769039ee20ba1293a088ca19d573b7f
       with:
-        title: Monthly issue metrics report
+        title: Monthly issue metrics report for ${{ env.last_month }}
         token: ${{ secrets.GITHUB_TOKEN }}
         content-filepath: ./issue_metrics.md
         labels: community metrics
@@ -54,7 +54,7 @@ jobs:
       # v4.0.1
       uses: peter-evans/create-issue-from-file@433e51abf769039ee20ba1293a088ca19d573b7f
       with:
-        title: Monthly pull request metrics report
+        title: Monthly pull request metrics report for ${{ env.last_month }}
         token: ${{ secrets.GITHUB_TOKEN }}
         content-filepath: ./issue_metrics.md
         
