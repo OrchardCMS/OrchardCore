@@ -50,6 +50,7 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SEARCH_QUERY: 'repo:OrchardCMS/OrchardCore is:pr created:${{ env.last_month }} -label:dontmerge -label:notready -is:draft'
+        HIDE_TIME_TO_ANSWER: true
 
     - name: Create Issue
       # v4.0.1
@@ -59,4 +60,3 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         content-filepath: ./issue_metrics.md
         labels: community metrics
-        HIDE_TIME_TO_ANSWER: true
