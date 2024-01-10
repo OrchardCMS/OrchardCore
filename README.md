@@ -56,20 +56,20 @@ First, clone the repository using the command `git clone https://github.com/Orch
 
 ### Command Line
 
-- Install the latest version of the .NET SDK from this page <https://dotnet.microsoft.com/download>
-- Next, navigate to `./OrchardCore/src/OrchardCore.Cms.Web`.
-- Call `dotnet run`.
-- Then open the `http://localhost:5000` URL in your browser.
+1. Install the latest version of the .NET SDK from this page: <https://dotnet.microsoft.com/download>.
+2. Navigate to `./OrchardCore/src/OrchardCore.Cms.Web`.
+3. Run `dotnet run`.
+4. Ppen the `http://localhost:5000` URL in your browser.
 
 ### Visual Studio
 
-- Download Visual Studio 2022 (v17.5+) from <https://www.visualstudio.com/downloads>.
-- Launch the solution by clicking on `OrchardCore.sln`. Give Visual Studio time to restore all missing Nuget packages.
-- Ensure `OrchardCore.Cms.Web` is set as the startup project. Then run the app.
+1. Download Visual Studio 2022 (v17.5+) from <https://www.visualstudio.com/downloads>.
+2. Launch the solution by clicking on `OrchardCore.sln`. Give Visual Studio time to restore all missing Nuget packages.
+3. Ensure `OrchardCore.Cms.Web` is set as the startup project. Then run the app.
 
 ## Code of Conduct
 
-See [CODE-OF-CONDUCT](./CODE-OF-CONDUCT.md)
+See [CODE-OF-CONDUCT](./CODE-OF-CONDUCT.md).
 
 ## .NET Foundation
 
