@@ -1,4 +1,4 @@
-name: Update Contributor Map
+name: Contributor Map
 
 on:
   workflow_dispatch:
@@ -7,7 +7,8 @@ on:
     - cron: "0 3 * * 1"
     
 jobs:
-  create-and-push-contributor-map:
+  update-contributor-map:
+    name: Update Contributor Map
     runs-on: ubuntu-latest
     
     steps:
