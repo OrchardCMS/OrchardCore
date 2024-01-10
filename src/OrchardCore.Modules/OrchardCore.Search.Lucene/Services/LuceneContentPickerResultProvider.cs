@@ -26,7 +26,7 @@ namespace OrchardCore.Search.Lucene.Services
 
             var fieldSettings = searchContext.PartFieldDefinition?.GetSettings<ContentPickerFieldLuceneEditorSettings>();
 
-            if (!String.IsNullOrWhiteSpace(fieldSettings?.Index))
+            if (!string.IsNullOrWhiteSpace(fieldSettings?.Index))
             {
                 indexName = fieldSettings.Index;
             }
@@ -42,7 +42,7 @@ namespace OrchardCore.Search.Lucene.Services
             {
                 Query query = null;
 
-                if (String.IsNullOrWhiteSpace(searchContext.Query))
+                if (string.IsNullOrWhiteSpace(searchContext.Query))
                 {
                     query = new MatchAllDocsQuery();
                 }

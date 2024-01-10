@@ -49,7 +49,7 @@ namespace OrchardCore.Menu.Controllers
 
         public async Task<IActionResult> Create(string id, string menuContentItemId, string menuItemId)
         {
-            if (String.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrWhiteSpace(id))
             {
                 return NotFound();
             }
@@ -80,7 +80,7 @@ namespace OrchardCore.Menu.Controllers
 
             ContentItem menu;
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Menu");
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Menu");
 
             if (!contentTypeDefinition.IsDraftable())
             {
@@ -185,7 +185,7 @@ namespace OrchardCore.Menu.Controllers
 
             ContentItem menu;
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Menu");
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Menu");
 
             if (!contentTypeDefinition.IsDraftable())
             {
@@ -251,7 +251,7 @@ namespace OrchardCore.Menu.Controllers
 
             ContentItem menu;
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Menu");
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Menu");
 
             if (!contentTypeDefinition.IsDraftable())
             {

@@ -10,6 +10,7 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Environment.Shell.Configuration.Internal;
 using OrchardCore.Shells.Database.Extensions;
 using OrchardCore.Shells.Database.Models;
 using YesSql;
@@ -43,14 +44,14 @@ namespace OrchardCore.Shells.Database.Configuration
         {
             JObject configurations = null;
 
-            using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
-            await context.CreateScope().UsingServiceScopeAsync(async scope =>
+            await using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
+            await (await context.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
                 var document = await session.Query<DatabaseShellConfigurations>().FirstOrDefaultAsync();
 
-                if (document != null)
+                if (document is not null)
                 {
                     configurations = document.ShellConfigurations;
                 }
@@ -69,28 +70,29 @@ namespace OrchardCore.Shells.Database.Configuration
 
                     document.ShellConfigurations = configurations;
 
-                    session.Save(document, checkConcurrency: true);
+                    await session.SaveAsync(document, checkConcurrency: true);
                 }
             });
 
             var configuration = configurations.GetValue(tenant) as JObject;
-            if (configuration != null)
+            if (configuration is not null)
             {
-                builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(configuration.ToString(Formatting.None))));
+                var configurationString = await configuration.ToStringAsync(Formatting.None);
+                builder.AddTenantJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(configurationString)));
             }
         }
 
         public async Task SaveAsync(string tenant, IDictionary<string, string> data)
         {
-            using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
-            await context.CreateScope().UsingServiceScopeAsync(async scope =>
+            await using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
+            await (await context.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
                 var document = await session.Query<DatabaseShellConfigurations>().FirstOrDefaultAsync();
 
                 JObject configurations;
-                if (document != null)
+                if (document is not null)
                 {
                     configurations = document.ShellConfigurations;
                 }
@@ -100,40 +102,41 @@ namespace OrchardCore.Shells.Database.Configuration
                     configurations = new JObject();
                 }
 
-                var config = configurations.GetValue(tenant) as JObject ?? new JObject();
+                var configData = await (configurations
+                    .GetValue(tenant) as JObject)
+                    .ToConfigurationDataAsync();
 
                 foreach (var key in data.Keys)
                 {
-                    if (data[key] != null)
+                    if (data[key] is not null)
                     {
-                        config[key] = data[key];
+                        configData[key] = data[key];
                     }
                     else
                     {
-                        config.Remove(key);
+                        configData.Remove(key);
                     }
                 }
 
-                configurations[tenant] = config;
-
+                configurations[tenant] = configData.ToJObject();
                 document.ShellConfigurations = configurations;
 
-                session.Save(document, checkConcurrency: true);
+                await session.SaveAsync(document, checkConcurrency: true);
             });
         }
 
         public async Task RemoveAsync(string tenant)
         {
-            using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
-            await context.CreateScope().UsingServiceScopeAsync(async scope =>
+            await using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
+            await (await context.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
                 var document = await session.Query<DatabaseShellConfigurations>().FirstOrDefaultAsync();
-                if (document != null)
+                if (document is not null)
                 {
                     document.ShellConfigurations.Remove(tenant);
-                    session.Save(document, checkConcurrency: true);
+                    await session.SaveAsync(document, checkConcurrency: true);
                 }
             });
         }
@@ -151,7 +154,7 @@ namespace OrchardCore.Shells.Database.Configuration
             using var file = File.OpenText(appsettings);
             var configuration = await file.ReadToEndAsync();
 
-            if (configuration != null)
+            if (configuration is not null)
             {
                 configurations[tenant] = JObject.Parse(configuration);
             }

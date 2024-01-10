@@ -101,7 +101,7 @@ namespace OrchardCore.AutoSetup.Options
         /// <returns> The collection of errors. </returns>
         public virtual IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (String.IsNullOrEmpty(ShellName) || !Regex.IsMatch(ShellName, @"^\w+$"))
+            if (string.IsNullOrEmpty(ShellName) || !Regex.IsMatch(ShellName, @"^\w+$"))
             {
                 yield return new ValidationResult("ShellName Can not be empty and must contain characters only and no spaces.");
             }
@@ -111,50 +111,50 @@ namespace OrchardCore.AutoSetup.Options
                 yield return new ValidationResult("The tenant name is in conflict with the 'Default' tenant name.");
             }
 
-            if (!String.IsNullOrWhiteSpace(RequestUrlPrefix) && RequestUrlPrefix.Contains('/'))
+            if (!string.IsNullOrWhiteSpace(RequestUrlPrefix) && RequestUrlPrefix.Contains('/'))
             {
                 yield return new ValidationResult("The RequestUrlPrefix can not contain more than one segment.");
             }
 
-            if (String.IsNullOrWhiteSpace(SiteName))
+            if (string.IsNullOrWhiteSpace(SiteName))
             {
-                yield return new ValidationResult(String.Format(_requiredErrorMessageFormat, nameof(SiteName)));
+                yield return new ValidationResult(string.Format(_requiredErrorMessageFormat, nameof(SiteName)));
             }
 
-            if (String.IsNullOrWhiteSpace(AdminUsername))
+            if (string.IsNullOrWhiteSpace(AdminUsername))
             {
-                yield return new ValidationResult(String.Format(_requiredErrorMessageFormat, nameof(AdminUsername)));
+                yield return new ValidationResult(string.Format(_requiredErrorMessageFormat, nameof(AdminUsername)));
             }
 
-            if (String.IsNullOrWhiteSpace(AdminEmail))
+            if (string.IsNullOrWhiteSpace(AdminEmail))
             {
-                yield return new ValidationResult(String.Format(_requiredErrorMessageFormat, nameof(AdminEmail)));
+                yield return new ValidationResult(string.Format(_requiredErrorMessageFormat, nameof(AdminEmail)));
             }
 
-            if (String.IsNullOrWhiteSpace(AdminPassword))
+            if (string.IsNullOrWhiteSpace(AdminPassword))
             {
-                yield return new ValidationResult(String.Format(_requiredErrorMessageFormat, nameof(AdminPassword)));
+                yield return new ValidationResult(string.Format(_requiredErrorMessageFormat, nameof(AdminPassword)));
             }
 
             var selectedProvider = validationContext.GetServices<DatabaseProvider>().FirstOrDefault(x => x.Value == DatabaseProvider);
             if (selectedProvider == null)
             {
-                yield return new ValidationResult(String.Format(_requiredErrorMessageFormat, nameof(DatabaseProvider)));
+                yield return new ValidationResult(string.Format(_requiredErrorMessageFormat, nameof(DatabaseProvider)));
             }
 
-            if (selectedProvider != null && selectedProvider.HasConnectionString && String.IsNullOrWhiteSpace(DatabaseConnectionString))
+            if (selectedProvider != null && selectedProvider.HasConnectionString && string.IsNullOrWhiteSpace(DatabaseConnectionString))
             {
-                yield return new ValidationResult(String.Format(_requiredErrorMessageFormat, nameof(DatabaseConnectionString)));
+                yield return new ValidationResult(string.Format(_requiredErrorMessageFormat, nameof(DatabaseConnectionString)));
             }
 
-            if (String.IsNullOrWhiteSpace(RecipeName))
+            if (string.IsNullOrWhiteSpace(RecipeName))
             {
-                yield return new ValidationResult(String.Format(_requiredErrorMessageFormat, nameof(RecipeName)));
+                yield return new ValidationResult(string.Format(_requiredErrorMessageFormat, nameof(RecipeName)));
             }
 
-            if (String.IsNullOrWhiteSpace(SiteTimeZone))
+            if (string.IsNullOrWhiteSpace(SiteTimeZone))
             {
-                yield return new ValidationResult(String.Format(_requiredErrorMessageFormat, nameof(SiteTimeZone)));
+                yield return new ValidationResult(string.Format(_requiredErrorMessageFormat, nameof(SiteTimeZone)));
             }
         }
     }

@@ -54,7 +54,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             throw new ArgumentNullException(nameof(context));
         }
 
-        if (String.IsNullOrWhiteSpace(context.DatabaseProvider))
+        if (string.IsNullOrWhiteSpace(context.DatabaseProvider))
         {
             return DbConnectionValidatorResult.NoProvider;
         }
@@ -76,14 +76,14 @@ public class DbConnectionValidator : IDbConnectionValidator
             connectionString = SqliteHelper.GetConnectionString(_sqliteOptions, _shellOptions, context.ShellName);
         }
 
-        if (String.IsNullOrWhiteSpace(connectionString))
+        if (string.IsNullOrWhiteSpace(connectionString))
         {
             return DbConnectionValidatorResult.InvalidConnection;
         }
 
         var factory = GetFactory(context.DatabaseProvider, connectionString);
 
-        using var connection = factory.CreateConnection();
+        await using var connection = factory.CreateConnection();
 
         // Prevent from creating an empty locked 'Sqlite' file.
         if (provider.Value == DatabaseProviderValue.Sqlite &&
@@ -211,8 +211,8 @@ public class DbConnectionValidator : IDbConnectionValidator
 
     private static ISqlBuilder GetSqlBuilder(ISqlDialect sqlDialect, string tablePrefix, string tableNameSeparator)
     {
-        var prefix = String.Empty;
-        if (!String.IsNullOrWhiteSpace(tablePrefix))
+        var prefix = string.Empty;
+        if (!string.IsNullOrWhiteSpace(tablePrefix))
         {
             prefix = tablePrefix.Trim() + tableNameSeparator;
         }

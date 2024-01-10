@@ -39,7 +39,7 @@ public class MediaS3BucketTenantEvents : ModularTenantEvents
     {
         if (!_options.CreateBucket ||
             _shellSettings.IsUninitialized() ||
-            String.IsNullOrEmpty(_options.BucketName))
+            string.IsNullOrEmpty(_options.BucketName))
         {
             return;
         }
@@ -97,7 +97,7 @@ public class MediaS3BucketTenantEvents : ModularTenantEvents
 
     public override async Task RemovingAsync(ShellRemovingContext context)
     {
-        if (!_options.RemoveBucket || String.IsNullOrEmpty(_options.BucketName))
+        if (!_options.RemoveBucket || string.IsNullOrEmpty(_options.BucketName))
         {
             return;
         }

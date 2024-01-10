@@ -37,7 +37,7 @@ namespace OrchardCore.ContentLocalization.Controllers
         public async Task<IActionResult> Localize(string contentItemId, string targetCulture)
         {
             // Invariant culture name is empty so a null value is bound.
-            targetCulture ??= String.Empty;
+            targetCulture ??= string.Empty;
 
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 

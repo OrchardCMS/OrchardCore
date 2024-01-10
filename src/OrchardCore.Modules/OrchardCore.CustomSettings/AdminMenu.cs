@@ -20,14 +20,14 @@ namespace OrchardCore.CustomSettings
             _customSettingsService = customSettingsService;
         }
 
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+        public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                return Task.CompletedTask;
+                return;
             }
 
-            foreach (var type in _customSettingsService.GetAllSettingsTypes())
+            foreach (var type in await _customSettingsService.GetAllSettingsTypesAsync())
             {
                 builder
                     .Add(S["Configuration"], configuration => configuration
@@ -41,8 +41,6 @@ namespace OrchardCore.CustomSettings
                                 .LocalNav()
                             )));
             }
-
-            return Task.CompletedTask;
         }
     }
 }

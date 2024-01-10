@@ -61,16 +61,16 @@ namespace OrchardCore.ContentTypes.Editors
 
         private static bool IsAlphaNumericOrEmpty(string value)
         {
-            if (String.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(value))
             {
                 return true;
             }
 
-            var startWithLetter = Char.IsLetter(value[0]);
+            var startWithLetter = char.IsLetter(value[0]);
 
             return value.Length == 1
                 ? startWithLetter
-                : startWithLetter && value.Skip(1).All(c => Char.IsLetterOrDigit(c));
+                : startWithLetter && value.Skip(1).All(c => char.IsLetterOrDigit(c));
         }
     }
 }

@@ -46,12 +46,12 @@ namespace OrchardCore.Twitter.Services
             var protrector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
             var queryString = request.RequestUri.Query;
 
-            if (!String.IsNullOrWhiteSpace(_twitterSettings.ConsumerSecret))
+            if (!string.IsNullOrWhiteSpace(_twitterSettings.ConsumerSecret))
             {
                 _twitterSettings.ConsumerSecret = protrector.Unprotect(_twitterSettings.ConsumerSecret);
             }
 
-            if (!String.IsNullOrWhiteSpace(_twitterSettings.AccessTokenSecret))
+            if (!string.IsNullOrWhiteSpace(_twitterSettings.AccessTokenSecret))
             {
                 _twitterSettings.AccessTokenSecret = protrector.Unprotect(_twitterSettings.AccessTokenSecret);
             }
@@ -69,7 +69,7 @@ namespace OrchardCore.Twitter.Services
                 { Uri.EscapeDataString("oauth_version"), Uri.EscapeDataString("1.0") },
             };
 
-            if (!String.IsNullOrEmpty(request.RequestUri.Query))
+            if (!string.IsNullOrEmpty(request.RequestUri.Query))
             {
                 foreach (var item in request.RequestUri.Query.Split('&'))
                 {
@@ -82,7 +82,7 @@ namespace OrchardCore.Twitter.Services
 
             var contentString = await request.Content.ReadAsStringAsync();
 
-            if (!String.IsNullOrEmpty(contentString))
+            if (!string.IsNullOrEmpty(contentString))
             {
                 foreach (var item in contentString.Split('&'))
                 {
@@ -94,11 +94,11 @@ namespace OrchardCore.Twitter.Services
                 }
             }
 
-            var baseString = String.Concat(request.Method.Method.ToUpperInvariant(), "&",
+            var baseString = string.Concat(request.Method.Method.ToUpperInvariant(), "&",
                 Uri.EscapeDataString(request.RequestUri.AbsoluteUri.ToString()), "&",
-                Uri.EscapeDataString(String.Join("&", sortedParameters.Select(c => String.Format("{0}={1}", c.Key, c.Value)))));
+                Uri.EscapeDataString(string.Join("&", sortedParameters.Select(c => string.Format("{0}={1}", c.Key, c.Value)))));
 
-            var secret = String.Concat(_twitterSettings.ConsumerSecret, "&", _twitterSettings.AccessTokenSecret);
+            var secret = string.Concat(_twitterSettings.ConsumerSecret, "&", _twitterSettings.AccessTokenSecret);
 
             string signature;
             using (var hasher = new HMACSHA1(Encoding.ASCII.GetBytes(secret)))

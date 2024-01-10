@@ -19,7 +19,7 @@ public static class AliasPartRazorHelperExtensions
     /// <returns>A content item id or <c>null</c> if it was not found.</returns>
     public static async Task<string> GetContentItemIdByAliasAsync(this IOrchardHelper orchardHelper, string alias)
     {
-        if (String.IsNullOrEmpty(alias))
+        if (string.IsNullOrEmpty(alias))
         {
             return null;
         }

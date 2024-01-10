@@ -63,7 +63,7 @@ namespace OrchardCore.Data.Migration
                 if (_dataMigrationRecord == null)
                 {
                     _dataMigrationRecord = new DataMigrationRecord();
-                    _session.Save(_dataMigrationRecord);
+                    await _session.SaveAsync(_dataMigrationRecord);
                 }
             }
 
@@ -243,7 +243,7 @@ namespace OrchardCore.Data.Migration
                 finally
                 {
                     // Persist data migrations
-                    _session.Save(_dataMigrationRecord);
+                    await _session.SaveAsync(_dataMigrationRecord);
                 }
             }
         }
@@ -292,7 +292,7 @@ namespace OrchardCore.Data.Migration
                     ? methodInfo.Name.Substring(updateFromPrefix.Length, methodInfo.Name.Length - updateFromPrefix.Length - asyncSuffix.Length)
                     : methodInfo.Name[updateFromPrefix.Length..];
 
-                if (Int32.TryParse(version, out var versionValue))
+                if (int.TryParse(version, out var versionValue))
                 {
                     return new Tuple<int, MethodInfo>(versionValue, methodInfo);
                 }

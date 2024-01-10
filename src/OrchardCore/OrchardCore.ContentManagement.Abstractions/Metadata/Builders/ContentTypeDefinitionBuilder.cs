@@ -15,7 +15,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         private readonly IList<ContentTypePartDefinition> _parts;
         private readonly JObject _settings;
 
-        public ContentTypeDefinition Current { get; private set; }
+        public ContentTypeDefinition Current { get; }
 
         public ContentTypeDefinitionBuilder()
             : this(new ContentTypeDefinition(null, null))
@@ -29,7 +29,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             if (existing == null)
             {
                 _parts = new List<ContentTypePartDefinition>();
-                _settings = new JObject();
+                _settings = [];
             }
             else
             {
@@ -46,7 +46,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             {
                 throw new ArgumentException("Content type name must start with a letter", "name");
             }
-            if (!String.Equals(_name, _name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(_name, _name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
             {
                 throw new ArgumentException("Content type name contains invalid characters", "name");
             }
@@ -114,7 +114,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentTypeDefinitionBuilder RemovePart(string partName)
         {
-            var existingPart = _parts.SingleOrDefault(x => String.Equals(x.Name, partName, StringComparison.OrdinalIgnoreCase));
+            var existingPart = _parts.SingleOrDefault(x => string.Equals(x.Name, partName, StringComparison.OrdinalIgnoreCase));
             if (existingPart != null)
             {
                 _parts.Remove(existingPart);
@@ -123,28 +123,17 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         }
 
         public ContentTypeDefinitionBuilder WithPart(string partName)
-        {
-            return WithPart(partName, configuration => { });
-        }
+            => WithPart(partName, configuration => { });
 
         public ContentTypeDefinitionBuilder WithPart(string name, string partName)
-        {
-            return WithPart(name, new ContentPartDefinition(partName), configuration => { });
-        }
-
-        public ContentTypeDefinitionBuilder WithPart(string name, string partName, Action<ContentTypePartDefinitionBuilder> configuration)
-        {
-            return WithPart(name, new ContentPartDefinition(partName), configuration);
-        }
+            => WithPart(name, new ContentPartDefinition(partName), configuration => { });
 
         public ContentTypeDefinitionBuilder WithPart(string partName, Action<ContentTypePartDefinitionBuilder> configuration)
-        {
-            return WithPart(partName, new ContentPartDefinition(partName), configuration);
-        }
+            => WithPart(partName, new ContentPartDefinition(partName), configuration);
 
         public ContentTypeDefinitionBuilder WithPart(string name, ContentPartDefinition partDefinition, Action<ContentTypePartDefinitionBuilder> configuration)
         {
-            var existingPart = _parts.FirstOrDefault(x => String.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
+            var existingPart = _parts.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
             if (existingPart != null)
             {
                 _parts.Remove(existingPart);
@@ -163,19 +152,27 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
+        public ContentTypeDefinitionBuilder WithPart(string name, string partName, Action<ContentTypePartDefinitionBuilder> configuration)
+            => WithPart(name, new ContentPartDefinition(partName), configuration);
+
+        public ContentTypeDefinitionBuilder WithPart<TPart>() where TPart : ContentPart
+            => WithPart(typeof(TPart).Name, configuration => { });
+
+        public ContentTypeDefinitionBuilder WithPart<TPart>(string name) where TPart : ContentPart
+            => WithPart(name, new ContentPartDefinition(typeof(TPart).Name), configuration => { });
+
+        public ContentTypeDefinitionBuilder WithPart<TPart>(string name, Action<ContentTypePartDefinitionBuilder> configuration) where TPart : ContentPart
+            => WithPart(name, new ContentPartDefinition(typeof(TPart).Name), configuration);
+
         public Task<ContentTypeDefinitionBuilder> WithPartAsync(string name, string partName, Func<ContentTypePartDefinitionBuilder, Task> configurationAsync)
-        {
-            return WithPartAsync(name, new ContentPartDefinition(partName), configurationAsync);
-        }
+            => WithPartAsync(name, new ContentPartDefinition(partName), configurationAsync);
 
         public Task<ContentTypeDefinitionBuilder> WithPartAsync(string partName, Func<ContentTypePartDefinitionBuilder, Task> configurationAsync)
-        {
-            return WithPartAsync(partName, new ContentPartDefinition(partName), configurationAsync);
-        }
+            => WithPartAsync(partName, new ContentPartDefinition(partName), configurationAsync);
 
         public async Task<ContentTypeDefinitionBuilder> WithPartAsync(string name, ContentPartDefinition partDefinition, Func<ContentTypePartDefinitionBuilder, Task> configurationAsync)
         {
-            var existingPart = _parts.FirstOrDefault(x => String.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
+            var existingPart = _parts.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
 
             if (existingPart != null)
             {
@@ -183,7 +180,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
             else
             {
-                existingPart = new ContentTypePartDefinition(name, partDefinition, new JObject())
+                existingPart = new ContentTypePartDefinition(name, partDefinition, [])
                 {
                     ContentTypeDefinition = Current,
                 };
@@ -216,7 +213,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
                     throw new ArgumentException("Content part name must start with a letter", "name");
                 }
 
-                if (!String.Equals(Current.Name, Current.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+                if (!string.Equals(Current.Name, Current.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
                 {
                     throw new ArgumentException("Content part name contains invalid characters", "name");
                 }

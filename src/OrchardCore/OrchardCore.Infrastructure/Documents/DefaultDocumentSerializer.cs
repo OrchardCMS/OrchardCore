@@ -11,7 +11,7 @@ namespace OrchardCore.Documents
     /// <summary>
     /// Serializes and deserializes an <see cref="IDocument"/> into and from a sequence of bytes.
     /// </summary>
-    public class DefaultDocumentSerializer : IDocumentSerialiser
+    public class DefaultDocumentSerializer : IDocumentSerializer
     {
         public static readonly DefaultDocumentSerializer Instance = new();
 
@@ -25,7 +25,7 @@ namespace OrchardCore.Documents
         {
         }
 
-        public Task<byte[]> SerializeAsync<TDocument>(TDocument document, int compressThreshold = Int32.MaxValue) where TDocument : class, IDocument, new()
+        public Task<byte[]> SerializeAsync<TDocument>(TDocument document, int compressThreshold = int.MaxValue) where TDocument : class, IDocument, new()
         {
             var data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(document, _jsonSettings));
 

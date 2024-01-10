@@ -13,7 +13,6 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Settings;
@@ -164,7 +163,7 @@ namespace OrchardCore.Users.Controllers
                 var disableLocalLogin = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().DisableLocalLogin;
                 if (disableLocalLogin)
                 {
-                    ModelState.AddModelError(String.Empty, S["Local login is disabled."]);
+                    ModelState.AddModelError(string.Empty, S["Local login is disabled."]);
                 }
                 else
                 {
@@ -204,7 +203,7 @@ namespace OrchardCore.Users.Controllers
 
                             if (result.IsLockedOut)
                             {
-                                ModelState.AddModelError(String.Empty, S["The account is locked out"]);
+                                ModelState.AddModelError(string.Empty, S["The account is locked out"]);
                                 await _accountEvents.InvokeAsync((e, user) => e.IsLockedOutAsync(user), user, _logger);
 
                                 return View();
@@ -214,7 +213,7 @@ namespace OrchardCore.Users.Controllers
                             await _accountEvents.InvokeAsync((e, user) => e.LoggingInFailedAsync(user), user, _logger);
                         }
 
-                        ModelState.AddModelError(String.Empty, S["Invalid login attempt."]);
+                        ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
                     }
 
                     // Login failed unknown user.
@@ -332,7 +331,7 @@ namespace OrchardCore.Users.Controllers
             if (remoteError != null)
             {
                 _logger.LogError("Error from external provider: {Error}", remoteError);
-                ModelState.AddModelError(String.Empty, S["An error occurred in external provider."]);
+                ModelState.AddModelError(string.Empty, S["An error occurred in external provider."]);
 
                 return RedirectToLogin(returnUrl);
             }
@@ -341,7 +340,7 @@ namespace OrchardCore.Users.Controllers
             if (info == null)
             {
                 _logger.LogError("Could not get external login info.");
-                ModelState.AddModelError(String.Empty, S["An error occurred in external provider."]);
+                ModelState.AddModelError(string.Empty, S["An error occurred in external provider."]);
 
                 return RedirectToLogin(returnUrl);
             }
@@ -364,7 +363,7 @@ namespace OrchardCore.Users.Controllers
                     }
                     else
                     {
-                        ModelState.AddModelError(String.Empty, S["Invalid login attempt."]);
+                        ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
                     }
                 }
             }
@@ -372,7 +371,7 @@ namespace OrchardCore.Users.Controllers
             {
                 var email = info.Principal.FindFirstValue(ClaimTypes.Email) ?? info.Principal.FindFirstValue("email");
 
-                if (!String.IsNullOrWhiteSpace(email))
+                if (!string.IsNullOrWhiteSpace(email))
                 {
                     iUser = await _userManager.FindByEmailAsync(email);
                 }
@@ -405,7 +404,7 @@ namespace OrchardCore.Users.Controllers
                 {
                     var message = S["Site does not allow user registration."];
                     _logger.LogWarning("Site does not allow user registration.");
-                    ModelState.AddModelError(String.Empty, message);
+                    ModelState.AddModelError(string.Empty, message);
                 }
                 else
                 {
@@ -478,7 +477,7 @@ namespace OrchardCore.Users.Controllers
                                     return await LoggedInActionResultAsync(iUser, returnUrl, info);
                                 }
 
-                                ModelState.AddModelError(String.Empty, S["Invalid login attempt."]);
+                                ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
 
                                 return RedirectToLogin(returnUrl);
                             }
@@ -526,12 +525,12 @@ namespace OrchardCore.Users.Controllers
 
             ModelState.Clear();
 
-            if (model.NoEmail && String.IsNullOrWhiteSpace(model.Email))
+            if (model.NoEmail && string.IsNullOrWhiteSpace(model.Email))
             {
                 model.Email = info.Principal.FindFirstValue(ClaimTypes.Email) ?? info.Principal.FindFirstValue("email");
             }
 
-            if (model.NoUsername && String.IsNullOrWhiteSpace(model.UserName))
+            if (model.NoUsername && string.IsNullOrWhiteSpace(model.UserName))
             {
                 model.UserName = await GenerateUsernameAsync(info);
             }
@@ -555,7 +554,7 @@ namespace OrchardCore.Users.Controllers
 
                 if (iUser is null)
                 {
-                    ModelState.AddModelError(String.Empty, "Registration Failed.");
+                    ModelState.AddModelError(string.Empty, "Registration Failed.");
                 }
                 else
                 {
@@ -638,7 +637,7 @@ namespace OrchardCore.Users.Controllers
                 if (!signInResult.Succeeded)
                 {
                     user = null;
-                    ModelState.AddModelError(String.Empty, S["Invalid login attempt."]);
+                    ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
                 }
                 else
                 {
@@ -769,7 +768,7 @@ namespace OrchardCore.Users.Controllers
 
         private async Task<string> GenerateUsernameAsync(ExternalLoginInfo info)
         {
-            var ret = String.Concat("u", IdGenerator.GenerateId());
+            var ret = string.Concat("u", IdGenerator.GenerateId());
             var externalClaims = info?.Principal.GetSerializableClaims();
             var userNames = new Dictionary<Type, string>();
 
@@ -778,7 +777,7 @@ namespace OrchardCore.Users.Controllers
                 try
                 {
                     var userName = await item.GenerateUserName(info.LoginProvider, externalClaims.ToArray());
-                    if (!String.IsNullOrWhiteSpace(userName))
+                    if (!string.IsNullOrWhiteSpace(userName))
                     {
                         // Set the return value to the username generated by the first IExternalLoginHandler.
                         if (userNames.Count == 0)
@@ -831,7 +830,7 @@ namespace OrchardCore.Users.Controllers
         {
             foreach (var errorMessage in TempData.Where(x => x.Key.StartsWith("error")).Select(x => x.Value.ToString()))
             {
-                ModelState.AddModelError(String.Empty, errorMessage);
+                ModelState.AddModelError(string.Empty, errorMessage);
             }
         }
 
@@ -839,7 +838,7 @@ namespace OrchardCore.Users.Controllers
         {
             if (user is not User localUser || !localUser.IsEnabled)
             {
-                ModelState.AddModelError(String.Empty, S["The specified user is not allowed to sign in."]);
+                ModelState.AddModelError(string.Empty, S["The specified user is not allowed to sign in."]);
 
                 return true;
             }
@@ -855,7 +854,7 @@ namespace OrchardCore.Users.Controllers
                 // Require that the users have a confirmed email before they can log on.
                 if (!await _userManager.IsEmailConfirmedAsync(user))
                 {
-                    ModelState.AddModelError(String.Empty, S["You must confirm your email."]);
+                    ModelState.AddModelError(string.Empty, S["You must confirm your email."]);
                     return true;
                 }
             }
@@ -867,7 +866,7 @@ namespace OrchardCore.Users.Controllers
         {
             foreach (var error in result.Errors)
             {
-                ModelState.AddModelError(String.Empty, error.Description);
+                ModelState.AddModelError(string.Empty, error.Description);
             }
         }
     }

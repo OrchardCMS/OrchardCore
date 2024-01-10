@@ -8,7 +8,7 @@
     The shape is created from MenuPartDisplayDriver
 *@
 
-<script asp-src="~/OrchardCore.Menu/Scripts/menu.js" at="Foot" depends-on="admin, jQuery-ui"></script>
+<script asp-src="~/OrchardCore.Menu/Scripts/menu.js" at="Foot" depends-on="jQuery-ui"></script>
 <style asp-src="~/OrchardCore.Menu/Styles/menu.min.css" debug-src="~/OrchardCore.Menu/Styles/menu.css" depends-on="jQuery-ui"></style>
 
 @using OrchardCore
@@ -21,9 +21,9 @@
     var items = Model.MenuPart.ContentItem.As<MenuItemsListPart>().MenuItems;
 }
 
-<div class="@Orchard.GetWrapperCssClasses()">
-    <div class="@Orchard.GetEndCssClasses(true)">
-        <div class="card bg-primary">
+<div class="@Orchard.GetWrapperClasses()">
+    <div class="@Orchard.GetEndClasses(true)">
+        <div class="card text-bg-theme">
             <div class="card-body p-3">
                 <button type="button" @(canAddMenuItem ? null : "disabled=\"disabled\"") class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalMenuItems">
                     @T["Add Menu Item"]

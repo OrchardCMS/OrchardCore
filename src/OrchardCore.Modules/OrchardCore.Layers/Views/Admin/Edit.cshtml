@@ -15,13 +15,13 @@
 
 <form asp-action="Edit" method="post" class="no-multisubmit">
     <div class="mb-3" asp-validation-class-for="Name">
-        <label asp-for="Name">@T["Name"]</label>
+        <label asp-for="Name" class="form-label">@T["Name"]</label>
         <input readonly="readonly" asp-for="Name" class="form-control" type="text" />
         <span asp-validation-for="Name"></span>
     </div>
 
     <div class="mb-3" asp-validation-class-for="Description">
-        <label asp-for="Description">@T["Description"]</label>
+        <label asp-for="Description" class="form-label">@T["Description"]</label>
         <textarea asp-for="Description" class="form-control" rows="3" type="text"></textarea>
         <span asp-validation-for="Description"></span>
     </div>
@@ -32,7 +32,7 @@
 
     @await DisplayAsync(Model.LayerRule)
 
-    <input class="button mt-3" type="submit" value="@T["Save"]" />
+    <input class="btn btn-primary mt-3" type="submit" value="@T["Save"]" />
 </form>
 
 @await DisplayAsync(await New.ConditionsModal(Thumbnails: Model.Thumbnails, Name: Model.Name))

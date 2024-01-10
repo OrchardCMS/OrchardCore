@@ -1,6 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -34,12 +35,13 @@ public class TwoFactorAuthenticationStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddMvc(options =>
+        services.Configure<MvcOptions>(options =>
         {
             options.Filters.Add<TwoFactorAuthenticationAuthorizationFilter>();
-            options.Filters.Add<LoginMenuFilter>();
         });
 
+        services.AddScoped<IUserClaimsProvider, TwoFactorAuthenticationClaimsProvider>();
+        services.AddScoped<IDisplayDriver<UserMenu>, TwoFactorUserMenuDisplayDriver>();
         services.AddScoped<IDisplayDriver<ISite>, TwoFactorLoginSettingsDisplayDriver>();
         services.AddScoped<IDisplayDriver<TwoFactorMethod>, TwoFactorMethodDisplayDriver>();
     }
@@ -158,7 +160,6 @@ public class AuthenticatorAppStartup : StartupBase
 }
 
 [Feature(UserConstants.Features.EmailAuthenticator)]
-[RequireFeatures(UserConstants.Features.TwoFactorAuthentication, "OrchardCore.Email", "OrchardCore.Liquid")]
 public class EmailAuthenticatorStartup : StartupBase
 {
     private static readonly string _emailAuthenticatorControllerName = typeof(EmailAuthenticatorController).ControllerName();
@@ -201,6 +202,46 @@ public class EmailAuthenticatorStartup : StartupBase
             areaName: UserConstants.Features.Users,
             pattern: _adminOptions.AdminUrlPrefix + "/Authenticator/Configure/Email/ValidateCode",
             defaults: new { controller = _emailAuthenticatorControllerName, action = nameof(EmailAuthenticatorController.ValidateCode) }
+        );
+    }
+}
+
+[Feature(UserConstants.Features.SmsAuthenticator)]
+public class SmsAuthenticatorStartup : StartupBase
+{
+    private static readonly string _smsAuthenticatorControllerName = typeof(SmsAuthenticatorController).ControllerName();
+    private readonly AdminOptions _adminOptions;
+
+    public SmsAuthenticatorStartup(IOptions<AdminOptions> adminOptions)
+    {
+        _adminOptions = adminOptions.Value;
+    }
+
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.Configure<TwoFactorOptions>(options =>
+        {
+            options.Providers.Add(TokenOptions.DefaultPhoneProvider);
+        });
+
+        services.AddScoped<IDisplayDriver<TwoFactorMethod>, TwoFactorMethodLoginSmsDisplayDriver>();
+        services.AddScoped<IDisplayDriver<ISite>, SmsAuthenticatorLoginSettingsDisplayDriver>();
+    }
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        routes.MapAreaControllerRoute(
+            name: "ConfigureSmsAuthenticator",
+            areaName: UserConstants.Features.Users,
+            pattern: _adminOptions.AdminUrlPrefix + "/Authenticator/Configure/Sms",
+            defaults: new { controller = _smsAuthenticatorControllerName, action = nameof(SmsAuthenticatorController.Index) }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "ConfigureSmsAuthenticatorValidateCode",
+            areaName: UserConstants.Features.Users,
+            pattern: _adminOptions.AdminUrlPrefix + "/Authenticator/Configure/Sms/ValidateCode",
+            defaults: new { controller = _smsAuthenticatorControllerName, action = nameof(SmsAuthenticatorController.ValidateCode) }
         );
     }
 }

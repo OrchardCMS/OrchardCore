@@ -15,6 +15,8 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Locking.Distributed;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Workflows.Helpers;
@@ -39,6 +41,9 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IActivityDisplayManager _activityDisplayManager;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IShapeFactory _shapeFactory;
+        private readonly IDistributedLock _distributedLock;
+
         protected readonly IHtmlLocalizer H;
         protected readonly IStringLocalizer S;
 
@@ -53,6 +58,7 @@ namespace OrchardCore.Workflows.Controllers
             IShapeFactory shapeFactory,
             INotifier notifier,
             IHtmlLocalizer<WorkflowController> htmlLocalizer,
+            IDistributedLock distributedLock,
             IStringLocalizer<WorkflowController> stringLocalizer,
             IUpdateModelAccessor updateModelAccessor)
         {
@@ -65,12 +71,11 @@ namespace OrchardCore.Workflows.Controllers
             _activityDisplayManager = activityDisplayManager;
             _notifier = notifier;
             _updateModelAccessor = updateModelAccessor;
-            New = shapeFactory;
+            _shapeFactory = shapeFactory;
             H = htmlLocalizer;
+            _distributedLock = distributedLock;
             S = stringLocalizer;
         }
-
-        private dynamic New { get; }
 
         public async Task<IActionResult> Index(long workflowTypeId, WorkflowIndexViewModel model, PagerParameters pagerParameters, string returnUrl = null)
         {
@@ -81,7 +86,7 @@ namespace OrchardCore.Workflows.Controllers
 
             if (!Url.IsLocalUrl(returnUrl))
             {
-                returnUrl = Url.Action(nameof(Index), "WorkflowType");
+                returnUrl = Url.Action(nameof(WorkflowTypeController.Index), typeof(WorkflowTypeController).ControllerName());
             }
 
             var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
@@ -89,22 +94,15 @@ namespace OrchardCore.Workflows.Controllers
             var query = _session.QueryIndex<WorkflowIndex>()
                 .Where(x => x.WorkflowTypeId == workflowType.WorkflowTypeId);
 
-            switch (model.Options.Filter)
+            query = model.Options.Filter switch
             {
-                case WorkflowFilter.Finished:
-                    query = query.Where(x => x.WorkflowStatus == (int)WorkflowStatus.Finished);
-                    break;
-                case WorkflowFilter.Faulted:
-                    query = query.Where(x => x.WorkflowStatus == (int)WorkflowStatus.Faulted);
-                    break;
-                case WorkflowFilter.All:
-                default:
-                    break;
-            }
+                WorkflowFilter.Finished => query.Where(x => x.WorkflowStatus == (int)WorkflowStatus.Finished),
+                WorkflowFilter.Faulted => query.Where(x => x.WorkflowStatus == (int)WorkflowStatus.Faulted),
+                _ => query,
+            };
 
             query = model.Options.OrderBy switch
             {
-                WorkflowOrder.CreatedDesc => query.OrderByDescending(x => x.CreatedUtc),
                 WorkflowOrder.Created => query.OrderBy(x => x.CreatedUtc),
                 _ => query.OrderByDescending(x => x.CreatedUtc),
             };
@@ -114,12 +112,20 @@ namespace OrchardCore.Workflows.Controllers
             var routeData = new RouteData();
             routeData.Values.Add("Filter", model.Options.Filter);
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(await query.CountAsync()).RouteData(routeData);
+            var pagerShape = await _shapeFactory.PagerAsync(pager, await query.CountAsync(), routeData);
+
             var pageOfItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
 
             var workflowIds = pageOfItems.Select(item => item.WorkflowId);
-            var workflows = await _session.Query<Workflow, WorkflowIndex>(item => item.WorkflowId.IsIn(workflowIds))
-                .ListAsync();
+            var workflowsQuery = _session.Query<Workflow, WorkflowIndex>(item => item.WorkflowId.IsIn(workflowIds));
+
+            workflowsQuery = model.Options.OrderBy switch
+            {
+                WorkflowOrder.Created => workflowsQuery.OrderBy(i => i.CreatedUtc),
+                _ => workflowsQuery.OrderByDescending(i => i.CreatedUtc),
+            };
+
+            var workflows = await workflowsQuery.ListAsync();
 
             var viewModel = new WorkflowIndexViewModel
             {
@@ -130,37 +136,35 @@ namespace OrchardCore.Workflows.Controllers
                 ReturnUrl = returnUrl,
             };
 
-            model.Options.WorkflowsSorts = new List<SelectListItem>()
-            {
-                new SelectListItem() { Text = S["Recently created"], Value = nameof(WorkflowOrder.CreatedDesc) },
-                new SelectListItem() { Text = S["Least recently created"], Value = nameof(WorkflowOrder.Created) },
-            };
+            model.Options.WorkflowsSorts =
+            [
+                new SelectListItem(S["Recently created"], nameof(WorkflowOrder.CreatedDesc)),
+                new SelectListItem(S["Least recently created"], nameof(WorkflowOrder.Created)),
+            ];
 
-            model.Options.WorkflowsStatuses = new List<SelectListItem>()
-            {
-                new SelectListItem() { Text = S["All"], Value = nameof(WorkflowFilter.All) },
-                new SelectListItem() { Text = S["Faulted"], Value = nameof(WorkflowFilter.Faulted) },
-                new SelectListItem() { Text = S["Finished"], Value = nameof(WorkflowFilter.Finished) },
-            };
+            model.Options.WorkflowsStatuses =
+            [
+                new SelectListItem(S["All"], nameof(WorkflowFilter.All)),
+                new SelectListItem(S["Faulted"], nameof(WorkflowFilter.Faulted)),
+                new SelectListItem(S["Finished"], nameof(WorkflowFilter.Finished)),
+            ];
 
-            viewModel.Options.WorkflowsBulkAction = new List<SelectListItem>()
-            {
-                new SelectListItem() { Text = S["Delete"], Value = nameof(WorkflowBulkAction.Delete) },
-            };
+            viewModel.Options.WorkflowsBulkAction =
+            [
+                new SelectListItem(S["Delete"], nameof(WorkflowBulkAction.Delete)),
+            ];
 
             return View(viewModel);
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(WorkflowIndexViewModel model)
-        {
-            return RedirectToAction(nameof(Index), new RouteValueDictionary
+            => RedirectToAction(nameof(Index), new RouteValueDictionary
             {
                 { "Options.Filter", model.Options.Filter },
                 { "Options.OrderBy", model.Options.OrderBy },
             });
-        }
 
         public async Task<IActionResult> Details(long id)
         {
@@ -239,6 +243,54 @@ namespace OrchardCore.Workflows.Controllers
             var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
             await _workflowStore.DeleteAsync(workflow);
             await _notifier.SuccessAsync(H["Workflow {0} has been deleted.", id]);
+            return RedirectToAction(nameof(Index), new { workflowTypeId = workflowType.Id });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Restart(long id)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
+            {
+                return Forbid();
+            }
+
+            var workflow = await _workflowStore.GetAsync(id);
+
+            if (workflow == null)
+            {
+                return NotFound();
+            }
+
+            var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
+
+            if (workflowType == null)
+            {
+                return NotFound();
+            }
+
+            // If a singleton, try to acquire a lock per workflow type.
+            (var locker, var locked) = await _distributedLock.TryAcquireWorkflowTypeLockAsync(workflowType);
+            if (!locked)
+            {
+                await _notifier.ErrorAsync(H["Another instance is already running.", id]);
+            }
+            else
+            {
+                await using var acquiredLock = locker;
+
+                // Check if this is a workflow singleton and there's already an halted instance on any activity.
+                if (workflowType.IsSingleton && await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId))
+                {
+                    await _notifier.ErrorAsync(H["Another instance is already running.", id]);
+                }
+                else
+                {
+                    await _workflowManager.RestartWorkflowAsync(workflow, workflowType);
+
+                    await _notifier.SuccessAsync(H["Workflow {0} has been restarted.", id]);
+                }
+            }
+
             return RedirectToAction(nameof(Index), new { workflowTypeId = workflowType.Id });
         }
 

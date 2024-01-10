@@ -26,7 +26,7 @@ namespace OrchardCore.Security
             // SiteOwner permission grants them all
             grantingNames.Add(StandardPermissions.SiteOwner.Name);
 
-            return claims.Any(claim => String.Equals(claim.Type, Permission.ClaimType, StringComparison.OrdinalIgnoreCase)
+            return claims.Any(claim => string.Equals(claim.Type, Permission.ClaimType, StringComparison.OrdinalIgnoreCase)
                 && grantingNames.Contains(claim.Value));
         }
 
