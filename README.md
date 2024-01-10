@@ -36,9 +36,23 @@ The software is finished -- and by finished, we mean there are no show-stopping,
 
 Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki/Roadmap).
 
-## Getting Started
+## Getting Started and Documentation
 
-- Clone the repository using the command `git clone https://github.com/OrchardCMS/OrchardCore.git` and checkout the `main` branch.
+The documentation can be accessed here: <https://docs.orchardcore.net/>. See [the getting started docs](https://docs.orchardcore.net/en/latest/docs/getting-started/) on how to start using Orchard Core.
+
+You can also run Orchard Core from Docker:
+
+```
+docker run --name orchardcms -p 8080:80 orchardproject/orchardcore-cms-linux:latest
+```
+
+Docker images and parameters can be found at <https://hub.docker.com/u/orchardproject/>. See [our Docker documentation](https://docs.orchardcore.net/en/latest/docs/topics/docker/).
+
+## Contributing
+
+It's great that you're thinking about contributing to Orchard Core! You'd join [our wonderful community of contributors](https://docs.orchardcore.net/en/latest/docs/community/).
+
+First, clone the repository using the command `git clone https://github.com/OrchardCMS/OrchardCore.git` and checkout the `main` branch. Then, you have multiple options, see below.
 
 ### Command Line
 
@@ -52,17 +66,6 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki
 - Download Visual Studio 2022 (v17.5+) from <https://www.visualstudio.com/downloads>.
 - Launch the solution by clicking on `OrchardCore.sln`. Give Visual Studio time to restore all missing Nuget packages.
 - Ensure `OrchardCore.Cms.Web` is set as the startup project. Then run the app.
-
-### Docker
-
-- Run `docker run --name orchardcms -p 8080:80 orchardproject/orchardcore-cms-linux:latest`
-
-Docker images and parameters can be found at <https://hub.docker.com/u/orchardproject/>  
-See [Docker documentation](https://docs.docker.com/engine/reference/commandline/run/#publish-or-expose-port--p---expose) to expose different port.
-
-### Documentation
-
-The documentation can be accessed here: <https://docs.orchardcore.net/>
 
 ## Code of Conduct
 
