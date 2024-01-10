@@ -40,14 +40,14 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             return contentDefinitionManager.GetIdentifierAsync();
         }
 
-        public Task BuildAsync(ISchema schema)
+        public async Task BuildAsync(ISchema schema)
         {
             var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
 
             var contentDefinitionManager = serviceProvider.GetService<IContentDefinitionManager>();
             var contentTypeBuilders = serviceProvider.GetServices<IContentTypeBuilder>().ToList();
 
-            foreach (var typeDefinition in contentDefinitionManager.ListTypeDefinitions())
+            foreach (var typeDefinition in await contentDefinitionManager.ListTypeDefinitionsAsync())
             {
                 if (_contentOptionsAccessor.Value.ShouldHide(typeDefinition))
                 {
@@ -91,8 +91,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             {
                 builder.Clear();
             }
-
-            return Task.CompletedTask;
         }
     }
 }

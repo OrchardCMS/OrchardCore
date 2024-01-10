@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using OrchardCore.Infrastructure.Html;
@@ -24,17 +25,20 @@ namespace OrchardCore.Media.Shortcodes
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ResourceManagementOptions _options;
+        private readonly IFileVersionProvider _fileVersionProvider;
 
         public ImageShortcodeProvider(
             IMediaFileStore mediaFileStore,
             IHtmlSanitizerService htmlSanitizerService,
             IHttpContextAccessor httpContextAccessor,
-            IOptions<ResourceManagementOptions> options)
+            IOptions<ResourceManagementOptions> options,
+            IFileVersionProvider fileVersionProvider)
         {
             _mediaFileStore = mediaFileStore;
             _htmlSanitizerService = htmlSanitizerService;
             _httpContextAccessor = httpContextAccessor;
             _options = options.Value;
+            _fileVersionProvider = fileVersionProvider;
         }
 
         public ValueTask<string> EvaluateAsync(string identifier, Arguments arguments, string content, Context context)
@@ -82,6 +86,7 @@ namespace OrchardCore.Media.Shortcodes
                 var mode = arguments.Named("mode");
                 var quality = arguments.Named("quality");
                 var format = arguments.Named("format");
+                var appendVersion = arguments.Named("append_version");
                 className = arguments.Named("class");
                 altText = arguments.Named("alt");
 
@@ -108,6 +113,11 @@ namespace OrchardCore.Media.Shortcodes
                 if (format != null)
                 {
                     queryStringParams.Add("format", format);
+                }
+
+                if (appendVersion?.Equals("true", StringComparison.OrdinalIgnoreCase) ?? false)
+                {
+                    content = _fileVersionProvider.AddFileVersionToPath(_httpContextAccessor.HttpContext.Request.PathBase, content);
                 }
 
                 if (className != null)

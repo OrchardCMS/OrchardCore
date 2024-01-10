@@ -11,7 +11,7 @@ namespace OrchardCore.Documents
     /// <summary>
     /// Serializes and deserializes an <see cref="IDocument"/> into and from a sequence of bytes.
     /// </summary>
-    public class DefaultDocumentSerializer : IDocumentSerialiser
+    public class DefaultDocumentSerializer : IDocumentSerializer
     {
         public static readonly DefaultDocumentSerializer Instance = new();
 

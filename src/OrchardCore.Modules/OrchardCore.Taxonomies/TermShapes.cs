@@ -1,7 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
@@ -14,9 +14,9 @@ using OrchardCore.Taxonomies.ViewModels;
 
 namespace OrchardCore.Taxonomies
 {
-    public class TermShapes : IShapeTableProvider
+    public class TermShapes : ShapeTableProvider
     {
-        public void Discover(ShapeTableBuilder builder)
+        public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
         {
             // Add standard alternates to a TermPart because it is rendered by a content display driver not a part display driver.
             builder.Describe("TermPart")
@@ -25,7 +25,7 @@ namespace OrchardCore.Taxonomies
                     var viewModel = context.Shape as TermPartViewModel;
 
                     var contentType = viewModel?.ContentItem?.ContentType;
-                    var displayTypes = new[] { "", "_" + context.Shape.Metadata.DisplayType };
+                    var displayTypes = new[] { string.Empty, "_" + context.Shape.Metadata.DisplayType };
 
                     // [ShapeType]_[DisplayType], e.g. TermPart.Summary, TermPart.Detail.
                     context.Shape.Metadata.Alternates.Add($"TermPart_{context.Shape.Metadata.DisplayType}");
@@ -143,7 +143,7 @@ namespace OrchardCore.Taxonomies
                             Level = level,
                             Term = termShape,
                             TermContentItem = termContentItem,
-                            Terms = childTerms ?? Array.Empty<ContentItem>(),
+                            Terms = childTerms ?? [],
                             TaxonomyContentItem = taxonomyContentItem
                         }));
 
@@ -181,7 +181,7 @@ namespace OrchardCore.Taxonomies
                                 TaxonomyContentItem = taxonomyContentItem,
                                 TermContentItem = termContentItem,
                                 Term = termShape,
-                                Terms = childTerms ?? Array.Empty<ContentItem>()
+                                Terms = childTerms ?? []
                             }));
 
                             shape.Metadata.Differentiator = differentiator;
@@ -246,9 +246,11 @@ namespace OrchardCore.Taxonomies
                         termItem.Metadata.Alternates.Add("TermContentItem__" + differentiator + "__" + encodedContentType + "__level__" + level);
                     }
                 });
+
+            return ValueTask.CompletedTask;
         }
 
-        private int FindTerm(JArray termsArray, string termContentItemId, int level, out ContentItem contentItem)
+        private static int FindTerm(JArray termsArray, string termContentItemId, int level, out ContentItem contentItem)
         {
             foreach (var term in termsArray.Cast<JObject>())
             {
