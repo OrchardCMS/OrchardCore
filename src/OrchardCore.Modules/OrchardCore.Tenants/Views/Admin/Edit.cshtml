@@ -8,7 +8,7 @@
 
     <div class="row row-cols-1 row-cols-md-2">
         <div class="mb-3" asp-validation-class-for="Name">
-            <label asp-for="Name">@T["Name"]</label>
+            <label asp-for="Name" class="form-label">@T["Name"]</label>
             <input asp-for="Name" class="form-control" readonly autofocus />
             <span asp-validation-for="Name" class="text-danger"></span>
             <span class="hint">@T["The name of the tenant."]</span>
@@ -22,7 +22,7 @@
         <partial name="_TenantRecipes" model="Model" />
         <partial name="_TenantDatabaseInfo" model="Model" />
     }
-    
+
     <partial name="_TenantFeatureProfile" model="Model" />
 
     <div class="mb-3">

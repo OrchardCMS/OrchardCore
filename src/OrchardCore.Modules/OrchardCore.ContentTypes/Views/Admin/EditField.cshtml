@@ -10,7 +10,7 @@
 
 @{
     var theme = await ThemeManager.GetThemeAsync();
-    var shapeTable = ShapeTableManager.GetShapeTable(theme?.Id);
+    var shapeTable = await ShapeTableManager.GetShapeTableAsync(theme?.Id);
     var editorShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.PartFieldDefinition.FieldDefinition.Name + "_Option__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.PartFieldDefinition.FieldDefinition.Name + "_Option", StringComparison.OrdinalIgnoreCase));
     var displayShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.PartFieldDefinition.FieldDefinition.Name + "_DisplayOption__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.PartFieldDefinition.FieldDefinition.Name + "_DisplayOption", StringComparison.OrdinalIgnoreCase));
     var returnUrl = ViewData["returnUrl"]?.ToString();
@@ -22,7 +22,7 @@
     @Html.ValidationSummary()
     <div class="mb-3">
         <div class="w-sm-75 w-lg-75 w-xl-50">
-            <label asp-for="DisplayName">@T["Display Name"]</label>
+            <label asp-for="DisplayName" class="form-label">@T["Display Name"]</label>
             <input asp-for="DisplayName" autofocus class="form-control" />
         </div>
         <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
@@ -30,7 +30,7 @@
 
     <div class="mb-3">
         <div class="w-sm-75 w-lg-75 w-xl-50">
-            <label asp-for="Name">@T["Technical Name"]</label>
+            <label asp-for="Name" class="form-label">@T["Technical Name"]</label>
             <input asp-for="Name" class="form-control" readonly />
         </div>
         <span class="hint">@T["Technical name of the field."]</span>
@@ -52,7 +52,7 @@
         @if (editorShapes.Any())
         {
             <div class="mb-3">
-                <label asp-for="Editor">@T["What type of editor should be used?"]</label>
+                <label asp-for="Editor" class="form-label">@T["What type of editor should be used?"]</label>
                 <select asp-for="Editor" class="form-select" id="field-editor-select">
                     @foreach (var editorShape in editorShapes)
                     {
@@ -71,7 +71,7 @@
         @if (displayShapes.Any())
         {
             <div class="mb-3">
-                <label asp-for="DisplayMode">@T["What type of display mode should be used?"]</label>
+                <label asp-for="DisplayMode" class="form-label">@T["What type of display mode should be used?"]</label>
                 <select asp-for="DisplayMode" class="form-select" id="field-display-select">
                     @foreach (var displayShape in displayShapes)
                     {
