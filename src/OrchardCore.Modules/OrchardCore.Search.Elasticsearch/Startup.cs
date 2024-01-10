@@ -3,7 +3,6 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Elasticsearch.Net;
-using Fluid;
 using GraphQL;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -33,7 +32,6 @@ using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.Drivers;
 using OrchardCore.Search.Elasticsearch.Services;
 using OrchardCore.Search.Lucene.Handler;
-using OrchardCore.Search.ViewModels;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
@@ -105,18 +103,10 @@ namespace OrchardCore.Search.Elasticsearch
                 }
             });
 
-            services.Configure<TemplateOptions>(o =>
-            {
-                o.MemberAccessStrategy.Register<SearchIndexViewModel>();
-                o.MemberAccessStrategy.Register<SearchFormViewModel>();
-                o.MemberAccessStrategy.Register<SearchResultsViewModel>();
-            });
-
             services.AddElasticServices();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IDisplayDriver<Query>, ElasticQueryDisplayDriver>();
-            services.AddScoped<IAuthorizationHandler, ElasticsearchAuthorizationHandler>();
         }
 
         private static ConnectionSettings GetConnectionSettings(ElasticConnectionOptions elasticConfiguration)
@@ -261,6 +251,7 @@ namespace OrchardCore.Search.Elasticsearch
         {
             services.AddScoped<ISearchService, ElasticsearchService>();
             services.AddScoped<IDisplayDriver<ISite>, ElasticSettingsDisplayDriver>();
+            services.AddScoped<IAuthorizationHandler, ElasticsearchAuthorizationHandler>();
         }
     }
 
