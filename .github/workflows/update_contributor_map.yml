@@ -2,9 +2,8 @@ name: Update Contributor Map
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - issue/OCORE-138
+  pull_request:
+    branches: [ main, release/** ]
   schedule:
     # At 3:00 AM UTC every Monday.
     - cron: "0 3 * * 1"
