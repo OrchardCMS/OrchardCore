@@ -9,8 +9,8 @@ namespace OrchardCore.Environment.Commands
     public class DefaultCommandManager : ICommandManager
     {
         private readonly IEnumerable<ICommandHandler> _commandHandlers;
-        private readonly CommandHandlerDescriptorBuilder _builder = new CommandHandlerDescriptorBuilder();
-        private readonly IStringLocalizer S;
+        private readonly CommandHandlerDescriptorBuilder _builder = new();
+        protected readonly IStringLocalizer S;
 
         public DefaultCommandManager(IEnumerable<ICommandHandler> commandHandlers,
             IStringLocalizer<DefaultCommandManager> localizer)
@@ -63,7 +63,8 @@ namespace OrchardCore.Environment.Commands
                 foreach (var name in commandDescriptor.Names)
                 {
                     var names = name.Split(' ');
-                    var namesCount = names.Count();
+                    var namesCount = names.Length;
+
                     // We check here number of arguments a command can recieve against
                     // arguments provided for the command to identify the correct command
                     // and avoid matching multiple commands.
@@ -78,14 +79,14 @@ namespace OrchardCore.Environment.Commands
                         {
                             Context = new CommandContext
                             {
-                                Arguments = parameters.Arguments.Skip(name.Split(' ').Count()),
+                                Arguments = parameters.Arguments.Skip(name.Split(' ').Length),
                                 Command = string.Join(" ", names),
                                 CommandDescriptor = commandDescriptor,
                                 Input = parameters.Input,
                                 Output = parameters.Output,
                                 Switches = parameters.Switches,
                             },
-                            CommandHandler = handler
+                            CommandHandler = handler,
                         };
                     }
                 }

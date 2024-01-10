@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
-using OrchardCore.Notifications.Models;
 using OrchardCore.Users;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
@@ -15,7 +15,7 @@ using YesSql;
 
 namespace OrchardCore.Notifications.Activities;
 
-public class NotifyContentOwnerTask : NotifyUserTaskActivity
+public class NotifyContentOwnerTask : NotifyUserTaskActivity<NotifyContentOwnerTask>
 {
     private readonly ISession _session;
 
@@ -35,40 +35,29 @@ public class NotifyContentOwnerTask : NotifyUserTaskActivity
         _session = session;
     }
 
-    public override string Name => nameof(NotifyContentOwnerTask);
-
     public override LocalizedString DisplayText => S["Notify Content's Owner Task"];
 
-    protected override async Task<IUser> GetUserAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    protected override async Task<IEnumerable<IUser>> GetUsersAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         if (workflowContext.Input.TryGetValue("ContentItem", out var obj)
             && obj is ContentItem contentItem
-            && !String.IsNullOrEmpty(contentItem.Owner))
+            && !string.IsNullOrEmpty(contentItem.Owner))
         {
-            if (workflowContext.Input.TryGetValue("Owner", out var ownerObject) && ownerObject is User user)
+            if (workflowContext.Input.TryGetValue("Owner", out var ownerObject) && ownerObject is User user && user.IsEnabled)
             {
-                return user;
+                return new[] { user };
             }
 
-            var owner = await _session.Query<User, UserIndex>(x => x.UserId == contentItem.Owner).FirstOrDefaultAsync();
+            var owner = await _session.Query<User, UserIndex>(x => x.UserId == contentItem.Owner && x.IsEnabled).FirstOrDefaultAsync();
 
-            workflowContext.Input.TryAdd("Owner", owner);
+            if (owner != null)
+            {
+                workflowContext.Input.TryAdd("Owner", owner);
 
-            return owner;
-
+                return new[] { owner };
+            }
         }
 
-        return null;
-    }
-
-    protected override async Task<INotificationMessage> GetMessageAsync(WorkflowExecutionContext workflowContext)
-    {
-        var message = new HtmlNotificationMessage()
-        {
-            Summary = await _expressionEvaluator.EvaluateAsync(Summary, workflowContext, _htmlEncoder),
-            Body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext, _htmlEncoder),
-        };
-
-        return message;
+        return Enumerable.Empty<IUser>();
     }
 }

@@ -15,7 +15,7 @@ namespace OrchardCore.Abstractions.Pooling
     {
         private Utf16ValueStringBuilder _sb;
         private bool _isOpen;
-        private UnicodeEncoding s_encoding;
+        private UnicodeEncoding _encoding;
 
         public ZStringWriter() : this(CultureInfo.CurrentCulture)
         {
@@ -39,7 +39,7 @@ namespace OrchardCore.Abstractions.Pooling
             base.Dispose(disposing);
         }
 
-        public override Encoding Encoding => s_encoding ??= new UnicodeEncoding(false, false);
+        public override Encoding Encoding => _encoding ??= new UnicodeEncoding(false, false);
 
         // Writes a character to the underlying string buffer.
         //
@@ -59,18 +59,22 @@ namespace OrchardCore.Abstractions.Pooling
             {
                 throw new ArgumentNullException(nameof(buffer));
             }
+
             if (index < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(index));
             }
+
             if (count < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(count));
             }
+
             if (buffer.Length - index < count)
             {
-                throw new ArgumentException();
+                throw new ArgumentException("Buffer overflow.");
             }
+
             if (!_isOpen)
             {
                 throw new ObjectDisposedException(nameof(_sb));

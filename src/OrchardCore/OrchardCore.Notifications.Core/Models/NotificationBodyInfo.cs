@@ -1,14 +1,19 @@
-﻿namespace OrchardCore.Notifications.Models;
+namespace OrchardCore.Notifications.Models;
 
 public class NotificationBodyInfo
 {
     /// <summary>
-    /// The body of the notification.
+    /// The summary or subject of the notification.
     /// </summary>
-    public string Body { get; set; }
+    public string Summary { get; set; }
 
     /// <summary>
-    /// Whether or not the body is an HTML.
+    /// The text body of the notification.
     /// </summary>
-    public bool IsHtmlBody { get; set; }
+    public string TextBody { get; set; }
+
+    /// <summary>
+    /// The html body of the notification.
+    /// </summary>
+    public string HtmlBody { get; set; }
 }

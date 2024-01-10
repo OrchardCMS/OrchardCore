@@ -2,6 +2,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email;
 using OrchardCore.Settings;
+using OrchardCore.Tests.Utilities;
 using OrchardCore.Users;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Events;
@@ -52,8 +53,8 @@ namespace OrchardCore.Tests.OrchardCore.Users
             var controller = SetupRegistrationController();
 
             // Act
-            var result = await controller.Register(new RegisterViewModel { UserName = "SuperAdmin", Email = "admin@orchardcore.net" });
-            result = await controller.Register(new RegisterViewModel { UserName = "Admin", Email = "admin@orchardcore.net" });
+            _ = await controller.Register(new RegisterViewModel { UserName = "SuperAdmin", Email = "admin@orchardcore.net" });
+            var result = await controller.Register(new RegisterViewModel { UserName = "Admin", Email = "admin@orchardcore.net" });
 
             // Assert
             Assert.IsType<ViewResult>(result);
@@ -133,15 +134,12 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 .Returns<string>(e =>
                 {
                     var user = users.SingleOrDefault(u => (u as User).Email == e);
-
                     return Task.FromResult(user);
                 });
 
-            var mockSiteService = Mock.Of<ISiteService>(ss =>
-                ss.GetSiteSettingsAsync() == Task.FromResult(
-                    Mock.Of<ISite>(s => s.Properties == JObject.FromObject(new { RegistrationSettings = registrationSettings }))
-                    )
-            );
+            var mockSite = SiteMockHelper.GetSite(registrationSettings);
+
+            var mockSiteService = Mock.Of<ISiteService>(ss => ss.GetSiteSettingsAsync() == Task.FromResult(mockSite.Object));
             var mockSmtpService = Mock.Of<ISmtpService>(x => x.SendAsync(It.IsAny<MailMessage>()) == Task.FromResult(SmtpResult.Success));
             var mockStringLocalizer = new Mock<IStringLocalizer<RegistrationController>>();
             mockStringLocalizer.Setup(l => l[It.IsAny<string>()])
@@ -170,9 +168,10 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 Mock.Of<INotifier>(),
                 Mock.Of<ILogger<RegistrationController>>(),
                 Mock.Of<IHtmlLocalizer<RegistrationController>>(),
-                mockStringLocalizer.Object);
-
-            controller.Url = urlHelperMock.Object;
+                mockStringLocalizer.Object)
+            {
+                Url = urlHelperMock.Object
+            };
 
             var mockServiceProvider = new Mock<IServiceProvider>();
 

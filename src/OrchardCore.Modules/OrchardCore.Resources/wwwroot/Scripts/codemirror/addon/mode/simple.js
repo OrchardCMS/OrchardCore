@@ -3,7 +3,7 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
@@ -28,15 +28,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     var states_ = {},
       meta = states.meta || {},
       hasIndentation = false;
-    for (var state in states) {
-      if (state != meta && states.hasOwnProperty(state)) {
-        var list = states_[state] = [],
-          orig = states[state];
-        for (var i = 0; i < orig.length; i++) {
-          var data = orig[i];
-          list.push(new Rule(data, states));
-          if (data.indent || data.dedent) hasIndentation = true;
-        }
+    for (var state in states) if (state != meta && states.hasOwnProperty(state)) {
+      var list = states_[state] = [],
+        orig = states[state];
+      for (var i = 0; i < orig.length; i++) {
+        var data = orig[i];
+        list.push(new Rule(data, states));
+        if (data.indent || data.dedent) hasIndentation = true;
       }
     }
     var mode = {
@@ -59,14 +57,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         };
         if (state.localState) s.localState = CodeMirror.copyState(state.local.mode, state.localState);
         if (state.stack) s.stack = state.stack.slice(0);
-        for (var pers = state.persistentStates; pers; pers = pers.next) {
-          s.persistentStates = {
-            mode: pers.mode,
-            spec: pers.spec,
-            state: pers.state == state.localState ? s.localState : CodeMirror.copyState(pers.mode, pers.state),
-            next: s.persistentStates
-          };
-        }
+        for (var pers = state.persistentStates; pers; pers = pers.next) s.persistentStates = {
+          mode: pers.mode,
+          spec: pers.spec,
+          state: pers.state == state.localState ? s.localState : CodeMirror.copyState(pers.mode, pers.state),
+          next: s.persistentStates
+        };
         return s;
       },
       token: tokenFunction(states_, config),
@@ -78,9 +74,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       },
       indent: indentFunction(states_, meta)
     };
-    if (meta) for (var prop in meta) {
-      if (meta.hasOwnProperty(prop)) mode[prop] = meta[prop];
-    }
+    if (meta) for (var prop in meta) if (meta.hasOwnProperty(prop)) mode[prop] = meta[prop];
     return mode;
   };
   function ensureState(states, name) {
@@ -103,9 +97,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     if (val.apply) return val;
     if (typeof val == "string") return val.replace(/\./g, " ");
     var result = [];
-    for (var i = 0; i < val.length; i++) {
-      result.push(val[i] && val[i].replace(/\./g, " "));
-    }
+    for (var i = 0; i < val.length; i++) result.push(val[i] && val[i].replace(/\./g, " "));
     return result;
   }
   function Rule(data, states) {
@@ -153,12 +145,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
           var token = rule.token;
           if (token && token.apply) token = token(matches);
           if (matches.length > 2 && rule.token && typeof rule.token != "string") {
-            for (var j = 2; j < matches.length; j++) {
-              if (matches[j]) (state.pending || (state.pending = [])).push({
-                text: matches[j],
-                token: rule.token[j - 1]
-              });
-            }
+            for (var j = 2; j < matches.length; j++) if (matches[j]) (state.pending || (state.pending = [])).push({
+              text: matches[j],
+              token: rule.token[j - 1]
+            });
             stream.backUp(matches[0].length - (matches[1] ? matches[1].length : 0));
             return token[0];
           } else if (token && token.join) {
@@ -176,22 +166,16 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     if (a === b) return true;
     if (!a || _typeof(a) != "object" || !b || _typeof(b) != "object") return false;
     var props = 0;
-    for (var prop in a) {
-      if (a.hasOwnProperty(prop)) {
-        if (!b.hasOwnProperty(prop) || !cmp(a[prop], b[prop])) return false;
-        props++;
-      }
+    for (var prop in a) if (a.hasOwnProperty(prop)) {
+      if (!b.hasOwnProperty(prop) || !cmp(a[prop], b[prop])) return false;
+      props++;
     }
-    for (var prop in b) {
-      if (b.hasOwnProperty(prop)) props--;
-    }
+    for (var prop in b) if (b.hasOwnProperty(prop)) props--;
     return props == 0;
   }
   function enterLocalMode(config, state, spec, token) {
     var pers;
-    if (spec.persistent) for (var p = state.persistentStates; p && !pers; p = p.next) {
-      if (spec.spec ? cmp(spec.spec, p.spec) : spec.mode == p.mode) pers = p;
-    }
+    if (spec.persistent) for (var p = state.persistentStates; p && !pers; p = p.next) if (spec.spec ? cmp(spec.spec, p.spec) : spec.mode == p.mode) pers = p;
     var mode = pers ? pers.mode : spec.mode || CodeMirror.getMode(config, spec.spec);
     var lState = pers ? pers.state : CodeMirror.startState(mode);
     if (spec.persistent && !pers) state.persistentStates = {
@@ -209,9 +193,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     };
   }
   function indexOf(val, arr) {
-    for (var i = 0; i < arr.length; i++) {
-      if (arr[i] === val) return true;
-    }
+    for (var i = 0; i < arr.length; i++) if (arr[i] === val) return true;
   }
   function indentFunction(states, meta) {
     return function (state, textAfter, line) {

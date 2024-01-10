@@ -11,6 +11,10 @@ namespace OrchardCore.Tests.Shell
 {
     public class ShellContainerFactoryTests
     {
+        private static readonly ShellSettings _uninitializedDefaultShell = new ShellSettings()
+            .AsDefaultShell()
+            .AsUninitialized();
+
         private readonly IShellContainerFactory _shellContainerFactory;
         private readonly IServiceProvider _applicationServiceProvider;
 
@@ -38,13 +42,17 @@ namespace OrchardCore.Tests.Shell
         }
 
         [Fact]
-        public void CanRegisterDefaultServiceWithFeatureInfo()
+        public async Task CanRegisterDefaultServiceWithFeatureInfo()
         {
             var shellBlueprint = CreateBlueprint();
 
             var expectedFeatureInfo = AddStartup(shellBlueprint, typeof(RegisterServiceStartup));
 
-            var container = _shellContainerFactory.CreateContainer(ShellHelper.BuildDefaultUninitializedShell, shellBlueprint).CreateScope().ServiceProvider;
+            var container = (await _shellContainerFactory
+                .CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint))
+                .CreateScope()
+                .ServiceProvider;
+
             var typeFeatureProvider = _applicationServiceProvider.GetService<ITypeFeatureProvider>();
 
             Assert.IsType<TestService>(container.GetRequiredService(typeof(ITestService)));
@@ -52,14 +60,18 @@ namespace OrchardCore.Tests.Shell
         }
 
         [Fact]
-        public void CanReplaceDefaultServiceWithCustomService()
+        public async Task CanReplaceDefaultServiceWithCustomService()
         {
             var shellBlueprint = CreateBlueprint();
 
             var expectedFeatureInfo = AddStartup(shellBlueprint, typeof(ReplaceServiceStartup));
             AddStartup(shellBlueprint, typeof(RegisterServiceStartup));
 
-            var container = _shellContainerFactory.CreateContainer(ShellHelper.BuildDefaultUninitializedShell, shellBlueprint).CreateScope().ServiceProvider;
+            var container = (await _shellContainerFactory
+                .CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint))
+                .CreateScope()
+                .ServiceProvider;
+
             var typeFeatureProvider = _applicationServiceProvider.GetService<ITypeFeatureProvider>();
 
             // Check that the default service has been replaced with the custom service and that the feature info is correct.
@@ -68,10 +80,13 @@ namespace OrchardCore.Tests.Shell
         }
 
         [Fact]
-        public void HostServiceLifeTimesShouldBePreserved()
+        public async Task HostServiceLifeTimesShouldBePreserved()
         {
             var shellBlueprint = CreateBlueprint();
-            var container = _shellContainerFactory.CreateContainer(ShellHelper.BuildDefaultUninitializedShell, shellBlueprint).CreateScope().ServiceProvider;
+            var container = (await _shellContainerFactory
+                .CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint))
+                .CreateScope()
+                .ServiceProvider;
 
             var singleton1 = container.GetRequiredService<ITestSingleton>();
             var singleton2 = container.GetRequiredService<ITestSingleton>();
@@ -101,11 +116,15 @@ namespace OrchardCore.Tests.Shell
         }
 
         [Fact]
-        public void WhenTwoHostSingletons_GetServices_Returns_HostAndShellServices()
+        public async Task WhenTwoHostSingletons_GetServices_Returns_HostAndShellServices()
         {
             var shellBlueprint = CreateBlueprint();
             AddStartup(shellBlueprint, typeof(ServicesOfTheSameTypeStartup));
-            var container = _shellContainerFactory.CreateContainer(ShellHelper.BuildDefaultUninitializedShell, shellBlueprint).CreateScope().ServiceProvider;
+
+            var container = (await _shellContainerFactory
+                .CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint))
+                .CreateScope()
+                .ServiceProvider;
 
             var services = container.GetServices<ITwoHostSingletonsOfTheSameType>();
 
@@ -113,10 +132,14 @@ namespace OrchardCore.Tests.Shell
         }
 
         [Fact]
-        public void WhenHostSingletonAndScoped_GetServices_Returns_CorrectImplementations()
+        public async Task WhenHostSingletonAndScoped_GetServices_Returns_CorrectImplementations()
         {
             var shellBlueprint = CreateBlueprint();
-            var container = _shellContainerFactory.CreateContainer(ShellHelper.BuildDefaultUninitializedShell, shellBlueprint).CreateScope().ServiceProvider;
+
+            var container = (await _shellContainerFactory
+                .CreateContainerAsync(_uninitializedDefaultShell, shellBlueprint))
+                .CreateScope()
+                .ServiceProvider;
 
             var services = container.GetServices<IHostSingletonAndScopedOfTheSameType>();
 
@@ -125,7 +148,7 @@ namespace OrchardCore.Tests.Shell
             Assert.IsType<HostScopedOfTheSameTypeAsSingleton>(services.ElementAt(1));
         }
 
-        private ShellBlueprint CreateBlueprint()
+        private static ShellBlueprint CreateBlueprint()
         {
             return new ShellBlueprint
             {

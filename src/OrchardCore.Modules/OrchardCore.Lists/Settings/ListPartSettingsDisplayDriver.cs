@@ -16,7 +16,7 @@ namespace OrchardCore.Lists.Settings
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContainerService _containerService;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public ListPartSettingsDisplayDriver(
             IContentDefinitionManager contentDefinitionManager,
@@ -30,7 +30,7 @@ namespace OrchardCore.Lists.Settings
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            return Initialize<ListPartSettingsViewModel>("ListPartSettings_Edit", model =>
+            return Initialize<ListPartSettingsViewModel>("ListPartSettings_Edit", async model =>
             {
                 model.ListPartSettings = contentTypePartDefinition.GetSettings<ListPartSettings>();
                 model.PageSize = model.ListPartSettings.PageSize;
@@ -39,7 +39,7 @@ namespace OrchardCore.Lists.Settings
                 model.ShowHeader = model.ListPartSettings.ShowHeader;
                 model.ContentTypes = new NameValueCollection();
 
-                foreach (var contentTypeDefinition in _contentDefinitionManager.ListTypeDefinitions())
+                foreach (var contentTypeDefinition in await _contentDefinitionManager.ListTypeDefinitionsAsync())
                 {
                     model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
                 }

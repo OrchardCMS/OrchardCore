@@ -3,13 +3,14 @@ using System.Buffers;
 using System.Data;
 using System.IO;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data;
 using OrchardCore.Data.Documents;
 using OrchardCore.Data.Migration;
 using OrchardCore.Data.YesSql;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using YesSql;
@@ -27,11 +28,13 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class OrchardCoreBuilderExtensions
     {
         /// <summary>
-        /// Adds tenant level data access services.
+        /// Adds host and tenant level data access services.
         /// </summary>
         /// <param name="builder">The <see cref="OrchardCoreBuilder"/>.</param>
         public static OrchardCoreBuilder AddDataAccess(this OrchardCoreBuilder builder)
         {
+            builder.ApplicationServices.AddSingleton<IShellRemovingHandler, ShellDbTablesRemovingHandler>();
+
             builder.ConfigureServices(services =>
             {
                 services.AddScoped<IDbConnectionValidator, DbConnectionValidator>();
@@ -53,7 +56,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     var shellSettings = sp.GetService<ShellSettings>();
 
                     // Before the setup, a 'DatabaseProvider' may be configured without a required 'ConnectionString'.
-                    if (shellSettings.State == TenantState.Uninitialized || shellSettings["DatabaseProvider"] == null)
+                    if (shellSettings.IsUninitialized() || shellSettings["DatabaseProvider"] is null)
                     {
                         return null;
                     }
@@ -95,25 +98,37 @@ namespace Microsoft.Extensions.DependencyInjection
                             throw new ArgumentException("Unknown database provider: " + shellSettings["DatabaseProvider"]);
                     }
 
-                    if (!String.IsNullOrWhiteSpace(shellSettings["TablePrefix"]))
+                    if (!string.IsNullOrWhiteSpace(shellSettings["TablePrefix"]))
                     {
                         var tablePrefix = shellSettings["TablePrefix"].Trim() + databaseTableOptions.TableNameSeparator;
 
-                        storeConfiguration = storeConfiguration.SetTablePrefix(tablePrefix);
+                        storeConfiguration.SetTablePrefix(tablePrefix);
                     }
 
-                    var store = StoreFactory.CreateAndInitializeAsync(storeConfiguration).GetAwaiter().GetResult();
-                    var options = sp.GetService<IOptions<StoreCollectionOptions>>().Value;
-                    foreach (var collection in options.Collections)
-                    {
-                        store.InitializeCollectionAsync(collection).GetAwaiter().GetResult();
-                    }
+                    var store = StoreFactory.Create(storeConfiguration);
 
                     var indexes = sp.GetServices<IIndexProvider>();
 
                     store.RegisterIndexes(indexes);
 
                     return store;
+                });
+
+                services.Initialize(async sp =>
+                {
+                    var store = sp.GetService<IStore>();
+                    if (store == null)
+                    {
+                        return;
+                    }
+
+                    await store.InitializeAsync();
+
+                    var storeCollectionOptions = sp.GetService<IOptions<StoreCollectionOptions>>().Value;
+                    foreach (var collection in storeCollectionOptions.Collections)
+                    {
+                        await store.InitializeCollectionAsync(collection);
+                    }
                 });
 
                 services.AddScoped(sp =>
@@ -156,9 +171,10 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder;
         }
 
-        private static IConfiguration GetStoreConfiguration(IServiceProvider sp, YesSqlOptions yesSqlOptions, DatabaseTableOptions databaseTableOptions)
+        private static YesSql.Configuration GetStoreConfiguration(IServiceProvider sp, YesSqlOptions yesSqlOptions, DatabaseTableOptions databaseTableOptions)
         {
             var tableNameFactory = sp.GetRequiredService<ITableNameConventionFactory>();
+            var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
 
             var storeConfiguration = new YesSql.Configuration
             {
@@ -167,6 +183,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 ContentSerializer = new PoolingJsonContentSerializer(sp.GetService<ArrayPool<char>>()),
                 TableNameConvention = tableNameFactory.Create(databaseTableOptions),
                 IdentityColumnSize = Enum.Parse<IdentityColumnSize>(databaseTableOptions.IdentityColumnSize),
+                Logger = loggerFactory.CreateLogger("YesSql"),
             };
 
             if (yesSqlOptions.IdGenerator != null)

@@ -11,9 +11,9 @@ namespace OrchardCore.Tests.DisplayManagement
 {
     public class DefaultDisplayManagerTests
     {
-        private ShapeTable _defaultShapeTable;
-        private TestShapeBindingsDictionary _additionalBindings;
-        private IServiceProvider _serviceProvider;
+        private readonly ShapeTable _defaultShapeTable;
+        private readonly TestShapeBindingsDictionary _additionalBindings;
+        private readonly IServiceProvider _serviceProvider;
 
         public DefaultDisplayManagerTests()
         {
@@ -184,7 +184,7 @@ namespace OrchardCore.Tests.DisplayManagement
             _additionalBindings["Foo"] = new ShapeBinding
             {
                 BindingName = "Foo",
-                BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString($"Yes there is { ((dynamic)ctx.Value).Data }."))
+                BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString($"Yes there is {((dynamic)ctx.Value).Data}."))
             };
 
             var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));

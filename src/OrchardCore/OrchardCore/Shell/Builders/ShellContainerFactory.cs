@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -32,7 +33,7 @@ namespace OrchardCore.Environment.Shell.Builders
             _serviceProvider = serviceProvider;
         }
 
-        public IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint)
+        public async Task<IServiceProvider> CreateContainerAsync(ShellSettings settings, ShellBlueprint blueprint)
         {
             var tenantServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
 
@@ -49,11 +50,8 @@ namespace OrchardCore.Environment.Shell.Builders
 
             // Execute IStartup registrations
 
-            var moduleServiceCollection = _serviceProvider.CreateChildContainer(_applicationServices);
-
             foreach (var dependency in blueprint.Dependencies.Where(t => typeof(IStartup).IsAssignableFrom(t.Key)))
             {
-                moduleServiceCollection.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IStartup), dependency.Key));
                 tenantServiceCollection.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IStartup), dependency.Key));
             }
 
@@ -98,14 +96,7 @@ namespace OrchardCore.Environment.Shell.Builders
 
                 // Add the startup class to the DI so we can instantiate it with
                 // valid ctor arguments
-                moduleServiceCollection.AddSingleton(rawStartup);
                 tenantServiceCollection.AddSingleton(rawStartup);
-
-                moduleServiceCollection.AddSingleton<IStartup>(sp =>
-                {
-                    var startupInstance = sp.GetService(rawStartup);
-                    return new StartupBaseMock(startupInstance, configureServicesMethod, configureMethod, orderProperty, configureOrderProperty);
-                });
 
                 tenantServiceCollection.AddSingleton<IStartup>(sp =>
                 {
@@ -114,21 +105,11 @@ namespace OrchardCore.Environment.Shell.Builders
                 });
             }
 
-            // Make shell settings available to the modules
-            moduleServiceCollection.AddSingleton(settings);
-            moduleServiceCollection.AddSingleton(sp =>
-            {
-                // Resolve it lazily as it's constructed lazily
-                var shellSettings = sp.GetRequiredService<ShellSettings>();
-                return shellSettings.ShellConfiguration;
-            });
-
-            var moduleServiceProvider = moduleServiceCollection.BuildServiceProvider(true);
-
             // Index all service descriptors by their feature id
             var featureAwareServiceCollection = new FeatureAwareServiceCollection(tenantServiceCollection);
 
-            var startups = moduleServiceProvider.GetServices<IStartup>();
+            var shellServiceProvider = tenantServiceCollection.BuildServiceProvider(true);
+            var startups = shellServiceProvider.GetServices<IStartup>();
 
             // IStartup instances are ordered by module dependency with an Order of 0 by default.
             // OrderBy performs a stable sort so order is preserved among equal Order values.
@@ -146,9 +127,10 @@ namespace OrchardCore.Environment.Shell.Builders
                 startup.ConfigureServices(featureAwareServiceCollection);
             }
 
-            (moduleServiceProvider as IDisposable).Dispose();
+            await shellServiceProvider.DisposeAsync();
 
-            var shellServiceProvider = tenantServiceCollection.BuildServiceProvider(true);
+            // Rebuild the service provider from the updated collection.
+            shellServiceProvider = tenantServiceCollection.BuildServiceProvider(true);
 
             // Register all DIed types in ITypeFeatureProvider
             var typeFeatureProvider = shellServiceProvider.GetRequiredService<ITypeFeatureProvider>();
@@ -159,7 +141,7 @@ namespace OrchardCore.Environment.Shell.Builders
                 {
                     var type = serviceDescriptor.GetImplementationType();
 
-                    if (type != null)
+                    if (type is not null)
                     {
                         var feature = featureServiceCollection.Key;
 
@@ -167,7 +149,7 @@ namespace OrchardCore.Environment.Shell.Builders
                         {
                             var attribute = type.GetCustomAttributes<FeatureAttribute>(false).FirstOrDefault();
 
-                            if (attribute != null)
+                            if (attribute is not null)
                             {
                                 feature = featureServiceCollection.Key.Extension.Features
                                     .FirstOrDefault(f => f.Id == attribute.FeatureName)
@@ -185,15 +167,12 @@ namespace OrchardCore.Environment.Shell.Builders
 
         private void EnsureApplicationFeature()
         {
-            if (_applicationFeature == null)
+            if (_applicationFeature is null)
             {
                 lock (this)
                 {
-                    if (_applicationFeature == null)
-                    {
-                        _applicationFeature = _extensionManager.GetFeatures()
+                    _applicationFeature ??= _extensionManager.GetFeatures()
                             .FirstOrDefault(f => f.Id == _hostingEnvironment.ApplicationName);
-                    }
                 }
             }
         }

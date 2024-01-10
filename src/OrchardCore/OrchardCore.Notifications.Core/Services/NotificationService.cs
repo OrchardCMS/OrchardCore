@@ -10,7 +10,7 @@ public class NotificationService : INotificationService
 {
     private readonly INotificationMethodProviderAccessor _notificationMethodProviderAccessor;
     private readonly IEnumerable<INotificationEvents> _notificationEvents;
-    private readonly ILogger<NotificationService> _logger;
+    private readonly ILogger _logger;
     private readonly ISession _session;
     private readonly IClock _clock;
 
@@ -31,7 +31,7 @@ public class NotificationService : INotificationService
     {
         var notificationContext = new NotificationContext(message, notify);
 
-        var notification = await CreateNotificationAsync(message, notificationContext);
+        var notification = await CreateNotificationAsync(notificationContext);
 
         await _notificationEvents.InvokeAsync((handler, context) => handler.SendingAsync(context), notificationContext, _logger);
 
@@ -60,19 +60,19 @@ public class NotificationService : INotificationService
         return totalSent;
     }
 
-    private async Task<Notification> CreateNotificationAsync(INotificationMessage message, NotificationContext context)
+    private async Task<Notification> CreateNotificationAsync(NotificationContext context)
     {
         var notification = new Notification()
         {
             NotificationId = IdGenerator.GenerateId(),
             CreatedUtc = _clock.UtcNow,
-            Summary = message.Summary,
+            Summary = context.NotificationMessage.Summary,
         };
 
         context.Notification = notification;
 
         await _notificationEvents.InvokeAsync((handler, context) => handler.CreatingAsync(context), context, _logger);
-        _session.Save(notification, collection: NotificationConstants.NotificationCollection);
+        await _session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection);
         await _notificationEvents.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
 
         return notification;

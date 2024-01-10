@@ -29,7 +29,8 @@ namespace OrchardCore.Lists.GraphQL
                 .Description("the content items")
                 .Argument<IntGraphType, int>("first", "the first n elements (10 by default)", 10)
                 .Argument<IntGraphType, int>("skip", "the number of elements to skip", 0)
-                .ResolveAsync(async g =>
+                // Important to use ResolveLockedAsync to prevent concurrency error on database query, when using nested content items with List part
+                .ResolveLockedAsync(async g =>
                 {
                     var serviceProvider = g.RequestServices;
                     var session = serviceProvider.GetService<ISession>();

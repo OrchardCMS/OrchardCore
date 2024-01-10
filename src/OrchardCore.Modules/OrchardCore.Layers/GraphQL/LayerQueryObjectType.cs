@@ -52,16 +52,14 @@ namespace OrchardCore.Layers.GraphQL
                 });
         }
 
-        private Expression<Func<ContentItemIndex, bool>> GetVersionFilter(PublicationStatusEnum status)
-        {
-            switch (status)
+        private static Expression<Func<ContentItemIndex, bool>> GetVersionFilter(PublicationStatusEnum status) =>
+            status switch
             {
-                case PublicationStatusEnum.Published: return x => x.Published;
-                case PublicationStatusEnum.Draft: return x => x.Latest && !x.Published;
-                case PublicationStatusEnum.Latest: return x => x.Latest;
-                case PublicationStatusEnum.All: return x => true;
-                default: return x => x.Published;
-            }
-        }
+                PublicationStatusEnum.Published => x => x.Published,
+                PublicationStatusEnum.Draft => x => x.Latest && !x.Published,
+                PublicationStatusEnum.Latest => x => x.Latest,
+                PublicationStatusEnum.All => x => true,
+                _ => x => x.Published,
+            };
     }
 }

@@ -10,7 +10,7 @@ notificationManager = function () {
       return;
     }
     var elements = document.getElementsByClassName('mark-notification-as-read');
-    var _loop = function _loop(i) {
+    var _loop = function _loop() {
       var element = elements[i];
       element.addEventListener('click', function () {
         if (element.getAttribute('data-is-read') != "false") {
@@ -53,7 +53,7 @@ notificationManager = function () {
       });
     };
     for (var i = 0; i < elements.length; i++) {
-      _loop(i);
+      _loop();
     }
   };
   return {

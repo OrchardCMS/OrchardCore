@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.Core.Models;
+using OrchardCore.Search.Elasticsearch.Core.Services;
 
 namespace OrchardCore.Search.Elasticsearch.Drivers
 {
@@ -43,7 +43,7 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
 
         public override bool CanHandleModel(ContentPartFieldDefinition model)
         {
-            return String.Equals("ContentPickerField", model.FieldDefinition.Name);
+            return string.Equals("ContentPickerField", model.FieldDefinition.Name);
         }
     }
 }

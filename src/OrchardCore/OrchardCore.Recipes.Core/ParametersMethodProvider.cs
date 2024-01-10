@@ -19,7 +19,7 @@ namespace OrchardCore.Recipes
                 Method = serviceprovider => (Func<string, object>)(name =>
                {
                    return environmentObject.SelectToken(name)?.Value<string>();
-               })
+               }),
             };
         }
 

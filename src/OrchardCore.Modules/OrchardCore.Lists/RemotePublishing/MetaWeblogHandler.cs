@@ -37,7 +37,7 @@ namespace OrchardCore.Lists.RemotePublishing
         private readonly IMembershipService _membershipService;
         private readonly IEnumerable<IMetaWeblogDriver> _metaWeblogDrivers;
         private readonly ISession _session;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public MetaWeblogHandler(
             IContentManager contentManager,
@@ -151,7 +151,7 @@ namespace OrchardCore.Lists.RemotePublishing
 
         private async Task<XRpcStruct> MetaWeblogNewMediaObjectAsync(string userName, string password, XRpcStruct file)
         {
-            var user = await ValidateUserAsync(userName, password);
+            _ = await ValidateUserAsync(userName, password);
 
             var name = file.Optional<string>("name");
             var bits = file.Optional<byte[]>("bits");
@@ -171,7 +171,8 @@ namespace OrchardCore.Lists.RemotePublishing
 
             var publicUrl = _mediaFileStore.MapPathToPublicUrl(filePath);
 
-            return new XRpcStruct() // Some clients require all optional attributes to be declared Wordpress responds in this way as well.
+            // Some clients require all optional attributes to be declared Wordpress responds in this way as well.
+            return new XRpcStruct()
                 .Set("file", publicUrl)
                 .Set("url", publicUrl)
                 .Set("type", file.Optional<string>("type"));
@@ -181,10 +182,10 @@ namespace OrchardCore.Lists.RemotePublishing
         {
             var user = await ValidateUserAsync(userName, password);
 
-            XRpcArray array = new XRpcArray();
+            var array = new XRpcArray();
 
-            // Look for all types using ListPart
-            foreach (var type in _contentDefinitionManager.ListTypeDefinitions())
+            // Look for all types using ListPart.
+            foreach (var type in await _contentDefinitionManager.ListTypeDefinitionsAsync())
             {
                 if (!type.Parts.Any(x => x.Name == nameof(ListPart)))
                 {
@@ -193,7 +194,7 @@ namespace OrchardCore.Lists.RemotePublishing
 
                 foreach (var list in await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == type.Name).ListAsync())
                 {
-                    // User needs to at least have permission to edit its own blog posts to access the service
+                    // User needs to at least have permission to edit its own blog posts to access the service.
                     if (await _authorizationService.AuthorizeAsync(user, CommonPermissions.EditContent, list))
                     {
                         var metadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(list);
@@ -220,15 +221,11 @@ namespace OrchardCore.Lists.RemotePublishing
         {
             var user = await ValidateUserAsync(userName, password);
 
-            // User needs to at least have permission to edit its own blog posts to access the service
+            // User needs to at least have permission to edit its own blog posts to access the service.
             await CheckAccessAsync(CommonPermissions.EditContent, user, null);
 
-            var list = await _contentManager.GetAsync(contentItemId);
-
-            if (list == null)
-            {
-                throw new InvalidOperationException("Could not find content item " + contentItemId);
-            }
+            var list = (await _contentManager.GetAsync(contentItemId))
+                ?? throw new InvalidOperationException("Could not find content item " + contentItemId);
 
             var array = new XRpcArray();
 
@@ -264,17 +261,13 @@ namespace OrchardCore.Lists.RemotePublishing
         {
             var user = await ValidateUserAsync(userName, password);
 
-            // User needs permission to edit or publish its own blog posts
+            // User needs permission to edit or publish its own blog posts.
             await CheckAccessAsync(publish ? CommonPermissions.PublishContent : CommonPermissions.EditContent, user, null);
 
-            var list = await _contentManager.GetAsync(contentItemId);
+            var list = (await _contentManager.GetAsync(contentItemId))
+                ?? throw new InvalidOperationException("Could not find content item " + contentItemId);
 
-            if (list == null)
-            {
-                throw new InvalidOperationException("Could not find content item " + contentItemId);
-            }
-
-            var postType = GetContainedContentTypes(list).FirstOrDefault();
+            var postType = (await GetContainedContentTypesAsync(list)).FirstOrDefault();
             var contentItem = await _contentManager.NewAsync(postType.Name);
 
             contentItem.Owner = user.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -287,16 +280,16 @@ namespace OrchardCore.Lists.RemotePublishing
 
             await _contentManager.CreateAsync(contentItem, VersionOptions.Draft);
 
-            // try to get the UTC time zone by default
+            // Try to get the UTC time zone by default.
             var publishedUtc = content.Optional<DateTime?>("date_created_gmt");
             if (publishedUtc == null)
             {
-                // take the local one
+                // Take the local one
                 publishedUtc = content.Optional<DateTime?>("dateCreated");
             }
             else
             {
-                // ensure it's read as a UTC time
+                // Ensure it's read as a UTC time.
                 publishedUtc = new DateTime(publishedUtc.Value.Ticks, DateTimeKind.Utc);
             }
 
@@ -330,12 +323,9 @@ namespace OrchardCore.Lists.RemotePublishing
             IEnumerable<IXmlRpcDriver> drivers)
         {
             var user = await ValidateUserAsync(userName, password);
-            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
-            if (contentItem == null)
-            {
-                throw new ArgumentException();
-            }
+            var contentItem = (await _contentManager.GetAsync(contentItemId, VersionOptions.Latest))
+                ?? throw new InvalidOperationException("Could not find content item " + contentItemId);
 
             await CheckAccessAsync(CommonPermissions.EditContent, user, contentItem);
 
@@ -364,12 +354,8 @@ namespace OrchardCore.Lists.RemotePublishing
         {
             var user = await ValidateUserAsync(userName, password);
 
-            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
-
-            if (contentItem == null)
-            {
-                throw new Exception(S["The specified Blog Post doesn't exist anymore. Please create a new Blog Post."]);
-            }
+            var contentItem = (await _contentManager.GetAsync(contentItemId, VersionOptions.DraftRequired))
+                ?? throw new Exception(S["The specified Blog Post doesn't exist anymore. Please create a new Blog Post."]);
 
             await CheckAccessAsync(publish ? CommonPermissions.PublishContent : CommonPermissions.EditContent, user, contentItem);
 
@@ -378,7 +364,7 @@ namespace OrchardCore.Lists.RemotePublishing
                 driver.EditPost(content, contentItem);
             }
 
-            // try to get the UTC time zone by default
+            // Try to get the UTC time zone by default.
             var publishedUtc = content.Optional<DateTime?>("date_created_gmt");
             if (publishedUtc == null)
             {
@@ -387,7 +373,7 @@ namespace OrchardCore.Lists.RemotePublishing
             }
             else
             {
-                // ensure it's read as a UTC time
+                // Ensure it's read as a UTC time.
                 publishedUtc = new DateTime(publishedUtc.Value.Ticks, DateTimeKind.Utc);
             }
 
@@ -420,11 +406,9 @@ namespace OrchardCore.Lists.RemotePublishing
             IEnumerable<IXmlRpcDriver> drivers)
         {
             var user = await ValidateUserAsync(userName, password);
-            var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
-            if (contentItem == null)
-            {
-                throw new ArgumentException();
-            }
+
+            var contentItem = (await _contentManager.GetAsync(contentItemId, VersionOptions.Latest))
+                ?? throw new InvalidOperationException("Could not find content item " + contentItemId);
 
             if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.DeleteContent, contentItem))
             {
@@ -499,13 +483,28 @@ namespace OrchardCore.Lists.RemotePublishing
             }
         }
 
-        private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ContentItem contentItem)
+        private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(ContentItem contentItem)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "ListPart"));
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "ListPart"));
             var settings = contentTypePartDefinition.GetSettings<ListPartSettings>();
             var contentTypes = settings.ContainedContentTypes ?? Enumerable.Empty<string>();
-            return contentTypes.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType));
+
+            var definitions = new List<ContentTypeDefinition>();
+
+            foreach (var contentType in contentTypes)
+            {
+                var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType);
+
+                if (definition == null)
+                {
+                    continue;
+                }
+
+                definitions.Add(definition);
+            }
+
+            return definitions;
         }
     }
 }

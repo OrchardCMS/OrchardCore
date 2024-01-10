@@ -1,0 +1,11 @@
+body, html {
+    height: 100%;
+}
+
+.auth-wrapper {
+    width: 100%;
+    max-width: 800px;
+    margin: auto;
+}
+
+@import 'components/validations';

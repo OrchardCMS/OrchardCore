@@ -13,9 +13,9 @@ namespace OrchardCore.Resources.Liquid
 {
     public class StyleTag
     {
-        private static readonly char[] Separators = new[] { ',', ' ' };
+        private static readonly char[] _separators = new[] { ',', ' ' };
 
-        public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder _, TemplateContext context)
         {
             var services = ((LiquidTemplateContext)context).Services;
             var resourceManager = services.GetRequiredService<IResourceManager>();
@@ -57,7 +57,7 @@ namespace OrchardCore.Resources.Liquid
                 }
             }
 
-            if (String.IsNullOrEmpty(name) && !String.IsNullOrEmpty(src))
+            if (string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(src))
             {
                 // Include custom style
                 var setting = resourceManager.RegisterUrl("stylesheet", src, debugSrc);
@@ -79,7 +79,7 @@ namespace OrchardCore.Resources.Liquid
                     setting.AtLocation(ResourceLocation.Head);
                 }
 
-                if (!String.IsNullOrEmpty(condition))
+                if (!string.IsNullOrEmpty(condition))
                 {
                     setting.UseCondition(condition);
                 }
@@ -94,14 +94,14 @@ namespace OrchardCore.Resources.Liquid
                     setting.UseDebugMode(debug.Value);
                 }
 
-                if (!String.IsNullOrEmpty(culture))
+                if (!string.IsNullOrEmpty(culture))
                 {
                     setting.UseCulture(culture);
                 }
 
-                if (!String.IsNullOrEmpty(dependsOn))
+                if (!string.IsNullOrEmpty(dependsOn))
                 {
-                    setting.SetDependencies(dependsOn.Split(Separators, StringSplitOptions.RemoveEmptyEntries));
+                    setting.SetDependencies(dependsOn.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 if (at == ResourceLocation.Inline)
@@ -109,7 +109,7 @@ namespace OrchardCore.Resources.Liquid
                     resourceManager.RenderLocalStyle(setting, writer);
                 }
             }
-            else if (!String.IsNullOrEmpty(name) && String.IsNullOrEmpty(src))
+            else if (!string.IsNullOrEmpty(name) && string.IsNullOrEmpty(src))
             {
                 // Resource required
 
@@ -137,7 +137,7 @@ namespace OrchardCore.Resources.Liquid
                     setting.UseCdn(useCdn.Value);
                 }
 
-                if (!String.IsNullOrEmpty(condition))
+                if (!string.IsNullOrEmpty(condition))
                 {
                     setting.UseCondition(condition);
                 }
@@ -147,7 +147,7 @@ namespace OrchardCore.Resources.Liquid
                     setting.UseDebugMode(debug.Value);
                 }
 
-                if (!String.IsNullOrEmpty(culture))
+                if (!string.IsNullOrEmpty(culture))
                 {
                     setting.UseCulture(culture);
                 }
@@ -157,15 +157,15 @@ namespace OrchardCore.Resources.Liquid
                     setting.ShouldAppendVersion(appendversion);
                 }
 
-                if (!String.IsNullOrEmpty(version))
+                if (!string.IsNullOrEmpty(version))
                 {
                     setting.UseVersion(version);
                 }
 
                 // This allows additions to the pre registered style dependencies.
-                if (!String.IsNullOrEmpty(dependsOn))
+                if (!string.IsNullOrEmpty(dependsOn))
                 {
-                    setting.SetDependencies(dependsOn.Split(Separators, StringSplitOptions.RemoveEmptyEntries));
+                    setting.SetDependencies(dependsOn.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 if (at == ResourceLocation.Inline)
@@ -173,7 +173,7 @@ namespace OrchardCore.Resources.Liquid
                     resourceManager.RenderLocalStyle(setting, writer);
                 }
             }
-            else if (!String.IsNullOrEmpty(name) && !String.IsNullOrEmpty(src))
+            else if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(src))
             {
                 // Inline declaration
 
@@ -188,24 +188,24 @@ namespace OrchardCore.Resources.Liquid
                     }
                 }
 
-                if (!String.IsNullOrEmpty(version))
+                if (!string.IsNullOrEmpty(version))
                 {
                     definition.SetVersion(version);
                 }
 
-                if (!String.IsNullOrEmpty(cdnSrc))
+                if (!string.IsNullOrEmpty(cdnSrc))
                 {
                     definition.SetCdn(cdnSrc, debugCdnSrc);
                 }
 
-                if (!String.IsNullOrEmpty(culture))
+                if (!string.IsNullOrEmpty(culture))
                 {
-                    definition.SetCultures(culture.Split(Separators, StringSplitOptions.RemoveEmptyEntries));
+                    definition.SetCultures(culture.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
                 }
 
-                if (!String.IsNullOrEmpty(dependsOn))
+                if (!string.IsNullOrEmpty(dependsOn))
                 {
-                    definition.SetDependencies(dependsOn.Split(Separators, StringSplitOptions.RemoveEmptyEntries));
+                    definition.SetDependencies(dependsOn.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 // Also include the style.
@@ -216,7 +216,7 @@ namespace OrchardCore.Resources.Liquid
                     setting.UseCdn(useCdn.Value);
                 }
 
-                if (!String.IsNullOrEmpty(condition))
+                if (!string.IsNullOrEmpty(condition))
                 {
                     setting.UseCondition(condition);
                 }
@@ -226,7 +226,7 @@ namespace OrchardCore.Resources.Liquid
                     setting.UseDebugMode(debug.Value);
                 }
 
-                if (!String.IsNullOrEmpty(culture))
+                if (!string.IsNullOrEmpty(culture))
                 {
                     setting.UseCulture(culture);
                 }

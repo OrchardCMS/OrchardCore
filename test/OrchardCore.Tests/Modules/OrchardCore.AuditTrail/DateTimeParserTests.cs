@@ -1,6 +1,5 @@
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.Modules;
-using Parlot;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.AuditTrail
 {
@@ -20,7 +19,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.AuditTrail
         public void DateParserTests(string text, string expected)
         {
             var context = new DateTimeParseContext(CultureInfo.InvariantCulture, Mock.Of<IClock>(), Mock.Of<ITimeZone>(), new Scanner(text));
-            Assert.True(DateTimeParser.Parser.TryParse(context, out var result, out var error));
+            Assert.True(DateTimeParser.Parser.TryParse(context, out var result, out _));
             Assert.StartsWith(expected, result.ToString());
         }
     }

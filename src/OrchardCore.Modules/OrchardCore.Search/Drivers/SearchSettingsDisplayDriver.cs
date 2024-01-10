@@ -3,12 +3,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Modules;
 using OrchardCore.Search.Abstractions;
-using OrchardCore.Search.Model;
+using OrchardCore.Search.Models;
 using OrchardCore.Search.ViewModels;
 using OrchardCore.Settings;
 
@@ -16,7 +18,9 @@ namespace OrchardCore.Search.Drivers
 {
     public class SearchSettingsDisplayDriver : SectionDisplayDriver<ISite, SearchSettings>
     {
-        public const string GroupId = "search";
+        [Obsolete("This property should not be used. Instead use  SearchConstants.SearchSettingsGroupId.")]
+        public const string GroupId = SearchConstants.SearchSettingsGroupId;
+
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
         private readonly IServiceProvider _serviceProvider;
@@ -43,19 +47,22 @@ namespace OrchardCore.Search.Drivers
 
             return Initialize<SearchSettingsViewModel>("SearchSettings_Edit", model =>
             {
-                var searchProviders = _serviceProvider.GetServices<SearchProvider>();
+                var searchServices = _serviceProvider.GetServices<ISearchService>();
 
-                if (searchProviders.Any())
-                {
-                    model.SearchProviders = searchProviders;
-                }
-
-                model.SearchProviderAreaName = settings.SearchProviderAreaName;
-            }).Location("Content:2").OnGroup(GroupId);
+                model.SearchServices = searchServices.Select(service => new SelectListItem(service.Name, service.Name)).ToList();
+                model.Placeholder = settings.Placeholder;
+                model.PageTitle = settings.PageTitle;
+                model.ProviderName = settings.ProviderName;
+            }).Location("Content:2").OnGroup(SearchConstants.SearchSettingsGroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(SearchSettings section, BuildEditorContext context)
         {
+            if (!SearchConstants.SearchSettingsGroupId.EqualsOrdinalIgnoreCase(context.GroupId))
+            {
+                return null;
+            }
+
             var user = _httpContextAccessor.HttpContext?.User;
 
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageSearchSettings))
@@ -63,13 +70,13 @@ namespace OrchardCore.Search.Drivers
                 return null;
             }
 
-            if (context.GroupId == GroupId)
+            var model = new SearchSettingsViewModel();
+
+            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                var model = new SearchSettingsViewModel();
-
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-                section.SearchProviderAreaName = model.SearchProviderAreaName;
+                section.ProviderName = model.ProviderName;
+                section.Placeholder = model.Placeholder;
+                section.PageTitle = model.PageTitle;
             }
 
             return await EditAsync(section, context);

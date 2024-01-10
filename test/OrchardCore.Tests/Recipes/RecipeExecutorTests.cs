@@ -1,6 +1,5 @@
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
@@ -19,9 +18,9 @@ namespace OrchardCore.Recipes
         [InlineData("recipe3", "js: valiables('now')")]
         [InlineData("recipe4", "[locale en]This text contains a colon ':' symbol[/locale][locale fr]Ce texte contient un deux-points ':'[/locale]")]
         [InlineData("recipe5", "[sc text='some : text'/]")]
-        public Task ShouldTrimValidScriptExpression(string recipeName, string expected)
+        public async Task ShouldTrimValidScriptExpression(string recipeName, string expected)
         {
-            return CreateShellContext().CreateScope().UsingAsync(async scope =>
+            await (await CreateShellContext().CreateScopeAsync()).UsingAsync(async scope =>
             {
                 // Arrange
                 var shellHostMock = new Mock<IShellHost>();
@@ -48,11 +47,11 @@ namespace OrchardCore.Recipes
             });
         }
 
-        private static Task<ShellScope> GetScopeAsync() => Task.FromResult(ShellScope.Context.CreateScope());
+        private static Task<ShellScope> GetScopeAsync() => ShellScope.Context.CreateScopeAsync();
 
-        private static ShellContext CreateShellContext() => new ShellContext()
+        private static ShellContext CreateShellContext() => new()
         {
-            Settings = new ShellSettings() { Name = ShellHelper.DefaultShellName, State = TenantState.Running },
+            Settings = new ShellSettings().AsDefaultShell().AsRunning(),
             ServiceProvider = CreateServiceProvider(),
         };
 
@@ -76,7 +75,7 @@ namespace OrchardCore.Recipes
 
             public Task RecipeStepExecutedAsync(RecipeExecutionContext context)
             {
-                if (String.Equals(context.Name, "Content", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(context.Name, "Content", StringComparison.OrdinalIgnoreCase))
                 {
                     Context = context;
                 }
