@@ -29,6 +29,8 @@ namespace OrchardCore.Search.AzureAI.Controllers;
 
 public class AdminController : Controller
 {
+    private const string _optionsSearch = "Options.Search";
+
     private readonly ISiteService _siteService;
     private readonly IAuthorizationService _authorizationService;
     private readonly AzureAISearchIndexManager _indexManager;
@@ -82,6 +84,11 @@ public class AdminController : Controller
             return Forbid();
         }
 
+        if (!_azureAIOptions.IsConfigurationExists())
+        {
+            return NotConfigured();
+        }
+
         var indexes = (await _indexSettingsService.GetSettingsAsync())
             .Select(i => new IndexViewModel { Name = i.IndexName })
             .ToList();
@@ -100,20 +107,19 @@ public class AdminController : Controller
             .Skip(pager.GetStartIndex())
             .Take(pager.PageSize).ToList();
 
-        // Maintain previous route data when generating page links.S
-        RouteValueDictionary routeValues = null;
+        // Maintain previous route data when generating page links.
+        var routeData = new RouteData();
 
-        if (!string.IsNullOrWhiteSpace(options.Search))
+        if (!string.IsNullOrEmpty(options.Search))
         {
-            routeValues = [];
-            routeValues.TryAdd("Options.Search", options.Search);
+            routeData.Values.TryAdd(_optionsSearch, options.Search);
         }
 
         var model = new AdminIndexViewModel
         {
             Indexes = indexes,
             Options = options,
-            Pager = await _shapeFactory.PagerAsync(pager, totalIndexes, routeValues)
+            Pager = await _shapeFactory.PagerAsync(pager, totalIndexes, routeData)
         };
 
         model.Options.ContentsBulkAction =
@@ -130,17 +136,22 @@ public class AdminController : Controller
         => RedirectToAction(nameof(Index),
             new RouteValueDictionary
             {
-                { "Options.Search", model.Options.Search }
+                { _optionsSearch, model.Options.Search }
             });
-    
+
 
     [HttpPost, ActionName(nameof(Index))]
     [FormValueRequired("submit.BulkAction")]
-    public async Task<ActionResult> IndexPost(AzureAIIndexOptions options, IEnumerable<string> itemIds)
+    public async Task<IActionResult> IndexPost(AzureAIIndexOptions options, IEnumerable<string> itemIds)
     {
         if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
         {
             return Forbid();
+        }
+
+        if (!_azureAIOptions.IsConfigurationExists())
+        {
+            return BadRequest();
         }
 
         if (itemIds?.Count() > 0)
@@ -169,11 +180,16 @@ public class AdminController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    public async Task<ActionResult> Create()
+    public async Task<IActionResult> Create()
     {
         if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
         {
             return Forbid();
+        }
+
+        if (!_azureAIOptions.IsConfigurationExists())
+        {
+            return NotConfigured();
         }
 
         var model = new AzureAISettingsViewModel
@@ -187,11 +203,16 @@ public class AdminController : Controller
     }
 
     [HttpPost, ActionName(nameof(Create))]
-    public async Task<ActionResult> CreatePost(AzureAISettingsViewModel model)
+    public async Task<IActionResult> CreatePost(AzureAISettingsViewModel model)
     {
         if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
         {
             return Forbid();
+        }
+
+        if (!_azureAIOptions.IsConfigurationExists())
+        {
+            return BadRequest();
         }
 
         if (ModelState.IsValid && await _indexManager.ExistsAsync(model.IndexName))
@@ -244,11 +265,16 @@ public class AdminController : Controller
         return View(model);
     }
 
-    public async Task<ActionResult> Edit(string indexName)
+    public async Task<IActionResult> Edit(string indexName)
     {
         if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
         {
             return Forbid();
+        }
+
+        if (!_azureAIOptions.IsConfigurationExists())
+        {
+            return NotConfigured();
         }
 
         var settings = await _indexSettingsService.GetAsync(indexName);
@@ -283,11 +309,16 @@ public class AdminController : Controller
     }
 
     [HttpPost, ActionName(nameof(Edit))]
-    public async Task<ActionResult> EditPost(AzureAISettingsViewModel model)
+    public async Task<IActionResult> EditPost(AzureAISettingsViewModel model)
     {
         if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
         {
             return Forbid();
+        }
+
+        if (!_azureAIOptions.IsConfigurationExists())
+        {
+            return BadRequest();
         }
 
         if (ModelState.IsValid && !await _indexManager.ExistsAsync(model.IndexName))
@@ -353,11 +384,16 @@ public class AdminController : Controller
     }
 
     [HttpPost]
-    public async Task<ActionResult> Delete(string indexName)
+    public async Task<IActionResult> Delete(string indexName)
     {
         if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
         {
             return Forbid();
+        }
+
+        if (!_azureAIOptions.IsConfigurationExists())
+        {
+            return BadRequest();
         }
 
         var exists = await _indexManager.ExistsAsync(indexName);
@@ -384,11 +420,16 @@ public class AdminController : Controller
     }
 
     [HttpPost]
-    public async Task<ActionResult> Rebuild(string indexName)
+    public async Task<IActionResult> Rebuild(string indexName)
     {
         if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
         {
             return Forbid();
+        }
+
+        if (!_azureAIOptions.IsConfigurationExists())
+        {
+            return BadRequest();
         }
 
         var settings = await _indexSettingsService.GetAsync(indexName);
@@ -413,11 +454,16 @@ public class AdminController : Controller
     }
 
     [HttpPost]
-    public async Task<ActionResult> Reset(string indexName)
+    public async Task<IActionResult> Reset(string indexName)
     {
         if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
         {
             return Forbid();
+        }
+
+        if (!_azureAIOptions.IsConfigurationExists())
+        {
+            return BadRequest();
         }
 
         var settings = await _indexSettingsService.GetAsync(indexName);
@@ -440,6 +486,9 @@ public class AdminController : Controller
 
         return RedirectToAction(nameof(Index));
     }
+
+    private IActionResult NotConfigured()
+        => View("NotConfigured");
 
     private static Task AsyncContentItemsAsync(string indexName)
         => HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("sync-content-items-azure-ai-" + indexName, async (scope) =>
