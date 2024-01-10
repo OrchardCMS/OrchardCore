@@ -1,0 +1,44 @@
+name: Monthly Issue Metrics
+on:
+  pull_request:
+    branches: [ main, release/** ]
+  workflow_dispatch:
+  schedule:
+    # Run on the first day of every month at 2:03 AM UTC.
+    - cron: '3 2 1 * *'
+
+permissions:
+  issues: write
+  pull-requests: read
+
+jobs:
+  build:
+    name: Generate Issue Metrics
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get Dates For Last Month
+      shell: bash
+      run: |
+        # Calculate the first day of the previous month.
+        first_day=$(date -d "last month" +%Y-%m-01)
+
+        # Calculate the last day of the previous month.
+        last_day=$(date -d "$first_day +1 month -1 day" +%Y-%m-%d)
+
+        # Set an environment variable with the date range.
+        echo "$first_day..$last_day"
+        echo "last_month=$first_day..$last_day" >> "$GITHUB_ENV"
+
+    - name: Compute Issue Metrics
+      uses: github/issue-metrics@v2
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SEARCH_QUERY: 'repo:OrchardCMS/OrchardCore is:issue created:${{ env.last_month }} -reason:"not planned"'
+
+    - name: Create Issue
+      # v4.0.1
+      uses: peter-evans/create-issue-from-file@v433e51abf769039ee20ba1293a088ca19d573b7f
+      with:
+        title: Monthly issue metrics report
+        token: ${{ secrets.GITHUB_TOKEN }}
+        content-filepath: ./issue_metrics.md
