@@ -7,6 +7,7 @@ The Orchard Core community is a thriving hub of collaboration and knowledge exch
 Orchard Core is steered and built by all of those who contribute, with code, bug reports and feature requests, code reviews, documentation, and in any other way.
 
 - [Our wonderful contributors](contributors/README.md)
+- [A map of where our contributors come from](contributors/Map.md)
 
 ## Honorable Members
 
