@@ -4,8 +4,8 @@ on:
     branches: [ main, release/** ]
   workflow_dispatch:
   schedule:
-    # Run on the first day of every month at 2:03 AM UTC.
-    - cron: '3 2 1 * *'
+    # Run on the first day of every month at 2:19 AM UTC.
+    - cron: '19 2 1 * *'
 
 permissions:
   issues: write
