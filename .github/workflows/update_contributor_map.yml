@@ -14,6 +14,6 @@ jobs:
     
     steps:
       - name: Update Contributor Map
-        uses: tunaitis/contributor-map@0d8dd542f4458fedd8a90d6a04fc2ec890a1f87c
+        uses: tunaitis/contributor-map@v1
         with:
             output: src/docs/community/contributors/images/contributors-map.svg
