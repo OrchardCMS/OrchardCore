@@ -6,5 +6,5 @@
     <label asp-for="FormLocationKey" class="form-label">@T["Form Location Key"]</label>
     <input type="text" asp-for="FormLocationKey" class="form-control" />
     <span asp-validation-for="FormLocationKey"></span>
-    <span class="hint">@T["This value needs to correspond with the Form Location Key value utilized in the HTTP request event settings. Leave blank if the workflow handles a single form event."]</span>
+    <span class="hint">@T["This key name should be equal to the 'Form Location Key' of the HTTP request event. Leave blank if the workflow only handles a single form."]</span>
 </div>

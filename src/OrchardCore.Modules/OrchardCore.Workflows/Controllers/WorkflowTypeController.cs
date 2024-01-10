@@ -44,8 +44,8 @@ namespace OrchardCore.Workflows.Controllers
         private readonly INotifier _notifier;
         private readonly ISecurityTokenService _securityTokenService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IShapeFactory _shapeFactory;
 
-        protected readonly dynamic New;
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
 
@@ -62,8 +62,8 @@ namespace OrchardCore.Workflows.Controllers
             IShapeFactory shapeFactory,
             INotifier notifier,
             ISecurityTokenService securityTokenService,
-            IStringLocalizer<WorkflowTypeController> s,
-            IHtmlLocalizer<WorkflowTypeController> h,
+            IStringLocalizer<WorkflowTypeController> stringLocalizer,
+            IHtmlLocalizer<WorkflowTypeController> htmlLocalizer,
             IUpdateModelAccessor updateModelAccessor)
         {
             _pagerOptions = pagerOptions.Value;
@@ -77,10 +77,9 @@ namespace OrchardCore.Workflows.Controllers
             _notifier = notifier;
             _securityTokenService = securityTokenService;
             _updateModelAccessor = updateModelAccessor;
-
-            New = shapeFactory;
-            S = s;
-            H = h;
+            _shapeFactory = shapeFactory;
+            S = stringLocalizer;
+            H = htmlLocalizer;
         }
 
         public async Task<IActionResult> Index(WorkflowTypeIndexOptions options, PagerParameters pagerParameters)
@@ -136,10 +135,13 @@ namespace OrchardCore.Workflows.Controllers
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();
             routeData.Values.Add("Options.Filter", options.Filter);
-            routeData.Values.Add("Options.Search", options.Search);
             routeData.Values.Add("Options.Order", options.Order);
+            if (!string.IsNullOrEmpty(options.Search))
+            {
+                routeData.Values.TryAdd("Options.Search", options.Search);
+            }
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
+            var pagerShape = await _shapeFactory.PagerAsync(pager, count, routeData);
             var model = new WorkflowTypeIndexViewModel
             {
                 WorkflowTypes = workflowTypes
@@ -155,28 +157,21 @@ namespace OrchardCore.Workflows.Controllers
                 Pager = pagerShape,
             };
 
-            model.Options.WorkflowTypesBulkAction = new List<SelectListItem>()
-            {
-                new SelectListItem()
-                {
-                    Text = S["Delete"].Value, Value = nameof(WorkflowTypeBulkAction.Delete),
-                },
-            };
+            model.Options.WorkflowTypesBulkAction =
+            [
+                new SelectListItem(S["Delete"], nameof(WorkflowTypeBulkAction.Delete)),
+            ];
 
             return View(model);
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(WorkflowTypeIndexViewModel model)
-        {
-            return RedirectToAction(nameof(Index), new RouteValueDictionary
+            => RedirectToAction(nameof(Index), new RouteValueDictionary
             {
-                {
-                    "Options.Search", model.Options.Search
-                },
+                { "Options.Search", model.Options.Search },
             });
-        }
 
         [HttpPost]
         [ActionName(nameof(Index))]
