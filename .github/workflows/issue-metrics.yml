@@ -57,4 +57,5 @@ jobs:
         title: Monthly pull request metrics report for ${{ env.last_month }}
         token: ${{ secrets.GITHUB_TOKEN }}
         content-filepath: ./issue_metrics.md
+        labels: community metrics
         
