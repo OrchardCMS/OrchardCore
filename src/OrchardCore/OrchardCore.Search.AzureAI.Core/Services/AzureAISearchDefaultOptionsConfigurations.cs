@@ -91,8 +91,7 @@ public class AzureAISearchDefaultOptionsConfigurations : IConfigureOptions<Azure
 
             options.Credential = new AzureKeyCredential(protector.Unprotect(settings.ApiKey));
         }
-
-        if (settings.AuthenticationType == AzureAIAuthenticationType.ManagedIdentity)
+        else if (settings.AuthenticationType == AzureAIAuthenticationType.ManagedIdentity)
         {
             options.IdentityClientId = settings.IdentityClientId;
         }
@@ -105,6 +104,6 @@ public class AzureAISearchDefaultOptionsConfigurations : IConfigureOptions<Azure
             return false;
         }
 
-        return options.AuthenticationType == AzureAIAuthenticationType.Default || !string.IsNullOrEmpty(options.Credential?.Key);
+        return options.AuthenticationType != AzureAIAuthenticationType.ApiKey || !string.IsNullOrEmpty(options.Credential?.Key);
     }
 }
