@@ -1,8 +1,8 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Recipes;
@@ -28,24 +28,12 @@ public static class ServiceCollectionExtensions
             logger.LogError("Azure AI Search module is enabled. However, the connection settings are not provided in configuration file.");
         }
 
-        services.Configure<AzureAISearchDefaultOptions>(opts =>
-        {
-            opts.Endpoint = options.Endpoint;
-            opts.Credential = options.Credential;
-            opts.IndexesPrefix = options.IndexesPrefix;
-            opts.Analyzers = options.Analyzers == null || options.Analyzers.Length == 0
-            ? AzureAISearchDefaultOptions.DefaultAnalyzers
-            : options.Analyzers;
-            opts.SetConfigurationExists(configExists);
-        });
+        services.AddTransient<IConfigureOptions<AzureAISearchDefaultOptions>, AzureAISearchDefaultOptionsConfigurations>();
 
-        services.AddAzureClients(builder =>
-        {
-            builder.AddSearchIndexClient(section);
-        });
+        services.AddAzureClientsCore();
+        services.AddSingleton<SearchIndexClientAccessor>();
 
         services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddScoped<IAuthorizationHandler, AzureAISearchAuthorizationHandler>();
         services.AddScoped<IContentHandler, AzureAISearchIndexingContentHandler>();
         services.AddScoped<AzureAISearchIndexManager>();
         services.AddScoped<AzureAIIndexDocumentManager>();

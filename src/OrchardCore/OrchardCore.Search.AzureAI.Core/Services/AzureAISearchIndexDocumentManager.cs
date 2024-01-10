@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Azure.Search.Documents;
 using Azure.Search.Documents.Models;
@@ -31,6 +32,7 @@ public class AzureAIIndexDocumentManager(
 
     public async Task<IEnumerable<SearchDocument>> SearchAsync(string indexName, string searchText, SearchOptions searchOptions = null)
     {
+        ArgumentException.ThrowIfNullOrEmpty(indexName, nameof(indexName));
         ArgumentException.ThrowIfNullOrWhiteSpace(searchText, nameof(searchText));
 
         var client = GetSearchClient(indexName);
@@ -47,6 +49,7 @@ public class AzureAIIndexDocumentManager(
 
     public async Task<long?> SearchAsync(string indexName, string searchText, Action<SearchDocument> action, SearchOptions searchOptions = null)
     {
+        ArgumentException.ThrowIfNullOrEmpty(indexName, nameof(indexName));
         ArgumentException.ThrowIfNullOrWhiteSpace(searchText, nameof(searchText));
         ArgumentNullException.ThrowIfNull(action);
 
@@ -61,11 +64,12 @@ public class AzureAIIndexDocumentManager(
             counter++;
         }
 
-        return searchResult.Value.TotalCount ?? counter;
+        return searchResult.Value?.TotalCount ?? counter;
     }
 
     public async Task DeleteDocumentsAsync(string indexName, IEnumerable<string> contentItemIds)
     {
+        ArgumentException.ThrowIfNullOrEmpty(indexName, nameof(indexName));
         ArgumentNullException.ThrowIfNull(contentItemIds, nameof(contentItemIds));
 
         try
@@ -113,6 +117,7 @@ public class AzureAIIndexDocumentManager(
 
     public async Task<bool> MergeOrUploadDocumentsAsync(string indexName, IList<DocumentIndex> indexDocuments, AzureAISearchIndexSettings indexSettings)
     {
+        ArgumentException.ThrowIfNullOrEmpty(indexName, nameof(indexName));
         ArgumentNullException.ThrowIfNull(indexDocuments, nameof(indexDocuments));
         ArgumentNullException.ThrowIfNull(indexSettings, nameof(indexSettings));
 
@@ -151,6 +156,7 @@ public class AzureAIIndexDocumentManager(
 
     public async Task UploadDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments, AzureAISearchIndexSettings indexSettings)
     {
+        ArgumentException.ThrowIfNullOrEmpty(indexName, nameof(indexName));
         ArgumentNullException.ThrowIfNull(indexDocuments, nameof(indexDocuments));
         ArgumentNullException.ThrowIfNull(indexSettings, nameof(indexSettings));
 
@@ -207,7 +213,7 @@ public class AzureAIIndexDocumentManager(
         return mapping;
     }
 
-    private IEnumerable<SearchDocument> CreateSearchDocuments(IEnumerable<DocumentIndex> indexDocuments, Dictionary<string, AzureAISearchIndexMap> mappings)
+    private IEnumerable<SearchDocument> CreateSearchDocuments(IEnumerable<DocumentIndex> indexDocuments, Dictionary<string, IEnumerable<AzureAISearchIndexMap>> mappings)
     {
         foreach (var indexDocument in indexDocuments)
         {
@@ -215,7 +221,7 @@ public class AzureAIIndexDocumentManager(
         }
     }
 
-    private SearchDocument CreateSearchDocument(DocumentIndex documentIndex, Dictionary<string, AzureAISearchIndexMap> mappings)
+    private SearchDocument CreateSearchDocument(DocumentIndex documentIndex, Dictionary<string, IEnumerable<AzureAISearchIndexMap>> mappingDictionary)
     {
         var doc = new SearchDocument()
         {
@@ -225,7 +231,14 @@ public class AzureAIIndexDocumentManager(
 
         foreach (var entry in documentIndex.Entries)
         {
-            if (!mappings.TryGetValue(entry.Name, out var map))
+            if (!mappingDictionary.TryGetValue(entry.Name, out var mappings))
+            {
+                continue;
+            }
+
+            var map = mappings.FirstOrDefault(x => x.IndexingKey == entry.Name);
+
+            if (map == null)
             {
                 continue;
             }
@@ -281,10 +294,11 @@ public class AzureAIIndexDocumentManager(
 
                         if (!string.IsNullOrEmpty(stringValue) && stringValue != "NULL")
                         {
-                            // Only full-test and display-text and keyword fields contains single string. All others, support a collection of strings.
-                            if (map.AzureFieldKey == AzureAISearchIndexManager.FullTextKey
-                                || map.AzureFieldKey == AzureAISearchIndexManager.DisplayTextAnalyzedKey
-                                || entry.Options.HasFlag(DocumentIndexOptions.Keyword))
+                            // Full-text and display-text support multi-value.
+                            // keyword fields contains single string. All others, support a collection of strings.
+                            if (entry.Options.HasFlag(DocumentIndexOptions.Keyword)
+                                && map.AzureFieldKey != AzureAISearchIndexManager.FullTextKey
+                                && map.AzureFieldKey != AzureAISearchIndexManager.DisplayTextAnalyzedKey)
                             {
                                 doc.TryAdd(map.AzureFieldKey, stringValue);
                             }

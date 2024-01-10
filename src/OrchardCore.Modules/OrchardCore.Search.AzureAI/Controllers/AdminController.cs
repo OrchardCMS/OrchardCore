@@ -15,7 +15,6 @@ using Microsoft.Extensions.Options;
 using OrchardCore.BackgroundJobs;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Indexing;
 using OrchardCore.Navigation;
@@ -246,12 +245,19 @@ public class AdminController : Controller
                 }
 
                 settings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(settings.IndexedContentTypes);
-                await _indexManager.CreateAsync(settings);
-                await _indexSettingsService.UpdateAsync(settings);
-                await AsyncContentItemsAsync(settings.IndexName);
-                await _notifier.SuccessAsync(H["Index <em>{0}</em> created successfully.", model.IndexName]);
 
-                return RedirectToAction(nameof(Index));
+                if (await _indexManager.CreateAsync(settings))
+                {
+                    await _indexSettingsService.UpdateAsync(settings);
+                    await AsyncContentItemsAsync(settings.IndexName);
+                    await _notifier.SuccessAsync(H["Index <em>{0}</em> created successfully.", model.IndexName]);
+
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    await _notifier.ErrorAsync(H["An error occurred while creating the index."]);
+                }
             }
             catch (Exception e)
             {

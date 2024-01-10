@@ -1,4 +1,5 @@
 using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +17,7 @@ using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.AzureAI.Controllers;
 using OrchardCore.Search.AzureAI.Deployment;
 using OrchardCore.Search.AzureAI.Drivers;
+using OrchardCore.Search.AzureAI.Handlers;
 using OrchardCore.Search.AzureAI.Services;
 using OrchardCore.Settings;
 
@@ -32,6 +34,7 @@ public class Startup(ILogger<Startup> logger, IShellConfiguration shellConfigura
     {
         services.TryAddAzureAISearchServices(_shellConfiguration, _logger);
         services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddScoped<IDisplayDriver<ISite>, AzureAISearchDefaultSettingsDisplayDriver>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -89,6 +92,7 @@ public class SearchStartup : StartupBase
     {
         services.AddScoped<IDisplayDriver<ISite>, AzureAISearchSettingsDisplayDriver>();
         services.AddScoped<ISearchService, AzureAISearchService>();
+        services.AddScoped<IAuthorizationHandler, AzureAISearchAuthorizationHandler>();
     }
 }
 
@@ -99,6 +103,7 @@ public class ContentTypesStartup : StartupBase
     {
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
+        services.AddScoped<IAuthorizationHandler, AzureAISearchAuthorizationHandler>();
     }
 }
 

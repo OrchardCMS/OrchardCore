@@ -116,7 +116,6 @@ namespace OrchardCore.Search.Elasticsearch
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IDisplayDriver<Query>, ElasticQueryDisplayDriver>();
-            services.AddScoped<IAuthorizationHandler, ElasticsearchAuthorizationHandler>();
         }
 
         private static ConnectionSettings GetConnectionSettings(ElasticConnectionOptions elasticConfiguration)
@@ -261,6 +260,7 @@ namespace OrchardCore.Search.Elasticsearch
         {
             services.AddScoped<ISearchService, ElasticsearchService>();
             services.AddScoped<IDisplayDriver<ISite>, ElasticSettingsDisplayDriver>();
+            services.AddScoped<IAuthorizationHandler, ElasticsearchAuthorizationHandler>();
         }
     }
 
