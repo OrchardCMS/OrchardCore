@@ -13,7 +13,6 @@
     var mediaFieldId = Html.IdFor(m => m);
 }
 
-<script asp-name="media" at="Foot"></script>
 <style asp-name="media" at="Head"></style>
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Paths)_FieldWrapper">
@@ -65,6 +64,7 @@
     <partial name="Shared/MediaFieldEditLocalization.cshtml" />
 </div>
 
+<script asp-name="media" at="Foot"></script>
 <script at="Foot">
     initializeAttachedMediaField(
         document.getElementById('@mediaFieldId'),

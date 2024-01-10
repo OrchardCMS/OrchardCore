@@ -53,7 +53,7 @@ namespace OrchardCore.Recipes.Services
 
                 var result = new RecipeResult { ExecutionId = executionId };
 
-                using (var stream = recipeDescriptor.RecipeFileInfo.CreateReadStream())
+                await using (var stream = recipeDescriptor.RecipeFileInfo.CreateReadStream())
                 {
                     using var file = new StreamReader(stream);
                     using var reader = new JsonTextReader(file);

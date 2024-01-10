@@ -32,8 +32,8 @@ public class HttpRedirectToFormLocationTask : TaskActivity<HttpRedirectToFormLoc
 
     public string FormLocationKey
     {
-        get => GetProperty<string>();
-        set => SetProperty(value);
+        get => GetProperty(() => string.Empty);
+        set => SetProperty(value ?? string.Empty);
     }
 
     public override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
@@ -41,10 +41,7 @@ public class HttpRedirectToFormLocationTask : TaskActivity<HttpRedirectToFormLoc
         if (workflowContext.Output.TryGetValue(WorkflowConstants.HttpFormLocationOutputKeyName, out var obj)
             && obj is Dictionary<string, string> formLocations)
         {
-            // if no custom location-key was provided, we use empty string as the default key.
-            var location = FormLocationKey ?? string.Empty;
-
-            if (formLocations.TryGetValue(location, out var path))
+            if (formLocations.TryGetValue(FormLocationKey, out var path))
             {
                 _httpContextAccessor.HttpContext.Items[WorkflowConstants.FormOriginatedLocationItemsKey] = path;
 

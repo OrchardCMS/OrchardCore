@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -15,7 +16,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
     /// <summary>
     /// This component discovers and announces the shape alterations implied by the contents of the Placement.json files
     /// </summary>
-    public class ShapePlacementParsingStrategy : IShapeTableHarvester
+    public class ShapePlacementParsingStrategy : ShapeTableProvider, IShapeTableHarvester
     {
         private readonly IHostEnvironment _hostingEnvironment;
         private readonly IShellFeaturesManager _shellFeaturesManager;
@@ -31,18 +32,18 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
             _placementParseMatchProviders = placementParseMatchProviders;
         }
 
-        public void Discover(ShapeTableBuilder builder)
+        public override async ValueTask DiscoverAsync(ShapeTableBuilder builder)
         {
-            var enabledFeatures = _shellFeaturesManager.GetEnabledFeaturesAsync().GetAwaiter().GetResult()
+            var enabledFeatures = (await _shellFeaturesManager.GetEnabledFeaturesAsync())
                 .Where(Feature => !builder.ExcludedFeatureIds.Contains(Feature.Id));
 
             foreach (var featureDescriptor in enabledFeatures)
             {
-                ProcessFeatureDescriptor(builder, featureDescriptor);
+                await ProcessFeatureDescriptorAsync(builder, featureDescriptor);
             }
         }
 
-        private void ProcessFeatureDescriptor(ShapeTableBuilder builder, IFeatureInfo featureDescriptor)
+        private async Task ProcessFeatureDescriptorAsync(ShapeTableBuilder builder, IFeatureInfo featureDescriptor)
         {
             // TODO : (ngm) Replace with configuration Provider and read from that.
             // Dont use JSON Deserializer directly.
@@ -51,9 +52,9 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
             if (virtualFileInfo.Exists)
             {
-                using var stream = virtualFileInfo.CreateReadStream();
+                await using var stream = virtualFileInfo.CreateReadStream();
                 using var reader = new StreamReader(stream);
-                using var jtr = new JsonTextReader(reader);
+                await using var jtr = new JsonTextReader(reader);
 
                 var serializer = new JsonSerializer();
                 var placementFile = serializer.Deserialize<PlacementFile>(jtr);
@@ -76,7 +77,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
                     Func<ShapePlacementContext, bool> predicate = ctx => CheckFilter(ctx, filter);
 
-                    if (matches.Any())
+                    if (matches.Count > 0)
                     {
                         predicate = matches.Aggregate(predicate, BuildPredicate);
                     }

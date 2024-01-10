@@ -242,6 +242,8 @@ nav:
       - Owners: docs/resources/owners/README.md
       - Workshops: docs/resources/workshops/README.md
   - Releases:
+      - 1.8.1: docs/releases/1.8.1.md
+      - 1.8.0: docs/releases/1.8.0.md
       - 1.7.2: docs/releases/1.7.2.md
       - 1.7.1: docs/releases/1.7.1.md
       - 1.7.0: docs/releases/1.7.0.md
@@ -259,3 +261,8 @@ nav:
       - 1.0.0-beta3: docs/releases/1.0.0-beta3.md
       - 1.0.0-beta2: docs/releases/1.0.0-beta2.md
       - 1.0.0-beta1: docs/releases/1.0.0-beta1.md
+  - Community:
+      - Overview: docs/community/README.md
+      - Honorable Members:
+          - Jean-Thierry Kéchichian: docs/community/jean-thierry/README.md
+      - Jean-Thierry Kéchichian Community Award: docs/community/jean-thierry-community-award/README.md

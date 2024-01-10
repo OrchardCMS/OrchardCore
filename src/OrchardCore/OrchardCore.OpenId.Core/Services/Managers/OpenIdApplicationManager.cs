@@ -98,7 +98,7 @@ namespace OrchardCore.OpenId.Services.Managers
                     return builder.ToImmutable();
                 }
 
-                return ImmutableArray.Create<string>();
+                return [];
             }
         }
 

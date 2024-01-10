@@ -57,9 +57,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
 
             Assert.Equal(expected.ClientId, actual.ClientId);
             Assert.Equal(expected.ClientSecret, actual.ClientSecret);
+            Assert.Equal(expected.ClientType, actual.ClientType);
             Assert.Equal(expected.ConsentType, actual.ConsentType);
             Assert.Equal(expected.DisplayName, actual.DisplayName);
-            Assert.Equal(expected.Type, actual.Type);
             Assert.Equal(expected.Permissions, actual.Permissions);
             Assert.Equal(expected.PostLogoutRedirectUris, actual.PostLogoutRedirectUris);
             Assert.Equal(expected.RedirectUris, actual.RedirectUris);
@@ -149,9 +149,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
 
             Assert.Equal(expected.ClientId, actual.ClientId);
             Assert.Equal(expected.ClientSecret, actual.ClientSecret);
+            Assert.Equal(expected.ClientType, actual.ClientType);
             Assert.Equal(expected.ConsentType, actual.ConsentType);
             Assert.Equal(expected.DisplayName, actual.DisplayName);
-            Assert.Equal(expected.Type, actual.Type);
             Assert.Equal(expected.Permissions, actual.Permissions);
             Assert.Equal(expected.PostLogoutRedirectUris, actual.PostLogoutRedirectUris);
             Assert.Equal(expected.RedirectUris, actual.RedirectUris);
