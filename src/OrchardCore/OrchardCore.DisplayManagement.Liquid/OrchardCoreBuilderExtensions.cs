@@ -92,6 +92,7 @@ namespace Microsoft.Extensions.DependencyInjection
                                 "IsDevelopment" => BooleanValue.Create(hostEnvironment.IsDevelopment()),
                                 "IsStaging" => BooleanValue.Create(hostEnvironment.IsStaging()),
                                 "IsProduction" => BooleanValue.Create(hostEnvironment.IsProduction()),
+                                "Name" => StringValue.Create(hostEnvironment.EnvironmentName),
                                 _ => NilValue.Instance
                             };
                         }
