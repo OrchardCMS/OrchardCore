@@ -1,19 +1,23 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace OrchardCore.ContentManagement.Display.ContentDisplay
 {
     public class ContentDisplayOptions
     {
-        private readonly List<ContentPartDisplayOption> _contentParts = new();
-        private readonly List<ContentFieldDisplayOption> _contentFields = new();
+        private readonly List<ContentPartDisplayOption> _contentParts = [];
+        private readonly List<ContentFieldDisplayOption> _contentFields = [];
 
-        private Dictionary<string, ContentPartDisplayOption> _contentPartOptions;
-        public IReadOnlyDictionary<string, ContentPartDisplayOption> ContentPartOptions => _contentPartOptions ??= _contentParts.ToDictionary(k => k.Type.Name);
+        private ImmutableDictionary<string, ContentPartDisplayOption> _contentPartOptions;
+        private ImmutableDictionary<string, ContentFieldDisplayOption> _contentFieldOptions;
 
-        private Dictionary<string, ContentFieldDisplayOption> _contentFieldOptions;
-        public IReadOnlyDictionary<string, ContentFieldDisplayOption> ContentFieldOptions => _contentFieldOptions ??= _contentFields.ToDictionary(k => k.Type.Name);
+        public IReadOnlyDictionary<string, ContentPartDisplayOption> ContentPartOptions
+            => _contentPartOptions ??= _contentParts.ToImmutableDictionary(k => k.Type.Name);
+
+        public IReadOnlyDictionary<string, ContentFieldDisplayOption> ContentFieldOptions
+            => _contentFieldOptions ??= _contentFields.ToImmutableDictionary(k => k.Type.Name);
 
         internal void ForContentPartDisplayMode(Type contentPartType, Type displayDriverType, Func<string, bool> predicate)
         {

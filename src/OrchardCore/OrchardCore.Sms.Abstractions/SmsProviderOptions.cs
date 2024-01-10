@@ -13,7 +13,7 @@ public class SmsProviderOptions
     /// <summary>
     /// This read-only collections contains all registered SMS providers.
     /// The 'Key' is the technical name of the provider.
-    /// The 'Value' is the type of the SMS provider. The type will awalys be an implementation of <see cref="ISmsProvider"></see> interface.
+    /// The 'Value' is the type of the SMS provider. The type will always be an implementation of <see cref="ISmsProvider"></see> interface.
     /// </summary>
     public IReadOnlyDictionary<string, Type> Providers => _readonlyProviders ??= _providers.ToImmutableDictionary(x => x.Key, x => x.Value);
 

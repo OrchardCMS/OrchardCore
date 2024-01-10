@@ -1,22 +1,26 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 
 namespace OrchardCore.ContentManagement.Display.ContentDisplay
 {
     public class ContentPartDisplayOption : ContentPartOptionBase
     {
-        private readonly List<ContentPartDisplayDriverOption> _partDisplayDrivers = new();
+        private readonly List<ContentPartDisplayDriverOption> _partDisplayDrivers = [];
 
         public ContentPartDisplayOption(Type contentPartType) : base(contentPartType)
         {
         }
 
-        private List<ContentPartDisplayDriverOption> _displayDrivers;
-        public IReadOnlyList<ContentPartDisplayDriverOption> DisplayDrivers => _displayDrivers ??= _partDisplayDrivers.Where(d => d.DisplayMode != null).ToList();
+        private IImmutableList<ContentPartDisplayDriverOption> _displayDrivers;
+        private IImmutableList<ContentPartDisplayDriverOption> _editorDrivers;
 
-        private List<ContentPartDisplayDriverOption> _editorDrivers;
-        public IReadOnlyList<ContentPartDisplayDriverOption> EditorDrivers => _editorDrivers ??= _partDisplayDrivers.Where(d => d.Editor != null).ToList();
+        public IImmutableList<ContentPartDisplayDriverOption> DisplayDrivers
+            => _displayDrivers ??= _partDisplayDrivers.Where(d => d.DisplayMode != null).ToImmutableList();
+
+        public IImmutableList<ContentPartDisplayDriverOption> EditorDrivers
+            => _editorDrivers ??= _partDisplayDrivers.Where(d => d.Editor != null).ToImmutableList();
 
         internal void ForDisplayMode(Type displayDriverType, Func<string, bool> predicate)
         {

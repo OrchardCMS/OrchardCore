@@ -1,20 +1,21 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Collections.Immutable;
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.AuditTrail.Services.Models
 {
     public class AuditTrailOptions
     {
-        internal Dictionary<string, AuditTrailCategoryDescriptorBuilder> CategoryDescriptorBuilders { get; set; } = new Dictionary<string, AuditTrailCategoryDescriptorBuilder>();
+        internal Dictionary<string, AuditTrailCategoryDescriptorBuilder> CategoryDescriptorBuilders { get; set; } = [];
 
-        private Dictionary<string, AuditTrailCategoryDescriptor> _categoryDescriptors;
-        public IReadOnlyDictionary<string, AuditTrailCategoryDescriptor> CategoryDescriptors => _categoryDescriptors ??= BuildCategoryDescriptors();
+        private ImmutableDictionary<string, AuditTrailCategoryDescriptor> _categoryDescriptors;
+        public IReadOnlyDictionary<string, AuditTrailCategoryDescriptor> CategoryDescriptors
+            => _categoryDescriptors ??= BuildCategoryDescriptors();
 
-        private Dictionary<string, AuditTrailCategoryDescriptor> BuildCategoryDescriptors()
+        private ImmutableDictionary<string, AuditTrailCategoryDescriptor> BuildCategoryDescriptors()
         {
-            var categoryDescriptors = CategoryDescriptorBuilders.ToDictionary(k => k.Key, v => v.Value.Build());
+            var categoryDescriptors = CategoryDescriptorBuilders.ToImmutableDictionary(k => k.Key, v => v.Value.Build());
             CategoryDescriptorBuilders = null;
 
             return categoryDescriptors;

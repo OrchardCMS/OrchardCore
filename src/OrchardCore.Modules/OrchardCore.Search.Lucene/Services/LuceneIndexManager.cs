@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -12,7 +12,6 @@ using Lucene.Net.Search;
 using Lucene.Net.Spatial.Prefix;
 using Lucene.Net.Spatial.Prefix.Tree;
 using Lucene.Net.Store;
-using LuceneLock = Lucene.Net.Store.Lock;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Contents.Indexing;
@@ -24,6 +23,7 @@ using OrchardCore.Search.Lucene.Services;
 using Spatial4n.Context;
 using Directory = System.IO.Directory;
 using LDirectory = Lucene.Net.Store.Directory;
+using LuceneLock = Lucene.Net.Store.Lock;
 
 namespace OrchardCore.Search.Lucene
 {
@@ -192,7 +192,7 @@ namespace OrchardCore.Search.Lucene
         /// </summary>
         public IReadOnlyDictionary<string, DateTime> GetTimestamps()
         {
-            return new ReadOnlyDictionary<string, DateTime>(_timestamps);
+            return _timestamps.ToImmutableDictionary();
         }
 
         private Document CreateLuceneDocument(DocumentIndex documentIndex, LuceneIndexSettings indexSettings)
