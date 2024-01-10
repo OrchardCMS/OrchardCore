@@ -2807,7 +2807,17 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "viktoriamagyar",
+      "name": "Viktória Magyar",
+      "avatar_url": "https://avatars.githubusercontent.com/u/84029837?v=4",
+      "profile": "https://github.com/viktoriamagyar",
+      "contributions": [
+        "eventOrganizing"
+      ]
     }
   ],
-  "skipCi": true
+  "skipCi": true,
+  "commitType": "docs"
 }
