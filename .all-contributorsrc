@@ -4,7 +4,7 @@
   "repoType": "github",
   "repoHost": "https://github.com",
   "files": [
-    "Contributors.md"
+    "src/docs/community/contributors/README.md"
   ],
   "imageSize": 100,
   "commit": true,
