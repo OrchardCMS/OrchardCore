@@ -14,7 +14,7 @@ namespace OrchardCore.WebHooks.Models
 
         public static string Unpublished = "unpublished";
 
-        public static IEnumerable<string> AllEvents => new[]
+        public static string[] AllEvents => new[]
         {
             Created,
             Updated,
