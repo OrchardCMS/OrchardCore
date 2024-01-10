@@ -517,7 +517,8 @@ The following properties are available on the `Environment` object.
 | --------- |------------ |
 | `IsDevelopment` | Checks if the current hosting environment name is `Development`. |
 | `IsStaging` | Checks if the current hosting environment name is `Staging`. |
-| `IsProduction` | Checks if the current hosting environment name is `Production``. |
+| `IsProduction` | Checks if the current hosting environment name is `Production`. |
+| `Name` | Gets hosting environment name. |
 
 ### HttpContext
 
