@@ -11,7 +11,7 @@ Orchard Core is steered and built by all of those who contribute, with code, bug
 
 ## Honorable Members
 
-In recognizing those who have played instrumental roles in our collective journey, we extend our gratitude to the following honorable member:
+In recognizing those who have played instrumental roles in our collective journey, we extend our gratitude to the following honorable members:
 
 - [Jean-Thierry Kéchichian](jean-thierry/README.md)
 
