@@ -17,17 +17,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Get Dates For Last Month
-      shell: bash
+      shell: pwsh
       run: |
         # Calculate the first day of the previous month.
-        first_day=$(date -d "last month" +%Y-%m-01)
-
+        $firstDay = (Get-Date).AddMonths(-1).ToString("yyyy-MM-01")
+    
         # Calculate the last day of the previous month.
-        last_day=$(date -d "$first_day +1 month -1 day" +%Y-%m-%d)
-
+        $lastDay = (Get-Date $firstDay).AddMonths(1).AddDays(-1).ToString("yyyy-MM-dd")
+    
         # Set an environment variable with the date range.
-        echo "$first_day..$last_day"
-        echo "last_month=$first_day..$last_day" >> "$GITHUB_ENV"
+        Write-Output "$firstDay..$lastDay"
+        Write-Output "last_month=$firstDay..$lastDay" >> $env:GITHUB_ENV
 
     - name: Compute Issue Metrics
       uses: github/issue-metrics@v2
@@ -36,14 +36,14 @@ jobs:
         SEARCH_QUERY: 'repo:OrchardCMS/OrchardCore is:issue created:${{ env.last_month }} -reason:"not planned" -label:"community metrics"'
         HIDE_TIME_TO_ANSWER: true
 
-    - name: Create Issue
-      # v4.0.1
-      uses: peter-evans/create-issue-from-file@433e51abf769039ee20ba1293a088ca19d573b7f
-      with:
-        title: Monthly issue metrics report for ${{ env.last_month }}
-        token: ${{ secrets.GITHUB_TOKEN }}
-        content-filepath: ./issue_metrics.md
-        labels: community metrics
+    # - name: Create Issue
+    #   # v4.0.1
+    #   uses: peter-evans/create-issue-from-file@433e51abf769039ee20ba1293a088ca19d573b7f
+    #   with:
+    #     title: Monthly issue metrics report for ${{ env.last_month }}
+    #     token: ${{ secrets.GITHUB_TOKEN }}
+    #     content-filepath: ./issue_metrics.md
+    #     labels: community metrics
 
     - name: Compute Pull Request Metrics
       uses: github/issue-metrics@v2
@@ -52,11 +52,11 @@ jobs:
         SEARCH_QUERY: 'repo:OrchardCMS/OrchardCore is:pr created:${{ env.last_month }} -label:dontmerge -label:notready -is:draft'
         HIDE_TIME_TO_ANSWER: true
 
-    - name: Create Issue
-      # v4.0.1
-      uses: peter-evans/create-issue-from-file@433e51abf769039ee20ba1293a088ca19d573b7f
-      with:
-        title: Monthly pull request metrics report for ${{ env.last_month }}
-        token: ${{ secrets.GITHUB_TOKEN }}
-        content-filepath: ./issue_metrics.md
-        labels: community metrics
+    # - name: Create Issue
+    #   # v4.0.1
+    #   uses: peter-evans/create-issue-from-file@433e51abf769039ee20ba1293a088ca19d573b7f
+    #   with:
+    #     title: Monthly pull request metrics report for ${{ env.last_month }}
+    #     token: ${{ secrets.GITHUB_TOKEN }}
+    #     content-filepath: ./issue_metrics.md
+    #     labels: community metrics
