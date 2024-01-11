@@ -16,6 +16,8 @@ namespace OrchardCore.Apis.GraphQL
         public double? FieldImpact { get; set; }
         public int DefaultNumberOfResults { get; set; }
         public int MaxNumberOfResults { get; set; }
+        public bool EnableMetrics { get; set; }
+        public bool EnableMetricsByHeader { get; set; }
         public MaxNumberOfResultsValidationMode MaxNumberOfResultsValidationMode { get; set; }
     }
 
