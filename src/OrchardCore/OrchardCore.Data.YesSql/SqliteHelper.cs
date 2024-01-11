@@ -7,7 +7,7 @@ namespace OrchardCore.Data;
 public static class SqliteHelper
 {
     public static string GetConnectionString(SqliteOptions sqliteOptions, ShellOptions shellOptions, string shellName) =>
-            GetConnectionString(sqliteOptions, GetDatabaseFolder(shellOptions, shellName));
+        GetConnectionString(sqliteOptions, GetDatabaseFolder(shellOptions, shellName));
 
     public static string GetConnectionString(SqliteOptions sqliteOptions, string databaseFolder) =>
         new SqliteConnectionStringBuilder
