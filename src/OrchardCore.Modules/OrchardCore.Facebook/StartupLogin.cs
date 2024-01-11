@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using OrchardCore.Deployment;
+using OrchardCore.Deployment.Extensions;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Facebook.Deployment;
 using OrchardCore.Facebook.Login.Configuration;
@@ -48,9 +48,7 @@ namespace OrchardCore.Facebook
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDisplayDriver<DeploymentStep>, FacebookLoginDeploymentStepDriver>();
-            services.AddTransient<IDeploymentSource, FacebookLoginDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<FacebookLoginDeploymentStep>>();
+            services.AddDeployment<FacebookLoginDeploymentSource, FacebookLoginDeploymentStep, FacebookLoginDeploymentStepDriver>();
         }
     }
 }

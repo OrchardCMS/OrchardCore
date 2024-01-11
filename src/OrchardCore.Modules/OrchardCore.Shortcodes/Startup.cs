@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
-using OrchardCore.Deployment;
+using OrchardCore.Deployment.Extensions;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
@@ -130,19 +130,17 @@ namespace OrchardCore.Shortcodes
     <td>lang, fallback</td>
   </tr>
 </table>";
-                d.Categories = new string[] { "Localization" };
+                d.Categories = ["Localization"];
             });
         }
     }
 
     [RequireFeatures("OrchardCore.Deployment", "OrchardCore.Shortcodes.Templates")]
-    public class ShortcodeTemplatesDeployementStartup : StartupBase
+    public class ShortcodeTemplatesDeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, AllShortcodeTemplatesDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllShortcodeTemplatesDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllShortcodeTemplatesDeploymentStepDriver>();
+            services.AddDeployment<AllShortcodeTemplatesDeploymentSource, AllShortcodeTemplatesDeploymentStep, AllShortcodeTemplatesDeploymentStepDriver>();
         }
     }
 }
