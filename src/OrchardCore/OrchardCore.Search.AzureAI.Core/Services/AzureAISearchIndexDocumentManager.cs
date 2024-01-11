@@ -14,7 +14,7 @@ using OrchardCore.Search.AzureAI.Models;
 namespace OrchardCore.Search.AzureAI.Services;
 
 public class AzureAIIndexDocumentManager(
-    AzureAIClientFactory searchClientFactory,
+    AzureAIClientFactory clientFactory,
     AzureAISearchIndexManager indexManager,
     IIndexingTaskManager indexingTaskManager,
     IContentManager contentManager,
@@ -22,7 +22,7 @@ public class AzureAIIndexDocumentManager(
     IEnumerable<IContentItemIndexHandler> contentItemIndexHandlers,
     ILogger<AzureAIIndexDocumentManager> logger)
 {
-    private readonly AzureAIClientFactory _searchClientFactory = searchClientFactory;
+    private readonly AzureAIClientFactory _clientFactory = clientFactory;
     private readonly AzureAISearchIndexManager _indexManager = indexManager;
     private readonly IIndexingTaskManager _indexingTaskManager = indexingTaskManager;
     private readonly IContentManager _contentManager = contentManager;
@@ -328,7 +328,7 @@ public class AzureAIIndexDocumentManager(
     {
         var fullIndexName = _indexManager.GetFullIndexName(indexName);
 
-        var client = _searchClientFactory.CreateSearchClient(fullIndexName);
+        var client = _clientFactory.CreateSearchClient(fullIndexName);
 
         return client;
     }
