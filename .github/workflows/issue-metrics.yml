@@ -72,11 +72,11 @@ jobs:
       run: |
         Get-Content ./community_metrics.md >> $env:GITHUB_STEP_SUMMARY
           
-    # - name: Create Issue
-    #   # v4.0.1
-    #   uses: peter-evans/create-issue-from-file@433e51abf769039ee20ba1293a088ca19d573b7f
-    #   with:
-    #     title: Monthly community metrics report for ${{ env.LAST_MONTH }}
-    #     token: ${{ secrets.GITHUB_TOKEN }}
-    #     content-filepath: ./community_metrics.md
-    #     labels: community metrics
+    - name: Create Issue
+      # v4.0.1
+      uses: peter-evans/create-issue-from-file@433e51abf769039ee20ba1293a088ca19d573b7f
+      with:
+        title: Monthly community metrics report for ${{ env.LAST_MONTH }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        content-filepath: ./community_metrics.md
+        labels: community metrics
