@@ -65,7 +65,7 @@ namespace OrchardCore.ContentManagement.Utilities
                 characterCount = backup;
             }
 
-            var trimmed = text.Substring(0, characterCount);
+            var trimmed = text[..characterCount];
             return trimmed + ellipsis;
         }
 
@@ -78,9 +78,9 @@ namespace OrchardCore.ContentManagement.Utilities
 
         public static string RemoveTags(this string html, bool htmlDecode = false)
         {
-            if (String.IsNullOrEmpty(html))
+            if (string.IsNullOrEmpty(html))
             {
-                return String.Empty;
+                return string.Empty;
             }
 
             var result = new char[html.Length];
@@ -89,7 +89,7 @@ namespace OrchardCore.ContentManagement.Utilities
             var inside = false;
             for (var i = 0; i < html.Length; i++)
             {
-                char current = html[i];
+                var current = html[i];
 
                 switch (current)
                 {
@@ -120,15 +120,15 @@ namespace OrchardCore.ContentManagement.Utilities
         // not accounting for only \r (e.g. Apple OS 9 carriage return only new lines)
         public static string ReplaceNewLinesWith(this string text, string replacement)
         {
-            return String.IsNullOrWhiteSpace(text)
-                       ? String.Empty
+            return string.IsNullOrWhiteSpace(text)
+                       ? string.Empty
                        : text
                              .Replace("\r\n", "\r\r")
-                             .Replace("\n", String.Format(replacement, "\r\n"))
-                             .Replace("\r\r", String.Format(replacement, "\r\n"));
+                             .Replace("\n", string.Format(replacement, "\r\n"))
+                             .Replace("\r\r", string.Format(replacement, "\r\n"));
         }
 
-        private static readonly char[] validSegmentChars = "/?#[]@\"^{}|`<>\t\r\n\f ".ToCharArray();
+        private static readonly char[] _validSegmentChars = "/?#[]@\"^{}|`<>\t\r\n\f ".ToCharArray();
         public static bool IsValidUrlSegment(this string segment)
         {
             // valid isegment from rfc3987 - http://tools.ietf.org/html/rfc3987#page-8
@@ -142,7 +142,7 @@ namespace OrchardCore.ContentManagement.Utilities
             //
             // rough blacklist regex == m/^[^/?#[]@"^{}|\s`<>]+$/ (leaving off % to keep the regex simple)
 
-            return !segment.Any(validSegmentChars);
+            return !segment.Any(_validSegmentChars);
         }
 
         /// <summary>
@@ -154,7 +154,9 @@ namespace OrchardCore.ContentManagement.Utilities
         public static string ToSafeName(this string name)
         {
             if (string.IsNullOrWhiteSpace(name))
+            {
                 return string.Empty;
+            }
 
             name = RemoveDiacritics(name);
             name = name.Strip(c =>
@@ -167,16 +169,18 @@ namespace OrchardCore.ContentManagement.Utilities
             // don't allow non A-Z chars as first letter, as they are not allowed in prefixes
             while (name.Length > 0 && !IsLetter(name[0]))
             {
-                name = name.Substring(1);
+                name = name[1..];
             }
 
             if (name.Length > 128)
-                name = name.Substring(0, 128);
+            {
+                name = name[..128];
+            }
 
             return name;
         }
 
-        private static HashSet<string> _reservedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        private static readonly HashSet<string> _reservedNames = new(StringComparer.OrdinalIgnoreCase)
         {
             nameof(ContentItem.Id),
             nameof(ContentItem.ContentItemId),
@@ -189,7 +193,7 @@ namespace OrchardCore.ContentManagement.Utilities
             nameof(ContentItem.CreatedUtc),
             nameof(ContentItem.Owner),
             nameof(ContentItem.Author),
-            nameof(ContentItem.DisplayText)
+            nameof(ContentItem.DisplayText),
         };
 
         public static bool IsReservedContentName(this string name)
@@ -217,12 +221,12 @@ namespace OrchardCore.ContentManagement.Utilities
 
         public static string RemoveDiacritics(this string name)
         {
-            string stFormD = name.Normalize(NormalizationForm.FormD);
+            var stFormD = name.Normalize(NormalizationForm.FormD);
             var sb = new StringBuilder();
 
-            foreach (char t in stFormD)
+            foreach (var t in stFormD)
             {
-                UnicodeCategory uc = CharUnicodeInfo.GetUnicodeCategory(t);
+                var uc = CharUnicodeInfo.GetUnicodeCategory(t);
                 if (uc != UnicodeCategory.NonSpacingMark)
                 {
                     sb.Append(t);
@@ -244,7 +248,7 @@ namespace OrchardCore.ContentManagement.Utilities
             var cursor = 0;
             for (var i = 0; i < subject.Length; i++)
             {
-                char current = subject[i];
+                var current = subject[i];
                 if (Array.IndexOf(stripped, current) < 0)
                 {
                     result[cursor++] = current;
@@ -261,7 +265,7 @@ namespace OrchardCore.ContentManagement.Utilities
             var cursor = 0;
             for (var i = 0; i < subject.Length; i++)
             {
-                char current = subject[i];
+                var current = subject[i];
                 if (!predicate(current))
                 {
                     result[cursor++] = current;
@@ -280,7 +284,7 @@ namespace OrchardCore.ContentManagement.Utilities
 
             for (var i = 0; i < subject.Length; i++)
             {
-                char current = subject[i];
+                var current = subject[i];
                 if (Array.IndexOf(chars, current) >= 0)
                 {
                     return true;
@@ -304,7 +308,7 @@ namespace OrchardCore.ContentManagement.Utilities
 
             for (var i = 0; i < subject.Length; i++)
             {
-                char current = subject[i];
+                var current = subject[i];
                 if (Array.IndexOf(chars, current) < 0)
                 {
                     return false;
@@ -321,9 +325,14 @@ namespace OrchardCore.ContentManagement.Utilities
                 return subject;
             }
 
-            if (from == null || to == null)
+            if (from == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(from));
+            }
+
+            if (to == null)
+            {
+                throw new ArgumentNullException(nameof(to));
             }
 
             if (from.Length != to.Length)
@@ -367,13 +376,13 @@ namespace OrchardCore.ContentManagement.Utilities
                 return null;
 
             return rough.EndsWith(trim, StringComparison.Ordinal)
-                       ? rough.Substring(0, rough.Length - trim.Length)
+                       ? rough[..^trim.Length]
                        : rough;
         }
 
         public static string ReplaceLastOccurrence(this string source, string find, string replace)
         {
-            int place = source.LastIndexOf(find, StringComparison.Ordinal);
+            var place = source.LastIndexOf(find, StringComparison.Ordinal);
             return source.Remove(place, find.Length).Insert(place, replace);
         }
     }

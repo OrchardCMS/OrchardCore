@@ -43,7 +43,7 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
 
         public override bool CanHandleModel(ContentPartFieldDefinition model)
         {
-            return String.Equals("ContentPickerField", model.FieldDefinition.Name);
+            return string.Equals("ContentPickerField", model.FieldDefinition.Name);
         }
     }
 }

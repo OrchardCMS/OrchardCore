@@ -60,7 +60,7 @@ public class Startup : Modules.StartupBase
             {
                 var hostingEnvironment = serviceProvider.GetRequiredService<IWebHostEnvironment>();
 
-                if (String.IsNullOrWhiteSpace(hostingEnvironment.WebRootPath))
+                if (string.IsNullOrWhiteSpace(hostingEnvironment.WebRootPath))
                 {
                     throw new MediaConfigurationException("The wwwroot folder for serving cache media files is missing.");
                 }
@@ -100,7 +100,7 @@ public class Startup : Modules.StartupBase
                 var clock = serviceProvider.GetRequiredService<IClock>();
                 var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
                 var amazonS3Client = serviceProvider.GetService<IAmazonS3>();
-                
+
                 var options = serviceProvider.GetRequiredService<IOptions<AwsStorageOptions>>();
                 var fileStore = new AwsFileStore(clock, options.Value, amazonS3Client);
 

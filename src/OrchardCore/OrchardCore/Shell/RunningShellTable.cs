@@ -48,7 +48,7 @@ namespace OrchardCore.Environment.Shell
                 _shellsByHostAndPrefix = _shellsByHostAndPrefix.RemoveRange(allHostsAndPrefix);
             }
 
-            if (_default == settings)
+            if (settings.IsDefaultShell())
             {
                 _default = null;
             }
@@ -161,7 +161,7 @@ namespace OrchardCore.Environment.Shell
         {
             // For each host entry return HOST/PREFIX
 
-            if (String.IsNullOrWhiteSpace(shellSettings.RequestUrlHost))
+            if (string.IsNullOrWhiteSpace(shellSettings.RequestUrlHost))
             {
                 return new string[] { "/" + shellSettings.RequestUrlPrefix };
             }
@@ -174,7 +174,7 @@ namespace OrchardCore.Environment.Shell
 
         private bool DefaultIsCatchAll()
         {
-            return _default != null && String.IsNullOrEmpty(_default.RequestUrlHost) && String.IsNullOrEmpty(_default.RequestUrlPrefix);
+            return _default != null && string.IsNullOrEmpty(_default.RequestUrlHost) && string.IsNullOrEmpty(_default.RequestUrlPrefix);
         }
     }
 }

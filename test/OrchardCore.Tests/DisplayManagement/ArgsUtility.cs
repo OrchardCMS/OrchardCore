@@ -1,4 +1,5 @@
 using OrchardCore.DisplayManagement;
+using Arguments = OrchardCore.DisplayManagement.Arguments;
 
 namespace OrchardCore.Tests.DisplayManagement
 {

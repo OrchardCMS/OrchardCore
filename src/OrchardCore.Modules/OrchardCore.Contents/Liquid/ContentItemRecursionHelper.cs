@@ -14,7 +14,7 @@ namespace OrchardCore.Contents.Liquid
     /// <inheritdocs />
     public class ContentItemRecursionHelper<T> : IContentItemRecursionHelper<T>
     {
-        private Dictionary<ContentItem, int> _recursions = new Dictionary<ContentItem, int>();
+        private readonly Dictionary<ContentItem, int> _recursions = new();
 
         /// <inheritdocs />
         public bool IsRecursive(ContentItem contentItem, int maxRecursions = 1)

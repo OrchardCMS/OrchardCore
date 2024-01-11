@@ -25,7 +25,7 @@ namespace OrchardCore.Environment.Shell
         {
             var appData = System.Environment.GetEnvironmentVariable(OrchardAppData);
 
-            if (!String.IsNullOrEmpty(appData))
+            if (!string.IsNullOrEmpty(appData))
             {
                 options.ShellsApplicationDataPath = Path.Combine(_hostingEnvironment.ContentRootPath, appData);
             }

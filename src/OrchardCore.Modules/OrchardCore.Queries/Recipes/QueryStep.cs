@@ -30,14 +30,14 @@ namespace OrchardCore.Queries.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "Queries", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "Queries", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
 
             var model = context.Step.ToObject<QueryStepModel>();
 
-            foreach (JObject token in model.Queries)
+            foreach (var token in model.Queries.Cast<JObject>())
             {
                 var sourceName = token[nameof(Query.Source)].ToString();
                 var sample = _querySources.FirstOrDefault(x => x.Name == sourceName)?.Create();

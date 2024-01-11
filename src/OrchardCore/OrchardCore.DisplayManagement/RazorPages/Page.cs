@@ -31,21 +31,9 @@ namespace OrchardCore.DisplayManagement.RazorPages
             }
         }
 
-        private void EnsureDisplayHelper()
-        {
-            if (_displayHelper == null)
-            {
-                _displayHelper = HttpContext.RequestServices.GetService<IDisplayHelper>();
-            }
-        }
+        private void EnsureDisplayHelper() => _displayHelper ??= HttpContext.RequestServices.GetService<IDisplayHelper>();
 
-        private void EnsureShapeFactory()
-        {
-            if (_shapeFactory == null)
-            {
-                _shapeFactory = HttpContext.RequestServices.GetService<IShapeFactory>();
-            }
-        }
+        private void EnsureShapeFactory() => _shapeFactory ??= HttpContext.RequestServices.GetService<IShapeFactory>();
 
         /// <summary>
         /// Gets a dynamic shape factory to create new shapes.
@@ -125,20 +113,8 @@ namespace OrchardCore.DisplayManagement.RazorPages
 
         public IZoneHolding ThemeLayout
         {
-            get
-            {
-                if (_themeLayout == null)
-                {
-                    _themeLayout = HttpContext.Features.Get<RazorViewFeature>()?.ThemeLayout;
-                }
-
-                return _themeLayout;
-            }
-
-            set
-            {
-                _themeLayout = value;
-            }
+            get => _themeLayout ??= HttpContext.Features.Get<RazorViewFeature>()?.ThemeLayout;
+            set => _themeLayout = value;
         }
 
         public string ViewLayout
@@ -155,7 +131,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
                     return layout.Metadata.Type;
                 }
 
-                return String.Empty;
+                return string.Empty;
             }
 
             set
@@ -179,18 +155,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
 
         private IPageTitleBuilder _pageTitleBuilder;
 
-        public IPageTitleBuilder Title
-        {
-            get
-            {
-                if (_pageTitleBuilder == null)
-                {
-                    _pageTitleBuilder = HttpContext.RequestServices.GetRequiredService<IPageTitleBuilder>();
-                }
-
-                return _pageTitleBuilder;
-            }
-        }
+        public IPageTitleBuilder Title => _pageTitleBuilder ??= HttpContext.RequestServices.GetRequiredService<IPageTitleBuilder>();
 
         private IViewLocalizer _t;
 
@@ -242,10 +207,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
         /// </summary>
         /// <param name="shape">The shape.</param>
         /// <returns>A new <see cref="TagBuilder"/>.</returns>
-        public TagBuilder Tag(IShape shape)
-        {
-            return shape.GetTagBuilder();
-        }
+        public static TagBuilder Tag(IShape shape) => shape.GetTagBuilder();
 
         /// <summary>
         /// Creates a <see cref="TagBuilder"/> to render a shape.
@@ -253,10 +215,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
         /// <param name="shape">The shape.</param>
         /// <param name="tag">The tag name to use.</param>
         /// <returns>A new <see cref="TagBuilder"/>.</returns>
-        public TagBuilder Tag(IShape shape, string tag)
-        {
-            return shape.GetTagBuilder(tag);
-        }
+        public static TagBuilder Tag(IShape shape, string tag) => shape.GetTagBuilder(tag);
 
         /// <summary>
         /// Check if a zone is defined in the layout or it has items.
@@ -311,7 +270,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
             return DisplayAsync(zone);
         }
 
-        public object OrDefault(object text, object other)
+        public static object OrDefault(object text, object other)
         {
             if (text == null || Convert.ToString(text) == "")
             {
@@ -329,17 +288,6 @@ namespace OrchardCore.DisplayManagement.RazorPages
         /// <summary>
         /// Gets the <see cref="ISite"/> instance.
         /// </summary>
-        public ISite Site
-        {
-            get
-            {
-                if (_site == null)
-                {
-                    _site = HttpContext.Features.Get<RazorViewFeature>()?.Site;
-                }
-
-                return _site;
-            }
-        }
+        public ISite Site => _site ??= HttpContext.Features.Get<RazorViewFeature>()?.Site;
     }
 }

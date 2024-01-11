@@ -35,12 +35,12 @@ namespace OrchardCore.Search.Lucene
             _content = JObject.Parse(File.ReadAllText(_indexSettingsFilename));
         }
 
-        public int GetLastTaskId(string indexName)
+        public long GetLastTaskId(string indexName)
         {
             JToken value;
             if (_content.TryGetValue(indexName, out value))
             {
-                return value.Value<int>();
+                return value.Value<long>();
             }
             else
             {
@@ -49,11 +49,11 @@ namespace OrchardCore.Search.Lucene
                     _content.Add(new JProperty(indexName, 0));
                 }
 
-                return 0;
+                return 0L;
             }
         }
 
-        public void SetLastTaskId(string indexName, int taskId)
+        public void SetLastTaskId(string indexName, long taskId)
         {
             lock (this)
             {

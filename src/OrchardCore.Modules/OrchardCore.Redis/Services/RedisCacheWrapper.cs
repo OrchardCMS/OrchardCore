@@ -12,7 +12,7 @@ namespace OrchardCore.Redis.Services;
 /// </summary>
 public class RedisCacheWrapper : IDistributedCache
 {
-    private readonly RedisCache _cache; 
+    private readonly RedisCache _cache;
 
     public RedisCacheWrapper(IOptions<RedisCacheOptions> optionsAccessor) => _cache = new RedisCache(optionsAccessor);
 
@@ -26,7 +26,7 @@ public class RedisCacheWrapper : IDistributedCache
 
     public void Remove(string key) => _cache!.Remove(key);
 
-    public Task RemoveAsync(string key, CancellationToken token = default) => _cache.RemoveAsync(key);
+    public Task RemoveAsync(string key, CancellationToken token = default) => _cache.RemoveAsync(key, token);
 
     public void Set(string key, byte[] value, DistributedCacheEntryOptions options) => _cache.Set(key, value, options);
 

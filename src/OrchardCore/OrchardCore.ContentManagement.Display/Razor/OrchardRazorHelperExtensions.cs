@@ -11,7 +11,9 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Razor;
 
+#pragma warning disable CA1050 // Declare types in namespaces
 public static class OrchardRazorHelperExtensions
+#pragma warning restore CA1050 // Declare types in namespaces
 {
     public static async Task<IHtmlContent> DisplayAsync(this IOrchardDisplayHelper orchardDisplayHelper, ContentItem content, string displayType = "", string groupId = "", IUpdateModel updater = null)
     {
@@ -67,22 +69,22 @@ public static class OrchardRazorHelperExtensions
 
     internal static JObject ConvertContentItem(ContentItem contentItem)
     {
-        var o = new JObject();
-
-        // Write all well-known properties
-        o.Add(new JProperty(nameof(ContentItem.ContentItemId), contentItem.ContentItemId));
-        o.Add(new JProperty(nameof(ContentItem.ContentItemVersionId), contentItem.ContentItemVersionId));
-        o.Add(new JProperty(nameof(ContentItem.ContentType), contentItem.ContentType));
-        o.Add(new JProperty(nameof(ContentItem.DisplayText), contentItem.DisplayText));
-        o.Add(new JProperty(nameof(ContentItem.Latest), contentItem.Latest));
-        o.Add(new JProperty(nameof(ContentItem.Published), contentItem.Published));
-        o.Add(new JProperty(nameof(ContentItem.ModifiedUtc), contentItem.ModifiedUtc));
-        o.Add(new JProperty(nameof(ContentItem.PublishedUtc), contentItem.PublishedUtc));
-        o.Add(new JProperty(nameof(ContentItem.CreatedUtc), contentItem.CreatedUtc));
-        o.Add(new JProperty(nameof(ContentItem.Owner), contentItem.Owner));
-        o.Add(new JProperty(nameof(ContentItem.Author), contentItem.Author));
-
-        o.Add(new JProperty(nameof(ContentItem.Content), (JObject)contentItem.Content));
+        var o = new JObject
+        {
+            // Write all well-known properties.
+            new JProperty(nameof(ContentItem.ContentItemId), contentItem.ContentItemId),
+            new JProperty(nameof(ContentItem.ContentItemVersionId), contentItem.ContentItemVersionId),
+            new JProperty(nameof(ContentItem.ContentType), contentItem.ContentType),
+            new JProperty(nameof(ContentItem.DisplayText), contentItem.DisplayText),
+            new JProperty(nameof(ContentItem.Latest), contentItem.Latest),
+            new JProperty(nameof(ContentItem.Published), contentItem.Published),
+            new JProperty(nameof(ContentItem.ModifiedUtc), contentItem.ModifiedUtc),
+            new JProperty(nameof(ContentItem.PublishedUtc), contentItem.PublishedUtc),
+            new JProperty(nameof(ContentItem.CreatedUtc), contentItem.CreatedUtc),
+            new JProperty(nameof(ContentItem.Owner), contentItem.Owner),
+            new JProperty(nameof(ContentItem.Author), contentItem.Author),
+            new JProperty(nameof(ContentItem.Content), (JObject)contentItem.Content),
+        };
 
         return o;
     }

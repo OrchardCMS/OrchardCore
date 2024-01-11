@@ -5,14 +5,14 @@
 
 @{
     var contentItem = (IContent)Model.ContentItem;
-    var contentTypeDisplayText = ContentDefinitionManager.GetTypeDefinition((string)Model.ContentItem.ContentType).DisplayName;
+    var contentTypeDisplayText = (await ContentDefinitionManager.GetTypeDefinitionAsync((string)Model.ContentItem.ContentType)).DisplayName;
     var contentItemDisplayText = contentItem.ContentItem.DisplayText;
     var widgetContentTypes = (IEnumerable<ContentTypeDefinition>)Model.ContainedContentTypes;
 
     var editorId = "contentEditor_" + Model.PrefixValue;
 }
 
-<div class="widget widget-editor card my-1@(Model.Inline ? " collapsed" : String.Empty)">
+<div class="widget widget-editor card my-1@(Model.Inline ? " collapsed" : string.Empty)">
     <div class="widget-editor-header card-header text-muted py-1 ps-2 pe-1">
         @if (Model.CanMove != false)
         {
@@ -39,17 +39,19 @@
                         <ul class="dropdown-menu dropdown-menu-end">
                             @foreach (var type in widgetContentTypes.OrderBy(w => w.DisplayName))
                             {
-                                <li><a class="dropdown-item insert-widget btn-sm"
-                                   data-target-id="@Model.TargetId"
-                                   data-html-field-prefix="@Model.HtmlFieldPrefix"
-                                   data-prefixes-name="@Model.PrefixesName"
-                                   data-flowmetadata="true"
-                                   data-parent-content-type="@Model.ParentContentType"
-                                   data-part-name="@Model.CollectionPartName"
-                                   data-contenttypes-name="@Model.ContentTypesName"
-                                   data-contentitems-name="@Model.ContentItemsName"
-                                   data-widget-type="@type.Name"
-                                   href="javascript:;">@type.DisplayName</a></li>
+                                <li>
+                                    <a class="dropdown-item insert-widget btn-sm"
+                                       data-target-id="@Model.TargetId"
+                                       data-html-field-prefix="@Model.HtmlFieldPrefix"
+                                       data-prefixes-name="@Model.PrefixesName"
+                                       data-flowmetadata="true"
+                                       data-parent-content-type="@Model.ParentContentType"
+                                       data-part-name="@Model.CollectionPartName"
+                                       data-contenttypes-name="@Model.ContentTypesName"
+                                       data-contentitems-name="@Model.ContentItemsName"
+                                       data-widget-type="@type.Name"
+                                       href="javascript:;">@type.DisplayName</a>
+                                </li>
                             }
                         </ul>
                     </div>

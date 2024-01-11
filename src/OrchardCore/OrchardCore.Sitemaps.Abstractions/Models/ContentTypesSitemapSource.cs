@@ -1,3 +1,5 @@
+using System;
+
 namespace OrchardCore.Sitemaps.Models
 {
     /// <summary>
@@ -26,7 +28,7 @@ namespace OrchardCore.Sitemaps.Models
         /// <summary>
         /// When not indexing all content types this contains the list of content types to index.
         /// </summary>
-        public ContentTypeSitemapEntry[] ContentTypes { get; set; } = new ContentTypeSitemapEntry[] { };
+        public ContentTypeSitemapEntry[] ContentTypes { get; set; } = Array.Empty<ContentTypeSitemapEntry>();
 
         /// <summary>
         /// When limiting content items, only one content type can be specified.

@@ -29,8 +29,8 @@ namespace OrchardCore.Users.Drivers
         private readonly IAuthorizationService _authorizationService;
         private readonly IEnumerable<IUserEventHandler> _userEventHandlers;
         private readonly ILogger _logger;
-        private readonly IHtmlLocalizer H;
-        private readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
+        protected readonly IStringLocalizer S;
 
         public UserDisplayDriver(
             UserManager<IUser> userManager,
@@ -94,7 +94,7 @@ namespace OrchardCore.Users.Drivers
 
             if (context.IsNew)
             {
-                if (String.IsNullOrWhiteSpace(model.Password))
+                if (string.IsNullOrWhiteSpace(model.Password))
                 {
                     context.Updater.ModelState.AddModelError(Prefix, nameof(model.Password), S["A password is required"]);
                 }

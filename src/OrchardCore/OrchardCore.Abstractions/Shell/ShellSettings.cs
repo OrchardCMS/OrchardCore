@@ -9,29 +9,49 @@ using OrchardCore.Environment.Shell.Models;
 namespace OrchardCore.Environment.Shell
 {
     /// <summary>
-    /// Represents the minimalistic set of fields stored for each tenant. This model
-    /// is obtained from the 'IShellSettingsManager', which by default reads this
-    /// from the 'App_Data/tenants.json' file.
+    /// The minimalistic set of settings fields and the configuration of a given tenant, all data can be first provided
+    /// by regular configuration sources, then by default settings of all tenants are stored in 'App_Data/tenants.json',
+    /// while each tenant configuration is stored in the related site folder 'App_Data/Sites/{tenant}/appsettings.json'.
     /// </summary>
-    public class ShellSettings
+    public class ShellSettings : IDisposable
     {
-        private static readonly char[] _hostSeparators = new[] { ',', ' ' };
+        /// <summary>
+        /// The name of the 'Default' tenant.
+        /// </summary>
+        public const string DefaultShellName = "Default";
+
+        /// <summary>
+        /// The 'RequestUrlHost' string separators allowing to provide multiple hosts.
+        /// </summary>
+        public static readonly char[] HostSeparators = new[] { ',', ' ' };
 
         private readonly ShellConfiguration _settings;
         private readonly ShellConfiguration _configuration;
+        internal volatile int _shellCreating;
+        private bool _disposed;
 
+        /// <summary>
+        /// Initializes a new <see cref="ShellSettings"/>.
+        /// </summary>
         public ShellSettings()
         {
             _settings = new ShellConfiguration();
             _configuration = new ShellConfiguration();
         }
 
+        /// <summary>
+        /// Initializes a new <see cref="ShellSettings"/> from an existing one
+        /// and from an existing <see cref="Configuration.ShellConfiguration"/>.
+        /// </summary>
         public ShellSettings(ShellConfiguration settings, ShellConfiguration configuration)
         {
             _settings = settings;
             _configuration = configuration;
         }
 
+        /// <summary>
+        /// Initializes a new <see cref="ShellSettings"/> from an existing one.
+        /// </summary>
         public ShellSettings(ShellSettings settings)
         {
             _settings = new ShellConfiguration(settings._settings);
@@ -39,8 +59,26 @@ namespace OrchardCore.Environment.Shell
             Name = settings.Name;
         }
 
+        /// <summary>
+        /// The tenant name.
+        /// </summary>
         public string Name { get; set; }
 
+        /// <summary>
+        /// Whether this instance has been disposed or not.
+        /// </summary>
+        [JsonIgnore]
+        public bool Disposed => _disposed;
+
+        /// <summary>
+        /// Whether this instance is disposable or not.
+        /// </summary>
+        [JsonIgnore]
+        public bool Disposable { get; internal set; }
+
+        /// <summary>
+        /// The tenant version identifier.
+        /// </summary>
         public string VersionId
         {
             get => _settings["VersionId"];
@@ -51,25 +89,40 @@ namespace OrchardCore.Environment.Shell
             }
         }
 
-        public string TenantId => _settings["TenantId"] ?? _settings ["VersionId"];
+        /// <summary>
+        /// The tenant identifier.
+        /// </summary>
+        public string TenantId => _settings["TenantId"] ?? _settings["VersionId"];
 
+        /// <summary>
+        /// The tenant request url host, multiple separated hosts may be provided.
+        /// </summary>
         public string RequestUrlHost
         {
             get => _settings["RequestUrlHost"];
             set => _settings["RequestUrlHost"] = value;
         }
 
+        /// <summary>
+        /// The tenant request url host(s).
+        /// </summary>
         [JsonIgnore]
         public string[] RequestUrlHosts => _settings["RequestUrlHost"]
-            ?.Split(_hostSeparators, StringSplitOptions.RemoveEmptyEntries)
+            ?.Split(HostSeparators, StringSplitOptions.RemoveEmptyEntries)
             ?? Array.Empty<string>();
 
+        /// <summary>
+        /// The tenant request url prefix.
+        /// </summary>
         public string RequestUrlPrefix
         {
             get => _settings["RequestUrlPrefix"]?.Trim(' ', '/');
             set => _settings["RequestUrlPrefix"] = value;
         }
 
+        /// <summary>
+        /// The tenant state.
+        /// </summary>
         [JsonConverter(typeof(StringEnumConverter))]
         public TenantState State
         {
@@ -77,6 +130,9 @@ namespace OrchardCore.Environment.Shell
             set => _settings["State"] = value.ToString();
         }
 
+        /// <summary>
+        /// The tenant configuration.
+        /// </summary>
         [JsonIgnore]
         public IShellConfiguration ShellConfiguration => _configuration;
 
@@ -87,8 +143,36 @@ namespace OrchardCore.Environment.Shell
             set => _configuration[key] = value;
         }
 
+        /// <summary>
+        /// Ensures that the tenant configuration is initialized.
+        /// </summary>
         public Task EnsureConfigurationAsync() => _configuration.EnsureConfigurationAsync();
 
-        public bool IsDefaultShell() => Name == ShellHelper.DefaultShellName;
+        public void Dispose()
+        {
+            // Disposable on reloading or if never registered.
+            if (!Disposable || _shellCreating > 0)
+            {
+                return;
+            }
+
+            Close();
+            GC.SuppressFinalize(this);
+        }
+
+        private void Close()
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            _disposed = true;
+
+            _settings?.Release();
+            _configuration?.Release();
+        }
+
+        ~ShellSettings() => Close();
     }
 }

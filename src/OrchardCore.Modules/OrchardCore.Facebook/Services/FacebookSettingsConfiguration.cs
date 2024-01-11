@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Facebook.Settings;
 
 namespace OrchardCore.Facebook.Services;
@@ -48,7 +47,7 @@ public class FacebookSettingsConfiguration : IConfigureOptions<FacebookSettings>
 
         if (_facebookService.ValidateSettings(settings).Any(result => result != ValidationResult.Success))
         {
-            if (_shellSettings.State == TenantState.Running)
+            if (_shellSettings.IsRunning())
             {
                 _logger.LogWarning("Facebook is not correctly configured.");
             }

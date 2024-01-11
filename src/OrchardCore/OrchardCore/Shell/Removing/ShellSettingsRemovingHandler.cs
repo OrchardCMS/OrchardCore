@@ -11,7 +11,7 @@ namespace OrchardCore.Environment.Shell.Removing;
 public class ShellSettingsRemovingHandler : IShellRemovingHandler
 {
     private readonly IShellHost _shellHost;
-    private readonly IStringLocalizer S;
+    protected readonly IStringLocalizer S;
     private readonly ILogger _logger;
 
     public ShellSettingsRemovingHandler(

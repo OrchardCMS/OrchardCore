@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
@@ -12,7 +11,7 @@ namespace OrchardCore.DisplayManagement
     /// <summary>
     /// Interface present on dynamic shapes.
     /// May be used to access attributes in a strongly typed fashion.
-    /// Note: Anything on this interface is a reserved word for the purpose of shape properties
+    /// Note: Anything on this interface is a reserved word for the purpose of shape properties.
     /// </summary>
     public interface IShape
     {
@@ -87,13 +86,13 @@ namespace OrchardCore.DisplayManagement
         {
             var tagName = defaultTagName;
 
-            // We keep this for backward compatibility
+            // We keep this for backward compatibility.
             if (shape.TryGetProperty("Tag", out string valueString))
             {
                 tagName = valueString;
             }
 
-            if (!String.IsNullOrEmpty(shape.TagName))
+            if (!string.IsNullOrEmpty(shape.TagName))
             {
                 tagName = shape.TagName;
             }
@@ -113,7 +112,7 @@ namespace OrchardCore.DisplayManagement
                 }
             }
 
-            if (!String.IsNullOrWhiteSpace(shape.Id))
+            if (!string.IsNullOrWhiteSpace(shape.Id))
             {
                 tagBuilder.Attributes["id"] = shape.Id;
             }
@@ -121,13 +120,7 @@ namespace OrchardCore.DisplayManagement
             return tagBuilder;
         }
 
-        private static readonly JsonSerializer ShapeSerializer = new JsonSerializer
-        {
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-        };
-
-        public static JObject ShapeToJson(this IShape shape)
-            => new ShapeSerializer(shape).Serialize();
+        public static JObject ShapeToJson(this IShape shape) => new ShapeSerializer(shape).Serialize();
 
     }
 }

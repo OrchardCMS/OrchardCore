@@ -2,16 +2,11 @@ using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Hosting;
 
 namespace OrchardCore.ContentPreview
 {
     public class PreviewStartupFilter : IStartupFilter
     {
-        public PreviewStartupFilter(IHostEnvironment hostEnvironment)
-        {
-        }
-
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
         {
             return app =>
@@ -27,7 +22,7 @@ namespace OrchardCore.ContentPreview
 
                     var previewPath = previewPathObject.ToString();
 
-                    if (!String.IsNullOrWhiteSpace(previewPath) && previewPath.StartsWith('/'))
+                    if (!string.IsNullOrWhiteSpace(previewPath) && previewPath.StartsWith('/'))
                     {
                         var originalPath = context.Request.Path;
                         var originalQueryString = context.Request.QueryString;
