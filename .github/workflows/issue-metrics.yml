@@ -51,7 +51,13 @@ jobs:
     - name: Concatentate Issue and Pull Request Metrics
       shell: pwsh
       run: |
-        Add-Content -Path './community_metrics.md' -Value ([Environment]::NewLine + (Get-Content -Path './issue_metrics.md' -Raw))
+        if (Test-Path ./community_metrics.md) {
+          Write-Output "File exists"
+        }
+        else {
+          Write-Output "File does not exist"
+        }
+        Add-Content -Path ./community_metrics.md -Value ([Environment]::NewLine + (Get-Content -Path ./issue_metrics.md -Raw))
 
     - name: Compute Q&A Discussion Request Metrics
       uses: github/issue-metrics@v2
@@ -62,12 +68,12 @@ jobs:
     - name: Concatentate Issue/PR and Discussion Metrics
       shell: pwsh
       run: |
-        Add-Content -Path './community_metrics.md' -Value ([Environment]::NewLine + (Get-Content -Path './issue_metrics.md' -Raw))
+        Add-Content -Path ./community_metrics.md -Value ([Environment]::NewLine + (Get-Content -Path ./issue_metrics.md -Raw))
 
     - name: Display Issue Metrics in Summary
       shell: pwsh
       run: |
-        Write-Host "::set-env name=GITHUB_STEP_SUMMARY::$(Get-Content ./issue_metrics.md)"
+        Write-Output "::set-env name=GITHUB_STEP_SUMMARY::$(Get-Content ./issue_metrics.md)"
       
           
     # - name: Create Issue
