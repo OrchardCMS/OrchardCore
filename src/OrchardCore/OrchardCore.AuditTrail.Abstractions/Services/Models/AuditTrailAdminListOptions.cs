@@ -1,6 +1,6 @@
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 
 namespace OrchardCore.AuditTrail.Services.Models
@@ -9,7 +9,7 @@ namespace OrchardCore.AuditTrail.Services.Models
     {
         internal Dictionary<string, AuditTrailAdminListOptionBuilder> SortOptionBuilders { get; set; } = [];
 
-        private ImmutableDictionary<string, AuditTrailAdminListOption> _sortOptions;
+        private FrozenDictionary<string, AuditTrailAdminListOption> _sortOptions;
 
         public IReadOnlyDictionary<string, AuditTrailAdminListOption> SortOptions
             => _sortOptions ??= BuildSortOptions();
@@ -18,9 +18,9 @@ namespace OrchardCore.AuditTrail.Services.Models
         public AuditTrailAdminListOption DefaultSortOption
             => _defaultSortOption ??= SortOptions.Values.FirstOrDefault(x => x.IsDefault);
 
-        private ImmutableDictionary<string, AuditTrailAdminListOption> BuildSortOptions()
+        private FrozenDictionary<string, AuditTrailAdminListOption> BuildSortOptions()
         {
-            var sortOptions = SortOptionBuilders.ToImmutableDictionary(k => k.Key, v => v.Value.Build());
+            var sortOptions = SortOptionBuilders.ToFrozenDictionary(k => k.Key, v => v.Value.Build());
             SortOptionBuilders = null;
 
             return sortOptions;

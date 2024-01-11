@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 
 namespace OrchardCore.ContentManagement.Display.ContentDisplay
@@ -13,14 +12,14 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         {
         }
 
-        private IImmutableList<ContentPartDisplayDriverOption> _displayDrivers;
-        private IImmutableList<ContentPartDisplayDriverOption> _editorDrivers;
+        private IReadOnlyList<ContentPartDisplayDriverOption> _displayDrivers;
+        private IReadOnlyList<ContentPartDisplayDriverOption> _editorDrivers;
 
-        public IImmutableList<ContentPartDisplayDriverOption> DisplayDrivers
-            => _displayDrivers ??= _partDisplayDrivers.Where(d => d.DisplayMode != null).ToImmutableList();
+        public IReadOnlyList<ContentPartDisplayDriverOption> DisplayDrivers
+            => _displayDrivers ??= _partDisplayDrivers.Where(d => d.DisplayMode != null).ToList();
 
-        public IImmutableList<ContentPartDisplayDriverOption> EditorDrivers
-            => _editorDrivers ??= _partDisplayDrivers.Where(d => d.Editor != null).ToImmutableList();
+        public IReadOnlyList<ContentPartDisplayDriverOption> EditorDrivers
+            => _editorDrivers ??= _partDisplayDrivers.Where(d => d.Editor != null).ToList();
 
         internal void ForDisplayMode(Type displayDriverType, Func<string, bool> predicate)
         {

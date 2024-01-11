@@ -1,6 +1,6 @@
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 
 namespace OrchardCore.ContentManagement
@@ -15,11 +15,11 @@ namespace OrchardCore.ContentManagement
 
         private IReadOnlyDictionary<string, ContentPartOption> _contentPartOptionsLookup;
         public IReadOnlyDictionary<string, ContentPartOption> ContentPartOptionsLookup
-            => _contentPartOptionsLookup ??= ContentPartOptions.ToImmutableDictionary(k => k.Type.Name);
+            => _contentPartOptionsLookup ??= ContentPartOptions.ToFrozenDictionary(k => k.Type.Name);
 
         private IReadOnlyDictionary<string, ContentFieldOption> _contentFieldOptionsLookup;
         public IReadOnlyDictionary<string, ContentFieldOption> ContentFieldOptionsLookup
-            => _contentFieldOptionsLookup ??= ContentFieldOptions.ToImmutableDictionary(k => k.Type.Name);
+            => _contentFieldOptionsLookup ??= ContentFieldOptions.ToFrozenDictionary(k => k.Type.Name);
 
         public IReadOnlyList<ContentPartOption> ContentPartOptions => _contentParts;
         public IReadOnlyList<ContentFieldOption> ContentFieldOptions => _contentFields;

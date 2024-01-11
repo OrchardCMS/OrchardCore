@@ -1,6 +1,6 @@
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 
 namespace OrchardCore.ContentManagement.Display.ContentDisplay
@@ -10,14 +10,14 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         private readonly List<ContentPartDisplayOption> _contentParts = [];
         private readonly List<ContentFieldDisplayOption> _contentFields = [];
 
-        private ImmutableDictionary<string, ContentPartDisplayOption> _contentPartOptions;
-        private ImmutableDictionary<string, ContentFieldDisplayOption> _contentFieldOptions;
+        private FrozenDictionary<string, ContentPartDisplayOption> _contentPartOptions;
+        private FrozenDictionary<string, ContentFieldDisplayOption> _contentFieldOptions;
 
         public IReadOnlyDictionary<string, ContentPartDisplayOption> ContentPartOptions
-            => _contentPartOptions ??= _contentParts.ToImmutableDictionary(k => k.Type.Name);
+            => _contentPartOptions ??= _contentParts.ToFrozenDictionary(k => k.Type.Name);
 
         public IReadOnlyDictionary<string, ContentFieldDisplayOption> ContentFieldOptions
-            => _contentFieldOptions ??= _contentFields.ToImmutableDictionary(k => k.Type.Name);
+            => _contentFieldOptions ??= _contentFields.ToFrozenDictionary(k => k.Type.Name);
 
         internal void ForContentPartDisplayMode(Type contentPartType, Type displayDriverType, Func<string, bool> predicate)
         {

@@ -1,6 +1,6 @@
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.AuditTrail.Services.Models
@@ -9,13 +9,13 @@ namespace OrchardCore.AuditTrail.Services.Models
     {
         internal Dictionary<string, AuditTrailCategoryDescriptorBuilder> CategoryDescriptorBuilders { get; set; } = [];
 
-        private ImmutableDictionary<string, AuditTrailCategoryDescriptor> _categoryDescriptors;
+        private FrozenDictionary<string, AuditTrailCategoryDescriptor> _categoryDescriptors;
         public IReadOnlyDictionary<string, AuditTrailCategoryDescriptor> CategoryDescriptors
             => _categoryDescriptors ??= BuildCategoryDescriptors();
 
-        private ImmutableDictionary<string, AuditTrailCategoryDescriptor> BuildCategoryDescriptors()
+        private FrozenDictionary<string, AuditTrailCategoryDescriptor> BuildCategoryDescriptors()
         {
-            var categoryDescriptors = CategoryDescriptorBuilders.ToImmutableDictionary(k => k.Key, v => v.Value.Build());
+            var categoryDescriptors = CategoryDescriptorBuilders.ToFrozenDictionary(k => k.Key, v => v.Value.Build());
             CategoryDescriptorBuilders = null;
 
             return categoryDescriptors;

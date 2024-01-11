@@ -1,22 +1,22 @@
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Rules
 {
     public class ConditionOperatorOptions
     {
-        private ImmutableDictionary<string, IConditionOperatorFactory> _factories;
-        private ImmutableDictionary<Type, ConditionOperatorOption> _conditionOperatorOptionByType;
+        private FrozenDictionary<string, IConditionOperatorFactory> _factories;
+        private FrozenDictionary<Type, ConditionOperatorOption> _conditionOperatorOptionByType;
 
         public IReadOnlyDictionary<string, IConditionOperatorFactory> Factories
-            => _factories ??= Operators.ToImmutableDictionary(x => x.Factory.Name, x => x.Factory);
+            => _factories ??= Operators.ToFrozenDictionary(x => x.Factory.Name, x => x.Factory);
 
         public IReadOnlyDictionary<Type, ConditionOperatorOption> ConditionOperatorOptionByType
-            => _conditionOperatorOptionByType ??= Operators.ToImmutableDictionary(x => x.Operator, x => x);
+            => _conditionOperatorOptionByType ??= Operators.ToFrozenDictionary(x => x.Operator, x => x);
 
-        public List<ConditionOperatorOption> Operators { get; set; } = new();
+        public List<ConditionOperatorOption> Operators { get; set; } = [];
     }
 
     public class ConditionOperatorOption<TLocalizer> : ConditionOperatorOption where TLocalizer : class

@@ -16,12 +16,13 @@ public class DictionaryLookupBenchmark
     private FrozenDictionary<string, Guid> _frozenDictionary;
     private ImmutableDictionary<string, Guid> _immutableDictionary;
 
-    private readonly IList<string> _locate;
+    private IList<string> _locate;
 
     [GlobalSetup]
     public void Setup()
     {
         _dictionary = [];
+        _locate = [];
 
         for (var i = 0; i < _dictionarySize; i++)
         {

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Frozen;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -192,7 +192,7 @@ namespace OrchardCore.Search.Lucene
         /// </summary>
         public IReadOnlyDictionary<string, DateTime> GetTimestamps()
         {
-            return _timestamps.ToImmutableDictionary();
+            return _timestamps.ToFrozenDictionary();
         }
 
         private Document CreateLuceneDocument(DocumentIndex documentIndex, LuceneIndexSettings indexSettings)
