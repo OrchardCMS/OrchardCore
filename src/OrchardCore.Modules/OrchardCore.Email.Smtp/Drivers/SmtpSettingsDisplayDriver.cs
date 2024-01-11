@@ -16,7 +16,7 @@ namespace OrchardCore.Email.Drivers
 {
     public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpEmailSettings>
     {
-        public const string GroupId = "smtp email";
+        public const string GroupId = "smtp-email";
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;

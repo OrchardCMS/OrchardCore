@@ -11,7 +11,6 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Email.Controllers
 {
-    [Feature("OrchardCore.Email.Smtp")]
     public class AdminController : Controller
     {
         private readonly IAuthorizationService _authorizationService;

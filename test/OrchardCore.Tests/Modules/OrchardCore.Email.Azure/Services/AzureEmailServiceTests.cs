@@ -21,7 +21,7 @@ public class AzureEmailServiceTests
             new EmailAddressValidator());
         var message = new MailMessage
         {
-            To = "hishamco_2007@hotmail.com",
+            To = "test@orchardcore.net",
             Subject = "Orchard Core",
             Body = "This is a test message."
         };

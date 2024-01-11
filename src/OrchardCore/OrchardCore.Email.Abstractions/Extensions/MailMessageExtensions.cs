@@ -11,30 +11,18 @@ public static class MailMessageExtensions
     public static MailMessageRecipients GetRecipients(this MailMessage message)
     {
         var recipients = new MailMessageRecipients();
-        recipients.To.AddRange(message.To?
-            .Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
-            ?? Enumerable.Empty<string>());
-        recipients.Cc.AddRange(message.Cc?
-            .Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
-            ?? Enumerable.Empty<string>());
-        recipients.Bcc.AddRange(message.Bcc?
-            .Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
-            ?? Enumerable.Empty<string>());
+        recipients.To.AddRange(SplitMailMessageRecipients(message.To));
+        recipients.Cc.AddRange(SplitMailMessageRecipients(message.Cc));
+        recipients.Bcc.AddRange(SplitMailMessageRecipients(message.Bcc));
 
         return recipients;
     }
+    public static IEnumerable<string> GetSender(this MailMessage message) =>
+        string.IsNullOrWhiteSpace(message.From) ? Enumerable.Empty<string>() : SplitMailMessageRecipients(message.From);
 
-    public static IEnumerable<string> GetSender(this MailMessage message)
-        => string.IsNullOrWhiteSpace(message.From)
-            ? Enumerable.Empty<string>()
-            : message.From?
-                .Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
-                ?? Enumerable.Empty<string>();
+    public static IEnumerable<string> GetReplyTo(this MailMessage message) =>
+        string.IsNullOrWhiteSpace(message.ReplyTo) ? message.GetSender() : SplitMailMessageRecipients(message.ReplyTo);
 
-    public static IEnumerable<string> GetReplyTo(this MailMessage message)
-        => string.IsNullOrWhiteSpace(message.ReplyTo)
-            ? message.GetSender()
-            : message.ReplyTo?
-                .Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
-                ?? Enumerable.Empty<string>();
+    private static IEnumerable<string> SplitMailMessageRecipients(string recipients) => recipients
+        ?.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries) ?? Enumerable.Empty<string>();
 }

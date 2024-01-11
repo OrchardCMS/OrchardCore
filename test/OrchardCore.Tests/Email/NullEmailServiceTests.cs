@@ -20,7 +20,7 @@ public class NullEmailServiceTests
             Mock.Of<IEmailAddressValidator>());
         var message = new MailMessage
         {
-            To = "hishamco_2007@hotmail.com",
+            To = "test@orchardcore.net",
             Subject = "Orchard Core",
             Body = "This is a test message."
         };
