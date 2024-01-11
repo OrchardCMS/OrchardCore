@@ -105,12 +105,18 @@ public class AzureAISearchDefaultOptions
 
     public string Endpoint { get; set; }
 
+    public AzureAIAuthenticationType AuthenticationType { get; set; }
+
+    public bool DisableUIConfiguration { get; set; }
+
     public AzureKeyCredential Credential { get; set; }
 
     // Environment prefix for all of the indexes.
     public string IndexesPrefix { get; set; }
 
     public string[] Analyzers { get; set; }
+
+    public string IdentityClientId { get; set; }
 
     private bool _configurationExists;
 
@@ -119,4 +125,12 @@ public class AzureAISearchDefaultOptions
 
     public bool IsConfigurationExists()
         => _configurationExists;
+
+    private bool _fileConfigurationExists;
+
+    public void SetFileConfigurationExists(bool fileConfigurationExists)
+        => _fileConfigurationExists = fileConfigurationExists;
+
+    public bool IsFileConfigurationExists()
+        => _fileConfigurationExists;
 }

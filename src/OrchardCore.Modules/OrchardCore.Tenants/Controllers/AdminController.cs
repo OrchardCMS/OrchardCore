@@ -43,8 +43,8 @@ namespace OrchardCore.Tenants.Controllers
         private readonly PagerOptions _pagerOptions;
         private readonly TenantsOptions _tenantsOptions;
         private readonly ILogger _logger;
+        private readonly IShapeFactory _shapeFactory;
 
-        protected readonly dynamic New;
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
 
@@ -83,8 +83,7 @@ namespace OrchardCore.Tenants.Controllers
             _pagerOptions = pagerOptions.Value;
             _tenantsOptions = tenantsOptions.Value;
             _logger = logger;
-
-            New = shapeFactory;
+            _shapeFactory = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
@@ -158,12 +157,20 @@ namespace OrchardCore.Tenants.Controllers
 
             // Maintain previous route data when generating page links
             var routeData = new RouteData();
-            routeData.Values.Add("Options.Category", options.Category);
             routeData.Values.Add("Options.Status", options.Status);
-            routeData.Values.Add("Options.Search", options.Search);
             routeData.Values.Add("Options.OrderBy", options.OrderBy);
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(entries.Count).RouteData(routeData);
+            if (!string.IsNullOrEmpty(options.Category))
+            {
+                routeData.Values.TryAdd("Options.Category", options.Category);
+            }
+
+            if (!string.IsNullOrEmpty(options.Search))
+            {
+                routeData.Values.TryAdd("Options.Search", options.Search);
+            }
+
+            var pagerShape = await _shapeFactory.PagerAsync(pager, entries.Count, routeData);
 
             var model = new AdminIndexViewModel
             {
@@ -174,9 +181,9 @@ namespace OrchardCore.Tenants.Controllers
 
             // We populate the SelectLists
             model.Options.TenantsCategories = allSettings
-                .GroupBy(t => t["Category"])
-                .Where(t => !string.IsNullOrEmpty(t.Key))
-                .Select(t => new SelectListItem(t.Key, t.Key, string.Equals(options.Category, t.Key, StringComparison.OrdinalIgnoreCase)))
+                .GroupBy(settings => settings["Category"])
+                .Where(group => !string.IsNullOrEmpty(group.Key))
+                .Select(group => new SelectListItem(group.Key, group.Key, string.Equals(options.Category, group.Key, StringComparison.OrdinalIgnoreCase)))
                 .ToList();
 
             model.Options.TenantsCategories.Insert(0, new SelectListItem(
@@ -184,22 +191,25 @@ namespace OrchardCore.Tenants.Controllers
                 string.Empty,
                 selected: string.IsNullOrEmpty(options.Category)));
 
-            model.Options.TenantsStates = new List<SelectListItem>() {
+            model.Options.TenantsStates =
+            [
                 new SelectListItem() { Text = S["All states"], Value = nameof(TenantsState.All) },
                 new SelectListItem() { Text = S["Running"], Value = nameof(TenantsState.Running) },
                 new SelectListItem() { Text = S["Disabled"], Value = nameof(TenantsState.Disabled) },
                 new SelectListItem() { Text = S["Uninitialized"], Value = nameof(TenantsState.Uninitialized) }
-            };
+            ];
 
-            model.Options.TenantsSorts = new List<SelectListItem>() {
+            model.Options.TenantsSorts =
+            [
                 new SelectListItem() { Text = S["Name"], Value = nameof(TenantsOrder.Name) },
                 new SelectListItem() { Text = S["State"], Value = nameof(TenantsOrder.State) }
-            };
+            ];
 
-            model.Options.TenantsBulkAction = new List<SelectListItem>() {
+            model.Options.TenantsBulkAction =
+            [
                 new SelectListItem() { Text = S["Disable"], Value = nameof(TenantsBulkAction.Disable) },
                 new SelectListItem() { Text = S["Enable"], Value = nameof(TenantsBulkAction.Enable) },
-            };
+            ];
 
             return View(model);
         }
@@ -207,15 +217,14 @@ namespace OrchardCore.Tenants.Controllers
         [HttpPost, ActionName("Index")]
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(AdminIndexViewModel model)
-        {
-            return RedirectToAction("Index", new RouteValueDictionary {
+            => RedirectToAction("Index", new RouteValueDictionary
+            {
                 { "Options.Category", model.Options.Category },
                 { "Options.Status", model.Options.Status },
                 { "Options.OrderBy", model.Options.OrderBy },
                 { "Options.Search", model.Options.Search },
                 { "Options.TenantsStates", model.Options.TenantsStates }
             });
-        }
 
         [HttpPost]
         [FormValueRequired("submit.BulkAction")]

@@ -41,6 +41,14 @@ public class AzureAISearchService(
         }
 
         var indexSettings = await _indexSettingsService.GetAsync(index);
+
+        if (indexSettings is null)
+        {
+            _logger.LogWarning("Azure AI Search: Couldn't execute search. Unable to get the search index settings. Index name {indexName}", index);
+
+            return result;
+        }
+
         result.Latest = indexSettings.IndexLatest;
 
         try

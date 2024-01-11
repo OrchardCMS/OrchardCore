@@ -81,5 +81,16 @@ namespace OrchardCore.Search.Drivers
 
             return await EditAsync(section, context);
         }
+
+        protected override void BuildPrefix(ISite model, string htmlFieldPrefix)
+        {
+            Prefix = typeof(SearchSettings).Name;
+
+            if (!string.IsNullOrEmpty(htmlFieldPrefix))
+            {
+                Prefix = htmlFieldPrefix + "." + Prefix;
+            }
+        }
+
     }
 }
