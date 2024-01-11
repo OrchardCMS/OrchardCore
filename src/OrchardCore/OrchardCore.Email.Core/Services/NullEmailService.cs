@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 namespace OrchardCore.Email.Services;
 
 /// <summary>
-/// Represents an email service that do nothing.
+/// Represents an email service that does nothing.
 /// </summary>
 /// <param name="options">The <see cref="IOptions{AzureEmailSettings}"/>.</param>
 /// <param name="logger">The <see cref="ILogger{AzureEmailService}"/>.</param>
