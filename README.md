@@ -63,7 +63,7 @@ First, clone the repository using the command `git clone https://github.com/Orch
 
 ### Visual Studio
 
-1. Download Visual Studio 2022 (v17.5+) from <https://www.visualstudio.com/downloads>.
+1. Download Visual Studio 2022 (v17.8+) from <https://www.visualstudio.com/downloads>.
 2. Launch the solution by clicking on `OrchardCore.sln`. Give Visual Studio time to restore all missing Nuget packages.
 3. Ensure `OrchardCore.Cms.Web` is set as the startup project. Then run the app.
 
