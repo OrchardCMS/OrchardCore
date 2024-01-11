@@ -12,7 +12,6 @@ using Lucene.Net.Search;
 using Lucene.Net.Spatial.Prefix;
 using Lucene.Net.Spatial.Prefix.Tree;
 using Lucene.Net.Store;
-using LuceneLock = Lucene.Net.Store.Lock;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Contents.Indexing;
@@ -24,6 +23,7 @@ using OrchardCore.Search.Lucene.Services;
 using Spatial4n.Context;
 using Directory = System.IO.Directory;
 using LDirectory = Lucene.Net.Store.Directory;
+using LuceneLock = Lucene.Net.Store.Lock;
 
 namespace OrchardCore.Search.Lucene
 {
@@ -257,7 +257,7 @@ namespace OrchardCore.Search.Lucene
                         }
                         else
                         {
-                            doc.Add(new StringField(entry.Name, "NULL", store));
+                            doc.Add(new StringField(entry.Name, IndexingConstants.NullValue, store));
                         }
                         break;
 
@@ -273,7 +273,7 @@ namespace OrchardCore.Search.Lucene
                         }
                         else
                         {
-                            doc.Add(new StringField(entry.Name, "NULL", store));
+                            doc.Add(new StringField(entry.Name, IndexingConstants.NullValue, store));
                         }
 
                         break;
@@ -290,7 +290,7 @@ namespace OrchardCore.Search.Lucene
                         }
                         else
                         {
-                            doc.Add(new StringField(entry.Name, "NULL", store));
+                            doc.Add(new StringField(entry.Name, IndexingConstants.NullValue, store));
                         }
                         break;
 
@@ -325,11 +325,11 @@ namespace OrchardCore.Search.Lucene
                         {
                             if (entry.Options.HasFlag(DocumentIndexOptions.Keyword))
                             {
-                                doc.Add(new StringField(entry.Name, "NULL", store));
+                                doc.Add(new StringField(entry.Name, IndexingConstants.NullValue, store));
                             }
                             else
                             {
-                                doc.Add(new TextField(entry.Name, "NULL", store));
+                                doc.Add(new TextField(entry.Name, IndexingConstants.NullValue, store));
                             }
                         }
                         break;
@@ -354,7 +354,7 @@ namespace OrchardCore.Search.Lucene
                         }
                         else
                         {
-                            doc.Add(new StoredField(strategy.FieldName, "NULL"));
+                            doc.Add(new StoredField(strategy.FieldName, IndexingConstants.NullValue));
                         }
                         break;
                 }
