@@ -294,7 +294,7 @@ public class AzureAIIndexDocumentManager(
                     {
                         var stringValue = Convert.ToString(entry.Value);
 
-                        if (!string.IsNullOrEmpty(stringValue) && stringValue != "NULL")
+                        if (!string.IsNullOrEmpty(stringValue) && stringValue != IndexingConstants.NullValue)
                         {
                             // Full-text and display-text support multi-value.
                             // keyword fields contains single string. All others, support a collection of strings.
