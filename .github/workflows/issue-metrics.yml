@@ -68,7 +68,7 @@ jobs:
     - name: Display Issue Metrics in Summary
       shell: pwsh
       run: |
-        Write-Output "::set-env name=GITHUB_STEP_SUMMARY::$(Get-Content ./issue_metrics.md)"
+        Get-Content ./issue_metrics.md >> $env:GITHUB_STEP_SUMMARY
       
           
     # - name: Create Issue
