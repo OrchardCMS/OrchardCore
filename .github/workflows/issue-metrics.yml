@@ -39,7 +39,8 @@ jobs:
     - name: Rename Issue Metrics File
       shell: pwsh
       run: |
-        Rename-Item -Path ./issue_metrics.md -NewName ./community_metrics.md -Force
+        # Renaming the file wouldn't work since other scripts will be denied access to it for some reason.
+        Add-Content -Path ./community_metrics.md -Value (Get-Content -Path ./issue_metrics.md -Raw)
 
     - name: Compute Pull Request Metrics
       uses: github/issue-metrics@v2
@@ -51,12 +52,6 @@ jobs:
     - name: Concatentate Issue and Pull Request Metrics
       shell: pwsh
       run: |
-        if (Test-Path ./community_metrics.md) {
-          Write-Output "File exists"
-        }
-        else {
-          Write-Output "File does not exist"
-        }
         Add-Content -Path ./community_metrics.md -Value ([Environment]::NewLine + (Get-Content -Path ./issue_metrics.md -Raw))
 
     - name: Compute Q&A Discussion Request Metrics
