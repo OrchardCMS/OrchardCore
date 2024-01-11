@@ -5,55 +5,67 @@ namespace OrchardCore.Deployment;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddDeploymentTargetHandler<TImplementation>(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddDeploymentTargetHandler<TImplementation>(this IServiceCollection services)
         where TImplementation : class, IDeploymentTargetHandler
     {
-        serviceCollection.AddScoped<IDeploymentTargetHandler, TImplementation>();
+        services.AddScoped<IDeploymentTargetHandler, TImplementation>();
 
-        return serviceCollection;
+        return services;
     }
 
-    public static void AddDeployment<TSource, TStep>(this IServiceCollection services)
+    public static IServiceCollection AddDeployment<TSource, TStep>(this IServiceCollection services)
         where TSource : IDeploymentSource
         where TStep : DeploymentStep, new()
     {
-        services.AddDeploymentSource<TSource>();
-        services.AddDeploymentStep<TStep>();
+        services.AddDeploymentSource<TSource>()
+            .AddDeploymentStep<TStep>();
+
+        return services;
     }
 
-    public static void AddDeployment<TSource, TStep, TDisplayDriver>(this IServiceCollection services)
+    public static IServiceCollection AddDeployment<TSource, TStep, TDisplayDriver>(this IServiceCollection services)
         where TSource : IDeploymentSource
         where TStep : DeploymentStep, new()
         where TDisplayDriver : DisplayDriver<DeploymentStep, TStep>
     {
-        services.AddDeployment<TSource, TStep>();
-        services.AddDeploymentStepDisplayDriver<TDisplayDriver, TStep>();
+        services.AddDeployment<TSource, TStep>()
+            .AddDeploymentStepDisplayDriver<TDisplayDriver, TStep>();
+
+        return services;
     }
 
-    public static void AddDeploymentWithoutSource<TStep, TDisplayDriver>(this IServiceCollection services)
+    public static IServiceCollection AddDeploymentWithoutSource<TStep, TDisplayDriver>(this IServiceCollection services)
         where TStep : DeploymentStep, new()
         where TDisplayDriver : DisplayDriver<DeploymentStep, TStep>
     {
-        services.AddDeploymentStep<TStep>();
-        services.AddDeploymentStepDisplayDriver<TDisplayDriver, TStep>();
+        services.AddDeploymentStep<TStep>()
+            .AddDeploymentStepDisplayDriver<TDisplayDriver, TStep>();
+
+        return services;
     }
 
-    private static void AddDeploymentSource<TSource>(this IServiceCollection services)
+    private static IServiceCollection AddDeploymentSource<TSource>(this IServiceCollection services)
         where TSource : IDeploymentSource
     {
         services.AddTransient(typeof(IDeploymentSource), typeof(TSource));
+
+        return services;
     }
 
-    private static void AddDeploymentStep<TStep>(this IServiceCollection services)
+    private static IServiceCollection AddDeploymentStep<TStep>(this IServiceCollection services)
         where TStep : DeploymentStep, new()
     {
         services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<TStep>());
+
+        return services;
     }
 
-    private static void AddDeploymentStepDisplayDriver<TDisplayDriver, TStep>(this IServiceCollection services)
+    private static IServiceCollection AddDeploymentStepDisplayDriver<TDisplayDriver, TStep>(this IServiceCollection services)
         where TDisplayDriver : DisplayDriver<DeploymentStep, TStep>
         where TStep : DeploymentStep, new()
     {
         services.AddScoped<IDisplayDriver<DeploymentStep>, TDisplayDriver>();
+
+        return services;
     }
 }
