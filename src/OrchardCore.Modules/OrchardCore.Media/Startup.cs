@@ -18,7 +18,6 @@ using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.Environment.Shell;
 using OrchardCore.FileStorage;
@@ -389,13 +388,8 @@ namespace OrchardCore.Media
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, MediaDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<MediaDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, MediaDeploymentStepDriver>();
-
-            services.AddTransient<IDeploymentSource, AllMediaProfilesDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllMediaProfilesDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllMediaProfilesDeploymentStepDriver>();
+            services.AddDeployment<MediaDeploymentSource, MediaDeploymentStep, MediaDeploymentStepDriver>();
+            services.AddDeployment<AllMediaProfilesDeploymentSource, AllMediaProfilesDeploymentStep, AllMediaProfilesDeploymentStepDriver>();
         }
     }
 

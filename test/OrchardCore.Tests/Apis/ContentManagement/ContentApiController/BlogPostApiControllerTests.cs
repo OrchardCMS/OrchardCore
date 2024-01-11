@@ -5,7 +5,6 @@ using OrchardCore.ContentManagement.Records;
 using OrchardCore.Lists.Models;
 using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Tests.Apis.Context;
-using YesSql;
 using ISession = YesSql.ISession;
 
 namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
