@@ -8,12 +8,12 @@ using OrchardCore.Search.AzureAI.Models;
 
 namespace OrchardCore.Search.AzureAI.Services;
 
-public class AzureAIClientFactory(
-    IOptions<AzureAISearchDefaultOptions> defaultOptions)
+public class AzureAIClientFactory(IOptions<AzureAISearchDefaultOptions> defaultOptions)
 {
     private readonly ConcurrentDictionary<string, SearchClient> _clients = [];
-    private SearchIndexClient _searchIndexClient;
     private readonly AzureAISearchDefaultOptions _defaultOptions = defaultOptions.Value;
+
+    private SearchIndexClient _searchIndexClient;
 
     public SearchClient CreateSearchClient(string indexFullName)
     {
