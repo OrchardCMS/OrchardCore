@@ -165,7 +165,7 @@ namespace OrchardCore.Email.Services
             {
                 if (Settings.UseDefaultCredentials)
                 {
-                    // There's no notion of 'UseDefaultCredentials' in MailKit, so empty credentials is passed in
+                    // There's no notion of 'UseDefaultCredentials' in MailKit, so empty credentials is passed in.
                     await client.AuthenticateAsync(string.Empty, string.Empty);
                 }
                 else if (!string.IsNullOrWhiteSpace(Settings.UserName))
