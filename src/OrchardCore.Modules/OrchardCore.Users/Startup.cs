@@ -505,10 +505,7 @@ namespace OrchardCore.Users
         {
             services.AddScoped<IDisplayDriver<User>, CustomUserSettingsDisplayDriver>();
             services.AddScoped<IPermissionProvider, CustomUserSettingsPermissions>();
-
-            services.AddTransient<IDeploymentSource, CustomUserSettingsDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<CustomUserSettingsDeploymentStep>>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>, CustomUserSettingsDeploymentStepDriver>();
+            services.AddDeployment<CustomUserSettingsDeploymentSource, CustomUserSettingsDeploymentStep, CustomUserSettingsDeploymentStepDriver>();
         }
     }
 
@@ -516,9 +513,7 @@ namespace OrchardCore.Users
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, AllUsersDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<AllUsersDeploymentStep>>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllUsersDeploymentStepDriver>();
+            services.AddDeployment<AllUsersDeploymentSource, AllUsersDeploymentStep, AllUsersDeploymentStepDriver>();
         }
     }
 }
