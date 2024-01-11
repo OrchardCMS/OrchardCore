@@ -117,7 +117,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - Email:
   - [Email](modules/Email/README.md)
   - [SMTP Email](modules/Email.Smtp/README.md)
-  - [Media Email](modules/Email.Azure/README.md)
+  - [Azure Email](modules/Email.Azure/README.md)
 - [Redis](modules/Redis/README.md)
 - [Deployment](modules/Deployment/README.md)
 - [Diagnostics](modules/Diagnostics/README.md)
