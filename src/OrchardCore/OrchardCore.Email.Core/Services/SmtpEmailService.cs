@@ -45,7 +45,7 @@ namespace OrchardCore.Email.Services
             var response = default(string);
             try
             {
-                // Set the MailMessage.From, to avoid the confusion between Options.DefaultSender (Author) and submitter (Sender)
+                // Set the MailMessage.From, to avoid the confusion between Options.DefaultSender (Author) and submitter (Sender).
                 var senderAddress = string.IsNullOrWhiteSpace(message.From)
                     ? Settings.DefaultSender
                     : message.From;
