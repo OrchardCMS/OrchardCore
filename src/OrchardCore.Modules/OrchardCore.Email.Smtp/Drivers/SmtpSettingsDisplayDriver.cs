@@ -99,7 +99,7 @@ namespace OrchardCore.Email.Drivers
             {
                 await context.Updater.TryUpdateModelAsync(section, Prefix);
 
-                // Don't check the DefaultSender from within SmtpEmailSettings
+                // Don't check the DefaultSender from within SmtpEmailSettings.
                 context.Updater.ModelState.Remove($"{nameof(ISite)}.{nameof(SmtpEmailSettings.DefaultSender)}");
 
                 var previousPassword = section.Password;
