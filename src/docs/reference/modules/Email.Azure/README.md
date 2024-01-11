@@ -8,7 +8,6 @@ Enabling the `OrchardCore.Email.Azure` module will allow the user to set the fol
 
 | Setting | Description |
 | --- | --- |
-| `DefaultSender` | The email of the sender. |
 | `ConnectionString` | The ACS connection string that will be used to deliver the email.
 
 ## Azure Email Settings Configuration
