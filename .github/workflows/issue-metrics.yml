@@ -52,7 +52,8 @@ jobs:
     - name: Concatentate Issue and Pull Request Metrics
       shell: pwsh
       run: |
-        Add-Content -Path ./community_metrics.md -Value ([Environment]::NewLine + (Get-Content -Path ./issue_metrics.md -Raw))
+        $content = (Get-Content -Path ./issue_metrics.md -Raw) -replace '# Issue Metrics', '# Pull Request Metrics'
+        Add-Content -Path ./community_metrics.md -Value ([Environment]::NewLine + $content)
 
     - name: Compute Q&A Discussion Request Metrics
       uses: github/issue-metrics@v2
@@ -63,18 +64,19 @@ jobs:
     - name: Concatentate Issue/PR and Discussion Metrics
       shell: pwsh
       run: |
-        Add-Content -Path ./community_metrics.md -Value ([Environment]::NewLine + (Get-Content -Path ./issue_metrics.md -Raw))
+        $content = (Get-Content -Path ./issue_metrics.md -Raw) -replace '# Issue Metrics', '# Discussion Metrics'
+        Add-Content -Path ./community_metrics.md -Value ([Environment]::NewLine + $content)
 
     - name: Display Issue Metrics in Summary
       shell: pwsh
       run: |
         Get-Content ./community_metrics.md >> $env:GITHUB_STEP_SUMMARY
           
-    - name: Create Issue
-      # v4.0.1
-      uses: peter-evans/create-issue-from-file@433e51abf769039ee20ba1293a088ca19d573b7f
-      with:
-        title: Monthly community metrics report for ${{ env.LAST_MONTH }}
-        token: ${{ secrets.GITHUB_TOKEN }}
-        content-filepath: ./community_metrics.md
-        labels: community metrics
+    # - name: Create Issue
+    #   # v4.0.1
+    #   uses: peter-evans/create-issue-from-file@433e51abf769039ee20ba1293a088ca19d573b7f
+    #   with:
+    #     title: Monthly community metrics report for ${{ env.LAST_MONTH }}
+    #     token: ${{ secrets.GITHUB_TOKEN }}
+    #     content-filepath: ./community_metrics.md
+    #     labels: community metrics
