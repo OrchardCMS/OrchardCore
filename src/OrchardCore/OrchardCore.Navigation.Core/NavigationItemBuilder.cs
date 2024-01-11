@@ -99,6 +99,12 @@ namespace OrchardCore.Navigation
             return this;
         }
 
+        public NavigationItemBuilder Permissions(IEnumerable<Permission> permissions)
+        {
+            _item.Permissions.AddRange(permissions);
+            return this;
+        }
+
         public NavigationItemBuilder Resource(object resource)
         {
             _item.Resource = resource;
@@ -147,11 +153,20 @@ namespace OrchardCore.Navigation
         {
             _item.RouteValues = new RouteValueDictionary(values);
             if (!string.IsNullOrEmpty(actionName))
+            {
                 _item.RouteValues["action"] = actionName;
+            }
+
             if (!string.IsNullOrEmpty(controllerName))
+            {
                 _item.RouteValues["controller"] = controllerName;
+            }
+
             if (!string.IsNullOrEmpty(areaName))
+            {
                 _item.RouteValues["area"] = areaName;
+            }
+
             return this;
         }
     }

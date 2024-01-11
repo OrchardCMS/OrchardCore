@@ -1,0 +1,72 @@
+@inject IDeploymentManager DeploymentManager
+
+<zone name="Footer">
+    <div class="modal fade" id="modalExportContentToDeploymentTargetContentBulkActionsTarget" tabindex="-1" role="dialog" aria-labelledby="deployment-targets-bulk-title" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deployment-targets-bulk-title">@T["Available Targets"]</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row row-cols-1 row-cols-md-2 g-2">
+                        @foreach (var target in await DeploymentManager.GetDeploymentTargetsAsync())
+                        {
+                            var routeWithId = new RouteValueDictionary(target.Route);
+                            routeWithId["id"] = Site.As<ExportContentToDeploymentTargetSettings>().ExportContentToDeploymentTargetPlanId;
+                            var returnUrl = Context.Request.Query["returnUrl"];
+                            routeWithId["returnUrl"] = FullRequestPath;
+                            
+                            <div class="col">
+                                <div class="card h-100 mb-3">
+                                    <div class="card-body">
+                                        <h4 class="card-title">@target.Name</h4>
+                                        <p>@target.Description</p>
+                                    </div>
+                                    <div class="card-footer text-muted text-sm-end">
+                                        <button type="button" class="export-to-deployment-target-bulk-actions text-white btn btn-primary btn-sm" data-bs-dismiss="modal" data-target-url="@Url.RouteUrl(routeWithId)">@T["Select"]</button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</zone>
+
+<script at="Foot" depends-on="jQuery">
+    $(function () {
+        $('#modalExportContentToDeploymentTargetContentBulkActionsTarget').on('show.bs.modal', function () {
+            var itemIds = $(":checkbox[name='itemIds']:checked");
+            if (itemIds.length > 1) {
+                $('.export-to-deployment-target-bulk-actions').one('click', function () {
+                    var targetButton = this;
+                    var magicToken = $("input[name=__RequestVerificationToken]").first();
+                    if (magicToken) {
+                        var hrefParts = $(targetButton).data("target-url").split("?");
+                        var exportForm = $("<form action=\"" + hrefParts[0] + "\" method=\"POST\" />");
+                        exportForm.append(magicToken.clone());
+                        if (hrefParts.length > 1) {
+                            var queryParts = hrefParts[1].split("&");
+                            for (var i = 0; i < queryParts.length; i++) {
+                                var queryPartKVP = queryParts[i].split("=");
+                                //trusting hrefs in the page here
+                                exportForm.append($("<input type=\"hidden\" name=\"" + decodeURIComponent(queryPartKVP[0]) + "\" value=\"" + decodeURIComponent(queryPartKVP[1]) + "\" />"));
+                            }
+                        }
+                        for (var i = 0; i < itemIds.length; i++) {
+                            exportForm.append($("<input type=\"hidden\" name=\"ExportContentToDeploymentTarget.ItemIds[" + i + "]\" + value=\"" + itemIds[i].value + "\"/>"));
+                        }
+                        $("body").append(exportForm);
+                        exportForm.submit();
+                    }
+                })
+            }
+        })
+    });
+</script>

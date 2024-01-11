@@ -13,7 +13,7 @@ namespace OrchardCore.Workflows.Services
     {
         private readonly ISession _session;
         private readonly IEnumerable<IWorkflowTypeEventHandler> _handlers;
-        private readonly ILogger<WorkflowTypeStore> _logger;
+        private readonly ILogger _logger;
 
         public WorkflowTypeStore(ISession session, IEnumerable<IWorkflowTypeEventHandler> handlers, ILogger<WorkflowTypeStore> logger)
         {
@@ -22,12 +22,12 @@ namespace OrchardCore.Workflows.Services
             _logger = logger;
         }
 
-        public Task<WorkflowType> GetAsync(int id)
+        public Task<WorkflowType> GetAsync(long id)
         {
             return _session.GetAsync<WorkflowType>(id);
         }
 
-        public Task<IEnumerable<WorkflowType>> GetAsync(IEnumerable<int> ids)
+        public Task<IEnumerable<WorkflowType>> GetAsync(IEnumerable<long> ids)
         {
             return _session.GetAsync<WorkflowType>(ids.ToArray());
         }
@@ -42,21 +42,19 @@ namespace OrchardCore.Workflows.Services
             return _session.Query<WorkflowType, WorkflowTypeIndex>().ListAsync();
         }
 
-        public async Task<IList<WorkflowType>> GetByStartActivityAsync(string activityName)
+        public Task<IEnumerable<WorkflowType>> GetByStartActivityAsync(string activityName)
         {
-            var query = await _session
+            return _session
                 .Query<WorkflowType, WorkflowTypeStartActivitiesIndex>(index =>
                     index.StartActivityName == activityName &&
                     index.IsEnabled)
                 .ListAsync();
-
-            return query.ToList();
         }
 
         public async Task SaveAsync(WorkflowType workflowType)
         {
             var isNew = workflowType.Id == 0;
-            _session.Save(workflowType);
+            await _session.SaveAsync(workflowType);
 
             if (isNew)
             {
@@ -72,8 +70,6 @@ namespace OrchardCore.Workflows.Services
 
         public async Task DeleteAsync(WorkflowType workflowType)
         {
-            // TODO: Remove this when versioning is implemented.
-
             // Delete workflows first.
             var workflows = await _session.Query<Workflow, WorkflowIndex>(x => x.WorkflowTypeId == workflowType.WorkflowTypeId).ListAsync();
 

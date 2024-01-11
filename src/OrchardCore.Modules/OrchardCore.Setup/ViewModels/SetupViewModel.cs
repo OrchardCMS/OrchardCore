@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.Data;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Setup.Annotations;
@@ -13,15 +14,20 @@ namespace OrchardCore.Setup.ViewModels
         [SiteNameValid(maximumLength: 70)]
         public string SiteName { get; set; }
 
+        public string Description { get; set; }
+
         public string DatabaseProvider { get; set; }
 
         public string ConnectionString { get; set; }
 
         public string TablePrefix { get; set; }
 
+        public string Schema { get; set; }
+
         /// <summary>
         /// True if the database configuration is preset and can't be changed or displayed on the Setup screen.
         /// </summary>
+        [BindNever]
         public bool DatabaseConfigurationPreset { get; set; }
 
         [Required]
@@ -36,8 +42,10 @@ namespace OrchardCore.Setup.ViewModels
         [DataType(DataType.Password)]
         public string PasswordConfirmation { get; set; }
 
+        [BindNever]
         public IEnumerable<DatabaseProvider> DatabaseProviders { get; set; } = Enumerable.Empty<DatabaseProvider>();
 
+        [BindNever]
         public IEnumerable<RecipeDescriptor> Recipes { get; set; }
 
         public bool RecipeNamePreset { get; set; }

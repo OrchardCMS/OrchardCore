@@ -2,7 +2,6 @@ using System;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Title;
@@ -17,26 +16,16 @@ namespace OrchardCore.DisplayManagement.Shapes
     public class PageTitleShapes : IShapeAttributeProvider
     {
         private IPageTitleBuilder _pageTitleBuilder;
-        public IPageTitleBuilder Title
-        {
-            get
-            {
-                if (_pageTitleBuilder == null)
-                {
-                    _pageTitleBuilder = ShellScope.Services.GetRequiredService<IPageTitleBuilder>();
-                }
 
-                return _pageTitleBuilder;
-            }
-        }
+        public IPageTitleBuilder Title => _pageTitleBuilder ??= ShellScope.Services.GetRequiredService<IPageTitleBuilder>();
 
         [Shape]
-        public async Task<IHtmlContent> PageTitle(IHtmlHelper Html)
+        public async Task<IHtmlContent> PageTitle()
         {
             var siteSettings = await ShellScope.Services.GetRequiredService<ISiteService>().GetSiteSettingsAsync();
-            
+
             // We must return a page title so if the format setting is blank just use the current title unformatted
-            if (String.IsNullOrWhiteSpace(siteSettings.PageTitleFormat))
+            if (string.IsNullOrWhiteSpace(siteSettings.PageTitleFormat))
             {
                 return Title.GenerateTitle(null);
             }
@@ -45,8 +34,8 @@ namespace OrchardCore.DisplayManagement.Shapes
                 var liquidTemplateManager = ShellScope.Services.GetRequiredService<ILiquidTemplateManager>();
                 var htmlEncoder = ShellScope.Services.GetRequiredService<HtmlEncoder>();
 
-                var result = await liquidTemplateManager.RenderAsync(siteSettings.PageTitleFormat, htmlEncoder);
-                return new HtmlString(result);
+                var result = await liquidTemplateManager.RenderHtmlContentAsync(siteSettings.PageTitleFormat, htmlEncoder);
+                return result;
             }
         }
     }

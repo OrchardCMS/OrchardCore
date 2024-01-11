@@ -1,0 +1,15 @@
+<td>
+    {% block name: "a", controller: "Todo", action: "Edit", route_todoid: Model.TodoId , route_returnurl: Request.Path %}
+        {{ Model.Text }}
+    {% endblock %}
+</td>
+
+<td>{{ Model.DueDate }}</td>
+
+<td>{{ Model.IsCompleted }}</td>
+
+<td>
+    {% block name:"a", action: "Delete" , class: "btn btn-danger", route_todoid: Model.TodoId %}
+        Delete
+    {% endblock %}
+</td>

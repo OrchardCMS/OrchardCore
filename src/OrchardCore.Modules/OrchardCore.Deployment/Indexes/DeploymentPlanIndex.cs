@@ -1,9 +1,11 @@
-﻿using YesSql.Indexes;
+using YesSql.Indexes;
 
 namespace OrchardCore.Deployment.Indexes
 {
     public class DeploymentPlanIndex : MapIndex
     {
+        public long DocumentId { get; set; }
+
         public string Name { get; set; }
     }
 

@@ -1,0 +1,30 @@
+// 
+// Social
+// 
+
+// Styling for the social icons
+.social-icons {
+    position: relative;
+    z-index: 2;
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        height: 4rem;
+        width: 4rem;
+        border-radius: 100rem;
+    }
+}
+
+// Moves the social icons to the center right of the screen on large screen sizes and up
+@include media-breakpoint-up(lg) {
+    .social-icons {
+        position: absolute;
+        height: 100%;
+        top: 0;
+        right: 2.5rem;
+        width: auto;
+    }
+}

@@ -1,4 +1,10 @@
+@import "fontawesome-iconpicker";
+
 #iconPickerModal {
+
+    .iconpicker-item {
+        background-color: var(--bs-body-bg, #fff);
+    }
 
     .iconpicker-popover.popover {
         width: 100%;

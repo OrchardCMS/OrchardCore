@@ -5,8 +5,7 @@ namespace OrchardCore.ResourceManagement
 {
     public class ResourceManifest
     {
-        private string _basePath = "";
-        private readonly Dictionary<string, IDictionary<string, IList<ResourceDefinition>>> _resources = new Dictionary<string, IDictionary<string, IList<ResourceDefinition>>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, IDictionary<string, IList<ResourceDefinition>>> _resources = new(StringComparer.OrdinalIgnoreCase);
 
         public virtual ResourceDefinition DefineResource(string resourceType, string resourceName)
         {
@@ -41,6 +40,6 @@ namespace OrchardCore.ResourceManagement
             return resources;
         }
 
-        public string BasePath => _basePath;
+        public string BasePath { get; } = "";
     }
 }

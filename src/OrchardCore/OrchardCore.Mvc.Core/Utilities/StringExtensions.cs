@@ -5,8 +5,9 @@ using System.Globalization;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-
+using Cysharp.Text;
 using Microsoft.Extensions.Localization;
+using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Mvc.Utilities
 {
@@ -14,17 +15,21 @@ namespace OrchardCore.Mvc.Utilities
     {
         public static string CamelFriendly(this string camel)
         {
+            // Optimize common cases.
             if (string.IsNullOrWhiteSpace(camel))
-                return "";
-
-            var sb = new StringBuilder(camel);
-
-            for (int i = camel.Length - 1; i > 0; i--)
             {
-                if (char.IsUpper(sb[i]))
+                return "";
+            }
+
+            using var sb = ZString.CreateStringBuilder();
+            for (var i = 0; i < camel.Length; ++i)
+            {
+                var c = camel[i];
+                if (i != 0 && char.IsUpper(c))
                 {
-                    sb.Insert(i, ' ');
+                    sb.Append(' ');
                 }
+                sb.Append(c);
             }
 
             return sb.ToString();
@@ -38,38 +43,42 @@ namespace OrchardCore.Mvc.Utilities
         public static string Ellipsize(this string text, int characterCount, string ellipsis, bool wordBoundary = false)
         {
             if (string.IsNullOrWhiteSpace(text))
+            {
                 return "";
+            }
 
             if (characterCount < 0 || text.Length <= characterCount)
                 return text;
 
-            // search beginning of word
+            // Search beginning of word.
             var backup = characterCount;
             while (characterCount > 0 && text[characterCount - 1].IsLetter())
             {
                 characterCount--;
             }
 
-            // search previous word
+            // Search previous word.
             while (characterCount > 0 && text[characterCount - 1].IsSpace())
             {
                 characterCount--;
             }
 
-            // if it was the last word, recover it, unless boundary is requested
+            // If it was the last word, recover it, unless boundary is requested.
             if (characterCount == 0 && !wordBoundary)
             {
                 characterCount = backup;
             }
 
-            var trimmed = text.Substring(0, characterCount);
+            var trimmed = text[..characterCount];
             return trimmed + ellipsis;
         }
 
         public static string HtmlClassify(this string text)
         {
             if (string.IsNullOrWhiteSpace(text))
+            {
                 return "";
+            }
 
             var friendlier = text.CamelFriendly();
 
@@ -79,7 +88,7 @@ namespace OrchardCore.Mvc.Utilities
             var previousIsNotLetter = false;
             for (var i = 0; i < friendlier.Length; i++)
             {
-                char current = friendlier[i];
+                var current = friendlier[i];
                 if (IsLetter(current) || (char.IsDigit(current) && cursor > 0))
                 {
                     if (previousIsNotLetter && i != 0 && cursor > 0)
@@ -108,9 +117,9 @@ namespace OrchardCore.Mvc.Utilities
 
         public static string RemoveTags(this string html, bool htmlDecode = false)
         {
-            if (String.IsNullOrEmpty(html))
+            if (string.IsNullOrEmpty(html))
             {
-                return String.Empty;
+                return string.Empty;
             }
 
             var result = new char[html.Length];
@@ -119,7 +128,7 @@ namespace OrchardCore.Mvc.Utilities
             var inside = false;
             for (var i = 0; i < html.Length; i++)
             {
-                char current = html[i];
+                var current = html[i];
 
                 switch (current)
                 {
@@ -147,22 +156,22 @@ namespace OrchardCore.Mvc.Utilities
             return stringResult;
         }
 
-        // not accounting for only \r (e.g. Apple OS 9 carriage return only new lines)
+        // Not accounting for only \r (e.g. Apple OS 9 carriage return only new lines).
         public static string ReplaceNewLinesWith(this string text, string replacement)
         {
-            return String.IsNullOrWhiteSpace(text)
-                       ? String.Empty
+            return string.IsNullOrWhiteSpace(text)
+                       ? string.Empty
                        : text
                              .Replace("\r\n", "\r\r")
-                             .Replace("\n", String.Format(replacement, "\r\n"))
-                             .Replace("\r\r", String.Format(replacement, "\r\n"));
+                             .Replace("\n", string.Format(replacement, "\r\n"))
+                             .Replace("\r\r", string.Format(replacement, "\r\n"));
         }
 
-        private static readonly char[] validSegmentChars = "/?#[]@\"^{}|`<>\t\r\n\f ".ToCharArray();
+        private static readonly char[] _validSegmentChars = "/?#[]@\"^{}|`<>\t\r\n\f ".ToCharArray();
         public static bool IsValidUrlSegment(this string segment)
         {
-            // valid isegment from rfc3987 - http://tools.ietf.org/html/rfc3987#page-8
-            // the relevant bits:
+            // Valid isegment from rfc3987 - http://tools.ietf.org/html/rfc3987#page-8
+            // The relevant bits:
             // isegment    = *ipchar
             // ipchar      = iunreserved / pct-encoded / sub-delims / ":" / "@"
             // iunreserved = ALPHA / DIGIT / "-" / "." / "_" / "~" / ucschar
@@ -172,7 +181,7 @@ namespace OrchardCore.Mvc.Utilities
             //
             // rough blacklist regex == m/^[^/?#[]@"^{}|\s`<>]+$/ (leaving off % to keep the regex simple)
 
-            return !segment.Any(validSegmentChars);
+            return !segment.Any(_validSegmentChars);
         }
 
         /// <summary>
@@ -184,7 +193,9 @@ namespace OrchardCore.Mvc.Utilities
         public static string ToSafeName(this string name)
         {
             if (string.IsNullOrWhiteSpace(name))
+            {
                 return string.Empty;
+            }
 
             name = RemoveDiacritics(name);
             name = name.Strip(c =>
@@ -194,20 +205,22 @@ namespace OrchardCore.Mvc.Utilities
 
             name = name.Trim();
 
-            // don't allow non A-Z chars as first letter, as they are not allowed in prefixes
+            // Don't allow non A-Z chars as first letter, as they are not allowed in prefixes.
             while (name.Length > 0 && !IsLetter(name[0]))
             {
-                name = name.Substring(1);
+                name = name[1..];
             }
 
             if (name.Length > 128)
-                name = name.Substring(0, 128);
+            {
+                name = name[..128];
+            }
 
             return name;
         }
 
         /// <summary>
-        /// Whether the char is a letter between A and Z or not
+        /// Whether the char is a letter between A and Z or not.
         /// </summary>
         public static bool IsLetter(this char c)
         {
@@ -221,12 +234,12 @@ namespace OrchardCore.Mvc.Utilities
 
         public static string RemoveDiacritics(this string name)
         {
-            string stFormD = name.Normalize(NormalizationForm.FormD);
+            var stFormD = name.Normalize(NormalizationForm.FormD);
             var sb = new StringBuilder();
 
-            foreach (char t in stFormD)
+            foreach (var t in stFormD)
             {
-                UnicodeCategory uc = CharUnicodeInfo.GetUnicodeCategory(t);
+                var uc = CharUnicodeInfo.GetUnicodeCategory(t);
                 if (uc != UnicodeCategory.NonSpacingMark)
                 {
                     sb.Append(t);
@@ -237,21 +250,18 @@ namespace OrchardCore.Mvc.Utilities
         }
 
         /// <summary>
-        /// Transforms the culture of a letter to its equivalent representation in the 0-127 ascii table, such as the letter 'é' is substituted by an 'e'
+        /// Transforms the culture of a letter to its equivalent representation in the 0-127 ascii table, such as the letter 'é' is substituted by an 'e'.
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
         public static string ReplaceDiacritics(this string s)
         {
-            string normalizedString = null;
-            StringBuilder stringBuilder = new StringBuilder();
-            normalizedString = s.Normalize(NormalizationForm.FormD);
-            int i = 0;
-            char c = '\0';
+            var stringBuilder = new StringBuilder();
+            var normalizedString = s.Normalize(NormalizationForm.FormD);
 
-            for (i = 0; i <= normalizedString.Length - 1; i++)
+            for (var i = 0; i <= normalizedString.Length - 1; i++)
             {
-                c = normalizedString[i];
+                var c = normalizedString[i];
                 if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
                 {
                     stringBuilder.Append(c);
@@ -273,7 +283,7 @@ namespace OrchardCore.Mvc.Utilities
             var cursor = 0;
             for (var i = 0; i < subject.Length; i++)
             {
-                char current = subject[i];
+                var current = subject[i];
                 if (Array.IndexOf(stripped, current) < 0)
                 {
                     result[cursor++] = current;
@@ -290,7 +300,7 @@ namespace OrchardCore.Mvc.Utilities
             var cursor = 0;
             for (var i = 0; i < subject.Length; i++)
             {
-                char current = subject[i];
+                var current = subject[i];
                 if (!predicate(current))
                 {
                     result[cursor++] = current;
@@ -309,7 +319,7 @@ namespace OrchardCore.Mvc.Utilities
 
             for (var i = 0; i < subject.Length; i++)
             {
-                char current = subject[i];
+                var current = subject[i];
                 if (Array.IndexOf(chars, current) >= 0)
                 {
                     return true;
@@ -333,7 +343,7 @@ namespace OrchardCore.Mvc.Utilities
 
             for (var i = 0; i < subject.Length; i++)
             {
-                char current = subject[i];
+                var current = subject[i];
                 if (Array.IndexOf(chars, current) < 0)
                 {
                     return false;
@@ -350,9 +360,14 @@ namespace OrchardCore.Mvc.Utilities
                 return subject;
             }
 
-            if (from == null || to == null)
+            if (from == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(from));
+            }
+
+            if (to == null)
+            {
+                throw new ArgumentNullException(nameof(to));
             }
 
             if (from.Length != to.Length)
@@ -393,16 +408,18 @@ namespace OrchardCore.Mvc.Utilities
         public static string TrimEnd(this string rough, string trim = "")
         {
             if (rough == null)
+            {
                 return null;
+            }
 
             return rough.EndsWith(trim, StringComparison.Ordinal)
-                       ? rough.Substring(0, rough.Length - trim.Length)
+                       ? rough[..^trim.Length]
                        : rough;
         }
 
         public static string ReplaceLastOccurrence(this string source, string find, string replace)
         {
-            int place = source.LastIndexOf(find);
+            var place = source.LastIndexOf(find, StringComparison.Ordinal);
             return source.Remove(place, find.Length).Insert(place, replace);
         }
 
@@ -424,7 +441,7 @@ namespace OrchardCore.Mvc.Utilities
         }
 
         /// <summary>
-        /// Converts an html attribute to pascal case
+        /// Converts an html attribute to pascal case.
         /// </summary>
         public static string ToPascalCaseDash(this string attribute)
         {
@@ -442,30 +459,65 @@ namespace OrchardCore.Mvc.Utilities
         /// </summary>
         public static string ToPascalCase(this string attribute, char upperAfterDelimiter)
         {
-            var nextIsUpper = true;
             attribute = attribute.Trim();
-            var result = new StringBuilder(attribute.Length);
-            foreach (var c in attribute)
+
+            var delimitersCount = 0;
+
+            for (var i = 0; i < attribute.Length; i++)
             {
-                if (c == upperAfterDelimiter)
+                if (attribute[i] == upperAfterDelimiter)
                 {
-                    nextIsUpper = true;
-                    continue;
+                    delimitersCount++;
                 }
-
-                if (nextIsUpper)
-                {
-                    result.Append(Char.ToUpperInvariant(c));
-                }
-                else
-                {
-                    result.Append(c);
-                }
-
-                nextIsUpper = false;
             }
 
-            return result.ToString();
+            var result = string.Create(attribute.Length - delimitersCount, new { attribute, upperAfterDelimiter }, (buffer, state) =>
+            {
+                var nextIsUpper = true;
+                var k = 0;
+
+                for (var i = 0; i < state.attribute.Length; i++)
+                {
+                    var c = state.attribute[i];
+
+                    if (c == state.upperAfterDelimiter)
+                    {
+                        nextIsUpper = true;
+                        continue;
+                    }
+
+                    if (nextIsUpper)
+                    {
+                        buffer[k] = char.ToUpperInvariant(c);
+                    }
+                    else
+                    {
+                        buffer[k] = c;
+                    }
+
+                    nextIsUpper = false;
+
+                    k++;
+                }
+            });
+
+            return result;
+        }
+
+        /// <summary>
+        /// Tests if a string is valid json.
+        /// </summary>
+        public static bool IsJson(this string json)
+        {
+            try
+            {
+                JToken.Parse(json);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

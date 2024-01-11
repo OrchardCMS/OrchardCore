@@ -1,0 +1,123 @@
+doctype html
+html(lang='en')
+
+    head
+
+        meta(charset='utf-8')
+        meta(name='viewport', content='width=device-width, initial-scale=1, shrink-to-fit=no')
+        meta(name='description', content='')
+        meta(name='author', content='')
+
+        title Clean Blog - Start Bootstrap Theme
+
+        link(rel='icon', type='image/x-icon', href='assets/favicon.ico')
+
+        include includes/css.pug
+
+    body
+
+        include includes/navbar.pug
+
+        // Page Header
+        header.masthead(style="background-image: url('assets/img/contact-bg.jpg')")
+            .container.position-relative.px-4.px-lg-5
+                .row.gx-4.gx-lg-5.justify-content-center
+                    .col-md-10.col-lg-8.col-xl-7
+                        .page-heading
+                            h1 Contact Me
+                            span.subheading Have questions? I have answers.
+
+        // Main Content
+        main.mb-4
+            .container.px-4.px-lg-5
+                .row.gx-4.gx-lg-5.justify-content-center
+                    .col-md-10.col-lg-8.col-xl-7
+                        p
+                            | Want to get in touch? Fill out the form below to send me a message and I will get back to you as soon as possible!
+
+                        .my-5
+
+                            // * * * * * * * * * * * * * * *
+                            // * * SB Forms Contact Form * *
+                            // * * * * * * * * * * * * * * *
+
+                            // This form is pre-integrated with SB Forms.
+                            // To make this form functional, sign up at
+                            // https://startbootstrap.com/solution/contact-forms
+                            // to get an API token!
+
+                            form#contactForm(data-sb-form-api-token='API_TOKEN')
+                                .form-floating
+                                    input#name.form-control(
+                                        type='text',
+                                        placeholder='Enter your name...',
+                                        data-sb-validations='required'
+                                    )
+                                    label(for='name') Name
+                                    .invalid-feedback(data-sb-feedback='name:required')
+                                        | A name is required.
+                                .form-floating
+                                    input#email.form-control(
+                                        type='email',
+                                        placeholder='Enter your email...',
+                                        data-sb-validations='required,email'
+                                    )
+                                    label(for='email') Email address
+                                    .invalid-feedback(data-sb-feedback='email:required')
+                                        | An email is required.
+                                    .invalid-feedback(data-sb-feedback='email:email')
+                                        | Email is not valid.
+                                .form-floating
+                                    input#phone.form-control(
+                                        type='tel',
+                                        placeholder='Enter your phone number...',
+                                        data-sb-validations='required'
+                                    )
+                                    label(for='phone') Phone Number
+                                    .invalid-feedback(data-sb-feedback='phone:required')
+                                        | A phone number is required.
+                                .form-floating
+                                    textarea#message.form-control(
+                                        placeholder='Enter your message here...',
+                                        style='height: 12rem;',
+                                        data-sb-validations='required'
+                                    )
+                                    label(for='message') Message
+                                    .invalid-feedback(data-sb-feedback='message:required')
+                                        | A message is required.
+
+                                br
+
+                                // Submit success message
+                                //
+                                // This is what your users will see when the form
+                                // has successfully submitted
+
+                                #submitSuccessMessage.d-none
+                                    .text-center.mb-3
+                                        .fw-bolder Form submission successful!
+                                        | To activate this form, sign up at
+                                        br
+                                        a(href='https://startbootstrap.com/solution/contact-forms') https://startbootstrap.com/solution/contact-forms
+
+                                // Submit error message
+                                //
+                                // This is what your users will see when there is
+                                // an error submitting the form
+
+                                #submitErrorMessage.d-none
+                                    .text-center.text-danger.mb-3 Error sending message!
+
+                                // Submit Button
+                                button#submitButton.btn.btn-primary.text-uppercase.disabled(type='submit') Send
+
+        include includes/footer.pug
+
+        include includes/scripts.pug
+
+        // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+        // * *                               SB Forms JS                               * *
+        // * * Activate your form at https://startbootstrap.com/solution/contact-forms * *
+        // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+        script(src='https://cdn.startbootstrap.com/sb-forms-latest.js')

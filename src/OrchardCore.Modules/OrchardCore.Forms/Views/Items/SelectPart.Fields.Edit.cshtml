@@ -1,0 +1,155 @@
+@using OrchardCore
+@using OrchardCore.Forms.ViewModels
+@using OrchardCore.Forms.Models
+@model SelectPartEditViewModel
+
+<script asp-src="~/OrchardCore.Forms/Scripts/selectOptionsEditor.min.js" debug-src="~/OrchardCore.Forms/Scripts/selectOptionsEditor.js" asp-name="selectOptionsEditor" at="Foot" depends-on="vuejs, vuedraggable"></script>
+<style asp-src="~/OrchardCore.Forms/Styles/selectOptionsEditor.min.css" debug-src="~/OrchardCore.Forms/Styles/selectOptionsEditor.css"></style>
+
+<script type="text/x-template" id="select-options-row" asp-name="select-options-row" at="Foot">
+    <tr>
+        <td>
+            <input type="text" class="form-control" v-model="optionText" placeholder="@T["Enter the text"]" />
+        </td>
+        <td>
+            <input type="text" class="form-control courier" v-model="optionValue" placeholder="@T["Enter a value"]" />
+        </td>
+        <td class="text-center align-middle">
+            <div class="form-check ms-2">
+                <input type="checkbox" class="form-check-input"
+                        :id=" partId + '_' + option.key + '_id'"
+                        :name = " partId + '_name' "
+                        v-bind:value="optionCheck"
+                        v-model="IsSelected"
+                        >
+                <label :for=" partId + '_' + option.key + '_id'" class="form-check-label" title="@T["Set as default"]" >
+                    <span class="sr-only"></span>
+                </label>
+            </div>
+        </td>
+        <td class="text-center">
+            <a v-on:click.prevent.stop="remove" href="#" title="@T["Remove element from list"]" class="btn">
+                <i class="fa-solid fa-times" aria-hidden="true"></i>
+            </a>
+        </td>
+        <td class="text-center"><div class="btn cursor-move"><i class="fa-solid fa-arrows-alt" aria-hidden="true"></i></div></td>
+    </tr>
+</script>
+
+<script type="text/x-template" id="select-options-table" asp-name="select-options-table" at="Foot">
+
+    <table class="table table-bordered table-sm select-options-table" >
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">@T["Option Text"]</th>
+                <th scope="col">@T["Value"]</th>
+                <th scope="col" colspan="3">@T["Default?"]</th>
+            </tr>
+        </thead>
+        <draggable v-model="data.options" :tag="'tbody'" v-on:end="onDragEnd">
+            <select-options-row v-for="option in data.options"
+                :key="option.key"
+                :option="option"
+                :defaultValue="data.defaultValue"
+                v-on="$listeners"
+             ></select-options-row>
+        </draggable>
+        <tfoot>
+            <tr>
+                <td class="col-sm-12 text-center" colspan="5">
+                    <a v-on:click="add()" class="btn btn-light w-100 btn-sm"><i class="fa-solid fa-plus small" aria-hidden="true"></i> @T["Add an option"]</a>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</script>
+
+<script type="text/x-template" id="select-options-modal" asp-name="select-options-modal" at="Foot">
+    <div>
+        <transition v-on:enter="showStart" v-on:after-enter="showEnd" v-on:leave="showEnd" v-on:after-leave="showStart"  >
+            <div class="modal fade text-start" role="dialog" aria-hidden="true" ref="modal" v-if="showModal" v-on:click.self="$emit('modal-cancel')" >
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">@T["Edit Data"]</h5>
+                            <button type="button" class="btn-close" aria-label="Close" v-on:click="closeModal(false)"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="select-options-textarea" class="form-label">@T["Options"]</label>
+                                <textarea id="select-options-textarea" name="select-options-textarea" rows="8" class="form-control"
+                                :class="{ 'is-invalid': !isValid }"
+                                v-model="optionsFormattedList"></textarea>
+                                <span class="hint">@T["A JSON representation of the allowed values, e.g. {0}", "[ { text: 'First option', value: 'option1' }, { text: 'Second option', value: 'option2' } ]"]</span>
+                            </div>
+                            <div class="mb-3">
+                                <label for="options-default-value" class="form-label">@T["Default value"]</label>
+                                <input id="options-default-value" name="options-default-value" class="form-control" type="text" v-model="defaultValue" />
+                                <span class="hint">@T["(Optional) The value to assign to the select field."]</span>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary btn-submit"
+                            :disabled="!isValid"
+                            v-on:click="closeModal(true)">@T["OK"]</button>
+                            <button type="button" class="btn btn-secondary" v-on:click="closeModal(false)">@T["Cancel"]</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </transition>
+        <div class="modal-backdrop fade" ref="backdrop" v-if="showModal"></div>
+    </div>
+</script>
+@{
+    var widgetId = Html.IdFor(m => m);
+}
+<div class="select-part-properties-wrapper" id="@widgetId">
+
+    <div class="@Orchard.GetWrapperClasses("show-for-input")">
+        <label asp-for="Editor" class="@Orchard.GetLabelClasses()">@T["Editor"]</label>
+        <div class="@Orchard.GetEndClasses()">
+            <select asp-for="Editor" class="form-select content-preview-select">
+                <option value="@SelectEditorOption.Dropdown">@T["Dropdown"]</option>
+                <option value="@SelectEditorOption.Checkbox">@T["Checkbox"]</option>
+                <option value="@SelectEditorOption.Radio">@T["Radio"]</option>
+            </select>
+            <span class="hint">@T["The editor style to use for this field."]</span>
+        </div>
+    </div>
+
+    <div class="@Orchard.GetWrapperClasses("field-options-wrapper")" id="@(widgetId)-selectOptions" data-defaultValue="@Model.DefaultValue">
+        <label asp-for="Options" class="@Orchard.GetLabelClasses()">@T["Options"]</label>
+
+        <div class="@Orchard.GetEndClasses()">
+            <input type="hidden" class="field-options-wrapper-initial-default-value" value="@Model.DefaultValue" />
+            <div class="d-none field-options-wrapper-initial-options">@Html.Raw(Model.Options)</div>
+            <a href="#" v-on:click.prevent.stop="showModal = true" class="float-end" title="@T["Edit Data"]"><i class="fa-solid fa-edit" aria-hidden="true"></i></a>
+            <select-options-table :data="state"
+                                  :mode="'single'"
+                                  v-on:reorder-option="reorderOption"
+                                  v-on:add-option="addOption"
+                                  v-on:remove-option="removeOption"
+                                  v-on:set-default="setDefaultValue">
+            </select-options-table>
+            <select-options-modal :data="state"
+                                  :valid-options="validOptions"
+                                  :show-modal="showModal"
+                                  v-on:modal-cancel="cancelChanges"
+                                  v-on:modal-save="updateChanges">
+            </select-options-modal>
+            <input id="@Html.IdFor(m => m.DefaultValue)" name="@Html.NameFor(m => m.DefaultValue)" type="hidden" v-model="state.defaultValue">
+            <input id="@Html.IdFor(m => m.Options)" name="@Html.NameFor(m => m.Options)" type="hidden" v-bind:value="stringify" />
+        </div>
+    </div>
+</div>
+
+<script at="Foot" depends-on="selectOptionsEditor">
+    selectOptionsEditor.initilizeElement('@(widgetId)-selectOptions', @Html.Raw(Model.Options), '@Model.DefaultValue');
+
+    var wrapper = document.getElementById('@Html.IdFor(m => m)');
+    if (wrapper != null) {
+        // at this point, we know this wrapper was added after page load, let's initilize it
+        selectOptionsEditor.initilizeFieldType(wrapper);
+    }
+</script>

@@ -7,5 +7,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         /// </summary>
         /// <returns>A string that contains a valid Sql fragment.</returns>
         string ToSqlString(IPredicateQuery predicateQuery);
+
+        void SearchUsedAlias(IPredicateQuery predicateQuery);
     }
 }

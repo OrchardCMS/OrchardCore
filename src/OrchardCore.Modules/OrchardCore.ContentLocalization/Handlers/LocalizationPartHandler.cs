@@ -21,9 +21,10 @@ namespace OrchardCore.ContentLocalization.Handlers
         {
             return context.ForAsync<CultureAspect>(cultureAspect =>
             {
-                if(part.Culture != null)
+                if (part.Culture != null)
                 {
                     cultureAspect.Culture = CultureInfo.GetCultureInfo(part.Culture);
+                    cultureAspect.HasCulture = true;
                 }
 
                 return Task.CompletedTask;
@@ -32,14 +33,10 @@ namespace OrchardCore.ContentLocalization.Handlers
 
         public override Task PublishedAsync(PublishContentContext context, LocalizationPart part)
         {
-            if (!String.IsNullOrWhiteSpace(part.LocalizationSet))
+            if (!string.IsNullOrWhiteSpace(part.LocalizationSet) && part.Culture != null)
             {
-                _entries.AddEntry(new LocalizationEntry()
-                {
-                    ContentItemId = part.ContentItem.ContentItemId,
-                    LocalizationSet = part.LocalizationSet,
-                    Culture = part.Culture.ToLowerInvariant()
-                });
+                // Update entries from the index table after the session is committed.
+                return _entries.UpdateEntriesAsync();
             }
 
             return Task.CompletedTask;
@@ -47,24 +44,22 @@ namespace OrchardCore.ContentLocalization.Handlers
 
         public override Task UnpublishedAsync(PublishContentContext context, LocalizationPart part)
         {
-            _entries.RemoveEntry(new LocalizationEntry()
+            if (!string.IsNullOrWhiteSpace(part.LocalizationSet) && part.Culture != null)
             {
-                ContentItemId = part.ContentItem.ContentItemId,
-                LocalizationSet = part.LocalizationSet,
-                Culture = part.Culture.ToLowerInvariant()
-            });
+                // Update entries from the index table after the session is committed.
+                return _entries.UpdateEntriesAsync();
+            }
 
             return Task.CompletedTask;
         }
 
         public override Task RemovedAsync(RemoveContentContext context, LocalizationPart part)
         {
-            _entries.RemoveEntry(new LocalizationEntry()
+            if (!string.IsNullOrWhiteSpace(part.LocalizationSet) && part.Culture != null && context.NoActiveVersionLeft)
             {
-                ContentItemId = part.ContentItem.ContentItemId,
-                LocalizationSet = part.LocalizationSet,
-                Culture = part.Culture.ToLowerInvariant()
-            });
+                // Update entries from the index table after the session is committed.
+                return _entries.UpdateEntriesAsync();
+            }
 
             return Task.CompletedTask;
         }

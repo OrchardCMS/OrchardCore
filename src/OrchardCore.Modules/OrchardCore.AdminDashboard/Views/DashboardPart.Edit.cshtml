@@ -1,0 +1,26 @@
+@using OrchardCore
+@model DashboardPartViewModel
+
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Position">
+    <label asp-for="Position" class="@Orchard.GetLabelClasses()">@T["Position"] </label>
+    <div class="@Orchard.GetEndClasses()">
+        <input asp-for="Position" class="form-control" />
+        <span asp-validation-for="Position"></span>
+    </div>
+</div>
+
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Width">
+    <label asp-for="Width" class="@Orchard.GetLabelClasses()">@T["Width"] </label>
+    <div class="@Orchard.GetEndClasses()">
+        <input asp-for="Width" class="form-control" />
+        <span asp-validation-for="Width"></span>
+    </div>
+</div>
+
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Height">
+    <label asp-for="Height" class="@Orchard.GetLabelClasses()">@T["Height"] </label>
+    <div class="@Orchard.GetEndClasses()">
+        <input asp-for="Height" class="form-control" />
+        <span asp-validation-for="Height"></span>
+    </div>
+</div>

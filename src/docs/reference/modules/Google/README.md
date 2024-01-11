@@ -1,4 +1,4 @@
-# Google (OrchardCore.Google)
+# Google (`OrchardCore.Google`)
 
 This module adds Google features to OrchardCore.
 
@@ -11,6 +11,16 @@ Navigate to [Google Analytics](https://analytics.google.com/analytics/web) porta
 Copy the Tracking ID from the Admin->Tracking Info->Tracking Code link.
 
 Το configure Orchard Core, go to _Google -> Google Analytics_ settings menu in the admin dashboard and enter the Tracking ID.
+
+## Google Tag Manager
+
+Enable Google Tag Manager Feature to integrate on the front end site.
+
+Navigate to [Google Tag Manager](https://tagmanager.google.com/) portal and create a Tag Manager account.
+
+Copy the _Container ID_ generated for you to use on your website.
+
+Το configure Orchard Core, go to _Google -> Google Tag Manager_ settings menu in the admin dashboard and enter the Container ID.
 
 ## Google Authentication
 
@@ -46,3 +56,20 @@ If no value is provided, setup Callback URL in Google API to use the default pat
 
 + If you want to enable new users to register to the site through their Google account, the `OrchardCore.Users.Registration` feature must be enabled and setup accordingly.
 + An existing user can link his account to his Google account through the External Logins link from User menu.
+
+## Google Settings Configuration
+
+The `OrchardCore.Google` module allows the user to use configuration values to override the settings configured from the admin area by calling the `ConfigureGoogleSettings()` extension method on `OrchardCoreBuilder` when initializing the app.
+
+The following configuration values can be customized:
+
+```json
+    "OrchardCore_Google": {
+      "ClientID": "",
+      "ClientSecret": "",
+      "CallbackPath": "/signin-google",
+      "SaveTokens": false
+    }
+```
+
+For more information please refer to [Configuration](../../core/Configuration/README.md).

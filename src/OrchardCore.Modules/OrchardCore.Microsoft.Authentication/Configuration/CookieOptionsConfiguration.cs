@@ -1,23 +1,24 @@
-using System;
 using System.Diagnostics;
-using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell;
-using OrchardCore.Modules;
+using MicrosoftIdentityDefaults = Microsoft.Identity.Web.Constants;
 
 namespace OrchardCore.Microsoft.Authentication.Configuration
 {
     internal class CookieOptionsConfiguration : IConfigureNamedOptions<CookieAuthenticationOptions>
     {
-        private readonly IOptionsMonitor<AzureADOptions> _azureADOptions;
         private readonly string _tenantPrefix;
 
-        public CookieOptionsConfiguration(IOptionsMonitor<AzureADOptions> azureADOptions, ShellSettings shellSettings)
+        public CookieOptionsConfiguration(IHttpContextAccessor httpContextAccessor)
         {
-            _azureADOptions = azureADOptions;
-            _tenantPrefix = "/" + shellSettings.RequestUrlPrefix;
+            var pathBase = httpContextAccessor.HttpContext?.Request.PathBase ?? PathString.Empty;
+            if (!pathBase.HasValue)
+            {
+                pathBase = "/";
+            }
+
+            _tenantPrefix = pathBase;
         }
 
         public void Configure(string name, CookieAuthenticationOptions options)
@@ -26,9 +27,10 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             {
                 return;
             }
+
             options.Cookie.Path = _tenantPrefix;
-            options.LoginPath = $"~/AzureAD/Account/SignIn/{AzureADDefaults.AuthenticationScheme}";
-            options.LogoutPath = $"~/AzureAD/Account/SignOut/{AzureADDefaults.AuthenticationScheme}";
+            options.LoginPath = $"~/AzureAD/Account/SignIn/{MicrosoftIdentityDefaults.AzureAd}";
+            options.LogoutPath = $"~/AzureAD/Account/SignOut/{MicrosoftIdentityDefaults.AzureAd}";
             options.AccessDeniedPath = "~/AzureAD/Account/AccessDenied";
         }
 

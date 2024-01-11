@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Localization
 {
-    /// Represensts a null <see cref="IHtmlLocalizerFactory"/> which is used by default when the localization module is disabled.
+    /// Represents a null <see cref="IHtmlLocalizerFactory"/> which is used by default when the localization module is disabled.
     /// <remarks>
     /// LocalizedHtmlString's arguments will be HTML encoded and not the main string. So the result
     /// should just contain the localized string containing the formatting placeholders {0...} as is.
@@ -29,7 +28,7 @@ namespace OrchardCore.Localization
             public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
                 => Enumerable.Empty<LocalizedString>();
 
-            public LocalizedHtmlString this[string name] => new LocalizedHtmlString(name, name, true);
+            public LocalizedHtmlString this[string name] => new(name, name, true);
 
             public LocalizedHtmlString this[string name, params object[] arguments]
             {
@@ -55,8 +54,6 @@ namespace OrchardCore.Localization
 
             public LocalizedString GetString(string name, params object[] arguments) =>
                 NullStringLocalizerFactory.NullLocalizer.Instance.GetString(name, arguments);
-
-            IHtmlLocalizer IHtmlLocalizer.WithCulture(CultureInfo culture) => Instance;
         }
     }
 }

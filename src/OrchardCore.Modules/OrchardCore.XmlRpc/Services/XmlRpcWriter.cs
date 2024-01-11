@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
@@ -61,7 +61,6 @@ namespace OrchardCore.XmlRpc.Services
                         new XElement("value", MapStruct(members))
                     )
                 );
-
             }
 
             return new XElement("methodResponse",

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
 using OrchardCore.Facebook.Login.Settings;
@@ -14,19 +13,22 @@ namespace OrchardCore.Facebook.Login.Services
     public class FacebookLoginService : IFacebookLoginService
     {
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<FacebookLoginService> T;
 
         public FacebookLoginService(
-            ISiteService siteService,
-            IStringLocalizer<FacebookLoginService> stringLocalizer)
+            ISiteService siteService)
         {
             _siteService = siteService;
-            T = stringLocalizer;
         }
 
         public async Task<FacebookLoginSettings> GetSettingsAsync()
         {
             var container = await _siteService.GetSiteSettingsAsync();
+            return container.As<FacebookLoginSettings>();
+        }
+
+        public async Task<FacebookLoginSettings> LoadSettingsAsync()
+        {
+            var container = await _siteService.LoadSiteSettingsAsync();
             return container.As<FacebookLoginSettings>();
         }
 
@@ -36,6 +38,7 @@ namespace OrchardCore.Facebook.Login.Services
             {
                 throw new ArgumentNullException(nameof(settings));
             }
+
             var container = await _siteService.LoadSiteSettingsAsync();
             container.Properties[nameof(FacebookLoginSettings)] = JObject.FromObject(settings);
             await _siteService.UpdateSiteSettingsAsync(container);

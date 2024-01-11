@@ -1,4 +1,4 @@
-﻿using GraphQL.Types;
+using GraphQL.Types;
 using OrchardCore.Menu.Models;
 
 namespace OrchardCore.Menu.GraphQL
@@ -10,8 +10,8 @@ namespace OrchardCore.Menu.GraphQL
             Name = "MenuItemsListPart";
 
             Field<ListGraphType<MenuItemInterface>>(
-                "menuItems", 
-                "The menu items.", 
+                "menuItems",
+                "The menu items.",
                 resolve: context => context.Source.MenuItems);
         }
     }

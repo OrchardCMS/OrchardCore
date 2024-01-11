@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace OrchardCore.ContentTypes.ViewModels

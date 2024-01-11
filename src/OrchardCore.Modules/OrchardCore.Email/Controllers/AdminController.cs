@@ -1,12 +1,8 @@
 using System;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Localization;
-using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email.Drivers;
 using OrchardCore.Email.ViewModels;
@@ -18,25 +14,19 @@ namespace OrchardCore.Email.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
         private readonly ISmtpService _smtpService;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
 
         public AdminController(
             IHtmlLocalizer<AdminController> h,
             IAuthorizationService authorizationService,
             INotifier notifier,
-            IShapeFactory shapeFactory,
-            ISmtpService smtpService,
-            IStringLocalizer<AdminController> stringLocalizer)
+            ISmtpService smtpService)
         {
             H = h;
             _authorizationService = authorizationService;
             _notifier = notifier;
             _smtpService = smtpService;
-
-            T = stringLocalizer;
         }
-
-        IStringLocalizer T { get; set; }
 
         [HttpGet]
         public async Task<IActionResult> Index()
@@ -61,31 +51,27 @@ namespace OrchardCore.Email.Controllers
             {
                 var message = CreateMessageFromViewModel(model);
 
-                if (ModelState.IsValid)
+                var result = await _smtpService.SendAsync(message);
+
+                if (!result.Succeeded)
                 {
-                    // send email with DefaultSender
-                    var result = await _smtpService.SendAsync(message);
-
-                    if (!result.Succeeded)
+                    foreach (var error in result.Errors)
                     {
-                        foreach (var error in result.Errors)
-                        {
-                            ModelState.AddModelError("*", error.ToString());
-                        }
+                        ModelState.AddModelError("*", error.ToString());
                     }
-                    else
-                    {
-                        _notifier.Success(H["Message sent successfully"]);
+                }
+                else
+                {
+                    await _notifier.SuccessAsync(H["Message sent successfully."]);
 
-                        return Redirect(Url.Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SmtpSettingsDisplayDriver.GroupId }));
-                    }
+                    return Redirect(Url.Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SmtpSettingsDisplayDriver.GroupId }));
                 }
             }
 
             return View(model);
         }
 
-        private MailMessage CreateMessageFromViewModel(SmtpSettingsViewModel testSettings)
+        private static MailMessage CreateMessageFromViewModel(SmtpSettingsViewModel testSettings)
         {
             var message = new MailMessage
             {
@@ -95,12 +81,17 @@ namespace OrchardCore.Email.Controllers
                 ReplyTo = testSettings.ReplyTo
             };
 
-            if (!String.IsNullOrWhiteSpace(testSettings.Subject))
+            if (!string.IsNullOrWhiteSpace(testSettings.Sender))
+            {
+                message.Sender = testSettings.Sender;
+            }
+
+            if (!string.IsNullOrWhiteSpace(testSettings.Subject))
             {
                 message.Subject = testSettings.Subject;
             }
 
-            if (!String.IsNullOrWhiteSpace(testSettings.Body))
+            if (!string.IsNullOrWhiteSpace(testSettings.Body))
             {
                 message.Body = testSettings.Body;
             }

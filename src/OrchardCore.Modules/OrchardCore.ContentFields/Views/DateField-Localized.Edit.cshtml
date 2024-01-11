@@ -4,18 +4,27 @@
     var settings = Model.PartFieldDefinition.GetSettings<DateFieldSettings>();
     var language = Orchard.CultureName().Split('-')[0];
     var datepickerId = Html.IdFor(m => m.Value);
-}       
+}
 
-<div class="form-group">
-    <div class="row col-md-6 col-lg-4">
-        <label asp-for="Value">@Model.PartFieldDefinition.DisplayName()</label>
-        <input asp-for="Value" type="text" class="form-control content-preview-select datepicker" required="@settings.Required" />
-        <span class="hint">@settings.Hint</span>
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Value" class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <div class="@Orchard.GetEndClasses()">
+        <div class="@Orchard.GetLimitedWidthWrapperClasses()">
+            <div class="@Orchard.GetLimitedWidthClasses()">
+                <input asp-for="Value" type="text" class="form-control content-preview-select datepicker" required="@settings.Required" />
+            </div>
+        </div>
+        @if (!string.IsNullOrEmpty(settings.Hint))
+        {
+            <span class="hint">@settings.Hint</span>
+        }
     </div>
 </div>
 
+<style asp-name="jQuery-ui" at="Head"></style>
+<script asp-name="jQuery-ui-i18n" at="Foot"></script>
 <script at="Foot">
     $(function () {
         $('#@datepickerId').datepicker($.datepicker.regional['@language']);
     });
-</script>        
+</script>

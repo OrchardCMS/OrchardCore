@@ -1,6 +1,5 @@
 using System;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using OrchardCore.Modules;
 
@@ -12,16 +11,12 @@ namespace OrchardCore.Workflows.Services
         private readonly IClock _clock;
 
         public SecurityTokenService(
-            IDataProtectionProvider dataProtectionProvider, 
-            IClock clock,
-            IStringLocalizer<SecurityTokenService> localizer)
+            IDataProtectionProvider dataProtectionProvider,
+            IClock clock)
         {
             _dataProtector = dataProtectionProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
             _clock = clock;
-            T = localizer;
         }
-
-        private IStringLocalizer T { get; }
 
         public string CreateToken<T>(T payload, TimeSpan lifetime)
         {

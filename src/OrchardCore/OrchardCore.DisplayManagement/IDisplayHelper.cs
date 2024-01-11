@@ -5,6 +5,6 @@ namespace OrchardCore.DisplayManagement
 {
     public interface IDisplayHelper
     {
-        Task<IHtmlContent> ShapeExecuteAsync(object shape);
+        Task<IHtmlContent> ShapeExecuteAsync(IShape shape);
     }
 }

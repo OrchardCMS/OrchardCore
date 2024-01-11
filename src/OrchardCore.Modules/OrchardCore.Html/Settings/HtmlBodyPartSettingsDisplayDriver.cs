@@ -1,38 +1,37 @@
-using System;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Html.Models;
+using OrchardCore.Html.ViewModels;
 
 namespace OrchardCore.Html.Settings
 {
-    public class HtmlBodyPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
+    public class HtmlBodyPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<HtmlBodyPart>
     {
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(HtmlBodyPart), contentTypePartDefinition.PartDefinition.Name))
+            return Initialize<HtmlBodyPartSettingsViewModel>("HtmlBodyPartSettings_Edit", model =>
             {
-                return null;
-            }
+                var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartSettings>();
 
-            return Initialize<HtmlBodyPartSettings>("HtmlBodyPartSettings_Edit", model => contentTypePartDefinition.PopulateSettings<HtmlBodyPartSettings>(model))
-                .Location("Editor");
+                model.SanitizeHtml = settings.SanitizeHtml;
+            })
+            .Location("Content:20");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(HtmlBodyPart), contentTypePartDefinition.PartDefinition.Name))
+            var model = new HtmlBodyPartSettingsViewModel();
+            var settings = new HtmlBodyPartSettings();
+
+            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                return null;
+                settings.SanitizeHtml = model.SanitizeHtml;
+
+                context.Builder.WithSettings(settings);
             }
-
-            var model = new HtmlBodyPartSettings();
-
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-            context.Builder.WithSettings(model);
 
             return Edit(contentTypePartDefinition, context.Updater);
         }

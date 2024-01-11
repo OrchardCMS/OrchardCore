@@ -1,4 +1,4 @@
-﻿using GraphQL.Types;
+using GraphQL.Types;
 using OrchardCore.Menu.Models;
 
 namespace OrchardCore.Menu.GraphQL
@@ -9,7 +9,10 @@ namespace OrchardCore.Menu.GraphQL
         {
             Name = "LinkMenuItemPart";
 
-            Field(x => x.Name, nullable: true);
+            // This code can be removed in a later release.
+#pragma warning disable 0618
+            Field(x => x.Name, nullable: true).Description("Deprecated. Use displayText.");
+#pragma warning restore 0618
             Field(x => x.Url, nullable: true);
         }
     }

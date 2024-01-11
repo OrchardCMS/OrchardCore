@@ -11,11 +11,14 @@ namespace OrchardCore.Mvc.LocationExpander
 {
     public class ComponentViewLocationExpanderProvider : IViewLocationExpanderProvider
     {
-        private static readonly string SharedViewsPath = "/Views/Shared/{0}" + RazorViewEngine.ViewExtension;
-        private static readonly string[] RazorExtensions = new[] { RazorViewEngine.ViewExtension };
+        private static readonly string _sharedViewsPath = "/Views/Shared/{0}" + RazorViewEngine.ViewExtension;
+        private static readonly string _sharedPagesPath = "/Pages/Shared/{0}" + RazorViewEngine.ViewExtension;
+        private static readonly string[] _razorExtensions = new[] { RazorViewEngine.ViewExtension };
         private const string CacheKey = "ModuleComponentViewLocations";
         private static List<IExtensionInfo> _modulesWithComponentViews;
-        private static object _synLock = new object();
+        private static List<IExtensionInfo> _modulesWithPagesComponentViews;
+        private static readonly object _synLock = new();
+        private static bool _initialized;
 
         private readonly IExtensionManager _extensionManager;
         private readonly ShellDescriptor _shellDescriptor;
@@ -31,16 +34,17 @@ namespace OrchardCore.Mvc.LocationExpander
             _shellDescriptor = shellDescriptor;
             _memoryCache = memoryCache;
 
-            if (_modulesWithComponentViews != null)
+            if (_initialized)
             {
                 return;
             }
 
             lock (_synLock)
             {
-                if (_modulesWithComponentViews == null)
+                if (!_initialized)
                 {
                     var modulesWithComponentViews = new List<IExtensionInfo>();
+                    var modulesWithPagesComponentViews = new List<IExtensionInfo>();
 
                     var orderedModules = _extensionManager.GetExtensions()
                         .Where(e => e.Manifest.Type.Equals("module", StringComparison.OrdinalIgnoreCase))
@@ -49,16 +53,28 @@ namespace OrchardCore.Mvc.LocationExpander
                     foreach (var module in orderedModules)
                     {
                         var moduleComponentsViewFilePaths = fileProviderAccessor.FileProvider.GetViewFilePaths(
-                            module.SubPath + "/Views/Shared/Components", RazorExtensions,
+                            module.SubPath + "/Views/Shared/Components", _razorExtensions,
                             viewsFolder: null, inViewsFolder: true, inDepth: true);
 
                         if (moduleComponentsViewFilePaths.Any())
                         {
                             modulesWithComponentViews.Add(module);
                         }
+
+                        var modulePagesComponentsViewFilePaths = fileProviderAccessor.FileProvider.GetViewFilePaths(
+                            module.SubPath + "/Pages/Shared/Components", _razorExtensions,
+                            viewsFolder: null, inViewsFolder: true, inDepth: true);
+
+                        if (modulePagesComponentsViewFilePaths.Any())
+                        {
+                            modulesWithPagesComponentViews.Add(module);
+                        }
                     }
 
                     _modulesWithComponentViews = modulesWithComponentViews;
+                    _modulesWithPagesComponentViews = modulesWithPagesComponentViews;
+
+                    _initialized = true;
                 }
             }
         }
@@ -96,7 +112,10 @@ namespace OrchardCore.Mvc.LocationExpander
 
                     moduleComponentViewLocations = _modulesWithComponentViews
                         .Where(m => enabledExtensionIds.Contains(m.Id))
-                        .Select(m => '/' + m.SubPath + SharedViewsPath)
+                        .Select(m => '/' + m.SubPath + _sharedViewsPath)
+                        .Concat(_modulesWithPagesComponentViews
+                        .Where(m => enabledExtensionIds.Contains(m.Id))
+                        .Select(m => '/' + m.SubPath + _sharedPagesPath))
                         .ToArray();
 
                     _memoryCache.Set(CacheKey, moduleComponentViewLocations);

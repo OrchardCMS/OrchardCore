@@ -1,7 +1,9 @@
 using System;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
+using YesSql.Sql;
 
 namespace OrchardCore.ContentManagement.Records
 {
@@ -13,9 +15,9 @@ namespace OrchardCore.ContentManagement.Records
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public int Create()
+        public async Task<int> CreateAsync()
         {
-            SchemaBuilder.CreateMapIndexTable(nameof(ContentItemIndex), table => table
+            await SchemaBuilder.CreateMapIndexTableAsync<ContentItemIndex>(table => table
                 .Column<string>("ContentItemId", c => c.WithLength(26))
                 .Column<string>("ContentItemVersionId", c => c.WithLength(26))
                 .Column<bool>("Latest")
@@ -29,53 +31,77 @@ namespace OrchardCore.ContentManagement.Records
                 .Column<string>("DisplayText", column => column.Nullable().WithLength(ContentItemIndex.MaxDisplayTextSize))
             );
 
-            SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
-                .CreateIndex("IDX_ContentItemIndex_ContentItemId", "ContentItemId", "Latest", "Published", "CreatedUtc")
+            await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
+                .CreateIndex("IDX_ContentItemIndex_DocumentId",
+                    "DocumentId",
+                    "ContentItemId",
+                    "ContentItemVersionId",
+                    "Published",
+                    "Latest")
             );
 
-            SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
-                .CreateIndex("IDX_ContentItemIndex_ContentItemVersionId", "ContentItemVersionId")
+            await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
+                .CreateIndex("IDX_ContentItemIndex_DocumentId_ContentType",
+                    "DocumentId",
+                    "ContentType",
+                    "CreatedUtc",
+                    "ModifiedUtc",
+                    "PublishedUtc",
+                    "Published",
+                    "Latest")
             );
 
-            SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
-                .CreateIndex("IDX_ContentItemIndex_DisplayText", "DisplayText")
+            await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
+                .CreateIndex("IDX_ContentItemIndex_DocumentId_Owner",
+                    "DocumentId",
+                    "Owner",
+                    "Published",
+                    "Latest")
             );
 
-            return 3;
+            await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
+                .CreateIndex("IDX_ContentItemIndex_DocumentId_Author",
+                    "DocumentId",
+                    "Author",
+                    "Published",
+                    "Latest")
+            );
+
+            await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
+                .CreateIndex("IDX_ContentItemIndex_DocumentId_DisplayText",
+                    "DocumentId",
+                    "DisplayText",
+                    "Published",
+                    "Latest")
+            );
+
+            // Shortcut other migration steps on new content definition schemas.
+            return 6;
         }
 
-        public int UpdateFrom1()
+        public async Task<int> UpdateFrom1Async()
         {
-            SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
+            await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
                 .AddColumn<string>("ContentItemVersionId", c => c.WithLength(26))
-            );
-
-            SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
-                .CreateIndex("IDX_ContentItemIndex_ContentItemVersionId", "ContentItemVersionId")
             );
 
             return 2;
         }
 
-        public int UpdateFrom2()
+        public async Task<int> UpdateFrom2Async()
         {
-            SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
+            await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
                 .AddColumn<string>("DisplayText", column => column.Nullable().WithLength(ContentItemIndex.MaxDisplayTextSize))
             );
 
-            SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
-                .CreateIndex("IDX_ContentItemIndex_DisplayText", "DisplayText")
-            );
-
-            // Return 3 to shortcut the 3rd and 4th migration on new content definition schemas.
-            return 5;
+            return 3;
         }
 
         // Migrate content type definitions. This only needs to run on old content definition schemas.
         // This code can be removed in a later version.
-        public int UpdateFrom3()
+        public async Task<int> UpdateFrom3Async()
         {
-            var contentTypeDefinitions = _contentDefinitionManager.LoadTypeDefinitions();
+            var contentTypeDefinitions = await _contentDefinitionManager.LoadTypeDefinitionsAsync();
             foreach (var contentTypeDefinition in contentTypeDefinitions)
             {
                 var existingContentTypeSettings = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>();
@@ -88,7 +114,7 @@ namespace OrchardCore.ContentManagement.Records
                     contentTypeDefinition.Settings.Remove(property.Name);
                 }
 
-                _contentDefinitionManager.AlterTypeDefinition(contentTypeDefinition.Name, builder =>
+                await _contentDefinitionManager.AlterTypeDefinitionAsync(contentTypeDefinition.Name, builder =>
                 {
                     builder.WithSettings(existingContentTypeSettings);
 
@@ -106,7 +132,6 @@ namespace OrchardCore.ContentManagement.Records
                         builder.WithPart(contentTypePartDefinition.Name, contentTypePartDefinition.PartDefinition, partBuilder =>
                         {
                             partBuilder.WithSettings(existingTypePartSettings);
-
                         });
                     }
                 });
@@ -117,9 +142,9 @@ namespace OrchardCore.ContentManagement.Records
 
         // Migration content part definitions.
         // This code can be removed in a later version.
-        public int UpdateFrom4()
+        public async Task<int> UpdateFrom4Async()
         {
-            var partDefinitions = _contentDefinitionManager.LoadPartDefinitions();
+            var partDefinitions = await _contentDefinitionManager.LoadPartDefinitionsAsync();
             foreach (var partDefinition in partDefinitions)
             {
                 var existingPartSettings = partDefinition.Settings.ToObject<ContentPartSettings>();
@@ -132,7 +157,7 @@ namespace OrchardCore.ContentManagement.Records
                     partDefinition.Settings.Remove(property.Name);
                 }
 
-                _contentDefinitionManager.AlterPartDefinition(partDefinition.Name, partBuilder =>
+                await _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, partBuilder =>
                 {
                     partBuilder.WithSettings(existingPartSettings);
                     foreach (var fieldDefinition in partDefinition.Fields)
@@ -156,6 +181,56 @@ namespace OrchardCore.ContentManagement.Records
             }
 
             return 5;
+        }
+
+        // This code can be removed in a later version.
+        public async Task<int> UpdateFrom5Async()
+        {
+            await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
+                .CreateIndex("IDX_ContentItemIndex_DocumentId",
+                    "DocumentId",
+                    "ContentItemId",
+                    "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
+                .CreateIndex("IDX_ContentItemIndex_DocumentId_ContentType",
+                    "DocumentId",
+                    "ContentType",
+                    "CreatedUtc",
+                    "ModifiedUtc",
+                    "PublishedUtc",
+                    "Published",
+                    "Latest")
+            );
+
+            await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
+                .CreateIndex("IDX_ContentItemIndex_DocumentId_Owner",
+                    "DocumentId",
+                    "Owner",
+                    "Published",
+                    "Latest")
+            );
+
+            await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
+                .CreateIndex("IDX_ContentItemIndex_DocumentId_Author",
+                    "DocumentId",
+                    "Author",
+                    "Published",
+                    "Latest")
+            );
+
+            await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
+                .CreateIndex("IDX_ContentItemIndex_DocumentId_DisplayText",
+                    "DocumentId",
+                    "DisplayText",
+                    "Published",
+                    "Latest")
+            );
+
+            return 6;
         }
     }
 }

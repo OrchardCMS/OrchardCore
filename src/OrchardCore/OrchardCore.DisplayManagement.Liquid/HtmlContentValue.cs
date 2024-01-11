@@ -45,7 +45,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             return true;
         }
 
-        public override double ToNumberValue()
+        public override decimal ToNumberValue()
         {
             return 0;
         }
@@ -70,7 +70,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             return false;
         }
 
-        public override IEnumerable<FluidValue> Enumerate()
+        public override IEnumerable<FluidValue> Enumerate(TemplateContext context)
         {
             return Enumerable.Empty<FluidValue>();
         }

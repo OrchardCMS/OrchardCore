@@ -1,5 +1,4 @@
 using System.Linq;
-using Microsoft.AspNetCore.Identity;
 using OrchardCore.Users.Models;
 using YesSql.Indexes;
 
@@ -13,15 +12,14 @@ namespace OrchardCore.Users.Indexes
 
     public class UserByLoginInfoIndexProvider : IndexProvider<User>
     {
-
         public override void Describe(DescribeContext<User> context)
         {
             context.For<UserByLoginInfoIndex>()
-                  .Map(user => user.LoginInfos.Select(x => new UserByLoginInfoIndex
-                  {
-                      LoginProvider = x.LoginProvider,
-                      ProviderKey = x.ProviderKey,
-                  }));
+                .Map(user => user.LoginInfos.Select(x => new UserByLoginInfoIndex
+                {
+                    LoginProvider = x.LoginProvider,
+                    ProviderKey = x.ProviderKey,
+                }));
         }
     }
 }

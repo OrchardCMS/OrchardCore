@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Fluid;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -9,11 +11,11 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Http.Activities
 {
-    public class HttpRedirectTask : TaskActivity
+    public class HttpRedirectTask : TaskActivity<HttpRedirectTask>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer<HttpRedirectTask> S;
+        protected readonly IStringLocalizer S;
 
         public HttpRedirectTask(
             IStringLocalizer<HttpRedirectTask> localizer,
@@ -26,10 +28,8 @@ namespace OrchardCore.Workflows.Http.Activities
             _expressionEvaluator = expressionEvaluator;
         }
 
-        public override string Name => nameof(HttpRedirectTask);
-        
         public override LocalizedString DisplayText => S["Http Redirect Task"];
-        
+
         public override LocalizedString Category => S["HTTP"];
 
         public WorkflowExpression<string> Location
@@ -51,9 +51,9 @@ namespace OrchardCore.Workflows.Http.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var location = await _expressionEvaluator.EvaluateAsync(Location, workflowContext);
+            var location = await _expressionEvaluator.EvaluateAsync(Location, workflowContext, NullEncoder.Default);
 
-            _httpContextAccessor.HttpContext.Response.Redirect(location, Permanent);
+            _httpContextAccessor.HttpContext.Response.Redirect(location.ToUriComponents(), Permanent);
             _httpContextAccessor.HttpContext.Items[WorkflowHttpResult.Instance] = WorkflowHttpResult.Instance;
 
             return Outcomes("Done");

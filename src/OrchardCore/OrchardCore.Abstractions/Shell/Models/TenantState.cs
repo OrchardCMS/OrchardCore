@@ -6,7 +6,7 @@ namespace OrchardCore.Environment.Shell.Models
     public enum TenantState
     {
         /// <summary>
-        /// The tenant is not yet intialized.
+        /// The tenant is not yet initialized.
         /// </summary>
         Uninitialized,
 

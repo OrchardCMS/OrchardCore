@@ -2,7 +2,7 @@
 
 ## GraphQL
 
-The GraphQL module allows client applications to query the content handled by an Orchard websites.  
+The GraphQL module allows client applications to query the content handled by an Orchard website.  
 It enables the GraphiQL Explorer view to test GraphQL queries, and provides HTTP endpoints to send client queries.
 
 ## HTTP Methods, Headers, and Body
@@ -21,11 +21,11 @@ When receiving an HTTP GET request, the GraphQL query should be specified in the
 
 This request could be sent via an HTTP GET like so:
 
-`http://myapi/graphql?query={me{name}}`
+`https://localhost:44300/api/graphql?query={me{name}}`
 
 Query variables can be sent as a JSON-encoded string in an additional query parameter called variables. If the query contains several named operations, an operationName query parameter can be used to control which one should be executed.
 
-### POST request 
+### POST request
 
 #### application/json content type
 
@@ -61,12 +61,12 @@ A query might result in some data and some errors, and those are returned in a J
 }
 ```
 
-If there were no errors returned, the "errors" field is not present on the response. 
+If there were no errors returned, the "errors" field is not present on the response.
 If no data is returned the "data" field is only included if the error occurred during execution.
 
 ## Authentication
 
-Executing a GraphQL query requires the issuer to have the `ExecuteGraphQL` permission. Like any other API in Orchard Core, the GraphQL API supports 
+Executing a GraphQL query requires the issuer to have the `ExecuteGraphQL` permission. Like any other API in Orchard Core, the GraphQL API supports
 cookie and OAuth 2.0 authentication. This means it's compatible with the OpenId module and supports JSON Web Token (JWT).
 
 By default anonymous users are not able to execute a GraphQL query.
@@ -80,7 +80,7 @@ Configuration is done via the standard shell configuration, as follows.
 ```json
 {
   "OrchardCore": {
-    "OrchardCore.Apis.GraphQL": {
+    "OrchardCore_Apis_GraphQL": {
       "ExposeExceptions": true,
       "MaxDepth": 50, 
       "MaxComplexity": 100, 

@@ -1,7 +1,9 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OrchardCore.AdminMenu.Services;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -12,16 +14,16 @@ namespace OrchardCore.AdminMenu.Recipes
     /// </summary>
     public class AdminMenuStep : IRecipeStepHandler
     {
-        private readonly IAdminMenuService _AdminMenuService;
+        private readonly IAdminMenuService _adminMenuService;
 
-        public AdminMenuStep(IAdminMenuService AdminMenuervice)
+        public AdminMenuStep(IAdminMenuService adminMenuService)
         {
-            _AdminMenuService = AdminMenuervice;
+            _adminMenuService = adminMenuService;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "AdminMenu", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "AdminMenu", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
@@ -30,11 +32,17 @@ namespace OrchardCore.AdminMenu.Recipes
 
             var serializer = new JsonSerializer() { TypeNameHandling = TypeNameHandling.Auto };
 
-            foreach (JObject token in model.Data)
+            foreach (var token in model.Data.Cast<JObject>())
             {
                 var adminMenu = token.ToObject<Models.AdminMenu>(serializer);
-                adminMenu.Id = Guid.NewGuid().ToString("n");// we always add it as a new tree.
-                await _AdminMenuService.SaveAsync(adminMenu);
+
+                // When the id is not supplied generate an id, otherwise replace the menu if it exists, or create a new menu.
+                if (string.IsNullOrEmpty(adminMenu.Id))
+                {
+                    adminMenu.Id = Guid.NewGuid().ToString("n");
+                }
+
+                await _adminMenuService.SaveAsync(adminMenu);
             }
 
             return;

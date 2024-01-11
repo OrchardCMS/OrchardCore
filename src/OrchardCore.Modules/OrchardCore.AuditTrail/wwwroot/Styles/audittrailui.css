@@ -1,0 +1,6 @@
+pre, .audittrail-comment {
+  white-space: pre-wrap;
+  word-break: normal;
+}[dir] pre, [dir] .audittrail-comment {
+  margin-bottom: 0;
+}

@@ -6,14 +6,11 @@ namespace OrchardCore.Environment.Extensions
 {
     public class TypeFeatureProvider : ITypeFeatureProvider
     {
-        private readonly ConcurrentDictionary<Type, IFeatureInfo> _features
-            = new ConcurrentDictionary<Type, IFeatureInfo>();
+        private readonly ConcurrentDictionary<Type, IFeatureInfo> _features = new();
 
         public IFeatureInfo GetFeatureForDependency(Type dependency)
         {
-            IFeatureInfo feature = null;
-
-            if (_features.TryGetValue(dependency, out feature))
+            if (_features.TryGetValue(dependency, out var feature))
             {
                 return feature;
             }

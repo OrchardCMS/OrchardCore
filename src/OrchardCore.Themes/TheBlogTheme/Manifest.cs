@@ -1,9 +1,11 @@
 using OrchardCore.DisplayManagement.Manifest;
+using OrchardCore.Modules.Manifest;
 
 [assembly: Theme(
     Name = "The Blog Theme",
-    Author = "The Orchard Team",
-    Website = "https://orchardproject.net",
-    Version = "2.0.0",
-    Description = "A theme adapted for blogs."
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion,
+    Description = "A theme adapted for blogs.",
+    Tags = new[] { "Blog", "Bootstrap", "Liquid" }
 )]

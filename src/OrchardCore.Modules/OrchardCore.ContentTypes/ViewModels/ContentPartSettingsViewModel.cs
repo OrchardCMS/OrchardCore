@@ -11,6 +11,6 @@ namespace OrchardCore.ContentTypes.ViewModels
         public string DisplayName { get; set; }
 
         [BindNever]
-        public ContentPartDefinition ContentPartDefinition { get; set; } 
+        public ContentPartDefinition ContentPartDefinition { get; set; }
     }
 }

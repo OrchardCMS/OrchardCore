@@ -12,7 +12,7 @@ namespace OrchardCore.ContentManagement.Records
         public const int MaxAuthorSize = 255;
         public const int MaxDisplayTextSize = 255;
 
-        public int DocumentId { get; set; }
+        public long DocumentId { get; set; }
         public string ContentItemId { get; set; }
         public string ContentItemVersionId { get; set; }
         public bool Published { get; set; }
@@ -31,7 +31,8 @@ namespace OrchardCore.ContentManagement.Records
         public override void Describe(DescribeContext<ContentItem> context)
         {
             context.For<ContentItemIndex>()
-                .Map(contentItem => {
+                .Map(contentItem =>
+                {
                     var contentItemIndex = new ContentItemIndex
                     {
                         Latest = contentItem.Latest,
@@ -49,22 +50,22 @@ namespace OrchardCore.ContentManagement.Records
 
                     if (contentItemIndex.ContentType?.Length > ContentItemIndex.MaxContentTypeSize)
                     {
-                        contentItem.ContentType = contentItem.ContentType.Substring(0, ContentItemIndex.MaxContentTypeSize);
+                        contentItemIndex.ContentType = contentItem.ContentType[..ContentItemIndex.MaxContentTypeSize];
                     }
 
                     if (contentItemIndex.Owner?.Length > ContentItemIndex.MaxOwnerSize)
                     {
-                        contentItem.Owner = contentItem.Owner.Substring(0, ContentItemIndex.MaxOwnerSize);
+                        contentItemIndex.Owner = contentItem.Owner[..ContentItemIndex.MaxOwnerSize];
                     }
 
                     if (contentItemIndex.Author?.Length > ContentItemIndex.MaxAuthorSize)
                     {
-                        contentItem.Author = contentItem.Author.Substring(0, ContentItemIndex.MaxAuthorSize);
+                        contentItemIndex.Author = contentItem.Author[..ContentItemIndex.MaxAuthorSize];
                     }
 
                     if (contentItemIndex.DisplayText?.Length > ContentItemIndex.MaxDisplayTextSize)
                     {
-                        contentItem.DisplayText = contentItem.DisplayText.Substring(0, ContentItemIndex.MaxDisplayTextSize);
+                        contentItemIndex.DisplayText = contentItem.DisplayText[..ContentItemIndex.MaxDisplayTextSize];
                     }
 
                     return contentItemIndex;

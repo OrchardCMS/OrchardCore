@@ -1,15 +1,16 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Navigation;
 using OrchardCore.Modules;
+using OrchardCore.Navigation;
 using OrchardCore.Users.Drivers;
+using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users
 {
     public class AdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
@@ -18,21 +19,23 @@ namespace OrchardCore.Users
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }
 
             builder.Add(S["Security"], NavigationConstants.AdminMenuSecurityPosition, security => security
                     .AddClass("security").Id("security")
-                        .Add(S["Users"], "5", installed => installed
+                        .Add(S["Users"], S["Users"].PrefixPosition(), users => users
+                            .AddClass("users").Id("users")
                             .Action("Index", "Admin", "OrchardCore.Users")
-                            .Permission(Permissions.ManageUsers)
+                            .Permission(CommonPermissions.ListUsers)
+                            .Resource(new User())
                             .LocalNav()
                          )
                         .Add(S["Settings"], settings => settings
-                            .Add(S["Login"], S["Login"], registration => registration
-                                .Permission(Permissions.ManageUsers)
+                            .Add(S["User Login"], S["User Login"].PrefixPosition(), login => login
+                                .Permission(CommonPermissions.ManageUsers)
                                 .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LoginSettingsDisplayDriver.GroupId })
                                 .LocalNav()
                                 )
@@ -46,8 +49,8 @@ namespace OrchardCore.Users
     [Feature("OrchardCore.Users.ChangeEmail")]
     public class ChangeEmailAdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
- 
+        protected readonly IStringLocalizer S;
+
         public ChangeEmailAdminMenu(IStringLocalizer<ChangeEmailAdminMenu> localizer)
         {
             S = localizer;
@@ -55,7 +58,7 @@ namespace OrchardCore.Users
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }
@@ -63,8 +66,8 @@ namespace OrchardCore.Users
             builder
                 .Add(S["Security"], security => security
                     .Add(S["Settings"], settings => settings
-                        .Add(S["Email"], S["Email"], registration => registration
-                            .Permission(Permissions.ManageUsers)
+                        .Add(S["User Change email"], S["User Change email"].PrefixPosition(), registration => registration
+                            .Permission(CommonPermissions.ManageUsers)
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ChangeEmailSettingsDisplayDriver.GroupId })
                             .LocalNav()
                         )));
@@ -76,8 +79,8 @@ namespace OrchardCore.Users
     [Feature("OrchardCore.Users.Registration")]
     public class RegistrationAdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
- 
+        protected readonly IStringLocalizer S;
+
         public RegistrationAdminMenu(IStringLocalizer<RegistrationAdminMenu> localizer)
         {
             S = localizer;
@@ -85,7 +88,7 @@ namespace OrchardCore.Users
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }
@@ -93,8 +96,8 @@ namespace OrchardCore.Users
             builder
                 .Add(S["Security"], security => security
                     .Add(S["Settings"], settings => settings
-                        .Add(S["Registration"], S["Registration"], registration => registration
-                            .Permission(Permissions.ManageUsers)
+                        .Add(S["User Registration"], S["User Registration"].PrefixPosition(), registration => registration
+                            .Permission(CommonPermissions.ManageUsers)
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = RegistrationSettingsDisplayDriver.GroupId })
                             .LocalNav()
                         )));
@@ -106,7 +109,7 @@ namespace OrchardCore.Users
     [Feature("OrchardCore.Users.ResetPassword")]
     public class ResetPasswordAdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public ResetPasswordAdminMenu(IStringLocalizer<ResetPasswordAdminMenu> localizer)
         {
@@ -115,7 +118,7 @@ namespace OrchardCore.Users
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }
@@ -123,8 +126,8 @@ namespace OrchardCore.Users
             builder
                 .Add(S["Security"], security => security
                     .Add(S["Settings"], settings => settings
-                        .Add(S["Reset password"], S["Reset password"], password => password
-                            .Permission(Permissions.ManageUsers)
+                        .Add(S["User Reset password"], S["User Reset password"].PrefixPosition(), password => password
+                            .Permission(CommonPermissions.ManageUsers)
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ResetPasswordSettingsDisplayDriver.GroupId })
                             .LocalNav()
                         )));

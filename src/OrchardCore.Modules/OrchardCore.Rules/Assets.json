@@ -1,0 +1,15 @@
+[
+  {
+    "generateSourceMaps": false,
+    "inputs": [
+      "Assets/scss/rules.scss"
+    ],
+    "output": "wwwroot/Styles/rules.css"
+  },
+  {
+    "inputs": [
+      "Assets/js/rules.js"
+    ],
+    "output": "wwwroot/Scripts/rules.js"
+  }
+]

@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Html;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
@@ -12,15 +6,14 @@ using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Localization;
 using OrchardCore.Tests.Stubs;
-using Xunit;
 
 namespace OrchardCore.Tests.DisplayManagement
 {
     public class DefaultDisplayManagerTests
     {
-        ShapeTable _defaultShapeTable;
-        TestShapeBindingsDictionary _additionalBindings;
-        IServiceProvider _serviceProvider;
+        private readonly ShapeTable _defaultShapeTable;
+        private readonly TestShapeBindingsDictionary _additionalBindings;
+        private readonly IServiceProvider _serviceProvider;
 
         public DefaultDisplayManagerTests()
         {
@@ -51,18 +44,27 @@ namespace OrchardCore.Tests.DisplayManagement
             _serviceProvider = serviceCollection.BuildServiceProvider();
         }
 
-        class TestDisplayEvents : IShapeDisplayEvents
+        private class TestDisplayEvents : IShapeDisplayEvents
         {
             public Action<ShapeDisplayContext> Displaying = ctx => { };
             public Action<ShapeDisplayContext> Displayed = ctx => { };
             public Action<ShapeDisplayContext> Finalized = ctx => { };
 
-            Task IShapeDisplayEvents.DisplayingAsync(ShapeDisplayContext context) { Displaying(context); return Task.CompletedTask; }
-            Task IShapeDisplayEvents.DisplayedAsync(ShapeDisplayContext context) { Displayed(context); return Task.CompletedTask; }
-            Task IShapeDisplayEvents.DisplayingFinalizedAsync(ShapeDisplayContext context) { Finalized(context); return Task.CompletedTask; }
+            Task IShapeDisplayEvents.DisplayingAsync(ShapeDisplayContext context)
+            {
+                Displaying(context); return Task.CompletedTask;
+            }
+            Task IShapeDisplayEvents.DisplayedAsync(ShapeDisplayContext context)
+            {
+                Displayed(context); return Task.CompletedTask;
+            }
+            Task IShapeDisplayEvents.DisplayingFinalizedAsync(ShapeDisplayContext context)
+            {
+                Finalized(context); return Task.CompletedTask;
+            }
         }
 
-        void AddShapeDescriptor(ShapeDescriptor shapeDescriptor)
+        private void AddShapeDescriptor(ShapeDescriptor shapeDescriptor)
         {
             _defaultShapeTable.Descriptors[shapeDescriptor.ShapeType] = shapeDescriptor;
             foreach (var binding in shapeDescriptor.Bindings)
@@ -71,7 +73,7 @@ namespace OrchardCore.Tests.DisplayManagement
             }
         }
 
-        static DisplayContext CreateDisplayContext(Shape shape)
+        private static DisplayContext CreateDisplayContext(Shape shape)
         {
             return new DisplayContext
             {
@@ -182,7 +184,7 @@ namespace OrchardCore.Tests.DisplayManagement
             _additionalBindings["Foo"] = new ShapeBinding
             {
                 BindingName = "Foo",
-                BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString($"Yes there is { ((dynamic)ctx.Value).Data }."))
+                BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString($"Yes there is {((dynamic)ctx.Value).Data}."))
             };
 
             var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));

@@ -1,6 +1,7 @@
-mkdocs>=1.0
-mkdocs-material>=4.6.1
-markdown-fenced-code-tabs>=1.0
-mkdocs-git-revision-date-localized-plugin>=0.4.5
-mkdocs-minify-plugin>=0.1.0
-pymdown-extensions>=6.3.0
+mkdocs>=1.5.3
+mkdocs-material>=9.5.3
+mkdocs-git-authors-plugin>=0.7.2
+mkdocs-git-revision-date-localized-plugin>=1.2.2
+pymdown-extensions>=10.7
+mkdocs-exclude>=1.0.2
+mdx_truly_sane_lists>=1.2

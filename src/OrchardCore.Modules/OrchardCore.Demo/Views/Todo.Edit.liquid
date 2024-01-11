@@ -1,0 +1,50 @@
+{% form action: "Update", method: "post", enctype: "multipart/form-data", route_returnUrl: Request.Query["returnurl"] %}
+    <table>
+    <tr>
+        <td>
+            {% helper "div", validation_summary: "All"%}
+        </td>
+    </tr>
+    <tr>
+        <td>
+            {% helper "label", for: "Text"%}
+        </td>
+        <td>
+            {% helper "input", for: "Text", class: "form-control"%}
+        </td>
+        <td>
+            {% helper "span", validation_for: "Text" %}
+        </td>
+    </tr>
+    <tr>
+        <td>
+            {% helper "label", for: "DueDate"%}
+        </td>
+        <td>
+            {% helper "input", for: "DueDate", class: "form-control" %}
+        </td>
+        <td>
+            {% helper "span", validation_for: "DueDate" %}
+        </td>
+    </tr>
+    <tr>
+        <td>
+             {% helper "label", for: "IsCompleted" %}
+        </td>
+        <td>
+            {% helper "input", for: "IsCompleted" %}
+        </td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>
+            {% helper "input", for: "TodoId", type: "hidden" %}
+            <input type="submit" value="Save" class="btn btn-primary"/>
+            <a href="{{Request.Query["returnUrl"]}}" class="btn btn-secondary">Cancel</a>
+        </td>
+    </tr>
+    </table>
+{% endform %}
+
+{% script src:"https://cdn.jsdelivr.net/npm/jquery-validation@1.19.1/dist/jquery.validate.min.js", at: "Foot", depends_on: "jquery" %}
+{% script src:"https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@3.2.11/dist/jquery.validate.unobtrusive.min.js", at: "Foot", depends_on: "jquery" %}

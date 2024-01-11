@@ -1,0 +1,33 @@
+@model dynamic
+@foreach (var item in Model.BulkActions)
+{
+    <li><a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a></li>
+}
+@if ((bool)Model.HasItems)
+{
+    <div class="dropdown-divider"></div>
+    foreach (var item in Model.Items)
+    {
+        @await DisplayAsync(item)
+    }
+}
+
+<script at="Foot">
+    $(function () {
+        $(".dropdown-menu .dropdown-item").filter(function () {
+            return $(this).data("action");
+        }).on("click", function () {
+            if ($(":checkbox[name='itemIds']:checked").length > 1) {
+                var $this = $(this);
+                confirmDialog({
+                    ...$this.data(), callback: function (r) {
+                        if (r) {
+                            $("[name='Options.BulkAction']").val($this.data("action"));
+                            $("[name='submit.BulkAction']").click();
+                        }
+                    }
+                });
+            }
+        });
+    })
+</script>

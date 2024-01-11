@@ -1,0 +1,39 @@
+{
+  "name": "AppRecipe",
+  "displayName": "Application Recipe",
+  "description": "",
+  "author": "",
+  "website": "",
+  "version": "1.0.0",
+  "issetuprecipe": false,
+  "categories": [ "test" ],
+  "tags": [],
+  "steps": [
+    {
+      "name": "OpenIdApplication",
+      "clientId": "a2",
+      "clientSecret": "test-secret",
+      "displayName": "Test Application",
+      "type": "confidential",
+      "consentType": "explicit",
+      "allowClientCredentialsFlow": true,
+      "redirectUris": "https://localhost/redirect",
+      "postLogoutRedirectUris": "https://localhost/logout-redirect",
+      "roleEntries": [
+        {
+          "name": "role1",
+          "selected": true
+        },
+        {
+          "name": "role2"
+        }
+      ],
+      "scopeEntries": [
+        {
+          "name": "scope1",
+          "selected":  true
+        }
+      ]
+    }
+  ]
+}

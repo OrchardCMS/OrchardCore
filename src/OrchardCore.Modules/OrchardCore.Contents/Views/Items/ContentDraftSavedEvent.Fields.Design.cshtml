@@ -1,0 +1,6 @@
+@model ContentEventViewModel<ContentDraftSavedEvent>
+
+<header>
+    <h4><i class="fa-solid fa-bolt" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Content Draft Saved"])</h4>
+</header>
+<em>@(Model.ContentTypeFilter.Any() ? (object)string.Join(", ", Model.ContentTypeFilter.Select(x => x.DisplayName)) : T["Any content type"])</em>

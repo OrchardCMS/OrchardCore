@@ -1,6 +1,9 @@
+using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Templates.ViewModels;
 
 namespace OrchardCore.Templates.Deployment
 {
@@ -17,7 +20,13 @@ namespace OrchardCore.Templates.Deployment
 
         public override IDisplayResult Edit(AllAdminTemplatesDeploymentStep step)
         {
-            return View("AllAdminTemplatesDeploymentStep_Edit", step).Location("Content");
+            return Initialize<AllAdminTemplatesDeploymentStepViewModel>("AllAdminTemplatesDeploymentStep_Fields_Edit", model => model.ExportAsFiles = step.ExportAsFiles).Location("Content");
+        }
+        public override async Task<IDisplayResult> UpdateAsync(AllAdminTemplatesDeploymentStep step, IUpdateModel updater)
+        {
+            await updater.TryUpdateModelAsync(step, Prefix, x => x.ExportAsFiles);
+
+            return Edit(step);
         }
     }
 }

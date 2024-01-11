@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -5,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using MimeKit;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
@@ -23,8 +23,8 @@ namespace OrchardCore.Users.Controllers
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer<RegistrationController> S;
-        private readonly IHtmlLocalizer<RegistrationController> H;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
 
         public RegistrationController(
             UserManager<IUser> userManager,
@@ -70,17 +70,41 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            if (!string.IsNullOrEmpty(model.Email) && !MailboxAddress.TryParse(model.Email, out var emailAddress))
+            if (string.IsNullOrEmpty(model.Email))
             {
-                ModelState.AddModelError("Email", S["Invalid email."]);
+                ModelState.AddModelError("Email", S["Email is required."]);
+            }
+
+            if (ModelState.IsValid)
+            {
+                // Check if user with same email already exists
+                var userWithEmail = await _userManager.FindByEmailAsync(model.Email);
+
+                if (userWithEmail != null)
+                {
+                    ModelState.AddModelError("Email", S["A user with the same email already exists."]);
+                }
             }
 
             ViewData["ReturnUrl"] = returnUrl;
 
-            // If we get a user, redirect to returnUrl
-            if (await this.RegisterUser(model, S["Confirm your account"], _logger) != null)
+            if (ModelState.IsValid)
             {
-                return RedirectToLocal(returnUrl);
+                var iUser = await this.RegisterUser(model, S["Confirm your account"], _logger);
+                // If we get a user, redirect to returnUrl
+                if (iUser is User user)
+                {
+                    if (settings.UsersMustValidateEmail && !user.EmailConfirmed)
+                    {
+                        return RedirectToAction("ConfirmEmailSent", new { ReturnUrl = returnUrl });
+                    }
+                    if (settings.UsersAreModerated && !user.IsEnabled)
+                    {
+                        return RedirectToAction("RegistrationPending", new { ReturnUrl = returnUrl });
+                    }
+
+                    return RedirectToLocal(returnUrl.ToUriComponents());
+                }
             }
 
             // If we got this far, something failed, redisplay form
@@ -113,12 +137,22 @@ namespace OrchardCore.Users.Controllers
             return NotFound();
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ConfirmEmailSent(string returnUrl = null)
+            => View(new { ReturnUrl = returnUrl });
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult RegistrationPending(string returnUrl = null)
+            => View(new { ReturnUrl = returnUrl });
+
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SendVerificationEmail(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageUsers))
             {
                 return Forbid();
             }
@@ -128,7 +162,7 @@ namespace OrchardCore.Users.Controllers
             {
                 await this.SendEmailConfirmationTokenAsync(user, S["Confirm your account"]);
 
-                _notifier.Success(H["Verification email sent."]);
+                await _notifier.SuccessAsync(H["Verification email sent."]);
             }
 
             return RedirectToAction(nameof(AdminController.Index), "Admin");
@@ -145,6 +179,5 @@ namespace OrchardCore.Users.Controllers
                 return Redirect("~/");
             }
         }
-
     }
 }

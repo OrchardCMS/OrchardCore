@@ -19,8 +19,8 @@ namespace OrchardCore.Mvc
     public class ShellFileVersionProvider : IFileVersionProvider
     {
         private const string VersionKey = "v";
-        private static readonly char[] QueryStringAndFragmentTokens = new[] { '?', '#' };
-        private static readonly MemoryCache _sharedCache = new MemoryCache(new MemoryCacheOptions());
+        private static readonly char[] _queryStringAndFragmentTokens = new[] { '?', '#' };
+        private static readonly MemoryCache _sharedCache = new(new MemoryCacheOptions());
 
         private readonly IFileProvider[] _fileProviders;
         private readonly IMemoryCache _cache;
@@ -46,10 +46,10 @@ namespace OrchardCore.Mvc
 
             var resolvedPath = path;
 
-            var queryStringOrFragmentStartIndex = path.IndexOfAny(QueryStringAndFragmentTokens);
+            var queryStringOrFragmentStartIndex = path.IndexOfAny(_queryStringAndFragmentTokens);
             if (queryStringOrFragmentStartIndex != -1)
             {
-                resolvedPath = path.Substring(0, queryStringOrFragmentStartIndex);
+                resolvedPath = path[..queryStringOrFragmentStartIndex];
             }
 
             if (Uri.TryCreate(resolvedPath, UriKind.Absolute, out var uri) && !uri.IsFile)
@@ -72,7 +72,7 @@ namespace OrchardCore.Mvc
             // Try to get the hash from the cache shared across tenants.
             if (resolvedPath.StartsWith(requestPathBase.Value, StringComparison.OrdinalIgnoreCase))
             {
-                if (_sharedCache.TryGetValue(resolvedPath.Substring(requestPathBase.Value.Length), out value))
+                if (_sharedCache.TryGetValue(resolvedPath[requestPathBase.Value.Length..], out value))
                 {
                     return QueryHelpers.AddQueryString(path, VersionKey, value);
                 }
@@ -91,7 +91,7 @@ namespace OrchardCore.Mvc
                     requestPathBase.HasValue &&
                     resolvedPath.StartsWith(requestPathBase.Value, StringComparison.OrdinalIgnoreCase))
                 {
-                    resolvedPath = resolvedPath.Substring(requestPathBase.Value.Length);
+                    resolvedPath = resolvedPath[requestPathBase.Value.Length..];
                     cacheEntryOptions.AddExpirationToken(fileProvider.Watch(resolvedPath));
                     fileInfo = fileProvider.GetFileInfo(resolvedPath);
                 }
@@ -102,7 +102,7 @@ namespace OrchardCore.Mvc
                     virtualPathBaseProvider.VirtualPathBase.HasValue &&
                     resolvedPath.StartsWith(virtualPathBaseProvider.VirtualPathBase.Value, StringComparison.OrdinalIgnoreCase))
                 {
-                    resolvedPath = resolvedPath.Substring(virtualPathBaseProvider.VirtualPathBase.Value.Length);
+                    resolvedPath = resolvedPath[virtualPathBaseProvider.VirtualPathBase.Value.Length..];
                     cacheEntryOptions.AddExpirationToken(fileProvider.Watch(resolvedPath));
                     fileInfo = fileProvider.GetFileInfo(resolvedPath);
                 }
@@ -120,7 +120,6 @@ namespace OrchardCore.Mvc
                     else
                     {
                         _cache.Set(cacheKey, value, cacheEntryOptions);
-
                     }
 
                     return QueryHelpers.AddQueryString(path, VersionKey, value);
@@ -129,38 +128,16 @@ namespace OrchardCore.Mvc
 
             // If the file is not in the current server, set cache so no further checks are done.
             cacheEntryOptions.SetSize(0);
-            _cache.Set(cacheKey, String.Empty, cacheEntryOptions);
+            _cache.Set(cacheKey, string.Empty, cacheEntryOptions);
             return path;
         }
 
         private static string GetHashForFile(IFileInfo fileInfo)
         {
-            using (var sha256 = CryptographyAlgorithms.CreateSHA256())
-            {
-                using (var readStream = fileInfo.CreateReadStream())
-                {
-                    var hash = sha256.ComputeHash(readStream);
-                    return WebEncoders.Base64UrlEncode(hash);
-                }
-            }
-        }
-
-        internal static class CryptographyAlgorithms
-        {
-            public static SHA256 CreateSHA256()
-            {
-                try
-                {
-                    return SHA256.Create();
-                }
-                // SHA256.Create is documented to throw this exception on FIPS compliant machines.
-                // See: https://msdn.microsoft.com/en-us/library/z08hz7ad%28v=vs.110%29.aspx?f=255&MSPPError=-2147217396
-                catch (System.Reflection.TargetInvocationException)
-                {
-                    // Fallback to a FIPS compliant SHA256 algorithm.
-                    return new SHA256CryptoServiceProvider();
-                }
-            }
+            using var sha256 = SHA256.Create();
+            using var readStream = fileInfo.CreateReadStream();
+            var hash = sha256.ComputeHash(readStream);
+            return WebEncoders.Base64UrlEncode(hash);
         }
     }
 }

@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>OrchardCore.Shortcodes</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Shortcodes Abstractions</Title>
+    <Description>$(OCCMSDescription)
+
+    Abstractions for Shortcodes module</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Abstractions</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Shortcodes" />
+  </ItemGroup>
+
+</Project>

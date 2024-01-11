@@ -12,5 +12,9 @@ namespace OrchardCore.GitHub.ViewModels
 
         [RegularExpression(@"\/[-A-Za-z0-9+&@#\/%?=~_|!:,.;]+[-A-Za-z0-9+&@#\/%=~_|]", ErrorMessage = "Invalid path")]
         public string CallbackUrl { get; set; }
+
+        public bool SaveTokens { get; set; }
+
+        public bool HasDecryptionError { get; set; }
     }
 }

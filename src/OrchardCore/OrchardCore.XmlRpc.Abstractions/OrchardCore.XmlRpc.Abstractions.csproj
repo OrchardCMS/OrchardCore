@@ -1,8 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <RootNamespace>OrchardCore.XmlRpc</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore XmlRpc Abstractions</Title>
+    <Description>$(OCFrameworkDescription)
+
+    Abstractions for XmlRpc.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework Abstractions Infrastructure</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

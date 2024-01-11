@@ -41,7 +41,7 @@ namespace OrchardCore.Demo.Controllers
             _contentDisplay = contentDisplay;
         }
 
-        dynamic Shape { get; set; }
+        private dynamic Shape { get; set; }
 
         public ActionResult Index()
         {
@@ -80,7 +80,7 @@ namespace OrchardCore.Demo.Controllers
         public async Task<ActionResult> Tag(string tag)
         {
             await _tagCache.RemoveTagAsync(tag);
-            return RedirectToAction("Tag", "Home", new { area = "OrchardCore.Demo" });
+            return RedirectToAction(nameof(Tag), "Home", new { area = "OrchardCore.Demo" });
         }
 
         public async Task<ActionResult> Display(string contentItemId)
@@ -94,7 +94,6 @@ namespace OrchardCore.Demo.Controllers
 
             return View("Display", contentItem);
         }
-
 
         public async Task<ActionResult> DisplayShape(string contentItemId)
         {
@@ -122,6 +121,7 @@ namespace OrchardCore.Demo.Controllers
             return View();
         }
 
+#pragma warning disable CA1822 // Mark members as static
         public string GCCollect()
         {
             GC.Collect();
@@ -144,6 +144,7 @@ namespace OrchardCore.Demo.Controllers
 
             return "Check for logs";
         }
+#pragma warning restore CA1822 // Mark members as static
 
         public IActionResult ShapePerformance()
         {

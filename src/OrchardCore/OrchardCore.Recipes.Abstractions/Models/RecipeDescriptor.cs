@@ -1,5 +1,5 @@
-using Microsoft.Extensions.FileProviders;
 using System;
+using Microsoft.Extensions.FileProviders;
 
 namespace OrchardCore.Recipes.Models
 {
@@ -21,6 +21,7 @@ namespace OrchardCore.Recipes.Models
         /// The path of the recipe file for the <see cref="RecipeDescriptor.FileProvider"/> property
         /// </summary>
         public string BasePath { get; set; }
+
         public IFileInfo RecipeFileInfo { get; set; }
         public IFileProvider FileProvider { get; set; }
     }

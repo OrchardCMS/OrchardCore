@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.FileProviders;
 using OrchardCore.Deployment.Remote.Services;
 using OrchardCore.Deployment.Remote.ViewModels;
@@ -23,19 +22,15 @@ namespace OrchardCore.Deployment.Remote.Controllers
         public ImportRemoteInstanceController(
             IDataProtectionProvider dataProtectionProvider,
             RemoteClientService remoteClientService,
-            IDeploymentManager deploymentManager,
-            IHtmlLocalizer<ExportRemoteInstanceController> h)
+            IDeploymentManager deploymentManager)
         {
             _deploymentManager = deploymentManager;
             _remoteClientService = remoteClientService;
             _dataProtector = dataProtectionProvider.CreateProtector("OrchardCore.Deployment").ToTimeLimitedDataProtector();
-            H = h;
         }
 
-        public IHtmlLocalizer H { get; }
-
         /// <remarks>
-        /// We ignore the AFT as the service is called from external applications (they can't have valid ones) and 
+        /// We ignore the AFT as the service is called from external applications (they can't have valid ones) and
         /// we use a private API key to secure its calls.
         /// </remarks>
         [HttpPost]
@@ -46,9 +41,14 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             var remoteClient = remoteClientList.RemoteClients.FirstOrDefault(x => x.ClientName == model.ClientName);
 
+            if (remoteClient == null)
+            {
+                return StatusCode((int)HttpStatusCode.BadRequest, "The remote client was not provided");
+            }
+
             var apiKey = Encoding.UTF8.GetString(_dataProtector.Unprotect(remoteClient.ProtectedApiKey));
 
-            if (remoteClient == null || model.ApiKey != apiKey || model.ClientName != remoteClient.ClientName)
+            if (model.ApiKey != apiKey || model.ClientName != remoteClient.ClientName)
             {
                 return StatusCode((int)HttpStatusCode.BadRequest, "The Api Key was not recognized");
             }

@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,7 +26,7 @@ namespace OrchardCore.OpenId.Controllers
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IHtmlLocalizer<ValidationConfigurationController> H;
+        protected readonly IHtmlLocalizer H;
 
         public ValidationConfigurationController(
             IAuthorizationService authorizationService,
@@ -55,7 +56,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             var settings = await _validationService.GetSettingsAsync();
-            var shape = await _validationSettingsDisplayManager.BuildEditorAsync(settings, updater: _updateModelAccessor.ModelUpdater, isNew: false);
+            var shape = await _validationSettingsDisplayManager.BuildEditorAsync(settings, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "");
 
             return View(shape);
         }
@@ -70,7 +71,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             var settings = await _validationService.GetSettingsAsync();
-            var shape = await _validationSettingsDisplayManager.UpdateEditorAsync(settings, updater: _updateModelAccessor.ModelUpdater, isNew: false);
+            var shape = await _validationSettingsDisplayManager.UpdateEditorAsync(settings, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "");
 
             if (!ModelState.IsValid)
             {
@@ -93,9 +94,9 @@ namespace OrchardCore.OpenId.Controllers
 
             await _validationService.UpdateSettingsAsync(settings);
 
-            _notifier.Success(H["OpenID validation configuration successfully updated."]);
+            await _notifier.SuccessAsync(H["OpenID validation configuration successfully updated."]);
 
-            await _shellHost.ReloadShellContextAsync(_shellSettings);
+            await _shellHost.ReleaseShellContextAsync(_shellSettings);
 
             return RedirectToAction(nameof(Index));
         }

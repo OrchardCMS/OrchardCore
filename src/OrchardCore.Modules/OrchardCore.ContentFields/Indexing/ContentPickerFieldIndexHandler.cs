@@ -8,7 +8,7 @@ namespace OrchardCore.ContentFields.Indexing
     {
         public override Task BuildIndexAsync(ContentPickerField field, BuildFieldIndexContext context)
         {
-            var options = DocumentIndexOptions.Store;
+            var options = DocumentIndexOptions.Keyword | DocumentIndexOptions.Store;
 
             if (field.ContentItemIds.Length > 0)
             {
@@ -20,7 +20,8 @@ namespace OrchardCore.ContentFields.Indexing
                     }
                 }
             }
-            else {
+            else
+            {
                 foreach (var key in context.Keys)
                 {
                     context.DocumentIndex.Set(key, "NULL", options);

@@ -12,38 +12,52 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage;
 using OrchardCore.Media.Services;
+using OrchardCore.Media.ViewModels;
 
 namespace OrchardCore.Media.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly HashSet<string> _allowedFileExtensions;
+        private static readonly char[] InvalidFolderNameCharacters = new char[] { '\\', '/' };
+        private static readonly char[] ExtensionSeperator = new char[] { ' ', ',' };
+        private static readonly HashSet<string> EmptySet = new();
+
         private readonly IMediaFileStore _mediaFileStore;
+        private readonly IMediaNameNormalizerService _mediaNameNormalizerService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentTypeProvider _contentTypeProvider;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer<AdminController> S;
+        protected readonly IStringLocalizer S;
+        private readonly MediaOptions _mediaOptions;
+        private readonly IUserAssetFolderNameProvider _userAssetFolderNameProvider;
+        private readonly IChunkFileUploadService _chunkFileUploadService;
 
         public AdminController(
             IMediaFileStore mediaFileStore,
+            IMediaNameNormalizerService mediaNameNormalizerService,
             IAuthorizationService authorizationService,
             IContentTypeProvider contentTypeProvider,
             IOptions<MediaOptions> options,
             ILogger<AdminController> logger,
-            IStringLocalizer<AdminController> stringLocalizer
+            IStringLocalizer<AdminController> stringLocalizer,
+            IUserAssetFolderNameProvider userAssetFolderNameProvider,
+            IChunkFileUploadService chunkFileUploadService
             )
         {
             _mediaFileStore = mediaFileStore;
+            _mediaNameNormalizerService = mediaNameNormalizerService;
             _authorizationService = authorizationService;
             _contentTypeProvider = contentTypeProvider;
-            _allowedFileExtensions = options.Value.AllowedFileExtensions;
+            _mediaOptions = options.Value;
             _logger = logger;
             S = stringLocalizer;
+            _userAssetFolderNameProvider = userAssetFolderNameProvider;
+            _chunkFileUploadService = chunkFileUploadService;
         }
 
         public async Task<IActionResult> Index()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
             {
                 return Forbid();
             }
@@ -53,14 +67,14 @@ namespace OrchardCore.Media.Controllers
 
         public async Task<ActionResult<IEnumerable<IFileStoreEntry>>> GetFolders(string path)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
             {
                 return Forbid();
             }
 
             if (string.IsNullOrEmpty(path))
             {
-                path = "";
+                path = string.Empty;
             }
 
             if (await _mediaFileStore.GetDirectoryInfoAsync(path) == null)
@@ -68,30 +82,28 @@ namespace OrchardCore.Media.Controllers
                 return NotFound();
             }
 
-            var content = (await _mediaFileStore.GetDirectoryContentAsync(path)).Where(x => x.IsDirectory);
-
-            var allowed = new List<IFileStoreEntry>();
-
-            foreach (var entry in content)
+            // create default folders if not exist
+            if (await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
+                && await _mediaFileStore.GetDirectoryInfoAsync(_mediaFileStore.Combine(_mediaOptions.AssetsUsersFolder, _userAssetFolderNameProvider.GetUserAssetFolderName(User))) == null)
             {
-                if ((await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)entry.Path)))
-                {
-                    allowed.Add(entry);
-                }
+                await _mediaFileStore.TryCreateDirectoryAsync(_mediaFileStore.Combine(_mediaOptions.AssetsUsersFolder, _userAssetFolderNameProvider.GetUserAssetFolderName(User)));
             }
 
-            return allowed.ToArray();
+            var allowed = _mediaFileStore.GetDirectoryContentAsync(path)
+                .WhereAwait(async e => e.IsDirectory && await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)e.Path));
+
+            return Ok(await allowed.ToListAsync());
         }
 
-        public async Task<ActionResult<IEnumerable<object>>> GetMediaItems(string path)
+        public async Task<ActionResult<IEnumerable<object>>> GetMediaItems(string path, string extensions)
         {
             if (string.IsNullOrEmpty(path))
             {
-                path = "";
+                path = string.Empty;
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
-                || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)path))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
+                || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)path))
             {
                 return Forbid();
             }
@@ -101,23 +113,18 @@ namespace OrchardCore.Media.Controllers
                 return NotFound();
             }
 
-            var files = (await _mediaFileStore.GetDirectoryContentAsync(path)).Where(x => !x.IsDirectory);
+            var allowedExtensions = GetRequestedExtensions(extensions, false);
 
-            var allowed = new List<IFileStoreEntry>();
-            foreach (var entry in files)
-            {
-                if ((await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)entry.Path)))
-                {
-                    allowed.Add(entry);
-                }
-            }
+            var allowed = _mediaFileStore.GetDirectoryContentAsync(path)
+                .WhereAwait(async e => !e.IsDirectory && (allowedExtensions.Count == 0 || allowedExtensions.Contains(Path.GetExtension(e.Path))) && await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)e.Path))
+                .Select(e => CreateFileResult(e));
 
-            return allowed.Select(CreateFileResult).ToArray();
+            return Ok(await allowed.ToListAsync());
         }
 
         public async Task<ActionResult<object>> GetMediaItem(string path)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
             {
                 return Forbid();
             }
@@ -127,90 +134,104 @@ namespace OrchardCore.Media.Controllers
                 return NotFound();
             }
 
-            var f = await _mediaFileStore.GetFileInfoAsync(path);
+            var fileEntry = await _mediaFileStore.GetFileInfoAsync(path);
 
-            if (f == null)
+            if (fileEntry == null)
             {
                 return NotFound();
             }
 
-            return CreateFileResult(f);
+            return CreateFileResult(fileEntry);
         }
 
         [HttpPost]
         [MediaSizeLimit]
-        public async Task<ActionResult<object>> Upload(
-            string path,
-            string contentType,
-            ICollection<IFormFile> files)
+        public async Task<IActionResult> Upload(string path, string extensions)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
             {
                 return Forbid();
             }
 
-            if (string.IsNullOrEmpty(path))
-            {
-                path = "";
-            }
+            var allowedExtensions = GetRequestedExtensions(extensions, true);
 
-            var result = new List<object>();
+            return await _chunkFileUploadService.ProcessRequestAsync(
+                Request,
 
-            // Loop through each file in the request
-            foreach (var file in files)
-            {
-                // TODO: support clipboard
-
-                if (!_allowedFileExtensions.Contains(Path.GetExtension(file.FileName), StringComparer.OrdinalIgnoreCase))
+                // We need this empty object because the frontend expects a JSON object in the response.
+                (_, _, _) => Task.FromResult<IActionResult>(Ok(new { })),
+                async (files) =>
                 {
-                    result.Add(new
+                    if (string.IsNullOrEmpty(path))
                     {
-                        name = file.FileName,
-                        size = file.Length,
-                        folder = path,
-                        error = S["This file extension is not allowed: {0}", Path.GetExtension(file.FileName)].ToString()
-                    });
-
-                    _logger.LogInformation("File extension not allowed: '{0}'", file.FileName);
-
-                    continue;
-                }
-
-                try
-                {
-                    var mediaFilePath = _mediaFileStore.Combine(path, file.FileName);
-
-                    using (var stream = file.OpenReadStream())
-                    {
-                        await _mediaFileStore.CreateFileFromStreamAsync(mediaFilePath, stream);
+                        path = string.Empty;
                     }
 
-                    var mediaFile = await _mediaFileStore.GetFileInfoAsync(mediaFilePath);
+                    var result = new List<object>();
 
-                    result.Add(CreateFileResult(mediaFile));
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "An error occurred while uploading a media");
-
-                    result.Add(new
+                    // Loop through each file in the request.
+                    foreach (var file in files)
                     {
-                        name = file.FileName,
-                        size = file.Length,
-                        folder = path,
-                        error = ex.Message
-                    });
-                }
-            }
+                        var extension = Path.GetExtension(file.FileName);
 
-            return new { files = result.ToArray() };
+                        if (!allowedExtensions.Contains(extension))
+                        {
+                            result.Add(new
+                            {
+                                name = file.FileName,
+                                size = file.Length,
+                                folder = path,
+                                error = S["This file extension is not allowed: {0}", extension].ToString()
+                            });
+
+                            if (_logger.IsEnabled(LogLevel.Information))
+                            {
+                                _logger.LogInformation("File extension not allowed: '{File}'", file.FileName);
+                            }
+
+                            continue;
+                        }
+
+                        var fileName = _mediaNameNormalizerService.NormalizeFileName(file.FileName);
+
+                        Stream stream = null;
+                        try
+                        {
+                            var mediaFilePath = _mediaFileStore.Combine(path, fileName);
+                            stream = file.OpenReadStream();
+                            mediaFilePath = await _mediaFileStore.CreateFileFromStreamAsync(mediaFilePath, stream);
+
+                            var mediaFile = await _mediaFileStore.GetFileInfoAsync(mediaFilePath);
+
+                            result.Add(CreateFileResult(mediaFile));
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, "An error occurred while uploading a media");
+
+                            result.Add(new
+                            {
+                                name = fileName,
+                                size = file.Length,
+                                folder = path,
+                                error = ex.Message
+                            });
+                        }
+                        finally
+                        {
+                            stream?.Dispose();
+                        }
+                    }
+
+                    return Ok(new { files = result.ToArray() });
+                });
         }
 
         [HttpPost]
         public async Task<IActionResult> DeleteFolder(string path)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
-                || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)path))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
+                || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)path))
             {
                 return Forbid();
             }
@@ -227,7 +248,9 @@ namespace OrchardCore.Media.Controllers
             }
 
             if (await _mediaFileStore.TryDeleteDirectoryAsync(path) == false)
+            {
                 return NotFound();
+            }
 
             return Ok();
         }
@@ -235,8 +258,8 @@ namespace OrchardCore.Media.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteMedia(string path)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
-                || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)path))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
+                || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)path))
             {
                 return Forbid();
             }
@@ -246,8 +269,10 @@ namespace OrchardCore.Media.Controllers
                 return NotFound();
             }
 
-            if (await _mediaFileStore.TryDeleteFileAsync(path) == false)
+            if (!await _mediaFileStore.TryDeleteFileAsync(path))
+            {
                 return NotFound();
+            }
 
             return Ok();
         }
@@ -255,8 +280,8 @@ namespace OrchardCore.Media.Controllers
         [HttpPost]
         public async Task<IActionResult> MoveMedia(string oldPath, string newPath)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
-                || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)oldPath))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
+                || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)oldPath))
             {
                 return Forbid();
             }
@@ -271,14 +296,16 @@ namespace OrchardCore.Media.Controllers
                 return NotFound();
             }
 
-            if (!_allowedFileExtensions.Contains(Path.GetExtension(newPath), StringComparer.OrdinalIgnoreCase))
+            var newExtension = Path.GetExtension(newPath);
+
+            if (!_mediaOptions.AllowedFileExtensions.Contains(newExtension, StringComparer.OrdinalIgnoreCase))
             {
-                return StatusCode(StatusCodes.Status403Forbidden, S["This file extension is not allowed: {0}", Path.GetExtension(newPath)]);
+                return BadRequest(S["This file extension is not allowed: {0}", newExtension]);
             }
 
             if (await _mediaFileStore.GetFileInfoAsync(newPath) != null)
             {
-                return StatusCode(StatusCodes.Status403Forbidden, S["Cannot move media because a file already exists with the same name"]);
+                return BadRequest(S["Cannot move media because a file already exists with the same name"]);
             }
 
             await _mediaFileStore.MoveFileAsync(oldPath, newPath);
@@ -289,7 +316,12 @@ namespace OrchardCore.Media.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteMediaList(string[] paths)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
+            if (paths == null)
+            {
+                return NotFound();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
             {
                 return Forbid();
             }
@@ -302,15 +334,12 @@ namespace OrchardCore.Media.Controllers
                 }
             }
 
-            if (paths == null)
+            foreach (var path in paths)
             {
-                return NotFound();
-            }
-
-            foreach (var p in paths)
-            {
-                if (await _mediaFileStore.TryDeleteFileAsync(p) == false)
+                if (!await _mediaFileStore.TryDeleteFileAsync(path))
+                {
                     return NotFound();
+                }
             }
 
             return Ok();
@@ -319,9 +348,9 @@ namespace OrchardCore.Media.Controllers
         [HttpPost]
         public async Task<IActionResult> MoveMediaList(string[] mediaNames, string sourceFolder, string targetFolder)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
-                || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)sourceFolder)
-                || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)targetFolder))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
+                || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)sourceFolder)
+                || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)targetFolder))
             {
                 return Forbid();
             }
@@ -356,10 +385,8 @@ namespace OrchardCore.Media.Controllers
             {
                 return BadRequest(S["Error when moving files. Maybe they already exist on the target folder? Files on error: {0}", string.Join(",", filesOnError)].ToString());
             }
-            else
-            {
-                return Ok();
-            }
+
+            return Ok();
         }
 
         [HttpPost]
@@ -369,13 +396,20 @@ namespace OrchardCore.Media.Controllers
         {
             if (string.IsNullOrEmpty(path))
             {
-                path = "";
+                path = string.Empty;
+            }
+
+            name = _mediaNameNormalizerService.NormalizeFolderName(name);
+
+            if (InvalidFolderNameCharacters.Any(invalidChar => name.Contains(invalidChar)))
+            {
+                return BadRequest(S["Cannot create folder because the folder name contains invalid characters"]);
             }
 
             var newPath = _mediaFileStore.Combine(path, name);
 
-            if (!await authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
-                || !await authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)newPath))
+            if (!await authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
+                || !await authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)newPath))
             {
                 return Forbid();
             }
@@ -383,13 +417,13 @@ namespace OrchardCore.Media.Controllers
             var mediaFolder = await _mediaFileStore.GetDirectoryInfoAsync(newPath);
             if (mediaFolder != null)
             {
-                return StatusCode(StatusCodes.Status403Forbidden, S["Cannot create folder because a folder already exists with the same name"]);
+                return BadRequest(S["Cannot create folder because a folder already exists with the same name"]);
             }
 
             var existingFile = await _mediaFileStore.GetFileInfoAsync(newPath);
             if (existingFile != null)
             {
-                return StatusCode(StatusCodes.Status403Forbidden, S["Cannot create folder because a file already exists with the same name"]);
+                return BadRequest(S["Cannot create folder because a file already exists with the same name"]);
             }
 
             await _mediaFileStore.TryCreateDirectoryAsync(newPath);
@@ -397,11 +431,6 @@ namespace OrchardCore.Media.Controllers
             mediaFolder = await _mediaFileStore.GetDirectoryInfoAsync(newPath);
 
             return new ObjectResult(mediaFolder);
-        }
-
-        public IActionResult MediaApplication()
-        {
-            return View();
         }
 
         public object CreateFileResult(IFileStoreEntry mediaFile)
@@ -412,11 +441,55 @@ namespace OrchardCore.Media.Controllers
             {
                 name = mediaFile.Name,
                 size = mediaFile.Length,
+                lastModify = mediaFile.LastModifiedUtc.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds,
                 folder = mediaFile.DirectoryPath,
                 url = _mediaFileStore.MapPathToPublicUrl(mediaFile.Path),
                 mediaPath = mediaFile.Path,
-                mime = contentType ?? "application/octet-stream"
+                mime = contentType ?? "application/octet-stream",
+                mediaText = string.Empty,
+                anchor = new { x = 0.5f, y = 0.5f },
+                attachedFileName = string.Empty
             };
+        }
+
+        public IActionResult MediaApplication(MediaApplicationViewModel model)
+        {
+            return View(model);
+        }
+
+        public async Task<IActionResult> Options()
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewMediaOptions))
+            {
+                return Forbid();
+            }
+
+            return View(_mediaOptions);
+        }
+
+        private HashSet<string> GetRequestedExtensions(string exts, bool fallback)
+        {
+            if (!string.IsNullOrWhiteSpace(exts))
+            {
+                var extensions = exts.Split(ExtensionSeperator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+                var requestedExtensions = _mediaOptions.AllowedFileExtensions
+                    .Intersect(extensions)
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+                if (requestedExtensions.Count > 0)
+                {
+                    return requestedExtensions;
+                }
+            }
+
+            if (fallback)
+            {
+                return _mediaOptions.AllowedFileExtensions
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            }
+
+            return EmptySet;
         }
     }
 }

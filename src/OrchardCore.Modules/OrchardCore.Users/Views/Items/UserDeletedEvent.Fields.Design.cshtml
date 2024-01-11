@@ -1,0 +1,5 @@
+@model OrchardCore.Users.Workflows.ViewModels.UserEventViewModel<OrchardCore.Users.Workflows.Activities.UserDeletedEvent>
+
+<header>
+    <h4><i class="fa-solid fa-user-minus" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["User Deleted"])</h4>
+</header>

@@ -1,5 +1,8 @@
+using System.Threading.Tasks;
+using OrchardCore.Contents.ViewModels;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Contents.Deployment
@@ -17,7 +20,17 @@ namespace OrchardCore.Contents.Deployment
 
         public override IDisplayResult Edit(AllContentDeploymentStep step)
         {
-            return View("AllContentDeploymentStep_Fields_Edit", step).Location("Content");
+            return Initialize<AllContentDeploymentStepViewModel>("AllContentDeploymentStep_Fields_Edit", model =>
+            {
+                model.ExportAsSetupRecipe = step.ExportAsSetupRecipe;
+            }).Location("Content");
+        }
+
+        public override async Task<IDisplayResult> UpdateAsync(AllContentDeploymentStep step, IUpdateModel updater)
+        {
+            await updater.TryUpdateModelAsync(step, Prefix, x => x.ExportAsSetupRecipe);
+
+            return Edit(step);
         }
     }
 }

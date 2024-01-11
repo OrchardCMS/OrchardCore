@@ -1,0 +1,10 @@
+@model dynamic
+
+<div class="card h-100">
+    <div class="card-body">
+        @await DisplayAsync(Model.Content)
+    </div>
+    <div class="card-footer text-muted text-xs-right">
+        <a class="btn btn-primary btn-sm" asp-route-action="Create" asp-route-controller="Source" asp-route-sitemapId="@Model.Sitemap.SitemapId" asp-route-sourceType="@Model.SitemapSourceType">@T["Add"]</a>
+    </div>
+</div>

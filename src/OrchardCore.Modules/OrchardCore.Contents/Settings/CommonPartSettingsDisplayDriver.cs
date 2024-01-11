@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Contents.Models;
@@ -9,31 +8,20 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Lists.Settings
 {
-    public class CommonPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
+    public class CommonPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<CommonPart>
     {
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(CommonPart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
-
             return Initialize<CommonPartSettingsViewModel>("CommonPartSettings_Edit", model =>
             {
                 var settings = contentTypePartDefinition.GetSettings<CommonPartSettings>();
                 model.DisplayDateEditor = settings.DisplayDateEditor;
                 model.DisplayOwnerEditor = settings.DisplayOwnerEditor;
-
             }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(CommonPart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
-
             var model = new CommonPartSettingsViewModel();
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))

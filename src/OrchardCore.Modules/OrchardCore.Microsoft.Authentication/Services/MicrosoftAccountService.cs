@@ -12,7 +12,7 @@ namespace OrchardCore.Microsoft.Authentication.Services
     public class MicrosoftAccountService : IMicrosoftAccountService
     {
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<MicrosoftAccountService> S;
+        protected readonly IStringLocalizer S;
 
         public MicrosoftAccountService(
             ISiteService siteService,
@@ -28,12 +28,19 @@ namespace OrchardCore.Microsoft.Authentication.Services
             return container.As<MicrosoftAccountSettings>();
         }
 
+        public async Task<MicrosoftAccountSettings> LoadSettingsAsync()
+        {
+            var container = await _siteService.LoadSiteSettingsAsync();
+            return container.As<MicrosoftAccountSettings>();
+        }
+
         public async Task UpdateSettingsAsync(MicrosoftAccountSettings settings)
         {
             if (settings == null)
             {
                 throw new ArgumentNullException(nameof(settings));
             }
+
             var container = await _siteService.LoadSiteSettingsAsync();
             container.Alter<MicrosoftAccountSettings>(nameof(MicrosoftAccountSettings), aspect =>
             {
@@ -41,6 +48,7 @@ namespace OrchardCore.Microsoft.Authentication.Services
                 aspect.AppSecret = settings.AppSecret;
                 aspect.CallbackPath = settings.CallbackPath;
             });
+
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 

@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Primitives;
 
 namespace OrchardCore.Queries
 {
+    /// <summary>
+    /// Contract for managing the query.
+    /// </summary>
     public interface IQueryManager
     {
         /// <summary>
@@ -25,7 +27,7 @@ namespace OrchardCore.Queries
         Task DeleteQueryAsync(string name);
 
         /// <summary>
-        /// Returns the <see cref="Query"/> instance with the specified name for udpate.
+        /// Returns the <see cref="Query"/> instance with the specified name for update.
         /// </summary>
         Task<Query> LoadQueryAsync(string name);
 
@@ -40,12 +42,13 @@ namespace OrchardCore.Queries
         /// Executes a query.
         /// </summary>
         /// <param name="query">The query to execute.</param>
+        /// <param name="parameters">The parameters for the query.</param>
         /// <returns>The result of the query.</returns>
         Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters);
 
         /// <summary>
-        /// Returns a change token that is set when queries have changed.
+        /// Returns an unique identifier that is updated when queries have changed.
         /// </summary>
-        IChangeToken ChangeToken { get; }
+        Task<string> GetIdentifierAsync();
     }
 }

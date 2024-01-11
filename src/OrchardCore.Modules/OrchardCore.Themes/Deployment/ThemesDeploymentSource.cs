@@ -20,16 +20,16 @@ namespace OrchardCore.Themes.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var themesState = step as ThemesDeploymentStep;
+            var themesStep = step as ThemesDeploymentStep;
 
-            if (themesState == null)
+            if (themesStep == null)
             {
                 return;
             }
-            
+
             result.Steps.Add(new JObject(
                 new JProperty("name", "Themes"),
-                new JProperty(nameof(ThemeStepModel.Site), await _siteThemeService.GetCurrentThemeNameAsync()),
+                new JProperty(nameof(ThemeStepModel.Site), await _siteThemeService.GetSiteThemeNameAsync()),
                 new JProperty(nameof(ThemeStepModel.Admin), await _adminThemeService.GetAdminThemeNameAsync())
             ));
         }

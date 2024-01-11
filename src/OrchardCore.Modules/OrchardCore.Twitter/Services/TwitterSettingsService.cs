@@ -12,7 +12,7 @@ namespace OrchardCore.Twitter.Services
     public class TwitterSettingsService : ITwitterSettingsService
     {
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<TwitterSettingsService> S;
+        protected readonly IStringLocalizer S;
 
         public TwitterSettingsService(
             ISiteService siteService,
@@ -28,12 +28,19 @@ namespace OrchardCore.Twitter.Services
             return container.As<TwitterSettings>();
         }
 
+        public async Task<TwitterSettings> LoadSettingsAsync()
+        {
+            var container = await _siteService.LoadSiteSettingsAsync();
+            return container.As<TwitterSettings>();
+        }
+
         public async Task UpdateSettingsAsync(TwitterSettings settings)
         {
             if (settings == null)
             {
                 throw new ArgumentNullException(nameof(settings));
             }
+
             var container = await _siteService.LoadSiteSettingsAsync();
             container.Alter<TwitterSettings>(nameof(TwitterSettings), aspect =>
             {
@@ -42,6 +49,7 @@ namespace OrchardCore.Twitter.Services
                 aspect.AccessToken = settings.AccessToken;
                 aspect.AccessTokenSecret = settings.AccessTokenSecret;
             });
+
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 
@@ -72,6 +80,5 @@ namespace OrchardCore.Twitter.Services
                 yield return new ValidationResult(S["Access Token Secret is required"], new string[] { nameof(settings.AccessTokenSecret) });
             }
         }
-
     }
 }

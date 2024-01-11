@@ -1,13 +1,10 @@
-using System.ComponentModel.DataAnnotations;
+using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Microsoft.Authentication.Services;
 using OrchardCore.Microsoft.Authentication.Settings;
 
 namespace OrchardCore.Microsoft.Authentication.Configuration
@@ -16,30 +13,26 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
         IConfigureOptions<AuthenticationOptions>,
         IConfigureNamedOptions<MicrosoftAccountOptions>
     {
-        private readonly IMicrosoftAccountService _microsoftAccountService;
+        private readonly MicrosoftAccountSettings _microsoftAccountSettings;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ILogger<MicrosoftAccountOptionsConfiguration> _logger;
+        private readonly ILogger _logger;
 
         public MicrosoftAccountOptionsConfiguration(
-            IMicrosoftAccountService microsoftAccountService,
+            IOptions<MicrosoftAccountSettings> microsoftAccountSettings,
             IDataProtectionProvider dataProtectionProvider,
             ILogger<MicrosoftAccountOptionsConfiguration> logger)
         {
-            _microsoftAccountService = microsoftAccountService;
+            _microsoftAccountSettings = microsoftAccountSettings.Value;
             _dataProtectionProvider = dataProtectionProvider;
             _logger = logger;
         }
 
         public void Configure(AuthenticationOptions options)
         {
-            var settings = GetMicrosoftAccountSettingsAsync().GetAwaiter().GetResult();
-            if (settings == null)
+            if (_microsoftAccountSettings == null)
             {
                 return;
             }
-
-            if (_microsoftAccountService.ValidateSettings(settings).Any())
-                return;
 
             // Register the OpenID Connect client handler in the authentication handlers collection.
             options.AddScheme(MicrosoftAccountDefaults.AuthenticationScheme, builder =>
@@ -57,37 +50,30 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
                 return;
             }
 
-            var loginSettings = GetMicrosoftAccountSettingsAsync().GetAwaiter().GetResult();
+            if (_microsoftAccountSettings == null)
+            {
+                return;
+            }
 
-            options.ClientId = loginSettings?.AppId ?? string.Empty;
+            options.ClientId = _microsoftAccountSettings.AppId;
 
             try
             {
-                options.ClientSecret = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount).Unprotect(loginSettings.AppSecret);
+                options.ClientSecret = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount).Unprotect(_microsoftAccountSettings.AppSecret);
             }
             catch
             {
                 _logger.LogError("The Microsoft Account secret key could not be decrypted. It may have been encrypted using a different key.");
             }
 
-            if (loginSettings.CallbackPath.HasValue)
+            if (_microsoftAccountSettings.CallbackPath.HasValue)
             {
-                options.CallbackPath = loginSettings.CallbackPath;
+                options.CallbackPath = _microsoftAccountSettings.CallbackPath;
             }
+
+            options.SaveTokens = _microsoftAccountSettings.SaveTokens;
         }
 
         public void Configure(MicrosoftAccountOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
-
-        private async Task<MicrosoftAccountSettings> GetMicrosoftAccountSettingsAsync()
-        {
-            var settings = await _microsoftAccountService.GetSettingsAsync();
-            if ((_microsoftAccountService.ValidateSettings(settings)).Any(result => result != ValidationResult.Success))
-            {
-                _logger.LogWarning("The Microsoft Account Authentication is not correctly configured.");
-
-                return null;
-            }
-            return settings;
-        }
     }
 }

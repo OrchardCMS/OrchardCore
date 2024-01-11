@@ -1,11 +1,12 @@
 using System;
+using Fluid;
+using Fluid.Values;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
@@ -39,7 +40,6 @@ namespace OrchardCore.Queries
         {
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IQueryManager, QueryManager>();
-            services.AddScoped<IDisplayManager<Query>, DisplayManager<Query>>();
 
             services.AddScoped<IDisplayDriver<Query>, QueryDisplayDriver>();
             services.AddRecipeExecutionStep<QueryStep>();
@@ -49,6 +49,19 @@ namespace OrchardCore.Queries
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllQueriesDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllQueriesDeploymentStepDriver>();
             services.AddSingleton<IGlobalMethodProvider, QueryGlobalMethodProvider>();
+
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.Scope.SetValue("Queries", new ObjectValue(new LiquidQueriesAccessor()));
+                o.MemberAccessStrategy.Register<LiquidQueriesAccessor, FluidValue>(async (obj, name, context) =>
+                {
+                    var liquidTemplateContext = (LiquidTemplateContext)context;
+                    var queryManager = liquidTemplateContext.Services.GetRequiredService<IQueryManager>();
+
+                    return FluidValue.Create(await queryManager.GetQueryAsync(name), context.Options);
+                });
+            })
+            .AddLiquidFilter<QueryFilter>("query");
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -92,15 +105,14 @@ namespace OrchardCore.Queries
         }
     }
 
-
-    [RequireFeatures("OrchardCore.Liquid")]
-    public class LiquidStartup : StartupBase
+    [RequireFeatures("OrchardCore.Deployment", "OrchardCore.Contents")]
+    public class DeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<ILiquidTemplateEventHandler, QueriesLiquidTemplateEventHandler>();
-
-            services.AddLiquidFilter<QueryFilter>("query");
+            services.AddTransient<IDeploymentSource, QueryBasedContentDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<QueryBasedContentDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, QueryBasedContentDeploymentStepDriver>();
         }
     }
 }

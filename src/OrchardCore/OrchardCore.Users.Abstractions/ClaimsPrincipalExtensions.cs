@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using OrchardCore.Users.Handlers;
 
 namespace OrchardCore.Users
 {

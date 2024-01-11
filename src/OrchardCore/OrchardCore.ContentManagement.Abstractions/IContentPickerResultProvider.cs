@@ -13,6 +13,7 @@ namespace OrchardCore.ContentManagement
     public class ContentPickerSearchContext
     {
         public string Query { get; set; }
+        public bool DisplayAllContentTypes { get; set; }
         public IEnumerable<string> ContentTypes { get; set; }
         public ContentPartFieldDefinition PartFieldDefinition { get; set; }
     }

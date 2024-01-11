@@ -12,6 +12,7 @@ using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
+using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Templates.Controllers;
 using OrchardCore.Templates.Deployment;
@@ -32,6 +33,8 @@ namespace OrchardCore.Templates
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
+
             services.AddScoped<IShapeBindingResolver, TemplatesShapeBindingResolver>();
             services.AddScoped<PreviewTemplatesProvider>();
             services.AddScoped<TemplatesManager>();

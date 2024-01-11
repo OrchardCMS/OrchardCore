@@ -1,0 +1,74 @@
+@model DisplaySitemapViewModel
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Sitemap"])</h1></zone>
+
+@if (string.IsNullOrEmpty(Site.BaseUrl))
+{
+    <p class="alert alert-warning">@T["The site settings 'Base url' property is empty, but is required to generate sitemaps."]</p>
+}
+<div class="card text-bg-theme mb-3">
+    <div class="card-body">
+        <div class="float-end">
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalSources">
+                @T["Add Source"]
+            </button>
+        </div>
+        @if (Model.Sitemap.Enabled)
+        {
+            <a asp-action="Index" asp-controller="Sitemap" asp-area="OrchardCore.Sitemaps" asp-route-sitemapId="@Model.Sitemap.SitemapId" target="_blank" class="btn btn-success btn-sm">@T["View"]</a>
+        }
+    </div>
+</div>
+@* do we need antiforgery here ?*@
+<form>
+    <div class="mb-3">
+        @if (Model.Items.Any())
+        {
+            <ul class="list-group">
+                @foreach (var item in Model.Items)
+                {
+                    item.SitemapPlanId = Model.Sitemap.SitemapId;
+
+                    <li class="list-group-item">
+                        @await DisplayAsync(item)
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <div class="alert alert-info mb-0" role="alert">
+                @T["<strong>Nothing here!</strong> There are no sources on this sitemap for the moment."]
+            </div>
+        }
+    </div>
+    <div class="mb-3">
+        <a class="btn btn-secondary" asp-route-controller="admin" asp-route-action="List">@T["Back"]</a>
+    </div>
+</form>
+
+<!-- Modal -->
+<div class="modal fade" id="modalSources" tabindex="-1" role="dialog" aria-labelledby="available-sources-title" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="available-sources-title">@T["Available Sources"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row row-cols-1 row-cols-md-2 g-2">
+                    @foreach (var thumbnail in Model.Thumbnails)
+                    {
+                        <div class="col">
+                            @await DisplayAsync(thumbnail.Value)
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
+            </div>
+        </div>
+    </div>
+</div>

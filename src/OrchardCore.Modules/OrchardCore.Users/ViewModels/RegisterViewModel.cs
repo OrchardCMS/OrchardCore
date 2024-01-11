@@ -1,23 +1,22 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace OrchardCore.Users.ViewModels
 {
     public class RegisterViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "Username is required.")]
         public string UserName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Email is required.")]
+        [Email.EmailAddress(ErrorMessage = "Invalid Email.")]
         public string Email { get; set; }
 
-        [Required]
         [DataType(DataType.Password)]
+        [Required(ErrorMessage = "Password is required.")]
         public string Password { get; set; }
 
         [DataType(DataType.Password)]
-        [Compare("Password")]
+        [Compare(nameof(Password), ErrorMessage = "The new password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
     }
 }

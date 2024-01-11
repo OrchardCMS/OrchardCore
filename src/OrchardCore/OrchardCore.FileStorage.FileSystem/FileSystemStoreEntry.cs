@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Microsoft.Extensions.FileProviders;
 
 namespace OrchardCore.FileStorage.FileSystem
@@ -17,7 +16,7 @@ namespace OrchardCore.FileStorage.FileSystem
 
         public string Path => _path;
         public string Name => _fileInfo.Name;
-        public string DirectoryPath => _path.Substring(0, _path.Length - Name.Length).TrimEnd('/');
+        public string DirectoryPath => _path[..^Name.Length].TrimEnd('/');
         public DateTime LastModifiedUtc => _fileInfo.LastModified.UtcDateTime;
         public long Length => _fileInfo.Length;
         public bool IsDirectory => _fileInfo.IsDirectory;

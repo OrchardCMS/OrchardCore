@@ -9,7 +9,7 @@ namespace OrchardCore.ContentManagement.Metadata.Settings
     {
         public static ContentPartDefinitionBuilder Attachable(this ContentPartDefinitionBuilder builder, bool attachable = true)
         {
-            return builder.MergeSettings<ContentPartSettings>(x => x.Attachable = attachable );
+            return builder.MergeSettings<ContentPartSettings>(x => x.Attachable = attachable);
         }
 
         public static bool IsAttachable(this ContentPartDefinition part)
@@ -56,7 +56,7 @@ namespace OrchardCore.ContentManagement.Metadata.Settings
         {
             var displayName = part.GetSettings<ContentPartSettings>().DisplayName;
 
-            if (String.IsNullOrEmpty(displayName))
+            if (string.IsNullOrEmpty(displayName))
             {
                 displayName = part.Name.TrimEnd("Part");
             }

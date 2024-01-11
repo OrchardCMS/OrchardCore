@@ -1,9 +1,9 @@
 using System;
 using System.Threading.Tasks;
-using OrchardCore.Twitter.Services;
-using OrchardCore.Twitter.Settings;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
+using OrchardCore.Twitter.Services;
+using OrchardCore.Twitter.Settings;
 
 namespace OrchardCore.Twitter.Recipes
 {
@@ -25,12 +25,15 @@ namespace OrchardCore.Twitter.Recipes
             {
                 return;
             }
+
             var model = context.Step.ToObject<TwitterSettingsStepModel>();
-            var settings = await _twitterService.GetSettingsAsync();
+            var settings = await _twitterService.LoadSettingsAsync();
+
             settings.ConsumerKey = model.ConsumerKey;
             settings.ConsumerSecret = model.ConsumerSecret;
             settings.AccessToken = model.AccessToken;
             settings.AccessTokenSecret = model.AccessTokenSecret;
+
             await _twitterService.UpdateSettingsAsync(settings);
         }
     }

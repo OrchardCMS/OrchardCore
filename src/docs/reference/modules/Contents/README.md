@@ -1,6 +1,19 @@
-# Contents (OrchardCore.Contents)
+# Contents (`OrchardCore.Contents`)
 
 This module provides Content Management services.
+
+## CommonPart
+
+Attach this part to your content items to edit the common properties like `CreatedUtc` and `Owner` of a `ContentItem`.
+
+The following properties are available on `CommonPart`:
+
+| Name | Type | Description |
+| -----| ---- |------------ |
+| `CreatedUtc` | `DateTime` | The HTML content in the body. |
+| `Owner` | `string` | The HTML content in the body. |
+| `Content` | | The raw content of the part. |
+| `ContentItem` | | The content item containing this part. |
 
 ## Liquid
 
@@ -8,19 +21,19 @@ You can access content items from liquid views and templates by using the `Conte
 By default, you can retrieve content by alias or content item ID.  
 Other modules (such as `Alias` and `Autoroute`) allow you to retrieve content by other identifiers.
 
-### Loading from an alias
+### Loading from a handle
 
 ```liquid
 {% assign my_content = Content["alias:main-menu"] %}
 ```
 
-Aliases can be in various forms, like when using Autoroute, with the `slug` prefix.
+Handles can be in various forms, like when using Autoroute, with the `slug` prefix.
 
 ```liquid
 {% assign my_content = Content["slug:my-blog/my-blog-post"] %}
 ```
 
-> Aliases are provided by implementing `IContentAliasProvider`.
+> Handles are provided by implementing `IContentHandleProvider`.
 
 ### Loading the latest version of a content item
 
@@ -48,11 +61,14 @@ When a list of content item ids is available, the `content_item_id` filter shoul
 {% assign my_content = Content.ContentItemVersionId["49gq8g6zndfc736x0az3zsp4w3"] %}
 ```
 
-### Rendering a content item from an alias
+### Rendering a content item from a handle
 
 ```liquid
-{% contentitem alias:"alias:test" display_type="Detail" %}
+{% contentitem handle:"alias:test", display_type="Summary" %}
 ```
+
+The default display type is "Detail" when none is specified.
+An optional `alternate` argument can be specified.
 
 ### Logging to the browser console
 
@@ -67,6 +83,7 @@ The `console_log` liquid filter can be used to dump data from well known propert
 ```
 
 Well known properties include
+
 - Strings
 - JTokens
 - Content Items (from the `Model.ContentItem` property)
@@ -83,8 +100,8 @@ The following methods are available from the Razor helper.
 
 | Method | Parameters | Description |
 | --------- | ---- |------------ |
-| `GetContentItemIdByAliasAsync` | `string alias` | Returns the content item id from its alias. |
-| `GetContentItemByAliasAsync` | `string alias, bool latest = false` | Loads a content item from its alias, seeking the latest version or not. |
+| `GetContentItemIdByHandleAsync` | `string name` | Returns the content item id from its handle. Ex: `alias:carousel`, `slug:myblog/my-blog-post` |
+| `GetContentItemByHandleAsync` | `string handle, bool latest = false` | Loads a content item from its handle, seeking the latest version or not. |
 | `GetContentItemByIdAsync` | `string contentItemId, bool latest = false` | Loads a content item from its id, seeking the latest version or not. |
 | `GetContentItemsByIdAsync` | `IEnumerable<string> contentItemIds, bool latest = false` | Loads a list of content items by ids, seeking the latest version or not. |
 | `GetContentItemByVersionIdAsync` | `string contentItemVersionId` | Loads a content item from its version id. |
@@ -101,6 +118,7 @@ The `ConsoleLog` extension method can be used to dump data from well known prope
 `@Orchard.ConsoleLog(Model.ContentItem as object)` noting that we cast to an object, as extension methods do not support dynamic dispatching.
 
 Well known properties include
+
 - Strings
 - JTokens
 - Content Items (from the `Model.ContentItem` property)
@@ -218,7 +236,7 @@ It's also not currently possible to order responses by their parts or custom fie
 
 #### Filtering
 
-When querying all content items of a type you can supply different parameters to the where argument to constrain the data in the response according to your requirements. 
+When querying all content items of a type you can supply different parameters to the where argument to constrain the data in the response according to your requirements.
 The available options depend on the scalar and part fields defined on the type in question.
 
 ##### Single Filters
@@ -404,3 +422,9 @@ query {
   }
 }
 ```
+
+## Videos
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/j6xuupq9FYY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/wbTEUl_N0Lk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

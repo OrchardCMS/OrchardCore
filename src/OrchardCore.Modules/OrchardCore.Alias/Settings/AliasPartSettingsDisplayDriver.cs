@@ -10,10 +10,10 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.Alias.Settings
 {
-    public class AliasPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
+    public class AliasPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<AliasPart>
     {
         private readonly ILiquidTemplateManager _templateManager;
-        private readonly IStringLocalizer<AliasPartSettingsDisplayDriver> S;
+        protected readonly IStringLocalizer S;
 
         public AliasPartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<AliasPartSettingsDisplayDriver> localizer)
         {
@@ -23,11 +23,6 @@ namespace OrchardCore.Alias.Settings
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(AliasPart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
-
             return Initialize<AliasPartSettingsViewModel>("AliasPartSettings_Edit", model =>
             {
                 var settings = contentTypePartDefinition.GetSettings<AliasPartSettings>();
@@ -40,11 +35,6 @@ namespace OrchardCore.Alias.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(AliasPart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
-
             var model = new AliasPartSettingsViewModel();
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Pattern, m => m.Options))

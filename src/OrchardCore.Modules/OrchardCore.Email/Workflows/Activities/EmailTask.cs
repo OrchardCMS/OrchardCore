@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -8,26 +9,35 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Email.Workflows.Activities
 {
-    public class EmailTask : TaskActivity
+    public class EmailTask : TaskActivity<EmailTask>
     {
         private readonly ISmtpService _smtpService;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer<EmailTask> S;
+        protected readonly IStringLocalizer S;
+        private readonly HtmlEncoder _htmlEncoder;
 
         public EmailTask(
             ISmtpService smtpService,
             IWorkflowExpressionEvaluator expressionEvaluator,
-            IStringLocalizer<EmailTask> localizer
+            IStringLocalizer<EmailTask> localizer,
+            HtmlEncoder htmlEncoder
         )
         {
             _smtpService = smtpService;
-            _expressionEvaluator = expressionEvaluator;           
+            _expressionEvaluator = expressionEvaluator;
             S = localizer;
+            _htmlEncoder = htmlEncoder;
         }
 
-        public override string Name => nameof(EmailTask);
         public override LocalizedString DisplayText => S["Email Task"];
+
         public override LocalizedString Category => S["Messaging"];
+
+        public WorkflowExpression<string> Author
+        {
+            get => GetProperty(() => new WorkflowExpression<string>());
+            set => SetProperty(value);
+        }
 
         public WorkflowExpression<string> Sender
         {
@@ -35,8 +45,26 @@ namespace OrchardCore.Email.Workflows.Activities
             set => SetProperty(value);
         }
 
+        public WorkflowExpression<string> ReplyTo
+        {
+            get => GetProperty(() => new WorkflowExpression<string>());
+            set => SetProperty(value);
+        }
+
         // TODO: Add support for the following format: Jack Bauer<jack@ctu.com>, ...
         public WorkflowExpression<string> Recipients
+        {
+            get => GetProperty(() => new WorkflowExpression<string>());
+            set => SetProperty(value);
+        }
+
+        public WorkflowExpression<string> Cc
+        {
+            get => GetProperty(() => new WorkflowExpression<string>());
+            set => SetProperty(value);
+        }
+
+        public WorkflowExpression<string> Bcc
         {
             get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
@@ -54,11 +82,12 @@ namespace OrchardCore.Email.Workflows.Activities
             set => SetProperty(value);
         }
 
-        public bool IsBodyHtml
+        public bool IsHtmlBody
         {
             get => GetProperty(() => true);
             set => SetProperty(value);
         }
+
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
@@ -67,22 +96,32 @@ namespace OrchardCore.Email.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var sender = await _expressionEvaluator.EvaluateAsync(Sender, workflowContext);
-            var recipients = await _expressionEvaluator.EvaluateAsync(Recipients, workflowContext);
-            var subject = await _expressionEvaluator.EvaluateAsync(Subject, workflowContext);
-            var body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext);
+            var author = await _expressionEvaluator.EvaluateAsync(Author, workflowContext, null);
+            var sender = await _expressionEvaluator.EvaluateAsync(Sender, workflowContext, null);
+            var replyTo = await _expressionEvaluator.EvaluateAsync(ReplyTo, workflowContext, null);
+            var recipients = await _expressionEvaluator.EvaluateAsync(Recipients, workflowContext, null);
+            var cc = await _expressionEvaluator.EvaluateAsync(Cc, workflowContext, null);
+            var bcc = await _expressionEvaluator.EvaluateAsync(Bcc, workflowContext, null);
+            var subject = await _expressionEvaluator.EvaluateAsync(Subject, workflowContext, null);
+            var body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext, IsHtmlBody ? _htmlEncoder : null);
 
             var message = new MailMessage
             {
-                To = recipients.Trim(),
-                Subject = subject.Trim(),
+                // Author and Sender are both not required fields.
+                From = author?.Trim() ?? sender?.Trim(),
+                To = recipients?.Trim(),
+                Cc = cc?.Trim(),
+                Bcc = bcc?.Trim(),
+                // Email reply-to header https://tools.ietf.org/html/rfc4021#section-2.1.4
+                ReplyTo = replyTo?.Trim(),
+                Subject = subject?.Trim(),
                 Body = body?.Trim(),
-                IsBodyHtml = IsBodyHtml
+                IsHtmlBody = IsHtmlBody
             };
 
             if (!string.IsNullOrWhiteSpace(sender))
             {
-                message.From = sender.Trim();
+                message.Sender = sender.Trim();
             }
 
             var result = await _smtpService.SendAsync(message);

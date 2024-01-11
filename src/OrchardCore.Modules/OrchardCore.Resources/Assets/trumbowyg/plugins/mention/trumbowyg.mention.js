@@ -23,26 +23,41 @@
             en: {
                 mention: 'Mention'
             },
+            az: {
+                mention: 'Bildirmək'
+            },
+            by: {
+                mention: 'Згадаць'
+            },
             da: {
                 mention: 'Nævn'
+            },
+            et: {
+                mention: 'Maini'
             },
             fr: {
                 mention: 'Mentionner'
             },
+            hu: {
+                mention: 'Említ'
+            },
+            ko: {
+                mention: '언급'
+            },
+            pt_br: {
+                mention: 'Menção'
+            },
             ru: {
                 mention: 'Упомянуть'
+            },
+            sl: {
+                mention: 'Omeni'
             },
             tr: {
                 mention: 'Bahset'
             },
             zh_tw: {
                 mention: '標記'
-            },
-            pt_br: {
-                mention: 'Menção'
-            },
-            ko: {
-                mention: '언급'
             },
             // jshint camelcase:true
         },

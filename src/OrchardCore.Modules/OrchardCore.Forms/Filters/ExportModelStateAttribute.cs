@@ -22,7 +22,7 @@ namespace OrchardCore.Forms.Filters
             base.OnActionExecuted(context);
         }
 
-        private bool IsRedirect(ActionExecutedContext context)
+        private static bool IsRedirect(ActionExecutedContext context)
         {
             var result = context.Result;
             var statusCode = context.HttpContext.Response.StatusCode;
@@ -31,6 +31,7 @@ namespace OrchardCore.Forms.Filters
                 result is RedirectResult ||
                 result is RedirectToRouteResult ||
                 result is RedirectToActionResult ||
+                result is LocalRedirectResult ||
                 statusCode == (int)HttpStatusCode.Redirect ||
                 statusCode == (int)HttpStatusCode.TemporaryRedirect;
         }

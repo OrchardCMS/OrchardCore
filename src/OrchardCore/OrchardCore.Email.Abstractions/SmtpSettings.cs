@@ -1,7 +1,7 @@
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Email
@@ -32,9 +32,11 @@ namespace OrchardCore.Email
         /// Gets or sets the SMTP server/host.
         /// </summary>
         public string Host { get; set; }
-        [Range(0, 65535)]
 
-        ///Gets or sets the SMTP port number. Defaults to <c>5</c>.
+        /// <summary>
+        /// Gets or sets the SMTP port number. Defaults to <c>25</c>.
+        /// </summary>
+        [Range(0, 65535)]
         public int Port { get; set; } = 25;
 
         /// <summary>
@@ -67,6 +69,21 @@ namespace OrchardCore.Email
         /// </summary>
         public string Password { get; set; }
 
+        /// <summary>
+        /// Gets or sets the proxy server.
+        /// </summary>
+        public string ProxyHost { get; set; }
+
+        /// <summary>
+        /// Gets or sets the proxy port number.
+        /// </summary>
+        public int ProxyPort { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether invalid SSL certificates should be ignored.
+        /// </summary>
+        public bool IgnoreInvalidSslCertificate { get; set; }
+
         /// <inheritdocs />
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
@@ -75,13 +92,13 @@ namespace OrchardCore.Email
             switch (DeliveryMethod)
             {
                 case SmtpDeliveryMethod.Network:
-                    if (String.IsNullOrEmpty(Host))
+                    if (string.IsNullOrEmpty(Host))
                     {
                         yield return new ValidationResult(S["The {0} field is required.", "Host name"], new[] { nameof(Host) });
                     }
                     break;
                 case SmtpDeliveryMethod.SpecifiedPickupDirectory:
-                    if (String.IsNullOrEmpty(PickupDirectoryLocation))
+                    if (string.IsNullOrEmpty(PickupDirectoryLocation))
                     {
                         yield return new ValidationResult(S["The {0} field is required.", "Pickup directory location"], new[] { nameof(PickupDirectoryLocation) });
                     }

@@ -19,12 +19,14 @@ namespace OrchardCore.Taxonomies.Indexing
         public string ContentPart { get; set; }
         public string ContentField { get; set; }
         public string TermContentItemId { get; set; }
+        public bool Published { get; set; }
+        public bool Latest { get; set; }
     }
 
     public class TaxonomyIndexProvider : IndexProvider<ContentItem>, IScopedIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly HashSet<string> _ignoredTypes = new HashSet<string>();
+        private readonly HashSet<string> _ignoredTypes = new();
         private IContentDefinitionManager _contentDefinitionManager;
 
         public TaxonomyIndexProvider(IServiceProvider serviceProvider)
@@ -35,9 +37,10 @@ namespace OrchardCore.Taxonomies.Indexing
         public override void Describe(DescribeContext<ContentItem> context)
         {
             context.For<TaxonomyIndex>()
-                .Map(contentItem =>
+                .Map(async contentItem =>
                 {
-                    if (!contentItem.IsPublished())
+                    // Remove index records of soft deleted items.
+                    if (!contentItem.Published && !contentItem.Latest)
                     {
                         return null;
                     }
@@ -49,11 +52,19 @@ namespace OrchardCore.Taxonomies.Indexing
                     }
 
                     // Lazy initialization because of ISession cyclic dependency
-                    _contentDefinitionManager = _contentDefinitionManager ?? _serviceProvider.GetRequiredService<IContentDefinitionManager>();
+                    _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
                     // Search for Taxonomy fields
-                    var fieldDefinitions = _contentDefinitionManager
-                        .GetTypeDefinition(contentItem.ContentType)
+                    var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+
+                    // This can occur when content items become orphaned, particularly layer widgets when a layer is removed, before its widgets have been unpublished.
+                    if (contentTypeDefinition == null)
+                    {
+                        _ignoredTypes.Add(contentItem.ContentType);
+                        return null;
+                    }
+
+                    var fieldDefinitions = contentTypeDefinition
                         .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(TaxonomyField)))
                         .ToArray();
 
@@ -76,7 +87,7 @@ namespace OrchardCore.Taxonomies.Indexing
                             continue;
                         }
 
-                        var jField = (JObject)jPart[fieldDefinition.Name];
+                        var jField = jPart[fieldDefinition.Name] as JObject;
 
                         if (jField == null)
                         {
@@ -95,6 +106,8 @@ namespace OrchardCore.Taxonomies.Indexing
                                 ContentPart = fieldDefinition.PartDefinition.Name,
                                 ContentField = fieldDefinition.Name,
                                 TermContentItemId = termContentItemId,
+                                Published = contentItem.Published,
+                                Latest = contentItem.Latest
                             });
                         }
                     }

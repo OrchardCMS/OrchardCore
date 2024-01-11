@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -7,10 +8,10 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
-    public class ForLoopTask : TaskActivity
+    public class ForLoopTask : TaskActivity<ForLoopTask>
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
-        private readonly IStringLocalizer<ForLoopTask> S;
+        protected readonly IStringLocalizer S;
 
         public ForLoopTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<ForLoopTask> localizer)
         {
@@ -18,10 +19,8 @@ namespace OrchardCore.Workflows.Activities
             S = localizer;
         }
 
-        public override string Name => nameof(ForLoopTask);
-        
         public override LocalizedString DisplayText => S["For Loop Task"];
-        
+
         public override LocalizedString Category => S["Control Flow"];
 
         /// <summary>

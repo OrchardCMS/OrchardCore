@@ -1,0 +1,86 @@
+@inject IShortcodeDescriptorManager ShortcodeDescriptorManager
+@inject IDisplayManager<ShortcodeDescriptor> ShortcodeDescriptorDisplayManager
+
+@* To use a shortcode modal on an input field use .shortcode-modal-input
+and call @await DisplayAsync(await New.ShortcodeModal()) from the fields view
+*@
+
+@* Inject the modal only once per page *@
+@if (!Context.Items.ContainsKey("ShortcodeModal"))
+{
+    Context.Items["ShortcodeModal"] = new object();
+    var shortcodeDescriptors = await ShortcodeDescriptorManager.GetShortcodeDescriptors();
+    var categories = shortcodeDescriptors
+        .SelectMany(shortcodeDescriptor => shortcodeDescriptor.Categories ?? Enumerable.Empty<string>())
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .OrderBy(category => category)
+        .ToList();
+
+    var jShortcodes = JsonConvert.SerializeObject(shortcodeDescriptors.Select(d => new { name = d.Name, categories = d.Categories }));
+    var jCategories = JsonConvert.SerializeObject(categories);
+
+    <style asp-src="~/OrchardCore.Shortcodes/Styles/shortcodes.min.css" debug-src="~/OrchardCore.Shortcodes/Styles/shortcodes.css" asp-name="shortcodes"></style>
+    <script asp-src="~/OrchardCore.Shortcodes/Scripts/shortcodes.min.js" debug-src="~/OrchardCore.Shortcodes/Scripts/shortcodes.js" asp-name="shortcodes" at="Foot" depends-on="jQuery, vuejs"></script>
+  
+    @*  This svg is only used by the trumbowyg editors, but is placed here, once, to reduce complexity
+        The icon for using a .shortcode-modal-input helper is included via javascript when wrapping the .shortcode-modal-input.
+    *@
+    <div class="d-none">
+        <svg xmlns="http://www.w3.org/2000/svg">
+            <symbol id="trumbowyg-insert-shortcode" viewBox="0 0 20 20" >
+                <path d="M16 4.2v1.5h2.5v12.5H16v1.5h4V4.2h-4zM4.2 19.8h4v-1.5H5.8V5.8h2.5V4.2h-4l-.1 15.6zm5.1-3.1l1.4.6 4-10-1.4-.6-4 10z"></path>
+            </symbol>
+        </svg>
+    </div>
+
+    @* Place at footer in case it is affected by being inline with an element. *@
+    <zone name="Footer">
+        <div class="modal fade modal-shortcodes" id="shortcodeModal" tabindex="-1" role="dialog" aria-labelledby="shortcodeModalLabel" aria-hidden="true" data-shortcodes="@jShortcodes" data-categories="@jCategories">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="shortcodeModalLabel">@T["Available Shortcodes"]</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-sm-3 col-md-3 col-lg-2">
+                                <div class="mb-3">
+                                    <input class="form-control" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" v-model="filter" ref="filter" />
+                                </div>
+                                <ul class="nav nav-pills flex-column">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" href="#all" data-bs-toggle="pill" v-on:click="setCategory('')">All</a>
+                                    </li>                                   
+                                    @foreach (var category in categories)
+                                    {
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#@category.HtmlClassify()" data-bs-toggle="pill" v-on:click="setCategory('@category')">@category</a>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                            <div class="col-sm-9 col-md-9 col-lg-10">
+                                <div class="tab-content row row-cols-1 row-cols-md-2 g-2">
+                                    @foreach (var descriptor in shortcodeDescriptors)
+                                    {
+                                        var summary = await ShortcodeDescriptorDisplayManager.BuildDisplayAsync(descriptor, null, "SummaryAdmin");
+                                        <div class="col" v-show="isVisible('@descriptor.Name')">
+                                            @await DisplayAsync(summary)
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </zone>
+   <script depends-on="shortcodes" at="Foot">
+        initializeShortcodesApp(document.getElementById("shortcodeModal"));
+    </script>
+}

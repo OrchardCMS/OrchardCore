@@ -8,31 +8,21 @@ using OrchardCore.Widgets.Models;
 
 namespace OrchardCore.Widgets.Settings
 {
-    public class WidgetsListPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
+    public class WidgetsListPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<WidgetsListPart>
     {
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(WidgetsListPart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
-
             return Initialize<WidgetsListPartSettingsViewModel>("WidgetsPartSettings_Edit", model =>
             {
                 var settings = contentTypePartDefinition.GetSettings<WidgetsListPartSettings>();
 
-                model.Zones = String.Join(", ", settings.Zones);
+                model.Zones = string.Join(", ", settings.Zones);
                 model.WidgetsListPartSettings = settings;
             }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(WidgetsListPart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
-
             var model = new WidgetsListPartSettingsViewModel();
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Zones))

@@ -1,20 +1,14 @@
-// media variables
-@import "variables.scss";
+@import 'variables';
+@import '../../node_modules/bootstrap/scss/mixins/_color-mode';
 
-
-// main basic layout 
 @import "main-layout.scss";
-
-
 // vuejs components
 @import "upload-component.scss";
 @import "upload-list-component.scss";
 @import "media-items-grid-component.scss";
 @import "media-items-table-component.scss";
-@import "pager-component.scss";  
-
-
-// others   
+@import "pager-component.scss";
+// others
 @import "_navbar.scss";
 @import "treeview.scss";
 @import "drop-zone.scss";

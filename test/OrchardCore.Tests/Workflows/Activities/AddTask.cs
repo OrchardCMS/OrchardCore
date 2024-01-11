@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -8,10 +5,10 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Tests.Workflows.Activities
 {
-    public class AddTask : TaskActivity
+    public class AddTask : TaskActivity<AddTask>
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
-        private readonly IStringLocalizer<AddTask> S;
+        protected readonly IStringLocalizer S;
 
         public AddTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<AddTask> stringLocalizer)
         {
@@ -19,10 +16,8 @@ namespace OrchardCore.Tests.Workflows.Activities
             S = stringLocalizer;
         }
 
-        public override string Name => nameof(AddTask);
-        
         public override LocalizedString DisplayText => S["Add Task"];
-        
+
         public override LocalizedString Category => S["Test"];
 
         public WorkflowExpression<double> A

@@ -8,7 +8,7 @@ namespace OrchardCore.Data
     public interface IDbConnectionAccessor
     {
         /// <summary>
-        /// Creats a database connection.
+        /// Creates a database connection.
         /// </summary>
         DbConnection CreateConnection();
     }

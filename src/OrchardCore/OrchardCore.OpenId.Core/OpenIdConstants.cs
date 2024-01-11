@@ -31,10 +31,5 @@ namespace OrchardCore.OpenId
         {
             public const string Roles = "Roles";
         }
-
-        public static class Schemes
-        {
-            public const string Userinfo = "Userinfo";
-        }
     }
 }

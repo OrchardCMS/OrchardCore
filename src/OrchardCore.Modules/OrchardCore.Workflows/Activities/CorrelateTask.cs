@@ -7,10 +7,10 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
-    public class CorrelateTask : TaskActivity
+    public class CorrelateTask : TaskActivity<CorrelateTask>
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
-        private readonly IStringLocalizer<CorrelateTask> S;
+        protected readonly IStringLocalizer S;
 
         public CorrelateTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<CorrelateTask> localizer)
         {
@@ -18,10 +18,8 @@ namespace OrchardCore.Workflows.Activities
             S = localizer;
         }
 
-        public override string Name => nameof(CorrelateTask);
-        
         public override LocalizedString DisplayText => S["Correlate Task"];
-        
+
         public override LocalizedString Category => S["Primitives"];
 
         public WorkflowExpression<string> Value

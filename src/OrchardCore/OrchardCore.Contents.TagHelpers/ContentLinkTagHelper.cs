@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -82,6 +83,27 @@ namespace OrchardCore.Contents.TagHelpers
             if (DisplayFor != null)
             {
                 contentItem = DisplayFor;
+                var previewAspect = await _contentManager.PopulateAspectAsync<PreviewAspect>(contentItem);
+
+                if (!string.IsNullOrEmpty(previewAspect.PreviewUrl))
+                {
+                    var previewUrl = previewAspect.PreviewUrl;
+                    if (!previewUrl.StartsWith("~/", StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (previewUrl.StartsWith('/'))
+                        {
+                            previewUrl = '~' + previewUrl;
+                        }
+                        else
+                        {
+                            previewUrl = "~/" + previewUrl;
+                        }
+                    }
+
+                    output.Attributes.SetAttribute("href", urlHelper.Content(previewUrl));
+                    return;
+                }
+
                 metadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(DisplayFor);
 
                 if (metadata.DisplayRouteValues == null)
@@ -160,7 +182,7 @@ namespace OrchardCore.Contents.TagHelpers
                 }
                 else
                 {
-                    var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+                    var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
                     output.Content.Append(typeDefinition.ToString());
                 }
             }
@@ -168,13 +190,13 @@ namespace OrchardCore.Contents.TagHelpers
             return;
         }
 
-        private void ApplyRouteValues(TagHelperContext tagHelperContext, RouteValueDictionary route)
+        private static void ApplyRouteValues(TagHelperContext tagHelperContext, RouteValueDictionary route)
         {
             foreach (var attribute in tagHelperContext.AllAttributes)
             {
-                if (attribute.Name.StartsWith(RoutePrefix, System.StringComparison.OrdinalIgnoreCase))
+                if (attribute.Name.StartsWith(RoutePrefix, StringComparison.OrdinalIgnoreCase))
                 {
-                    route.Add(attribute.Name.Substring(RoutePrefix.Length), attribute.Value);
+                    route.Add(attribute.Name[RoutePrefix.Length..], attribute.Value);
                 }
             }
         }

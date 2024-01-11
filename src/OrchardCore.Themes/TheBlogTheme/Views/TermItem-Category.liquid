@@ -1,0 +1,13 @@
+<li class="list-group-item border-0 pb-0">
+    {% shape_clear_alternates Model %}
+    {% shape_type Model "TermContentItem" %}
+    {{ Model | shape_render }}
+    {% if Model.HasItems %}
+        <ul class="list-group list-group-flush">
+            {% for item in Model.Items %}
+                {% shape_add_classes item "list-group-item border-0 pb-0" %}
+                {{ item | shape_render }}
+            {% endfor %}
+        </ul>
+    {% endif %}
+</li>

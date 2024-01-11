@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.Localization.Models;
 
@@ -11,7 +10,7 @@ namespace OrchardCore.Localization.ViewModels
     public class LocalizationSettingsViewModel
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         [BindNever]
         public CultureEntry[] Cultures { get; set; } = Array.Empty<CultureEntry>();

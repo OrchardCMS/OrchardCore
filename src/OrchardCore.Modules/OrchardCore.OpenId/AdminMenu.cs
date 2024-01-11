@@ -11,7 +11,7 @@ namespace OrchardCore.OpenId
     public class AdminMenu : INavigationProvider
     {
         private readonly ShellDescriptor _shellDescriptor;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AdminMenu(
             IStringLocalizer<AdminMenu> localizer,
@@ -23,13 +23,13 @@ namespace OrchardCore.OpenId
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }
 
             builder.Add(S["Security"], security => security
-            .Add(S["OpenID Connect"], "15", category =>
+            .Add(S["OpenID Connect"], S["OpenID Connect"].PrefixPosition(), category =>
             {
                 category.AddClass("openid").Id("openid");
 

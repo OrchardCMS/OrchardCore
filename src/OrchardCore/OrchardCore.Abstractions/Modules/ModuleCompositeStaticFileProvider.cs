@@ -10,7 +10,11 @@ namespace OrchardCore.Modules
     /// </summary>
     public class ModuleCompositeStaticFileProvider : CompositeFileProvider, IModuleStaticFileProvider
     {
-        public ModuleCompositeStaticFileProvider(params IStaticFileProvider[] fileProviders) : base(fileProviders) { }
-        public ModuleCompositeStaticFileProvider(IEnumerable<IStaticFileProvider> fileProviders) : base(fileProviders) { }
+        public ModuleCompositeStaticFileProvider(params IStaticFileProvider[] fileProviders) : base(fileProviders)
+        {
+        }
+        public ModuleCompositeStaticFileProvider(IEnumerable<IStaticFileProvider> fileProviders) : base(fileProviders)
+        {
+        }
     }
 }

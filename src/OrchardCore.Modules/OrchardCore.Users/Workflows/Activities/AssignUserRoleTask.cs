@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
@@ -13,26 +11,27 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Users.Workflows.Activities
 {
-    public class AssignUserRoleTask : TaskActivity
+    public class AssignUserRoleTask : TaskActivity<AssignUserRoleTask>
     {
         private readonly UserManager<IUser> _userManager;
         private readonly IUserService _userService;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+        protected readonly IStringLocalizer S;
 
-        private readonly IStringLocalizer<AssignUserRoleTask> S;
-        
-        public AssignUserRoleTask(UserManager<IUser> userManager, IUserService userService, IWorkflowExpressionEvaluator expressionvaluator, IStringLocalizer<AssignUserRoleTask> localizer)
+        public AssignUserRoleTask(
+            UserManager<IUser> userManager,
+            IUserService userService,
+            IWorkflowExpressionEvaluator expressionEvaluator,
+            IStringLocalizer<AssignUserRoleTask> localizer)
         {
             _userManager = userManager;
             _userService = userService;
-            _expressionEvaluator = expressionvaluator;
+            _expressionEvaluator = expressionEvaluator;
             S = localizer;
         }
 
-        public override string Name => nameof(AssignUserRoleTask);
-        
         public override LocalizedString DisplayText => S["Assign User Role Task"];
-        
+
         public override LocalizedString Category => S["User"];
 
         public WorkflowExpression<string> UserName
@@ -54,10 +53,10 @@ namespace OrchardCore.Users.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var userName = await _expressionEvaluator.EvaluateAsync(UserName, workflowContext);
-            var roleName = await _expressionEvaluator.EvaluateAsync(RoleName, workflowContext);
+            var userName = await _expressionEvaluator.EvaluateAsync(UserName, workflowContext, null);
+            var roleName = await _expressionEvaluator.EvaluateAsync(RoleName, workflowContext, null);
 
-            User user = (User)await _userService.GetUserAsync(userName);
+            var user = (User)await _userService.GetUserAsync(userName);
 
             if (user != null)
             {

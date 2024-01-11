@@ -7,10 +7,10 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
-    public class SetOutputTask : TaskActivity
+    public class SetOutputTask : TaskActivity<SetOutputTask>
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
-        private readonly IStringLocalizer<SetOutputTask> S;
+        protected readonly IStringLocalizer S;
 
         public SetOutputTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<SetOutputTask> localizer)
         {
@@ -18,10 +18,8 @@ namespace OrchardCore.Workflows.Activities
             S = localizer;
         }
 
-        public override string Name => nameof(SetOutputTask);
-        
         public override LocalizedString DisplayText => S["Set Output Task"];
-        
+
         public override LocalizedString Category => S["Primitives"];
 
         public string OutputName

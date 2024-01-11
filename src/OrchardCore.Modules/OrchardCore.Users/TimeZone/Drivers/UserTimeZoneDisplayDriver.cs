@@ -3,7 +3,6 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Modules;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.TimeZone.Models;
 using OrchardCore.Users.TimeZone.Services;
@@ -13,12 +12,10 @@ namespace OrchardCore.Users.TimeZone.Drivers
 {
     public class UserTimeZoneDisplayDriver : SectionDisplayDriver<User, UserTimeZone>
     {
-        private readonly IClock _clock;
         private readonly UserTimeZoneService _userTimeZoneService;
 
-        public UserTimeZoneDisplayDriver(IClock clock, UserTimeZoneService userTimeZoneService)
+        public UserTimeZoneDisplayDriver(UserTimeZoneService userTimeZoneService)
         {
-            _clock = clock;
             _userTimeZoneService = userTimeZoneService;
         }
 
@@ -40,7 +37,7 @@ namespace OrchardCore.Users.TimeZone.Drivers
 
                 // Remove the cache entry, don't update it, as the form might still fail validation for other reasons.
                 await _userTimeZoneService.UpdateUserTimeZoneAsync(user);
-            }            
+            }
 
             return await EditAsync(userTimeZone, context);
         }

@@ -5,7 +5,6 @@ using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
-using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace OrchardCore.OpenId.Recipes
 {
@@ -27,14 +26,18 @@ namespace OrchardCore.OpenId.Recipes
             }
 
             var model = context.Step.ToObject<OpenIdServerSettingsStepModel>();
+            var settings = await _serverService.LoadSettingsAsync();
 
-            var settings = await _serverService.GetSettingsAsync();
             settings.AccessTokenFormat = model.AccessTokenFormat;
             settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
 
-            settings.CertificateStoreLocation = model.CertificateStoreLocation;
-            settings.CertificateStoreName = model.CertificateStoreName;
-            settings.CertificateThumbprint = model.CertificateThumbprint;
+            settings.EncryptionCertificateStoreLocation = model.EncryptionCertificateStoreLocation;
+            settings.EncryptionCertificateStoreName = model.EncryptionCertificateStoreName;
+            settings.EncryptionCertificateThumbprint = model.EncryptionCertificateThumbprint;
+
+            settings.SigningCertificateStoreLocation = model.SigningCertificateStoreLocation;
+            settings.SigningCertificateStoreName = model.SigningCertificateStoreName;
+            settings.SigningCertificateThumbprint = model.SigningCertificateThumbprint;
 
             settings.AuthorizationEndpointPath = model.EnableAuthorizationEndpoint ?
                 new PathString("/connect/authorize") : PathString.Empty;
@@ -44,44 +47,22 @@ namespace OrchardCore.OpenId.Recipes
                 new PathString("/connect/token") : PathString.Empty;
             settings.UserinfoEndpointPath = model.EnableUserInfoEndpoint ?
                 new PathString("/connect/userinfo") : PathString.Empty;
+            settings.IntrospectionEndpointPath = model.EnableIntrospectionEndpoint ?
+                new PathString("/connect/introspect") : PathString.Empty;
+            settings.RevocationEndpointPath = model.EnableRevocationEndpoint ?
+                new PathString("/connect/revoke") : PathString.Empty;
 
-            if (model.AllowImplicitFlow)
-            {
-                settings.GrantTypes.Add(GrantTypes.Implicit);
-            }
-            else
-            {
-                settings.GrantTypes.Remove(GrantTypes.Implicit);
-            }
+            settings.AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow;
+            settings.AllowClientCredentialsFlow = model.AllowClientCredentialsFlow;
+            settings.AllowHybridFlow = model.AllowHybridFlow;
+            settings.AllowImplicitFlow = model.AllowImplicitFlow;
+            settings.AllowPasswordFlow = model.AllowPasswordFlow;
+            settings.AllowRefreshTokenFlow = model.AllowRefreshTokenFlow;
 
-            if (model.AllowClientCredentialsFlow)
-            {
-                settings.GrantTypes.Add(GrantTypes.ClientCredentials);
-            }
-            else
-            {
-                settings.GrantTypes.Remove(GrantTypes.ClientCredentials);
-            }
-
-            if (model.AllowPasswordFlow)
-            {
-                settings.GrantTypes.Add(GrantTypes.Password);
-            }
-            else
-            {
-                settings.GrantTypes.Remove(GrantTypes.Password);
-            }
-
-            if (model.AllowRefreshTokenFlow)
-            {
-                settings.GrantTypes.Add(GrantTypes.RefreshToken);
-            }
-            else
-            {
-                settings.GrantTypes.Remove(GrantTypes.RefreshToken);
-            }
-
-            settings.UseRollingTokens = model.UseRollingTokens;
+            settings.DisableAccessTokenEncryption = model.DisableAccessTokenEncryption;
+            settings.DisableRollingRefreshTokens = model.DisableRollingRefreshTokens;
+            settings.UseReferenceAccessTokens = model.UseReferenceAccessTokens;
+            settings.RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange;
 
             await _serverService.UpdateSettingsAsync(settings);
         }

@@ -1,33 +1,33 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Xml.Linq;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Modules;
 
 namespace OrchardCore.XmlRpc.Controllers
 {
     [Feature("OrchardCore.RemotePublishing")]
     public class MetaWeblogController : Controller
     {
-        private readonly IEnumerable<IXmlRpcHandler> _xmlRpcHandlers;
         private const string ManifestUri = "http://schemas.microsoft.com/wlw/manifest/weblog";
+
+        private readonly IEnumerable<IXmlRpcHandler> _xmlRpcHandlers;
+        private readonly ILogger _logger;
 
         public MetaWeblogController(
             IEnumerable<IXmlRpcHandler> xmlRpcHandlers,
             ILogger<MetaWeblogController> logger)
         {
             _xmlRpcHandlers = xmlRpcHandlers;
-            Logger = logger;
+            _logger = logger;
         }
-
-        ILogger Logger { get; }
 
         [ResponseCache(Duration = 0, NoStore = true)]
         public ActionResult Manifest()
         {
-            if (Logger.IsEnabled(LogLevel.Debug))
+            if (_logger.IsEnabled(LogLevel.Debug))
             {
-                Logger.LogDebug("Manifest requested");
+                _logger.LogDebug("Manifest requested");
             }
 
             var options = new XElement(

@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using MimeKit;
+using Microsoft.Extensions.Options;
+using OrchardCore.Abstractions.Setup;
 using OrchardCore.Data;
+using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
@@ -19,29 +22,35 @@ namespace OrchardCore.Setup.Controllers
 {
     public class SetupController : Controller
     {
+        private readonly IClock _clock;
         private readonly ISetupService _setupService;
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _shellHost;
+        private readonly IdentityOptions _identityOptions;
+        private readonly IEmailAddressValidator _emailAddressValidator;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
-        private readonly IClock _clock;
-        private readonly ILogger<SetupController> _logger;
-        private readonly IStringLocalizer S;
+        private readonly ILogger _logger;
+        protected readonly IStringLocalizer S;
 
         public SetupController(
-            ILogger<SetupController> logger,
             IClock clock,
             ISetupService setupService,
             ShellSettings shellSettings,
-            IEnumerable<DatabaseProvider> databaseProviders,
             IShellHost shellHost,
-            IStringLocalizer<SetupController> localizer)
+            IOptions<IdentityOptions> identityOptions,
+            IEmailAddressValidator emailAddressValidator,
+            IEnumerable<DatabaseProvider> databaseProviders,
+            IStringLocalizer<SetupController> localizer,
+            ILogger<SetupController> logger)
         {
-            _logger = logger;
             _clock = clock;
-            _shellHost = shellHost;
             _setupService = setupService;
             _shellSettings = shellSettings;
+            _shellHost = shellHost;
+            _identityOptions = identityOptions.Value;
+            _emailAddressValidator = emailAddressValidator;
             _databaseProviders = databaseProviders;
+            _logger = logger;
             S = localizer;
         }
 
@@ -50,13 +59,9 @@ namespace OrchardCore.Setup.Controllers
             var recipes = await _setupService.GetSetupRecipesAsync();
             var defaultRecipe = recipes.FirstOrDefault(x => x.Tags.Contains("default")) ?? recipes.FirstOrDefault();
 
-            if (!string.IsNullOrWhiteSpace(_shellSettings["Secret"]))
+            if (!await ShouldProceedWithTokenAsync(token))
             {
-                if (string.IsNullOrEmpty(token) || !await IsTokenValid(token))
-                {
-                    _logger.LogWarning("An attempt to access '{TenantName}' without providing a secret was made", _shellSettings.Name);
-                    return StatusCode(404);
-                }
+                return NotFound();
             }
 
             var model = new SetupViewModel
@@ -64,15 +69,21 @@ namespace OrchardCore.Setup.Controllers
                 DatabaseProviders = _databaseProviders,
                 Recipes = recipes,
                 RecipeName = defaultRecipe?.Name,
-                Secret = token
+                Secret = token,
             };
 
             CopyShellSettingsValues(model);
 
-            if (!String.IsNullOrEmpty(_shellSettings["TablePrefix"]))
+            if (!string.IsNullOrEmpty(_shellSettings["TablePrefix"]))
             {
                 model.DatabaseConfigurationPreset = true;
                 model.TablePrefix = _shellSettings["TablePrefix"];
+            }
+
+            if (!string.IsNullOrEmpty(_shellSettings["Schema"]))
+            {
+                model.DatabaseConfigurationPreset = true;
+                model.Schema = _shellSettings["Schema"];
             }
 
             return View(model);
@@ -81,29 +92,15 @@ namespace OrchardCore.Setup.Controllers
         [HttpPost, ActionName("Index")]
         public async Task<ActionResult> IndexPOST(SetupViewModel model)
         {
-            if (!string.IsNullOrWhiteSpace(_shellSettings["Secret"]))
+            if (!await ShouldProceedWithTokenAsync(model.Secret))
             {
-                if (string.IsNullOrEmpty(model.Secret) || !await IsTokenValid(model.Secret))
-                {
-                    _logger.LogWarning("An attempt to access '{TenantName}' without providing a valid secret was made", _shellSettings.Name);
-                    return StatusCode(404);
-                }
+                return StatusCode(404);
             }
 
             model.DatabaseProviders = _databaseProviders;
             model.Recipes = await _setupService.GetSetupRecipesAsync();
 
-            var selectedProvider = model.DatabaseProviders.FirstOrDefault(x => x.Value == model.DatabaseProvider);
-
-            if (!model.DatabaseConfigurationPreset)
-            {
-                if (selectedProvider != null && selectedProvider.HasConnectionString && String.IsNullOrWhiteSpace(model.ConnectionString))
-                {
-                    ModelState.AddModelError(nameof(model.ConnectionString), S["The connection string is mandatory for this provider."]);
-                }
-            }
-
-            if (String.IsNullOrEmpty(model.Password))
+            if (string.IsNullOrEmpty(model.Password))
             {
                 ModelState.AddModelError(nameof(model.Password), S["The password is required."]);
             }
@@ -122,14 +119,20 @@ namespace OrchardCore.Setup.Controllers
                     ModelState.AddModelError(nameof(model.RecipeName), S["Invalid recipe."]);
                 }
             }
-            else if (String.IsNullOrEmpty(model.RecipeName) || (selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == model.RecipeName)) == null)
+            else if (string.IsNullOrEmpty(model.RecipeName) || (selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == model.RecipeName)) == null)
             {
                 ModelState.AddModelError(nameof(model.RecipeName), S["Invalid recipe."]);
             }
 
-            if (!MailboxAddress.TryParse(model.Email, out var emailAddress))
+            // Only add additional errors if attribute validation has passed.
+            if (!string.IsNullOrEmpty(model.Email) && !_emailAddressValidator.Validate(model.Email))
             {
-                ModelState.AddModelError(nameof(model.Email), S["Invalid email."]);
+                ModelState.AddModelError(nameof(model.Email), S["The email is invalid."]);
+            }
+
+            if (!string.IsNullOrEmpty(model.UserName) && model.UserName.Any(c => !_identityOptions.User.AllowedUserNameCharacters.Contains(c)))
+            {
+                ModelState.AddModelError(nameof(model.UserName), S["User name '{0}' is invalid, can only contain letters or digits.", model.UserName]);
             }
 
             if (!ModelState.IsValid)
@@ -141,33 +144,39 @@ namespace OrchardCore.Setup.Controllers
             var setupContext = new SetupContext
             {
                 ShellSettings = _shellSettings,
-                SiteName = model.SiteName,
                 EnabledFeatures = null, // default list,
-                AdminUsername = model.UserName,
-                AdminEmail = model.Email,
-                AdminPassword = model.Password,
                 Errors = new Dictionary<string, string>(),
                 Recipe = selectedRecipe,
-                SiteTimeZone = model.SiteTimeZone
+                Properties = new Dictionary<string, object>
+                {
+                    { SetupConstants.SiteName, model.SiteName },
+                    { SetupConstants.AdminUsername, model.UserName },
+                    { SetupConstants.AdminEmail, model.Email },
+                    { SetupConstants.AdminPassword, model.Password },
+                    { SetupConstants.SiteTimeZone, model.SiteTimeZone },
+                }
             };
 
             if (!string.IsNullOrEmpty(_shellSettings["ConnectionString"]))
             {
-                setupContext.DatabaseProvider = _shellSettings["DatabaseProvider"];
-                setupContext.DatabaseConnectionString = _shellSettings["ConnectionString"];
-                setupContext.DatabaseTablePrefix = _shellSettings["TablePrefix"];
+                model.DatabaseConfigurationPreset = true;
+                setupContext.Properties[SetupConstants.DatabaseProvider] = _shellSettings["DatabaseProvider"];
+                setupContext.Properties[SetupConstants.DatabaseConnectionString] = _shellSettings["ConnectionString"];
+                setupContext.Properties[SetupConstants.DatabaseTablePrefix] = _shellSettings["TablePrefix"];
+                setupContext.Properties[SetupConstants.DatabaseSchema] = _shellSettings["Schema"];
             }
             else
             {
-                setupContext.DatabaseProvider = model.DatabaseProvider;
-                setupContext.DatabaseConnectionString = model.ConnectionString;
-                setupContext.DatabaseTablePrefix = model.TablePrefix;
+                setupContext.Properties[SetupConstants.DatabaseProvider] = model.DatabaseProvider;
+                setupContext.Properties[SetupConstants.DatabaseConnectionString] = model.ConnectionString;
+                setupContext.Properties[SetupConstants.DatabaseTablePrefix] = model.TablePrefix;
+                setupContext.Properties[SetupConstants.DatabaseSchema] = model.Schema;
             }
 
             var executionId = await _setupService.SetupAsync(setupContext);
 
-            // Check if a component in the Setup failed
-            if (setupContext.Errors.Any())
+            // Check if any Setup component failed (e.g., database connection validation)
+            if (setupContext.Errors.Count > 0)
             {
                 foreach (var error in setupContext.Errors)
                 {
@@ -182,19 +191,19 @@ namespace OrchardCore.Setup.Controllers
 
         private void CopyShellSettingsValues(SetupViewModel model)
         {
-            if (!String.IsNullOrEmpty(_shellSettings["ConnectionString"]))
+            if (!string.IsNullOrEmpty(_shellSettings["ConnectionString"]))
             {
                 model.DatabaseConfigurationPreset = true;
                 model.ConnectionString = _shellSettings["ConnectionString"];
             }
 
-            if (!String.IsNullOrEmpty(_shellSettings["RecipeName"]))
+            if (!string.IsNullOrEmpty(_shellSettings["RecipeName"]))
             {
                 model.RecipeNamePreset = true;
                 model.RecipeName = _shellSettings["RecipeName"];
             }
 
-            if (!String.IsNullOrEmpty(_shellSettings["DatabaseProvider"]))
+            if (!string.IsNullOrEmpty(_shellSettings["DatabaseProvider"]))
             {
                 model.DatabaseConfigurationPreset = true;
                 model.DatabaseProvider = _shellSettings["DatabaseProvider"];
@@ -205,13 +214,27 @@ namespace OrchardCore.Setup.Controllers
             }
         }
 
+        private async Task<bool> ShouldProceedWithTokenAsync(string token)
+        {
+            if (!string.IsNullOrWhiteSpace(_shellSettings["Secret"]))
+            {
+                if (string.IsNullOrEmpty(token) || !await IsTokenValid(token))
+                {
+                    _logger.LogWarning("An attempt to access '{TenantName}' without providing a secret was made", _shellSettings.Name);
+
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         private async Task<bool> IsTokenValid(string token)
         {
+            var result = false;
             try
             {
-                var result = false;
-
-                var shellScope = await _shellHost.GetScopeAsync(ShellHelper.DefaultShellName);
+                var shellScope = await _shellHost.GetScopeAsync(ShellSettings.DefaultShellName);
 
                 await shellScope.UsingAsync(scope =>
                 {
@@ -230,15 +253,13 @@ namespace OrchardCore.Setup.Controllers
 
                     return Task.CompletedTask;
                 });
-
-                return result;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error in decrypting the token");
             }
 
-            return false;
+            return result;
         }
     }
 }

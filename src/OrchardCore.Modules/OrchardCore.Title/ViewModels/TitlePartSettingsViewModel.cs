@@ -7,6 +7,7 @@ namespace OrchardCore.Title.ViewModels
     {
         public TitlePartOptions Options { get; set; }
         public string Pattern { get; set; }
+        public bool RenderTitle { get; set; }
 
         [BindNever]
         public TitlePartSettings TitlePartSettings { get; set; }

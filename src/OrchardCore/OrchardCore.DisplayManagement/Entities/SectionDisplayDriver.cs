@@ -12,6 +12,7 @@ namespace OrchardCore.DisplayManagement.Entities
     /// shape instance for a specific section of the object. A section represents a property of an entity instance
     /// where the name of the property is the type of the section.
     /// </summary>
+    /// <typeparam name="TModel">The type of model this driver handles.</typeparam>
     /// <typeparam name="TSection">The type of the section this driver handles.</typeparam>
     public abstract class SectionDisplayDriver<TModel, TSection> : DisplayDriver<TModel>
         where TSection : new()

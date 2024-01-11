@@ -1,4 +1,4 @@
-# Workflows (OrchardCore.Workflows)
+# Workflows (`OrchardCore.Workflows`)
 
 The Workflows module provides a way for users to visually implement business rules using flowchart diagrams.
 
@@ -14,7 +14,7 @@ A Task activity typically performs an action, such as publishing a content item,
 
 In order for a workflow to execute, at least one activity must be marked as the *start of the workflow*.  
 Only Event activities can be marked as the start of a workflow.  
-An example of such an event activity is _Content Created_, which executes whenever a content item is created.  
+An example of such an event activity is *Content Created*, which executes whenever a content item is created.  
 A workflow can have more than one start event. This allows you to trigger (run) a workflow in response to various types of events.
 
 Each activity has one or more **outcomes**, which represent a source endpoint from which a connection can be made to the next activity, which are called transitions.  
@@ -82,7 +82,7 @@ Each activity has zero or more outcomes. When an activity has executed, it yield
 The workflow manager uses this list of outcomes to determine which activities to execute next.
 
 Although many activities support multiple outcomes, they typically return only one of them when done executing.  
-For example, the _Send Email_ activity has two possible outcomes: "Done" and "Failed".  
+For example, the *Send Email* activity has two possible outcomes: "Done" and "Failed".  
 When the email was sent successfully, it yields "Done" as the outcome, and "Failed" otherwise.
 
 ### Transition
@@ -101,8 +101,8 @@ Each activity has access to this execution context.
 
 ### Correlation
 
-Correlation is the act of associating a workflow instance with one or more _identifiers_. These identifiers can be anything.  
-For example, when a workflow has the _Content Created_ event as its starting point, the workflow instance will be associated, or rather _correlated_ to the content item ID that was just created.  
+Correlation is the act of associating a workflow instance with one or more *identifiers*. These identifiers can be anything.  
+For example, when a workflow has the *Content Created* event as its starting point, the workflow instance will be associated, or rather *correlated* to the content item ID that was just created.  
 This allows long-running workflow scenarios where only workflow instances associated with a given content item ID are resumed.
 
 ### Input
@@ -130,11 +130,11 @@ Workflows can be **short-running** as well as **long-running**.
 
 ### Short-running workflows
 
-When a workflow executes without encountering any **blocking** activities (i.e. activities that wait for an event to occur, such as _Signal_), the workflow will run to completion in one go.
+When a workflow executes without encountering any **blocking** activities (i.e. activities that wait for an event to occur, such as *Signal*), the workflow will run to completion in one go.
 
 ### Long-running workflows
 
-When a workflow executes and encounters a blocking activity (such as an event), the workflow manager will _halt_ execution and persist the workflow instance to the underlying persistence layer.  
+When a workflow executes and encounters a blocking activity (such as an event), the workflow manager will *halt* execution and persist the workflow instance to the underlying persistence layer.  
 When the appropriate event is triggered (which could happen seconds, days, weeks or even years from now), the workflow manager will load the workflow instance from storage and resume execution.
 
 ## Scripts and Expressions
@@ -154,6 +154,9 @@ The following JavaScript functions are available by default to any activity that
 | `input` | Returns the input parameter with the specified name. Input to the workflow is provided when the workflow is executed by the workflow manager. | `input(name: string): any` |
 | `output` | Sets an output parameter with the specified name. Workflow output can be collected by the invoker of the workflow. | `output(name: string, value: any): void` |
 | `property` | Returns the property value with the specified name. Properties are a dictionary that workflow activities can read and write information from and to. | `property(name: string): any` |
+| `setProperty` | Stores the specified data in workflow properties. | `setProperty(name: string,data:any):void` |
+| `executeQuery` | Returns the result of the query, see [more](../Queries/#scripting). | `executeQuery(name: String, parameters: Dictionary<string,object>): IEnumerable<object>` |
+| `log` | Output logs according to the specified log level. Allowed log levels : `'Trace','Debug','Information','Warning','Error','Critical','None'` | `log(level: string, text: string, param: object): void` |
 | `lastResult` | Returns the value that the previous activity provided, if any. | `lastResult(): any` |
 | `correlationId` | Returns the correlation value of the workflow instance. | `correlationId(): string` |
 | `signalUrl` | Returns workflow trigger URL with a protected SAS token into which the specified signal name is encoded. Use this to generate URLs that can be shared with trusted parties to trigger the current workflow if it is blocked on the Signal activity that is configured with the same signal name. | `signalUrl(signal: string): string` |
@@ -170,8 +173,7 @@ The following JavaScript functions are available by default to any HTTP activity
 | `absoluteUrl` | Returns the absolute URL for the relative path argument. | `absoluteUrl(relativePath: String): String` |
 | `readBody` | Returns the raw HTTP request body. | `readBody(): String` |
 | `requestForm` | Returns the value(s) of the form field name passed in as an argument. | `requestForm(): String`<br/>`requestForm(name: String): String` or `Array` |
-| `queryStringAsJson` | Returns the entire query string as a JSON object. | `queryStringAsJson(): { "param1": [ "param1-value1", "param1-value2" ], "param2": [ "param2-value1", "param2-value2" ], ... }` |
-| `requestFormAsJson` | Returns the entire request form as a JSON object. | `requestFormAsJson(): { "field1": [ "field1-value1", "field1-value2" ], "field2": [ "field2-value1", "field2-value2" ], ... }` |
+| `deserializeRequestData` | Deserializes the request data automatically for requests that send JSON or form data. Returns the entire request data as a JSON object. Replaces deprecated queryStringAsJson and requestFormAsJson methods | `deserializeRequestData(): { "field1": [ "field1-value1", "field1-value2" ], "field2": [ "field2-value1", "field2-value2" ], ... }` |
 
 ### Liquid Expressions
 
@@ -183,6 +185,7 @@ The following Liquid tags, properties and filters are available by default to an
 | `Workflow.Input` | Property | Returns the Input dictionary. | `{{ Workflow.Input["ContentItem"] }}` |
 | `Workflow.Output` | Property | Returns the Output dictionary. | `{{ Workflow.Output["SomeResult"] }}` |
 | `Workflow.Properties` | Property | Returns the Properties dictionary. | `{{ Workflow.Properties["Foo"] }}` |
+| `signal_url` | Filter | Returns the workflow trigger URL. You can use the `input("Signal")` JavaScript method to check which signal is triggered. | `{{ 'Approved' \| signal_url }}` |
 
 Instead of using the indexer syntax on the three workflow dictionaries `Input`, `Output` and `Properties`, you can also use dot notation, e.g.:
 
@@ -201,46 +204,48 @@ For example, if you have a workflow that starts with the **Content Created Event
 {{ Workflow.Input.ContentItem.DisplayText }}
 ```
 
-For more examples of supported content item filters, see the documentation on [Liquid](..//OrchardCore.Modules/OrchardCore.Liquid/).
+For more examples of supported content item filters, see the documentation on [Liquid](../Liquid/README.md).
 
 ## Activities out of the box
 
 The following activities are available with any default Orchard installation:
 
-| Activity | Type | Description | Documentation |
-| -------- | ---- | ----------- | ------------- |
-| **Workflows** | * | * | * |
-| Correlate | Task | Correlate the current workflow instance with a value. | [link] |
-| For Each | Task | Iterate over a list. | [link] |
-| Fork | Task | Fork workflow execution into separate paths of execution. | [link] |
-| For Loop | Task | Iterates for N times. | [link] |
-| If / Else | Task | Evaluate a boolean condition and continues execution based on the outcome. | [link] |
-| Join | Task | Join a forked workflow execution back into a single path of execution. | [link] |
-| Log | Task | Write a log entry. | [link] |
-| Notify | Task | Display a notification. | [link] |
-| Script | Task | Execute script and continue execution based on the returned outcome. | [link] |
-| Set Output | Task | Evaluate a script expression and store the result into the workflow's output. | [link] |
-| Set Property | Task | Execute script and continue execution based on the returned outcome. | [link] |
-| While Loop | Task | Iterate while a condition is true. | [link] |
+| Activity | Type | Description |
+| -------- | ---- | ----------- |
+| **Workflows** | * | * |
+| Correlate | Task | Correlate the current workflow instance with a value. |
+| For Each | Task | Iterate over a list. |
+| Fork | Task | Fork workflow execution into separate paths of execution. |
+| For Loop | Task | Iterates for N times. |
+| If / Else | Task | Evaluate a boolean condition and continues execution based on the outcome. |
+| Join | Task | Join a forked workflow execution back into a single path of execution. |
+| Log | Task | Write a log entry. |
+| Notify | Task | Display a notification. |
+| Script | Task | Execute script and continue execution based on the returned outcome. |
+| Set Output | Task | Evaluate a script expression and store the result into the workflow's output. |
+| Set Property | Task | Execute script and continue execution based on the returned outcome. |
+| While Loop | Task | Iterate while a condition is true. |
 | **HTTP Workflow Activities** | * | * | * |
-| HTTP Redirect | Task | Redirect the user agent to the specified URL (301/302). | [link] |
-| HTTP Request | Task | Perform a HTTP request to a given URL. | [link] |
-| Filter Incoming HTTP Request | Event | Executes when the specified HTTP request comes in. Similar to an MVC Action Filter. | [link] |
-| Signal | Event | Executes when a signal is triggered. | [link] |
+| HTTP Redirect | Task | Redirect the user agent to the specified URL (301/302). |
+| HTTP Request | Task | Perform a HTTP request to a given URL. |
+| Filter Incoming HTTP Request | Event | Executes when the specified HTTP request comes in. Similar to an MVC Action Filter. |
+| Signal | Event | Executes when a signal is triggered. |
 | **Email** | * | * | * |
-| Send Email | Task | Send an email. | [link] |
+| Send Email | Task | Send an email. |
 | **Timer Workflow Activities** | * | * | * |
-| Timer | Event | Executes repeatedly according to a specified CRON expression. | [link] |
+| Timer | Event | Executes repeatedly according to a specified CRON expression. |
 | **Contents** | * | * | * |
-| Content Created | Event | Executes when content is created. | [link] |
-| Content Deleted | Event | Executes when content is deleted. | [link] |
-| Content Published | Event | Executes when content is published. | [link] |
-| Content Unpublished | Event | Executes when content is unpublished. | [link] |
-| Content Updated | Event | Executes when content is updated. | [link] |
-| Content Versioned| Event | Executes when content is versioned. | [link] |
-| Create Content | Task | Create a content item. | [link] |
-| Delete Content | Task | Delete a content item. | [link] |
-| Publish Content | Task | Publish a content item. | [link] |
+| Content Created | Event | Executes when content is created. |
+| Content Deleted | Event | Executes when content is deleted. |
+| Content Published | Event | Executes when content is published. |
+| Content Unpublished | Event | Executes when content is unpublished. |
+| Content Updated | Event | Executes when content is updated. |
+| Content Versioned| Event | Executes when content is versioned. |
+| Create Content | Task | Create a content item. |
+| Delete Content | Task | Delete a content item. |
+| Publish Content | Task | Publish a content item. |
+**User** | * | * | * |
+| ValidateUser | Task | Used to check if the user is logged in and has the specified role(s). |
 
 ## Developing Custom Activities
 
@@ -251,6 +256,29 @@ Developing custom activities involve the following steps:
 2. Create a new **display driver** class that directly or indirectly implements `IDisplayDriver`. An activity display driver controls the activity's display on the **workflow editor canvas**, the **activity picker** and the **activity editor**. Although not required, it is recommended to keep this class in a folder called `Drivers`.
 3. Optionally implement a **view model** if your activity has properties that the user should be able to configure.
 4. Implement the various Razor views for the various shapes provided by the driver. Although not required, it is recommended to store these files in the `Views/Items` folder. Note that it is required for your views to be discoverable by the display engine.  
+
+You may trigger a custom event activity by calling the `TriggerEventAsync` method on `IWorkflowManager`. The following is an example of how to trigger the workflow for a custom event named `CustomTaskActivity`
+
+```csharp
+var customData = new CustomDto();
+
+var input = new Dictionary<string, object>()
+{
+    // Here we are passing custom data to the workflow's input.
+    { "data", customData}
+};
+
+await workflowManager.TriggerEventAsync("CustomTaskActivity", input);
+```
+
+You may passing an instance of a custom object to the workflow's input by adding it to the input collection. If you are looking to use liquid to access the member of the custom object, you must register a member access strategy. The following example for defining a custom type.
+
+```csharp
+services.Configure<TemplateOptions>(o =>
+{
+    o.MemberAccessStrategy.Register<CustomDto>();
+});
+```
 
 ### Activity Display Types
 
@@ -271,6 +299,7 @@ Used when the activity is rendered as part of the workflow editor design surface
 
 - `Name`
 - `Category`
+- `DisplayText`
 - `Properties`
 - `HasEditor`
 - `GetPossibleOutcomes`
@@ -285,11 +314,7 @@ Used when the activity is rendered as part of the workflow editor design surface
 - `OnActivityExecutingAsync`
 - `OnActivityExecutedAsync`
 
-The `IEvent` interface adds the following member:
-
-- `CanStartWorkflow`
-
-The following is an example of a simple activity implementation that displays a notification:
+The following is an example of a simple task activity implementation that displays a notification:
 
 ```csharp
 public class NotifyTask : TaskActivity
@@ -333,13 +358,13 @@ public class NotifyTask : TaskActivity
     }
 
     // Returns the possible outcomes of this activity.
-    public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowContext workflowContext, ActivityContext activityContext)
+    public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         return Outcomes(S["Done"]);
     }
 
     // This is the heart of the activity and actually performs the work to be done.
-    public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowContext workflowContext, ActivityContext activityContext)
+    public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         var message = await workflowContext.EvaluateExpressionAsync(Message);
         _notifier.Add(NotificationType, H[message]);
@@ -351,7 +376,7 @@ public class NotifyTask : TaskActivity
 The following is an example of a simple activity display driver:
 
 ```csharp
-public class NotifyTaskDisplay : ActivityDisplayDriver<NotifyTask, NotifyTaskViewModel>
+public class NotifyTaskDisplayDriver : ActivityDisplayDriver<NotifyTask, NotifyTaskViewModel>
 {
     protected override void EditActivity(NotifyTask activity, NotifyTaskViewModel model)
     {
@@ -413,16 +438,8 @@ Continuing with the `NotifyTask` example, we now need to create the following Ra
 - `NotifyTask.Fields.Thumbnail.cshtml`
 - `NotifyTask.Fields.Edit.cshtml`
 
-## CREDITS
+## Videos
 
-### jsPlumb
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/n-O4WO6dVJk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-<https://github.com/jsplumb/jsplumb>  
-Copyright (c) 2010 - 2014 jsPlumb, <http://jsplumbtoolkit.com>  
-License: dual-licensed under both MIT and GPLv
-
-### NCrontab
-
-<https://github.com/atifaziz/NCrontab>  
-Copyright (C) Atif Aziz  
-License: Apache License 2.0
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/IcR-YpxKlGQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

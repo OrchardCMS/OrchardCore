@@ -8,9 +8,7 @@ using OrchardCore.OpenId.YesSql.Stores;
 
 namespace OrchardCore.OpenId.YesSql.Resolvers
 {
-    /// <summary>
-    /// Exposes a method allowing to resolve a token store.
-    /// </summary>
+    /// <inheritdoc/>
     public class OpenIdTokenStoreResolver : IOpenIddictTokenStoreResolver
     {
         private readonly TypeResolutionCache _cache;
@@ -22,12 +20,7 @@ namespace OrchardCore.OpenId.YesSql.Resolvers
             _provider = provider;
         }
 
-        /// <summary>
-        /// Returns a token store compatible with the specified token type or throws an
-        /// <see cref="InvalidOperationException"/> if no store can be built using the specified type.
-        /// </summary>
-        /// <typeparam name="TToken">The type of the Token entity.</typeparam>
-        /// <returns>An <see cref="IOpenIddictTokenStore{TToken}"/>.</returns>
+        /// <inheritdoc/>
         public IOpenIddictTokenStore<TToken> Get<TToken>() where TToken : class
         {
             var store = _provider.GetService<IOpenIddictTokenStore<TToken>>();
@@ -51,7 +44,7 @@ namespace OrchardCore.OpenId.YesSql.Resolvers
                 return typeof(OpenIdTokenStore<>).MakeGenericType(key);
             });
 
-            return (IOpenIddictTokenStore<TToken>) _provider.GetRequiredService(type);
+            return (IOpenIddictTokenStore<TToken>)_provider.GetRequiredService(type);
         }
 
         // Note: OrchardCore YesSql resolvers are registered as scoped dependencies as their inner

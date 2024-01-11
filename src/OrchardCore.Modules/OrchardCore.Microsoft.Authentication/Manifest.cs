@@ -1,11 +1,11 @@
-using OrchardCore.Modules.Manifest;
 using OrchardCore.Microsoft.Authentication;
+using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "Microsoft Authentication",
-    Author = "The Orchard Team",
-    Website = "https://orchardproject.net",
-    Version = "2.0.0",
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion,
     Category = "Microsoft Authentication"
 )]
 
@@ -18,7 +18,7 @@ using OrchardCore.Microsoft.Authentication;
 
 [assembly: Feature(
     Id = MicrosoftAuthenticationConstants.Features.AAD,
-    Name = "Microsoft Azure Active Directory Authentication",
+    Name = "Microsoft Entra ID (Azure Active Directory) Authentication",
     Category = "Microsoft Authentication",
-    Description = "Authenticates users with their Azure Active Directory Account."
+    Description = "Authenticates users with their Microsoft Entra ID Account."
 )]

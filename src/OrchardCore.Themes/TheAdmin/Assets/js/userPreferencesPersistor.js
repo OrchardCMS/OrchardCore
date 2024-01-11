@@ -3,9 +3,9 @@
 // restore the sidebar to the previous state.
 function persistAdminPreferences() {
     setTimeout(function () {
-        var adminPreferences = {};        
-        adminPreferences.leftSidebarCompact = $('body').hasClass('left-sidebar-compact') ? true : false;
+        var adminPreferences = {};
+        adminPreferences.leftSidebarCompact = document.body.classList.contains('left-sidebar-compact') ? true : false;
         adminPreferences.isCompactExplicit = isCompactExplicit;
-        localStorage.setItem('adminPreferences', JSON.stringify(adminPreferences));
+        setAdminPreferences(adminPreferences);
     }, 200);
 }

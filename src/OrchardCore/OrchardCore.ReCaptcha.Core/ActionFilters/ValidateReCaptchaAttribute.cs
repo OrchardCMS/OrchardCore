@@ -24,7 +24,7 @@ namespace OrchardCore.ReCaptcha.ActionFilters
             var isValidCaptcha = false;
             var reCaptchaResponse = context.HttpContext.Request?.Form?[Constants.ReCaptchaServerResponseHeaderName].ToString();
 
-            if (!String.IsNullOrWhiteSpace(reCaptchaResponse))
+            if (!string.IsNullOrWhiteSpace(reCaptchaResponse))
                 isValidCaptcha = await recaptchaService.VerifyCaptchaResponseAsync(reCaptchaResponse);
 
             var isRobot = false;
@@ -37,7 +37,6 @@ namespace OrchardCore.ReCaptcha.ActionFilters
                 case ReCaptchaMode.AlwaysShow:
                     isRobot = true;
                     break;
-
             }
 
             if (isRobot && !isValidCaptcha)

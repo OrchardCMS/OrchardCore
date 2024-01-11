@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
@@ -9,23 +10,27 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
-    public class NotifyTask : TaskActivity
+    public class NotifyTask : TaskActivity<NotifyTask>
     {
         private readonly INotifier _notifier;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer<NotifyTask> S;
+        protected readonly IStringLocalizer S;
+        private readonly HtmlEncoder _htmlEncoder;
 
-        public NotifyTask(INotifier notifier, IWorkflowExpressionEvaluator expressionvaluator, IStringLocalizer<NotifyTask> localizer)
+        public NotifyTask(
+            INotifier notifier,
+            IWorkflowExpressionEvaluator expressionEvaluator,
+            IStringLocalizer<NotifyTask> localizer,
+            HtmlEncoder htmlEncoder)
         {
             _notifier = notifier;
-            _expressionEvaluator = expressionvaluator;
+            _expressionEvaluator = expressionEvaluator;
             S = localizer;
+            _htmlEncoder = htmlEncoder;
         }
-        
-        public override string Name => nameof(NotifyTask);
-        
+
         public override LocalizedString DisplayText => S["Notify Task"];
-        
+
         public override LocalizedString Category => S["UI"];
 
         public NotifyType NotificationType
@@ -47,8 +52,10 @@ namespace OrchardCore.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var message = await _expressionEvaluator.EvaluateAsync(Message, workflowContext);
-            _notifier.Add(NotificationType, new LocalizedHtmlString(nameof(NotifyTask), message));
+            var message = await _expressionEvaluator.EvaluateAsync(Message, workflowContext, _htmlEncoder);
+
+            // The notification message can contain HTML by design
+            await _notifier.AddAsync(NotificationType, new LocalizedHtmlString(nameof(NotifyTask), message));
 
             return Outcomes("Done");
         }

@@ -13,8 +13,8 @@ namespace OrchardCore.Workflows.Http.Activities
     public class HttpRequestFilterEvent : EventActivity
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IStringLocalizer<HttpRequestFilterEvent> S;
-        
+        protected readonly IStringLocalizer S;
+
         public static string EventName => nameof(HttpRequestFilterEvent);
 
         public HttpRequestFilterEvent(IStringLocalizer<HttpRequestFilterEvent> localizer, IHttpContextAccessor httpContextAccessor)
@@ -62,17 +62,21 @@ namespace OrchardCore.Workflows.Http.Activities
         {
             var httpContext = _httpContextAccessor.HttpContext;
             var httpRequest = httpContext.Request;
-            var isHttpMethodMatch = string.Equals(HttpMethod, httpRequest.Method, System.StringComparison.OrdinalIgnoreCase);
+            var isHttpMethodMatch = string.Equals(HttpMethod, httpRequest.Method, StringComparison.OrdinalIgnoreCase);
 
             if (!isHttpMethodMatch)
+            {
                 return false;
+            }
 
             var routeValues = RouteValues;
             var currentRouteValues = httpContext.Request.RouteValues;
             var isRouteMatch = RouteMatches(routeValues, currentRouteValues);
 
             if (!isRouteMatch)
+            {
                 return false;
+            }
 
             return true;
         }
@@ -94,7 +98,7 @@ namespace OrchardCore.Workflows.Http.Activities
             RouteValues = routeValues;
         }
 
-        private bool RouteMatches(RouteValueDictionary a, RouteValueDictionary b)
+        private static bool RouteMatches(RouteValueDictionary a, RouteValueDictionary b)
         {
             return a.All(x =>
             {

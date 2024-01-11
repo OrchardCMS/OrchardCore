@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Localization;
+using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -9,12 +10,13 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Mvc.ModelBinding;
 
-namespace OrchardCore.ContentFields.Fields
+namespace OrchardCore.ContentFields.Drivers
 {
     public class YoutubeFieldDisplayDriver : ContentFieldDisplayDriver<YoutubeField>
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public YoutubeFieldDisplayDriver(IStringLocalizer<YoutubeFieldDisplayDriver> localizer)
         {
@@ -25,9 +27,9 @@ namespace OrchardCore.ContentFields.Fields
         {
             return Initialize<YoutubeFieldDisplayViewModel>(GetDisplayShapeType(context), model =>
             {
-               model.Field = field;
-               model.Part = context.ContentPart;
-               model.PartFieldDefinition = context.PartFieldDefinition;
+                model.Field = field;
+                model.Part = context.ContentPart;
+                model.PartFieldDefinition = context.PartFieldDefinition;
             })
             .Location("Detail", "Content")
             .Location("Summary", "Content");
@@ -47,14 +49,14 @@ namespace OrchardCore.ContentFields.Fields
 
         public override async Task<IDisplayResult> UpdateAsync(YoutubeField field, IUpdateModel updater, UpdateFieldEditorContext context)
         {
-            EditYoutubeFieldViewModel model = new EditYoutubeFieldViewModel();
+            var model = new EditYoutubeFieldViewModel();
 
             if (await updater.TryUpdateModelAsync(model, Prefix))
             {
                 var settings = context.PartFieldDefinition.GetSettings<YoutubeFieldSettings>();
-                if (settings.Required && String.IsNullOrWhiteSpace(model.RawAddress))
+                if (settings.Required && string.IsNullOrWhiteSpace(model.RawAddress))
                 {
-                    updater.ModelState.AddModelError(Prefix, S["A value is required for '{0}'.", context.PartFieldDefinition.DisplayName()]);
+                    updater.ModelState.AddModelError(Prefix, nameof(model.RawAddress), S["A value is required for '{0}'.", context.PartFieldDefinition.DisplayName()]);
                 }
                 else
                 {
@@ -62,17 +64,17 @@ namespace OrchardCore.ContentFields.Fields
                     {
                         var uri = new Uri(model.RawAddress);
 
-                        // if it is a url with QueryString
-                        if (!String.IsNullOrWhiteSpace(uri.Query))
+                        // If it is a url with QueryString.
+                        if (!string.IsNullOrWhiteSpace(uri.Query))
                         {
                             var query = QueryHelpers.ParseQuery(uri.Query);
-                            if (query.ContainsKey("v"))
+                            if (query.TryGetValue("v", out var values))
                             {
-                                model.EmbeddedAddress = $"{uri.GetLeftPart(UriPartial.Authority)}/embed/{query["v"]}";
+                                model.EmbeddedAddress = $"{uri.GetLeftPart(UriPartial.Authority)}/embed/{values}";
                             }
                             else
                             {
-                                updater.ModelState.AddModelError(Prefix + "." + nameof(model.RawAddress), S["The format of the url is invalid"]);
+                                updater.ModelState.AddModelError(Prefix, nameof(model.RawAddress), S["The format of the url is invalid"]);
                             }
                         }
                         else
@@ -83,6 +85,11 @@ namespace OrchardCore.ContentFields.Fields
 
                         field.RawAddress = model.RawAddress;
                         field.EmbeddedAddress = model.EmbeddedAddress;
+                    }
+                    else
+                    {
+                        field.RawAddress = null;
+                        field.EmbeddedAddress = null;
                     }
                 }
             }

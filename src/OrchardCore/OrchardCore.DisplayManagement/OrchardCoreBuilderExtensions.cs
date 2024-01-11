@@ -63,6 +63,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     services.AddScoped<IPlacementNodeFilterProvider, PathPlacementNodeFilterProvider>();
 
+                    services.AddScoped<IShapePlacementProvider, ShapeTablePlacementProvider>();
+
                     services.TryAddEnumerable(
                         ServiceDescriptor.Transient<IConfigureOptions<ShapeTemplateOptions>, ShapeTemplateOptionsSetup>());
                     services.TryAddSingleton<IShapeTemplateFileProviderAccessor, ShapeTemplateFileProviderAccessor>();
@@ -70,7 +72,10 @@ namespace Microsoft.Extensions.DependencyInjection
                     services.AddShapeAttributes<CoreShapes>();
                     services.AddScoped<IShapeTableProvider, CoreShapesTableProvider>();
                     services.AddShapeAttributes<ZoneShapes>();
+                    services.AddScoped<IShapeTableProvider, ZoneShapeAlternates>();
+                    services.AddShapeAttributes<GroupShapes>();
 
+                    services.AddScoped(typeof(IDisplayManager<>), typeof(DisplayManager<>));
                     services.AddScoped<IHtmlDisplay, DefaultHtmlDisplay>();
                     services.AddScoped<ILayoutAccessor, LayoutAccessor>();
                     services.AddScoped<IThemeManager, ThemeManager>();

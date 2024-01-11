@@ -1,12 +1,11 @@
-using System;
 using System.Collections.Generic;
 
 namespace OrchardCore.ContentManagement
 {
     public class DefaultContentManagerSession : IContentManagerSession
     {
-        private readonly Dictionary<int, ContentItem> _itemByVersionId = new Dictionary<int, ContentItem>();
-        private readonly Dictionary<string, ContentItem> _publishedItemsById = new Dictionary<string, ContentItem>();
+        private readonly Dictionary<long, ContentItem> _itemByVersionId = new();
+        private readonly Dictionary<string, ContentItem> _publishedItemsById = new();
 
         private bool _hasItems;
 
@@ -14,16 +13,20 @@ namespace OrchardCore.ContentManagement
         {
             _hasItems = true;
 
-            _itemByVersionId.Add(item.Id, item);
+            // Don't fail to re-add an item if it is the same instance.
+            if (!_itemByVersionId.TryGetValue(item.Id, out var existing) || existing != item)
+            {
+                _itemByVersionId.Add(item.Id, item);
+            }
 
-            // is it the  Published version ?
+            // Is it the Published version?
             if (item.Published)
             {
                 _publishedItemsById[item.ContentItemId] = item;
             }
         }
 
-        public bool RecallVersionId(int id, out ContentItem item)
+        public bool RecallVersionId(long id, out ContentItem item)
         {
             if (!_hasItems)
             {

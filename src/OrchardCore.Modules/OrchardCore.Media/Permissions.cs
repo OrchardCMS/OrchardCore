@@ -7,13 +7,27 @@ namespace OrchardCore.Media
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageMedia = new Permission("ManageMediaContent", "Manage Media");
-        public static readonly Permission ManageOwnMedia = new Permission("ManageOwnMedia", "Manage Own Media", new[] { ManageMedia });
-        public static readonly Permission ManageAttachedMediaFieldsFolder = new Permission("ManageAttachedMediaFieldsFolder", "Manage Attached Media Fields Folder");
+        public static readonly Permission ManageMediaFolder = new("ManageMediaFolder", "Manage All Media Folders");
+        public static readonly Permission ManageOthersMedia = new("ManageOthersMediaContent", "Manage Media For Others", new[] { ManageMediaFolder });
+        public static readonly Permission ManageOwnMedia = new("ManageOwnMediaContent", "Manage Own Media", new[] { ManageOthersMedia });
+        public static readonly Permission ManageMedia = new("ManageMediaContent", "Manage Media", new[] { ManageOwnMedia });
+        public static readonly Permission ManageAttachedMediaFieldsFolder = new("ManageAttachedMediaFieldsFolder", "Manage Attached Media Fields Folder", new[] { ManageMediaFolder });
+        public static readonly Permission ManageMediaProfiles = new("ManageMediaProfiles", "Manage Media Profiles");
+        public static readonly Permission ViewMediaOptions = new("ViewMediaOptions", "View Media Options");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return Task.FromResult(new[] { ManageMedia, ManageOwnMedia, ManageAttachedMediaFieldsFolder }.AsEnumerable());
+            return Task.FromResult(new[]
+            {
+                ManageMedia,
+                ManageMediaFolder,
+                ManageOthersMedia,
+                ManageOwnMedia,
+                ManageAttachedMediaFieldsFolder,
+                ManageMediaProfiles,
+                ViewMediaOptions,
+            }
+            .AsEnumerable());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -23,12 +37,16 @@ namespace OrchardCore.Media
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageMedia, ManageAttachedMediaFieldsFolder }
+                    Permissions = new[]
+                    {
+                        ManageMediaFolder,
+                        ManageMediaProfiles,
+                        ViewMediaOptions },
                 },
                 new PermissionStereotype
                 {
                     Name = "Editor",
-                    Permissions = new[] { ManageMedia }
+                    Permissions = new[] { ManageMedia, ManageOwnMedia },
                 },
                 new PermissionStereotype
                 {
@@ -37,12 +55,12 @@ namespace OrchardCore.Media
                 new PermissionStereotype
                 {
                     Name = "Author",
-                    Permissions = new[] { ManageOwnMedia }
+                    Permissions = new[] { ManageOwnMedia },
                 },
                 new PermissionStereotype
                 {
                     Name = "Contributor",
-                    Permissions = new[] { ManageOwnMedia }
+                    Permissions = new[] { ManageOwnMedia },
                 },
             };
         }
@@ -50,7 +68,7 @@ namespace OrchardCore.Media
 
     public class MediaCachePermissions : IPermissionProvider
     {
-        public static readonly Permission ManageAssetCache = new Permission("ManageAssetCache", "Manage Asset Cache Folder");
+        public static readonly Permission ManageAssetCache = new("ManageAssetCache", "Manage Asset Cache Folder");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
@@ -64,8 +82,8 @@ namespace OrchardCore.Media
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageAssetCache }
-                }
+                    Permissions = new[] { ManageAssetCache },
+                },
             };
         }
     }

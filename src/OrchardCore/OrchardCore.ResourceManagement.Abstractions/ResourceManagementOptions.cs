@@ -1,10 +1,11 @@
 using System;
+using System.Collections.Generic;
 
 namespace OrchardCore.ResourceManagement
 {
     public class ResourceManagementOptions
     {
-        public bool UseCdn { get; set; } = true;
+        public bool UseCdn { get; set; }
 
         public string CdnBaseUrl { get; set; }
 
@@ -17,6 +18,8 @@ namespace OrchardCore.ResourceManagement
         /// <summary>
         /// The prefix path that is used when a url starts with "~/".
         /// </summary>
-        public string ContentBasePath { get; set; } = String.Empty;
+        public string ContentBasePath { get; set; } = string.Empty;
+
+        public HashSet<ResourceManifest> ResourceManifests { get; } = new HashSet<ResourceManifest>();
     }
 }

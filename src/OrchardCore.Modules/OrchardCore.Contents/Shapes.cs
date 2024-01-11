@@ -1,21 +1,23 @@
-using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Utilities;
 
 namespace OrchardCore.Contents
 {
-    public class Shapes : IShapeTableProvider
+    public class Shapes : ShapeTableProvider
     {
-        public void Discover(ShapeTableBuilder builder)
+        public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
         {
             builder.Describe("Content")
                 .OnDisplaying(displaying =>
                 {
-                    dynamic shape = displaying.Shape;
-                    ContentItem contentItem = shape.ContentItem;
+                    var shape = displaying.Shape;
+                    var contentItem = shape.GetProperty<ContentItem>("ContentItem");
 
                     if (contentItem != null)
                     {
@@ -24,16 +26,18 @@ namespace OrchardCore.Contents
                         // BasicShapeTemplateHarvester.Adjust will then adjust the template name
 
                         // Content__[DisplayType] e.g. Content-Summary
-                        displaying.Shape.Metadata.Alternates.Add("Content_" + EncodeAlternateElement(displaying.Shape.Metadata.DisplayType));
+                        displaying.Shape.Metadata.Alternates.Add("Content_" + displaying.Shape.Metadata.DisplayType.EncodeAlternateElement());
+
+                        var encodedContentType = contentItem.ContentType.EncodeAlternateElement();
 
                         // Content__[ContentType] e.g. Content-BlogPost,
-                        displaying.Shape.Metadata.Alternates.Add("Content__" + EncodeAlternateElement(contentItem.ContentType));
+                        displaying.Shape.Metadata.Alternates.Add("Content__" + encodedContentType);
 
                         // Content__[Id] e.g. Content-42,
                         displaying.Shape.Metadata.Alternates.Add("Content__" + contentItem.Id);
 
                         // Content_[DisplayType]__[ContentType] e.g. Content-BlogPost.Summary
-                        displaying.Shape.Metadata.Alternates.Add("Content_" + displaying.Shape.Metadata.DisplayType + "__" + EncodeAlternateElement(contentItem.ContentType));
+                        displaying.Shape.Metadata.Alternates.Add("Content_" + displaying.Shape.Metadata.DisplayType + "__" + encodedContentType);
 
                         // Content_[DisplayType]__[Id] e.g. Content-42.Summary
                         displaying.Shape.Metadata.Alternates.Add("Content_" + displaying.Shape.Metadata.DisplayType + "__" + contentItem.Id);
@@ -44,22 +48,27 @@ namespace OrchardCore.Contents
             builder.Describe("ContentItem")
                 .OnProcessing(async context =>
                 {
-                    dynamic content = context.Shape;
-                    string alias = content.Alias;
-                    string displayType = content.DisplayType;
-                    string alternate = content.Alternate;
+                    var content = context.Shape;
+                    var handle = content.GetProperty<string>("Handle");
+                    var displayType = content.GetProperty<string>("DisplayType");
+                    var alternate = content.GetProperty<string>("Alternate");
 
-                    if (String.IsNullOrEmpty(alias))
+                    if (string.IsNullOrEmpty(handle))
                     {
-                        return;
+                        // This code is provided for backwards compatibility and can be removed in a future version.
+                        handle = content.GetProperty<string>("Alias");
+                        if (string.IsNullOrEmpty(handle))
+                        {
+                            return;
+                        }
                     }
 
                     var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
-                    var aliasManager = context.ServiceProvider.GetRequiredService<IContentAliasManager>();
+                    var handleManager = context.ServiceProvider.GetRequiredService<IContentHandleManager>();
                     var displayManager = context.ServiceProvider.GetRequiredService<IContentItemDisplayManager>();
                     var updateModelAccessor = context.ServiceProvider.GetRequiredService<IUpdateModelAccessor>();
 
-                    var contentItemId = await aliasManager.GetContentItemIdAsync(alias);
+                    var contentItemId = await handleManager.GetContentItemIdAsync(handle);
 
                     if (string.IsNullOrEmpty(contentItemId))
                     {
@@ -73,28 +82,19 @@ namespace OrchardCore.Contents
                         return;
                     }
 
-                    content.ContentItem = contentItem;
+                    content.Properties["ContentItem"] = contentItem;
 
                     var displayShape = await displayManager.BuildDisplayAsync(contentItem, updateModelAccessor.ModelUpdater, displayType);
 
-                    if (!String.IsNullOrEmpty(alternate))
+                    if (!string.IsNullOrEmpty(alternate))
                     {
                         displayShape.Metadata.Alternates.Add(alternate);
                     }
 
-                    content.Add(displayShape);
+                    await context.Shape.AddAsync(displayShape, string.Empty);
                 });
-        }
 
-        /// <summary>
-        /// Encodes dashed and dots so that they don't conflict in filenames
-        /// </summary>
-        /// <param name="alternateElement"></param>
-        /// <returns></returns>
-        private string EncodeAlternateElement(string alternateElement)
-        {
-            return alternateElement.Replace("-", "__").Replace('.', '_');
+            return ValueTask.CompletedTask;
         }
-
     }
 }

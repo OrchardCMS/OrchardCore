@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
@@ -7,15 +6,21 @@ namespace OrchardCore.Users
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageUsers = new Permission("ManageUsers", "Managing Users");
+        public static readonly Permission ManageUsers = CommonPermissions.ManageUsers;
+        public static readonly Permission ViewUsers = CommonPermissions.ViewUsers;
+        public static readonly Permission ManageOwnUserInformation = CommonPermissions.EditOwnUser;
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return Task.FromResult(new[]
+            return Task.FromResult<IEnumerable<Permission>>(new List<Permission>
             {
-                ManageUsers
-            }
-            .AsEnumerable());
+                CommonPermissions.ManageUsers,
+                CommonPermissions.ViewUsers,
+                CommonPermissions.EditOwnUser,
+                CommonPermissions.ListUsers,
+                CommonPermissions.EditUsers,
+                CommonPermissions.DeleteUsers,
+            });
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -23,8 +28,36 @@ namespace OrchardCore.Users
             return new[] {
                 new PermissionStereotype {
                     Name = "Administrator",
-                    Permissions = new[] {ManageUsers}
+                    Permissions = new[]
+                    {
+                        CommonPermissions.ManageUsers,
+                        CommonPermissions.ViewUsers,
+                        CommonPermissions.EditOwnUser,
+                        CommonPermissions.ListUsers,
+                        CommonPermissions.EditUsers,
+                        CommonPermissions.DeleteUsers,
+                    }
                 },
+                new PermissionStereotype
+                {
+                    Name = "Editor",
+                    Permissions = new[] { CommonPermissions.EditOwnUser },
+                },
+                new PermissionStereotype
+                {
+                    Name = "Moderator",
+                    Permissions = new[] { CommonPermissions.EditOwnUser },
+                },
+                new PermissionStereotype
+                {
+                    Name = "Contributor",
+                    Permissions = new[] { CommonPermissions.EditOwnUser },
+                },
+                new PermissionStereotype
+                {
+                    Name = "Author",
+                    Permissions = new[] { CommonPermissions.EditOwnUser },
+                }
             };
         }
     }

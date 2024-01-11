@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.LocationExpander;
@@ -29,10 +30,12 @@ namespace OrchardCore.Mvc
         public override int Order => -1000;
         public override int ConfigureOrder => 1000;
 
+        private readonly IHostEnvironment _hostingEnvironment;
         private readonly IServiceProvider _serviceProvider;
 
-        public Startup(IServiceProvider serviceProvider)
+        public Startup(IHostEnvironment hostingEnvironment, IServiceProvider serviceProvider)
         {
+            _hostingEnvironment = hostingEnvironment;
             _serviceProvider = serviceProvider;
         }
 
@@ -79,6 +82,8 @@ namespace OrchardCore.Mvc
 
                 // Custom model binder to testing purpose
                 options.ModelBinderProviders.Insert(0, new CheckMarkModelBinderProvider());
+
+                options.ModelBinderProviders.Insert(0, new SafeBoolModelBinderProvider());
             });
 
             // Add a route endpoint selector policy.
@@ -87,8 +92,6 @@ namespace OrchardCore.Mvc
             // There are some issues when using the default formatters based on
             // System.Text.Json. Here, we manually add JSON.NET based formatters.
             builder.AddNewtonsoftJson();
-
-            builder.SetCompatibilityVersion(CompatibilityVersion.Latest);
 
             services.AddModularRazorPages();
 
@@ -101,16 +104,17 @@ namespace OrchardCore.Mvc
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<RazorViewEngineOptions>, ModularRazorViewEngineOptionsSetup>());
 
-            // Support razor runtime compilation only if the 'refs' folder exists.
+            // Support razor runtime compilation only if in dev mode and if the 'refs' folder exists.
             var refsFolderExists = Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "refs"));
 
-            if (refsFolderExists)
+            if (_hostingEnvironment.IsDevelopment() && refsFolderExists)
             {
                 builder.AddRazorRuntimeCompilation();
-
-                // Shares across tenants the same compiler and its 'IMemoryCache' instance.
-                services.AddSingleton<IViewCompilerProvider, SharedViewCompilerProvider>();
             }
+
+            // Share across tenants a static compiler even if there is no runtime compilation
+            // because the compiler still uses its internal cache to retrieve compiled items.
+            services.AddSingleton<IViewCompilerProvider, SharedViewCompilerProvider>();
 
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<MvcRazorRuntimeCompilationOptions>, RazorCompilationOptionsSetup>());

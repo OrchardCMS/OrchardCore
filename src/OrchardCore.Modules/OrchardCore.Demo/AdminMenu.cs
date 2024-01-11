@@ -7,7 +7,7 @@ namespace OrchardCore.Demo
 {
     public class AdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
@@ -16,7 +16,7 @@ namespace OrchardCore.Demo
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }
@@ -45,6 +45,10 @@ namespace OrchardCore.Demo
                             .Action("Index", "Admin", new { area = "OrchardCore.Demo" }))
                         .Add(S["This is Menu Item 3.2"], subItem => subItem
                             .Action("Index", "Admin", new { area = "OrchardCore.Demo" }))
+
+                    )
+                    .Add(S["Todo (Liquid - Frontend)"], "0", item => item
+                        .Action("Index", "Todo", new { area = "OrchardCore.Demo" })
                     )
                 );
 

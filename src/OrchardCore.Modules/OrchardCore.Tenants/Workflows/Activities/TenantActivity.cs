@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
@@ -14,10 +12,11 @@ namespace OrchardCore.Tenants.Workflows.Activities
     {
         protected readonly IStringLocalizer S;
 
-        protected TenantActivity(IShellSettingsManager shellSettingsManager, IShellHost shellHost, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer localizer)
+        protected TenantActivity(IShellSettingsManager shellSettingsManager, IShellHost shellHost, IWorkflowExpressionEvaluator expressionEvaluator, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer localizer)
         {
             ShellSettingsManager = shellSettingsManager;
             ShellHost = shellHost;
+            ExpressionEvaluator = expressionEvaluator;
             ScriptEvaluator = scriptEvaluator;
             S = localizer;
         }
@@ -30,6 +29,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
         protected IShellSettingsManager ShellSettingsManager { get; }
         protected IShellHost ShellHost { get; }
+        protected IWorkflowExpressionEvaluator ExpressionEvaluator { get; }
         protected IWorkflowScriptEvaluator ScriptEvaluator { get; }
 
         public override LocalizedString Category => S["Tenant"];

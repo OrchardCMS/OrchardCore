@@ -1,0 +1,7 @@
+.tags .multiselect--active {
+  z-index: 1000;
+}
+
+[v-cloak] {
+  display: none;
+}

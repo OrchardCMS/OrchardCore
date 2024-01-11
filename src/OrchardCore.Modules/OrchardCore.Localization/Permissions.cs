@@ -11,9 +11,9 @@ namespace OrchardCore.Localization
     public class Permissions : IPermissionProvider
     {
         /// <summary>
-        /// Gets a permession for managing the cultures.
+        /// Gets a permission for managing the cultures.
         /// </summary>
-        public static readonly Permission ManageCultures = new Permission("ManageCultures", "Manage supported culture");
+        public static readonly Permission ManageCultures = new("ManageCultures", "Manage supported culture");
 
         /// <inheritdocs />
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
@@ -29,12 +29,7 @@ namespace OrchardCore.Localization
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageCultures }
-                },
-                new PermissionStereotype
-                {
-                    Name = "Editor",
-                    Permissions = new[] { ManageCultures }
+                    Permissions = new[] { ManageCultures },
                 }
             };
         }

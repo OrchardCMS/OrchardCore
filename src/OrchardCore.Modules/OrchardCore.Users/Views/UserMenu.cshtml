@@ -1,0 +1,48 @@
+@if (!User.Identity.IsAuthenticated)
+{
+    @if (Model.AnonymousContent?.Items != null && Model.AnonymousContent.Items.Count > 0)
+    {
+        <li class="nav-item dropdown text-end">
+            <a class="dropdown-toggle nav-link" id="navbarDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" role="button">
+                @if (Model.AnonymousHeader?.Items != null && Model.AnonymousHeader.Items.Count > 0)
+                {
+                    @await DisplayAsync(Model.AnonymousHeader)
+                }
+                else
+                {
+                    <span>@T["Users"]</span>
+                }
+            </a>
+
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                @await DisplayAsync(Model.AnonymousContent)
+            </ul>
+        </li>
+
+        return;
+    }
+
+    <li class="nav-item text-end">
+        <a class="nav-link" asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="Login">
+            <i class="fa-solid fa-sign-in-alt fa-fw" aria-hidden="true"></i> @T["Log in"]
+        </a>
+    </li>
+
+    return;
+}
+
+<li class="nav-item dropdown text-end">
+    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+        @if (Model.Header != null)
+        {
+            @await DisplayAsync(Model.Header)
+        }
+    </a>
+
+    @if (Model.Content != null)
+    {
+        <ul class="dropdown-menu dropdown-menu-end">
+            @await DisplayAsync(Model.Content)
+        </ul>
+    }
+</li>

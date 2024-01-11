@@ -1,6 +1,6 @@
+using System.Threading.Tasks;
 using GraphQL.Language.AST;
 using GraphQL.Validation;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -11,61 +11,69 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
     {
         private readonly int _maxNumberOfResults;
         private readonly MaxNumberOfResultsValidationMode _maxNumberOfResultsValidationMode;
+        protected readonly IStringLocalizer S;
+        private readonly ILogger _logger;
 
-        public MaxNumberOfResultsValidationRule(IOptions<GraphQLSettings> options)
+        public MaxNumberOfResultsValidationRule(
+            IOptions<GraphQLSettings> options,
+            IStringLocalizer<MaxNumberOfResultsValidationRule> localizer,
+            ILogger<MaxNumberOfResultsValidationRule> logger)
         {
             var settings = options.Value;
             _maxNumberOfResults = settings.MaxNumberOfResults;
             _maxNumberOfResultsValidationMode = settings.MaxNumberOfResultsValidationMode;
+            S = localizer;
+            _logger = logger;
         }
 
-        public INodeVisitor Validate(ValidationContext validationContext)
+        public Task<INodeVisitor> ValidateAsync(ValidationContext validationContext)
         {
-            return new EnterLeaveListener(_ =>
+            return Task.FromResult((INodeVisitor)new NodeVisitors(
+            new MatchingNodeVisitor<Argument>((arg, visitorContext) =>
             {
-                _.Match<Argument>(arg =>
+                if ((arg.Name == "first" || arg.Name == "last") && arg.Value != null)
                 {
-                    if ((arg.Name == "first" || arg.Name == "last") && arg.Value != null)
-                    {
-                        var context = (GraphQLContext)validationContext.UserContext;
-                       
-                        int? value = null;
+                    var context = (GraphQLUserContext)validationContext.UserContext;
 
-                        if (arg.Value is IntValue)
+                    int? value = null;
+
+                    if (arg.Value is IntValue)
+                    {
+                        value = ((IntValue)arg.Value)?.Value;
+                    }
+                    else
+                    {
+                        if (validationContext.Inputs.TryGetValue(arg.Value.ToString(), out var input))
                         {
-                            value = ((IntValue)arg.Value)?.Value;
+                            value = (int?)input;
+                        }
+                    }
+
+                    if (value.HasValue && value > _maxNumberOfResults)
+                    {
+                        var errorMessage = S["'{0}' exceeds the maximum number of results for '{1}' ({2})", value.Value, arg.Name, _maxNumberOfResults];
+
+                        if (_maxNumberOfResultsValidationMode == MaxNumberOfResultsValidationMode.Enabled)
+                        {
+                            validationContext.ReportError(new ValidationError(
+                                validationContext.Document.OriginalQuery,
+                                "ArgumentInputError",
+                                errorMessage,
+                                arg));
                         }
                         else
                         {
-                            if (validationContext.Inputs.TryGetValue(arg.Value.ToString(), out var input))
-                            {
-                                value = (int?)input;
-                            }
-                        }
+                            _logger.LogInformation("'{IntValue}' exceeds the maximum number of results for '{ArgumentName}' ({MaxNumber})",
+                                value.Value,
+                                arg.Name,
+                                _maxNumberOfResults);
 
-                        if (value.HasValue && value > _maxNumberOfResults)
-                        {
-                            var localizer = context.ServiceProvider.GetService<IStringLocalizer<MaxNumberOfResultsValidationRule>>();
-                            var errorMessage = localizer["'{0}' exceeds the maximum number of results for '{1}' ({2})", value.Value, arg.Name, _maxNumberOfResults];
-
-                            if (_maxNumberOfResultsValidationMode == MaxNumberOfResultsValidationMode.Enabled)
-                            {
-                                validationContext.ReportError(new ValidationError(
-                                    validationContext.OriginalQuery,
-                                    "ArgumentInputError",
-                                    errorMessage,
-                                    arg));
-                            }
-                            else
-                            {
-                                var logger = context.ServiceProvider.GetService<ILogger<MaxNumberOfResultsValidationMode>>();
-                                logger.LogInformation(errorMessage);
-                                arg.Value = new IntValue(_maxNumberOfResults); // if disabled mode we just log info and override the arg to be maxvalue
-                            }
+                            // If disabled mode we just log info and override the arg to be maxvalue.
+                            arg = new Argument(arg.NameNode, new IntValue(_maxNumberOfResults));
                         }
                     }
-                });
-            });
+                }
+            })));
         }
     }
 }

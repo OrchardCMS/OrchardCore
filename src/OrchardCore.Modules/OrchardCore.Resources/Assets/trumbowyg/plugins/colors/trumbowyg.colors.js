@@ -14,19 +14,53 @@
     $.extend(true, $.trumbowyg, {
         langs: {
             // jshint camelcase:false
-            cs: {
-                foreColor: 'Barva textu',
-                backColor: 'Barva pozadí'
-            },
             en: {
                 foreColor: 'Text color',
                 backColor: 'Background color',
                 foreColorRemove: 'Remove text color',
                 backColorRemove: 'Remove background color'
             },
+            az: {
+                foreColor: 'Yazı rəngi',
+                backColor: 'Arxa plan rəngi',
+                foreColorRemove: 'Yazı rəngini sil',
+                backColorRemove: 'Arxa plan rəngini sil'
+            },
+            by: {
+                foreColor: 'Колер тэксту',
+                backColor: 'Колер фону тэксту',
+                foreColorRemove: 'Выдаліць колер тэксту',
+                backColorRemove: 'Выдаліць колер фону тэксту'
+            },
+            ca: {
+                foreColor: 'Color del text',
+                backColor: 'Color del fons',
+                foreColorRemove: 'Eliminar color del text',
+                backColorRemove: 'Eliminar color del fons'
+            },
+            cs: {
+                foreColor: 'Barva textu',
+                backColor: 'Barva pozadí'
+            },
             da: {
                 foreColor: 'Tekstfarve',
                 backColor: 'Baggrundsfarve'
+            },
+            de: {
+                foreColor: 'Textfarbe',
+                backColor: 'Hintergrundfarbe'
+            },
+            es: {
+                foreColor: 'Color del texto',
+                backColor: 'Color del fondo',
+                foreColorRemove: 'Eliminar color del texto',
+                backColorRemove: 'Eliminar color del fondo'
+            },
+            et: {
+                foreColor: 'Teksti värv',
+                backColor: 'Taustavärv',
+                foreColorRemove: 'Eemalda teksti värv',
+                backColorRemove: 'Eemalda taustavärv'
             },
             fr: {
                 foreColor: 'Couleur du texte',
@@ -34,17 +68,51 @@
                 foreColorRemove: 'Supprimer la couleur du texte',
                 backColorRemove: 'Supprimer la couleur de fond'
             },
-            de: {
-                foreColor: 'Textfarbe',
-                backColor: 'Hintergrundfarbe'
+            hu: {
+                foreColor: 'Betű szín',
+                backColor: 'Háttér szín',
+                foreColorRemove: 'Betű szín eltávolítása',
+                backColorRemove: 'Háttér szín eltávolítása'
+            },
+            ja: {
+                foreColor: '文字色',
+                backColor: '背景色'
+            },
+            ko: {
+                foreColor: '글자색',
+                backColor: '배경색',
+                foreColorRemove: '글자색 지우기',
+                backColorRemove: '배경색 지우기'
             },
             nl: {
                 foreColor: 'Tekstkleur',
                 backColor: 'Achtergrondkleur'
             },
+            pt_br: {
+                foreColor: 'Cor de fonte',
+                backColor: 'Cor de fundo'
+            },
+            ru: {
+                foreColor: 'Цвет текста',
+                backColor: 'Цвет выделения текста',
+                foreColorRemove: 'Очистить цвет текста',
+                backColorRemove: 'Очистить цвет выделения текста'
+            },
+            sl: {
+                foreColor: 'Barva teksta',
+                backColor: 'Barva ozadja',
+                foreColorRemove: 'Ponastavi barvo teksta',
+                backColorRemove: 'Ponastavi barvo ozadja',
+            },
             sk: {
                 foreColor: 'Farba textu',
                 backColor: 'Farba pozadia'
+            },
+            tr: {
+                foreColor: 'Yazı rengi',
+                backColor: 'Arka plan rengi',
+                foreColorRemove: 'Yazı rengini kaldır',
+                backColorRemove: 'Arka plan rengini kaldır'
             },
             zh_cn: {
                 foreColor: '文字颜色',
@@ -53,28 +121,6 @@
             zh_tw: {
                 foreColor: '文字顏色',
                 backColor: '背景顏色'
-            },
-            ru: {
-                foreColor: 'Цвет текста',
-                backColor: 'Цвет выделения текста'
-            },
-            ja: {
-                foreColor: '文字色',
-                backColor: '背景色'
-            },
-            tr: {
-                foreColor: 'Yazı rengi',
-                backColor: 'Arkaplan rengi'
-            },
-            pt_br: {
-                foreColor: 'Cor de fonte',
-                backColor: 'Cor de fundo'
-            },
-            ko: {
-                foreColor: '글자색',
-                backColor: '배경색',
-                foreColorRemove: '글자색 지우기',
-                backColorRemove: '배경색 지우기'
             },
         }
     });
@@ -92,7 +138,10 @@
         } else if (rgb === 'rgba(0, 0, 0, 0)') {
             return 'transparent';
         } else {
-            rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+))?\)$/);
+            rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/);
+            if (rgb == null) {
+                return 'transparent'; // No match, return transparent as unkown color
+            }
             return hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
         }
     }

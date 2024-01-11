@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
@@ -14,7 +15,6 @@ namespace OrchardCore.Contents.Scripting
         private readonly GlobalMethod _updateContentItemMethod;
         private readonly GlobalMethod _deleteContentItemMethod;
 
-
         public ContentMethodsProvider()
         {
             _newContentItemMethod = new GlobalMethod
@@ -26,7 +26,7 @@ namespace OrchardCore.Contents.Scripting
                     var contentItem = contentManager.NewAsync(contentType).GetAwaiter().GetResult();
 
                     return contentItem;
-                })
+                }),
             };
 
             _createContentItemMethod = new GlobalMethod
@@ -37,9 +37,16 @@ namespace OrchardCore.Contents.Scripting
                     var contentManager = serviceProvider.GetRequiredService<IContentManager>();
                     var contentItem = contentManager.NewAsync(contentType).GetAwaiter().GetResult();
                     contentItem.Merge(properties);
-                    contentManager.UpdateAndCreateAsync(contentItem, publish == true ? VersionOptions.Published : VersionOptions.Draft).GetAwaiter().GetResult();
-                    return contentItem;
-                })
+                    var result = contentManager.UpdateValidateAndCreateAsync(contentItem, publish == true ? VersionOptions.Published : VersionOptions.Draft).GetAwaiter().GetResult();
+                    if (result.Succeeded)
+                    {
+                        return contentItem;
+                    }
+                    else
+                    {
+                        throw new ValidationException(string.Join(", ", result.Errors));
+                    }
+                }),
             };
 
             _updateContentItemMethod = new GlobalMethod
@@ -50,7 +57,12 @@ namespace OrchardCore.Contents.Scripting
                     var contentManager = serviceProvider.GetRequiredService<IContentManager>();
                     contentItem.Merge(properties, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
                     contentManager.UpdateAsync(contentItem).GetAwaiter().GetResult();
-                })
+                    var result = contentManager.ValidateAsync(contentItem).GetAwaiter().GetResult();
+                    if (!result.Succeeded)
+                    {
+                        throw new ValidationException(string.Join(", ", result.Errors));
+                    }
+                }),
             };
 
             _deleteContentItemMethod = new GlobalMethod
@@ -60,9 +72,8 @@ namespace OrchardCore.Contents.Scripting
                 {
                     var contentManager = serviceProvider.GetRequiredService<IContentManager>();
                     contentManager.RemoveAsync(contentItem).GetAwaiter().GetResult();
-                })
+                }),
             };
-
         }
 
         public IEnumerable<GlobalMethod> GetMethods()

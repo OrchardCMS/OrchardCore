@@ -1,19 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using System.Threading.Tasks;
 
 namespace OrchardCore.Environment.Commands.Builtin
 {
     public class HelpCommand : DefaultCommandHandler
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly CommandHandlerDescriptorBuilder _builder = new CommandHandlerDescriptorBuilder();
+        private readonly CommandHandlerDescriptorBuilder _builder = new();
 
         public HelpCommand(IServiceProvider serviceProvider,
-            IStringLocalizer<HelpCommand> localizer) : base (localizer)
+            IStringLocalizer<HelpCommand> localizer) : base(localizer)
         {
             _serviceProvider = serviceProvider;
         }
@@ -35,12 +35,11 @@ namespace OrchardCore.Environment.Commands.Builtin
             }
         }
 
-
         [CommandName("help")]
         [CommandHelp("help <command>", "\tDisplay help text for <command>")]
         public async Task SingleCommandAsync(string[] commandNameStrings)
         {
-            string command = string.Join(" ", commandNameStrings);
+            var command = string.Join(" ", commandNameStrings);
             var descriptors = GetCommandDescriptors()
                 .Where(t => t.Names.Any(x => x.StartsWith(command, StringComparison.OrdinalIgnoreCase)))
                 .OrderBy(d => d.Names);

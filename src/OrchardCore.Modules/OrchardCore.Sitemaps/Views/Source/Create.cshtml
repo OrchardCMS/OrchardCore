@@ -1,0 +1,19 @@
+@model CreateSourceViewModel
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Create Sitemap Source"])</h1></zone>
+
+<div asp-validation-summary="ModelOnly"></div>
+<form asp-action="Create" method="post" class="no-multisubmit">
+    @await DisplayAsync(Model.Editor.Content)
+
+    <input type="hidden" asp-for="SitemapId" />
+    <input type="hidden" asp-for="SitemapSourceId" />
+    <input type="hidden" asp-for="SitemapSourceType" />
+
+    <fieldset>
+        <div class="mb-3">
+            <button class="btn btn-primary create" type="submit">@T["Create"]</button>
+            <a class="btn btn-secondary cancel" role="button" asp-route-action="Display" asp-route-controller="Admin" asp-route-sitemapId="@Model.SitemapId">@T["Cancel"]</a>
+        </div>
+    </fieldset>
+</form>

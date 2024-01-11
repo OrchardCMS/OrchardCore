@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -20,14 +19,13 @@ namespace OrchardCore.Mvc
         ICompilationReferencesProvider
     {
         private static IEnumerable<string> _referencePaths;
-        private static object _synLock = new object();
+        private static readonly object _synLock = new();
         private ShellBlueprint _shellBlueprint;
         private IEnumerable<ITagHelpersProvider> _tagHelpers;
 
         /// <summary>
         /// Initalizes a new <see cref="AssemblyPart"/> instance.
         /// </summary>
-        /// <param name="assembly"></param>
         public ShellFeatureApplicationPart()
         {
         }
@@ -61,7 +59,6 @@ namespace OrchardCore.Mvc
                         }
                     }
                 }
-
 
                 return _shellBlueprint
                     .Dependencies.Keys

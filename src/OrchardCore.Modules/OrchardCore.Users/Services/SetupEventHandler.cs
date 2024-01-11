@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
+using OrchardCore.Abstractions.Setup;
 using OrchardCore.Setup.Events;
+using OrchardCore.Setup.Services;
 using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Services
@@ -17,27 +19,22 @@ namespace OrchardCore.Users.Services
             _userService = userService;
         }
 
-        public Task Setup(
-            string siteName,
-            string userName,
-            string email,
-            string password,
-            string dbProvider,
-            string dbConnectionString,
-            string dbTablePrefix,
-            string siteTimeZone,
-            Action<string, string> reportError
-            )
+        public Task SetupAsync(SetupContext context)
         {
             var user = new User
             {
-                UserName = userName,
-                Email = email,
-                RoleNames = new string[] { "Administrator" },
+                UserName = context.Properties.TryGetValue(SetupConstants.AdminUsername, out var adminUserName) ? adminUserName?.ToString() : string.Empty,
+                UserId = context.Properties.TryGetValue(SetupConstants.AdminUserId, out var adminUserId) ? adminUserId?.ToString() : string.Empty,
+                Email = context.Properties.TryGetValue(SetupConstants.AdminEmail, out var adminEmail) ? adminEmail?.ToString() : string.Empty,
                 EmailConfirmed = true
             };
 
-            return _userService.CreateUserAsync(user, password, reportError);
+            user.RoleNames.Add("Administrator");
+
+            return _userService.CreateUserAsync(user, context.Properties[SetupConstants.AdminPassword]?.ToString(), (key, message) =>
+            {
+                context.Errors[key] = message;
+            });
         }
     }
 }

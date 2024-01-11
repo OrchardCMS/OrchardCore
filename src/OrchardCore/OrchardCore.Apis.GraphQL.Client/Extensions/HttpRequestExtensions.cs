@@ -12,7 +12,7 @@ namespace OrchardCore.Apis.GraphQL.Client
     /// </summary>
     internal static class HttpRequestExtensions
     {
-        private readonly static JsonSerializerSettings JsonSettings = new JsonSerializerSettings()
+        private readonly static JsonSerializerSettings _jsonSettings = new()
         {
             NullValueHandling = NullValueHandling.Ignore
         };
@@ -29,7 +29,7 @@ namespace OrchardCore.Apis.GraphQL.Client
         /// <param name="value">
         /// The value.
         /// </param>
-        /// <param name="formatter">
+        /// <param name="settings">
         /// The formatter.
         /// </param>
         /// <typeparam name="T">
@@ -44,7 +44,7 @@ namespace OrchardCore.Apis.GraphQL.Client
             JsonSerializerSettings settings = null)
         {
             var content = new StringContent(
-                JsonConvert.SerializeObject(value, settings ?? JsonSettings),
+                JsonConvert.SerializeObject(value, settings ?? _jsonSettings),
                 Encoding.UTF8,
                 "application/json");
 
@@ -94,7 +94,7 @@ namespace OrchardCore.Apis.GraphQL.Client
         /// <param name="value">
         /// The value.
         /// </param>
-        /// <param name="formatter">
+        /// <param name="settings">
         /// The formatter.
         /// </param>
         /// <typeparam name="T">
@@ -109,7 +109,7 @@ namespace OrchardCore.Apis.GraphQL.Client
             JsonSerializerSettings settings = null)
         {
             var content = new StringContent(
-                JsonConvert.SerializeObject(value, settings ?? JsonSettings),
+                JsonConvert.SerializeObject(value, settings ?? _jsonSettings),
                 Encoding.UTF8,
                 "application/json");
 
@@ -128,7 +128,7 @@ namespace OrchardCore.Apis.GraphQL.Client
         /// <param name="value">
         /// The value.
         /// </param>
-        /// <param name="formatter">
+        /// <param name="settings">
         /// The formatter.
         /// </param>
         /// <typeparam name="T">
@@ -143,12 +143,14 @@ namespace OrchardCore.Apis.GraphQL.Client
             JsonSerializerSettings settings = null)
         {
             var content = new StringContent(
-                JsonConvert.SerializeObject(value, settings ?? JsonSettings),
+                JsonConvert.SerializeObject(value, settings ?? _jsonSettings),
                 Encoding.UTF8,
                 "application/json");
 
-            var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
-            request.Content = content;
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUri)
+            {
+                Content = content,
+            };
 
             request.Headers
                 .Accept
@@ -167,8 +169,10 @@ namespace OrchardCore.Apis.GraphQL.Client
                 Encoding.UTF8,
                 "application/json");
 
-            var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
-            request.Content = content;
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUri)
+            {
+                Content = content,
+            };
 
             request.Headers
                 .Accept
@@ -187,8 +191,10 @@ namespace OrchardCore.Apis.GraphQL.Client
                 Encoding.UTF8,
                 "application/vnd.api+json");
 
-            var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
-            request.Content = content;
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUri)
+            {
+                Content = content,
+            };
 
             request.Headers
                 .Accept

@@ -25,12 +25,13 @@ namespace OrchardCore.DisplayManagement
 
     public static class ShapeFactoryExtensions
     {
-        private static readonly ProxyGenerator ProxyGenerator = new ProxyGenerator();
-        private static readonly Func<ValueTask<IShape>> NewShape = () => new ValueTask<IShape>(new Shape());
+        private static readonly ProxyGenerator _proxyGenerator = new();
+        private static readonly Func<ValueTask<IShape>> _newShape = () => new(new Shape());
 
         /// <summary>
         /// Creates a new shape by copying the properties of the specific model.
         /// </summary>
+        /// <param name="factory">The <see cref="IShapeFactory"/>.</param>
         /// <param name="shapeType">The type of shape to create.</param>
         /// <param name="model">The model to copy.</param>
         /// <returns></returns>
@@ -51,13 +52,13 @@ namespace OrchardCore.DisplayManagement
             {
                 var options = new ProxyGenerationOptions();
                 options.AddMixinInstance(new ShapeViewModel());
-                return (IShape)ProxyGenerator.CreateClassProxy(baseType, options);
+                return (IShape)_proxyGenerator.CreateClassProxy(baseType, options);
             }
         }
 
         public static ValueTask<IShape> CreateAsync(this IShapeFactory factory, string shapeType)
         {
-            return factory.CreateAsync(shapeType, NewShape);
+            return factory.CreateAsync(shapeType, _newShape);
         }
 
         public static ValueTask<IShape> CreateAsync(this IShapeFactory factory, string shapeType, Func<ValueTask<IShape>> shapeFactory)
@@ -66,9 +67,10 @@ namespace OrchardCore.DisplayManagement
         }
 
         /// <summary>
-        /// Creates a dynamic proxy instance for the <see cref="TModel"/> type and initializes it.
+        /// Creates a dynamic proxy instance for the type and initializes it.
         /// </summary>
         /// <typeparam name="TModel">The type to instantiate.</typeparam>
+        /// <param name="factory">The <see cref="IShapeFactory"/>.</param>
         /// <param name="shapeType">The shape type to create.</param>
         /// <param name="initializeAsync">The initialization method.</param>
         /// <returns></returns>
@@ -83,7 +85,7 @@ namespace OrchardCore.DisplayManagement
             static ValueTask<IShape> ShapeFactory(Func<TModel, ValueTask> init)
             {
                 var shape = CreateShape(typeof(TModel));
-                var task = init((TModel) shape);
+                var task = init((TModel)shape);
                 if (!task.IsCompletedSuccessfully)
                 {
                     return Awaited(task, shape);
@@ -96,9 +98,10 @@ namespace OrchardCore.DisplayManagement
         }
 
         /// <summary>
-        /// Creates a dynamic proxy instance for the <see cref="TModel"/> type and initializes it.
+        /// Creates a dynamic proxy instance for the type and initializes it.
         /// </summary>
         /// <typeparam name="TModel">The type to instantiate.</typeparam>
+        /// <param name="factory">The <see cref="IShapeFactory"/>.</param>
         /// <param name="shapeType">The shape type to create.</param>
         /// <param name="initialize">The initialization method.</param>
         /// <returns></returns>
@@ -119,12 +122,12 @@ namespace OrchardCore.DisplayManagement
                 return factory.CreateAsync(shapeType);
             }
 
-            return factory.CreateAsync(shapeType, NewShape, null, createdContext =>
+            return factory.CreateAsync(shapeType, _newShape, null, createdContext =>
             {
                 var shape = (Shape)createdContext.Shape;
 
                 // If only one non-Type, use it as the source object to copy
-                
+
                 var initializer = parameters.Positional.SingleOrDefault();
 
                 if (initializer != null)

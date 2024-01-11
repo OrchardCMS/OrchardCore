@@ -8,7 +8,7 @@ namespace OrchardCore.Localization.GraphQL
     public class CultureQueryObjectType : ObjectGraphType<SiteCulture>
     {
         /// <summary>
-        /// Creates a new instance of <see cref="CultureQueryObjectType"/>. 
+        /// Creates a new instance of <see cref="CultureQueryObjectType"/>.
         /// </summary>
         public CultureQueryObjectType()
         {

@@ -1,12 +1,20 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Fluid.Values;
+using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Html.Models;
+using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
 using OrchardCore.Liquid;
+using OrchardCore.Shortcodes.Services;
+using Shortcodes;
 
 namespace OrchardCore.Html.GraphQL
 {
@@ -23,21 +31,37 @@ namespace OrchardCore.Html.GraphQL
                 .ResolveLockedAsync(RenderHtml);
         }
 
-        private static async Task<object> RenderHtml(ResolveFieldContext<HtmlBodyPart> ctx)
+        private static async Task<object> RenderHtml(IResolveFieldContext<HtmlBodyPart> ctx)
         {
-            var serviceProvider = ctx.ResolveServiceProvider();
-            var liquidTemplateManager = serviceProvider.GetService<ILiquidTemplateManager>();
-            var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
+            var shortcodeService = ctx.RequestServices.GetRequiredService<IShortcodeService>();
+            var contentDefinitionManager = ctx.RequestServices.GetRequiredService<IContentDefinitionManager>();
 
-            var model = new HtmlBodyPartViewModel()
+            var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(ctx.Source.ContentItem.ContentType);
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "HtmlBodyPart"));
+            var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartSettings>();
+
+            var html = ctx.Source.Html;
+
+            if (!settings.SanitizeHtml)
             {
-                Html = ctx.Source.Html,
-                HtmlBodyPart = ctx.Source,
-                ContentItem = ctx.Source.ContentItem
-            };
+                var model = new HtmlBodyPartViewModel()
+                {
+                    Html = ctx.Source.Html,
+                    HtmlBodyPart = ctx.Source,
+                    ContentItem = ctx.Source.ContentItem
+                };
+                var liquidTemplateManager = ctx.RequestServices.GetRequiredService<ILiquidTemplateManager>();
+                var htmlEncoder = ctx.RequestServices.GetService<HtmlEncoder>();
 
-            return await liquidTemplateManager.RenderAsync(ctx.Source.Html, htmlEncoder, model,
-                scope => scope.SetValue("ContentItem", model.ContentItem));
+                html = await liquidTemplateManager.RenderStringAsync(html, htmlEncoder, model, new Dictionary<string, FluidValue> { ["ContentItem"] = new ObjectValue(model.ContentItem) });
+            }
+
+            return await shortcodeService.ProcessAsync(html,
+                new Context
+                {
+                    ["ContentItem"] = ctx.Source.ContentItem,
+                    ["TypePartDefinition"] = contentTypePartDefinition
+                });
         }
     }
 }

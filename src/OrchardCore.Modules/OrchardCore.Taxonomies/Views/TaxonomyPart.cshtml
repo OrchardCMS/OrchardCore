@@ -1,0 +1,8 @@
+@model TaxonomyPartViewModel
+@using OrchardCore.Mvc.Utilities
+@{
+    var name = ( "taxonomy-" + Model.TaxonomyPart.TermContentType).HtmlClassify();
+}
+<section class="taxonomy @name">
+    <shape type="term" TaxonomyContentItemId="@Model.TaxonomyContentItemId" />
+</section>

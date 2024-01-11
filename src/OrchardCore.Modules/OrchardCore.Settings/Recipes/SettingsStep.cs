@@ -21,7 +21,7 @@ namespace OrchardCore.Settings.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "Settings", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "Settings", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
@@ -91,6 +91,10 @@ namespace OrchardCore.Settings.Recipes
 
                     case "HomeRoute":
                         site.HomeRoute = property.Value.ToObject<RouteValueDictionary>();
+                        break;
+
+                    case "CacheMode":
+                        site.CacheMode = (CacheMode)property.Value.Value<int>();
                         break;
 
                     default:

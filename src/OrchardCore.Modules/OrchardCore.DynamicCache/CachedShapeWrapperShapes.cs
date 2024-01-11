@@ -9,7 +9,9 @@ namespace OrchardCore.DynamicCache
     public class CachedShapeWrapperShapes : IShapeAttributeProvider
     {
         [Shape]
+#pragma warning disable CA1822 // Mark members as static
         public IHtmlContent CachedShapeWrapper(IShape Shape)
+#pragma warning restore CA1822 // Mark members as static
         {
             // No need to optimize this code as it will be used for debugging purpose
 
@@ -17,17 +19,19 @@ namespace OrchardCore.DynamicCache
             var metadata = Shape.Metadata;
             var cache = metadata.Cache();
 
-            contentBuilder.AppendHtml($"<!-- CACHED SHAPE: {cache.CacheId} ({Guid.NewGuid()})");
-            contentBuilder.AppendHtml($"          VARY BY: {String.Join(", ", cache.Contexts)}");
-            contentBuilder.AppendHtml($"     DEPENDENCIES: {String.Join(", ", cache.Tags)}");
-            contentBuilder.AppendHtml($"       EXPIRES ON: {cache.ExpiresOn}");
-            contentBuilder.AppendHtml($"    EXPIRES AFTER: {cache.ExpiresAfter}");
-            contentBuilder.AppendHtml($"  EXPIRES SLIDING: {cache.ExpiresSliding}");
-            contentBuilder.AppendHtml("-->");
+            contentBuilder.AppendLine();
+            contentBuilder.AppendHtmlLine($"<!-- CACHED SHAPE: {cache.CacheId} ({Guid.NewGuid()})");
+            contentBuilder.AppendHtmlLine($"          VARY BY: {string.Join(", ", cache.Contexts)}");
+            contentBuilder.AppendHtmlLine($"     DEPENDENCIES: {string.Join(", ", cache.Tags)}");
+            contentBuilder.AppendHtmlLine($"       EXPIRES ON: {cache.ExpiresOn}");
+            contentBuilder.AppendHtmlLine($"    EXPIRES AFTER: {cache.ExpiresAfter}");
+            contentBuilder.AppendHtmlLine($"  EXPIRES SLIDING: {cache.ExpiresSliding}");
+            contentBuilder.AppendHtmlLine("-->");
 
             contentBuilder.AppendHtml(metadata.ChildContent);
 
-            contentBuilder.AppendHtml($"<!-- END CACHED SHAPE: {cache.CacheId} -->");
+            contentBuilder.AppendLine();
+            contentBuilder.AppendHtmlLine($"<!-- END CACHED SHAPE: {cache.CacheId} -->");
 
             return contentBuilder;
         }

@@ -3,7 +3,7 @@ using OrchardCore.Deployment;
 namespace OrchardCore.AdminMenu.Deployment
 {
     /// <summary>
-    /// Adds all admin menus to a <see cref="DeploymentPlanResult"/>. 
+    /// Adds all admin menus to a <see cref="DeploymentPlanResult"/>.
     /// </summary>
     public class AdminMenuDeploymentStep : DeploymentStep
     {

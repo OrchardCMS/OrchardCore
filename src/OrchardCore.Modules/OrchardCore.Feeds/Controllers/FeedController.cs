@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Feeds.Models;
 
@@ -21,7 +20,6 @@ namespace OrchardCore.Feeds.Controllers
             IEnumerable<IFeedQueryProvider> feedQueryProviders,
             IEnumerable<IFeedBuilderProvider> feedFormatProviders,
             IFeedItemBuilder feedItemBuilder,
-            ILogger<FeedController> logger,
             IServiceProvider serviceProvider,
             IUpdateModelAccessor updateModelAccessor)
         {
@@ -30,10 +28,7 @@ namespace OrchardCore.Feeds.Controllers
             _feedItemBuilder = feedItemBuilder;
             _serviceProvider = serviceProvider;
             _updateModelAccessor = updateModelAccessor;
-            Logger = logger;
         }
-
-        ILogger Logger { get; }
 
         public async Task<ActionResult> Index(string format)
         {
@@ -70,23 +65,23 @@ namespace OrchardCore.Feeds.Controllers
             }
 
             var document = await context.Builder.ProcessAsync(context, async () =>
-           {
-               await bestQueryMatch.FeedQuery.ExecuteAsync(context);
+            {
+                await bestQueryMatch.FeedQuery.ExecuteAsync(context);
 
-               await _feedItemBuilder.PopulateAsync(context);
+                await _feedItemBuilder.PopulateAsync(context);
 
-               foreach (var contextualizer in context.Response.Contextualizers)
-               {
-                   if (ControllerContext != null)
-                   {
-                       contextualizer(new ContextualizeContext
-                       {
-                           ServiceProvider = _serviceProvider,
-                           Url = Url
-                       });
-                   }
-               }
-           });
+                foreach (var contextualizer in context.Response.Contextualizers)
+                {
+                    if (ControllerContext != null)
+                    {
+                        contextualizer(new ContextualizeContext
+                        {
+                            ServiceProvider = _serviceProvider,
+                            Url = Url
+                        });
+                    }
+                }
+            });
 
             return Content(document.ToString(), "text/xml");
         }

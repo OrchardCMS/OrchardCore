@@ -12,7 +12,7 @@ namespace OrchardCore.Microsoft.Authentication.Services
     public class AzureADService : IAzureADService
     {
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<AzureADService> S;
+        protected readonly IStringLocalizer S;
 
         public AzureADService(
             ISiteService siteService,
@@ -25,6 +25,12 @@ namespace OrchardCore.Microsoft.Authentication.Services
         public async Task<AzureADSettings> GetSettingsAsync()
         {
             var container = await _siteService.GetSiteSettingsAsync();
+            return container.As<AzureADSettings>();
+        }
+
+        public async Task<AzureADSettings> LoadSettingsAsync()
+        {
+            var container = await _siteService.LoadSiteSettingsAsync();
             return container.As<AzureADSettings>();
         }
 
@@ -43,6 +49,7 @@ namespace OrchardCore.Microsoft.Authentication.Services
                 aspect.DisplayName = settings.DisplayName;
                 aspect.TenantId = settings.TenantId;
             });
+
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 

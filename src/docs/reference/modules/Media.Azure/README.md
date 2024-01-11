@@ -18,10 +18,10 @@ The following configuration values are used by default and can be customized:
 ```json
 {
    "OrchardCore": {
-    "OrchardCore.Media.Azure": {
+    "OrchardCore_Media_Azure": {
       // Set to your Azure Storage account connection string.
       "ConnectionString": "", 
-      // Set to the Azure Blob container name.
+      // Set to the Azure Blob container name. A container name must be a valid DNS name and conform to Azure container naming rules eg. lowercase only.
       "ContainerName": "somecontainer",
       // Optionally, set to a path to store media in a subdirectory inside your container.
       "BasePath": "some/base/path",
@@ -31,7 +31,7 @@ The following configuration values are used by default and can be customized:
 }
 ```
 
-Refer also to the [Configuration Section](../../core/Configuration/README.md), 
+Refer also to the [Configuration Section](../../core/Configuration/README.md),
 and the [Media Section](../Media/README.md) for other Media related configuration settings.
 
 If the `CreateContainer` option is set to `true` an activating event will check on `Startup` for a
@@ -42,21 +42,24 @@ If these are not present in `appSettings.json`, it will not enable the feature, 
 
 ## Templating Configuration
 
-Optionally you may use liquid templating to further configure Azure Media Storage, perhaps creating a container per tenant, 
+Optionally you may use liquid templating to further configure Azure Media Storage, perhaps creating a container per tenant,
 or a single container with a base path per tenant.
 
 The `ShellSettings` property is made available to the liquid template.
 The `ContainerName` property and the `BasePath` property are the only templatable properties.
 
-### Configuring a container per tenant.
- 
+!!! note
+    When templating the `ContainerName`  using  `{{ ShellSettings.Name }}`, the tenant's name will be automatically lowercased, however, you must also make sure the `ContainerName` conforms to other Azure Blob naming conventions as set out in Azure's documentation.
+
+### Configuring a container per tenant
+
 ```json
 {
   "OrchardCore": {
-    "OrchardCore.Media.Azure": {
+    "OrchardCore_Media_Azure": {
       // Set to your Azure Storage account connection string.
       "ConnectionString": "", 
-      // Optionally configure with liquid.
+      // Optionally configure with liquid. A container name must be a valid DNS name and conform to Azure container naming rules eg. lowercase only.
       "ContainerName": "{{ ShellSettings.Name }}-media",
       // Optionally configure with liquid.
       "BasePath": "Media",
@@ -66,15 +69,15 @@ The `ContainerName` property and the `BasePath` property are the only templatabl
 }
 ```
 
-### Configuring a single container, with a base folder per tenant.
- 
+### Configuring a single container, with a base folder per tenant
+
 ```json
 {
   "OrchardCore": {
-    "OrchardCore.Media.Azure": {
+    "OrchardCore_Media_Azure": {
       // Set to your Azure Storage account connection string.
       "ConnectionString": "", 
-      // Optionally configure with liquid.
+      // Optionally configure with liquid. A container name must be a valid DNS name and conform to Azure container naming rules eg. lowercase only.
       "ContainerName": "somecontainer",
       // Optionally configure with liquid.
       "BasePath": "{{ ShellSettings.Name }}/Media",
@@ -85,7 +88,7 @@ The `ContainerName` property and the `BasePath` property are the only templatabl
 ```
 
 !!! note
-    Only the default liquid filters and tags are available during parsing of the liquid template.
+    Only the default Liquid filters and tags are available during parsing of the Liquid template.
     Extra filters like `slugify` will not be available.
 
 ## Media Cache
@@ -106,9 +109,9 @@ another PoP may not, until it is requested. At this stage the Media Cache will, 
 asset from Azure Blog Storage, on the fly, and provide it to the CDN PoP.
 
 CDN providers also clear their caches at pre-determined times of their own devising, so while CDN’s
-are a valuable caching and performance asset, it is important that they are always be able to 
+are a valuable caching and performance asset, it is important that they are always be able to
 re-fetch the source file, as and when required, which the Media Cache Module will automatically handle.
 
 !!! note
     The Media Feature is designed to support one storage provider at a time, whether that is
-    local File Storage, the default, or Azure Blob Storage.
+    local File Storage (the default), Azure Blob Storage, or Amazon S3 Storage.

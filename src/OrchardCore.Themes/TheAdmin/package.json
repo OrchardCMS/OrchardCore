@@ -2,7 +2,9 @@
   "name": "orchardcore.theadmin",
   "version": "1.0.0",
   "dependencies": {
-    "bootstrap": "4.4.1",
-    "popper.js": "1.16.0"
+    "@popperjs/core": "2.11.8",
+    "bootstrap": "5.3.2",
+    "bootstrap-select": "1.14.0-beta3",
+    "nouislider": "15.7.0"
   }
 }

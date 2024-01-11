@@ -1,23 +1,11 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using OrchardCore.Users.Controllers;
 
 namespace OrchardCore.Users.ViewModels
 {
-    public class LinkExternalLoginViewModel : IValidatableObject
+    public class LinkExternalLoginViewModel
     {
         [DataType(DataType.Password)]
+        [Required(ErrorMessage = "Password is required.")]
         public string Password { get; set; }
-
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            var S = validationContext.GetService<IStringLocalizer<LinkExternalLoginViewModel>>();
-            if (string.IsNullOrWhiteSpace(Password))
-            {
-                yield return new ValidationResult(S["Password is required"], new[] { nameof(Password) });
-            }
-        }
     }
 }

@@ -7,12 +7,12 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.ContentLocalization.Handlers
 {
-    class ContentLocalizationPartHandlerCoordinator : ContentLocalizationHandlerBase
+    internal class ContentLocalizationPartHandlerCoordinator : ContentLocalizationHandlerBase
     {
         private readonly ITypeActivatorFactory<ContentPart> _contentPartFactory;
         private readonly IEnumerable<IContentLocalizationPartHandler> _partHandlers;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly ILogger<ContentLocalizationPartHandlerCoordinator> _logger;
+        private readonly ILogger _logger;
 
         public ContentLocalizationPartHandlerCoordinator(
 
@@ -30,9 +30,11 @@ namespace OrchardCore.ContentLocalization.Handlers
 
         public override async Task LocalizingAsync(LocalizationContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
+            {
                 return;
+            }
 
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {
@@ -49,9 +51,11 @@ namespace OrchardCore.ContentLocalization.Handlers
 
         public override async Task LocalizedAsync(LocalizationContentContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
+            {
                 return;
+            }
 
             foreach (var typePartDefinition in contentTypeDefinition.Parts)
             {

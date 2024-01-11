@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.ContentManagement.Metadata.Models
 {
@@ -13,5 +13,6 @@ namespace OrchardCore.ContentManagement.Metadata.Models
 
         public ContentFieldDefinition FieldDefinition { get; private set; }
         public ContentPartDefinition PartDefinition { get; set; }
+        public ContentTypePartDefinition ContentTypePartDefinition { get; set; }
     }
 }

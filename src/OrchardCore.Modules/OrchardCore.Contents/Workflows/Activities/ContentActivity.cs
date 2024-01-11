@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
-using OrchardCore.Contents.Workflows.Handlers;
+using OrchardCore.ContentManagement.Workflows;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
@@ -16,7 +18,10 @@ namespace OrchardCore.Contents.Workflows.Activities
     {
         protected readonly IStringLocalizer S;
 
-        protected ContentActivity(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer localizer)
+        protected ContentActivity(
+            IContentManager contentManager,
+            IWorkflowScriptEvaluator scriptEvaluator,
+            IStringLocalizer localizer)
         {
             ContentManager = contentManager;
             ScriptEvaluator = scriptEvaluator;
@@ -26,6 +31,11 @@ namespace OrchardCore.Contents.Workflows.Activities
         protected IContentManager ContentManager { get; }
 
         protected IWorkflowScriptEvaluator ScriptEvaluator { get; }
+
+        /// <summary>
+        /// A <see cref="ContentEventContext"/> updated when executed inline from a <see cref="ContentEvent"/>
+        /// </summary>
+        protected ContentEventContext InlineEvent { get; private set; } = new ContentEventContext();
 
         public override LocalizedString Category => S["Content"];
 
@@ -43,40 +53,92 @@ namespace OrchardCore.Contents.Workflows.Activities
             return Outcomes(S["Done"]);
         }
 
+        public override Task OnInputReceivedAsync(WorkflowExecutionContext workflowContext, IDictionary<string, object> input)
+        {
+            var contentEvent = input?.GetValue<ContentEventContext>(ContentEventConstants.ContentEventInputKey);
+
+            if (contentEvent != null)
+            {
+                InlineEvent = contentEvent;
+
+                InlineEvent.IsStart = workflowContext.Status == WorkflowStatus.Starting;
+            }
+
+            return Task.CompletedTask;
+        }
+
         public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Outcomes("Done");
         }
 
+        public override async Task OnWorkflowRestartingAsync(WorkflowExecutionContext workflowContext, CancellationToken cancellationToken = default)
+        {
+            ContentItem contentItem = null;
+
+            if (workflowContext.Input.TryGetValue(ContentEventConstants.ContentEventInputKey, out var contentEvent))
+            {
+                var contentEventContext = ((JObject)contentEvent).ToObject<ContentEventContext>();
+
+                if (contentEventContext?.ContentItemVersionId != null)
+                {
+                    contentItem = await ContentManager.GetVersionAsync(contentEventContext.ContentItemVersionId);
+                }
+                if (contentItem == null && contentEventContext?.ContentItemId != null)
+                {
+                    contentItem = await ContentManager.GetAsync(contentEventContext.ContentItemId);
+                }
+            }
+
+            if (contentItem == null && workflowContext.Input.TryGetValue(ContentEventConstants.ContentItemInputKey, out var contentItemEvent))
+            {
+                var item = ((JObject)contentItemEvent).ToObject<ContentItem>();
+
+                if (item?.ContentItemId != null)
+                {
+                    contentItem = await ContentManager.GetAsync(item.ContentItemId);
+                }
+            }
+
+            if (contentItem != null)
+            {
+                workflowContext.Input[ContentEventConstants.ContentItemInputKey] = contentItem;
+            }
+        }
+
         protected virtual async Task<IContent> GetContentAsync(WorkflowExecutionContext workflowContext)
         {
-            // Try and evaluate a content item from the Content expression, if provided.
+            IContent content;
+
+            // Try to evaluate a content item from the Content expression, if provided.
             if (!string.IsNullOrWhiteSpace(Content.Expression))
             {
                 var expression = new WorkflowExpression<object> { Expression = Content.Expression };
-                var contentItemResult = await ScriptEvaluator.EvaluateAsync(expression, workflowContext);
+                var result = await ScriptEvaluator.EvaluateAsync(expression, workflowContext);
 
-                if (contentItemResult is ContentItem contentItem)
+                if (result is ContentItem contentItem)
                 {
-                    return contentItem;
-                } else if (contentItemResult is string contentItemId)
-                {
-                    // Latest is used to allow fetching unpublished content items
-                    return await ContentManager.GetAsync(contentItemId, VersionOptions.Latest);
+                    content = contentItem;
                 }
-
-                // Try to map the result to a content item
-                var contentItemJson = JsonConvert.SerializeObject(contentItemResult);
-                var res = JsonConvert.DeserializeObject<ContentItem>(contentItemJson);
-
-                return res;
+                else if (result is string contentItemId)
+                {
+                    content = new ContentItemIdExpressionResult(contentItemId);
+                }
+                else
+                {
+                    // Try to map the result to a content item.
+                    var json = JsonConvert.SerializeObject(result);
+                    content = JsonConvert.DeserializeObject<ContentItem>(json);
+                }
+            }
+            else
+            {
+                // If no expression was provided, see if the content item was provided as an input or as a property.
+                content = workflowContext.Input.GetValue<IContent>(ContentEventConstants.ContentItemInputKey)
+                    ?? workflowContext.Properties.GetValue<IContent>(ContentEventConstants.ContentItemInputKey);
             }
 
-            // If no expression was provided, see if the content item was provided as an input or as a property.
-            var content = workflowContext.Input.GetValue<IContent>(ContentsHandler.ContentItemInputKey)
-                ?? workflowContext.Properties.GetValue<IContent>(ContentsHandler.ContentItemInputKey);
-
-            if (content != null)
+            if (content != null && content.ContentItem.ContentItemId != null)
             {
                 return content;
             }
@@ -84,21 +146,31 @@ namespace OrchardCore.Contents.Workflows.Activities
             return null;
         }
 
-
         protected virtual async Task<string> GetContentItemIdAsync(WorkflowExecutionContext workflowContext)
         {
-            // Try and evaluate a content item id from the Content expression, if provided.
+            // Try to evaluate a content item id from the Content expression, if provided.
             if (!string.IsNullOrWhiteSpace(Content.Expression))
             {
                 var expression = new WorkflowExpression<object> { Expression = Content.Expression };
                 var contentItemIdResult = await ScriptEvaluator.EvaluateAsync(expression, workflowContext);
+
                 if (contentItemIdResult is string contentItemId)
                 {
                     return contentItemId;
                 }
             }
+
             return null;
         }
 
+        protected class ContentItemIdExpressionResult : IContent
+        {
+            public ContentItemIdExpressionResult(string contentItemId)
+            {
+                ContentItem = new ContentItem() { ContentItemId = contentItemId };
+            }
+
+            public ContentItem ContentItem { get; }
+        }
     }
 }

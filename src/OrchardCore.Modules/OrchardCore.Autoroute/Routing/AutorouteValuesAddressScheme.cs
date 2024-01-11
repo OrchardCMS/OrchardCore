@@ -10,12 +10,12 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.Autoroute.Routing
 {
-    internal sealed class AutoRouteValuesAddressScheme : IShellRouteValuesAddressScheme
+    internal sealed class AutorouteValuesAddressScheme : IShellRouteValuesAddressScheme
     {
         private readonly IAutorouteEntries _entries;
         private readonly AutorouteOptions _options;
 
-        public AutoRouteValuesAddressScheme(IAutorouteEntries entries, IOptions<AutorouteOptions> options)
+        public AutorouteValuesAddressScheme(IAutorouteEntries entries, IOptions<AutorouteOptions> options)
         {
             _entries = entries;
             _options = options.Value;
@@ -28,22 +28,37 @@ namespace OrchardCore.Autoroute.Routing
                 return Enumerable.Empty<Endpoint>();
             }
 
-            string contentItemId = address.ExplicitValues[_options.ContentItemIdKey]?.ToString();
+            // Try to get the contained item first, then the container content item
+            string contentItemId = address.ExplicitValues[_options.ContainedContentItemIdKey]?.ToString();
+            if (string.IsNullOrEmpty(contentItemId))
+            {
+                contentItemId = address.ExplicitValues[_options.ContentItemIdKey]?.ToString();
+            }
 
-            if (string.IsNullOrEmpty(contentItemId) || !_entries.TryGetPath(contentItemId, out var path))
+            if (string.IsNullOrEmpty(contentItemId))
+            {
+                return Enumerable.Empty<Endpoint>();
+            }
+
+            (var found, var autorouteEntry) = _entries.TryGetEntryByContentItemIdAsync(contentItemId).GetAwaiter().GetResult();
+
+            if (!found)
             {
                 return Enumerable.Empty<Endpoint>();
             }
 
             if (Match(address.ExplicitValues))
             {
+                // Once we have the contained content item id value we no longer want it in the route values.
+                address.ExplicitValues.Remove(_options.ContainedContentItemIdKey);
+
                 var routeValues = new RouteValueDictionary(address.ExplicitValues);
 
                 if (address.ExplicitValues.Count > _options.GlobalRouteValues.Count + 1)
                 {
                     foreach (var entry in address.ExplicitValues)
                     {
-                        if (String.Equals(entry.Key, _options.ContentItemIdKey, StringComparison.OrdinalIgnoreCase))
+                        if (string.Equals(entry.Key, _options.ContentItemIdKey, StringComparison.OrdinalIgnoreCase))
                         {
                             continue;
                         }
@@ -58,7 +73,7 @@ namespace OrchardCore.Autoroute.Routing
                 var endpoint = new RouteEndpoint
                 (
                     c => null,
-                    RoutePatternFactory.Parse(path, routeValues, null),
+                    RoutePatternFactory.Parse(autorouteEntry.Path, routeValues, null),
                     0,
                     null,
                     null
@@ -74,7 +89,7 @@ namespace OrchardCore.Autoroute.Routing
         {
             foreach (var entry in _options.GlobalRouteValues)
             {
-                if (!String.Equals(explicitValues[entry.Key]?.ToString(), entry.Value?.ToString(), StringComparison.OrdinalIgnoreCase))
+                if (!string.Equals(explicitValues[entry.Key]?.ToString(), entry.Value?.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
                     return false;
                 }

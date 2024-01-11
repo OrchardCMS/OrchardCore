@@ -8,6 +8,7 @@ namespace OrchardCore.Entities
         /// <summary>
         /// Extracts the specified type of property.
         /// </summary>
+        /// <param name="entity">The <see cref="IEntity"/>.</param>
         /// <typeparam name="T">The type of the property to extract.</typeparam>
         /// <returns>A new instance of the requested type if the property was not found.</returns>
         public static T As<T>(this IEntity entity) where T : new()
@@ -20,6 +21,7 @@ namespace OrchardCore.Entities
         /// Extracts the specified named property.
         /// </summary>
         /// <typeparam name="T">The type of the property to extract.</typeparam>
+        /// <param name="entity">The <see cref="IEntity"/>.</param>
         /// <param name="name">The name of the property to extract.</param>
         /// <returns>A new instance of the requested type if the property was not found.</returns>
         public static T As<T>(this IEntity entity, string name) where T : new()
@@ -38,6 +40,7 @@ namespace OrchardCore.Entities
         /// Indicates if the specified type of property is attached to the <see cref="IEntity"/> instance.
         /// </summary>
         /// <typeparam name="T">The type of the property to check.</typeparam>
+        /// <param name="entity">The <see cref="IEntity"/>.</param>
         /// <returns>True if the property was found, otherwise false.</returns>
         public static bool Has<T>(this IEntity entity)
         {
@@ -48,16 +51,27 @@ namespace OrchardCore.Entities
         /// <summary>
         /// Indicates if the specified property is attached to the <see cref="IEntity"/> instance.
         /// </summary>
+        /// <param name="entity">The <see cref="IEntity"/>.</param>
         /// <param name="name">The name of the property to check.</param>
         /// <returns>True if the property was found, otherwise false.</returns>
         public static bool Has(this IEntity entity, string name)
-        {
-            return entity.Properties[name] != null;
-        }
+            => entity.Properties[name] != null;
 
         public static IEntity Put<T>(this IEntity entity, T aspect) where T : new()
+            => entity.Put(typeof(T).Name, aspect);
+
+        public static bool TryGet<T>(this IEntity entity, out T aspect) where T : new()
         {
-            return entity.Put(typeof(T).Name, aspect);
+            if (entity.Properties.TryGetValue(typeof(T).Name, out var value))
+            {
+                aspect = value.ToObject<T>();
+
+                return true;
+            }
+
+            aspect = default;
+
+            return false;
         }
 
         public static IEntity Put(this IEntity entity, string name, object property)
@@ -69,8 +83,9 @@ namespace OrchardCore.Entities
         /// <summary>
         /// Modifies or create an aspect.
         /// </summary>
-        /// <typeparam name="name">The name of the aspect.</typeparam>
-        /// <typeparam name="action">An action to apply on the aspect.</typeparam>
+        /// <param name="entity">The <see cref="IEntity"/>.</param>
+        /// <param name="name">The name of the aspect.</param>
+        /// <param name="action">An action to apply on the aspect.</param>
         /// <returns>The current <see cref="IEntity"/> instance.</returns>
         public static IEntity Alter<TAspect>(this IEntity entity, string name, Action<TAspect> action) where TAspect : new()
         {

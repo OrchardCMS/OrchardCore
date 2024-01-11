@@ -1,4 +1,4 @@
-﻿using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement;
 using OrchardCore.Lists.Models;
 using YesSql.Indexes;
 
@@ -7,7 +7,18 @@ namespace OrchardCore.Lists.Indexes
     public class ContainedPartIndex : MapIndex
     {
         public string ListContentItemId { get; set; }
+
         public int Order { get; set; }
+
+        public string ContentItemId { get; set; }
+
+        public string ListContentType { get; set; }
+
+        public bool Published { get; set; }
+
+        public bool Latest { get; set; }
+
+        public string DisplayText { get; set; }
     }
 
     public class ContainedPartIndexProvider : IndexProvider<ContentItem>
@@ -17,17 +28,28 @@ namespace OrchardCore.Lists.Indexes
             context.For<ContainedPartIndex>()
                 .Map(contentItem =>
                 {
-                    var containedPart = contentItem.As<ContainedPart>();
-                    if(containedPart != null)
+                    if (!contentItem.Latest && !contentItem.Published)
                     {
-                        return new ContainedPartIndex
-                        {
-                            ListContentItemId = containedPart.ListContentItemId,
-                            Order = containedPart.Order
-                        };
+                        return null;
                     }
 
-                    return null;
+                    var containedPart = contentItem.As<ContainedPart>();
+
+                    if (containedPart == null)
+                    {
+                        return null;
+                    }
+
+                    return new ContainedPartIndex
+                    {
+                        ContentItemId = contentItem.ContentItemId,
+                        ListContentType = containedPart.ListContentType,
+                        ListContentItemId = containedPart.ListContentItemId,
+                        Order = containedPart.Order,
+                        Published = contentItem.Published,
+                        Latest = contentItem.Latest,
+                        DisplayText = contentItem.DisplayText,
+                    };
                 });
         }
     }

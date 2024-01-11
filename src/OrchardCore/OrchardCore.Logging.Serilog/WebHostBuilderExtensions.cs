@@ -1,16 +1,12 @@
 using System;
-using System.IO;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Serilog;
-using Serilog.Core;
 
 namespace OrchardCore.Logging
 {
     public static class WebHostBuilderExtensions
     {
-        [Obsolete]
-        public static IWebHostBuilder UseSerilogWeb(this IWebHostBuilder builder)
+        public static IHostBuilder UseSerilogWeb(this IHostBuilder builder)
         {
             return builder.UseSerilog((hostingContext, configBuilder) =>
             {

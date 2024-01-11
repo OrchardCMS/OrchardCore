@@ -1,6 +1,5 @@
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Apis.GraphQL;
 using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.GraphQL
@@ -16,10 +15,10 @@ namespace OrchardCore.Media.GraphQL
             Field<StringGraphType>()
                 .Name("path")
                 .Description("The url to the asset.")
-                .Resolve(x => {
+                .Resolve(x =>
+                {
                     var path = x.Source.Path;
-                    var context = (GraphQLContext)x.UserContext;
-                    var mediaFileStore = context.ServiceProvider.GetService<IMediaFileStore>();
+                    var mediaFileStore = x.RequestServices.GetService<IMediaFileStore>();
                     return mediaFileStore.MapPathToPublicUrl(path);
                 });
 

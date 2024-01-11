@@ -8,6 +8,7 @@ namespace OrchardCore.Lists.ViewModels
 {
     public class ListPartViewModel
     {
+        public ListPartFilterViewModel ListPartFilterViewModel { get; set; }
         public ListPart ListPart { get; set; }
         public IEnumerable<ContentItem> ContentItems { get; set; }
         public IEnumerable<ContentTypeDefinition> ContainedContentTypeDefinitions { get; set; }

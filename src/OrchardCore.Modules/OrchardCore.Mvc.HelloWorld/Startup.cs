@@ -21,7 +21,7 @@ namespace OrchardCore.Mvc.HelloWorld
             {
                 throw new Exception(":(");
             }
-            
+
             routes.MapAreaControllerRoute
             (
                 name: "Home",

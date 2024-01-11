@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
@@ -7,9 +8,9 @@ using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Facebook.Login.Services;
 using OrchardCore.Facebook.Login.Settings;
-using OrchardCore.Facebook.Services;
 using OrchardCore.Facebook.Settings;
 using OrchardCore.Modules;
 
@@ -20,18 +21,18 @@ namespace OrchardCore.Facebook.Login.Configuration
         IConfigureOptions<AuthenticationOptions>,
         IConfigureNamedOptions<FacebookOptions>
     {
-        private readonly IFacebookService _coreService;
+        private readonly FacebookSettings _facebookSettings;
         private readonly IFacebookLoginService _loginService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ILogger<FacebookLoginConfiguration> _logger;
+        private readonly ILogger _logger;
 
         public FacebookLoginConfiguration(
-            IFacebookService coreService,
+            IOptions<FacebookSettings> facebookSettings,
             IFacebookLoginService loginService,
             IDataProtectionProvider dataProtectionProvider,
             ILogger<FacebookLoginConfiguration> logger)
         {
-            _coreService = coreService;
+            _facebookSettings = facebookSettings.Value;
             _loginService = loginService;
             _dataProtectionProvider = dataProtectionProvider;
             _logger = logger;
@@ -39,8 +40,7 @@ namespace OrchardCore.Facebook.Login.Configuration
 
         public void Configure(AuthenticationOptions options)
         {
-            var coreSettings = GetFacebookCoreSettingsAsync().GetAwaiter().GetResult();
-            if (coreSettings == null)
+            if (_facebookSettings == null)
             {
                 return;
             }
@@ -67,8 +67,7 @@ namespace OrchardCore.Facebook.Login.Configuration
                 return;
             }
 
-            var coreSettings = GetFacebookCoreSettingsAsync().GetAwaiter().GetResult();
-            if (coreSettings == null)
+            if (_facebookSettings == null)
             {
                 return;
             }
@@ -78,21 +77,24 @@ namespace OrchardCore.Facebook.Login.Configuration
             {
                 return;
             }
-            options.AppId = coreSettings.AppId;
+
+            options.AppId = _facebookSettings.AppId;
 
             try
             {
-                options.AppSecret = _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core).Unprotect(coreSettings.AppSecret);
+                options.AppSecret = _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core).Unprotect(_facebookSettings.AppSecret);
             }
             catch
             {
-                _logger.LogError("The Facebook secret keycould not be decrypted. It may have been encrypted using a different key.");
+                _logger.LogError("The Facebook secret key could not be decrypted. It may have been encrypted using a different key.");
             }
 
             if (loginSettings.CallbackPath.HasValue)
             {
                 options.CallbackPath = loginSettings.CallbackPath;
             }
+
+            options.SaveTokens = loginSettings.SaveTokens;
         }
 
         public void Configure(FacebookOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
@@ -106,21 +108,8 @@ namespace OrchardCore.Facebook.Login.Configuration
 
                 return null;
             }
-            return settings;
-        }
-
-        private async Task<FacebookSettings> GetFacebookCoreSettingsAsync()
-        {
-            var settings = await _coreService.GetSettingsAsync();
-            if ((await _coreService.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))
-            {
-                _logger.LogWarning("The Facebook Core module is not correctly configured.");
-
-                return null;
-            }
 
             return settings;
         }
-
     }
 }

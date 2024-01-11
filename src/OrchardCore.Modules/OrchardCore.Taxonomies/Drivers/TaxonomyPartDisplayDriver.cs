@@ -2,13 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Taxonomies.Models;
 using OrchardCore.Taxonomies.ViewModels;
 
@@ -16,19 +18,22 @@ namespace OrchardCore.Taxonomies.Drivers
 {
     public class TaxonomyPartDisplayDriver : ContentPartDisplayDriver<TaxonomyPart>
     {
-        private readonly IContentManager _contentManager;
-        private readonly IServiceProvider _serviceProvider;
-        private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly IStringLocalizer S;
 
-        public TaxonomyPartDisplayDriver(
-            IContentDefinitionManager contentDefinitionManager,
-            IContentManager contentManager,
-            IServiceProvider serviceProvider
-            )
+        public TaxonomyPartDisplayDriver(IStringLocalizer<TaxonomyPartDisplayDriver> stringLocalizer)
         {
-            _contentDefinitionManager = contentDefinitionManager;
-            _serviceProvider = serviceProvider;
-            _contentManager = contentManager;
+            S = stringLocalizer;
+        }
+
+        public override IDisplayResult Display(TaxonomyPart part, BuildPartDisplayContext context)
+        {
+            var hasItems = part.Terms.Any();
+            return Initialize<TaxonomyPartViewModel>(hasItems ? "TaxonomyPart" : "TaxonomyPart_Empty", m =>
+            {
+                m.ContentItem = part.ContentItem;
+                m.TaxonomyPart = part;
+            })
+            .Location("Detail", "Content");
         }
 
         public override IDisplayResult Edit(TaxonomyPart part)
@@ -46,7 +51,12 @@ namespace OrchardCore.Taxonomies.Drivers
 
             if (await updater.TryUpdateModelAsync(model, Prefix, t => t.Hierarchy, t => t.TermContentType))
             {
-                if (!String.IsNullOrWhiteSpace(model.Hierarchy))
+                if (string.IsNullOrWhiteSpace(model.TermContentType))
+                {
+                    updater.ModelState.AddModelError(Prefix, nameof(model.TermContentType), S["The Term Content Type field is required."]);
+                }
+
+                if (!string.IsNullOrWhiteSpace(model.Hierarchy))
                 {
                     var originalTaxonomyItems = part.ContentItem.As<TaxonomyPart>();
 
@@ -71,12 +81,12 @@ namespace OrchardCore.Taxonomies.Drivers
         /// <summary>
         /// Clone the content items at the specific index.
         /// </summary>
-        private JObject GetTaxonomyItemAt(List<ContentItem> taxonomyItems, int[] indexes)
+        private static JObject GetTaxonomyItemAt(List<ContentItem> taxonomyItems, int[] indexes)
         {
             ContentItem taxonomyItem = null;
 
             // Seek the term represented by the list of indexes
-            foreach(var index in indexes)
+            foreach (var index in indexes)
             {
                 if (taxonomyItems == null || taxonomyItems.Count < index)
                 {
@@ -99,7 +109,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
             return newObj;
         }
-        
+
         private JObject ProcessItem(TaxonomyPart originalItems, JObject item)
         {
             var contentItem = GetTaxonomyItemAt(originalItems.Terms, item["index"].ToString().Split('-').Select(x => Convert.ToInt32(x)).ToArray());

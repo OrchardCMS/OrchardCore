@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.Lists.Models;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Lists.Controllers
 {
@@ -12,22 +12,21 @@ namespace OrchardCore.Lists.Controllers
     public class RemotePublishingController : Controller
     {
         private readonly IContentManager _contentManager;
+        private readonly ILogger _logger;
 
         public RemotePublishingController(
             IContentManager contentManager,
             ILogger<RemotePublishingController> logger)
         {
             _contentManager = contentManager;
-            Logger = logger;
+            _logger = logger;
         }
-
-        ILogger Logger { get; set; }
 
         public async Task<IActionResult> Rsd(string contentItemId)
         {
-            if (Logger.IsEnabled(LogLevel.Debug))
+            if (_logger.IsEnabled(LogLevel.Debug))
             {
-                Logger.LogDebug("RSD requested");
+                _logger.LogDebug("RSD requested");
             }
 
             var contentItem = await _contentManager.GetAsync(contentItemId);
@@ -51,8 +50,8 @@ namespace OrchardCore.Lists.Controllers
             var options = new XElement(
                 XName.Get("service", manifestUri),
                 new XElement(XName.Get("engineName", manifestUri), "Orchard CMS"),
-                new XElement(XName.Get("engineLink", manifestUri), "https://orchardproject.net"),
-                new XElement(XName.Get("homePageLink", manifestUri), "https://orchardproject.net"),
+                new XElement(XName.Get("engineLink", manifestUri), "https://orchardcore.net"),
+                new XElement(XName.Get("homePageLink", manifestUri), "https://orchardcore.net"),
                 new XElement(XName.Get("apis", manifestUri),
                     new XElement(XName.Get("api", manifestUri),
                         new XAttribute("name", "MetaWeblog"),

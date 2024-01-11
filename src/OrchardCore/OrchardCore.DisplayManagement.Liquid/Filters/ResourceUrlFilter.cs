@@ -17,28 +17,28 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ResourceManagementOptions _options;
 
-        public ResourceUrlFilter(
-            IHttpContextAccessor httpContextAccessor,
-            IOptions<ResourceManagementOptions> options
-            )
+        public ResourceUrlFilter(IHttpContextAccessor httpContextAccessor, IOptions<ResourceManagementOptions> options)
         {
             _httpContextAccessor = httpContextAccessor;
             _options = options.Value;
         }
 
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
             var resourcePath = input.ToStringValue();
 
             if (resourcePath.StartsWith("~/", StringComparison.Ordinal))
             {
-                resourcePath = _httpContextAccessor.HttpContext.Request.PathBase.Add(resourcePath.Substring(1)).Value;
+                resourcePath = _httpContextAccessor.HttpContext.Request.PathBase.Add(resourcePath[1..]).Value;
             }
 
-            // Don't prefix cdn if the path is absolute, or is in debug mode.
-            if (!_options.DebugMode
-                && !String.IsNullOrEmpty(_options.CdnBaseUrl)
-                && !Uri.TryCreate(resourcePath, UriKind.Absolute, out var uri))
+            // Don't prefix cdn if the path includes a protocol, i.e. is an external url, or is in debug mode.
+            if (!_options.DebugMode && !string.IsNullOrEmpty(_options.CdnBaseUrl) &&
+                // Don't evaluate with Uri.TryCreate as it produces incorrect results on Linux.
+                !resourcePath.StartsWith("https://", StringComparison.OrdinalIgnoreCase) &&
+                !resourcePath.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
+                !resourcePath.StartsWith("//", StringComparison.OrdinalIgnoreCase) &&
+                !resourcePath.StartsWith("file://", StringComparison.OrdinalIgnoreCase))
             {
                 resourcePath = _options.CdnBaseUrl + resourcePath;
             }

@@ -24,23 +24,50 @@
                 noembed: 'Noembed',
                 noembedError: 'Error'
             },
-            da: {
-                noembedError: 'Fejl'
+            az: {
+                noembed: 'Noembed',
+                noembedError: 'Xəta'
             },
-            sk: {
-                noembedError: 'Chyba'
-            },
-            fr: {
-                noembedError: 'Erreur'
+            by: {
+                noembedError: 'Памылка'
             },
             cs: {
                 noembedError: 'Chyba'
             },
-            ru: {
-                noembedError: 'Ошибка'
+            da: {
+                noembedError: 'Fejl'
+            },
+            et: {
+                noembed: 'Noembed',
+                noembedError: 'Viga'
+            },
+            fr: {
+                noembedError: 'Erreur'
+            },
+            hu: {
+                noembed: 'Noembed',
+                noembedError: 'Hiba'
             },
             ja: {
                 noembedError: 'エラー'
+            },
+            ko: {
+                noembed: 'oEmbed 넣기',
+                noembedError: '에러'
+            },
+            pt_br: {
+                noembed: 'Incorporar',
+                noembedError: 'Erro'
+            },
+            ru: {
+                noembedError: 'Ошибка'
+            },
+            sl: {
+                noembed: 'Noembed',
+                noembedError: 'Napaka'
+            },
+            sk: {
+                noembedError: 'Chyba'
             },
             tr: {
                 noembedError: 'Hata'
@@ -48,14 +75,6 @@
             zh_tw: {
                 noembed: '插入影片',
                 noembedError: '錯誤'
-            },
-            pt_br: {
-                noembed: 'Incorporar',
-                noembedError: 'Erro'
-            },
-            ko: {
-                noembed: 'oEmbed 넣기',
-                noembedError: '에러'
             },
             // jshint camelcase:true
         },
@@ -88,18 +107,24 @@
                                         cache: false,
                                         dataType: 'json',
 
-                                        success: trumbowyg.o.plugins.noembed.success || function (data) {
-                                            if (data.html) {
-                                                trumbowyg.execCmd('insertHTML', data.html);
-                                                setTimeout(function () {
-                                                    trumbowyg.closeModal();
-                                                }, 250);
-                                            } else {
+                                        success: function (data) {
+                                            if (trumbowyg.o.plugins.noembed.success) {
+                                                trumbowyg.o.plugins.noembed.success(data, trumbowyg, $modal);
+                                                return;
+                                            }
+
+                                            if (!data.html) {
                                                 trumbowyg.addErrorOnModalField(
                                                     $('input[type=text]', $modal),
                                                     data.error
                                                 );
+                                                return;
                                             }
+
+                                            trumbowyg.execCmd('insertHTML', data.html);
+                                            setTimeout(function () {
+                                                trumbowyg.closeModal();
+                                            }, 250);
                                         },
                                         error: trumbowyg.o.plugins.noembed.error || function () {
                                             trumbowyg.addErrorOnModalField(

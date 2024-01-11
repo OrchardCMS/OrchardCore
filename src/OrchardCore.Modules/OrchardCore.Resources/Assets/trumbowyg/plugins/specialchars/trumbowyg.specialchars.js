@@ -28,11 +28,32 @@
             en: {
                 specialChars: 'Special characters'
             },
+            az: {
+                specialChars: 'Xüsusi simvollar'
+            },
+            by: {
+                specialChars: 'Спецыяльныя сімвалы'
+            },
+            et: {
+                specialChars: 'Erimärgid'
+            },
             fr: {
                 specialChars: 'Caractères spéciaux'
             },
+            hu: {
+                specialChars: 'Speciális karakterek'
+            },
             ko: {
                 specialChars: '특수문자'
+            },
+            ru: {
+                specialChars: 'Специальные символы'
+            },
+            sl: {
+                specialChars: 'Posebni znaki'
+            },
+            tr: {
+                specialChars: 'Özel karakterler'
             },
         },
         plugins: {

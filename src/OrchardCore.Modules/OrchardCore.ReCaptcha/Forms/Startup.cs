@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
@@ -13,17 +10,17 @@ namespace OrchardCore.ReCaptcha.Forms
     [RequireFeatures("OrchardCore.Forms", "OrchardCore.ReCaptcha")]
     public class Startup : StartupBase
     {
-        static Startup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<ReCaptchaPart>();
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddContentPart<ReCaptchaPart>()
-                .UseDisplayDriver<ReCaptchaPartDisplay>();
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<ReCaptchaPart>();
+            });
 
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddContentPart<ReCaptchaPart>()
+                .UseDisplayDriver<ReCaptchaPartDisplayDriver>();
+
+            services.AddDataMigration<Migrations>();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Text;
 using Microsoft.Extensions.FileProviders;
@@ -8,11 +8,10 @@ namespace OrchardCore.DisplayManagement.FileProviders
     public class ContentFileInfo : IFileInfo
     {
         private readonly byte[] _content;
-        private readonly string _name;
 
         public ContentFileInfo(string name, string content)
         {
-            _name = name;
+            Name = name;
             _content = Encoding.UTF8.GetBytes(content);
         }
 
@@ -25,10 +24,7 @@ namespace OrchardCore.DisplayManagement.FileProviders
 
         public string PhysicalPath => null;
 
-        public string Name
-        {
-            get { return _name; }
-        }
+        public string Name { get; }
 
         public DateTimeOffset LastModified
         {

@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -9,10 +11,10 @@ namespace OrchardCore.Workflows.Http.Activities
 {
     public class HttpRequestEvent : EventActivity
     {
-        public static string EventName => nameof(HttpRequestEvent);        
+        public static string EventName => nameof(HttpRequestEvent);
 
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IStringLocalizer<HttpRequestEvent> S;
+        protected readonly IStringLocalizer S;
 
         public HttpRequestEvent(
             IStringLocalizer<HttpRequestEvent> localizer,
@@ -51,23 +53,55 @@ namespace OrchardCore.Workflows.Http.Activities
             set => SetProperty(value);
         }
 
+        public string FormLocationKey
+        {
+            get => GetProperty(() => string.Empty);
+            set => SetProperty(value ?? string.Empty);
+        }
+
         public override bool CanExecute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var httpContext = _httpContextAccessor.HttpContext;
             var httpRequest = httpContext.Request;
-            var isMatch = string.Equals(HttpMethod, httpRequest.Method, System.StringComparison.OrdinalIgnoreCase);
+            var isMatch = string.Equals(HttpMethod, httpRequest.Method, StringComparison.OrdinalIgnoreCase);
 
             return isMatch;
         }
 
-        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        public override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(S["Done"]);
+            if (_httpContextAccessor.HttpContext.Request.HasFormContentType
+            && _httpContextAccessor.HttpContext.Request.Form.TryGetValue(WorkflowConstants.FormLocationKeyInputName, out var value)
+            && !string.IsNullOrWhiteSpace(value))
+            {
+                if (!workflowContext.Output.TryGetValue(WorkflowConstants.HttpFormLocationOutputKeyName, out var obj)
+                    || obj is not Dictionary<string, string> formLocation)
+                {
+                    formLocation = [];
+                }
+
+                formLocation[FormLocationKey] = GetLocationUrl(value);
+
+                workflowContext.Output[WorkflowConstants.HttpFormLocationOutputKeyName] = formLocation;
+            }
+
+            return Task.FromResult(Outcomes("Done"));
         }
 
+        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+            => Outcomes(S["Done"]);
+
         public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+            => Outcomes("Done");
+
+        private static string GetLocationUrl(string value)
         {
-            return Outcomes("Done");
+            if (value.StartsWith('/'))
+            {
+                return "~" + value;
+            }
+
+            return value;
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿using System;
-using System.IO;
+using System;
 using System.Threading.Tasks;
+using Cysharp.Text;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Environment.Commands.Parameters;
@@ -17,6 +17,7 @@ namespace OrchardCore.Recipes.RecipeSteps
         private readonly ICommandManager _commandManager;
         private readonly ICommandParser _commandParser;
         private readonly ICommandParametersParser _commandParameterParser;
+        private readonly ILogger _logger;
 
         public CommandStep(ICommandManager commandManager,
             ICommandParser commandParser,
@@ -26,31 +27,29 @@ namespace OrchardCore.Recipes.RecipeSteps
             _commandManager = commandManager;
             _commandParser = commandParser;
             _commandParameterParser = commandParameterParser;
-            Logger = logger;
+            _logger = logger;
         }
 
-        private ILogger Logger { get; set; }
-
         public async Task ExecuteAsync(RecipeExecutionContext context)
-        { 
-            if (!String.Equals(context.Name, "Command", StringComparison.OrdinalIgnoreCase))
+        {
+            if (!string.Equals(context.Name, "Command", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
 
             var step = context.Step.ToObject<CommandStepModel>();
 
-            foreach(var command in step.Commands)
+            foreach (var command in step.Commands)
             {
-                using (var output = new StringWriter())
+                using (var output = new ZStringWriter())
                 {
-                    Logger.LogInformation("Executing command: {Command}", command);
+                    _logger.LogInformation("Executing command: {Command}", command);
                     var commandParameters = _commandParameterParser.Parse(_commandParser.Parse(command));
                     commandParameters.Output = output;
                     await _commandManager.ExecuteAsync(commandParameters);
-                    Logger.LogInformation("Command executed with output: {CommandOutput}", output);
+                    _logger.LogInformation("Command executed with output: {CommandOutput}", output);
                 }
-                Logger.LogInformation("Executed command: {Command}", command);
+                _logger.LogInformation("Executed command: {Command}", command);
             }
         }
 

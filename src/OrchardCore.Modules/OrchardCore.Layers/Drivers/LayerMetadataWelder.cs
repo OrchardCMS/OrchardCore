@@ -8,13 +8,14 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Services;
 using OrchardCore.Layers.ViewModels;
+using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Layers.Drivers
 {
     public class LayerMetadataWelder : ContentDisplayDriver
     {
         private readonly ILayerService _layerService;
-        private readonly IStringLocalizer<LayerMetadataWelder> S;
+        protected readonly IStringLocalizer S;
 
         public LayerMetadataWelder(ILayerService layerService, IStringLocalizer<LayerMetadataWelder> stringLocalizer)
         {
@@ -41,7 +42,7 @@ namespace OrchardCore.Layers.Drivers
 
                 // Are we loading an editor that requires layer metadata?
                 if (await context.Updater.TryUpdateModelAsync(layerMetadata, Prefix, m => m.Zone, m => m.Position)
-                    && !String.IsNullOrEmpty(layerMetadata.Zone))
+                    && !string.IsNullOrEmpty(layerMetadata.Zone))
                 {
                     model.Weld(layerMetadata);
                 }
@@ -71,9 +72,14 @@ namespace OrchardCore.Layers.Drivers
                 return null;
             }
 
-            if (String.IsNullOrEmpty(viewModel.LayerMetadata.Zone))
+            if (string.IsNullOrEmpty(viewModel.LayerMetadata.Zone))
             {
-                context.Updater.ModelState.AddModelError("LayerMetadata.Zone", S["Zone is missing"]);
+                context.Updater.ModelState.AddModelError(Prefix, "LayerMetadata.Zone", S["Zone is missing"]);
+            }
+
+            if (string.IsNullOrEmpty(viewModel.LayerMetadata.Layer))
+            {
+                context.Updater.ModelState.AddModelError(Prefix, "LayerMetadata.Layer", S["Layer is missing"]);
             }
 
             if (context.Updater.ModelState.IsValid)

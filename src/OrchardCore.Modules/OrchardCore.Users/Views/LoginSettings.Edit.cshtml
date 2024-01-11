@@ -1,45 +1,67 @@
 @model OrchardCore.Users.Models.LoginSettings
 
-<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<style asp-name="codemirror"></style>
+<script asp-name="codemirror" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
 <script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
 <script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 
-<div class="form-group" asp-validation-class-for="UseSiteTheme">
-    <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" asp-for="UseSiteTheme" />
+<div class="mb-3">
+    <div class="form-check">
+        <input asp-for="AllowChangingUsername" type="checkbox" class="form-check-input">
+        <label class="form-check-label" asp-for="AllowChangingUsername">@T["Allow user to change their username"]</label>
+    </div>
+</div>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input asp-for="AllowChangingEmail" type="checkbox" class="form-check-input">
+        <label class="form-check-label" asp-for="AllowChangingEmail">@T["Allow user to change their email address"]</label>
+    </div>
+</div>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input asp-for="AllowChangingPhoneNumber" type="checkbox" class="form-check-input">
+        <label class="form-check-label" asp-for="AllowChangingPhoneNumber">@T["Allow user to change their phone number"]</label>
+    </div>
+</div>
+
+<div class="mb-3" asp-validation-class-for="UseSiteTheme">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="UseSiteTheme" />
         <span asp-validation-for="UseSiteTheme"></span>
-        <label class="custom-control-label" asp-for="UseSiteTheme">@T["Use site theme for login page"]</label>
-        <span class="hint">— @T["Requires an active site theme."]</span>
+        <label class="form-check-label" asp-for="UseSiteTheme">@T["Use site theme for login page"]</label>
+        <span class="hint dashed">@T["Requires an active site theme."]</span>
     </div>
 </div>
 
-<div class="form-group" asp-validation-class-for="UseExternalProviderIfOnlyOneDefined">
-    <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" asp-for="UseExternalProviderIfOnlyOneDefined" />
+<div class="mb-3" asp-validation-class-for="UseExternalProviderIfOnlyOneDefined">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="UseExternalProviderIfOnlyOneDefined" />
         <span asp-validation-for="UseExternalProviderIfOnlyOneDefined"></span>
-        <label class="custom-control-label" asp-for="UseExternalProviderIfOnlyOneDefined">@T["Use external provider for login."]</label>
-        <span class="hint">— @T["If only one external provider is defined, auto challenge the provider to login. You should also configure registration options"]</span>
+        <label class="form-check-label" asp-for="UseExternalProviderIfOnlyOneDefined">@T["Use external provider for login."]</label>
+        <span class="hint dashed">@T["If only one external provider is defined, auto challenge the provider to login. You should also configure registration options"]</span>
     </div>
 </div>
 
-<div class="form-group" asp-validation-class-for="DisableLocalLogin">
-    <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" asp-for="DisableLocalLogin" />
+<div class="mb-3" asp-validation-class-for="DisableLocalLogin">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="DisableLocalLogin" />
         <span asp-validation-for="DisableLocalLogin"></span>
-        <label class="custom-control-label" asp-for="DisableLocalLogin">@T["Disable local password login."]</label>
-        <span class="hint">— @T["When selected, users are not allowed to login with username/password. Make sure there is at least one admin with linked account"]</span>
+        <label class="form-check-label" asp-for="DisableLocalLogin">@T["Disable local password login."]</label>
+        <span class="hint dashed">@T["When selected, users are not allowed to login with username/password. Make sure there is at least one admin with linked account"]</span>
     </div>
 </div>
 
-<div class="form-group" asp-validation-class-for="UseScriptToSyncRoles">
-    <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" asp-for="UseScriptToSyncRoles" />
+<div class="mb-3" asp-validation-class-for="UseScriptToSyncRoles">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="UseScriptToSyncRoles" />
         <span asp-validation-for="UseScriptToSyncRoles"></span>
-        <label class="custom-control-label" asp-for="UseScriptToSyncRoles">@T["Use a script to set user roles based on external provider claims"]</label>
-        <span class="hint">— @T["If selected, any IExternalLoginEventHandlers defined in modules are not triggered"]</span>
+        <label class="form-check-label" asp-for="UseScriptToSyncRoles">@T["Use a script to set user roles based on external provider claims"]</label>
+        <span class="hint dashed">@T["If selected, any IExternalLoginEventHandlers defined in modules are not triggered"]</span>
     </div>
     <pre>
 *************************************************************************************************
@@ -71,23 +93,22 @@
 </pre>
 </div>
 
-<div class="form-group" asp-validation-class-for="SyncRolesScript">
-    <button type="button" class="btn btn-secondary mb-2" onclick="resetScript()">@T["Reset Script"]</button>
+<div class="mb-3" asp-validation-class-for="SyncRolesScript">
+    <button type="button" class="btn btn-secondary mb-2" onclick="resetScript(false)">@T["Reset Script"]</button>
     <textarea asp-for="SyncRolesScript" rows="1" class="form-control content-preview-text"></textarea>
 </div>
-
 
 <script at="Foot">
     function resetScript(keepText) {
         var editor = $('#@Html.IdFor(x => x.SyncRolesScript)').data('editor');
         if (!keepText) {
             editor.doc.setValue(
-                '/* Uncomment to map AzureAD\n' +
+                '/* Uncomment to map AzureAd\n' +
                 'switch (context.loginProvider) {\n' +
-                '    case "AzureAD":\n' +
+                '    case "AzureAd":\n' +
                 '        context.externalClaims.forEach(claim => {\n' +
-                '            if (claim.Type === "http://schemas.microsoft.com/ws/2008/06/identity/claims/role") {\n' +
-                '                switch (claim.Value) {\n' +
+                '            if (claim.type === "http://schemas.microsoft.com/ws/2008/06/identity/claims/role") {\n' +
+                '                switch (claim.value) {\n' +
                 '                    case "Writer":\n' +
                 '                        context.rolesToAdd.push("Author");\n' +
                 '                        break;\n' +
@@ -95,16 +116,17 @@
                 '                        context.rolesToAdd.push("Administrator");\n' +
                 '                        break;\n' +
                 '                    default:\n' +
-                '                        log("Warning", "Role " + claim.Value + " was not handled");\n' +
+                '                        log("Warning", "Role " + claim.value + " was not handled");\n' +
                 '                        break;\n' +
                 '                }\n' +
                 '            }\n' +
                 '        });\n' +
+                '        break;\n' +
                 '    default:\n' +
-                '        log("Warning", "Provider " + loginProvider + " was not handled");\n' +
-    	        '        break;\n' +
+                '        log("Warning", "Provider " + context.loginProvider + " was not handled");\n' +
+                '        break;\n' +
                 '}\n' +
-                '*/\n' 
+                '*/\n'
             );
         }
     }
@@ -117,23 +139,23 @@
             editor.options.readOnly = "nocursor";
         }
     }
-$(function () {
-    var textArea = document.getElementById('@Html.IdFor(x => x.SyncRolesScript)');
-    var syncRolesCheckbox = document.getElementById('@Html.IdFor(x => x.UseScriptToSyncRoles)');
-    if (textArea == null) {
-        return;
-    }
-    var editor = CodeMirror.fromTextArea(textArea, {
-        autoRefresh: true,
-        lineNumbers: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        autoCloseTags: true,
-        mode: "javascript"
+    $(function () {
+        var textArea = document.getElementById('@Html.IdFor(x => x.SyncRolesScript)');
+        var syncRolesCheckbox = document.getElementById('@Html.IdFor(x => x.UseScriptToSyncRoles)');
+        if (textArea == null) {
+            return;
+        }
+        var editor = CodeMirror.fromTextArea(textArea, {
+            autoRefresh: true,
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            autoCloseTags: true,
+            mode: "javascript"
+        });
+        $('#@Html.IdFor(x => x.SyncRolesScript)').data('editor', editor);
+        resetScript(editor.doc.getValue() != '');
+        syncRolesCheckbox.addEventListener("change", toggleEditorState);
+        toggleEditorState();
     });
-    $('#@Html.IdFor(x => x.SyncRolesScript)').data('editor', editor);
-    resetScript(editor.doc.lineCount() > 1);
-    syncRolesCheckbox.addEventListener("change", toggleEditorState);
-    toggleEditorState();
-});
 </script>

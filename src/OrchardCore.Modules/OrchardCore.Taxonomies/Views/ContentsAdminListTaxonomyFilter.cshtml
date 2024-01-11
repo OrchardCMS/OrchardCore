@@ -1,0 +1,6 @@
+@model TaxonomyContentsAdminFilterViewModel
+
+<div class="btn-group filter">
+    <select asp-for="SelectedContentItemId" asp-items="Model.Taxonomies" class="selectpicker taxonomy-selectpicker show-tick me-2" data-header="@T["Filter by {0}", Model.DisplayText]" data-live-search="true" data-selected-text-format="static" data-width="fit" title="@T["{0}", Model.DisplayText]" data-style="btn-sm" data-dropdown-align-right="auto">
+    </select>
+</div>

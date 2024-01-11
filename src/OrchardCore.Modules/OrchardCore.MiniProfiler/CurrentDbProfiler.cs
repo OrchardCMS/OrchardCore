@@ -5,7 +5,7 @@ using StackExchange.Profiling.Data;
 
 namespace OrchardCore.MiniProfiler
 {
-    class CurrentDbProfiler : IDbProfiler
+    internal class CurrentDbProfiler : IDbProfiler
     {
         private Func<IDbProfiler> GetProfiler { get; }
         public CurrentDbProfiler(Func<IDbProfiler> getProfiler) => GetProfiler = getProfiler;

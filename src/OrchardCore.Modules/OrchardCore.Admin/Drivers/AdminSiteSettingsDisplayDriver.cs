@@ -2,13 +2,12 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using OrchardCore.Admin.Models;
+using OrchardCore.Admin.ViewModels;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
-using OrchardCore.Admin.Models;
-using OrchardCore.Admin.ViewModels;
-using OrchardCore.Admin;
 
 namespace OrchardCore.Admin.Drivers
 {
@@ -36,9 +35,12 @@ namespace OrchardCore.Admin.Drivers
             }
 
             return Initialize<AdminSettingsViewModel>("AdminSettings_Edit", model =>
-                {
-                    model.DisplayMenuFilter = settings.DisplayMenuFilter;
-                }).Location("Content:3").OnGroup(GroupId);
+            {
+                model.DisplayThemeToggler = settings.DisplayThemeToggler;
+                model.DisplayMenuFilter = settings.DisplayMenuFilter;
+                model.DisplayNewMenu = settings.DisplayNewMenu;
+                model.DisplayTitlesInTopbar = settings.DisplayTitlesInTopbar;
+            }).Location("Content:3").OnGroup(GroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(AdminSettings settings, BuildEditorContext context)
@@ -50,13 +52,16 @@ namespace OrchardCore.Admin.Drivers
                 return null;
             }
 
-            if (context.GroupId == GroupId)
+            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
             {
                 var model = new AdminSettingsViewModel();
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
+                settings.DisplayThemeToggler = model.DisplayThemeToggler;
                 settings.DisplayMenuFilter = model.DisplayMenuFilter;
+                settings.DisplayNewMenu = model.DisplayNewMenu;
+                settings.DisplayTitlesInTopbar = model.DisplayTitlesInTopbar;
             }
 
             return await EditAsync(settings, context);

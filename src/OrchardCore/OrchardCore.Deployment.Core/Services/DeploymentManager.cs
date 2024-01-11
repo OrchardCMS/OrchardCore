@@ -23,9 +23,9 @@ namespace OrchardCore.Deployment.Core.Services
 
         public async Task ExecuteDeploymentPlanAsync(DeploymentPlan deploymentPlan, DeploymentPlanResult result)
         {
-            foreach(var step in deploymentPlan.DeploymentSteps)
+            foreach (var step in deploymentPlan.DeploymentSteps)
             {
-                foreach(var source in _deploymentSources)
+                foreach (var source in _deploymentSources)
                 {
                     await source.ProcessDeploymentStepAsync(step, result);
                 }
@@ -38,7 +38,7 @@ namespace OrchardCore.Deployment.Core.Services
         {
             var tasks = new List<DeploymentTarget>();
 
-            foreach(var provider in _deploymentTargetProviders)
+            foreach (var provider in _deploymentTargetProviders)
             {
                 tasks.AddRange(await provider.GetDeploymentTargetsAsync());
             }

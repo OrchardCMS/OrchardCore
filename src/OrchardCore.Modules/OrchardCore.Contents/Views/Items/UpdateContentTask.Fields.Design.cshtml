@@ -1,0 +1,14 @@
+@model ContentTaskViewModel<UpdateContentTask>
+
+<header>
+    <h4><i class="fa-solid fa-pencil-square-o" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Update Content"])</h4>
+</header>
+
+@if (string.IsNullOrWhiteSpace(Model.Activity.Content?.Expression))
+{
+    <span>@T["Update content provided via the <em>ContentItemId</em> input argument"]</span>
+}
+else
+{
+    <span>@T["Update content using expression: <em>{0}</em>", Model.Activity.Content.Expression]</span>
+}

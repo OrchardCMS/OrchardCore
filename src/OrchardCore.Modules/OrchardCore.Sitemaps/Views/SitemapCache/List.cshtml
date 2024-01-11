@@ -1,0 +1,94 @@
+@model OrchardCore.Sitemaps.ViewModels.ListSitemapCacheViewModel
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Sitemaps Cache"])</h1></zone>
+
+<div class="card text-bg-theme mb-3 position-sticky action-bar">
+    <div class="card-body">
+        <div class="row gx-3">
+            <div class="col">
+                <div class="has-search">
+                    <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
+                    <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+                </div>
+            </div>
+            <div class="col-auto">
+                <a asp-route-action="PurgeAll" class="btn btn-danger" data-title="@T["Purge All"]" data-message="@T["Are you sure you want to purge the entire sitemap cache?"]" data-url-af="RemoveUrl UnsafeUrl">@T["Purge All"]</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* the form is necessary to generate and antiforgery token for the purge action *@
+<form asp-action="List">
+    @if (Model.CachedFileNames.Any())
+    {
+        <ul id="cache-entries" class="list-group">
+            @for (var i = 0; i < Model.CachedFileNames.Length; i++)
+            {
+                <li class="list-group-item" data-cacheentry="@Model.CachedFileNames[i]">
+                    <div class="row">
+                        <div class="col">
+                            @Model.CachedFileNames[i]
+                        </div>
+                        <div class="col">
+                            <a asp-action="Purge" asp-route-cacheFileName="@Model.CachedFileNames[i]" class="btn btn-sm btn-danger float-end" data-title="@T["Purge"]" data-message="@T["Are you sure you want to purge this sitemap?"]" data-url-af="RemoveUrl UnsafeUrl">@T["Purge"]</a>
+                        </div>
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <div id="none-alert" class="alert alert-info mb-1" role="alert">
+            @T["<strong>Nothing here!</strong> There are no sitemaps cached for the moment."]
+        </div>
+    }
+    <div id="search-alert" class="alert alert-info mb-1 d-none" role="alert">
+        @T["<strong>Nothing here!</strong> Your search returned no results."]
+    </div>
+</form>
+
+<script at="Foot">
+    $(function () {
+        var searchBox = $('#search-box');
+
+        // On each keypress filter the list of cache entries
+        searchBox.keyup(function (e) {
+            var search = $(this).val().toLowerCase();
+            var elementsToFilter = $("[data-cacheentry]");
+
+            // On ESC, clear the search box and display all cache entries
+            if (e.keyCode == 27 || search == '') {
+                searchBox.val('');
+                elementsToFilter.removeClass("d-none first-child-visible last-child-visible");
+            }
+            else {
+                $('#cache-entries > li').each(function () {
+                    var cacheEntry = $(this).data('cacheentry').toLowerCase();
+                    var found = cacheEntry.indexOf(search) > -1;
+
+                    if (found) {
+                        $(this).removeClass("d-none first-child-visible last-child-visible");
+                    }
+                    else {
+                        $(this).addClass("d-none");
+                    }
+                });
+
+                elementsToFilter.filter(":not(.d-none)").first().addClass("first-child-visible");
+                elementsToFilter.filter(":not(.d-none)").last().addClass("last-child-visible");
+
+                // We display an alert if a search is not found
+                var visible = $('#cache-entries > li:visible');
+                if (visible.length == 0) {
+                    $('#search-alert').removeClass("d-none");
+                    $('#none-alert').addClass("d-none");
+                }
+                else {
+                    $('#search-alert').addClass("d-none");
+                }
+            }
+        });
+    })
+</script>

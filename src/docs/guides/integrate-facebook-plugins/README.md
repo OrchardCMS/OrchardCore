@@ -1,6 +1,6 @@
 # Integrate Facebook Social Plugins
 
-In order to integrate Social plugins from Facebook, you must enable and configure The `OrchardCore.Facebook.Widgets` module. You can learn more about [here](../../../modules/Facebook)
+In order to integrate Social plugins from Facebook, you must enable and configure The `OrchardCore.Facebook.Widgets` module. You can learn more about [here](../../reference/modules/Facebook/README.md)
 
 ## What you will build
 
@@ -8,7 +8,7 @@ You will build a Blog and give the ability to your readers to share quotes using
 
 ## What you will need
 
-Follow the guide to [create a new Orchard Core CMS website](../../guides/create-cms-application)
+Follow the guide to [create a new Orchard Core CMS website](../../guides/create-cms-application/README.md)
 
 ## Login to admin and enable Facebook Social Plugins Widgets Feature
 

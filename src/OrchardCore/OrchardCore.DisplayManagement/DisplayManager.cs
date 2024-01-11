@@ -5,7 +5,6 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement
@@ -15,24 +14,21 @@ namespace OrchardCore.DisplayManagement
         private readonly IEnumerable<IDisplayDriver<TModel>> _drivers;
         private readonly IShapeFactory _shapeFactory;
         private readonly ILayoutAccessor _layoutAccessor;
+        private readonly ILogger _logger;
 
         public DisplayManager(
             IEnumerable<IDisplayDriver<TModel>> drivers,
-            IShapeTableManager shapeTableManager,
             IShapeFactory shapeFactory,
-            IThemeManager themeManager,
+            IEnumerable<IShapePlacementProvider> placementProviders,
             ILogger<DisplayManager<TModel>> logger,
             ILayoutAccessor layoutAccessor
-            ) : base(shapeTableManager, shapeFactory, themeManager)
+            ) : base(shapeFactory, placementProviders)
         {
             _shapeFactory = shapeFactory;
             _layoutAccessor = layoutAccessor;
             _drivers = drivers;
-
-            Logger = logger;
+            _logger = logger;
         }
-
-        ILogger Logger { get; set; }
 
         public async Task<IShape> BuildDisplayAsync(TModel model, IUpdateModel updater, string displayType = null, string group = null)
         {
@@ -69,12 +65,12 @@ namespace OrchardCore.DisplayManagement
                 {
                     await result.ApplyAsync(context);
                 }
-            }, model, context, Logger);
+            }, model, context, _logger);
 
             return shape;
         }
 
-        public async Task<IShape> BuildEditorAsync(TModel model, IUpdateModel updater, bool isNew, string group = null)
+        public async Task<IShape> BuildEditorAsync(TModel model, IUpdateModel updater, bool isNew, string group, string htmlPrefix)
         {
             var actualShapeType = typeof(TModel).Name + "_Edit";
 
@@ -88,7 +84,7 @@ namespace OrchardCore.DisplayManagement
                 shape,
                 group ?? "",
                 isNew,
-                "",
+                htmlPrefix,
                 _shapeFactory,
                 await _layoutAccessor.GetLayoutAsync(),
                 new ModelStateWrapperUpdater(updater)
@@ -103,12 +99,12 @@ namespace OrchardCore.DisplayManagement
                 {
                     await result.ApplyAsync(context);
                 }
-            }, model, context, Logger);
+            }, model, context, _logger);
 
             return shape;
         }
 
-        public async Task<IShape> UpdateEditorAsync(TModel model, IUpdateModel updater, bool isNew, string group = null)
+        public async Task<IShape> UpdateEditorAsync(TModel model, IUpdateModel updater, bool isNew, string group, string htmlPrefix)
         {
             var actualShapeType = typeof(TModel).Name + "_Edit";
 
@@ -122,7 +118,7 @@ namespace OrchardCore.DisplayManagement
                 shape,
                 group ?? "",
                 isNew,
-                "",
+                htmlPrefix,
                 _shapeFactory,
                 await _layoutAccessor.GetLayoutAsync(),
                 new ModelStateWrapperUpdater(updater)
@@ -137,7 +133,7 @@ namespace OrchardCore.DisplayManagement
                 {
                     await result.ApplyAsync(context);
                 }
-            }, model, context, Logger);
+            }, model, context, _logger);
 
             return shape;
         }

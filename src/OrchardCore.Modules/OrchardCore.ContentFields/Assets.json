@@ -1,16 +1,21 @@
 [
   {
-    "generateSourceMaps": false,
-    "inputs": [
-      "Assets/scss/vue-multiselect-wrapper.scss"
-    ],
-    "output": "wwwroot/Styles/vue-multiselect-wrapper.css"
-  },
-  {
     "inputs": [
       "Assets/js/vue-multiselect-wrapper.js"
     ],
     "output": "wwwroot/Scripts/vue-multiselect-wrapper.js"
+  },
+  {
+    "inputs": [
+      "Assets/js/vue-multiselect-userpicker.js"
+    ],
+    "output": "wwwroot/Scripts/vue-multiselect-userpicker.js"
+  },
+  {
+    "inputs": [
+      "Assets/js/vue-multiselect-multitextfieldpicker.js"
+    ],
+    "output": "wwwroot/Scripts/vue-multiselect-multitextfieldpicker.js"
   },
   {
     "generateSourceMaps": false,
@@ -18,6 +23,13 @@
       "Assets/scss/optionsEditor.scss"
     ],
     "output": "wwwroot/Styles/optionsEditor.css"
+  },
+  {
+    "generateSourceMaps": false,
+    "inputs": [
+      "Assets/scss/fontawesome_iconpicker.scss"
+    ],
+    "output": "wwwroot/Styles/fontawesome-iconpicker.css"
   },
   {
     "inputs": [

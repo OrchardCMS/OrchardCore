@@ -13,6 +13,24 @@
                     '2.0': 'Extra large'
                 }
             },
+            az: {
+                lineheight: 'Sətir yüksəkliyi',
+                lineheights: {
+                    '0.9': 'Kiçik',
+                    'normal': 'Normal',
+                    '1.5': 'Böyük',
+                    '2.0': 'Daha böyük'
+                }
+            },
+            by: {
+                lineheight: 'Міжрадковы інтэрвал',
+                lineheights: {
+                    '0.9': 'Маленькі',
+                    'normal': 'Звычайны',
+                    '1.5': 'Вялікі',
+                    '2.0': 'Вельмі вялікі'
+                }
+            },
             da: {
                 lineheight: 'Linjehøjde',
                 lineheights: {
@@ -20,6 +38,15 @@
                     'normal': 'Normal',
                     '1.5': 'Stor',
                     '2.0': 'Ekstra stor'
+                }
+            },
+            et: {
+                lineheight: 'Reavahe',
+                lineheights: {
+                    '0.9': 'Väike',
+                    'normal': 'Tavaline',
+                    '1.5': 'Suur',
+                    '2.0': 'Väga suur'
                 }
             },
             fr: {
@@ -31,40 +58,13 @@
                     '2.0': 'Très grande'
                 }
             },
-            nl: {
-                lineheight: 'Regelhoogte',
+            hu: {
+                lineheight: 'Line height',
                 lineheights: {
-                    '0.9': 'Klein',
-                    'normal': 'Normaal',
-                    '1.5': 'Groot',
-                    '2.0': 'Extra groot'
-                }
-            },
-            tr: {
-                lineheight: 'Satır yüksekliği',
-                lineheights: {
-                    '0.9': 'Küçük',
-                    'normal': 'Normal',
-                    '1.5': 'Büyük',
-                    '2.0': 'Çok Büyük'
-                }
-            },
-            zh_tw: {
-                lineheight: '文字間距',
-                lineheights: {
-                    '0.9': '小',
-                    'normal': '正常',
-                    '1.5': '大',
-                    '2.0': '特大'
-                }
-            },
-            pt_br: {
-                lineheight: 'Altura de linha',
-                lineheights: {
-                    '0.9': 'Pequena',
+                    '0.9': 'Small',
                     'normal': 'Regular',
-                    '1.5': 'Grande',
-                    '2.0': 'Extra grande'
+                    '1.5': 'Large',
+                    '2.0': 'Extra large'
                 }
             },
             it: {
@@ -83,6 +83,60 @@
                     'normal': '보통',
                     '1.5': '넓게',
                     '2.0': '아주 넓게'
+                }
+            },
+            nl: {
+                lineheight: 'Regelhoogte',
+                lineheights: {
+                    '0.9': 'Klein',
+                    'normal': 'Normaal',
+                    '1.5': 'Groot',
+                    '2.0': 'Extra groot'
+                }
+            },
+            pt_br: {
+                lineheight: 'Altura de linha',
+                lineheights: {
+                    '0.9': 'Pequena',
+                    'normal': 'Regular',
+                    '1.5': 'Grande',
+                    '2.0': 'Extra grande'
+                }
+            },
+            ru: {
+                lineheight: 'Межстрочный интервал',
+                lineheights: {
+                    '0.9': 'Маленький',
+                    'normal': 'Обычный',
+                    '1.5': 'Большой',
+                    '2.0': 'Очень большой'
+                }
+            },
+            sl: {
+                lineheight: 'Višina vrstice',
+                lineheights: {
+                    '0.9': 'Majhna',
+                    'normal': 'Navadna',
+                    '1.5': 'Velika',
+                    '2.0': 'Ekstra velika'
+                }
+            },
+            tr: {
+                lineheight: 'Satır yüksekliği',
+                lineheights: {
+                    '0.9': 'Küçük',
+                    'normal': 'Normal',
+                    '1.5': 'Büyük',
+                    '2.0': 'Çok Büyük'
+                }
+            },
+            zh_tw: {
+                lineheight: '文字間距',
+                lineheights: {
+                    '0.9': '小',
+                    'normal': '正常',
+                    '1.5': '大',
+                    '2.0': '特大'
                 }
             },
         }

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Deployment.Core.Services
 {
-    public class TemporaryFileBuilder : IFileBuilder, IDisposable
+    public sealed class TemporaryFileBuilder : IFileBuilder, IDisposable
     {
         private readonly bool _deleteOnDispose;
 
@@ -29,6 +29,11 @@ namespace OrchardCore.Deployment.Core.Services
 
         public async Task SetFileAsync(string subpath, Stream stream)
         {
+            if (subpath.StartsWith('/'))
+            {
+                throw new InvalidOperationException("A virtual path is required");
+            }
+
             var fullname = PathExtensions.Combine(Folder, subpath);
 
             var directory = new FileInfo(fullname).Directory;
@@ -38,10 +43,8 @@ namespace OrchardCore.Deployment.Core.Services
                 directory.Create();
             }
 
-            using (var fs = File.Create(fullname, 4 * 1024, FileOptions.None))
-            {
-                await stream.CopyToAsync(fs);
-            }
+            using var fs = File.Create(fullname, 4 * 1024, FileOptions.None);
+            await stream.CopyToAsync(fs);
         }
 
         public override string ToString()

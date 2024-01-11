@@ -1,0 +1,11 @@
+@model AllFeaturesDeploymentStepViewModel
+
+<h5>@T["All Features"]</h5>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="IgnoreDisabledFeatures" />
+        <label class="form-check-label" asp-for="IgnoreDisabledFeatures">@T["Ignore disabled features"]</label>
+        <span class="hint">@T["Check if the disabled features have to be ignored."]</span>
+    </div>
+</div>

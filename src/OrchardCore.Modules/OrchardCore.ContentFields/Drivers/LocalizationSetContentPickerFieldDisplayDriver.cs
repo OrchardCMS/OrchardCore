@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentLocalization;
@@ -12,15 +13,16 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.ModelBinding;
 
-namespace OrchardCore.ContentFields.Fields
+namespace OrchardCore.ContentFields.Drivers
 {
     [RequireFeatures("OrchardCore.ContentLocalization")]
     public class LocalizationSetContentPickerFieldDisplayDriver : ContentFieldDisplayDriver<LocalizationSetContentPickerField>
     {
         private readonly IContentManager _contentManager;
         private readonly IContentLocalizationManager _contentLocalizationManager;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public LocalizationSetContentPickerFieldDisplayDriver(
             IContentManager contentManager,
@@ -30,7 +32,6 @@ namespace OrchardCore.ContentFields.Fields
             _contentManager = contentManager;
             S = localizer;
             _contentLocalizationManager = contentLocalizationManager;
-
         }
 
         public override IDisplayResult Display(LocalizationSetContentPickerField field, BuildFieldDisplayContext context)
@@ -88,18 +89,18 @@ namespace OrchardCore.ContentFields.Fields
             }
 
             field.LocalizationSets = viewModel.LocalizationSets == null
-                ? new string[0] : viewModel.LocalizationSets.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                ? Array.Empty<string>() : viewModel.LocalizationSets.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
             var settings = context.PartFieldDefinition.GetSettings<LocalizationSetContentPickerFieldSettings>();
 
             if (settings.Required && field.LocalizationSets.Length == 0)
             {
-                updater.ModelState.AddModelError(Prefix, S["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
+                updater.ModelState.AddModelError(Prefix, nameof(field.LocalizationSets), S["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
             }
 
             if (!settings.Multiple && field.LocalizationSets.Length > 1)
             {
-                updater.ModelState.AddModelError(Prefix, S["The {0} field cannot contain multiple items.", context.PartFieldDefinition.DisplayName()]);
+                updater.ModelState.AddModelError(Prefix, nameof(field.LocalizationSets), S["The {0} field cannot contain multiple items.", context.PartFieldDefinition.DisplayName()]);
             }
 
             return Edit(field, context);

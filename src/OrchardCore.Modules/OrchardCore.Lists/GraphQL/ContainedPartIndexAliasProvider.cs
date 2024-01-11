@@ -6,13 +6,13 @@ namespace OrchardCore.Lists.GraphQL
 {
     public class ContainedPartIndexAliasProvider : IIndexAliasProvider
     {
-        private static readonly IndexAlias[] _aliases = new []
+        private static readonly IndexAlias[] _aliases = new[]
         {
             new IndexAlias
             {
                 Alias = "containedPart",
                 Index = nameof(ContainedPartIndex),
-                With = q => q.With<ContainedPartIndex>()
+                IndexType = typeof(ContainedPartIndex)
             }
         };
 

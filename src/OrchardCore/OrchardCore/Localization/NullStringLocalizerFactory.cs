@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Microsoft.Extensions.Localization;
 
@@ -25,7 +24,7 @@ namespace OrchardCore.Localization
 
             public static NullLocalizer Instance { get; } = new NullLocalizer();
 
-            public LocalizedString this[string name] => new LocalizedString(name, name, false);
+            public LocalizedString this[string name] => new(name, name, false);
 
             public LocalizedString this[string name, params object[] arguments]
             {
@@ -42,7 +41,7 @@ namespace OrchardCore.Localization
                         Array.Copy(pluralArgument.Arguments, 0, arguments, 1, pluralArgument.Arguments.Length);
                     }
 
-                    translation = String.Format(translation, arguments);
+                    translation = string.Format(translation, arguments);
 
                     return new LocalizedString(name, translation, false);
                 }
@@ -51,8 +50,6 @@ namespace OrchardCore.Localization
             public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
                 => Enumerable.Empty<LocalizedString>();
 
-            public IStringLocalizer WithCulture(CultureInfo culture) => Instance;
-            
             public LocalizedString GetString(string name) => this[name];
 
             public LocalizedString GetString(string name, params object[] arguments) => this[name, arguments];

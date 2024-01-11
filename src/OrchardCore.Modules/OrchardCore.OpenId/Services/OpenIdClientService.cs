@@ -14,7 +14,7 @@ namespace OrchardCore.OpenId.Services
     public class OpenIdClientService : IOpenIdClientService
     {
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<OpenIdClientService> S;
+        protected readonly IStringLocalizer S;
 
         public OpenIdClientService(
             ISiteService siteService,
@@ -27,6 +27,12 @@ namespace OrchardCore.OpenId.Services
         public async Task<OpenIdClientSettings> GetSettingsAsync()
         {
             var container = await _siteService.GetSiteSettingsAsync();
+            return container.As<OpenIdClientSettings>();
+        }
+
+        public async Task<OpenIdClientSettings> LoadSettingsAsync()
+        {
+            var container = await _siteService.LoadSiteSettingsAsync();
             return container.As<OpenIdClientSettings>();
         }
 
@@ -105,8 +111,6 @@ namespace OrchardCore.OpenId.Services
                     nameof(settings.ResponseMode)
                 }));
             }
-
-
 
             return Task.FromResult(results.ToImmutable());
         }

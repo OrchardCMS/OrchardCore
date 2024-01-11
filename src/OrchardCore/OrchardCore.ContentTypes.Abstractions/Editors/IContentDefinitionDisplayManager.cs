@@ -17,7 +17,5 @@ namespace OrchardCore.ContentTypes.Editors
 
         Task<dynamic> BuildPartFieldEditorAsync(ContentPartFieldDefinition definition, IUpdateModel updater, string groupId = "");
         Task<dynamic> UpdatePartFieldEditorAsync(ContentPartFieldDefinition definition, IUpdateModel updater, string groupId = "");
-
     }
-
 }

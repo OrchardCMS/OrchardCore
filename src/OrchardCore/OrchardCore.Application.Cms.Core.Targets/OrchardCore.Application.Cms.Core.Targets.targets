@@ -21,19 +21,23 @@
     <WriteLinesToFile Lines="" Encoding="Unicode" File="Localization/.placeholder" />
   </Target>
 
-  <Target Name="CopyPackageTranslationFiles" AfterTargets="Build">
+  <Target
+    Name="CopyPackageTranslationFiles"
+    AfterTargets="Build">
     <Message Text="Copying translation files: $(MSBuildProjectName)" Importance="high" />
     <Copy
       SourceFiles="%(PackageTranslationFiles.FullPath)"
       DestinationFolder="Localization\%(RecursiveDir)"
       Condition="'@(PackageTranslationFiles)' != ''"
-      SkipUnchangedFiles="true" />
+      SkipUnchangedFiles="true"
+      OverwriteReadOnlyFiles="false" />
+  </Target>
 
+  <Target Name="PublishTranslationFiles" BeforeTargets="GetCopyToPublishDirectoryItems">
+    <Message Text="Publishing translation files: $(MSBuildProjectName)" Importance="high" />
     <ItemGroup>
-      <LocalizationFiles Include="Localization\**" Exclude="$(DefaultItemExcludes)" />
-      <ResolvedFileToPublish Include="@(LocalizationFiles)">
-        <RelativePath>Localization\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
-      </ResolvedFileToPublish>
+      <_WebProjectGeneratedContent Include="Localization\**" Exclude="$(DefaultItemExcludes)">
+      </_WebProjectGeneratedContent>
     </ItemGroup>
   </Target>
 

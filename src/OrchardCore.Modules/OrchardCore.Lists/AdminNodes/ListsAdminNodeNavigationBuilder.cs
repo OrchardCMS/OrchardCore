@@ -9,6 +9,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Contents;
 using OrchardCore.Contents.Security;
 using OrchardCore.Navigation;
 using YesSql;
@@ -20,11 +21,12 @@ namespace OrchardCore.Lists.AdminNodes
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContentManager _contentManager;
         private readonly ISession _session;
-        private readonly ILogger<ListsAdminNodeNavigationBuilder> _logger;
+        private readonly ILogger _logger;
         private ListsAdminNode _node;
         private ContentTypeDefinition _contentType;
 
-        private const int MaxItemsInNode = 100; // security check
+        // Security check.
+        private const int MaxItemsInNode = 100;
 
         public ListsAdminNodeNavigationBuilder(
             IContentDefinitionManager contentDefinitionManager,
@@ -44,12 +46,12 @@ namespace OrchardCore.Lists.AdminNodes
         {
             _node = menuItem as ListsAdminNode;
 
-            if (_node == null || !_node.Enabled || String.IsNullOrEmpty(_node.ContentType))
+            if (_node == null || !_node.Enabled || string.IsNullOrEmpty(_node.ContentType))
             {
                 return;
             }
 
-            _contentType = _contentDefinitionManager.GetTypeDefinition(_node.ContentType);
+            _contentType = await _contentDefinitionManager.GetTypeDefinitionAsync(_node.ContentType);
 
             if (_node.AddContentTypeAsParent)
             {
@@ -61,8 +63,8 @@ namespace OrchardCore.Lists.AdminNodes
                 await builder.AddAsync(new LocalizedString(_contentType.DisplayName, _contentType.DisplayName), async listTypeMenu =>
                 {
                     AddPrefixToClasses(_node.IconForParentLink).ForEach(c => listTypeMenu.AddClass(c));
-                    listTypeMenu.Permission(ContentTypePermissions.CreateDynamicPermission(
-                        ContentTypePermissions.PermissionTemplates[Contents.Permissions.EditContent.Name], _contentType));
+                    listTypeMenu.Permission(ContentTypePermissionsHelper.CreateDynamicPermission(
+                        ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.EditContent.Name], _contentType));
                     await AddContentItemsAsync(listTypeMenu);
                 });
             }
@@ -71,7 +73,7 @@ namespace OrchardCore.Lists.AdminNodes
                 await AddContentItemsAsync(builder);
             }
 
-            // Add external children
+            // Add external children.
             foreach (var childNode in _node.Items)
             {
                 try
@@ -84,12 +86,11 @@ namespace OrchardCore.Lists.AdminNodes
                     _logger.LogError(e, "An exception occurred while building the '{MenuItem}' child Menu Item.", childNode.GetType().Name);
                 }
             }
-
         }
 
         private async Task AddContentItemsAsync(NavigationBuilder listTypeMenu)
         {
-            foreach (var ci in await getContentItemsAsync())
+            foreach (var ci in await GetContentItemsAsync())
             {
                 var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci);
 
@@ -104,14 +105,14 @@ namespace OrchardCore.Lists.AdminNodes
                         m.LocalNav();
                         AddPrefixToClasses(_node.IconForContentItems).ToList().ForEach(c => m.AddClass(c));
 
-                        m.Permission(ContentTypePermissions.CreateDynamicPermission(
-                        ContentTypePermissions.PermissionTemplates[Contents.Permissions.EditContent.Name], _contentType));
+                        m.Permission(ContentTypePermissionsHelper.CreateDynamicPermission(
+                        ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.EditContent.Name], _contentType));
                     });
                 }
             }
         }
 
-        private async Task<List<ContentItem>> getContentItemsAsync()
+        private async Task<List<ContentItem>> GetContentItemsAsync()
         {
             return (await _session.Query<ContentItem, ContentItemIndex>()
                 .With<ContentItemIndex>(x => x.Latest && x.ContentType == _node.ContentType)
@@ -121,12 +122,12 @@ namespace OrchardCore.Lists.AdminNodes
                 .ToList();
         }
 
-        private List<string> AddPrefixToClasses(string unprefixed)
+        private static List<string> AddPrefixToClasses(string unprefixed)
         {
             return unprefixed?.Split(' ')
                 .ToList()
                 .Select(c => "icon-class-" + c)
-                .ToList<string>()
+                .ToList()
                 ?? new List<string>();
         }
     }

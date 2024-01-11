@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
@@ -11,10 +10,10 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.Facebook.Widgets.Settings
 {
-    public class FacebookPluginPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
+    public class FacebookPluginPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<FacebookPluginPart>
     {
-        private readonly ILiquidTemplateManager _templateManager;
-        private readonly IStringLocalizer<FacebookPluginPartSettingsDisplayDriver> S;
+        protected readonly ILiquidTemplateManager _templateManager;
+        protected readonly IStringLocalizer S;
 
         public FacebookPluginPartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<FacebookPluginPartSettingsDisplayDriver> localizer)
         {
@@ -24,11 +23,6 @@ namespace OrchardCore.Facebook.Widgets.Settings
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(FacebookPluginPart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
-
             return Initialize<FacebookPluginPartSettingsViewModel>("FacebookPluginPartSettings_Edit", model =>
             {
                 model.FacebookPluginPartSettings = contentTypePartDefinition.GetSettings<FacebookPluginPartSettings>();
@@ -38,11 +32,6 @@ namespace OrchardCore.Facebook.Widgets.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(FacebookPluginPart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
-
             var model = new FacebookPluginPartSettingsViewModel();
 
             await context.Updater.TryUpdateModelAsync(model, Prefix,

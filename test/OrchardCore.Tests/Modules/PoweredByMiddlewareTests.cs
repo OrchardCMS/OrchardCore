@@ -1,12 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
-using Moq;
 using OrchardCore.Modules;
-using Xunit;
 
 namespace OrchardCore.Tests.Modules
 {
@@ -29,13 +21,13 @@ namespace OrchardCore.Tests.Modules
             optionsMock.SetupGet(o => o.Enabled).Returns(true);
             optionsMock.SetupGet(o => o.HeaderName).Returns(key);
             optionsMock.SetupGet(o => o.HeaderValue).Returns(value);
-            RequestDelegate requestDelegate = (context) => Task.CompletedTask;
+            static Task requestDelegate(HttpContext context) => Task.CompletedTask;
             var middleware = new PoweredByMiddleware(next: requestDelegate, options: optionsMock.Object);
 
             // Act
             await middleware.Invoke(httpContextMock.Object);
 
-            // Assert 
+            // Assert
             Assert.Equal(value, headersArray[key]);
             httpResponseMock.Verify(r => r.Headers, Times.Once);
         }
@@ -46,7 +38,9 @@ namespace OrchardCore.Tests.Modules
             // Arrange
             string key = "X-Powered-By", value = "OrchardCore";
             var httpResponseMock = new Mock<HttpResponse>();
-            httpResponseMock.Setup(r => r.Headers.Add(key, value));
+#pragma warning disable ASP0019 // Suggest using IHeaderDictionary.Append or the indexer
+            _ = httpResponseMock.Setup(r => r.Headers.Add(key, value));
+#pragma warning restore ASP0019 // Suggest using IHeaderDictionary.Append or the indexer
 
             Func<Task> dueTask = null;
             httpResponseMock.Setup(r => r.OnStarting(It.IsAny<Func<Task>>()))
@@ -59,15 +53,17 @@ namespace OrchardCore.Tests.Modules
             optionsMock.SetupGet(o => o.Enabled).Returns(false);
             optionsMock.SetupGet(o => o.HeaderName).Returns(key);
             optionsMock.SetupGet(o => o.HeaderValue).Returns(value);
-            RequestDelegate requestDelegate = (context) => Task.CompletedTask;
+            static Task requestDelegate(HttpContext context) => Task.CompletedTask;
             var middleware = new PoweredByMiddleware(next: requestDelegate, options: optionsMock.Object);
 
             // Act
             await middleware.Invoke(httpContextMock.Object);
 
-            // Assert 
+            // Assert
             Assert.Null(dueTask);
+#pragma warning disable ASP0019 // Suggest using IHeaderDictionary.Append or the indexer
             httpResponseMock.Verify(r => r.Headers.Add(key, value), Times.Never);
+#pragma warning restore ASP0019 // Suggest using IHeaderDictionary.Append or the indexer
         }
     }
 }

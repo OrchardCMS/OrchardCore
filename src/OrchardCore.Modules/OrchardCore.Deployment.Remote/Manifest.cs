@@ -2,10 +2,10 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "Remote Deployment",
-    Author = "The Orchard Team",
-    Website = "https://orchardproject.net",
-    Version = "2.0.0",
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion,
     Description = "Provide the ability to export and import to and from a remote server.",
-    Dependencies = new [] { "OrchardCore.Deployment" },
+    Dependencies = new[] { "OrchardCore.Deployment" },
     Category = "Deployment"
 )]

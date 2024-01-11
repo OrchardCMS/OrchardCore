@@ -1,0 +1,27 @@
+    <div class="modal media-anchor-modal" ref="anchoringModal">
+        <div v-if="selectedMedia" class="modal-dialog modal-lg" role="document" >
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@T["Select an anchor"]</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body w-100" ref="modalBody">
+                    <div class="bg-secondary d-flex justify-content-center">
+                        <img class="img-fluid img-modal" v-bind:src="selectedMedia.url" ref="anchorImage" v-on:mousedown="setAnchor" v-on:drop='onAnchorDrop($event)' v-on:dragover.prevent v-on:dragenter.prevent/>
+                        <span v-if="selectedMedia.anchor && selectedMedia.anchor.x && selectedMedia.anchor.y" class="icon-media-anchor" draggable v-bind:style="{ left: anchorLeft(), top: anchorTop() }">
+                            <i class="fa-solid fa-crosshairs" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="d-flex w-100 justify-content-between">
+                        <button type="button" class="btn btn-primary " v-on:click="resetAnchor">@T["Reset Anchor"]</button>
+                        <div>
+                            <button type="button" class="btn btn-success" data-bs-dismiss="modal">@T["OK"]</button>
+                            <button type="button" class="btn btn-secondary" v-on:click="cancelAnchoringModal">@T["Cancel"]</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

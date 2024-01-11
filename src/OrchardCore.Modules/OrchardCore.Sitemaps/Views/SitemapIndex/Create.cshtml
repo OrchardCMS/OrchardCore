@@ -1,0 +1,60 @@
+@model CreateSitemapIndexViewModel
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Create Sitemap Index"])</h1></zone>
+
+@if (string.IsNullOrEmpty(Site.BaseUrl))
+{
+    <p class="alert alert-warning">@T["The site settings 'Base url' property is empty, but is required to generate sitemaps."]</p>
+}
+
+<div asp-validation-summary="ModelOnly"></div>
+<form asp-action="Create" method="post" class="no-multisubmit">
+
+    <div class="mb-3" asp-validation-class-for="Name">
+        <label asp-for="Name" class="form-label">@T["Name"]</label>
+        <input asp-for="Name" class="form-control" autofocus />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3" asp-validation-class-for="Path">
+        <label asp-for="Path" class="form-label">@T["Permalink"]</label>
+        <div class="input-group">
+            @if (!string.IsNullOrWhiteSpace(Site.BaseUrl))
+            {
+                <span class="input-group-text">@Site.BaseUrl</span>
+            }
+            <input asp-for="Path" class="form-control" />
+            <span asp-validation-for="Path"></span>
+        </div>
+        <span class="hint">@T["The url of the sitemap index."]</span>
+    </div>
+
+    <div class="mb-3 form-check">
+        <input asp-for="Enabled" class="form-check-input" />
+        <label asp-for="Enabled" class="form-check-label">@T["Enabled"]</label>
+        <span class="hint">@T["Uncheck to disable routing to the sitemap index."]</span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ContainableSitemaps" class="form-label">@T["Contained Sitemaps"]</label>
+        <span class="hint">@T["The sitemaps this index contains."]</span>
+        <div class="row">
+            @for (int i = 0; i < Model.ContainableSitemaps.Length; i++)
+            {
+                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+                    <input hidden asp-for="@Model.ContainableSitemaps[i].SitemapId" />
+                    <input hidden asp-for="@Model.ContainableSitemaps[i].Name" />
+                    <div class="form-check">
+                        <input asp-for="@Model.ContainableSitemaps[i].IsChecked" class="form-check-input" />
+                        <label asp-for="@Model.ContainableSitemaps[i].IsChecked" class="form-check-label">@Model.ContainableSitemaps[i].Name</label>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+        <a class="btn btn-secondary cancel" role="button" asp-controller="SitemapIndex" asp-action="List" asp-area="OrchardCore.Sitemaps">@T["Cancel"]</a>
+    </div>
+</form>

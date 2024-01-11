@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Environment.Shell
@@ -8,9 +7,55 @@ namespace OrchardCore.Environment.Shell
     public static class ShellHostExtensions
     {
         /// <summary>
+        /// Tries to create a standalone service scope that can be used to resolve local services.
+        /// </summary>
+        public static async Task<(ShellScope scope, bool success)> TryGetScopeAsync(this IShellHost shellHost, string tenant)
+        {
+            try
+            {
+                return (await shellHost.GetScopeAsync(shellHost.GetSettings(tenant)), true);
+            }
+            catch
+            {
+                return (null, false);
+            }
+        }
+
+        /// <summary>
+        /// Creates a standalone service scope that can be used to resolve local services.
+        /// </summary>
+        public static Task<ShellScope> GetScopeAsync(this IShellHost shellHost, string tenant)
+        {
+            return shellHost.GetScopeAsync(shellHost.GetSettings(tenant));
+        }
+
+        /// <summary>
+        /// Reloads all shell settings and releases all shells so that new ones will be
+        /// built for subsequent requests, while existing requests get flushed.
+        /// </summary>
+        public async static Task ReloadAllShellContextsAsync(this IShellHost shellHost)
+        {
+            foreach (var settings in shellHost.GetAllSettings())
+            {
+                await shellHost.ReloadShellContextAsync(settings);
+            }
+        }
+
+        /// <summary>
+        /// Releases all shells so that new ones will be built for subsequent requests.
+        /// Note: Can be used to free up resources after a given period of inactivity.
+        /// </summary>
+        public async static Task ReleaseAllShellContextsAsync(this IShellHost shellHost)
+        {
+            foreach (var settings in shellHost.GetAllSettings())
+            {
+                await shellHost.ReleaseShellContextAsync(settings);
+            }
+        }
+
+        /// <summary>
         /// Retrieves the shell settings associated with the specified tenant.
         /// </summary>
-        /// <returns>The shell settings associated with the tenant.</returns>
         public static ShellSettings GetSettings(this IShellHost shellHost, string tenant)
         {
             if (!shellHost.TryGetSettings(tenant, out var settings))
@@ -22,12 +67,11 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// Creates a standalone service scope that can be used to resolve local services.
+        /// Whether or not a given tenant is in use in at least one active scope.
         /// </summary>
-        /// <param name="tenant">The tenant name related to the service scope to get.</param>
-        public static Task<ShellScope> GetScopeAsync(this IShellHost shellHost, string tenant)
-        {
-            return shellHost.GetScopeAsync(shellHost.GetSettings(tenant));
-        }
+        public static bool IsShellActive(this IShellHost shellHost, ShellSettings settings) =>
+            settings is { Name: not null } &&
+            shellHost.TryGetShellContext(settings.Name, out var context) &&
+            context.IsActive();
     }
 }

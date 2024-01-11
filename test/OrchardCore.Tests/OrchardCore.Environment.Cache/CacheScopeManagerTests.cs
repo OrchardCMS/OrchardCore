@@ -1,6 +1,3 @@
-using System;
-using Xunit;
-using System.Linq;
 using OrchardCore.Environment.Cache;
 
 namespace OrchardCore.Tests.Environment.Cache
@@ -387,7 +384,7 @@ namespace OrchardCore.Tests.Environment.Cache
             Assert.Collection(scopeABA.Contexts, context => Assert.Contains("deepestcontext", context));
 
             Assert.Collection(scopeABA.Tags, tag => Assert.Contains("deepesttag", tag));
-            
+
             Assert.Equal(new DateTime(2018, 10, 26), scopeABA.ExpiresOn);
             Assert.Null(scopeABA.ExpiresSliding);
             Assert.Null(scopeABA.ExpiresAfter);

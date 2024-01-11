@@ -1,0 +1,45 @@
+@using OrchardCore.Forms.Models
+@model ShapeViewModel<SelectPart>
+@{
+    var formElementPart = Model.Value.ContentItem.As<FormElementPart>();
+    var formInputElementPart = Model.Value.ContentItem.As<FormInputElementPart>();
+    var elementId = formElementPart.Id;
+    var fieldName = formInputElementPart.Name;
+    var fieldId = !string.IsNullOrEmpty(elementId) ? elementId : !string.IsNullOrEmpty(fieldName) ? Html.GenerateIdFromName(fieldName) : default(string);
+    var fieldValue = Model.Value.DefaultValue;
+    var fieldClass = "form-select";
+
+    if (ViewData.ModelState.TryGetValue(fieldName, out var fieldEntry))
+    {
+        fieldValue = fieldEntry.AttemptedValue;
+        if (fieldEntry.Errors.Count > 0)
+        {
+            fieldClass += " input-validation-error is-invalid";
+        }
+    }
+}
+
+@if (Model.Value.Editor == SelectEditorOption.Checkbox || Model.Value.Editor == SelectEditorOption.Radio)
+{
+    int i = 0;
+    var htmlType = Model.Value.Editor == SelectEditorOption.Checkbox ? "checkbox" : "radio";
+    @foreach (var option in Model.Value.Options)
+    {
+        <div class="form-check">
+            <input type="@htmlType" id="@(fieldId + "_" + i)" name="@fieldName" class="form-check-input" value="@option.Value" @(option.Value == fieldValue ? "checked='checked'" : "") />
+            <label class="form-check-label" for="@(fieldId + "_" + i)">@option.Text</label>
+        </div>
+        i++;
+    }
+}
+else
+{
+    <select id="@fieldId" name="@fieldName" class="@fieldClass">
+        @foreach (var option in Model.Value.Options)
+        {
+            var optionValue = !string.IsNullOrWhiteSpace(option.Value) ? option.Value : option.Text;
+            var isOptionSelected = optionValue == fieldValue;
+            <option value="@optionValue" selected="@isOptionSelected">@option.Text</option>
+        }
+    </select>
+}

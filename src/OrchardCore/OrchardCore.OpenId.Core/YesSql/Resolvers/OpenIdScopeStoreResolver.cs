@@ -8,9 +8,7 @@ using OrchardCore.OpenId.YesSql.Stores;
 
 namespace OrchardCore.OpenId.YesSql.Resolvers
 {
-    /// <summary>
-    /// Exposes a method allowing to resolve a scope store.
-    /// </summary>
+    /// <inheritdoc/>
     public class OpenIdScopeStoreResolver : IOpenIddictScopeStoreResolver
     {
         private readonly TypeResolutionCache _cache;
@@ -22,12 +20,7 @@ namespace OrchardCore.OpenId.YesSql.Resolvers
             _provider = provider;
         }
 
-        /// <summary>
-        /// Returns a scope store compatible with the specified scope type or throws an
-        /// <see cref="InvalidOperationException"/> if no store can be built using the specified type.
-        /// </summary>
-        /// <typeparam name="TScope">The type of the Scope entity.</typeparam>
-        /// <returns>An <see cref="IOpenIddictScopeStore{TScope}"/>.</returns>
+        /// <inheritdoc/>
         public IOpenIddictScopeStore<TScope> Get<TScope>() where TScope : class
         {
             var store = _provider.GetService<IOpenIddictScopeStore<TScope>>();
@@ -51,7 +44,7 @@ namespace OrchardCore.OpenId.YesSql.Resolvers
                 return typeof(OpenIdScopeStore<>).MakeGenericType(key);
             });
 
-            return (IOpenIddictScopeStore<TScope>) _provider.GetRequiredService(type);
+            return (IOpenIddictScopeStore<TScope>)_provider.GetRequiredService(type);
         }
 
         // Note: OrchardCore YesSql resolvers are registered as scoped dependencies as their inner

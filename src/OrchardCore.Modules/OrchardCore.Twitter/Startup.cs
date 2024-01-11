@@ -15,6 +15,7 @@ using OrchardCore.Settings;
 using OrchardCore.Twitter.Drivers;
 using OrchardCore.Twitter.Recipes;
 using OrchardCore.Twitter.Services;
+using OrchardCore.Twitter.Settings;
 using OrchardCore.Twitter.Signin.Configuration;
 using OrchardCore.Twitter.Signin.Drivers;
 using OrchardCore.Twitter.Signin.Services;
@@ -22,7 +23,7 @@ using Polly;
 
 namespace OrchardCore.Twitter
 {
-    public class ModuleStartup : StartupBase
+    public class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -38,10 +39,11 @@ namespace OrchardCore.Twitter
             services.AddScoped<IDisplayDriver<ISite>, TwitterSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddSingleton<ITwitterSettingsService, TwitterSettingsService>();
-            
+
             services.AddRecipeExecutionStep<TwitterSettingsStep>();
 
             services.AddTransient<TwitterClientMessageHandler>();
+            services.AddTransient<IConfigureOptions<TwitterSettings>, TwitterSettingsConfiguration>();
 
             services.AddHttpClient<TwitterClient>()
                 .AddHttpMessageHandler<TwitterClientMessageHandler>()

@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Users.Events
@@ -19,7 +17,7 @@ namespace OrchardCore.Users.Events
         /// <summary>
         /// Occurs after the user password has been reset.
         /// </summary>
-        Task PasswordResetAsync();
+        Task PasswordResetAsync(PasswordRecoveryContext context);
 
         /// <summary>
         /// Occurs during the user password recovery.
@@ -30,6 +28,6 @@ namespace OrchardCore.Users.Events
         /// <summary>
         /// Occurs after the user password has been recovered.
         /// </summary>
-        Task PasswordRecoveredAsync();
+        Task PasswordRecoveredAsync(PasswordRecoveryContext context);
     }
 }

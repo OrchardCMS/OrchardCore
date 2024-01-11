@@ -1,24 +1,16 @@
-using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using OrchardCore.Diagnostics.ViewModels;
 
-namespace OrchardCore.Diagnostics.Controllers
+namespace OrchardCore.Diagnostics.Controllers;
+
+public class DiagnosticsController : Controller
 {
-    public class DiagnosticsController : Controller
+    [IgnoreAntiforgeryToken]
+    public IActionResult Error(int? status)
     {
-        public IActionResult Error(int? status)
-        {
-            ViewData["StatusCode"] = status;
+        // Most commonly used error messages.
+        ViewData["StatusCode"] = status;
 
-            if (status == (int)HttpStatusCode.NotFound)
-            {
-                return View("NotFound");
-            }
-            else if (status == (int)HttpStatusCode.Forbidden)
-            {
-                return View("Forbidden");
-            }
-
-            return View("Error");
-        }
+        return View(new HttpErrorShapeViewModel(status));
     }
 }

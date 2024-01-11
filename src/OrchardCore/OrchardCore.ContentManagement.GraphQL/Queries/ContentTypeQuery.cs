@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL.Types;
@@ -6,13 +5,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.Contents;
+using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries
 {
@@ -24,7 +21,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IOptions<GraphQLContentOptions> _contentOptionsAccessor;
         private readonly IOptions<GraphQLSettings> _settingsAccessor;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public ContentTypeQuery(IHttpContextAccessor httpContextAccessor,
             IOptions<GraphQLContentOptions> contentOptionsAccessor,
@@ -37,17 +34,26 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             S = localizer;
         }
 
-        public Task<IChangeToken> BuildAsync(ISchema schema)
+        public Task<string> GetIdentifierAsync()
+        {
+            var contentDefinitionManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IContentDefinitionManager>();
+            return contentDefinitionManager.GetIdentifierAsync();
+        }
+
+        public async Task BuildAsync(ISchema schema)
         {
             var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
 
             var contentDefinitionManager = serviceProvider.GetService<IContentDefinitionManager>();
             var contentTypeBuilders = serviceProvider.GetServices<IContentTypeBuilder>().ToList();
 
-            var changeToken = contentDefinitionManager.ChangeToken;
-
-            foreach (var typeDefinition in contentDefinitionManager.ListTypeDefinitions())
+            foreach (var typeDefinition in await contentDefinitionManager.ListTypeDefinitionsAsync())
             {
+                if (_contentOptionsAccessor.Value.ShouldHide(typeDefinition))
+                {
+                    continue;
+                }
+
                 var typeType = new ContentItemType(_contentOptionsAccessor)
                 {
                     Name = typeDefinition.Name,
@@ -61,17 +67,16 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     ResolvedType = new ListGraphType(typeType)
                 };
 
-                query.RequirePermission(CommonPermissions.ViewContent, typeDefinition.Name);
+                query.RequirePermission(CommonPermissions.ExecuteGraphQL);
+                query.RequirePermission(Contents.CommonPermissions.ViewOwnContent, typeDefinition.Name);
 
                 foreach (var builder in contentTypeBuilders)
                 {
                     builder.Build(query, typeDefinition, typeType);
                 }
 
-                var settings = typeDefinition.GetSettings<ContentTypeSettings>();
-
                 // Only add queries over standard content types
-                if (settings == null || String.IsNullOrWhiteSpace(settings.Stereotype))
+                if (!typeDefinition.HasStereotype())
                 {
                     schema.Query.AddField(query);
                 }
@@ -86,8 +91,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             {
                 builder.Clear();
             }
-
-            return Task.FromResult(changeToken);
         }
     }
 }

@@ -10,7 +10,7 @@ namespace OrchardCore.Deployment.Steps
     {
         public override IDisplayResult Display(CustomFileDeploymentStep step)
         {
-            return 
+            return
                 Combine(
                     View("CustomFileDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
                     View("CustomFileDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")

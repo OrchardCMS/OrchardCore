@@ -7,10 +7,10 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
-    public class WhileLoopTask : TaskActivity
+    public class WhileLoopTask : TaskActivity<WhileLoopTask>
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
-        private readonly IStringLocalizer<WhileLoopTask> S;
+        protected readonly IStringLocalizer S;
 
         public WhileLoopTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<WhileLoopTask> localizer)
         {
@@ -18,10 +18,8 @@ namespace OrchardCore.Workflows.Activities
             S = localizer;
         }
 
-        public override string Name => nameof(WhileLoopTask);
-        
         public override LocalizedString DisplayText => S["While Loop Task"];
-        
+
         public override LocalizedString Category => S["Control Flow"];
 
         /// <summary>

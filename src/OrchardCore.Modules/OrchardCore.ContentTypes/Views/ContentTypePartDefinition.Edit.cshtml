@@ -1,5 +1,5 @@
-@using OrchardCore.ContentManagement.Metadata.Models;
-@using OrchardCore.ContentManagement.Metadata.Settings;
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.ContentManagement.Metadata.Settings
 
 @{
     ContentTypePartDefinition contentTypePartDefinition = Model.ContentPart;
@@ -7,7 +7,7 @@
     var description = contentTypePartDefinition.Description();
 }
 
-@if(Model.Content != null)
+@if (Model.Content != null)
 {
     @await DisplayAsync(Model.Content)
 }

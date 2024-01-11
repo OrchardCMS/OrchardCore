@@ -21,12 +21,12 @@ namespace OrchardCore.Mvc
 
         public void Configure(MvcRazorRuntimeCompilationOptions options)
         {
-            // If the 'refs' folder doesn't exists, we don't register razor runtime compilation services.
+            // In dev mode or if there is no 'refs' folder, we don't register razor runtime compilation services.
             var refsFolderExists = Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "refs"));
 
             // But in some view location expanders we always use the file providers that we enlist here, so
             // we still need to add 'ContentRootFileProvider' that includes our 'ModuleEmbeddedFileProvider'.
-            if (!refsFolderExists)
+            if (!_hostingEnvironment.IsDevelopment() || !refsFolderExists)
             {
                 options.FileProviders.Insert(0, _hostingEnvironment.ContentRootFileProvider);
             }

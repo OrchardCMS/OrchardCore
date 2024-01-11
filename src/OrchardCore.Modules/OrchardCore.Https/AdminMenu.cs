@@ -7,7 +7,7 @@ namespace OrchardCore.Https
 {
     public class AdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
@@ -16,7 +16,7 @@ namespace OrchardCore.Https
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }
@@ -24,7 +24,7 @@ namespace OrchardCore.Https
             builder
                 .Add(S["Security"], security => security
                     .Add(S["Settings"], settings => settings
-                        .Add(S["HTTPS"], S["HTTPS"], entry => entry
+                        .Add(S["HTTPS"], S["HTTPS"].PrefixPosition(), entry => entry
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "Https" })
                             .Permission(Permissions.ManageHttps)
                             .LocalNav()

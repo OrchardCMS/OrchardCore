@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using OrchardCore.Autoroute.Core.Indexes;
 using OrchardCore.ContentManagement.GraphQL.Queries;
-using OrchardCore.ContentManagement.Records;
 
 namespace OrchardCore.Autoroute.GraphQL
 {
@@ -12,7 +12,7 @@ namespace OrchardCore.Autoroute.GraphQL
             {
                 Alias = "autoroutePart",
                 Index = nameof(AutoroutePartIndex),
-                With = q => q.With<AutoroutePartIndex>()
+                IndexType = typeof(AutoroutePartIndex)
             }
         };
 

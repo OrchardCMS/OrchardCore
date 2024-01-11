@@ -5,7 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -21,6 +24,10 @@ namespace OrchardCore.OpenId.Drivers
     public class OpenIdClientSettingsDisplayDriver : SectionDisplayDriver<ISite, OpenIdClientSettings>
     {
         private const string SettingsGroupId = "OrchardCore.OpenId.Client";
+        private static readonly JsonSerializerSettings _jsonSerializerSettings = new()
+        {
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+        };
 
         private readonly IAuthorizationService _authorizationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -28,6 +35,7 @@ namespace OrchardCore.OpenId.Drivers
         private readonly IOpenIdClientService _clientService;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
+        protected readonly IStringLocalizer S;
 
         public OpenIdClientSettingsDisplayDriver(
             IAuthorizationService authorizationService,
@@ -35,7 +43,8 @@ namespace OrchardCore.OpenId.Drivers
             IOpenIdClientService clientService,
             IHttpContextAccessor httpContextAccessor,
             IShellHost shellHost,
-            ShellSettings shellSettings)
+            ShellSettings shellSettings,
+            IStringLocalizer<OpenIdClientSettingsDisplayDriver> stringLocalizer)
         {
             _authorizationService = authorizationService;
             _dataProtectionProvider = dataProtectionProvider;
@@ -43,12 +52,13 @@ namespace OrchardCore.OpenId.Drivers
             _httpContextAccessor = httpContextAccessor;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
+            S = stringLocalizer;
         }
 
         public override async Task<IDisplayResult> EditAsync(OpenIdClientSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageClientSettings))
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageClientSettings))
             {
                 return null;
             }
@@ -64,6 +74,7 @@ namespace OrchardCore.OpenId.Drivers
                 model.SignedOutCallbackPath = settings.SignedOutCallbackPath;
                 model.SignedOutRedirectUri = settings.SignedOutRedirectUri;
                 model.ResponseMode = settings.ResponseMode;
+                model.StoreExternalTokens = settings.StoreExternalTokens;
 
                 if (settings.ResponseType == OpenIdConnectResponseType.Code)
                 {
@@ -90,14 +101,14 @@ namespace OrchardCore.OpenId.Drivers
                     model.UseIdTokenTokenFlow = true;
                 }
 
-
+                model.Parameters = JsonConvert.SerializeObject(settings.Parameters, _jsonSerializerSettings);
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(OpenIdClientSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageClientSettings))
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageClientSettings))
             {
                 return null;
             }
@@ -108,7 +119,7 @@ namespace OrchardCore.OpenId.Drivers
                 var model = new OpenIdClientSettingsViewModel();
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                model.Scopes = model.Scopes ?? string.Empty;
+                model.Scopes ??= string.Empty;
 
                 settings.DisplayName = model.DisplayName;
                 settings.Scopes = model.Scopes.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
@@ -118,13 +129,13 @@ namespace OrchardCore.OpenId.Drivers
                 settings.SignedOutCallbackPath = model.SignedOutCallbackPath;
                 settings.SignedOutRedirectUri = model.SignedOutRedirectUri;
                 settings.ResponseMode = model.ResponseMode;
+                settings.StoreExternalTokens = model.StoreExternalTokens;
 
-                bool useClientSecret = true;
+                var useClientSecret = true;
 
                 if (model.UseCodeFlow)
                 {
                     settings.ResponseType = OpenIdConnectResponseType.Code;
-
                 }
                 else if (model.UseCodeIdTokenFlow)
                 {
@@ -154,6 +165,17 @@ namespace OrchardCore.OpenId.Drivers
                     useClientSecret = false;
                 }
 
+                try
+                {
+                    settings.Parameters = string.IsNullOrWhiteSpace(model.Parameters)
+                        ? Array.Empty<ParameterSetting>()
+                        : JsonConvert.DeserializeObject<ParameterSetting[]>(model.Parameters);
+                }
+                catch
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, S["The parameters are written in an incorrect format."]);
+                }
+
                 if (!useClientSecret)
                 {
                     model.ClientSecret = previousClientSecret = null;
@@ -179,10 +201,10 @@ namespace OrchardCore.OpenId.Drivers
                     }
                 }
 
-                // If the settings are valid, reload the current tenant.
+                // If the settings are valid, release the current tenant.
                 if (context.Updater.ModelState.IsValid)
                 {
-                    await _shellHost.ReloadShellContextAsync(_shellSettings);
+                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
                 }
             }
 

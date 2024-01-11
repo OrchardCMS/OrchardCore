@@ -1,0 +1,20 @@
+@model dynamic
+    
+<div class="w-100">
+    <div class="float-end">
+        <a asp-action="Edit" 
+           asp-controller="Source" 
+           asp-route-sitemapId="@Model.SitemapId" 
+           asp-route-sourceId="@Model.SitemapSource.Id" 
+           class="btn btn-primary btn-sm">@T["Edit"]</a>
+
+        <a asp-action="Delete" 
+           asp-controller="Source" 
+           asp-route-sitemapId="@Model.SitemapId" 
+           asp-route-sourceId="@Model.SitemapSource.Id" 
+           class="btn btn-danger btn-sm" 
+           data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+    </div>
+
+    @await DisplayAsync(Model.Content)
+</div>

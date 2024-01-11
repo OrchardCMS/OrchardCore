@@ -17,7 +17,7 @@ namespace OrchardCore.ContentManagement
         /// <summary>
         /// The primary key in the database.
         /// </summary>
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// The logical identifier of the content item across versions.
@@ -60,8 +60,7 @@ namespace OrchardCore.ContentManagement
         public DateTime? CreatedUtc { get; set; }
 
         /// <summary>
-        /// The name of the user who first created this content item version
-        /// and owns content rigths.
+        /// The user id of the user who first created this content item version.
         /// </summary>
         public string Owner { get; set; }
 

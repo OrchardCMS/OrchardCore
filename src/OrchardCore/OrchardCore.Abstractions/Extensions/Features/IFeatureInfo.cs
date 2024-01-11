@@ -10,7 +10,7 @@ namespace OrchardCore.Environment.Extensions.Features
         bool DefaultTenantOnly { get; }
         IExtensionInfo Extension { get; }
         string[] Dependencies { get; }
-
         bool IsAlwaysEnabled { get; }
+        bool EnabledByDependencyOnly { get; }
     }
 }

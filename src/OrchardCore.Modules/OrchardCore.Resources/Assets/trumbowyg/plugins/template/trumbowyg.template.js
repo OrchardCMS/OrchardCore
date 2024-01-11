@@ -8,14 +8,26 @@
             en: {
                 template: 'Template'
             },
+            az: {
+                template: 'Şablon'
+            },
+            by: {
+                template: 'Шаблон'
+            },
             da: {
                 template: 'Skabelon'
             },
             de: {
                 template: 'Vorlage'
             },
+            et: {
+                template: 'Mall'
+            },
             fr: {
                 template: 'Patron'
+            },
+            hu: {
+                template: 'Sablon'
             },
             ja: {
                 template: 'テンプレート'
@@ -31,6 +43,9 @@
             },
             ru: {
                 template: 'Шаблон'
+            },
+            sl: {
+                template: 'Predloga'
             },
             tr: {
                 template: 'Şablon'

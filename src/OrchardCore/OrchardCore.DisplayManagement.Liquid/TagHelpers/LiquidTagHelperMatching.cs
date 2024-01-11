@@ -8,10 +8,12 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
     public class LiquidTagHelperMatching
     {
         private const string AspPrefix = "asp-";
-        public readonly static LiquidTagHelperMatching None = new LiquidTagHelperMatching();
-        public readonly IEnumerable<TagMatchingRuleDescriptor> _rules = Enumerable.Empty<TagMatchingRuleDescriptor>();
+        public readonly static LiquidTagHelperMatching None = new();
+        public readonly TagMatchingRuleDescriptor[] _rules = Array.Empty<TagMatchingRuleDescriptor>();
 
-        public LiquidTagHelperMatching() { }
+        public LiquidTagHelperMatching()
+        {
+        }
 
         public LiquidTagHelperMatching(string name, string assemblyName, IEnumerable<TagMatchingRuleDescriptor> tagMatchingRules)
         {
@@ -20,58 +22,70 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             _rules = tagMatchingRules.ToArray();
         }
 
-        public string Name { get; } = String.Empty;
-        public string AssemblyName { get; } = String.Empty;
+        public string Name { get; } = string.Empty;
+        public string AssemblyName { get; } = string.Empty;
+
+        private static bool Predicate(TagMatchingRuleDescriptor rule, string helper, IEnumerable<string> arguments)
+        {
+            // Does it match the required tag name
+            if (rule.TagName != "*" && !string.Equals(rule.TagName, helper, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            // Does it expect any specific attribute?
+            if (!rule.Attributes.Any())
+            {
+                return true;
+            }
+
+            // Are all required attributes present?
+            var allRequired = rule.Attributes.All(attr => arguments.Any(name =>
+            {
+                // Exact match
+                if (string.Equals(name, attr.Name, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+
+                // Check by replacing all '_' with '-', e.g. asp_src will map to asp-src
+                name = name.Replace('_', '-');
+
+                if (string.Equals(name, attr.Name, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+
+                if (attr.Name.StartsWith(AspPrefix, StringComparison.Ordinal))
+                {
+                    if (name.AsSpan().Equals(attr.Name.AsSpan(AspPrefix.Length), StringComparison.OrdinalIgnoreCase))
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }));
+
+            if (allRequired)
+            {
+                return true;
+            }
+
+            return false;
+        }
 
         public bool Match(string helper, IEnumerable<string> arguments)
         {
-
-            return _rules.Any(rule =>
+            foreach (var rule in _rules)
             {
-                // Does it match the required tag name
-                if (rule.TagName != "*" && !String.Equals(rule.TagName, helper, StringComparison.OrdinalIgnoreCase))
-                {
-                    return false;
-                }
-
-                // Does it expect any specific attribute?
-                if (!rule.Attributes.Any())
+                if (Predicate(rule, helper, arguments))
                 {
                     return true;
                 }
+            }
 
-                // Are all required attributes present?
-                var allRequired = rule.Attributes.All(attr => arguments.Any(name =>
-                {
-                    // Exact match
-                    if (String.Equals(name, attr.Name, StringComparison.OrdinalIgnoreCase))
-                    {
-                        return true;
-                    }
-
-                    // Check by replacing all '_' with '-', e.g. asp_src will map to asp-src
-                    name = name.Replace('_', '-');
-
-                    if (attr.Name.StartsWith(AspPrefix, StringComparison.Ordinal) && String.Equals(name, attr.Name.Substring(AspPrefix.Length), StringComparison.OrdinalIgnoreCase))
-                    {
-                        return true;
-                    }
-
-                    if (String.Equals(name, attr.Name, StringComparison.OrdinalIgnoreCase))
-                    {
-                        return true;
-                    }
-
-                    return false;
-                }));
-
-                if (allRequired)
-                {
-                    return true;
-                }
-    
-                return false;
-            });
+            return false;
         }
     }
 }

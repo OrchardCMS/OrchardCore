@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid.Models;
 
@@ -8,10 +8,7 @@ namespace OrchardCore.Liquid.Indexing
     {
         public override Task BuildIndexAsync(LiquidPart part, BuildPartIndexContext context)
         {
-            var options = context.Settings.ToOptions() 
-                | DocumentIndexOptions.Sanitize 
-                | DocumentIndexOptions.Analyze
-                ;
+            var options = context.Settings.ToOptions() | DocumentIndexOptions.Sanitize;
 
             foreach (var key in context.Keys)
             {

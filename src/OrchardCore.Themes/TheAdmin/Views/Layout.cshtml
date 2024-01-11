@@ -1,64 +1,95 @@
-﻿<!DOCTYPE html>
-<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
+@using OrchardCore.DisplayManagement
+@using OrchardCore.DisplayManagement.ModelBinding
+@using OrchardCore.Environment.Shell
+@using OrchardCore.Themes.Services
+@using OrchardCore.Users.Models
+
+@inject ThemeTogglerService ThemeTogglerService
+@inject IDisplayManager<Navbar> DisplayManager
+@inject IUpdateModelAccessor UpdateModelAccessor
+@{
+    var adminSettings = Site.As<AdminSettings>();
+
+    // Branding and Navbar are pre-rendered to allow resource injection.
+    var brandingHtml = await DisplayAsync(await New.AdminBranding());
+    var navbar = await DisplayAsync(await DisplayManager.BuildDisplayAsync<Navbar>(UpdateModelAccessor.ModelUpdater, "DetailAdmin"));
+}
+<!DOCTYPE html>
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-bs-theme="@await ThemeTogglerService.CurrentTheme()" data-tenant="@ThemeTogglerService.CurrentTenant">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <link type="image/x-icon" rel="shortcut icon" href="~/TheAdmin/favicon.ico" />
 
-    <!-- Bootstrap CSS -->
-    <style asp-name="admin" asp-src="~/TheAdmin/Styles/TheAdmin.min.css" debug-src="~/TheAdmin/Styles/TheAdmin.css" depends-on="jQuery-ui"></style>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- This script can't wait till the footer -->
+    <script asp-name="admin-main" version="1" at="Head"></script>
 
-    <script asp-name="font-awesome" at="Foot" version="5"></script>
-    <script asp-name="font-awesome-v4-shims" at="Foot" version="5"></script>
-    <script asp-name="admin" asp-src="~/TheAdmin/Scripts/TheAdmin.min.js" debug-src="~/TheAdmin/Scripts/TheAdmin.js" depends-on="jQuery, jQuery-ui, jQuery-ui-i18n" at="Foot"></script>
+    <style asp-name="TheAdminLayout" asp-src="~/TheAdmin/css/admin-layout.min.css" debug-src="~/TheAdmin/css/admin-layout.css" at="Head"></style>
+
+    @if (Orchard.IsRightToLeft())
+    {
+        <style asp-name="bootstrap-rtl" version="5" at="Head"></style>
+        <style media="all" asp-name="admin" version="1" depends-on="bootstrap-rtl,TheAdminLayout" at="Head"></style>
+    }
+    else
+    {
+        <style asp-name="bootstrap" version="5" at="Head"></style>
+        <style media="all" asp-name="admin" version="1" depends-on="bootstrap,TheAdminLayout" at="Head"></style>
+    }
+    <script asp-name="font-awesome" at="Head" version="6"></script>
+    <script asp-name="admin" version="1" at="Foot"></script>
+
     <resources type="Header" />
 
-    <!-- This script can't wait to the footer -->
-    <script type="text/javascript" asp-src="~/TheAdmin/Scripts/userPreferencesLoader.min.js" debug-src="~/TheAdmin/Scripts/userPreferencesLoader.js"></script>
-
-    @await RenderSectionAsync("Header", required: false)
+    @await RenderSectionAsync("HeadMeta", required: false)
 </head>
 <body class="preload">
     <div class="ta-wrapper">
-        <div class="ta-navbar-top">
-            <a class="ta-navbar-brand" href="@Url.Content("~/")"><span>@Site.SiteName</span></a>
-            <div class="collapse navbar-collapse" id="navbar-links">
-                <div class="mr-auto">
-                    @await RenderSectionAsync("NavbarTop", required: false)
+        <nav class="ta-navbar-top navbar text-bg-theme fixed-top">
+            <div class="container-fluid">
+                <div class="d-flex w-100 justify-content-between align-items-center">
+                    <div class="brand-wrapper">
+                        <div class="d-flex w-100 justify-content-between align-items-center">
+                            @brandingHtml
+
+                            @if (adminSettings.DisplayTitlesInTopbar)
+                            {
+                                <div class="brand-wrapper-title">
+                                    @await RenderSectionAsync("Title", required: false)
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    @navbar
                 </div>
-                <ul class="nav navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link"><span><i class="fa fa-user" aria-hidden="true"></i></span><span> @User.Identity.Name</span></a>
-                    </li>
-                </ul>
-                <form asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="LogOff" method="post" class="form-inline">
-                    <button type="submit" class="btn btn-link nav-link" role="button"><i class="fa fa-sign-out" aria-hidden="true"></i> @T["Log off"]</button>
-                </form>
             </div>
-        </div>
+        </nav>
 
         <div id="ta-left-sidebar" class="d-flex flex-column justify-content-between align-items-stretch">
             @await RenderSectionAsync("Navigation", required: false)
             <div class="footer">
-                <button class="leftbar-compactor" type="button" title="@T["Collapse / expand menu"]"></button>
+                <button type="button" class="leftbar-compactor" title="@T["Collapse / expand menu"]">
+                    <span class="d-none">@T["Collapse / expand menu"]</span>
+                </button>
             </div>
         </div>
 
         <div class="ta-content">
+            @await RenderSectionAsync("Header", required: false)
             @await RenderSectionAsync("Messages", required: false)
             @await RenderSectionAsync("Breadcrumbs", required: false)
-
+            @if (!adminSettings.DisplayTitlesInTopbar)
+            {
+                @await RenderSectionAsync("Title", required: false)
+            }
             @await RenderBodyAsync()
         </div>
-    </div><!-- /.ta-wrapper -->
 
-    @await RenderSectionAsync("Footer", required: false)
+        @await RenderSectionAsync("Footer", required: false)
 
+    </div>
     <div id="confirmRemoveModalMetadata" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this element?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]" data-ok-class="btn-danger" data-cancel-class="btn-secondary"></div>
-
     <resources type="Footer" />
 </body>
 </html>

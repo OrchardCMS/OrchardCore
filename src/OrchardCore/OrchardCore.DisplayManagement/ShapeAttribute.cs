@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 
 namespace OrchardCore.DisplayManagement
 {
+    [AttributeUsage(AttributeTargets.Method)]
     public class ShapeAttribute : Attribute
     {
         public ShapeAttribute()
@@ -10,7 +11,7 @@ namespace OrchardCore.DisplayManagement
 
         public ShapeAttribute(string shapeType)
         {
-            this.ShapeType = shapeType;
+            ShapeType = shapeType;
         }
 
         public string ShapeType { get; private set; }

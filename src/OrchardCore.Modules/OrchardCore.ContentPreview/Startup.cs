@@ -1,16 +1,16 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentPreview.Drivers;
 using OrchardCore.ContentPreview.Handlers;
 using OrchardCore.ContentPreview.Models;
 using OrchardCore.ContentPreview.Settings;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
-using OrchardCore.Security.Permissions;
+using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.ContentPreview
 {
@@ -18,14 +18,15 @@ namespace OrchardCore.ContentPreview
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
+
             services.AddScoped<IContentDisplayDriver, ContentPreviewDriver>();
-            services.AddScoped<IPermissionProvider, Permissions>();
 
             // Preview Part
             services.AddContentPart<PreviewPart>()
                 .AddHandler<PreviewPartHandler>();
 
-            services.AddScoped<IDataMigration, Migrations>();            
+            services.AddDataMigration<Migrations>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, PreviewPartSettingsDisplayDriver>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IStartupFilter, PreviewStartupFilter>());
         }

@@ -8,7 +8,7 @@ namespace OrchardCore.Menu
 {
     public class AdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
@@ -17,20 +17,21 @@ namespace OrchardCore.Menu
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }
 
             var rvd = new RouteValueDictionary
             {
+                { "contentTypeId", "Menu" },
                 { "Area", "OrchardCore.Contents" },
                 { "Options.SelectedContentType", "Menu" },
                 { "Options.CanCreateSelectedContentType", true }
             };
 
             builder.Add(S["Content"], design => design
-                    .Add(S["Menus"], "1.3", menus => menus
+                    .Add(S["Menus"], S["Menus"].PrefixPosition(), menus => menus
                         .Permission(Permissions.ManageMenu)
                         .Action("List", "Admin", rvd)
                         .LocalNav()

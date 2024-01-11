@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
@@ -8,11 +9,14 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Taxonomies.Indexing;
 using YesSql;
 
+#pragma warning disable CA1050 // Declare types in namespaces
 public static class TaxonomyOrchardHelperExtensions
+#pragma warning restore CA1050 // Declare types in namespaces
 {
     /// <summary>
     /// Returns a term from its content item id and taxonomy.
     /// </summary>
+    /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="taxonomyContentItemId">The taxonomy content item id.</param>
     /// <param name="termContentItemId">The term content item id.</param>
     /// <returns>A content item id <c>null</c> if it was not found.</returns>
@@ -32,6 +36,7 @@ public static class TaxonomyOrchardHelperExtensions
     /// <summary>
     /// Returns the list of terms including their parents.
     /// </summary>
+    /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="taxonomyContentItemId">The taxonomy content item id.</param>
     /// <param name="termContentItemId">The term content item id.</param>
     /// <returns>A list content items.</returns>
@@ -67,7 +72,7 @@ public static class TaxonomyOrchardHelperExtensions
 
     internal static ContentItem FindTerm(JArray termsArray, string termContentItemId)
     {
-        foreach(JObject term in termsArray)
+        foreach (var term in termsArray.Cast<JObject>())
         {
             var contentItemId = term.GetValue("ContentItemId").ToString();
 
@@ -92,7 +97,7 @@ public static class TaxonomyOrchardHelperExtensions
 
     internal static bool FindTermHierarchy(JArray termsArray, string termContentItemId, List<ContentItem> terms)
     {
-        foreach (JObject term in termsArray)
+        foreach (var term in termsArray.Cast<JObject>())
         {
             var contentItemId = term.GetValue("ContentItemId").ToString();
 
@@ -118,5 +123,4 @@ public static class TaxonomyOrchardHelperExtensions
 
         return false;
     }
-
 }

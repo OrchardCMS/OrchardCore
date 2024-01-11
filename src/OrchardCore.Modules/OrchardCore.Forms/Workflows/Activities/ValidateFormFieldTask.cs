@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
@@ -9,11 +10,11 @@ using OrchardCore.Workflows.Models;
 namespace OrchardCore.Forms.Workflows.Activities
 {
     // TODO: Add the ability to configure various types of validators.
-    public class ValidateFormFieldTask : TaskActivity
+    public class ValidateFormFieldTask : TaskActivity<ValidateFormFieldTask>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IStringLocalizer<ValidateFormFieldTask> S;
+        protected readonly IStringLocalizer S;
 
         public ValidateFormFieldTask(
             IHttpContextAccessor httpContextAccessor,
@@ -26,10 +27,8 @@ namespace OrchardCore.Forms.Workflows.Activities
             S = localizer;
         }
 
-        public override string Name => nameof(ValidateFormFieldTask);
-        
         public override LocalizedString DisplayText => S["Validate Form Field Task"];
-        
+
         public override LocalizedString Category => S["Validation"];
 
         public string FieldName
@@ -60,10 +59,7 @@ namespace OrchardCore.Forms.Workflows.Activities
             {
                 var updater = _updateModelAccessor.ModelUpdater;
 
-                if (updater != null)
-                {
-                    updater.ModelState.TryAddModelError(FieldName, ErrorMessage);
-                }
+                updater?.ModelState.TryAddModelError(FieldName, ErrorMessage);
             }
 
             return Outcomes("Done", outcome);

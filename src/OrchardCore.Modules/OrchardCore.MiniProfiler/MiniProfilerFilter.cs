@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
+using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.MiniProfiler
 {
@@ -12,24 +12,37 @@ namespace OrchardCore.MiniProfiler
     {
         private readonly ILayoutAccessor _layoutAccessor;
         private readonly IShapeFactory _shapeFactory;
+        private readonly IAuthorizationService _authorizationService;
 
         public MiniProfilerFilter(
             ILayoutAccessor layoutAccessor,
-            IShapeFactory shapeFactory)
+            IShapeFactory shapeFactory,
+            IAuthorizationService authorizationService)
         {
             _layoutAccessor = layoutAccessor;
             _shapeFactory = shapeFactory;
+            _authorizationService = authorizationService;
         }
 
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
-            // Should only run on the front-end for a full view
-            if ((context.Result is ViewResult || context.Result is PageResult) &&
-                !AdminAttribute.IsApplied(context.HttpContext))
+            var viewMiniProfilerOnFrontEnd = await _authorizationService.AuthorizeAsync(context.HttpContext.User, Permissions.ViewMiniProfilerOnFrontEnd);
+            var viewMiniProfilerOnBackEnd = await _authorizationService.AuthorizeAsync(context.HttpContext.User, Permissions.ViewMiniProfilerOnBackEnd);
+            if (
+                    context.IsViewOrPageResult() &&
+                    (
+                        (viewMiniProfilerOnFrontEnd && !AdminAttribute.IsApplied(context.HttpContext)) ||
+                        (viewMiniProfilerOnBackEnd && AdminAttribute.IsApplied(context.HttpContext))
+                    )
+                )
             {
-                dynamic layout = await _layoutAccessor.GetLayoutAsync();
+                var layout = await _layoutAccessor.GetLayoutAsync();
                 var footerZone = layout.Zones["Footer"];
-                footerZone.Add(await _shapeFactory.CreateAsync("MiniProfiler"));
+
+                if (footerZone is Shape shape)
+                {
+                    await shape.AddAsync(await _shapeFactory.CreateAsync("MiniProfiler"));
+                }
             }
 
             await next.Invoke();

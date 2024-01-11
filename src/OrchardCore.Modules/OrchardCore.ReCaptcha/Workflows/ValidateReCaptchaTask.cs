@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.ReCaptcha.Services;
@@ -10,11 +9,11 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.ReCaptcha.Workflows
 {
-    public class ValidateReCaptchaTask : TaskActivity
+    public class ValidateReCaptchaTask : TaskActivity<ValidateReCaptchaTask>
     {
         private readonly ReCaptchaService _reCaptchaService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IStringLocalizer<ValidateReCaptchaTask> S;
+        protected readonly IStringLocalizer S;
 
         public ValidateReCaptchaTask(
             ReCaptchaService reCaptchaService,
@@ -27,12 +26,10 @@ namespace OrchardCore.ReCaptcha.Workflows
             S = localizer;
         }
 
-        public override string Name => nameof(ValidateReCaptchaTask);
-        
         public override LocalizedString DisplayText => S["Validate ReCaptcha Task"];
-        
+
         public override LocalizedString Category => S["Validation"];
-        
+
         public override bool HasEditor => false;
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
@@ -48,10 +45,8 @@ namespace OrchardCore.ReCaptcha.Workflows
             {
                 var updater = _updateModelAccessor.ModelUpdater;
                 outcome = "Invalid";
-                if (updater != null)
-                {
-                    updater.ModelState.TryAddModelError(Constants.ReCaptchaServerResponseHeaderName, S["Captcha validation failed. Try again."]);
-                }
+
+                updater?.ModelState.TryAddModelError(Constants.ReCaptchaServerResponseHeaderName, S["Captcha validation failed. Try again."]);
             });
 
             return Outcomes("Done", outcome);

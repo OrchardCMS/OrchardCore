@@ -1,0 +1,9 @@
+@using OrchardCore
+@model ContentMenuItemPartEditViewModel
+
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Name" class="@Orchard.GetLabelClasses()">@T["Name"]</label>
+    <div class="@Orchard.GetEndClasses()">
+        <input asp-for="Name" class="form-control" autofocus />
+    </div>
+</div>

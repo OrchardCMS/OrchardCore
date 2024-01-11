@@ -4,36 +4,40 @@ using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.ContentLocalization.Liquid
 {
     public class SwitchCultureUrlFilter : ILiquidFilter
     {
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        private readonly IUrlHelperFactory _urlHelperFactory;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public SwitchCultureUrlFilter(IUrlHelperFactory urlHelperFactory, IHttpContextAccessor httpContextAccessor)
         {
-            if (!ctx.AmbientValues.TryGetValue("UrlHelper", out var urlHelperObj))
-            {
-                throw new ArgumentException("UrlHelper missing while invoking 'switch_culture_url'");
-            }
-            var request = (HttpRequest)ctx.GetValue("Request")?.ToObjectValue();
-            if (request == null)
-            {
-                throw new ArgumentException("HttpRequest missing while invoking 'switch_culture_url'");
-            }
+            _urlHelperFactory = urlHelperFactory;
+            _httpContextAccessor = httpContextAccessor;
+        }
+
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
+        {
+            var urlHelper = _urlHelperFactory.GetUrlHelper(context.ViewContext);
+
+            var request = _httpContextAccessor.HttpContext?.Request
+                ?? throw new ArgumentException("HttpRequest missing while invoking 'switch_culture_url'");
 
             var targetCulture = input.ToStringValue();
-            var urlHelper = (IUrlHelper)urlHelperObj;
 
             var url = urlHelper.RouteUrl("RedirectToLocalizedContent",
                 new
                 {
                     area = "OrchardCore.ContentLocalization",
-                    targetCulture = targetCulture,
+                    targetCulture,
                     contentItemUrl = request.Path.Value,
-                    queryStringValue = request.QueryString.Value
+                    queryStringValue = request.QueryString.Value,
                 });
-            return new ValueTask<FluidValue>(FluidValue.Create(url));
+            return new ValueTask<FluidValue>(FluidValue.Create(url, context.Options));
         }
     }
 }

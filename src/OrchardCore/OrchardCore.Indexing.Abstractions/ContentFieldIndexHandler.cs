@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
@@ -7,11 +8,11 @@ namespace OrchardCore.Indexing
 {
     /// <summary>
     /// An implementation of <see cref="ContentFieldIndexHandler&lt;TField&gt;"/> is able to take part in the rendering of
-    /// a <see cref="TField"/> instance.
+    /// a <see typeparamref="TField"/> instance.
     /// </summary>
     public abstract class ContentFieldIndexHandler<TField> : IContentFieldIndexHandler where TField : ContentField
     {
-        Task IContentFieldIndexHandler.BuildIndexAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, ContentPartFieldDefinition partFieldDefinition, BuildIndexContext context, ContentIndexSettings settings)
+        Task IContentFieldIndexHandler.BuildIndexAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, ContentPartFieldDefinition partFieldDefinition, BuildIndexContext context, IContentIndexSettings settings)
         {
             if (!string.Equals(typeof(TField).Name, partFieldDefinition.FieldDefinition.Name) &&
                !string.Equals(nameof(ContentField), partFieldDefinition.FieldDefinition.Name))

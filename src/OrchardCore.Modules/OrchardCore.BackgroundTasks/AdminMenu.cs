@@ -7,24 +7,21 @@ namespace OrchardCore.BackgroundTasks
 {
     public class AdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
-        {
-            S = localizer;
-        }
+        public AdminMenu(IStringLocalizer<AdminMenu> localizer) => S = localizer;
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }
 
             builder
                 .Add(S["Configuration"], configuration => configuration
-                    .Add(S["Tasks"], "10", tasks => tasks
-                        .Add(S["Background Tasks"], "10", backgroundTasks => backgroundTasks
+                    .Add(S["Tasks"], S["Tasks"].PrefixPosition(), tasks => tasks
+                        .Add(S["Background Tasks"], S["Background Tasks"].PrefixPosition(), backgroundTasks => backgroundTasks
                             .Action("Index", "BackgroundTask", new { area = "OrchardCore.BackgroundTasks" })
                             .Permission(Permissions.ManageBackgroundTasks)
                             .LocalNav()

@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using OrchardCore.Localization;
 using NodaTime;
+using OrchardCore.Localization;
 
 namespace OrchardCore.Modules
 {
@@ -33,16 +33,8 @@ namespace OrchardCore.Modules
             return _clock.ConvertToTimeZone(_clock.UtcNow, await GetLocalTimeZoneAsync());
         }
 
-        public async Task<ITimeZone> GetLocalTimeZoneAsync()
-        {
-            // Caching the result per request
-            if (_timeZone == null)
-            {
-                _timeZone = await LoadLocalTimeZoneAsync();
-            }
-
-            return _timeZone;
-        }
+        // Caching the result per request.
+        public async Task<ITimeZone> GetLocalTimeZoneAsync() => _timeZone ??= await LoadLocalTimeZoneAsync();
 
         public async Task<DateTimeOffset> ConvertToLocalAsync(DateTimeOffset dateTimeOffSet)
         {
@@ -85,11 +77,11 @@ namespace OrchardCore.Modules
                 timeZoneResults.Sort((x, y) => y.Priority.CompareTo(x.Priority));
             }
 
-            foreach(var result in timeZoneResults)
+            foreach (var result in timeZoneResults)
             {
                 var value = await result.TimeZoneId();
 
-                if (!String.IsNullOrEmpty(value))
+                if (!string.IsNullOrEmpty(value))
                 {
                     return _clock.GetTimeZone(value);
                 }

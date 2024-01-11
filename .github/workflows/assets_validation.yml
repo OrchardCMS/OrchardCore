@@ -1,0 +1,29 @@
+name: Frontend Assets build validation
+on:
+# manual trigger
+  workflow_dispatch:
+jobs:
+  test-npm-build:
+    name: Test building assets
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/cache@v3
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+    - name: Rebuild packages
+      run: |
+        npm install
+        npm run rebuild
+    - name: Check if git has changes
+      id: changes
+      uses: UnicornGlobal/has-changes-action@v1.0.11
+    - name: Changes detected after building assets
+      if: steps.changes.outputs.changed == 1
+      run: | 
+        git status
+        echo "Please make sure to build them properly before pushing"
+        exit -1

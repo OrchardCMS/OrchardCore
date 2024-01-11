@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using OrchardCore.DisplayManagement;
+using Microsoft.Extensions.Options;
+using OrchardCore.Abstractions.Pooling;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Environment.Cache;
 
@@ -15,32 +15,31 @@ namespace OrchardCore.DynamicCache.EventHandlers
     /// </summary>
     public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents
     {
-        private readonly Dictionary<string, CacheContext> _cached = new Dictionary<string, CacheContext>();
-        private readonly Dictionary<string, CacheContext> _openScopes = new Dictionary<string, CacheContext>();
+        private readonly Dictionary<string, CacheContext> _cached = new();
+        private readonly Dictionary<string, CacheContext> _openScopes = new();
 
         private readonly IDynamicCacheService _dynamicCacheService;
         private readonly ICacheScopeManager _cacheScopeManager;
         private readonly HtmlEncoder _htmlEncoder;
+        private readonly CacheOptions _cacheOptions;
 
         public DynamicCacheShapeDisplayEvents(
             IDynamicCacheService dynamicCacheService,
             ICacheScopeManager cacheScopeManager,
-            HtmlEncoder htmlEncoder)
+            HtmlEncoder htmlEncoder,
+            IOptions<CacheOptions> options)
         {
             _dynamicCacheService = dynamicCacheService;
             _cacheScopeManager = cacheScopeManager;
             _htmlEncoder = htmlEncoder;
+            _cacheOptions = options.Value;
         }
 
         public async Task DisplayingAsync(ShapeDisplayContext context)
         {
-            // TODO: replace with configurable UI
-            var debugMode = false;
-
-            // The shape has cache settings and no content yet
+            // The shape has cache settings and no content yet.
             if (context.Shape.Metadata.IsCached && context.ChildContent == null)
             {
-
                 var cacheContext = context.Shape.Metadata.Cache();
                 _cacheScopeManager.EnterScope(cacheContext);
                 _openScopes[cacheContext.CacheId] = cacheContext;
@@ -54,7 +53,7 @@ namespace OrchardCore.DynamicCache.EventHandlers
                     _cached[cacheContext.CacheId] = cacheContext;
                     context.ChildContent = new HtmlString(cachedContent);
                 }
-                else if (debugMode)
+                else if (_cacheOptions.DebugMode)
                 {
                     context.Shape.Metadata.Wrappers.Add("CachedShapeWrapper");
                 }
@@ -65,13 +64,10 @@ namespace OrchardCore.DynamicCache.EventHandlers
         {
             var cacheContext = context.Shape.Metadata.Cache();
 
-            // If the shape is not configured to be cached, continue as usual
+            // If the shape is not configured to be cached, continue as usual.
             if (cacheContext == null)
             {
-                if (context.ChildContent == null)
-                {
-                    context.ChildContent = HtmlString.Empty;
-                }
+                context.ChildContent ??= HtmlString.Empty;
 
                 return;
             }
@@ -85,16 +81,16 @@ namespace OrchardCore.DynamicCache.EventHandlers
             // So, if the cache context is not present in the _cached collection, we need to insert the ChildContent value into the cache:
             if (!_cached.ContainsKey(cacheContext.CacheId) && context.ChildContent != null)
             {
-                // The content is pre-encoded in the cache so we don't have to do it every time it's rendered
-                using (var sb = StringBuilderPool.GetInstance())
-                {
-                    using (var sw = new StringWriter(sb.Builder))
-                    {
-                        context.ChildContent.WriteTo(sw, _htmlEncoder);
-                        await _dynamicCacheService.SetCachedValueAsync(cacheContext, sw.ToString());
-                        await sw.FlushAsync();
-                    }
-                }
+                // The content is pre-encoded in the cache so we don't have to do it every time it's rendered.
+                using var sw = new ZStringWriter();
+
+                // 'ChildContent' may be a 'ViewBufferTextWriterContent' on which we can't
+                // call 'WriteTo()' twice, so here we update it with a new 'HtmlString()'.
+                context.ChildContent.WriteTo(sw, _htmlEncoder);
+                var contentHtmlString = new HtmlString(sw.ToString());
+                context.ChildContent = contentHtmlString;
+
+                await _dynamicCacheService.SetCachedValueAsync(cacheContext, contentHtmlString.Value);
             }
         }
 

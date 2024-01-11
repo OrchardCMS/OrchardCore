@@ -1,0 +1,8 @@
+@using OrchardCore.Users.Workflows.Activities
+@using OrchardCore.Workflows.Helpers
+@using OrchardCore.Workflows.ViewModels
+@model ActivityViewModel<ValidateUserTask>
+
+<header>
+    <h4><i class="fa-solid fa-user" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["Validate User"])</h4>
+</header>

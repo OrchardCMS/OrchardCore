@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -8,6 +7,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
+using OrchardCore.Html.Settings;
 using YesSql;
 
 namespace OrchardCore.Html
@@ -15,7 +15,7 @@ namespace OrchardCore.Html
     public class Migrations : DataMigration
     {
         private readonly ISession _session;
-        private readonly ILogger<Migrations> _logger;
+        private readonly ILogger _logger;
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
         public Migrations(
@@ -28,40 +28,48 @@ namespace OrchardCore.Html
             _logger = logger;
         }
 
-
-        public int Create()
+        public async Task<int> CreateAsync()
         {
-            _contentDefinitionManager.AlterPartDefinition("HtmlBodyPart", builder => builder
+            await _contentDefinitionManager.AlterPartDefinitionAsync("HtmlBodyPart", builder => builder
                 .Attachable()
                 .WithDescription("Provides an HTML Body for your content item."));
 
+            // Shortcut other migration steps on new content definition schemas.
+            return 5;
+        }
+
+        // This code can be removed in a later version.
+#pragma warning disable CA1822 // Mark members as static
+        public int UpdateFrom1()
+        {
             return 2;
         }
 
+        // This code can be removed in a later version.
         public int UpdateFrom2()
+#pragma warning restore CA1822 // Mark members as static
         {
             return 3;
         }
 
+        // This code can be removed in a later version.
         public async Task<int> UpdateFrom3()
         {
-            // This code can be removed in RC
-
             // Update content type definitions
-            foreach (var contentType in _contentDefinitionManager.LoadTypeDefinitions())
+            foreach (var contentType in await _contentDefinitionManager.LoadTypeDefinitionsAsync())
             {
                 if (contentType.Parts.Any(x => x.PartDefinition.Name == "BodyPart"))
                 {
-                    _contentDefinitionManager.AlterTypeDefinition(contentType.Name, x => x.RemovePart("BodyPart").WithPart("HtmlBodyPart"));
+                    await _contentDefinitionManager.AlterTypeDefinitionAsync(contentType.Name, x => x.RemovePart("BodyPart").WithPart("HtmlBodyPart"));
                 }
             }
 
-            _contentDefinitionManager.DeletePartDefinition("BodyPart");
+            await _contentDefinitionManager.DeletePartDefinitionAsync("BodyPart");
 
             // We are patching all content item versions by moving the Title to DisplayText
             // This step doesn't need to be executed for a brand new site
 
-            var lastDocumentId = 0;
+            var lastDocumentId = 0L;
 
             for (; ; )
             {
@@ -77,17 +85,17 @@ namespace OrchardCore.Html
                 {
                     if (UpdateBody(contentItemVersion.Content))
                     {
-                        _session.Save(contentItemVersion);
+                        await _session.SaveAsync(contentItemVersion);
                         _logger.LogInformation("A content item version's BodyPart was upgraded: {ContentItemVersionId}", contentItemVersion.ContentItemVersionId);
                     }
 
                     lastDocumentId = contentItemVersion.Id;
                 }
 
-                await _session.CommitAsync();
+                await _session.SaveChangesAsync();
             }
 
-            bool UpdateBody(JToken content)
+            static bool UpdateBody(JToken content)
             {
                 var changed = false;
 
@@ -95,7 +103,7 @@ namespace OrchardCore.Html
                 {
                     var body = content["BodyPart"]?["Body"]?.Value<string>();
 
-                    if (!String.IsNullOrWhiteSpace(body))
+                    if (!string.IsNullOrWhiteSpace(body))
                     {
                         content["HtmlBodyPart"] = new JObject(new JProperty("Html", body));
                         changed = true;
@@ -113,5 +121,22 @@ namespace OrchardCore.Html
             return 4;
         }
 
+        // This code can be removed in a later version.
+        public async Task<int> UpdateFrom4()
+        {
+            // For backwards compatibility with liquid filters we disable html sanitization on existing field definitions.
+            foreach (var contentType in await _contentDefinitionManager.LoadTypeDefinitionsAsync())
+            {
+                if (contentType.Parts.Any(x => x.PartDefinition.Name == "HtmlBodyPart"))
+                {
+                    await _contentDefinitionManager.AlterTypeDefinitionAsync(contentType.Name, x => x.WithPart("HtmlBodyPart", part =>
+                    {
+                        part.MergeSettings<HtmlBodyPartSettings>(x => x.SanitizeHtml = false);
+                    }));
+                }
+            }
+
+            return 5;
+        }
     }
 }

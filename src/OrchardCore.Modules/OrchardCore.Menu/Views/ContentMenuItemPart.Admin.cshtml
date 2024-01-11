@@ -1,0 +1,10 @@
+@inject IOptions<AutorouteOptions> AutorouteOptions
+
+@{
+    ContentMenuItemPart menuItemPart = Model.MenuItemPart;
+    var routeValues = new RouteValueDictionary(AutorouteOptions.Value.GlobalRouteValues);
+    routeValues[AutorouteOptions.Value.ContentItemIdKey] = menuItemPart.ContentItem.Content.ContentMenuItemPart.SelectedContentItem.ContentItemIds[0];
+    var linkUrl = Url.RouteUrl(routeValues);
+}
+
+<span>@menuItemPart.ContentItem.DisplayText <code>@linkUrl</code><span class="text-muted dashed">ContentLink</span></span>

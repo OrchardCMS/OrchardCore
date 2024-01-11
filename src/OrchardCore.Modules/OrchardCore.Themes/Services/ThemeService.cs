@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
@@ -15,24 +14,21 @@ namespace OrchardCore.Themes.Services
     {
         private readonly IExtensionManager _extensionManager;
         private readonly IShellFeaturesManager _shellFeaturesManager;
-        private readonly ILogger _logger;
         private readonly INotifier _notifier;
         private readonly ISiteThemeService _siteThemeService;
-        private readonly IHtmlLocalizer<ThemeService> H;
+        protected readonly IHtmlLocalizer H;
 
         public ThemeService(
             IExtensionManager extensionManager,
             IShellFeaturesManager shellFeaturesManager,
             ISiteThemeService siteThemeService,
-            ILogger<ThemeService> logger,
             IHtmlLocalizer<ThemeService> htmlLocalizer,
             INotifier notifier)
         {
             _extensionManager = extensionManager;
             _shellFeaturesManager = shellFeaturesManager;
             _siteThemeService = siteThemeService;
-            
-            _logger = logger;
+
             _notifier = notifier;
             H = htmlLocalizer;
         }
@@ -54,7 +50,7 @@ namespace OrchardCore.Themes.Services
                     : null;
             }
 
-            var currentTheme = await _siteThemeService.GetCurrentThemeNameAsync();
+            var currentTheme = await _siteThemeService.GetSiteThemeNameAsync();
 
             while (themes.Count > 0)
             {
@@ -77,11 +73,11 @@ namespace OrchardCore.Themes.Services
                     throw new InvalidOperationException(H["The theme \"{0}\" is already in the stack of themes that need features enabled.", themeName].ToString());
                 themes.Push(themeName);
 
+                // TODO: MWP: probably follow on issue: should this be recursive? maybe with a depth limit? i.e. base3->base2->base1 ...
                 var extensionInfo = _extensionManager.GetExtension(themeName);
                 var theme = new ThemeExtensionInfo(extensionInfo);
-                themeName = !string.IsNullOrWhiteSpace(theme.BaseTheme)
-                    ? theme.BaseTheme
-                    : null;
+                // Along similar lines as with ModuleAttribute, internal safety checks handled within the attribute itself
+                themeName = theme.BaseTheme;
             }
 
             while (themes.Count > 0)
@@ -91,7 +87,7 @@ namespace OrchardCore.Themes.Services
                 await EnableFeaturesAsync(new[] { themeId }, true);
             }
         }
-        
+
         /// <summary>
         /// Enables a list of features.
         /// </summary>
@@ -115,7 +111,7 @@ namespace OrchardCore.Themes.Services
             var enabledFeatures = await _shellFeaturesManager.EnableFeaturesAsync(featuresToEnable, force);
             foreach (var enabledFeature in enabledFeatures)
             {
-                _notifier.Success(H["{0} was enabled.", enabledFeature.Name]);
+                await _notifier.SuccessAsync(H["{0} was enabled.", enabledFeature.Name]);
             }
         }
 
@@ -142,8 +138,8 @@ namespace OrchardCore.Themes.Services
             var features = await _shellFeaturesManager.DisableFeaturesAsync(featuresToDisable, force);
             foreach (var feature in features)
             {
-                _notifier.Success(H["{0} was disabled.", feature.Name]);
+                await _notifier.SuccessAsync(H["{0} was disabled.", feature.Name]);
             }
-        }        
+        }
     }
 }

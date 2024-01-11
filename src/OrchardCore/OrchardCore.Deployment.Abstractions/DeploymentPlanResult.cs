@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Recipes.Models;
 
 namespace OrchardCore.Deployment
 {
@@ -11,20 +13,22 @@ namespace OrchardCore.Deployment
     /// </summary>
     public class DeploymentPlanResult
     {
-        public DeploymentPlanResult(IFileBuilder fileBuilder)
+        public DeploymentPlanResult(IFileBuilder fileBuilder, RecipeDescriptor recipeDescriptor)
         {
             FileBuilder = fileBuilder;
 
-            Recipe = new JObject();
-            Recipe["name"] = "";
-            Recipe["displayName"] = "";
-            Recipe["description"] = "";
-            Recipe["author"] = "";
-            Recipe["website"] = "";
-            Recipe["version"] = "";
-            Recipe["issetuprecipe"] = false;
-            Recipe["categories"] = "";
-            Recipe["tags"] = new JArray();
+            Recipe = new JObject
+            {
+                ["name"] = recipeDescriptor.Name ?? "",
+                ["displayName"] = recipeDescriptor.DisplayName ?? "",
+                ["description"] = recipeDescriptor.Description ?? "",
+                ["author"] = recipeDescriptor.Author ?? "",
+                ["website"] = recipeDescriptor.WebSite ?? "",
+                ["version"] = recipeDescriptor.Version ?? "",
+                ["issetuprecipe"] = recipeDescriptor.IsSetupRecipe,
+                ["categories"] = new JArray(recipeDescriptor.Categories ?? Array.Empty<string>()),
+                ["tags"] = new JArray(recipeDescriptor.Tags ?? Array.Empty<string>()),
+            };
         }
 
         public JObject Recipe { get; }

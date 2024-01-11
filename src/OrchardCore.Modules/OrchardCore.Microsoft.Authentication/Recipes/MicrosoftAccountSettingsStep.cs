@@ -25,11 +25,14 @@ namespace OrchardCore.Microsoft.Authentication.Recipes
             {
                 return;
             }
+
             var model = context.Step.ToObject<MicrosoftAccountSettingsStepModel>();
-            var settings = await _microsoftAccountService.GetSettingsAsync();
+            var settings = await _microsoftAccountService.LoadSettingsAsync();
+
             settings.AppId = model.AppId;
             settings.AppSecret = model.AppSecret;
             settings.CallbackPath = model.CallbackPath;
+
             await _microsoftAccountService.UpdateSettingsAsync(settings);
         }
     }

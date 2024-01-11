@@ -1,8 +1,4 @@
-﻿using OrchardCore.ContentManagement;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Lists.Models
 {
@@ -15,6 +11,11 @@ namespace OrchardCore.Lists.Models
         /// The content item id of the list owning this content item.
         /// </summary>
         public string ListContentItemId { get; set; }
+
+        /// <summary>
+        /// The content type of the list owning this content item.
+        /// </summary>
+        public string ListContentType { get; set; }
 
         /// <summary>
         /// The order of this content item in the list.

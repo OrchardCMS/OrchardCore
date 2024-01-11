@@ -1,6 +1,4 @@
-using System;
 using OrchardCore.Apis.GraphQL.Client;
-using Xunit;
 
 namespace OrchardCore.Tests.Apis.GraphQL.Client
 {
@@ -60,7 +58,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.Client
         {
             var builder = new ContentTypeQueryResourceBuilder("someContentType");
             builder.WithQueryArgument("arg", "a");
-            
+
             Assert.Throws<Exception>(() => builder.WithQueryArgument("arg", "b"));
             Assert.Throws<Exception>(() => builder.WithQueryArgument("arg", "b", "2"));
             Assert.Throws<Exception>(() => builder.WithNestedQueryArgument("arg", "b", "2"));

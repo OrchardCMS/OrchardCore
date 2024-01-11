@@ -1,0 +1,19 @@
+<div class="modal" ref="mediaTextModal">
+    <div v-if="selectedMedia" class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@T["Enter media text"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <input class="form-control" v-if="selectedMedia" v-model="selectedMedia.mediaText"/>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">@T["OK"]</button>
+                <button type="button" class="btn btn-secondary" v-on:click="cancelMediaTextModal">@T["Cancel"]</button>
+            </div>
+        </div>
+    </div>
+</div>

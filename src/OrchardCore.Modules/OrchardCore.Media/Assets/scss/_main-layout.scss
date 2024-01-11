@@ -1,11 +1,19 @@
 #mediaApp {
     position: absolute;
-    top: 128px;
+    top: var(--oc-top-nav-height, 52);
     bottom: 0;
     right: 0;
-    left: 260px;
+    left: var(--oc-start-navigation-width, 260);
     transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
+    background-color: var(--bs-body);
 
+    ::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: #495057;
+    }
 
     #mediaContainer {
         display: flex;
@@ -14,13 +22,12 @@
         align-items: stretch;
 
         #navigationApp {
-            border-right: $media-border-content;
-            border-top: $media-border-content;
+            border-right: var(--oc-media-border-content);
+            border-top: var(--oc-media-border-content);
             flex-shrink: 0;
         }
 
         #mediaContainerMain {
-            height: 100%;
             display: flex;
             flex-direction: column;
             flex-grow: 1;
@@ -32,12 +39,12 @@
             }
 
             .media-container-footer {
-                border-top: $media-border-content;
+                border-top: var(--oc-media-border-content);
             }
         }
     }
     // on large screen they are side by side
-    @media only screen and ( min-width: 768px ) {
+    @media only screen and ( min-width: 923px ) {
         #mediaContainer {
             flex-direction: row;
 
@@ -54,8 +61,10 @@
         // we don't want left navigation 100% tall when on stacked over the thumbs list
         #navigationApp {
             height: 100%;
-            width: 260px;
+            width: 240px;
             overflow: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #495057 #EAEAEA;
         }
     }
 
@@ -74,5 +83,5 @@
 }
 
 .left-sidebar-compact #mediaApp {
-    left: 48px;
+    left: var(--oc-start-navigation-width-when-compact, 48);
 }

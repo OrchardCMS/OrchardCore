@@ -10,24 +10,6 @@ namespace OrchardCore.ResourceManagement
 {
     public class ResourceDefinition
     {
-        private static readonly Dictionary<string, string> _resourceTypeTagNames = new Dictionary<string, string> {
-            { "script", "script" },
-            { "stylesheet", "link" }
-        };
-        private static readonly Dictionary<string, string> _filePathAttributes = new Dictionary<string, string> {
-            { "script", "src" },
-            { "link", "href" }
-        };
-        private static readonly Dictionary<string, Dictionary<string, string>> _resourceAttributes = new Dictionary<string, Dictionary<string, string>> {
-            { "script", new Dictionary<string, string> { {"type", "text/javascript"} } },
-            { "stylesheet", new Dictionary<string, string> { {"type", "text/css"}, {"rel", "stylesheet"} } }
-        };
-        private static readonly Dictionary<string, TagRenderMode> _fileTagRenderModes = new Dictionary<string, TagRenderMode> {
-            { "script", TagRenderMode.Normal },
-            { "link", TagRenderMode.SelfClosing },
-            { "stylesheet", TagRenderMode.SelfClosing }
-        };
-
         private string _basePath;
 
         public ResourceDefinition(ResourceManifest manifest, string type, string name)
@@ -35,17 +17,13 @@ namespace OrchardCore.ResourceManagement
             Manifest = manifest;
             Type = type;
             Name = name;
-
-            TagName = _resourceTypeTagNames.ContainsKey(Type) ? _resourceTypeTagNames[Type] : "meta";
-            FilePathAttributeName = _filePathAttributes.ContainsKey(TagName) ? _filePathAttributes[TagName] : null;
-            TagRenderMode = _fileTagRenderModes.ContainsKey(TagName) ? _fileTagRenderModes[TagName] : TagRenderMode.Normal;
         }
 
         private static string Coalesce(params string[] strings)
         {
             foreach (var str in strings)
             {
-                if (!String.IsNullOrEmpty(str))
+                if (!string.IsNullOrEmpty(str))
                 {
                     return str;
                 }
@@ -55,8 +33,6 @@ namespace OrchardCore.ResourceManagement
 
         public ResourceManifest Manifest { get; private set; }
 
-        public string TagName { get; private set; }
-        public TagRenderMode TagRenderMode { get; private set; }
         public string Name { get; private set; }
         public string Type { get; private set; }
         public string Version { get; private set; }
@@ -70,23 +46,21 @@ namespace OrchardCore.ResourceManagement
         public string[] Cultures { get; private set; }
         public bool CdnSupportsSsl { get; private set; }
         public List<string> Dependencies { get; private set; }
-        public string FilePathAttributeName { get; private set; }
         public AttributeDictionary Attributes { get; private set; }
+        public string InnerContent { get; private set; }
+        public ResourcePosition Position { get; private set; }
 
         public ResourceDefinition SetAttribute(string name, string value)
         {
-            if (Attributes == null)
-            {
-                Attributes = new AttributeDictionary();
-            }
+            Attributes ??= new AttributeDictionary();
 
             Attributes[name] = value;
             return this;
         }
 
-        public ResourceDefinition SetBasePath(string virtualPath)
+        public ResourceDefinition SetBasePath(string basePath)
         {
-            _basePath = virtualPath;
+            _basePath = basePath;
             return this;
         }
 
@@ -97,7 +71,7 @@ namespace OrchardCore.ResourceManagement
 
         public ResourceDefinition SetUrl(string url, string urlDebug)
         {
-            if (String.IsNullOrEmpty(url))
+            if (string.IsNullOrEmpty(url))
             {
                 ThrowArgumentNullException(nameof(url));
             }
@@ -126,7 +100,7 @@ namespace OrchardCore.ResourceManagement
 
         public ResourceDefinition SetCdnIntegrity(string cdnIntegrity, string cdnDebugIntegrity)
         {
-            if (String.IsNullOrEmpty(cdnIntegrity))
+            if (string.IsNullOrEmpty(cdnIntegrity))
             {
                 ThrowArgumentNullException(nameof(cdnIntegrity));
             }
@@ -140,7 +114,7 @@ namespace OrchardCore.ResourceManagement
 
         public ResourceDefinition SetCdn(string cdnUrl, string cdnUrlDebug, bool? cdnSupportsSsl)
         {
-            if (String.IsNullOrEmpty(cdnUrl))
+            if (string.IsNullOrEmpty(cdnUrl))
             {
                 ThrowArgumentNullException(nameof(cdnUrl));
             }
@@ -162,7 +136,13 @@ namespace OrchardCore.ResourceManagement
         /// <param name="version">The version to set, in the form of <code>major.minor[.build[.revision]]</code></param>
         public ResourceDefinition SetVersion(string version)
         {
+            if (!System.Version.TryParse(version, out _))
+            {
+                throw new FormatException("The resource version should be in the form of major.minor[.build[.revision]].");
+            }
+
             Version = version;
+
             return this;
         }
 
@@ -184,24 +164,26 @@ namespace OrchardCore.ResourceManagement
 
         public ResourceDefinition SetDependencies(params string[] dependencies)
         {
-            if (Dependencies == null)
-            {
-                Dependencies = new List<string>();
-            }
+            Dependencies ??= new List<string>();
 
             Dependencies.AddRange(dependencies);
 
             return this;
         }
 
-        public ResourceDefinition SetDependencies(List<string> dependencies)
+        public ResourceDefinition SetInnerContent(string innerContent)
         {
-            if (Dependencies == null)
-            {
-                Dependencies = new List<string>();
-            }
+            InnerContent = innerContent;
 
-            Dependencies.AddRange(dependencies);
+            return this;
+        }
+        /// <summary>
+        /// Position a resource first, last or by dependency.
+        /// </summary>
+        /// <param name="position"></param>
+        public ResourceDefinition SetPosition(ResourcePosition position)
+        {
+            Position = position;
 
             return this;
         }
@@ -210,8 +192,9 @@ namespace OrchardCore.ResourceManagement
             string applicationPath,
             IFileVersionProvider fileVersionProvider)
         {
-            string url;
-            // Url priority:
+            string url, filePathAttributeName = null;
+
+            // Url priority.
             if (settings.DebugMode)
             {
                 url = settings.CdnMode
@@ -225,65 +208,107 @@ namespace OrchardCore.ResourceManagement
                     : Coalesce(Url, UrlDebug, UrlCdn, UrlCdnDebug);
             }
 
-            if (String.IsNullOrEmpty(url))
+            if (string.IsNullOrEmpty(url))
             {
                 url = null;
             }
-            if (!String.IsNullOrEmpty(settings.Culture))
+            if (!string.IsNullOrEmpty(settings.Culture))
             {
-                string nearestCulture = FindNearestCulture(settings.Culture);
-                if (!String.IsNullOrEmpty(nearestCulture))
+                var nearestCulture = FindNearestCulture(settings.Culture);
+                if (!string.IsNullOrEmpty(nearestCulture))
                 {
                     url = Path.ChangeExtension(url, nearestCulture + Path.GetExtension(url));
                 }
             }
 
-            if (url.StartsWith("~/", StringComparison.Ordinal))
+            if (url != null && url.StartsWith("~/", StringComparison.Ordinal))
             {
-                if (!String.IsNullOrEmpty(_basePath))
+                if (!string.IsNullOrEmpty(_basePath))
                 {
-                    url = _basePath + url.Substring(1);
+                    url = string.Concat(_basePath, url.AsSpan(1));
                 }
                 else
                 {
-                    url = applicationPath + url.Substring(1);
+                    url = string.Concat(applicationPath, url.AsSpan(1));
                 }
             }
 
-            // If settings has value, it can override resource definition, otherwise use resource definition
+            // If settings has value, it can override resource definition, otherwise use resource definition.
             if (url != null && ((settings.AppendVersion.HasValue && settings.AppendVersion == true) ||
                 (!settings.AppendVersion.HasValue && AppendVersion == true)))
             {
                 url = fileVersionProvider.AddFileVersionToPath(applicationPath, url);
             }
 
-            // Don't prefix cdn if the path is absolute, or is in debug mode.
-            if (!settings.DebugMode
-                && !String.IsNullOrEmpty(settings.CdnBaseUrl)
-                && !Uri.TryCreate(url, UriKind.Absolute, out var uri))
+            // Don't prefix cdn if the path includes a protocol, i.e. is an external url, or is in debug mode.
+            if (url != null && !settings.DebugMode && !string.IsNullOrEmpty(settings.CdnBaseUrl) &&
+
+                // Don't evaluate with Uri.TryCreate as it produces incorrect results on Linux.
+                !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase) &&
+                !url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
+                !url.StartsWith("//", StringComparison.OrdinalIgnoreCase) &&
+                !url.StartsWith("file://", StringComparison.OrdinalIgnoreCase))
             {
                 url = settings.CdnBaseUrl + url;
             }
 
-            var tagBuilder = new TagBuilder(TagName)
+            TagBuilder tagBuilder;
+            switch (Type)
             {
-                TagRenderMode = TagRenderMode
-            };
+                case "script":
+                    tagBuilder = new TagBuilder("script");
+                    if (settings.Attributes.Count > 0)
+                    {
+                        foreach (var kv in settings.Attributes)
+                        {
+                            tagBuilder.Attributes.Add(kv);
+                        }
+                    }
+                    filePathAttributeName = "src";
+                    break;
+                case "stylesheet":
+                    if (url == null && InnerContent != null)
+                    {
+                        // Inline style declaration.
+                        tagBuilder = new TagBuilder("style")
+                        {
+                            Attributes = {
+                                { "type", "text/css" }
+                            }
+                        };
+                    }
+                    else
+                    {
+                        // Stylesheet resource.
+                        tagBuilder = new TagBuilder("link")
+                        {
+                            TagRenderMode = TagRenderMode.SelfClosing,
+                            Attributes = {
+                                { "type", "text/css" },
+                                { "rel", "stylesheet" }
+                            }
+                        };
+                        filePathAttributeName = "href";
+                    }
+                    break;
+                case "link":
+                    tagBuilder = new TagBuilder("link") { TagRenderMode = TagRenderMode.SelfClosing };
+                    filePathAttributeName = "href";
+                    break;
+                default:
+                    tagBuilder = new TagBuilder("meta") { TagRenderMode = TagRenderMode.SelfClosing };
+                    break;
+            }
 
-            if (!String.IsNullOrEmpty(CdnIntegrity) && url != null && url == UrlCdn)
+            if (!string.IsNullOrEmpty(CdnIntegrity) && url != null && url == UrlCdn)
             {
                 tagBuilder.Attributes["integrity"] = CdnIntegrity;
                 tagBuilder.Attributes["crossorigin"] = "anonymous";
             }
-            else if (!String.IsNullOrEmpty(CdnDebugIntegrity) && url != null && url == UrlCdnDebug)
+            else if (!string.IsNullOrEmpty(CdnDebugIntegrity) && url != null && url == UrlCdnDebug)
             {
                 tagBuilder.Attributes["integrity"] = CdnDebugIntegrity;
                 tagBuilder.Attributes["crossorigin"] = "anonymous";
-            }
-
-            if (_resourceAttributes.ContainsKey(Type))
-            {
-                tagBuilder.MergeAttributes(_resourceAttributes[Type]);
             }
 
             if (Attributes != null)
@@ -296,12 +321,13 @@ namespace OrchardCore.ResourceManagement
                 tagBuilder.MergeAttributes(settings.Attributes);
             }
 
-            if (!String.IsNullOrEmpty(FilePathAttributeName))
+            if (!string.IsNullOrEmpty(url) && filePathAttributeName != null)
             {
-                if (!String.IsNullOrEmpty(url))
-                {
-                    tagBuilder.MergeAttribute(FilePathAttributeName, url, true);
-                }
+                tagBuilder.MergeAttribute(filePathAttributeName, url, true);
+            }
+            else if (!string.IsNullOrEmpty(InnerContent))
+            {
+                tagBuilder.InnerHtml.AppendHtml(InnerContent);
             }
 
             return tagBuilder;
@@ -309,17 +335,17 @@ namespace OrchardCore.ResourceManagement
 
         public string FindNearestCulture(string culture)
         {
-            // go for an exact match
+            // Go for an exact match.
             if (Cultures == null)
             {
                 return null;
             }
-            int selectedIndex = Array.IndexOf(Cultures, culture);
+            var selectedIndex = Array.IndexOf(Cultures, culture);
             if (selectedIndex != -1)
             {
                 return Cultures[selectedIndex];
             }
-            // try parent culture if any
+            // Try parent culture if any.
             var cultureInfo = new CultureInfo(culture);
             if (cultureInfo.Parent.Name != culture)
             {

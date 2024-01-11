@@ -8,10 +8,10 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Forms.Workflows.Activities
 {
-    public class AddModelValidationErrorTask : TaskActivity
+    public class AddModelValidationErrorTask : TaskActivity<AddModelValidationErrorTask>
     {
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IStringLocalizer<AddModelValidationErrorTask> S;
+        protected readonly IStringLocalizer S;
 
         public AddModelValidationErrorTask(
             IUpdateModelAccessor updateModelAccessor,
@@ -22,10 +22,8 @@ namespace OrchardCore.Forms.Workflows.Activities
             S = localizer;
         }
 
-        public override string Name => nameof(AddModelValidationErrorTask);
-        
         public override LocalizedString DisplayText => S["Add Model Validation Error Task"];
-        
+
         public override LocalizedString Category => S["Validation"];
 
         public string Key
@@ -47,12 +45,8 @@ namespace OrchardCore.Forms.Workflows.Activities
 
         public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var updater = _updateModelAccessor.ModelUpdater;
-
-            if (updater == null)
-            {
-                throw new InvalidOperationException("Cannot add model validation errors when there's no Updater present.");
-            }
+            var updater = _updateModelAccessor.ModelUpdater
+                ?? throw new InvalidOperationException("Cannot add model validation errors when there's no Updater present.");
 
             updater.ModelState.AddModelError(Key, ErrorMessage);
             return Outcomes("Done");

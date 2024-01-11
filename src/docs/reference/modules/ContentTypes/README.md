@@ -88,7 +88,7 @@ Each part can also be configured in the context of a type. For instance the `Aut
 
 ```csharp
 _contentDefinitionManager.AlterTypeDefinition("Product", type => type
-    .WithPart("Product", part => part
+    .WithPart("AutoroutePart", part => part
         // sets the position among other parts
         .WithPosition("2")
         // sets all the settings on the AutoroutePart
@@ -104,14 +104,18 @@ For a list of all the settings each type can use, please refer to their respecti
 Fields can not be attached directly to a Content Type. To add fields to a content type, create a part with the same name as the type, and add fields to this part.
 
 ```csharp
- _contentDefinitionManager.AlterTypeDefinition("Product", type => type
-    .WithPart("Product", part => part
-        .WithField("Image", field => field
-            .OfType("MediaField")
-            .WithDisplayName("Main image"))
-        .WithField("Price", field => field
-            .OfType("NumericField")
-            .WithDisplayName("Price"))
+_contentDefinitionManager.AlterTypeDefinition("Product", type => type
+    .WithPart("Product")
+);
+
+_contentDefinitionManager.AlterPartDefinition("Product", part => part
+    .WithField("Image", field => field
+        .OfType("MediaField")
+        .WithDisplayName("Main image")
+    )
+    .WithField("Price", field => field
+        .OfType("NumericField")
+        .WithDisplayName("Price")
     )
 );
 ```
@@ -157,13 +161,15 @@ Finally, here is an example of consuming your Content Item as your Content Part 
 public class ProductController : Controller
 {
     private readonly IOrchardHelper _orchardHelper;
+    private readonly IContentManager _contentManager;
 
-    public ProductController(IOrchardHelper orchardHelper)
+    public ProductController(IOrchardHelper orchardHelper, IContentManager contentManager)
     {
         _orchardHelper = orchardHelper;
+        _contentManager = contentManager;
     }
 
-    [HttpPost("/api/product/{productId}")]
+    [HttpGet("/api/product/{productId}")]
     public async Task<ObjectResult> GetProductAsync(string productId)
     {
         var product = _orchardHelper.GetContentItemByIdAsync(productId);
@@ -181,6 +187,28 @@ public class ProductController : Controller
              Image = productPart.Image.Paths.FirstOrDefault(),
              Price = productPart.Price.Value,
         });
+    }
+    
+    [HttpPost("/api/product/{productId}/price/{price}")]
+    public async Task<ContentValidateResult> UpdateProductPriceAsync(string productId, int price)
+    {
+        //this call will only fetch published content item, which makes publishing after update redundant
+        var product = _orchardHelper.GetContentItemByIdAsync(productId);
+
+        if (product == null) 
+        {
+            return NotFoundObjectResult();
+        }
+
+        var productPart = product.As<Product>();
+        productPart.Price.Value = price;
+        
+        product.Apply(productPart) //apply modified part to a content item
+        
+        await _contentManager.UpdateAsync(product); //update will fire handlers which could alter the content item.
+
+        //validation will cancel changes if product is not valid. It's fired after update since handlers could change the object.
+        return await _contentManager.ValidateAsync(product);
     }
 }
 ```

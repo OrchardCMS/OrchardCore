@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace OrchardCore.ResourceManagement.TagHelpers
 {
-
     [HtmlTargetElement("link", Attributes = SrcAttributeName)]
     public class LinkTagHelper : TagHelper
     {
@@ -67,7 +66,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
             foreach (var attribute in output.Attributes)
             {
-                if (String.Equals(attribute.Name, "href", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(attribute.Name, "href", StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }

@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Settings;
 
@@ -8,26 +7,21 @@ namespace OrchardCore.Themes.Services
 {
     public class SiteThemeService : ISiteThemeService
     {
-        private const string CacheKey = "CurrentThemeName";
-
         private readonly ISiteService _siteService;
         private readonly IExtensionManager _extensionManager;
-        private readonly IMemoryCache _memoryCache;
 
         public SiteThemeService(
             ISiteService siteService,
-            IExtensionManager extensionManager,
-            IMemoryCache memoryCache)
+            IExtensionManager extensionManager)
         {
             _siteService = siteService;
             _extensionManager = extensionManager;
-            _memoryCache = memoryCache;
         }
 
         public async Task<IExtensionInfo> GetSiteThemeAsync()
         {
-            string currentThemeName = await GetCurrentThemeNameAsync();
-            if (String.IsNullOrEmpty(currentThemeName))
+            string currentThemeName = await GetSiteThemeNameAsync();
+            if (string.IsNullOrEmpty(currentThemeName))
             {
                 return null;
             }
@@ -42,17 +36,11 @@ namespace OrchardCore.Themes.Services
             await _siteService.UpdateSiteSettingsAsync(site);
         }
 
-        public async Task<string> GetCurrentThemeNameAsync()
+        public async Task<string> GetSiteThemeNameAsync()
         {
-            if (!_memoryCache.TryGetValue(CacheKey, out string themeName))
-            {
-                var changeToken = _siteService.ChangeToken;
-                var site = await _siteService.GetSiteSettingsAsync();
-                themeName = (string)site.Properties["CurrentThemeName"];
-                _memoryCache.Set(CacheKey, themeName, changeToken);
-            }
+            var site = await _siteService.GetSiteSettingsAsync();
 
-            return themeName;
+            return (string)site.Properties["CurrentThemeName"];
         }
     }
 }

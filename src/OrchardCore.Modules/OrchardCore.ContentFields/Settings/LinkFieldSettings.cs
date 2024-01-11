@@ -21,10 +21,13 @@ namespace OrchardCore.ContentFields.Settings
     {
         // Some text can be entered or not, if not the url is used
         Optional,
+
         // Some text must be entered
         Required,
+
         // Use the default text value defined in the settings
         Static,
+
         // Use the url
         Url
     }

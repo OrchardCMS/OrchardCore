@@ -17,6 +17,7 @@ namespace OrchardCore.Contents.Indexing
         private readonly ITypeActivatorFactory<ContentPart> _contentPartFactory;
         private readonly IEnumerable<IContentPartIndexHandler> _partIndexHandlers;
         private readonly IEnumerable<IContentFieldIndexHandler> _fieldIndexHandlers;
+        private readonly ILogger _logger;
 
         public ContentItemIndexCoordinator(
             IContentDefinitionManager contentDefinitionManager,
@@ -29,14 +30,12 @@ namespace OrchardCore.Contents.Indexing
             _contentPartFactory = contentPartFactory;
             _partIndexHandlers = partIndexHandlers;
             _fieldIndexHandlers = fieldIndexHandlers;
-            Logger = logger;
+            _logger = logger;
         }
-
-        public ILogger Logger { get; }
 
         public async Task BuildIndexAsync(BuildIndexContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
 
             if (contentTypeDefinition == null)
             {
@@ -50,21 +49,25 @@ namespace OrchardCore.Contents.Indexing
                 var partActivator = _contentPartFactory.GetTypeActivator(partTypeName);
                 var part = (ContentPart)context.ContentItem.Get(partActivator.Type, partName);
 
-                var typePartIndexSettings = contentTypePartDefinition.GetSettings<ContentIndexSettings>();
+                var contentTypePartDefinitionMethod = contentTypePartDefinition.GetType().GetMethod("GetSettings");
+                var contentTypePartDefinitionGeneric = contentTypePartDefinitionMethod.MakeGenericMethod(context.Settings.GetType());
+                var typePartIndexSettings = (IContentIndexSettings)contentTypePartDefinitionGeneric.Invoke(contentTypePartDefinition, null);
 
                 // Skip this part if it's not included in the index and it's not the default type part
-                if (partName != partTypeName && !typePartIndexSettings.Included)
+                if (contentTypeDefinition.Name != partTypeName && !typePartIndexSettings.Included)
                 {
                     continue;
                 }
 
                 await _partIndexHandlers.InvokeAsync((handler, part, contentTypePartDefinition, context, typePartIndexSettings) =>
                     handler.BuildIndexAsync(part, contentTypePartDefinition, context, typePartIndexSettings),
-                        part, contentTypePartDefinition, context, typePartIndexSettings, Logger);
+                        part, contentTypePartDefinition, context, typePartIndexSettings, _logger);
 
                 foreach (var contentPartFieldDefinition in contentTypePartDefinition.PartDefinition.Fields)
                 {
-                    var partFieldIndexSettings = contentPartFieldDefinition.GetSettings<ContentIndexSettings>();
+                    var contentPartFieldDefinitionMethod = contentPartFieldDefinition.GetType().GetMethod("GetSettings");
+                    var contentPartFieldDefinitionGeneric = contentPartFieldDefinitionMethod.MakeGenericMethod(context.Settings.GetType());
+                    var partFieldIndexSettings = (IContentIndexSettings)contentPartFieldDefinitionGeneric.Invoke(contentPartFieldDefinition, null);
 
                     if (!partFieldIndexSettings.Included)
                     {
@@ -73,7 +76,7 @@ namespace OrchardCore.Contents.Indexing
 
                     await _fieldIndexHandlers.InvokeAsync((handler, part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings) =>
                         handler.BuildIndexAsync(part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings),
-                            part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings, Logger);
+                            part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings, _logger);
                 }
             }
 

@@ -4,17 +4,13 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
-using OrchardCore.ContentPreview.Models;
-using OrchardCore.DisplayManagement;
+using OrchardCore.Contents;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Modules;
-using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.ContentPreview.Controllers
 {
@@ -26,14 +22,11 @@ namespace OrchardCore.ContentPreview.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IClock _clock;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly dynamic New;
 
         public PreviewController(
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
             IContentManagerSession contentManagerSession,
-            IShapeFactory shapeFactory,
-            ILogger<PreviewController> logger,
             IAuthorizationService authorizationService,
             IClock clock,
             IUpdateModelAccessor updateModelAccessor)
@@ -44,11 +37,7 @@ namespace OrchardCore.ContentPreview.Controllers
             _contentManager = contentManager;
             _contentManagerSession = contentManagerSession;
             _updateModelAccessor = updateModelAccessor;
-            New = shapeFactory;
-            Logger = logger;
         }
-
-        public ILogger Logger { get; set; }
 
         public IActionResult Index()
         {
@@ -58,10 +47,13 @@ namespace OrchardCore.ContentPreview.Controllers
         [HttpPost]
         public async Task<IActionResult> Render()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ContentPreview))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PreviewContent))
             {
                 return this.ChallengeOrForbid();
             }
+
+            // Mark request as a `Preview` request so that drivers / handlers or underlying services can be aware of an active preview mode.
+            HttpContext.Features.Set(new ContentPreviewFeature());
 
             var contentItemType = Request.Form["ContentItemType"];
             var contentItem = await _contentManager.NewAsync(contentItemType);
@@ -74,7 +66,7 @@ namespace OrchardCore.ContentPreview.Controllers
             var contentItemVersionId = Request.Form["PreviewContentItemVersionId"];
 
             // Unique contentItem.Id that only Preview is using such that another
-            // stored document can't have the same one in the IContentManagerSession index
+            // stored document can't have the same one in the IContentManagerSession index.
 
             contentItem.Id = -1;
             contentItem.ContentItemId = contentItemId;
@@ -84,8 +76,8 @@ namespace OrchardCore.ContentPreview.Controllers
             contentItem.PublishedUtc = _clock.UtcNow;
             contentItem.Published = true;
 
-            // TODO: we should probably get this value from the main editor as it might impact validators
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
+            // TODO: we should probably get this value from the main editor as it might impact validators.
+            _ = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
 
             if (!ModelState.IsValid)
             {
@@ -100,14 +92,14 @@ namespace OrchardCore.ContentPreview.Controllers
                     }
                 }
 
-                return StatusCode(500, new { errors = errors });
+                return this.InternalServerError(new { errors });
             }
 
             var previewAspect = await _contentManager.PopulateAspectAsync(contentItem, new PreviewAspect());
 
-            if (!String.IsNullOrEmpty(previewAspect.PreviewUrl))
+            if (!string.IsNullOrEmpty(previewAspect.PreviewUrl))
             {
-                // The PreviewPart is configured, we need to set the fake content item
+                // The PreviewPart is configured, we need to set the fake content item.
                 _contentManagerSession.Store(contentItem);
 
                 if (!previewAspect.PreviewUrl.StartsWith('/'))
@@ -120,7 +112,7 @@ namespace OrchardCore.ContentPreview.Controllers
                 return Ok();
             }
 
-            model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, "Detail");
+            var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, "Detail");
 
             return View(model);
         }

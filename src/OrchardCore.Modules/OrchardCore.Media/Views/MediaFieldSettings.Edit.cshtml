@@ -1,27 +1,102 @@
-@model OrchardCore.Media.Settings.MediaFieldSettings
+@model OrchardCore.Media.ViewModels.MediaFieldSettingsViewModel
 
-<div class="row">
-    <div class="form-group col-md-6">
-        <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" asp-for="Required" checked="@Model.Required">
-            <label class="custom-control-label" asp-for="Required">@T["Required"]</label>
-            <span class="hint">@T["Whether a media is required."]</span>
-        </div>
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="Required" checked="@Model.Required">
+        <label class="form-check-label" asp-for="Required">@T["Required"]</label>
+        <span class="hint dashed">@T["Whether a media is required."]</span>
     </div>
 </div>
-<div class="row">
-    <div class="form-group col-md-6">
-        <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" asp-for="Multiple" checked="@Model.Multiple">
-            <label class="custom-control-label" asp-for="Multiple">@T["Multiple"]</label>
-            <span class="hint">@T["Whether multiple media can be selected."]</span>
-        </div>
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="Multiple" checked="@Model.Multiple">
+        <label class="form-check-label" asp-for="Multiple">@T["Multiple"]</label>
+        <span class="hint dashed">@T["Whether multiple media can be selected."]</span>
     </div>
 </div>
-<div class="row">
-    <div class="form-group col-md-6">
-        <label asp-for="Hint">@T["Hint"]</label>
+<div class="mb-3 ">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="AllowMediaText" checked="@Model.AllowMediaText">
+        <label class="form-check-label" asp-for="AllowMediaText">@T["Allow media text"]</label>
+        <span class="hint dashed">@T["Whether media text editing is allowed."]</span>
+    </div>
+</div>
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="AllowAnchors" checked="@Model.AllowAnchors">
+        <label class="form-check-label" asp-for="AllowAnchors">@T["Allow anchors"]</label>
+        <span class="hint dashed">@T["Whether selecting an anchor point for resizing is allowed."]</span>
+    </div>
+</div>
+<div class="mb-3">
+    <div class="w-lg-75 w-xl-50">
+        <label asp-for="Hint" class="form-label">@T["Hint"]</label>
         <input asp-for="Hint" type="text" class="form-control" />
-        <span class="hint">@T["The hint text to display on the editor."]</span>
+    </div>
+    <span class="hint">@T["The hint text to display on the editor."]</span>
+</div>
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="AllowAllDefaultMediaTypes" checked="@Model.AllowAllDefaultMediaTypes" data-bs-toggle="collapse" data-bs-target="#MediaExtensionWrapper" role="button" aria-expanded="@(Model.AllowAllDefaultMediaTypes ? "false" : "true")" aria-controls="MediaExtensionWrapper">
+        <label class="form-check-label" asp-for="AllowAllDefaultMediaTypes">@T["Allow all default media types"]</label>
+        <span class="hint dashed">@T["This will allow the user to attach any accessible file from the media library."]</span>
     </div>
 </div>
+<div class="collapse@(Model.AllowAllDefaultMediaTypes ? string.Empty : " show")" id="MediaExtensionWrapper">
+    <div class="mb-3">
+        @{
+            var groups = Model.MediaTypes
+            .GroupBy(t => t.Type)
+            .OrderBy(t => t.Key)
+            .ToDictionary(t => t.Key, t => t.Select(m => m).ToHashSet());
+        }
+
+        <div class="mb-3">
+            @foreach (var group in groups)
+            {
+                var allSelected = !group.Value.Any(x => !x.IsSelected);
+                var htmlId = $"MediaExtensionTypeId_{group.Key}";
+
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input media-extensions-selector" checked="@allSelected" id="@htmlId" value="@string.Join(';', group.Value.Select(m => m.ContentType))">
+                    <label class="form-check-label cursor-pointer" for="@htmlId">@T["{0} types", group.Key]</label>
+                    <span class="hint dashed">@T["Select all extensions with the '{0}' type.", group.Key]</span>
+                </div>
+            }
+        </div>
+
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6">
+            @for (int i = 0; i < Model.MediaTypes.Length; i++)
+            {
+                var type = Model.MediaTypes[i];
+
+                <div class="col">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input media-extension" asp-for="MediaTypes[i].IsSelected" data-media-content-type="@type.ContentType">
+                        <input type="hidden" asp-for="MediaTypes[i].Extension" />
+                        <label class="form-check-label cursor-pointer" asp-for="MediaTypes[i].IsSelected">@type.Extension</label>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script at="Foot" asp-name="media-field-settings">
+    document.addEventListener('DOMContentLoaded', () => {
+        var buttons = document.getElementsByClassName('media-extensions-selector');
+        var mediaExtensionCheckboxes = document.getElementsByClassName('media-extension');
+
+        for (let i = 0; i < buttons.length; i++) {
+            var button = buttons[i];
+            button.addEventListener('click', (e) => {
+                var contentTypes = e.target.value.split(';');
+                for (let x = 0; x < mediaExtensionCheckboxes.length; x++) {
+                    if (contentTypes.includes(mediaExtensionCheckboxes[x].getAttribute('data-media-content-type'))) {
+                        mediaExtensionCheckboxes[x].checked = e.target.checked;
+                    }
+                }
+            })
+        }
+    });
+</script>

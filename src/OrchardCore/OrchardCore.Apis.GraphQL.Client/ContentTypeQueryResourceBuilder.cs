@@ -1,17 +1,16 @@
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace OrchardCore.Apis.GraphQL.Client
 {
     public class ContentTypeQueryResourceBuilder
     {
-        private string _contentType;
-
-        private List<string> _keys = new List<string>();
-        private IDictionary<string, object> _queries = new Dictionary<string, object>();
-        private List<ContentTypeQueryResourceBuilder> _nested = new List<ContentTypeQueryResourceBuilder>();
+        private readonly string _contentType;
+        private readonly List<string> _keys = new();
+        private readonly Dictionary<string, object> _queries = new();
+        private readonly List<ContentTypeQueryResourceBuilder> _nested = new();
 
         public ContentTypeQueryResourceBuilder(string contentType)
         {
@@ -61,7 +60,7 @@ namespace OrchardCore.Apis.GraphQL.Client
             // Field-level argument exists
             else if (queryValues is IDictionary<string, string>)
             {
-                ((IDictionary<string, string>) queryValues)
+                ((IDictionary<string, string>)queryValues)
                     .Add(fieldName.ToGraphQLStringFormat(), fieldValue);
             }
             else

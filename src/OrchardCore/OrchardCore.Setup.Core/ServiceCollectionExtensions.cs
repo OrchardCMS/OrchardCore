@@ -15,6 +15,8 @@ namespace OrchardCore.Setup
         {
             services.AddScoped<ISetupService, SetupService>();
 
+            services.AddSingleton<ISetupUserIdGenerator, SetupUserIdGenerator>();
+
             return services;
         }
     }

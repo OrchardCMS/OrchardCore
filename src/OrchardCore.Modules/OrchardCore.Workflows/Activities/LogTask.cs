@@ -8,22 +8,21 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
-    public class LogTask : TaskActivity
+    public class LogTask : TaskActivity<LogTask>
     {
-        private readonly ILogger<LogTask> _logger;
+        private readonly ILogger _logger;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer<LogTask> S;
-        
+        protected readonly IStringLocalizer S;
+
         public LogTask(ILogger<LogTask> logger, IWorkflowExpressionEvaluator expressionEvaluator, IStringLocalizer<LogTask> localizer)
         {
             _logger = logger;
             _expressionEvaluator = expressionEvaluator;
             S = localizer;
         }
-        public override string Name => nameof(LogTask);
-        
+
         public override LocalizedString DisplayText => S["Log Task"];
-        
+
         public override LocalizedString Category => S["Primitives"];
 
         public LogLevel LogLevel
@@ -45,7 +44,7 @@ namespace OrchardCore.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var text = await _expressionEvaluator.EvaluateAsync(Text, workflowContext);
+            var text = await _expressionEvaluator.EvaluateAsync(Text, workflowContext, null);
             var logLevel = LogLevel;
 
             _logger.Log(logLevel, 0, text, null, (state, error) => state.ToString());

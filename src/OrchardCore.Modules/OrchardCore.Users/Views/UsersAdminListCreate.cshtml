@@ -1,0 +1,8 @@
+@model UserIndexOptions
+@using OrchardCore.Users.Models
+@inject IAuthorizationService AuthorizationService
+
+@if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, new User()))
+{
+    <a asp-route-action="Create" class="btn btn-secondary create" role="button">@T["Add User"]</a>
+}

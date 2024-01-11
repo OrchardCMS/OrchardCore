@@ -50,10 +50,7 @@ namespace OrchardCore.Environment.Cache
         /// </summary>
         public CacheContext AddContext(params string[] contexts)
         {
-            if (_contexts == null)
-            {
-                _contexts = new HashSet<string>();
-            }
+            _contexts ??= new HashSet<string>();
 
             foreach (var context in contexts)
             {
@@ -68,20 +65,14 @@ namespace OrchardCore.Environment.Cache
         /// </summary>
         public CacheContext RemoveContext(string context)
         {
-            if (_contexts != null)
-            {
-                _contexts.Remove(context);
-            }
+            _contexts?.Remove(context);
 
             return this;
         }
 
         public CacheContext AddTag(params string[] tags)
         {
-            if (_tags == null)
-            {
-                _tags = new HashSet<string>();
-            }
+            _tags ??= new HashSet<string>();
 
             foreach (var tag in tags)
             {
@@ -93,16 +84,13 @@ namespace OrchardCore.Environment.Cache
 
         public CacheContext RemoveTag(string tag)
         {
-            if (_tags != null)
-            {
-                _tags.Remove(tag);
-            }
+            _tags?.Remove(tag);
 
             return this;
         }
 
         public string CacheId { get; }
-        public ICollection<string> Contexts => (ICollection<string>) _contexts ?? Array.Empty<string>();
+        public ICollection<string> Contexts => (ICollection<string>)_contexts ?? Array.Empty<string>();
         public IEnumerable<string> Tags => _tags ?? Enumerable.Empty<string>();
         public DateTimeOffset? ExpiresOn { get; private set; }
         public TimeSpan? ExpiresAfter { get; private set; }

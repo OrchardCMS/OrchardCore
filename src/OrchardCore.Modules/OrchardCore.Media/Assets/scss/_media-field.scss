@@ -1,11 +1,10 @@
+@import './_variables';
+
 .media-field-toolbar {
     display: flex;
 
     .selected-media-name {
-        display: flex;
-        justify-content: flex-end;
-        align-items: flex-end;
-        flex-grow: 1;
+        margin: 0;
     }
 
     code {
@@ -18,7 +17,7 @@
         cursor: pointer;
         margin: 0;
         padding: 4px 8px;
-        border: 1px solid $secondary;
+        border: var(--bs-border-width, 1px) solid var(--bs-border-color, #ccc);
 
         input {
             width: 0.1px;
@@ -28,5 +27,31 @@
             position: absolute;
             z-index: -1;
         }
+    }
+}
+
+@media (min-width: 992px) {
+    .media-anchor-modal {
+        .modal-lg {
+            max-width: 1200px;
+        }
+    }
+}
+
+.media-anchor-modal {
+    .img-modal {
+        max-height: 70vh;
+    }
+}
+
+.icon-media-anchor {
+    position: absolute;
+    line-height: 0px;
+    color: var(--bs-white);
+    font-size: 1.875rem;
+
+    path {
+        stroke: var(--bs-black);
+        stroke-width: 10;
     }
 }

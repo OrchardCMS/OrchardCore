@@ -1,5 +1,4 @@
 using System;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using OrchardCore.Microsoft.Authentication.Services;
 using OrchardCore.Microsoft.Authentication.Settings;
@@ -9,7 +8,7 @@ using OrchardCore.Recipes.Services;
 namespace OrchardCore.Microsoft.Authentication.Recipes
 {
     /// <summary>
-    /// This recipe step sets general OpenID Connect Client settings.
+    /// This recipe step sets general Microsoft Entra ID settings.
     /// </summary>
     public class AzureADSettingsStep : IRecipeStepHandler
     {
@@ -28,12 +27,13 @@ namespace OrchardCore.Microsoft.Authentication.Recipes
             }
 
             var model = context.Step.ToObject<AzureADSettingsStepModel>();
+            var settings = await _azureADService.LoadSettingsAsync();
 
-            var settings = await _azureADService.GetSettingsAsync();
             settings.AppId = model.AppId;
             settings.TenantId = model.TenantId;
             settings.DisplayName = model.DisplayName;
             settings.CallbackPath = model.CallbackPath;
+
             await _azureADService.UpdateSettingsAsync(settings);
         }
     }

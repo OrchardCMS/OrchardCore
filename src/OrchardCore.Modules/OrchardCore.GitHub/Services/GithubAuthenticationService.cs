@@ -12,7 +12,7 @@ namespace OrchardCore.GitHub.Services
     public class GitHubAuthenticationService : IGitHubAuthenticationService
     {
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<GitHubAuthenticationService> S;
+        protected readonly IStringLocalizer S;
 
         public GitHubAuthenticationService(
             ISiteService siteService,
@@ -28,12 +28,19 @@ namespace OrchardCore.GitHub.Services
             return container.As<GitHubAuthenticationSettings>();
         }
 
+        public async Task<GitHubAuthenticationSettings> LoadSettingsAsync()
+        {
+            var container = await _siteService.LoadSiteSettingsAsync();
+            return container.As<GitHubAuthenticationSettings>();
+        }
+
         public async Task UpdateSettingsAsync(GitHubAuthenticationSettings settings)
         {
             if (settings == null)
             {
                 throw new ArgumentNullException(nameof(settings));
             }
+
             var container = await _siteService.LoadSiteSettingsAsync();
             container.Alter<GitHubAuthenticationSettings>(nameof(GitHubAuthenticationSettings), aspect =>
             {
@@ -41,6 +48,7 @@ namespace OrchardCore.GitHub.Services
                 aspect.ClientSecret = settings.ClientSecret;
                 aspect.CallbackPath = settings.CallbackPath;
             });
+
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 
@@ -61,6 +69,5 @@ namespace OrchardCore.GitHub.Services
                 yield return new ValidationResult(S["ClientSecret is required"], new string[] { nameof(settings.ClientSecret) });
             }
         }
-
     }
 }

@@ -22,7 +22,7 @@ namespace OrchardCore.ContentLocalization
         private readonly ISession _session;
         private readonly Microsoft.AspNetCore.Http.IHttpContextAccessor _httpContextAccessor;
         private readonly ILocalizationService _localizationService;
-        private readonly ILogger<DefaultContentLocalizationManager> _logger;
+        private readonly ILogger _logger;
         private readonly Entities.IIdGenerator _iidGenerator;
 
         public IEnumerable<IContentLocalizationHandler> Handlers { get; private set; }
@@ -47,40 +47,42 @@ namespace OrchardCore.ContentLocalization
             _logger = logger;
         }
 
-        public async Task<ContentItem> GetContentItemAsync(string localizationSet, string culture)
+        public Task<ContentItem> GetContentItemAsync(string localizationSet, string culture)
         {
             var invariantCulture = culture.ToLowerInvariant();
-            return await _session.Query<ContentItem, LocalizedContentItemIndex>(o =>
-                    o.LocalizationSet == localizationSet &&
-                    o.Culture == invariantCulture
-                ).FirstOrDefaultAsync();
-        }
-        public async Task<IEnumerable<ContentItem>> GetItemsForSetAsync(string localizationSet)
-        {
-            return await _session.Query<ContentItem, LocalizedContentItemIndex>(o => o.LocalizationSet == localizationSet).ListAsync();
+            return _session.Query<ContentItem, LocalizedContentItemIndex>(i =>
+                        (i.Published || i.Latest) &&
+                        i.LocalizationSet == localizationSet &&
+                        i.Culture == invariantCulture)
+                    .FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<ContentItem>> GetItemsForSetsAsync(IEnumerable<string> localizationSets, string culture)
+        public Task<IEnumerable<ContentItem>> GetItemsForSetAsync(string localizationSet)
+        {
+            return _session.Query<ContentItem, LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.LocalizationSet == localizationSet).ListAsync();
+        }
+
+        public Task<IEnumerable<ContentItem>> GetItemsForSetsAsync(IEnumerable<string> localizationSets, string culture)
         {
             var invariantCulture = culture.ToLowerInvariant();
-            return await _session.Query<ContentItem, LocalizedContentItemIndex>(o => o.LocalizationSet.IsIn(localizationSets) && o.Culture == invariantCulture).ListAsync();
+            return _session.Query<ContentItem, LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.LocalizationSet.IsIn(localizationSets) && i.Culture == invariantCulture).ListAsync();
         }
 
         public async Task<ContentItem> LocalizeAsync(ContentItem content, string targetCulture)
         {
             var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
-            if (!supportedCultures.Any(c => String.Equals(c, targetCulture, StringComparison.OrdinalIgnoreCase)))
+            if (!supportedCultures.Any(c => string.Equals(c, targetCulture, StringComparison.OrdinalIgnoreCase)))
             {
                 throw new InvalidOperationException("Cannot localize an unsupported culture");
             }
 
             var localizationPart = content.As<LocalizationPart>();
-            if (String.IsNullOrEmpty(localizationPart.LocalizationSet))
+            if (string.IsNullOrEmpty(localizationPart.LocalizationSet))
             {
-                // If the source content item is not yet localized, define its defaults
+                // If the source content item is not yet localized, define its defaults.
                 localizationPart.LocalizationSet = _iidGenerator.GenerateUniqueId();
                 localizationPart.Culture = await _localizationService.GetDefaultCultureAsync();
-                _session.Save(content);
+                await _session.SaveAsync(content);
             }
             else
             {
@@ -88,12 +90,12 @@ namespace OrchardCore.ContentLocalization
 
                 if (existingContent != null)
                 {
-                    // already localized
+                    // Already localized.
                     return existingContent;
                 }
             }
 
-            // Cloning the content item
+            // Cloning the content item.
             var cloned = await _contentManager.CloneAsync(content);
             var clonedPart = cloned.As<LocalizationPart>();
             clonedPart.Culture = targetCulture;
@@ -105,15 +107,13 @@ namespace OrchardCore.ContentLocalization
             await Handlers.InvokeAsync((handler, context) => handler.LocalizingAsync(context), context, _logger);
             await ReversedHandlers.InvokeAsync((handler, context) => handler.LocalizedAsync(context), context, _logger);
 
-            _session.Save(cloned);
             return cloned;
         }
 
         public async Task<IDictionary<string, ContentItem>> DeduplicateContentItemsAsync(IEnumerable<ContentItem> contentItems)
         {
             var contentItemIds = contentItems.Select(c => c.ContentItemId);
-            var indexValues = await _session.QueryIndex<LocalizedContentItemIndex>(o => o.ContentItemId.IsIn(contentItemIds)).ListAsync();
-
+            var indexValues = await _session.QueryIndex<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.ContentItemId.IsIn(contentItemIds)).ListAsync();
 
             var currentCulture = _httpContextAccessor.HttpContext.Features.Get<IRequestCultureFeature>().RequestCulture.Culture.Name.ToLowerInvariant();
             var defaultCulture = (await _localizationService.GetDefaultCultureAsync()).ToLowerInvariant();
@@ -124,17 +124,20 @@ namespace OrchardCore.ContentLocalization
             {
                 dictionary.Add(val.LocalizationSet, contentItems.SingleOrDefault(ci => ci.ContentItemId == val.ContentItemId));
             }
+
             return dictionary;
         }
+
         public async Task<IDictionary<string, string>> GetFirstItemIdForSetsAsync(IEnumerable<string> localizationSets)
         {
-            var indexValues = await _session.QueryIndex<LocalizedContentItemIndex>(o => o.LocalizationSet.IsIn(localizationSets)).ListAsync();
+            var indexValues = await _session.QueryIndex<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.LocalizationSet.IsIn(localizationSets)).ListAsync();
 
             var currentCulture = _httpContextAccessor.HttpContext.Features.Get<IRequestCultureFeature>().RequestCulture.Culture.Name.ToLowerInvariant();
             var defaultCulture = (await _localizationService.GetDefaultCultureAsync()).ToLowerInvariant();
             var dictionary = new Dictionary<string, string>();
             var cleanedIndexValues = GetSingleContentItemIdPerSet(indexValues, currentCulture, defaultCulture);
-            // This loop keeps the original ordering of localizationSets for the LocalizationSetContentPicker
+
+            // This loop keeps the original ordering of localizationSets for the LocalizationSetContentPicker.
             foreach (var set in localizationSets)
             {
                 var idxValue = cleanedIndexValues.FirstOrDefault(x => x.LocalizationSet == set);
@@ -142,8 +145,10 @@ namespace OrchardCore.ContentLocalization
                 {
                     continue;
                 }
+
                 dictionary.Add(idxValue.LocalizationSet, idxValue.ContentItemId);
             }
+
             return dictionary;
         }
 
@@ -152,21 +157,21 @@ namespace OrchardCore.ContentLocalization
         /// ContentItemId of the current culture for the set
         /// OR ContentItemId of the default culture for the set
         /// OR First ContentItemId found in the set
-        /// OR null if nothing found
+        /// OR null if nothing found.
         /// </summary>
-        /// <returns>List of ContentItemId</returns>
+        /// <returns>List of ContentItemId.</returns>
         private static IEnumerable<LocalizedContentItemIndex> GetSingleContentItemIdPerSet(IEnumerable<LocalizedContentItemIndex> indexValues, string currentCulture, string defaultCulture)
         {
             return indexValues.GroupBy(l => l.LocalizationSet).Select(set =>
             {
                 var currentcultureContentItem = set.FirstOrDefault(f => f.Culture == currentCulture);
-                if (currentcultureContentItem is object)
+                if (currentcultureContentItem is not null)
                 {
                     return currentcultureContentItem;
                 }
 
                 var defaultCultureContentItem = set.FirstOrDefault(f => f.Culture == defaultCulture);
-                if (defaultCultureContentItem is object)
+                if (defaultCultureContentItem is not null)
                 {
                     return defaultCultureContentItem;
                 }
@@ -177,7 +182,6 @@ namespace OrchardCore.ContentLocalization
                 }
 
                 return null;
-
             }).OfType<LocalizedContentItemIndex>().ToList();
         }
     }

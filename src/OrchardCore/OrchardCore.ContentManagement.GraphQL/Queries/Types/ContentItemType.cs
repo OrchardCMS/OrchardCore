@@ -1,8 +1,8 @@
-using System.IO;
 using System.Text.Encodings.Web;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Abstractions.Pooling;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.GraphQL.Options;
@@ -24,7 +24,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             Field(ci => ci.ContentItemId).Description("Content item id");
             Field(ci => ci.ContentItemVersionId).Description("The content item version id");
             Field(ci => ci.ContentType).Description("Type of content");
-            Field(ci => ci.DisplayText).Description("The display text of the content item");
+            Field(ci => ci.DisplayText, nullable: true).Description("The display text of the content item");
             Field(ci => ci.Published).Description("Is the published version");
             Field(ci => ci.Latest).Description("Is the latest version");
             Field<DateTimeGraphType>("modifiedUtc", resolve: ci => ci.Source.ModifiedUtc, description: "The date and time of modification");
@@ -37,8 +37,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 .Name("render")
                 .ResolveLockedAsync(async context =>
                 {
-                    var userContext = (GraphQLContext)context.UserContext;
-                    var serviceProvider = userContext.ServiceProvider;
+                    var serviceProvider = context.RequestServices;
 
                     // Build shape
                     var displayManager = serviceProvider.GetRequiredService<IContentItemDisplayManager>();
@@ -48,17 +47,10 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     var displayHelper = serviceProvider.GetRequiredService<IDisplayHelper>();
                     var htmlEncoder = serviceProvider.GetRequiredService<HtmlEncoder>();
 
-                    using (var sb = StringBuilderPool.GetInstance())
-                    {
-                        using (var sw = new StringWriter(sb.Builder))
-                        {
-                            var htmlContent = await displayHelper.ShapeExecuteAsync(model);
-                            htmlContent.WriteTo(sw, htmlEncoder);
-
-                            await sw.FlushAsync();
-                            return sw.ToString();
-                        }
-                    }
+                    using var sw = new ZStringWriter();
+                    var htmlContent = await displayHelper.ShapeExecuteAsync(model);
+                    htmlContent.WriteTo(sw, htmlEncoder);
+                    return sw.ToString();
                 });
 
             Interface<ContentItemInterface>();
@@ -73,7 +65,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
         public override FieldType AddField(FieldType fieldType)
         {
-            if (!_options.ShouldSkip(this.GetType(), fieldType.Name))
+            if (!_options.ShouldSkip(GetType(), fieldType.Name))
             {
                 return base.AddField(fieldType);
             }

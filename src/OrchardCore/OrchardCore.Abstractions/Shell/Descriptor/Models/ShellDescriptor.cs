@@ -9,8 +9,6 @@ namespace OrchardCore.Environment.Shell.Descriptor.Models
     /// </summary>
     public class ShellDescriptor
     {
-        public int Id { get; set; }
-
         /// <summary>
         /// Gets or sets the version number of the shell descriptor.
         /// </summary>
@@ -22,8 +20,8 @@ namespace OrchardCore.Environment.Shell.Descriptor.Models
         public IList<ShellFeature> Features { get; set; } = new List<ShellFeature>();
 
         /// <summary>
-        /// Gets or sets the list of parameters specific to this shell.
+        /// Gets or sets the list of installed features in the shell.
         /// </summary>
-        public IList<ShellParameter> Parameters { get; set; } = new List<ShellParameter>();
+        public IList<InstalledShellFeature> Installed { get; set; } = new List<InstalledShellFeature>();
     }
 }

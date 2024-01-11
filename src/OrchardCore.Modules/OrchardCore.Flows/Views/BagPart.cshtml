@@ -6,7 +6,7 @@
 <section class="flow">
     @foreach (var item in Model.BagPart.ContentItems)
     {
-        var itemContent = await ContentItemDisplayManager.BuildDisplayAsync(item, Model.BuildPartDisplayContext.Updater, Model.Settings.DisplayType ?? "Detail", Model.BuildPartDisplayContext.GroupId);
+        var itemContent = await ContentItemDisplayManager.BuildDisplayAsync(item, Model.BuildPartDisplayContext.Updater, Model.Settings.DisplayType ?? "Summary", Model.BuildPartDisplayContext.GroupId);
 
         @await DisplayAsync(itemContent)
     }

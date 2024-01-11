@@ -11,6 +11,9 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 {
     public abstract class ContentFieldDisplayDriver<TField> : DisplayDriverBase, IContentFieldDisplayDriver where TField : ContentField, new()
     {
+        private const string DisplayToken = "_Display";
+        private const string DisplaySeparator = "_Display__";
+
         private ContentTypePartDefinition _typePartDefinition;
         private ContentPartFieldDefinition _partFieldDefinition;
 
@@ -28,6 +31,8 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                 var fieldType = _partFieldDefinition.FieldDefinition.Name;
                 var fieldName = _partFieldDefinition.Name;
                 var contentType = _typePartDefinition.ContentTypeDefinition.Name;
+                var displayMode = _partFieldDefinition.DisplayMode();
+                var hasDisplayMode = !string.IsNullOrEmpty(displayMode);
 
                 if (GetEditorShapeType(_partFieldDefinition) == shapeType)
                 {
@@ -36,6 +41,13 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                     // We do not need to add alternates on edit as they are handled with field editor types so return before adding alternates
                     return result;
+                }
+
+                // If the shape type and the field type only differ by the display mode
+                if (hasDisplayMode && shapeType == fieldType + DisplaySeparator + displayMode)
+                {
+                    // Preserve the shape name regardless its differentiator
+                    result.Name($"{partName}-{fieldName}");
                 }
 
                 if (fieldType == shapeType)
@@ -65,28 +77,50 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                             // [PartType]__[FieldName], e.g. HtmlBodyPart-Description
                             ctx.Shape.Metadata.Alternates.Add($"{partType}{displayType}__{fieldName}");
 
-                            // [ContentType]__[PartName]__[FieldName], , e.g. Blog-HtmlBodyPart-Description, LandingPage-Services-Description
-                            ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partType}__{fieldName}");
-
-                            // [ContentType]__[FieldType], , e.g. Blog-TextField, LandingPage-TextField
+                            // [ContentType]__[FieldType], e.g. Blog-TextField, LandingPage-TextField
                             ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{fieldType}");
+
+                            // [ContentType]__[PartName]__[FieldName], e.g. Blog-HtmlBodyPart-Description, LandingPage-Services-Description
+                            ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partType}__{fieldName}");
                         }
                     }
                     else
                     {
-                        foreach (var displayType in displayTypes)
+                        if (hasDisplayMode)
                         {
+                            // [FieldType]_[DisplayType]__[DisplayMode]_Display, e.g. TextField-Header.Display.Summary
+                            ctx.Shape.Metadata.Alternates.Add($"{fieldType}_{ctx.Shape.Metadata.DisplayType}__{displayMode}{DisplayToken}");
+                        }
+
+                        for (var i = 0; i < displayTypes.Length; i++)
+                        {
+                            var displayType = displayTypes[i];
+
+                            if (hasDisplayMode)
+                            {
+                                shapeType = $"{fieldType}__{displayMode}";
+
+                                if (displayType == "")
+                                {
+                                    displayType = DisplayToken;
+                                }
+                                else
+                                {
+                                    shapeType += DisplayToken;
+                                }
+                            }
+
                             // [FieldType]__[ShapeType], e.g. TextField-TextFieldSummary
                             ctx.Shape.Metadata.Alternates.Add($"{fieldType}{displayType}__{shapeType}");
 
                             // [PartType]__[FieldName]__[ShapeType], e.g. HtmlBodyPart-Description-TextFieldSummary
                             ctx.Shape.Metadata.Alternates.Add($"{partType}{displayType}__{fieldName}__{shapeType}");
 
-                            // [ContentType]__[PartName]__[FieldName]__[ShapeType], e.g. Blog-HtmlBodyPart-Description-TextFieldSummary, LandingPage-Services-Description-TextFieldSummary
-                            ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partName}__{fieldName}__{shapeType}");
-
                             // [ContentType]__[FieldType]__[ShapeType], e.g. Blog-TextField-TextFieldSummary, LandingPage-TextField-TextFieldSummary
                             ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{fieldType}__{shapeType}");
+
+                            // [ContentType]__[PartName]__[FieldName]__[ShapeType], e.g. Blog-HtmlBodyPart-Description-TextFieldSummary, LandingPage-Services-Description-TextFieldSummary
+                            ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partName}__{fieldName}__{shapeType}");
                         }
                     }
                 });
@@ -168,7 +202,13 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
             var updateFieldEditorContext = new UpdateFieldEditorContext(contentPart, typePartDefinition, partFieldDefinition, context);
 
+            _typePartDefinition = typePartDefinition;
+            _partFieldDefinition = partFieldDefinition;
+
             var result = await UpdateAsync(field, context.Updater, updateFieldEditorContext);
+
+            _typePartDefinition = null;
+            _partFieldDefinition = null;
 
             if (result == null)
             {
@@ -213,7 +253,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         protected string GetEditorShapeType(string shapeType, ContentPartFieldDefinition partFieldDefinition)
         {
             var editor = partFieldDefinition.Editor();
-            return !String.IsNullOrEmpty(editor)
+            return !string.IsNullOrEmpty(editor)
                 ? shapeType + "__" + editor
                 : shapeType;
         }
@@ -236,8 +276,8 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         protected string GetDisplayShapeType(string shapeType, BuildFieldDisplayContext context)
         {
             var displayMode = context.PartFieldDefinition.DisplayMode();
-            return !String.IsNullOrEmpty(displayMode)
-                ? shapeType + "_Display__" + displayMode
+            return !string.IsNullOrEmpty(displayMode)
+                ? shapeType + DisplaySeparator + displayMode
                 : shapeType;
         }
 
@@ -246,12 +286,11 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return GetDisplayShapeType(typeof(TField).Name, context);
         }
 
-
         private void BuildPrefix(ContentTypePartDefinition typePartDefinition, ContentPartFieldDefinition partFieldDefinition, string htmlFieldPrefix)
         {
             Prefix = typePartDefinition.Name + "." + partFieldDefinition.Name;
 
-            if (!String.IsNullOrEmpty(htmlFieldPrefix))
+            if (!string.IsNullOrEmpty(htmlFieldPrefix))
             {
                 Prefix = htmlFieldPrefix + "." + Prefix;
             }

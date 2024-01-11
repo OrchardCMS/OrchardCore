@@ -1,0 +1,53 @@
+@using OrchardCore
+@model SitemapPartViewModel
+<div class="@Orchard.GetWrapperClasses()">
+    <div class="@Orchard.GetEndClasses(true)">
+        <div class="form-check">
+            <input asp-for="OverrideSitemapConfig" class="form-check-input" />
+            <label asp-for="OverrideSitemapConfig" class="form-check-label">@T["Override sitemap configuration"]</label>
+            <span class="hint dashed">@T["Check to override sitemap configuration."]</span>
+        </div>
+    </div>
+    <div class="@Orchard.GetEndClasses(true)">
+        <div class="form-check sitemap-form-g mt-3" style="@(Model.OverrideSitemapConfig ? string.Empty : "display: none")">
+            <input asp-for="Exclude" class="form-check-input" />
+            <label asp-for="Exclude" class="form-check-label">@T["Exclude"]</label>
+            <span class="hint dashed">@T["Check to exclude this content item from the site map."]</span>
+        </div>
+    </div>
+</div>
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="ChangeFrequency" class="@Orchard.GetLabelClasses()">@T["Change Frequency"]</label>
+    <div class="@Orchard.GetEndClasses("sitemap-form-g")" asp-validation-class-for="ChangeFrequency" style="@(Model.OverrideSitemapConfig ? string.Empty : "display: none")">
+        <select asp-for="ChangeFrequency" class="form-select" asp-items="Html.GetEnumSelectList<ChangeFrequency>()"></select>
+        <span class="hint">@T["The frequency this content item is likely to change."]</span>
+</div>
+</div>
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Priority" class="@Orchard.GetLabelClasses()">@T["Priority"] </label>
+    <div class="@Orchard.GetEndClasses("sitemap-form-g")" asp-validation-class-for="Priority" style="@(Model.OverrideSitemapConfig ? string.Empty : "display: none")">
+        <select asp-for="Priority" class="form-select">
+            <option value="0">@T["0.0"]</option>
+            <option value="1">@T["0.1"]</option>
+            <option value="2">@T["0.2"]</option>
+            <option value="3">@T["0.3"]</option>
+            <option value="4">@T["0.4"]</option>
+            <option value="5">@T["0.5"]</option>
+            <option value="6">@T["0.6"]</option>
+            <option value="7">@T["0.7"]</option>
+            <option value="8">@T["0.8"]</option>
+            <option value="9">@T["0.9"]</option>
+            <option value="10">@T["1.0"]</option>
+        </select>
+        <span class="hint">@T["The default priority of these content types relative to other content on your site."]</span>
+    </div>
+</div>
+
+<script at="Foot" depends-on="jquery">
+    $('#@Html.IdFor(i => i.OverrideSitemapConfig)').change(function (e) {
+        var checked = $(e.target).prop('checked');
+        $('.sitemap-form-g').each(function () {
+            checked ? $(this).show() : $(this).hide();
+        });
+    });
+</script>

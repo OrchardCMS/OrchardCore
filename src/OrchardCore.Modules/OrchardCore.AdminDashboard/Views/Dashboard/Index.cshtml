@@ -1,0 +1,57 @@
+@using OrchardCore.ContentManagement
+
+@model AdminDashboardViewModel
+
+@inject IAuthorizationService AuthorizationService
+@inject IContentManager ContentManager
+@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
+@inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+
+@{
+    Model.Dashboards ??= Array.Empty<DashboardWrapper>();
+
+    // Todo Create Settings for Dashboard.
+    var settings = new
+    {
+        // Default is 1, i.e. 6 columns in large screen, 3 for tablets and 1 for phones.
+        // Changing Scale 2 will increase the # columns to 12 for large screen, 6 for tablets and 2 for phones.
+        ColumnScale = 1
+    };
+}
+
+<style asp-src="~/OrchardCore.AdminDashboard/Styles/dashboard.min.css" debug-src="~/OrchardCore.AdminDashboard/Styles/dashboard.css" at="Head"></style>
+
+@if (Model.CanManageDashboard)
+{
+    <div class="btn-group float-end mb-3">
+        <a class="btn btn-primary btn-sm" asp-action="Manage">
+            @T["Manage Dashboard"]
+        </a>
+    </div>
+}
+
+@if (Model.CanManageDashboard || Model.Dashboards.Length > 0)
+{
+    <zone Name="Title"><h1 class="float-start">@RenderTitleSegments(T["Dashboard"])</h1></zone>
+    <div class="clearfix"></div>
+
+    @if (Model.Dashboards.Length > 0)
+    {
+        <div class="dashboard-container" style="--dashboard-columns: calc( @(settings.ColumnScale) * var(--dashboard-columns-default));">
+            @foreach (var dashboard in Model.Dashboards)
+            {
+                @await DisplayAsync(dashboard)
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning" role="alert">
+            @T["Click on Manage Dashboard button to add dashboard widget."]
+        </div>
+    }
+}
+else
+{
+    @await DisplayAsync(await New.AdminDashboard())
+}
