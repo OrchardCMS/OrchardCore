@@ -110,7 +110,7 @@ namespace OrchardCore.Email.Drivers
                 }
                 else
                 {
-                    // encrypt the password
+                    // Encrypt the password.
                     var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpEmailSettingsConfiguration));
                     section.Password = protector.Protect(section.Password);
                 }
