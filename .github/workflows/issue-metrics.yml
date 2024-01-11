@@ -27,20 +27,20 @@ jobs:
     
         # Set an environment variable with the date range.
         Write-Output "$firstDay..$lastDay"
-        Write-Output "last_month=$firstDay..$lastDay" >> $env:GITHUB_ENV
+        Write-Output "LAST_MONTH=$firstDay..$lastDay" >> $env:GITHUB_ENV
 
     - name: Compute Issue Metrics
       uses: github/issue-metrics@v2
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SEARCH_QUERY: 'repo:OrchardCMS/OrchardCore is:issue created:${{ env.last_month }} -reason:"not planned" -label:"community metrics"'
+        SEARCH_QUERY: 'repo:OrchardCMS/OrchardCore is:issue created:${{ env.LAST_MONTH }} -reason:"not planned" -label:"community metrics"'
         HIDE_TIME_TO_ANSWER: true
 
     # - name: Create Issue
     #   # v4.0.1
     #   uses: peter-evans/create-issue-from-file@433e51abf769039ee20ba1293a088ca19d573b7f
     #   with:
-    #     title: Monthly issue metrics report for ${{ env.last_month }}
+    #     title: Monthly issue metrics report for ${{ env.LAST_MONTH }}
     #     token: ${{ secrets.GITHUB_TOKEN }}
     #     content-filepath: ./issue_metrics.md
     #     labels: community metrics
@@ -49,14 +49,14 @@ jobs:
       uses: github/issue-metrics@v2
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SEARCH_QUERY: 'repo:OrchardCMS/OrchardCore is:pr created:${{ env.last_month }} -label:dontmerge -label:notready -is:draft'
+        SEARCH_QUERY: 'repo:OrchardCMS/OrchardCore is:pr created:${{ env.LAST_MONTH }} -label:dontmerge -label:notready -is:draft'
         HIDE_TIME_TO_ANSWER: true
 
     # - name: Create Issue
     #   # v4.0.1
     #   uses: peter-evans/create-issue-from-file@433e51abf769039ee20ba1293a088ca19d573b7f
     #   with:
-    #     title: Monthly pull request metrics report for ${{ env.last_month }}
+    #     title: Monthly pull request metrics report for ${{ env.LAST_MONTH }}
     #     token: ${{ secrets.GITHUB_TOKEN }}
     #     content-filepath: ./issue_metrics.md
     #     labels: community metrics
