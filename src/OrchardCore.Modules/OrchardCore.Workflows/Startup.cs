@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
-using OrchardCore.Deployment.Extensions;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;

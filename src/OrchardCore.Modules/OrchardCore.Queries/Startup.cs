@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
-using OrchardCore.Deployment.Extensions;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
@@ -40,13 +40,10 @@ namespace OrchardCore.Queries
         {
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IQueryManager, QueryManager>();
-
             services.AddScoped<IDisplayDriver<Query>, QueryDisplayDriver>();
             services.AddRecipeExecutionStep<QueryStep>();
             services.AddScoped<IPermissionProvider, Permissions>();
-
             services.AddDeployment<AllQueriesDeploymentSource, AllQueriesDeploymentStep, AllQueriesDeploymentStepDriver>();
-
             services.AddSingleton<IGlobalMethodProvider, QueryGlobalMethodProvider>();
 
             services.Configure<TemplateOptions>(o =>

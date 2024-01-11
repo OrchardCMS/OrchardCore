@@ -9,7 +9,6 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Deployment.Controllers;
 using OrchardCore.Deployment.Core;
 using OrchardCore.Deployment.Deployment;
-using OrchardCore.Deployment.Extensions;
 using OrchardCore.Deployment.Indexes;
 using OrchardCore.Deployment.Recipes;
 using OrchardCore.Deployment.Steps;
