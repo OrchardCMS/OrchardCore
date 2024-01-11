@@ -46,7 +46,7 @@ You can also run Orchard Core from Docker:
 docker run --name orchardcms -p 8080:80 orchardproject/orchardcore-cms-linux:latest
 ```
 
-Docker images and parameters can be found at <https://hub.docker.com/u/orchardproject/>. See [our Docker documentation](https://docs.orchardcore.net/en/latest/docs/topics/docker/).
+Docker images and parameters can be found at <https://hub.docker.com/u/orchardproject/>. See [our Docker documentation](https://docs.orchardcore.net/en/latest/docs/topics/docker/) for more details, especially if you're new to Docker.
 
 ## Contributing
 
