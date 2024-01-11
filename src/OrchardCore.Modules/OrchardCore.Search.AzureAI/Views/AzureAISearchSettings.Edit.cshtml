@@ -1,15 +1,28 @@
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.Extensions.Options
 @using OrchardCore.Search.AzureAI
-@using OrchardCore.Search.AzureAI.Models
-@using OrchardCore.Search.AzureAI.ViewModels
+@using OrchardCore.Search.AzureAI.Drivers
 
 @model AzureAISearchSettingsViewModel
 @inject IOptions<AzureAISearchDefaultOptions> AzureAIOptions
+@inject IAuthorizationService AuthorizationService
 
-@if (!AzureAIOptions.Value.IsConfigurationExists())
+@if (!AzureAIOptions.Value.IsConfigurationExists() && !AzureAIOptions.Value.IsFileConfigurationExists())
 {
     <div class="alert alert-danger" role="alert">
-        @T["Azure AI Search has not been configured yet."]
+        @if (!AzureAIOptions.Value.DisableUIConfiguration)
+        {
+            @T["Azure AI Search is not configured."]
+
+            if (await AuthorizationService.AuthorizeAsync(User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
+            {
+                <text>&nbsp;</text> @T["<a href=\"{0}\">Click here</a> to configure Azure AI Search service.", Url.Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = AzureAISearchDefaultSettingsDisplayDriver.GroupId })]
+            }
+        }
+        else
+        {
+            @T["Azure AI Search is not configured. Update the appsettings file with Azure Search AI service information."]
+        }
     </div>
 
     return;
