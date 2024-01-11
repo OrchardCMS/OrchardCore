@@ -35,15 +35,9 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
         {
             using var context = new BlogPostApiControllerContext();
 
-            try
-            {
-                // Setup
-                await context.InitializeAsync();
-            }
-            catch (Exception ex)
-            {
-                var t = ex;
-            }
+            // Setup
+            await context.InitializeAsync();
+
             context.BlogPost.Latest = false;
             context.BlogPost.Published = false; // Deliberately set these incorrectly.
 
