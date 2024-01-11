@@ -14,7 +14,7 @@ using OrchardCore.Search.AzureAI.Models;
 namespace OrchardCore.Search.AzureAI.Services;
 
 public class AzureAIIndexDocumentManager(
-    SearchClientFactory searchClientFactory,
+    AzureAIClientFactory clientFactory,
     AzureAISearchIndexManager indexManager,
     IIndexingTaskManager indexingTaskManager,
     IContentManager contentManager,
@@ -22,7 +22,7 @@ public class AzureAIIndexDocumentManager(
     IEnumerable<IContentItemIndexHandler> contentItemIndexHandlers,
     ILogger<AzureAIIndexDocumentManager> logger)
 {
-    private readonly SearchClientFactory _searchClientFactory = searchClientFactory;
+    private readonly AzureAIClientFactory _clientFactory = clientFactory;
     private readonly AzureAISearchIndexManager _indexManager = indexManager;
     private readonly IIndexingTaskManager _indexingTaskManager = indexingTaskManager;
     private readonly IContentManager _contentManager = contentManager;
@@ -38,7 +38,9 @@ public class AzureAIIndexDocumentManager(
         var client = GetSearchClient(indexName);
 
         var searchResult = await client.SearchAsync<SearchDocument>(searchText, searchOptions);
+
         var docs = new List<SearchDocument>();
+
         await foreach (var doc in searchResult.Value.GetResultsAsync())
         {
             docs.Add(doc.Document);
@@ -326,7 +328,7 @@ public class AzureAIIndexDocumentManager(
     {
         var fullIndexName = _indexManager.GetFullIndexName(indexName);
 
-        var client = _searchClientFactory.Create(fullIndexName) ?? throw new Exception("Endpoint is missing from Azure AI Search Settings");
+        var client = _clientFactory.CreateSearchClient(fullIndexName);
 
         return client;
     }
