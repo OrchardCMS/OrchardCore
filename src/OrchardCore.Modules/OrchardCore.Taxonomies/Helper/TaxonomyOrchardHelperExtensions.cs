@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
@@ -8,7 +9,9 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Taxonomies.Indexing;
 using YesSql;
 
+#pragma warning disable CA1050 // Declare types in namespaces
 public static class TaxonomyOrchardHelperExtensions
+#pragma warning restore CA1050 // Declare types in namespaces
 {
     /// <summary>
     /// Returns a term from its content item id and taxonomy.
@@ -69,7 +72,7 @@ public static class TaxonomyOrchardHelperExtensions
 
     internal static ContentItem FindTerm(JArray termsArray, string termContentItemId)
     {
-        foreach (JObject term in termsArray)
+        foreach (var term in termsArray.Cast<JObject>())
         {
             var contentItemId = term.GetValue("ContentItemId").ToString();
 
@@ -94,7 +97,7 @@ public static class TaxonomyOrchardHelperExtensions
 
     internal static bool FindTermHierarchy(JArray termsArray, string termContentItemId, List<ContentItem> terms)
     {
-        foreach (JObject term in termsArray)
+        foreach (var term in termsArray.Cast<JObject>())
         {
             var contentItemId = term.GetValue("ContentItemId").ToString();
 

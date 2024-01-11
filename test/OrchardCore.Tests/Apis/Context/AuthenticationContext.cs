@@ -1,13 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Principal;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
@@ -21,6 +11,11 @@ namespace OrchardCore.Tests.Apis.Context
         public PermissionContextAuthorizationHandler(IHttpContextAccessor httpContextAccessor, IDictionary<string, PermissionsContext> permissionsContexts)
         {
             _permissionsContext = new PermissionsContext();
+
+            if (httpContextAccessor.HttpContext == null)
+            {
+                return;
+            }
 
             var requestContext = httpContextAccessor.HttpContext.Request;
 
@@ -51,30 +46,46 @@ namespace OrchardCore.Tests.Apis.Context
             }
             else
             {
-                context.Fail();
+                var grantingNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+                GetGrantingNamesInternal(requirement.Permission, grantingNames);
+
+                // SiteOwner permission grants them all
+                grantingNames.Add(StandardPermissions.SiteOwner.Name);
+
+                if (permissions.Any(p => grantingNames.Contains(p.Name)))
+                {
+                    context.Succeed(requirement);
+                }
+                else
+                {
+                    context.Fail();
+                }
             }
 
             return Task.CompletedTask;
         }
-    }
 
-    internal class AlwaysLoggedInApiAuthenticationHandler : AuthenticationHandler<ApiAuthorizationOptions>
-    {
-        public AlwaysLoggedInApiAuthenticationHandler(
-            IOptionsMonitor<ApiAuthorizationOptions> options,
-            ILoggerFactory logger,
-            UrlEncoder encoder,
-            ISystemClock clock)
-            : base(options, logger, encoder, clock)
+        private void GetGrantingNamesInternal(Permission permission, HashSet<string> stack)
         {
-        }
+            // The given name is tested
+            stack.Add(permission.Name);
 
-        protected override Task<AuthenticateResult> HandleAuthenticateAsync()
-        {
-            return Task.FromResult(
-                AuthenticateResult.Success(
-                    new AuthenticationTicket(
-                        new System.Security.Claims.ClaimsPrincipal(new StubIdentity()), "Api")));
+            // Iterate implied permissions to grant, it present
+            if (permission.ImpliedBy != null && permission.ImpliedBy.Any())
+            {
+                foreach (var impliedBy in permission.ImpliedBy)
+                {
+                    // Avoid potential recursion
+                    if (impliedBy == null || stack.Contains(impliedBy.Name))
+                    {
+                        continue;
+                    }
+
+                    // Otherwise accumulate the implied permission names recursively
+                    GetGrantingNamesInternal(impliedBy, stack);
+                }
+            }
         }
     }
 

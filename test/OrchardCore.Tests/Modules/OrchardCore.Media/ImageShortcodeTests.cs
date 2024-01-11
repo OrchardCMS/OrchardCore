@@ -1,9 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Moq;
 using OrchardCore.FileStorage;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Media.Core;
@@ -11,8 +5,6 @@ using OrchardCore.Media.Events;
 using OrchardCore.Media.Shortcodes;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Shortcodes.Services;
-using Shortcodes;
-using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media
 {
@@ -28,7 +20,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
         [InlineData("", @"foo [image ""bar""] baz", @"foo <img src=""/media/bar""> baz")]
         [InlineData("", @"foo [image src=""bar""] baz", @"foo <img src=""/media/bar""> baz")]
         [InlineData("https://cdn.com", @"foo [image src=""bar""] baz", @"foo <img src=""https://cdn.com/media/bar""> baz")]
-
         [InlineData("", "foo [image]~/bar[/image] baz", @"foo <img src=""/tenant/bar""> baz")]
         [InlineData("https://cdn.com", "foo [image]~/bar[/image] baz", @"foo <img src=""https://cdn.com/tenant/bar""> baz")] // new
         [InlineData("", "foo [image]http://bar[/image] baz", @"foo <img src=""http://bar""> baz")]
@@ -44,8 +35,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
         [InlineData("", "foo [image]bar.png[/image] baz foo-extended [image]bar-extended.png[/image] baz-extended", @"foo <img src=""/media/bar.png""> baz foo-extended <img src=""/media/bar-extended.png""> baz-extended")]
         [InlineData("", "foo [media]bar[/media] baz foo [image]bar[/image] baz", @"foo <img src=""/media/bar""> baz foo <img src=""/media/bar""> baz")]
         [InlineData("", "foo [image]bàr.jpeg?width=100[/image] baz", @"foo <img src=""/media/bàr.jpeg?width=100""> baz")]
-        [InlineData("", "foo [image]bàr.jpeg?width=100 onload=\"javascript: alert('XSS')[/image] baz", @"foo <img src=""/media/bàr.jpeg?width=100 onload=""> baz")]
-
+        [InlineData("", "foo [image]bàr.jpeg?width=100 onload=\"javascript: alert('XSS')\"[/image] baz", @"foo <img src=""/media/bàr.jpeg?width=100 onload=""> baz")]
         public async Task ShouldProcess(string cdnBaseUrl, string text, string expected)
         {
             var sanitizerOptions = new HtmlSanitizerOptions();
@@ -59,6 +49,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
                 Enumerable.Empty<IMediaCreatingEventHandler>(),
                 Mock.Of<ILogger<DefaultMediaFileStore>>());
 
+            var fileVersionProvider = Mock.Of<IFileVersionProvider>();
+
             var sanitizer = new HtmlSanitizerService(Options.Create(sanitizerOptions));
 
             var defaultHttpContext = new DefaultHttpContext();
@@ -67,13 +59,12 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
 
             var options = Options.Create(new ResourceManagementOptions { CdnBaseUrl = cdnBaseUrl });
 
-            var imageProvider = new ImageShortcodeProvider(fileStore, sanitizer, httpContextAccessor, options);
+            var imageProvider = new ImageShortcodeProvider(fileStore, sanitizer, httpContextAccessor, options, fileVersionProvider);
 
             var processor = new ShortcodeService(new IShortcodeProvider[] { imageProvider }, Enumerable.Empty<IShortcodeContextProvider>());
 
             var processed = await processor.ProcessAsync(text);
             Assert.Equal(expected, processed);
-
         }
     }
 }

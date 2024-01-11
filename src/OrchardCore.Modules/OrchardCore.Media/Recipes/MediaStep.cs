@@ -1,8 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -14,16 +18,23 @@ namespace OrchardCore.Media.Recipes
     public class MediaStep : IRecipeStepHandler
     {
         private readonly IMediaFileStore _mediaFileStore;
-        private readonly static HttpClient _httpClient = new HttpClient();
+        private readonly HashSet<string> _allowedFileExtensions;
+        private readonly ILogger _logger;
+        private static readonly HttpClient _httpClient = new();
 
-        public MediaStep(IMediaFileStore mediaFileStore)
+        public MediaStep(
+            IMediaFileStore mediaFileStore,
+            IOptions<MediaOptions> options,
+            ILogger<MediaStep> logger)
         {
             _mediaFileStore = mediaFileStore;
+            _allowedFileExtensions = options.Value.AllowedFileExtensions;
+            _logger = logger;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "media", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "media", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
@@ -32,19 +43,26 @@ namespace OrchardCore.Media.Recipes
 
             foreach (var file in model.Files)
             {
+                if (!_allowedFileExtensions.Contains(Path.GetExtension(file.TargetPath), StringComparer.OrdinalIgnoreCase))
+                {
+                    _logger.LogWarning("File extension not allowed: '{Path}'", file.TargetPath);
+
+                    continue;
+                }
+
                 Stream stream = null;
 
-                if (!String.IsNullOrWhiteSpace(file.Base64))
+                if (!string.IsNullOrWhiteSpace(file.Base64))
                 {
                     stream = new MemoryStream(Convert.FromBase64String(file.Base64));
                 }
-                else if (!String.IsNullOrWhiteSpace(file.SourcePath))
+                else if (!string.IsNullOrWhiteSpace(file.SourcePath))
                 {
                     var fileInfo = context.RecipeDescriptor.FileProvider.GetRelativeFileInfo(context.RecipeDescriptor.BasePath, file.SourcePath);
 
                     stream = fileInfo.CreateReadStream();
                 }
-                else if (!String.IsNullOrWhiteSpace(file.SourceUrl))
+                else if (!string.IsNullOrWhiteSpace(file.SourceUrl))
                 {
                     var response = await _httpClient.GetAsync(file.SourceUrl);
                     if (response.IsSuccessStatusCode)
@@ -61,7 +79,7 @@ namespace OrchardCore.Media.Recipes
                     }
                     finally
                     {
-                        stream?.Dispose();
+                        await stream.DisposeAsync();
                     }
                 }
             }

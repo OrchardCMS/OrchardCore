@@ -33,7 +33,7 @@ namespace OrchardCore.Templates
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IResourceManifestProvider, ResourceManifest>();
+            services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
 
             services.AddScoped<IShapeBindingResolver, TemplatesShapeBindingResolver>();
             services.AddScoped<PreviewTemplatesProvider>();

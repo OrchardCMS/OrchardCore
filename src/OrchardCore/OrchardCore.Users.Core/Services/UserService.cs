@@ -4,7 +4,12 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Entities;
+using OrchardCore.Modules;
+using OrchardCore.Settings;
+using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Services
@@ -17,22 +22,39 @@ namespace OrchardCore.Users.Services
         private readonly SignInManager<IUser> _signInManager;
         private readonly UserManager<IUser> _userManager;
         private readonly IOptions<IdentityOptions> _identityOptions;
-        private readonly IStringLocalizer S;
+        private readonly IEnumerable<IPasswordRecoveryFormEvents> _passwordRecoveryFormEvents;
+        protected readonly IStringLocalizer S;
+        private readonly ISiteService _siteService;
+        private readonly ILogger _logger;
 
         public UserService(
             SignInManager<IUser> signInManager,
             UserManager<IUser> userManager,
             IOptions<IdentityOptions> identityOptions,
-            IStringLocalizer<UserService> stringLocalizer)
+            IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents,
+            IStringLocalizer<UserService> stringLocalizer,
+            ISiteService siteService,
+            ILogger<UserService> logger)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _identityOptions = identityOptions;
+            _passwordRecoveryFormEvents = passwordRecoveryFormEvents;
             S = stringLocalizer;
+            _siteService = siteService;
+            _logger = logger;
         }
 
         public async Task<IUser> AuthenticateAsync(string userName, string password, Action<string, string> reportError)
         {
+            var disableLocalLogin = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().DisableLocalLogin;
+
+            if (disableLocalLogin)
+            {
+                reportError(string.Empty, S["Local login is disabled."]);
+                return null;
+            }
+
             if (string.IsNullOrWhiteSpace(userName))
             {
                 reportError("UserName", S["A user name is required."]);
@@ -45,7 +67,7 @@ namespace OrchardCore.Users.Services
                 return null;
             }
 
-            var user = await _userManager.FindByNameAsync(userName);
+            var user = await GetUserAsync(userName);
             if (user == null)
             {
                 reportError(string.Empty, S["The specified username/password couple is invalid."]);
@@ -53,7 +75,13 @@ namespace OrchardCore.Users.Services
             }
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure: true);
-            if (result.IsNotAllowed)
+
+            if (result.IsLockedOut)
+            {
+                reportError(string.Empty, S["The user is locked out."]);
+                return null;
+            }
+            else if (result.IsNotAllowed)
             {
                 reportError(string.Empty, S["The specified user is not allowed to sign in."]);
                 return null;
@@ -81,13 +109,13 @@ namespace OrchardCore.Users.Services
 
         public async Task<IUser> CreateUserAsync(IUser user, string password, Action<string, string> reportError)
         {
-            if (!(user is User newUser))
+            if (user is not User newUser)
             {
                 throw new ArgumentException("Expected a User instance.", nameof(user));
             }
 
-            // Accounts can be created with no password
-            var identityResult = String.IsNullOrWhiteSpace(password)
+            // Accounts can be created with no password.
+            var identityResult = string.IsNullOrWhiteSpace(password)
                 ? await _userManager.CreateAsync(user)
                 : await _userManager.CreateAsync(user, password);
             if (!identityResult.Succeeded)
@@ -153,12 +181,12 @@ namespace OrchardCore.Users.Services
             return user;
         }
 
-        public async Task<bool> ResetPasswordAsync(string userIdentifier, string resetToken, string newPassword, Action<string, string> reportError)
+        public async Task<bool> ResetPasswordAsync(string emailAddress, string resetToken, string newPassword, Action<string, string> reportError)
         {
             var result = true;
-            if (string.IsNullOrWhiteSpace(userIdentifier))
+            if (string.IsNullOrWhiteSpace(emailAddress))
             {
-                reportError("UserName", S["A user name or email is required."]);
+                reportError("UserName", S["A email address is required."]);
                 result = false;
             }
 
@@ -179,7 +207,7 @@ namespace OrchardCore.Users.Services
                 return result;
             }
 
-            var user = await _userManager.FindByEmailAsync(userIdentifier) as User;
+            var user = await _userManager.FindByEmailAsync(emailAddress) as User;
 
             if (user == null)
             {
@@ -191,6 +219,13 @@ namespace OrchardCore.Users.Services
             if (!identityResult.Succeeded)
             {
                 ProcessValidationErrors(identityResult.Errors, user, reportError);
+            }
+
+            if (identityResult.Succeeded)
+            {
+                var context = new PasswordRecoveryContext(user);
+
+                await _passwordRecoveryFormEvents.InvokeAsync((handler, context) => handler.PasswordResetAsync(context), context, _logger);
             }
 
             return identityResult.Succeeded;
@@ -206,7 +241,8 @@ namespace OrchardCore.Users.Services
             return _signInManager.CreateUserPrincipalAsync(user);
         }
 
-        public Task<IUser> GetUserAsync(string userName) => _userManager.FindByNameAsync(userName);
+        public async Task<IUser> GetUserAsync(string userName) =>
+            (await _userManager.FindByNameAsync(userName)) ?? await _userManager.FindByEmailAsync(userName);
 
         public Task<IUser> GetUserByUniqueIdAsync(string userIdentifier) => _userManager.FindByIdAsync(userIdentifier);
 
@@ -216,7 +252,7 @@ namespace OrchardCore.Users.Services
             {
                 switch (error.Code)
                 {
-                    // Password
+                    // Password.
                     case "PasswordRequiresDigit":
                         reportError("Password", S["Passwords must have at least one digit character ('0'-'9')."]);
                         break;
@@ -236,12 +272,12 @@ namespace OrchardCore.Users.Services
                         reportError("Password", S["Passwords must contain at least {0} unique characters.", _identityOptions.Value.Password.RequiredUniqueChars]);
                         break;
 
-                    // CurrentPassword
+                    // CurrentPassword.
                     case "PasswordMismatch":
                         reportError("CurrentPassword", S["Incorrect password."]);
                         break;
 
-                    // User name
+                    // User name.
                     case "InvalidUserName":
                         reportError("UserName", S["User name '{0}' is invalid, can only contain letters or digits.", user.UserName]);
                         break;
@@ -249,14 +285,16 @@ namespace OrchardCore.Users.Services
                         reportError("UserName", S["User name '{0}' is already used.", user.UserName]);
                         break;
 
-                    // Email
+                    // Email.
                     case "DuplicateEmail":
                         reportError("Email", S["Email '{0}' is already used.", user.Email]);
                         break;
                     case "InvalidEmail":
                         reportError("Email", S["Email '{0}' is invalid.", user.Email]);
                         break;
-
+                    case "InvalidToken":
+                        reportError(string.Empty, S["The reset token is invalid. Please request a new token."]);
+                        break;
                     default:
                         reportError(string.Empty, S["Unexpected error: '{0}'.", error.Code]);
                         break;

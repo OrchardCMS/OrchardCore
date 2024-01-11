@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.DisplayManagement
@@ -46,7 +45,7 @@ namespace OrchardCore.DisplayManagement
 
             if (delimiterIndex > 0)
             {
-                shapeType = shapeType.Substring(0, delimiterIndex);
+                shapeType = shapeType[..delimiterIndex];
             }
 
             var placementContext = new ShapePlacementContext(

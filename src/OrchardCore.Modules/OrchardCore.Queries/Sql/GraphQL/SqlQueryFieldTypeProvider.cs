@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GraphQL;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,7 +22,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
     public class SqlQueryFieldTypeProvider : ISchemaBuilder
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ILogger<SqlQueryFieldTypeProvider> _logger;
+        private readonly ILogger _logger;
 
         public SqlQueryFieldTypeProvider(IHttpContextAccessor httpContextAccessor, ILogger<SqlQueryFieldTypeProvider> logger)
         {
@@ -42,7 +43,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
 
             foreach (var query in queries.OfType<SqlQuery>())
             {
-                if (String.IsNullOrWhiteSpace(query.Schema))
+                if (string.IsNullOrWhiteSpace(query.Schema))
                     continue;
 
                 var name = query.Name;
@@ -82,7 +83,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
             }
         }
 
-        private FieldType BuildSchemaBasedFieldType(SqlQuery query, JToken querySchema, string fieldTypeName)
+        private static FieldType BuildSchemaBasedFieldType(SqlQuery query, JToken querySchema, string fieldTypeName)
         {
             var properties = querySchema["properties"];
             if (properties == null)
@@ -95,7 +96,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                 Name = fieldTypeName
             };
 
-            foreach (JProperty child in properties.Children())
+            foreach (var child in properties.Children().Cast<JProperty>())
             {
                 var name = child.Name;
                 var nameLower = name.Replace('.', '_');
@@ -141,7 +142,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                 ResolvedType = new ListGraphType(typetype),
                 Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
                 {
-                    var queryManager = context.ResolveServiceProvider().GetService<IQueryManager>();
+                    var queryManager = context.RequestServices.GetService<IQueryManager>();
                     var iquery = await queryManager.GetQueryAsync(query.Name);
 
                     var parameters = context.GetArgument<string>("parameters");
@@ -159,7 +160,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
             return fieldType;
         }
 
-        private FieldType BuildContentTypeFieldType(ISchema schema, string contentType, SqlQuery query, string fieldTypeName)
+        private static FieldType BuildContentTypeFieldType(ISchema schema, string contentType, SqlQuery query, string fieldTypeName)
         {
             var typetype = schema.Query.Fields.OfType<ContentItemsFieldType>().FirstOrDefault(x => x.Name == contentType);
             if (typetype == null)
@@ -178,7 +179,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                 ResolvedType = typetype.ResolvedType,
                 Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
                 {
-                    var queryManager = context.ResolveServiceProvider().GetService<IQueryManager>();
+                    var queryManager = context.RequestServices.GetService<IQueryManager>();
                     var iquery = await queryManager.GetQueryAsync(query.Name);
 
                     var parameters = context.GetArgument<string>("parameters");

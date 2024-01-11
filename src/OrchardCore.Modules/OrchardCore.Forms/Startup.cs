@@ -4,29 +4,32 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Data.Migration;
+using OrchardCore.Forms.Activities;
+using OrchardCore.Forms.Activities.Drivers;
 using OrchardCore.Forms.Drivers;
 using OrchardCore.Forms.Filters;
 using OrchardCore.Forms.Models;
 using OrchardCore.Modules;
+using OrchardCore.Workflows.Helpers;
 
 namespace OrchardCore.Forms
 {
     public class Startup : StartupBase
     {
-        static Startup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<FormPart>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<FormElementPart>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<FormInputElementPart>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<LabelPart>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<InputPart>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<SelectPart>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<TextAreaPart>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<ButtonPart>();
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<FormPart>();
+                o.MemberAccessStrategy.Register<FormElementPart>();
+                o.MemberAccessStrategy.Register<FormInputElementPart>();
+                o.MemberAccessStrategy.Register<LabelPart>();
+                o.MemberAccessStrategy.Register<InputPart>();
+                o.MemberAccessStrategy.Register<SelectPart>();
+                o.MemberAccessStrategy.Register<TextAreaPart>();
+                o.MemberAccessStrategy.Register<ButtonPart>();
+            });
+
             services.Configure<MvcOptions>(options =>
             {
                 options.Filters.Add<ExportModelStateAttribute>();
@@ -66,7 +69,22 @@ namespace OrchardCore.Forms
             services.AddContentPart<ValidationPart>()
                     .UseDisplayDriver<ValidationPartDisplayDriver>();
 
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddContentPart<FormElementLabelPart>()
+                    .UseDisplayDriver<FormElementLabelPartDisplayDriver>();
+
+            services.AddContentPart<FormElementValidationPart>()
+                    .UseDisplayDriver<FormElementValidationPartDisplayDriver>();
+
+            services.AddDataMigration<Migrations>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Workflows")]
+    public class WorkflowStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddActivity<HttpRedirectToFormLocationTask, HttpRedirectToFormLocationTaskDisplayDriver>();
         }
     }
 }

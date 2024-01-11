@@ -1,4 +1,6 @@
-using System;
+#if (AddPart)
+using Fluid;
+#endif
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +14,7 @@ using OrchardCore.Templates.Cms.Module.Drivers;
 using OrchardCore.Templates.Cms.Module.Handlers;
 using OrchardCore.Templates.Cms.Module.Models;
 using OrchardCore.Templates.Cms.Module.Settings;
+using OrchardCore.Templates.Cms.Module.ViewModels;
 #endif
 using OrchardCore.Modules;
 
@@ -22,12 +25,17 @@ namespace OrchardCore.Templates.Cms.Module
         public override void ConfigureServices(IServiceCollection services)
         {
 #if (AddPart)
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<MyTestPartViewModel>();
+            });
+
             services.AddContentPart<MyTestPart>()
                 .UseDisplayDriver<MyTestPartDisplayDriver>()
                 .AddHandler<MyTestPartHandler>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, MyTestPartSettingsDisplayDriver>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
 #endif
         }
 

@@ -10,7 +10,7 @@ namespace OrchardCore.Users.Services
     /// <summary>
     /// Custom implementation of <see cref="IUserClaimsPrincipalFactory{TUser}"/> adding email claims.
     /// </summary>
-    [Obsolete("The class 'DefaultUserClaimsPrincipalFactory' in obsolete, please implement 'IUserClaimsProvider' instead.")]
+    [Obsolete("The class 'DefaultUserClaimsPrincipalFactory' is obsolete, please implement 'IUserClaimsProvider' instead.")]
     public class DefaultUserClaimsPrincipalFactory : UserClaimsPrincipalFactory<IUser, IRole>
     {
         public DefaultUserClaimsPrincipalFactory(
@@ -29,7 +29,7 @@ namespace OrchardCore.Users.Services
             // new 'IdentityOptions.ClaimsIdentity.EmailClaimType' or at least its default value which is 'ClaimTypes.Email'.
 
             var email = await UserManager.GetEmailAsync(user);
-            if (!String.IsNullOrEmpty(email))
+            if (!string.IsNullOrEmpty(email))
             {
                 claims.AddClaim(new Claim("email", email));
 

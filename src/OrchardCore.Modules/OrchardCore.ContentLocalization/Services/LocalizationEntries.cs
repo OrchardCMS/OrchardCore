@@ -14,19 +14,22 @@ namespace OrchardCore.ContentLocalization.Services
 {
     public class LocalizationEntries : ILocalizationEntries
     {
+        private readonly IVolatileDocumentManager<LocalizationStateDocument> _localizationStateManager;
+
         private ImmutableDictionary<string, LocalizationEntry> _localizations = ImmutableDictionary<string, LocalizationEntry>.Empty;
 
         private ImmutableDictionary<string, ImmutableList<LocalizationEntry>> _localizationSets =
             ImmutableDictionary<string, ImmutableList<LocalizationEntry>>.Empty;
 
-        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+        private readonly SemaphoreSlim _semaphore = new(1);
 
-        private int _lastIndexId;
+        private long _lastIndexId;
         private string _stateIdentifier;
         private bool _initialized;
 
-        public LocalizationEntries()
+        public LocalizationEntries(IVolatileDocumentManager<LocalizationStateDocument> localizationStateManager)
         {
+            _localizationStateManager = localizationStateManager;
         }
 
         public async Task<(bool, LocalizationEntry)> TryGetLocalizationAsync(string contentItemId)
@@ -58,7 +61,7 @@ namespace OrchardCore.ContentLocalization.Services
             await EnsureInitializedAsync();
 
             // Update the cache with a new state and then refresh entries as it would be done on a next request.
-            await LocalizationStateManager.UpdateAsync(new LocalizationStateDocument(), afterUpdateAsync: RefreshEntriesAsync);
+            await _localizationStateManager.UpdateAsync(new LocalizationStateDocument(), afterUpdateAsync: RefreshEntriesAsync);
         }
 
         private async Task EnsureInitializedAsync()
@@ -69,7 +72,7 @@ namespace OrchardCore.ContentLocalization.Services
             }
             else
             {
-                var state = await LocalizationStateManager.GetOrCreateImmutableAsync();
+                var state = await _localizationStateManager.GetOrCreateImmutableAsync();
                 if (_stateIdentifier != state.Identifier)
                 {
                     await RefreshEntriesAsync(state);
@@ -132,7 +135,10 @@ namespace OrchardCore.ContentLocalization.Services
             {
                 if (_stateIdentifier != state.Identifier)
                 {
-                    var indexes = await Session.QueryIndex<LocalizedContentItemIndex>(i => i.Id > _lastIndexId).ListAsync();
+                    var indexes = await Session
+                        .QueryIndex<LocalizedContentItemIndex>(i => i.Id > _lastIndexId)
+                        .OrderBy(i => i.Id)
+                        .ListAsync();
 
                     // A draft is indexed to check for conflicts, and to remove an entry, but only if an item is unpublished,
                     // so only if the entry 'DocumentId' matches, this because when a draft is saved more than once, the index
@@ -184,9 +190,13 @@ namespace OrchardCore.ContentLocalization.Services
             {
                 if (!_initialized)
                 {
-                    var state = await LocalizationStateManager.GetOrCreateImmutableAsync();
+                    var state = await _localizationStateManager.GetOrCreateImmutableAsync();
 
-                    var indexes = await Session.QueryIndex<LocalizedContentItemIndex>(i => i.Published && i.Culture != null).ListAsync();
+                    var indexes = await Session
+                        .QueryIndex<LocalizedContentItemIndex>(i => i.Published && i.Culture != null)
+                        .OrderBy(i => i.Id)
+                        .ListAsync();
+
                     var entries = indexes.Select(i => new LocalizationEntry
                     {
                         DocumentId = i.DocumentId,
@@ -210,8 +220,5 @@ namespace OrchardCore.ContentLocalization.Services
         }
 
         private static ISession Session => ShellScope.Services.GetRequiredService<ISession>();
-
-        private static IVolatileDocumentManager<LocalizationStateDocument> LocalizationStateManager
-            => ShellScope.Services.GetRequiredService<IVolatileDocumentManager<LocalizationStateDocument>>();
     }
 }

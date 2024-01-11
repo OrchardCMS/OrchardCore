@@ -1,0 +1,17 @@
+@model AuditTrailIndexOptions
+
+<div class="filter">
+    <div class="btn-group">
+
+        <select asp-for="Date" asp-items="@Model.AuditTrailDates" class="selectpicker dates-selectpicker show-tick" data-header="@T["Date"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Date"]" data-style="btn-sm"></select>
+        @if (!Model.CorrelationIdFromRoute)
+        {
+            <select asp-for="Category" asp-items="Model.Categories" class="selectpicker categories-selectpicker show-tick me-2" data-header="@T["Filter by category"]" data-live-search="true" data-selected-text-format="static" data-width="fit" title="@T["Category"]" data-style="btn-sm" data-dropdown-align-right="auto"></select>
+        }
+        @if (Model.Events.Count > 0)
+        {
+            <select asp-for="Event" asp-items="@Model.Events" class="selectpicker events-selectpicker show-tick me-2" data-header="@T["Filter by event"]" data-selected-text-format="static" data-width="fit" data-dropdown-align-right="auto" title="@T["Events"]" data-style="btn-sm"></select>
+        }
+        <select asp-for="Sort" asp-items="@Model.AuditTrailSorts" class="selectpicker sorts-selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Sort"]" data-style="btn-sm"></select>
+    </div>
+</div>

@@ -33,11 +33,11 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
         public override async Task<IDisplayResult> EditAsync(AzureADSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
             {
                 return null;
             }
-            return Initialize<AzureADSettingsViewModel>("AzureADSettings_Edit", model =>
+            return Initialize<AzureADSettingsViewModel>("MicrosoftEntraIDSettings_Edit", model =>
             {
                 model.DisplayName = settings.DisplayName;
                 model.AppId = settings.AppId;
@@ -55,7 +55,7 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
             if (context.GroupId == MicrosoftAuthenticationConstants.Features.AAD)
             {
                 var user = _httpContextAccessor.HttpContext?.User;
-                if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
+                if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
                 {
                     return null;
                 }

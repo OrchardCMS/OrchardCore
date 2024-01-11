@@ -1,0 +1,20 @@
+{
+  "name": "ScopeRecipe",
+  "displayName": "Scope Recipe",
+  "description": "",
+  "author": "",
+  "website": "",
+  "version": "1.0.0",
+  "issetuprecipe": false,
+  "categories": [ "test" ],
+  "tags": [],
+  "steps": [
+    {
+      "name": "OpenIdScope",
+      "scopeName": "test_scope",
+      "displayName": "Test Scope A",
+      "description": "Unit test scope A.",
+      "resources": "res1 res2 res3"
+    }
+  ]
+}

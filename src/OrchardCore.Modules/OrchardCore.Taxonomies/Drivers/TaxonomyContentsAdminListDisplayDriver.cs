@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Cysharp.Text;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Contents.ViewModels;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -28,7 +28,7 @@ namespace OrchardCore.Taxonomies.Drivers
         private readonly ISiteService _siteService;
         private readonly IContentManager _contentManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public TaxonomyContentsAdminListDisplayDriver(
             ISiteService siteService,
@@ -52,9 +52,9 @@ namespace OrchardCore.Taxonomies.Drivers
             }
 
             var taxonomyContentItemIds = settings.TaxonomyContentItemIds;
-            if (!String.IsNullOrEmpty(model.SelectedContentType))
+            if (!string.IsNullOrEmpty(model.SelectedContentType))
             {
-                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.SelectedContentType);
+                var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(model.SelectedContentType);
                 var fieldDefinitions = contentTypeDefinition
                     .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(TaxonomyField)));
                 var fieldTaxonomyContentItemIds = fieldDefinitions.Select(x => x.GetSettings<TaxonomyFieldSettings>().TaxonomyContentItemId);
@@ -75,30 +75,31 @@ namespace OrchardCore.Taxonomies.Drivers
                 results.Add(
                     Initialize<TaxonomyContentsAdminFilterViewModel>("ContentsAdminListTaxonomyFilter", m =>
                     {
+                        using var sb = ZString.CreateStringBuilder();
                         var termEntries = new List<FilterTermEntry>();
                         PopulateTermEntries(termEntries, taxonomy.As<TaxonomyPart>().Terms, 0);
                         var terms = new List<SelectListItem>
                             {
-                                new SelectListItem() { Text = S["Clear filter"], Value = ""  },
-                                new SelectListItem() { Text = S["Show all"], Value = "Taxonomy:" + taxonomy.ContentItemId }
+                                new SelectListItem { Text = S["Clear filter"], Value = ""  },
+                                new SelectListItem { Text = S["Show all"], Value = "Taxonomy:" + taxonomy.ContentItemId }
                             };
 
                         foreach (var term in termEntries)
                         {
-                            using var sb = StringBuilderPool.GetInstance();
+                            sb.Clear();
                             for (var l = 0; l < term.Level; l++)
                             {
-                                sb.Builder.Insert(0, LevelPadding);
+                                sb.Append(LevelPadding);
                             }
-                            sb.Builder.Append(term.DisplayText);
-                            var item = new SelectListItem() { Text = sb.Builder.ToString(), Value = "Term:" + term.ContentItemId };
+                            sb.Append(term.DisplayText);
+                            var item = new SelectListItem { Text = sb.ToString(), Value = "Term:" + term.ContentItemId };
                             terms.Add(item);
                         }
 
                         m.DisplayText = taxonomy.DisplayText;
                         m.Taxonomies = terms;
                     })
-                    .Location("Actions:40." + position.ToString())
+                    .Location("Actions:40." + position)
                     .Prefix("Taxonomy" + taxonomy.ContentItemId)
                 );
 
@@ -121,7 +122,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 var viewModel = new TaxonomyContentsAdminFilterViewModel();
                 if (await updater.TryUpdateModelAsync(viewModel, "Taxonomy" + contentItemId))
                 {
-                    if (!String.IsNullOrEmpty(viewModel.SelectedContentItemId))
+                    if (!string.IsNullOrEmpty(viewModel.SelectedContentItemId))
                     {
                         model.RouteValues.TryAdd("Taxonomy" + contentItemId + ".SelectedContentItemId", viewModel.SelectedContentItemId);
                     }

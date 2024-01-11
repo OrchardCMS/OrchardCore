@@ -2,9 +2,10 @@
   <Import Project="..\..\OrchardCore.Build\OrchardCore.Commons.props" />
   <ItemGroup>
     <PackageReference Remove="Microsoft.SourceLink.GitHub" />
+    <PackageReference Remove="StyleCop.Analyzers" />
   </ItemGroup>
   <PropertyGroup>
-    <TargetFrameworks>$(AspNetCoreTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
     <IncludeBuildOutput>False</IncludeBuildOutput>
     <IncludeSource>False</IncludeSource>
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
@@ -65,7 +66,7 @@
     </Task>
   </UsingTask>
 
-  <Target Name="TransformTemplateConfigs" BeforeTargets="Build">
+  <Target Name="TransformTemplateConfigs" BeforeTargets="Build" Condition="'$(TargetFramework)' == '$(DefaultTargetFramework)'">
     <!--
       For each template, copy its '.template.config.src' directory to '.template.config',
       removing any earlier output at that location.

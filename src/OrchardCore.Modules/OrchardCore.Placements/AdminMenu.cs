@@ -7,7 +7,7 @@ namespace OrchardCore.Placements
 {
     public class AdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
@@ -16,14 +16,14 @@ namespace OrchardCore.Placements
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }
 
             builder
                 .Add(S["Design"], design => design
-                    .Add(S["Placements"], "Placements", import => import
+                    .Add(S["Placements"], S["Placements"].PrefixPosition(), import => import
                         .Action("Index", "Admin", new { area = "OrchardCore.Placements" })
                         .Permission(Permissions.ManagePlacements)
                         .LocalNav()

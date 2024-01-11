@@ -26,7 +26,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
         {
             var node = menuItem as PlaceholderAdminNode;
 
-            if (node == null || String.IsNullOrEmpty(node.LinkText) || !node.Enabled)
+            if (node == null || string.IsNullOrEmpty(node.LinkText) || !node.Enabled)
             {
                 return Task.CompletedTask;
             }
@@ -54,7 +54,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
                 {
                     try
                     {
-                        var treeBuilder = treeNodeBuilders.Where(x => x.Name == childTreeNode.GetType().Name).FirstOrDefault();
+                        var treeBuilder = treeNodeBuilders.FirstOrDefault(x => x.Name == childTreeNode.GetType().Name);
                         await treeBuilder.BuildNavigationAsync(childTreeNode, itemBuilder, treeNodeBuilders);
                     }
                     catch (Exception e)

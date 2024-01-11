@@ -24,15 +24,9 @@ namespace OrchardCore.Markdown
 {
     public class Startup : StartupBase
     {
-        private static readonly string DefaultMarkdownExtensions = "nohtml+advanced";
+        private const string DefaultMarkdownExtensions = "nohtml+advanced";
 
         private readonly IShellConfiguration _shellConfiguration;
-
-        static Startup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<MarkdownBodyPartViewModel>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<MarkdownFieldViewModel>();
-        }
 
         public Startup(IShellConfiguration shellConfiguration)
         {
@@ -41,13 +35,20 @@ namespace OrchardCore.Markdown
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<MarkdownBodyPartViewModel>();
+                o.MemberAccessStrategy.Register<MarkdownFieldViewModel>();
+            })
+            .AddLiquidFilter<Markdownify>("markdownify");
+
             // Markdown Part
             services.AddContentPart<MarkdownBodyPart>()
                 .UseDisplayDriver<MarkdownBodyPartDisplayDriver>()
                 .AddHandler<MarkdownBodyPartHandler>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, MarkdownBodyPartSettingsDisplayDriver>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
             services.AddScoped<IContentPartIndexHandler, MarkdownBodyPartIndexHandler>();
 
             // Markdown Field
@@ -56,8 +57,6 @@ namespace OrchardCore.Markdown
 
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MarkdownFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, MarkdownFieldIndexHandler>();
-
-            services.AddLiquidFilter<Markdownify>("markdownify");
 
             services.AddOptions<MarkdownPipelineOptions>();
             services.ConfigureMarkdownPipeline((pipeline) =>

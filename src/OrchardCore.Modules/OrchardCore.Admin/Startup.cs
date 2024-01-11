@@ -5,12 +5,10 @@ using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Controllers;
 using OrchardCore.Admin.Drivers;
 using OrchardCore.Admin.Models;
-using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Shell.Configuration;
@@ -57,6 +55,7 @@ namespace OrchardCore.Admin
             services.AddScoped<IPermissionProvider, PermissionsAdminSettings>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddSingleton<IPageRouteModelProvider, AdminPageRouteModelProvider>();
+            services.AddScoped<IDisplayDriver<Navbar>, VisitSiteNavbarDisplayDriver>();
 
             services.Configure<AdminOptions>(_configuration.GetSection("OrchardCore_Admin"));
         }
@@ -91,13 +90,7 @@ namespace OrchardCore.Admin
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<AdminSettings>>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
-            {
-                var S = sp.GetService<IStringLocalizer<DeploymentStartup>>();
-                return new SiteSettingsPropertyDeploymentStepDriver<AdminSettings>(S["Admin settings"], S["Exports the admin settings."]);
-            });
-            services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<AdminSettings>());
+            services.AddSiteSettingsPropertyDeploymentStep<AdminSettings, DeploymentStartup>(S => S["Admin settings"], S => S["Exports the admin settings."]);
         }
     }
 }

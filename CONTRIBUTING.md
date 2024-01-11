@@ -3,12 +3,15 @@
 One of the easiest ways to contribute is to participate in discussions on GitHub issues. You can also contribute by submitting pull requests with code changes.
 
 ## General feedback and discussions?
+
 Start a discussion on the [repository issue tracker](https://github.com/orchardcms/orchardcore/issues).
 
 ## Reporting security issues
+
 Security issues should be reported privately, via email, to contact@orchardcore.net.
 
 ## Other discussions
+
 Our team members also monitor other discussion forums:
 
 * [GitHub Discussions](https://github.com/OrchardCMS/OrchardCore/discussions).
@@ -17,7 +20,7 @@ Our team members also monitor other discussion forums:
 
 We accept fixes and features! Here are some resources to help you get started on how to contribute code or new content.
 
-* Look at the [documentation](/docs/).
+* Look at the [documentation](/src/docs/).
 * ["Help wanted" issues](https://github.com/orchardcms/orchardcore/labels/help%20wanted) - these issues are up for grabs. Comment on an issue if you want to create a fix.
 * ["Good first issue" issues](https://github.com/orchardcms/orchardcore/labels/good%20first%20issue) - we think these are a good for newcomers.
 

@@ -11,10 +11,10 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.ContentPreview.Settings
 {
-    public class PreviewPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
+    public class PreviewPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<PreviewPart>
     {
         private readonly ILiquidTemplateManager _templateManager;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public PreviewPartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<PreviewPartSettingsDisplayDriver> localizer)
         {
@@ -24,11 +24,6 @@ namespace OrchardCore.ContentPreview.Settings
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(PreviewPart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
-
             return Initialize<PreviewPartSettingsViewModel>("PreviewPartSettings_Edit", model =>
             {
                 var settings = contentTypePartDefinition.GetSettings<PreviewPartSettings>();
@@ -40,11 +35,6 @@ namespace OrchardCore.ContentPreview.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(PreviewPart), contentTypePartDefinition.PartDefinition.Name))
-            {
-                return null;
-            }
-
             var model = new PreviewPartSettingsViewModel();
 
             await context.Updater.TryUpdateModelAsync(model, Prefix,

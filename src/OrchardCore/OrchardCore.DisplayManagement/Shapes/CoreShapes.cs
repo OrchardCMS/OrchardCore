@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement.Shapes
@@ -20,7 +21,9 @@ namespace OrchardCore.DisplayManagement.Shapes
         }
 
         [Shape]
-        public async Task<IHtmlContent> List(Shape shape, dynamic DisplayAsync, IEnumerable<dynamic> Items,
+#pragma warning disable CA1822 // Mark members as static
+        public async Task<IHtmlContent> List(Shape shape, DisplayContext displayContext, IEnumerable<object> Items,
+#pragma warning restore CA1822 // Mark members as static
             string ItemTagName,
             IEnumerable<string> ItemClasses,
             IDictionary<string, string> ItemAttributes,
@@ -29,40 +32,48 @@ namespace OrchardCore.DisplayManagement.Shapes
         {
             if (Items == null)
             {
-                return HtmlString.Empty;
+                if (shape.Items != null && shape.Items.Any())
+                {
+                    Items = shape.Items;
+                }
+                else
+                {
+                    return HtmlString.Empty;
+                }
             }
 
-            // prevent multiple enumerations
+            // Prevent multiple enumerations.
             var items = Items.ToList();
 
             // var itemDisplayOutputs = Items.Select(item => Display(item)).Where(output => !string.IsNullOrWhiteSpace(output.ToHtmlString())).ToList();
-            var count = items.Count();
+            var count = items.Count;
             if (count < 1)
             {
                 return HtmlString.Empty;
             }
 
-            string listTagName = null;
+            var listTagBuilder = shape.GetTagBuilder("ul");
 
-            if (shape.TagName != "-")
-            {
-                listTagName = String.IsNullOrEmpty(shape.TagName) ? "ul" : shape.TagName;
-            }
-
-            var id = shape.Id ?? String.Empty;
-
-            var listTagBuilder = String.IsNullOrEmpty(listTagName) ? null : Shape.GetTagBuilder(listTagName, id, shape.Classes, shape.Attributes);
-
-            string itemTagName = null;
-            if (ItemTagName != "-")
-            {
-                itemTagName = String.IsNullOrEmpty(ItemTagName) ? "li" : ItemTagName;
-            }
+            var itemTagName = string.IsNullOrEmpty(ItemTagName) ? "li" : ItemTagName;
 
             var index = 0;
+
             foreach (var item in items)
             {
-                var itemTag = String.IsNullOrEmpty(itemTagName) ? null : Shape.GetTagBuilder(itemTagName, null, ItemClasses, ItemAttributes);
+                var itemTag = new TagBuilder(itemTagName);
+
+                if (ItemAttributes != null)
+                {
+                    itemTag.MergeAttributes(ItemAttributes, false);
+                }
+
+                if (ItemClasses != null)
+                {
+                    foreach (var cssClass in ItemClasses)
+                    {
+                        itemTag.AddCssClass(cssClass);
+                    }
+                }
 
                 if (index == 0)
                 {
@@ -74,14 +85,14 @@ namespace OrchardCore.DisplayManagement.Shapes
                     itemTag.AddCssClass(LastClass ?? "last");
                 }
 
-                if (item is IShape)
+                if (item is IShape itemShape)
                 {
-                    item.Tag = itemTag;
+                    itemShape.Properties["Tag"] = itemTag;
                 }
 
                 // Give the item shape the possibility to alter its container tag
                 // by rendering them before rendering the containing list.
-                var itemContent = await DisplayAsync(item);
+                var itemContent = await displayContext.DisplayHelper.ShapeExecuteAsync((IShape)item);
 
                 itemTag.InnerHtml.AppendHtml(itemContent);
                 listTagBuilder.InnerHtml.AppendHtml(itemTag);
@@ -93,11 +104,13 @@ namespace OrchardCore.DisplayManagement.Shapes
         }
 
         [Shape]
-        public IHtmlContent Message(dynamic Shape)
+#pragma warning disable CA1822 // Mark members as static
+        public IHtmlContent Message(IShape Shape)
+#pragma warning restore CA1822 // Mark members as static
         {
-            TagBuilder tagBuilder = OrchardCore.DisplayManagement.Shapes.Shape.GetTagBuilder(Shape, "div");
-            string type = Shape.Type.ToString().ToLowerInvariant();
-            IHtmlContent message = Shape.Message;
+            var tagBuilder = Shape.GetTagBuilder("div");
+            var type = Shape.Properties["Type"].ToString().ToLowerInvariant();
+            var message = Shape.Properties["Message"] as IHtmlContent;
             tagBuilder.AddCssClass("message");
             tagBuilder.AddCssClass("message-" + type);
             tagBuilder.Attributes["role"] = "alert";
@@ -106,9 +119,9 @@ namespace OrchardCore.DisplayManagement.Shapes
         }
     }
 
-    public class CoreShapesTableProvider : IShapeTableProvider
+    public class CoreShapesTableProvider : ShapeTableProvider
     {
-        public void Discover(ShapeTableBuilder builder)
+        public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
         {
             builder.Describe("List")
                 .OnCreated(created =>
@@ -120,6 +133,8 @@ namespace OrchardCore.DisplayManagement.Shapes
                     list.ItemClasses = new List<string>();
                     list.ItemAttributes = new Dictionary<string, string>();
                 });
+
+            return ValueTask.CompletedTask;
         }
     }
 }

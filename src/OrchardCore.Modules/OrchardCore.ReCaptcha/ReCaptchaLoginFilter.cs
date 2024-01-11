@@ -1,8 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.Entities;
@@ -19,6 +17,8 @@ namespace OrchardCore.ReCaptcha
         private readonly ReCaptchaService _reCaptchaService;
         private readonly IShapeFactory _shapeFactory;
 
+        private ReCaptchaSettings _reCaptchaSettings;
+
         public ReCaptchaLoginFilter(
             ILayoutAccessor layoutAccessor,
             ISiteService siteService,
@@ -33,38 +33,37 @@ namespace OrchardCore.ReCaptcha
 
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
-            if (!(context.Result is ViewResult || context.Result is PageResult)
-                || !String.Equals("OrchardCore.Users", Convert.ToString(context.RouteData.Values["area"]), StringComparison.OrdinalIgnoreCase))
+            if (!context.IsViewOrPageResult()
+                || !string.Equals("OrchardCore.Users", Convert.ToString(context.RouteData.Values["area"]), StringComparison.OrdinalIgnoreCase))
             {
                 await next();
                 return;
             }
 
-            var settings = (await _siteService.GetSiteSettingsAsync()).As<ReCaptchaSettings>();
+            _reCaptchaSettings ??= (await _siteService.GetSiteSettingsAsync()).As<ReCaptchaSettings>();
 
-            if (!settings.IsValid())
+            if (!_reCaptchaSettings.IsValid())
             {
                 await next();
                 return;
             }
 
-            dynamic layout = await _layoutAccessor.GetLayoutAsync();
-
-            var afterLoginZone = layout.Zones["AfterLogin"];
+            var layout = await _layoutAccessor.GetLayoutAsync();
 
             if (_reCaptchaService.IsThisARobot())
             {
-                afterLoginZone.Add(await _shapeFactory.New.ReCaptcha());
+                var afterLoginZone = layout.Zones["AfterLogin"];
+                await afterLoginZone.AddAsync(await _shapeFactory.CreateAsync("ReCaptcha"));
             }
 
-            var afterForgotPassword = layout.Zones["AfterForgotPassword"];
-            afterForgotPassword.Add(await _shapeFactory.New.ReCaptcha());
+            var afterForgotPasswordZone = layout.Zones["AfterForgotPassword"];
+            await afterForgotPasswordZone.AddAsync(await _shapeFactory.CreateAsync("ReCaptcha"));
 
-            var afterRegister = layout.Zones["AfterRegister"];
-            afterRegister.Add(await _shapeFactory.New.ReCaptcha());
+            var afterRegisterZone = layout.Zones["AfterRegister"];
+            await afterRegisterZone.AddAsync(await _shapeFactory.CreateAsync("ReCaptcha"));
 
-            var afterResetPassword = layout.Zones["AfterResetPassword"];
-            afterResetPassword.Add(await _shapeFactory.New.ReCaptcha());
+            var afterResetPasswordZone = layout.Zones["AfterResetPassword"];
+            await afterResetPasswordZone.AddAsync(await _shapeFactory.CreateAsync("ReCaptcha"));
 
             await next();
         }

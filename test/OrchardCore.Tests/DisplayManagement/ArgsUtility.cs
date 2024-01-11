@@ -1,7 +1,5 @@
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Routing;
 using OrchardCore.DisplayManagement;
+using Arguments = OrchardCore.DisplayManagement.Arguments;
 
 namespace OrchardCore.Tests.DisplayManagement
 {

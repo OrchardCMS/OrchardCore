@@ -36,6 +36,14 @@ namespace OrchardCore.Lists.Feeds
                 return null;
             }
 
+            var contentItem = await _contentManager.GetAsync(model.ContentItemId);
+            var feedMetadata = await _contentManager.PopulateAspectAsync<FeedMetadata>(contentItem);
+
+            if (feedMetadata.DisableRssFeed)
+            {
+                return null;
+            }
+
             return new FeedQueryMatch { FeedQuery = this, Priority = -5 };
         }
 
@@ -65,7 +73,7 @@ namespace OrchardCore.Lists.Feeds
                 context.Response.Element.SetElementValue("title", contentItem.DisplayText);
                 context.Response.Element.Add(link);
 
-                context.Response.Element.Add(new XElement("description", new XCData(bodyAspect.Body?.ToString() ?? String.Empty)));
+                context.Response.Element.Add(new XElement("description", new XCData(bodyAspect.Body?.ToString() ?? string.Empty)));
 
                 context.Response.Contextualize(contextualize =>
                 {
@@ -78,7 +86,7 @@ namespace OrchardCore.Lists.Feeds
             else
             {
                 context.Builder.AddProperty(context, null, "title", contentItem.DisplayText);
-                context.Builder.AddProperty(context, null, new XElement("description", new XCData(bodyAspect.Body?.ToString() ?? String.Empty)));
+                context.Builder.AddProperty(context, null, new XElement("description", new XCData(bodyAspect.Body?.ToString() ?? string.Empty)));
 
                 context.Response.Contextualize(contextualize =>
                 {

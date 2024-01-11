@@ -5,17 +5,13 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Html;
 using OrchardCore.DisplayManagement.Title;
+using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Settings;
 
 namespace OrchardCore.DisplayManagement.Razor
 {
-    public interface IRazorPage
-    {
-        string ViewLayout { get; set; }
-    }
-
     public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPage<TModel>, IRazorPage
     {
         private IDisplayHelper _displayHelper;
@@ -34,21 +30,9 @@ namespace OrchardCore.DisplayManagement.Razor
             }
         }
 
-        private void EnsureDisplayHelper()
-        {
-            if (_displayHelper == null)
-            {
-                _displayHelper = Context.RequestServices.GetService<IDisplayHelper>();
-            }
-        }
+        private void EnsureDisplayHelper() => _displayHelper ??= Context.RequestServices.GetService<IDisplayHelper>();
 
-        private void EnsureShapeFactory()
-        {
-            if (_shapeFactory == null)
-            {
-                _shapeFactory = Context.RequestServices.GetService<IShapeFactory>();
-            }
-        }
+        private void EnsureShapeFactory() => _shapeFactory ??= Context.RequestServices.GetService<IShapeFactory>();
 
         /// <summary>
         /// Gets a dynamic shape factory to create new shapes.
@@ -81,6 +65,31 @@ namespace OrchardCore.DisplayManagement.Razor
         /// <param name="shape">The shape.</param>
         public Task<IHtmlContent> DisplayAsync(dynamic shape)
         {
+            if (shape is IShape s)
+            {
+                EnsureDisplayHelper();
+                return _displayHelper.ShapeExecuteAsync(s);
+            }
+
+            if (shape is IHtmlContent hc)
+            {
+                return Task.FromResult(hc);
+            }
+
+            if (shape is string str)
+            {
+                return Task.FromResult<IHtmlContent>(new HtmlContentString(str));
+            }
+
+            throw new ArgumentException("DisplayAsync requires an instance of IShape");
+        }
+
+        /// <summary>
+        /// Renders a shape.
+        /// </summary>
+        /// <param name="shape">The shape.</param>
+        public Task<IHtmlContent> DisplayAsync(IShape shape)
+        {
             EnsureDisplayHelper();
             return _displayHelper.ShapeExecuteAsync(shape);
         }
@@ -99,24 +108,12 @@ namespace OrchardCore.DisplayManagement.Razor
             }
         }
 
-        private dynamic _themeLayout;
+        protected IZoneHolding _themeLayout;
 
-        public dynamic ThemeLayout
+        public IZoneHolding ThemeLayout
         {
-            get
-            {
-                if (_themeLayout == null)
-                {
-                    _themeLayout = Context.Features.Get<RazorViewFeature>()?.ThemeLayout;
-                }
-
-                return _themeLayout;
-            }
-
-            set
-            {
-                _themeLayout = value;
-            }
+            get => _themeLayout ??= Context.Features.Get<RazorViewFeature>()?.ThemeLayout;
+            set => _themeLayout = value;
         }
 
         public string ViewLayout
@@ -133,7 +130,7 @@ namespace OrchardCore.DisplayManagement.Razor
                     return layout.Metadata.Type;
                 }
 
-                return String.Empty;
+                return string.Empty;
             }
 
             set
@@ -157,18 +154,7 @@ namespace OrchardCore.DisplayManagement.Razor
 
         private IPageTitleBuilder _pageTitleBuilder;
 
-        public IPageTitleBuilder Title
-        {
-            get
-            {
-                if (_pageTitleBuilder == null)
-                {
-                    _pageTitleBuilder = Context.RequestServices.GetRequiredService<IPageTitleBuilder>();
-                }
-
-                return _pageTitleBuilder;
-            }
-        }
+        public IPageTitleBuilder Title => _pageTitleBuilder ??= Context.RequestServices.GetRequiredService<IPageTitleBuilder>();
 
         private IViewLocalizer _t;
 
@@ -211,9 +197,9 @@ namespace OrchardCore.DisplayManagement.Razor
         /// <returns>And <see cref="IHtmlContent"/> instance representing the full title.</returns>
         public IHtmlContent RenderTitleSegments(string segment, string position = "0", IHtmlContent separator = null)
         {
-            if (!String.IsNullOrEmpty(segment))
+            if (!string.IsNullOrEmpty(segment))
             {
-                Title.AddSegment(new StringHtmlContent(segment), position);
+                Title.AddSegment(new HtmlContentString(segment), position);
             }
 
             return Title.GenerateTitle(separator);
@@ -222,35 +208,28 @@ namespace OrchardCore.DisplayManagement.Razor
         /// <summary>
         /// Renders the content zone of the layout.
         /// </summary>
-        public IHtmlContent RenderLayoutBody()
-        {
-            var result = base.RenderBody();
-            return result;
-        }
+        public IHtmlContent RenderLayoutBody() => base.RenderBody();
 
         /// <summary>
         /// Creates a <see cref="TagBuilder"/> to render a shape.
         /// </summary>
         /// <param name="shape">The shape.</param>
         /// <returns>A new <see cref="TagBuilder"/>.</returns>
-        public TagBuilder Tag(dynamic shape)
-        {
-            return Shape.GetTagBuilder(shape);
-        }
+        public static TagBuilder Tag(IShape shape) => shape.GetTagBuilder();
 
-        public TagBuilder Tag(dynamic shape, string tag)
-        {
-            return Shape.GetTagBuilder(shape, tag);
-        }
+        /// <summary>
+        /// Creates a <see cref="TagBuilder"/> to render a shape.
+        /// </summary>
+        /// <param name="shape">The shape.</param>
+        /// <param name="tag">The tag name to use.</param>
+        /// <returns>A new <see cref="TagBuilder"/>.</returns>
+        public static TagBuilder Tag(IShape shape, string tag) => shape.GetTagBuilder(tag);
 
         /// <summary>
         /// In a Razor layout page, renders the portion of a content page that is not within a named zone.
         /// </summary>
         /// <returns>The HTML content to render.</returns>
-        public Task<IHtmlContent> RenderBodyAsync()
-        {
-            return DisplayAsync(ThemeLayout.Content);
-        }
+        public Task<IHtmlContent> RenderBodyAsync() => DisplayAsync(ThemeLayout.Zones["Content"]);
 
         /// <summary>
         /// Check if a zone is defined in the layout or it has items.
@@ -266,9 +245,7 @@ namespace OrchardCore.DisplayManagement.Razor
                 throw new ArgumentNullException(nameof(name));
             }
 
-            var zone = ThemeLayout[name];
-
-            return zone != null;
+            return ThemeLayout.Zones.IsNotEmpty(name);
         }
 
         /// <summary>
@@ -334,9 +311,9 @@ namespace OrchardCore.DisplayManagement.Razor
                 throw new ArgumentNullException(nameof(name));
             }
 
-            var zone = ThemeLayout[name];
+            var zone = ThemeLayout.Zones[name];
 
-            if (required && zone != null && zone is Shape && zone.Items.Count == 0)
+            if (required && zone.IsNullOrEmpty())
             {
                 throw new InvalidOperationException("Zone not found: " + name);
             }
@@ -344,7 +321,7 @@ namespace OrchardCore.DisplayManagement.Razor
             return DisplayAsync(zone);
         }
 
-        public object OrDefault(object text, object other)
+        public static object OrDefault(object text, object other)
         {
             if (text == null || Convert.ToString(text) == "")
             {
@@ -362,18 +339,7 @@ namespace OrchardCore.DisplayManagement.Razor
         /// <summary>
         /// Gets the <see cref="ISite"/> instance.
         /// </summary>
-        public ISite Site
-        {
-            get
-            {
-                if (_site == null)
-                {
-                    _site = Context.Features.Get<RazorViewFeature>()?.Site;
-                }
-
-                return _site;
-            }
-        }
+        public ISite Site => _site ??= Context.Features.Get<RazorViewFeature>()?.Site;
     }
 
     public abstract class RazorPage : RazorPage<dynamic>

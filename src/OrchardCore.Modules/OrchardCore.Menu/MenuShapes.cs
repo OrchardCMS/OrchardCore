@@ -1,30 +1,24 @@
-using System;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Utilities;
 using OrchardCore.Menu.Models;
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Menu
 {
-    public class MenuShapes : IShapeTableProvider
+    public class MenuShapes : ShapeTableProvider
     {
-        public void Discover(ShapeTableBuilder builder)
+        public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
         {
             builder.Describe("Menu")
                 .OnProcessing(async context =>
                 {
-                    dynamic menu = context.Shape;
-                    string identifier = menu.ContentItemId ?? menu.Alias;
-
-                    if (String.IsNullOrEmpty(identifier))
-                    {
-                        return;
-                    }
-
-                    menu.Classes.Add("menu");
+                    var menu = context.Shape;
 
                     // Menu population is executed when processing the shape so that its value
                     // can be cached. IShapeDisplayEvents is called before the ShapeDescriptor
@@ -34,14 +28,18 @@ namespace OrchardCore.Menu
                     var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
                     var handleManager = context.ServiceProvider.GetRequiredService<IContentHandleManager>();
 
-                    string contentItemId = menu.Alias != null
-                        ? await handleManager.GetContentItemIdAsync(menu.Alias)
-                        : menu.ContentItemId;
+                    var contentItemId = menu.TryGetProperty("Alias", out object alias) && alias != null
+                        ? await handleManager.GetContentItemIdAsync(alias.ToString())
+                        : menu.TryGetProperty("ContentItemId", out object id)
+                            ? id.ToString()
+                            : null;
 
                     if (contentItemId == null)
                     {
                         return;
                     }
+
+                    menu.Classes.Add("menu");
 
                     var menuContentItem = await contentManager.GetAsync(contentItemId);
 
@@ -50,9 +48,9 @@ namespace OrchardCore.Menu
                         return;
                     }
 
-                    menu.ContentItem = menuContentItem;
+                    menu.Properties["ContentItem"] = menuContentItem;
 
-                    menu.MenuName = menuContentItem.DisplayText;
+                    menu.Properties["MenuName"] = menuContentItem.DisplayText;
 
                     var menuItems = menuContentItem.As<MenuItemsListPart>()?.MenuItems;
 
@@ -61,9 +59,9 @@ namespace OrchardCore.Menu
                         return;
                     }
 
-                    var differentiator = FormatName((string)menu.MenuName);
+                    var differentiator = FormatName(menu.GetProperty<string>("MenuName"));
 
-                    if (!String.IsNullOrEmpty(differentiator))
+                    if (!string.IsNullOrEmpty(differentiator))
                     {
                         // Menu__[MenuName] e.g. Menu-MainMenu
                         menu.Metadata.Alternates.Add("Menu__" + differentiator);
@@ -86,18 +84,18 @@ namespace OrchardCore.Menu
                         shape.Metadata.Differentiator = differentiator;
 
                         // Don't use Items.Add() or the collection won't be sorted
-                        menu.Add(shape);
+                        await ((Shape)menu).AddAsync(shape);
                     }
                 });
 
             builder.Describe("MenuItem")
                 .OnDisplaying(async context =>
                 {
-                    dynamic menuItem = context.Shape;
-                    ContentItem menuContentItem = menuItem.ContentItem;
-                    var menu = menuItem.Menu;
-                    int level = menuItem.Level;
-                    string differentiator = menuItem.Metadata.Differentiator;
+                    var menuItem = context.Shape;
+                    var menuContentItem = menuItem.GetProperty<ContentItem>("ContentItem");
+                    var menu = menuItem.GetProperty<IShape>("Menu");
+                    var level = menuItem.GetProperty<int>("Level");
+                    var differentiator = menuItem.Metadata.Differentiator;
 
                     var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
 
@@ -117,11 +115,11 @@ namespace OrchardCore.Menu
                             shape.Metadata.Differentiator = differentiator;
 
                             // Don't use Items.Add() or the collection won't be sorted
-                            menuItem.Add(shape);
+                            await menuItem.AddAsync(shape);
                         }
                     }
 
-                    var encodedContentType = EncodeAlternateElement(menuContentItem.ContentItem.ContentType);
+                    var encodedContentType = menuContentItem.ContentItem.ContentType.EncodeAlternateElement();
 
                     // MenuItem__level__[level] e.g. MenuItem-level-2
                     menuItem.Metadata.Alternates.Add("MenuItem__level__" + level);
@@ -131,7 +129,7 @@ namespace OrchardCore.Menu
                     menuItem.Metadata.Alternates.Add("MenuItem__" + encodedContentType);
                     menuItem.Metadata.Alternates.Add("MenuItem__" + encodedContentType + "__level__" + level);
 
-                    if (!String.IsNullOrEmpty(differentiator))
+                    if (!string.IsNullOrEmpty(differentiator))
                     {
                         // MenuItem__[MenuName] e.g. MenuItem-MainMenu
                         // MenuItem__[MenuName]__level__[level] e.g. MenuItem-MainMenu-level-2
@@ -148,13 +146,13 @@ namespace OrchardCore.Menu
             builder.Describe("MenuItemLink")
                 .OnDisplaying(displaying =>
                 {
-                    dynamic menuItem = displaying.Shape;
-                    int level = menuItem.Level;
-                    string differentiator = menuItem.Metadata.Differentiator;
+                    var menuItem = displaying.Shape;
+                    var level = menuItem.GetProperty<int>("Level");
+                    var differentiator = menuItem.Metadata.Differentiator;
 
-                    ContentItem menuContentItem = menuItem.ContentItem;
+                    var menuContentItem = menuItem.GetProperty<ContentItem>("ContentItem");
 
-                    var encodedContentType = EncodeAlternateElement(menuContentItem.ContentItem.ContentType);
+                    var encodedContentType = menuContentItem.ContentItem.ContentType.EncodeAlternateElement();
 
                     menuItem.Metadata.Alternates.Add("MenuItemLink__level__" + level);
 
@@ -163,7 +161,7 @@ namespace OrchardCore.Menu
                     menuItem.Metadata.Alternates.Add("MenuItemLink__" + encodedContentType);
                     menuItem.Metadata.Alternates.Add("MenuItemLink__" + encodedContentType + "__level__" + level);
 
-                    if (!String.IsNullOrEmpty(differentiator))
+                    if (!string.IsNullOrEmpty(differentiator))
                     {
                         // MenuItemLink__[MenuName] e.g. MenuItemLink-MainMenu
                         // MenuItemLink__[MenuName]__level__[level] e.g. MenuItemLink-MainMenu-level-2
@@ -176,16 +174,8 @@ namespace OrchardCore.Menu
                         menuItem.Metadata.Alternates.Add("MenuItemLink__" + differentiator + "__" + encodedContentType + "__level__" + level);
                     }
                 });
-        }
 
-        /// <summary>
-        /// Encodes dashed and dots so that they don't conflict in filenames
-        /// </summary>
-        /// <param name="alternateElement"></param>
-        /// <returns></returns>
-        private string EncodeAlternateElement(string alternateElement)
-        {
-            return alternateElement.Replace("-", "__").Replace('.', '_');
+            return ValueTask.CompletedTask;
         }
 
         /// <summary>
@@ -193,7 +183,7 @@ namespace OrchardCore.Menu
         /// </summary>
         private static string FormatName(string name)
         {
-            if (String.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
             {
                 return null;
             }

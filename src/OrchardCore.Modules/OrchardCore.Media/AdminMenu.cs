@@ -7,7 +7,7 @@ namespace OrchardCore.Media
 {
     public class AdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
@@ -16,7 +16,7 @@ namespace OrchardCore.Media
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }
@@ -34,7 +34,7 @@ namespace OrchardCore.Media
                 .Add(S["Media"], S["Media"].PrefixPosition(), media => media
                     .Add(S["Media Options"], S["Media Options"].PrefixPosition(), options => options
                         .Action("Options", "Admin", new { area = "OrchardCore.Media" })
-                        .Permission(Permissions.ManageMedia)
+                        .Permission(Permissions.ViewMediaOptions)
                         .LocalNav())
                     .Add(S["Media Profiles"], S["Media Profiles"].PrefixPosition(), mediaProfiles => mediaProfiles
                         .Action("Index", "MediaProfiles", new { area = "OrchardCore.Media" })
@@ -48,7 +48,7 @@ namespace OrchardCore.Media
 
     public class MediaCacheAdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public MediaCacheAdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
@@ -57,7 +57,7 @@ namespace OrchardCore.Media
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }

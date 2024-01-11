@@ -26,7 +26,7 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
         public override async Task<IDisplayResult> EditAsync(ExportContentToDeploymentTargetSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, OrchardCore.Deployment.CommonPermissions.ManageDeploymentPlan))
+            if (!await _authorizationService.AuthorizeAsync(user, OrchardCore.Deployment.CommonPermissions.ManageDeploymentPlan))
             {
                 return null;
             }

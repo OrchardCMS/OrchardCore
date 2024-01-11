@@ -19,9 +19,8 @@ namespace OrchardCore.Security
             IOptions<AuthenticationOptions> authenticationOptions,
             IOptionsMonitor<ApiAuthorizationOptions> options,
             ILoggerFactory logger,
-            UrlEncoder encoder,
-            ISystemClock clock)
-            : base(options, logger, encoder, clock)
+            UrlEncoder encoder)
+            : base(options, logger, encoder)
         {
             _authenticationOptions = authenticationOptions;
         }
@@ -40,6 +39,7 @@ namespace OrchardCore.Security
         {
             if (!_authenticationOptions.Value.SchemeMap.ContainsKey(Options.ApiAuthenticationScheme))
             {
+                Response.StatusCode = (int)System.Net.HttpStatusCode.Unauthorized;
                 return Task.CompletedTask;
             }
 
@@ -56,6 +56,7 @@ namespace OrchardCore.Security
         {
             if (!_authenticationOptions.Value.SchemeMap.ContainsKey(Options.ApiAuthenticationScheme))
             {
+                Response.StatusCode = (int)System.Net.HttpStatusCode.Forbidden;
                 return Task.CompletedTask;
             }
 
@@ -64,13 +65,8 @@ namespace OrchardCore.Security
             {
                 statusCodePagesFeature.Enabled = false;
             }
-            
+
             return Context.ForbidAsync(Options.ApiAuthenticationScheme);
         }
-    }
-
-    public class ApiAuthorizationOptions : AuthenticationSchemeOptions
-    {
-        public string ApiAuthenticationScheme { get; set; } = "Bearer";
     }
 }

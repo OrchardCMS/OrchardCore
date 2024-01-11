@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
+using Fluid.Values;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Autoroute.Core.Indexes;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.Autoroute.ViewModels;
 using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Records;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Liquid;
@@ -35,7 +36,7 @@ namespace OrchardCore.Autoroute.Handlers
         private readonly ITagCache _tagCache;
         private readonly ISession _session;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         private IContentManager _contentManager;
 
@@ -63,7 +64,7 @@ namespace OrchardCore.Autoroute.Handlers
 
         public override async Task PublishedAsync(PublishContentContext context, AutoroutePart part)
         {
-            if (!String.IsNullOrWhiteSpace(part.Path))
+            if (!string.IsNullOrWhiteSpace(part.Path))
             {
                 if (part.RouteContainedItems)
                 {
@@ -76,39 +77,39 @@ namespace OrchardCore.Autoroute.Handlers
                 await _entries.UpdateEntriesAsync();
             }
 
-            if (!String.IsNullOrWhiteSpace(part.Path) && !part.Disabled && part.SetHomepage)
+            if (!string.IsNullOrWhiteSpace(part.Path) && !part.Disabled && part.SetHomepage)
             {
                 await SetHomeRouteAsync(part, homeRoute =>
                 {
                     homeRoute[_options.ContentItemIdKey] = context.ContentItem.ContentItemId;
-                    homeRoute[_options.JsonPathKey] = "";
+                    homeRoute.Remove(_options.JsonPathKey);
                 });
             }
 
-            // Evict any dependent item from cache
+            // Evict any dependent item from cache.
             await RemoveTagAsync(part);
         }
 
         public override async Task UnpublishedAsync(PublishContentContext context, AutoroutePart part)
         {
-            if (!String.IsNullOrWhiteSpace(part.Path))
+            if (!string.IsNullOrWhiteSpace(part.Path))
             {
                 // Update entries from the index table after the session is committed.
                 await _entries.UpdateEntriesAsync();
 
-                // Evict any dependent item from cache
+                // Evict any dependent item from cache.
                 await RemoveTagAsync(part);
             }
         }
 
         public override async Task RemovedAsync(RemoveContentContext context, AutoroutePart part)
         {
-            if (!String.IsNullOrWhiteSpace(part.Path) && context.NoActiveVersionLeft)
+            if (!string.IsNullOrWhiteSpace(part.Path) && context.NoActiveVersionLeft)
             {
                 // Update entries from the index table after the session is committed.
                 await _entries.UpdateEntriesAsync();
 
-                // Evict any dependent item from cache
+                // Evict any dependent item from cache.
                 await RemoveTagAsync(part);
             }
         }
@@ -116,7 +117,7 @@ namespace OrchardCore.Autoroute.Handlers
         public override async Task ValidatingAsync(ValidateContentContext context, AutoroutePart part)
         {
             // Only validate the path if it's not empty.
-            if (String.IsNullOrWhiteSpace(part.Path))
+            if (string.IsNullOrWhiteSpace(part.Path))
             {
                 return;
             }
@@ -151,10 +152,10 @@ namespace OrchardCore.Autoroute.Handlers
 
         public override Task GetContentItemAspectAsync(ContentItemAspectContext context, AutoroutePart part)
         {
-            return context.ForAsync<RouteHandlerAspect>(aspect =>
+            return context.ForAsync<RouteHandlerAspect>(async aspect =>
             {
-                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-                var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "AutoroutePart"));
+                var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
+                var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "AutoroutePart"));
                 var settings = contentTypePartDefinition.GetSettings<AutoroutePartSettings>();
                 if (settings.ManageContainedItemRoutes)
                 {
@@ -162,8 +163,6 @@ namespace OrchardCore.Autoroute.Handlers
                     aspect.Absolute = part.Absolute;
                     aspect.Disabled = part.Disabled;
                 }
-
-                return Task.CompletedTask;
             });
         }
 
@@ -171,10 +170,7 @@ namespace OrchardCore.Autoroute.Handlers
         {
             var site = await _siteService.LoadSiteSettingsAsync();
 
-            if (site.HomeRoute == null)
-            {
-                site.HomeRoute = new RouteValueDictionary();
-            }
+            site.HomeRoute ??= new RouteValueDictionary();
 
             var homeRoute = site.HomeRoute;
 
@@ -203,7 +199,7 @@ namespace OrchardCore.Autoroute.Handlers
             {
                 var jItems = accessor.Invoke(content);
 
-                foreach (JObject jItem in jItems)
+                foreach (var jItem in jItems.Cast<JObject>())
                 {
                     var contentItem = jItem.ToObject<ContentItem>();
                     var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem);
@@ -230,7 +226,7 @@ namespace OrchardCore.Autoroute.Handlers
         private async Task GenerateContainedPathsFromPatternAsync(ContentItem contentItem, AutoroutePart part)
         {
             // Validate contained content item routes if container has valid path.
-            if (!String.IsNullOrWhiteSpace(part.Path) || !part.RouteContainedItems)
+            if (string.IsNullOrWhiteSpace(part.Path) || !part.RouteContainedItems)
             {
                 return;
             }
@@ -251,7 +247,7 @@ namespace OrchardCore.Autoroute.Handlers
             {
                 var jItems = accessor.Invoke(content);
 
-                foreach (JObject jItem in jItems)
+                foreach (var jItem in jItems.Cast<JObject>())
                 {
                     var contentItem = jItem.ToObject<ContentItem>();
                     var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem);
@@ -261,7 +257,7 @@ namespace OrchardCore.Autoroute.Handlers
                         var path = handlerAspect.Path;
                         if (!handlerAspect.Absolute)
                         {
-                            path = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path;
+                            path = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path.TrimStart('/');
                         }
 
                         entries.Add(new AutorouteEntry(containerContentItemId, path, contentItem.ContentItemId, jItem.Path)
@@ -270,7 +266,7 @@ namespace OrchardCore.Autoroute.Handlers
                         });
                     }
 
-                    var itemBasePath = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path;
+                    var itemBasePath = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path.TrimStart('/');
                     var childrenAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
                     await PopulateContainedContentItemRoutesAsync(entries, containerContentItemId, childrenAspect, jItem, itemBasePath);
                 }
@@ -283,7 +279,7 @@ namespace OrchardCore.Autoroute.Handlers
             {
                 var jItems = accessor.Invoke(content);
 
-                foreach (JObject jItem in jItems)
+                foreach (var jItem in jItems.Cast<JObject>())
                 {
                     var contentItem = jItem.ToObject<ContentItem>();
                     var containedAutoroutePart = contentItem.As<AutoroutePart>();
@@ -310,12 +306,12 @@ namespace OrchardCore.Autoroute.Handlers
                         else
                         {
                             var currentItemBasePath = basePath.EndsWith('/') ? basePath : basePath + '/';
-                            path = currentItemBasePath + containedAutoroutePart.Path;
+                            path = currentItemBasePath + containedAutoroutePart.Path.TrimStart('/');
                             if (!IsRelativePathUnique(entries, path, containedAutoroutePart))
                             {
                                 path = GenerateRelativeUniquePath(entries, path, containedAutoroutePart);
                                 // Remove base path and update part path.
-                                containedAutoroutePart.Path = path.Substring(currentItemBasePath.Length);
+                                containedAutoroutePart.Path = path[currentItemBasePath.Length..];
                                 containedAutoroutePart.Apply();
 
                                 // Merge because we have disconnected the content item from it's json owner.
@@ -326,7 +322,7 @@ namespace OrchardCore.Autoroute.Handlers
                                 });
                             }
 
-                            path = path.Substring(currentItemBasePath.Length);
+                            path = path[currentItemBasePath.Length..];
                         }
 
                         var containedItemBasePath = (basePath.EndsWith('/') ? basePath : basePath + '/') + path;
@@ -339,19 +335,19 @@ namespace OrchardCore.Autoroute.Handlers
 
         private static bool IsRelativePathUnique(List<AutorouteEntry> entries, string path, AutoroutePart context)
         {
-            var result = !entries.Any(e => context.ContentItem.ContentItemId != e.ContainedContentItemId && String.Equals(e.Path, path, StringComparison.OrdinalIgnoreCase));
+            var result = !entries.Any(e => context.ContentItem.ContentItemId != e.ContainedContentItemId && string.Equals(e.Path.Trim('/'), path.Trim('/'), StringComparison.OrdinalIgnoreCase));
             return result;
         }
 
-        private string GenerateRelativeUniquePath(List<AutorouteEntry> entries, string path, AutoroutePart context)
+        private static string GenerateRelativeUniquePath(List<AutorouteEntry> entries, string path, AutoroutePart context)
         {
             var version = 1;
             var unversionedPath = path;
 
             var versionSeparatorPosition = path.LastIndexOf('-');
-            if (versionSeparatorPosition > -1 && Int32.TryParse(path.Substring(versionSeparatorPosition).TrimStart('-'), out version))
+            if (versionSeparatorPosition > -1 && int.TryParse(path[versionSeparatorPosition..].TrimStart('-'), out version))
             {
-                unversionedPath = path.Substring(0, versionSeparatorPosition);
+                unversionedPath = path[..versionSeparatorPosition];
             }
 
             while (true)
@@ -360,7 +356,7 @@ namespace OrchardCore.Autoroute.Handlers
                 var quantityCharactersToTrim = unversionedPath.Length + 1 + version.ToString().Length - AutoroutePart.MaxPathLength;
                 if (quantityCharactersToTrim > 0)
                 {
-                    unversionedPath = unversionedPath.Substring(0, unversionedPath.Length - quantityCharactersToTrim);
+                    unversionedPath = unversionedPath[..^quantityCharactersToTrim];
                 }
 
                 var versionedPath = $"{unversionedPath}-{version++}";
@@ -376,37 +372,40 @@ namespace OrchardCore.Autoroute.Handlers
 
         private async Task GenerateContainerPathFromPatternAsync(AutoroutePart part)
         {
-            // Compute the Path only if it's empty
-            if (!String.IsNullOrWhiteSpace(part.Path))
+            // Compute the Path only if it's empty.
+            if (!string.IsNullOrWhiteSpace(part.Path))
             {
                 return;
             }
 
-            var pattern = GetPattern(part);
+            var pattern = await GetPatternAsync(part);
 
-            if (!String.IsNullOrEmpty(pattern))
+            if (!string.IsNullOrEmpty(pattern))
             {
                 var model = new AutoroutePartViewModel()
                 {
                     Path = part.Path,
                     AutoroutePart = part,
-                    ContentItem = part.ContentItem
+                    ContentItem = part.ContentItem,
                 };
 
                 _contentManager ??= _serviceProvider.GetRequiredService<IContentManager>();
 
                 var cultureAspect = await _contentManager.PopulateAspectAsync(part.ContentItem, new CultureAspect());
-                using (CultureScope.Create(cultureAspect.Culture))
+
+                var cultureOptions = _serviceProvider.GetService<IOptions<CultureOptions>>().Value;
+
+                using (CultureScope.Create(cultureAspect.Culture, ignoreSystemSettings: cultureOptions.IgnoreSystemSettings))
                 {
-                    part.Path = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, model,
-                        scope => scope.SetValue(nameof(ContentItem), model.ContentItem));
+                    part.Path = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,
+                        new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) });
                 }
 
-                part.Path = part.Path.Replace("\r", String.Empty).Replace("\n", String.Empty);
+                part.Path = part.Path.Replace("\r", string.Empty).Replace("\n", string.Empty);
 
                 if (part.Path?.Length > AutoroutePart.MaxPathLength)
                 {
-                    part.Path = part.Path.Substring(0, AutoroutePart.MaxPathLength);
+                    part.Path = part.Path[..AutoroutePart.MaxPathLength];
                 }
 
                 if (!await IsAbsolutePathUniqueAsync(part.Path, part.ContentItem.ContentItemId))
@@ -419,12 +418,12 @@ namespace OrchardCore.Autoroute.Handlers
         }
 
         /// <summary>
-        /// Get the pattern from the AutoroutePartSettings property for its type
+        /// Get the pattern from the AutoroutePartSettings property for its type.
         /// </summary>
-        private string GetPattern(AutoroutePart part)
+        private async Task<string> GetPatternAsync(AutoroutePart part)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(AutoroutePart)));
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(AutoroutePart)));
             var pattern = contentTypePartDefinition.GetSettings<AutoroutePartSettings>().Pattern;
 
             return pattern;
@@ -436,9 +435,9 @@ namespace OrchardCore.Autoroute.Handlers
             var unversionedPath = path;
 
             var versionSeparatorPosition = path.LastIndexOf('-');
-            if (versionSeparatorPosition > -1 && Int32.TryParse(path.Substring(versionSeparatorPosition).TrimStart('-'), out version))
+            if (versionSeparatorPosition > -1 && int.TryParse(path[versionSeparatorPosition..].TrimStart('-'), out version))
             {
-                unversionedPath = path.Substring(0, versionSeparatorPosition);
+                unversionedPath = path[..versionSeparatorPosition];
             }
 
             while (true)
@@ -447,7 +446,7 @@ namespace OrchardCore.Autoroute.Handlers
                 var quantityCharactersToTrim = unversionedPath.Length + 1 + version.ToString().Length - AutoroutePart.MaxPathLength;
                 if (quantityCharactersToTrim > 0)
                 {
-                    unversionedPath = unversionedPath.Substring(0, unversionedPath.Length - quantityCharactersToTrim);
+                    unversionedPath = unversionedPath[..^quantityCharactersToTrim];
                 }
 
                 var versionedPath = $"{unversionedPath}-{version++}";
@@ -464,13 +463,9 @@ namespace OrchardCore.Autoroute.Handlers
             var paths = new string[] { path, "/" + path, path + "/", "/" + path + "/" };
 
             var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => (o.Published || o.Latest) && o.Path.IsIn(paths)).ListAsync();
-            if (possibleConflicts.Any())
+            if (possibleConflicts.Any(x => x.ContentItemId != contentItemId && x.ContainedContentItemId != contentItemId))
             {
-                if (possibleConflicts.Any(x => x.ContentItemId != contentItemId) ||
-                    possibleConflicts.Any(x => !String.IsNullOrEmpty(x.ContainedContentItemId) && x.ContainedContentItemId != contentItemId))
-                {
-                    return false;
-                }
+                return false;
             }
 
             return true;

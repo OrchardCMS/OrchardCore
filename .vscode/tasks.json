@@ -13,14 +13,46 @@
     ]
   },
   "windows": {
-    "command": "cmd",
-    "args": [
-      "/C"
-    ]
+    "options": {
+      "shell": {
+        "executable": "cmd.exe",
+        "args": [
+          "/C"
+        ]
+      }
+    }
   },
   "tasks": [
     {
-      "label": "Dotnet Restore",
+      "label": "dotnet watch - net8.0",
+      "type": "process",
+      "command": "dotnet",
+      "args": [
+        "watch",
+        "run",
+        "${workspaceRoot}/src/OrchardCore.Cms.Web",
+        "-f",
+        "net8.0"
+      ],
+      "options": {
+        "cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web"
+      },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "dotnet run",
+      "type": "shell",
+      "command": "dotnet",
+      "args": [
+        "run",
+        "--project",
+        "${workspaceRoot}\\src\\OrchardCore.Cms.Web\\OrchardCore.Cms.Web.csproj",
+        "-f",
+        "net8.0"
+      ]
+    },
+    {
+      "label": "dotnet restore",
       "type": "shell",
       "command": "dotnet",
       "args": [
@@ -28,7 +60,7 @@
       ]
     },
     {
-      "label": "Dotnet Restore Force",
+      "label": "dotnet restore force",
       "type": "shell",
       "command": "dotnet",
       "args": [
@@ -37,7 +69,7 @@
       ]
     },
     {
-      "label": "Dotnet clean (debug)",
+      "label": "dotnet clean (debug)",
       "type": "shell",
       "command": "dotnet",
       "args": [
@@ -47,7 +79,7 @@
       ]
     },
     {
-      "label": "Dotnet clean (release)",
+      "label": "dotnet clean (release)",
       "type": "shell",
       "command": "dotnet",
       "args": [
@@ -57,19 +89,35 @@
       ]
     },
     {
-      "label": "Web App: Dotnet Build Debug",
+      "label": "dotnet build (debug) - net8.0",
       "type": "shell",
       "command": "dotnet",
       "args": [
         "build",
         "${workspaceRoot}/src/OrchardCore.Cms.Web",
         "-c",
-        "Debug"
+        "Debug",
+        "-f",
+        "net8.0"
       ],
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "Web App: Dotnet Rebuild Debug",
+      "label": "dotnet build (release) - net8.0",
+      "type": "shell",
+      "command": "dotnet",
+      "args": [
+        "build",
+        "${workspaceRoot}/src/OrchardCore.Cms.Web",
+        "-c",
+        "Release",
+        "-f",
+        "net8.0"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "dotnet rebuild (debug) - net8.0",
       "type": "shell",
       "command": "dotnet",
       "args": [
@@ -77,30 +125,29 @@
         "${workspaceRoot}/src/OrchardCore.Cms.Web",
         "--no-incremental",
         "-c",
-        "Debug"
+        "Debug",
+        "-f",
+        "net8.0"
       ],
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "Web App: Dotnet Build Release",
+      "label": "dotnet rebuild (release) - net8.0",
       "type": "shell",
       "command": "dotnet",
       "args": [
         "build",
         "${workspaceRoot}/src/OrchardCore.Cms.Web",
+        "--no-incremental",
         "-c",
-        "Release"
+        "Release",
+        "-f",
+        "net8.0"
       ],
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "Web App: Dotnet Run",
-      "args": [
-        "cd ${workspaceRoot}/src/OrchardCore.Cms.Web & dotnet run"
-      ]
-    },
-    {
-      "label": "Cleanup build folder",
+      "label": "cleanup publish folder",
       "type": "shell",
       "command": "rm",
       "windows": {
@@ -116,7 +163,7 @@
       ]
     },
     {
-      "label": "Dotnet Publish (self-contained)",
+      "label": "dotnet publish (self-contained) - release - net8.0",
       "type": "shell",
       "command": "dotnet",
       "windows": {
@@ -130,7 +177,7 @@
           "win-x64",
           "--self-contained",
           "--framework",
-          "net5.0",
+          "net8.0",
           "--output",
           ".\\.build\\release"
         ]
@@ -144,14 +191,14 @@
         "linux-x64",
         "--self-contained",
         "--framework",
-        "net5.0",
+        "net8.0",
         "--output",
         "./.build/release"
       ],
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "Dotnet Publish (framework dependent)",
+      "label": "dotnet publish (framework dependent) - release - net8.0",
       "type": "shell",
       "command": "dotnet",
       "windows": {
@@ -166,7 +213,7 @@
           "--self-contained",
           "false",
           "--framework",
-          "net5.0",
+          "net8.0",
           "--output",
           ".\\.build\\release"
         ]
@@ -181,30 +228,32 @@
         "--self-contained",
         "false",
         "--framework",
-        "net5.0",
+        "net8.0",
         "--output",
         "./.build/release"
       ],
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "Web App: Dotnet Publish (self-contained)",
+      "label": "tasks: dotnet publish release (self-contained) - net8.0",
       "dependsOn": [
-        "Cleanup build folder",
-        "Dotnet Publish (self-contained)"
+        "cleanup publish folder",
+        "dotnet publish (self-contained) - net8.0"
       ]
     },
     {
-      "label": "Web App: Dotnet Publish (framework dependent)",
+      "label": "tasks: dotnet publish release (framework dependent) - net8.0",
       "dependsOn": [
-        "Cleanup build folder",
-        "Dotnet Publish (framework dependent)"
+        "cleanup publish folder",
+        "dotnet publish (framework dependent) - net8.0"
       ]
     },
     {
-      "label": "Gulp Build",
+      "label": "gulp build",
+      "type": "shell",
+      "command": "gulp",
       "args": [
-        "gulp build"
+        "build"
       ],
       "problemMatcher": "$gulp-tsc"
     }

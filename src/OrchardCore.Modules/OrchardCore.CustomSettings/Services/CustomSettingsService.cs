@@ -8,7 +8,6 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Settings;
 
 namespace OrchardCore.CustomSettings.Services
@@ -20,7 +19,7 @@ namespace OrchardCore.CustomSettings.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly Lazy<IDictionary<string, ContentTypeDefinition>> _settingsTypes;
+        private readonly Lazy<Task<IDictionary<string, ContentTypeDefinition>>> _settingsTypes;
 
         public CustomSettingsService(
             ISiteService siteService,
@@ -34,49 +33,60 @@ namespace OrchardCore.CustomSettings.Services
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
             _contentDefinitionManager = contentDefinitionManager;
-            _settingsTypes = new Lazy<IDictionary<string, ContentTypeDefinition>>(
-                () => _contentDefinitionManager
-                     .ListTypeDefinitions()
-                     .Where(x => x.GetSettings<ContentTypeSettings>().Stereotype == "CustomSettings")
-                     .ToDictionary(x => x.Name));
+            _settingsTypes = new Lazy<Task<IDictionary<string, ContentTypeDefinition>>>(async () => await GetContentTypeAsync());
         }
 
+        [Obsolete($"Instead, utilize the {nameof(GetAllSettingsTypeNamesAsync)} method. This current method is slated for removal in upcoming releases.")]
         public IEnumerable<string> GetAllSettingsTypeNames()
-        {
-            return _settingsTypes.Value.Keys;
-        }
+            => GetAllSettingsTypeNamesAsync().GetAwaiter().GetResult();
 
+        public async Task<IEnumerable<string>> GetAllSettingsTypeNamesAsync()
+            => (await _settingsTypes.Value).Keys;
+
+
+        [Obsolete($"Instead, utilize the {nameof(GetAllSettingsTypesAsync)} method. This current method is slated for removal in upcoming releases.")]
         public IEnumerable<ContentTypeDefinition> GetAllSettingsTypes()
-        {
-            return _settingsTypes.Value.Values;
-        }
+            => GetAllSettingsTypesAsync().GetAwaiter().GetResult();
 
+        public async Task<IEnumerable<ContentTypeDefinition>> GetAllSettingsTypesAsync()
+            => (await _settingsTypes.Value).Values;
+
+        [Obsolete($"Instead, utilize the {nameof(GetSettingsTypesAsync)} method. This current method is slated for removal in upcoming releases.")]
         public IEnumerable<ContentTypeDefinition> GetSettingsTypes(params string[] settingsTypeNames)
+            => GetSettingsTypesAsync(settingsTypeNames).GetAwaiter().GetResult();
+
+        public async Task<IEnumerable<ContentTypeDefinition>> GetSettingsTypesAsync(params string[] settingsTypeNames)
         {
+            var types = await _settingsTypes.Value;
+            var definitions = new List<ContentTypeDefinition>();
+
             foreach (var settingsTypeName in settingsTypeNames)
             {
                 ContentTypeDefinition settingsType;
-                if (_settingsTypes.Value.TryGetValue(settingsTypeName, out settingsType))
+                if (types.TryGetValue(settingsTypeName, out settingsType))
                 {
-                    yield return settingsType;
+                    definitions.Add(settingsType);
                 }
             }
+
+            return definitions;
         }
 
         public ContentTypeDefinition GetSettingsType(string settingsTypeName)
-        {
-            ContentTypeDefinition settingsType;
+            => GetSettingsTypeAsync(settingsTypeName).Result;
 
-            _settingsTypes.Value.TryGetValue(settingsTypeName, out settingsType);
+        public async Task<ContentTypeDefinition> GetSettingsTypeAsync(string settingsTypeName)
+        {
+            (await _settingsTypes.Value).TryGetValue(settingsTypeName, out var settingsType);
 
             return settingsType;
         }
 
-        public async Task<bool> CanUserCreateSettingsAsync(ContentTypeDefinition settingsType)
+        public Task<bool> CanUserCreateSettingsAsync(ContentTypeDefinition settingsType)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            return await _authorizationService.AuthorizeAsync(user, Permissions.CreatePermissionForType(settingsType));
+            return _authorizationService.AuthorizeAsync(user, Permissions.CreatePermissionForType(settingsType));
         }
 
         public Task<ContentItem> GetSettingsAsync(string settingsTypeName, Action isNew = null)
@@ -117,6 +127,16 @@ namespace OrchardCore.CustomSettings.Services
             }
 
             return contentItem;
+        }
+
+        private async Task<IDictionary<string, ContentTypeDefinition>> GetContentTypeAsync()
+        {
+            var contentTypes = await _contentDefinitionManager.ListTypeDefinitionsAsync();
+
+            var result = contentTypes.Where(x => x.StereotypeEquals("CustomSettings"))
+            .ToDictionary(x => x.Name);
+
+            return result;
         }
     }
 }

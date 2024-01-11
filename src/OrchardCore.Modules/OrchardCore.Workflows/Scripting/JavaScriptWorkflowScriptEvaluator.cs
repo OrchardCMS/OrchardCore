@@ -29,9 +29,9 @@ namespace OrchardCore.Workflows.Evaluators
 
         public async Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext, params IGlobalMethodProvider[] scopedMethodProviders)
         {
-            if (String.IsNullOrWhiteSpace(expression.Expression))
+            if (string.IsNullOrWhiteSpace(expression.Expression))
             {
-                return await Task.FromResult<T>(default(T));
+                return default;
             }
 
             var workflowType = workflowContext.WorkflowType;

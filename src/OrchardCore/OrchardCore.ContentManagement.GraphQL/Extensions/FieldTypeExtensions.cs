@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using GraphQL.Types;
 
 namespace OrchardCore.ContentManagement.GraphQL
@@ -20,11 +19,6 @@ namespace OrchardCore.ContentManagement.GraphQL
             if (fieldType == null)
             {
                 return null;
-            }
-
-            if (fieldType.Metadata == null)
-            {
-                fieldType.Metadata = new Dictionary<string, object>();
             }
 
             if (!fieldType.HasMetadata(name))

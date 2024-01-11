@@ -1,6 +1,6 @@
 using System;
-using System.IO;
 using System.Threading.Tasks;
+using Cysharp.Text;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Environment.Commands.Parameters;
@@ -32,7 +32,7 @@ namespace OrchardCore.Recipes.RecipeSteps
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "Command", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "Command", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
@@ -41,7 +41,7 @@ namespace OrchardCore.Recipes.RecipeSteps
 
             foreach (var command in step.Commands)
             {
-                using (var output = new StringWriter())
+                using (var output = new ZStringWriter())
                 {
                     _logger.LogInformation("Executing command: {Command}", command);
                     var commandParameters = _commandParameterParser.Parse(_commandParser.Parse(command));

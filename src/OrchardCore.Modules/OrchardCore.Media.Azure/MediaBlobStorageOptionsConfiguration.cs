@@ -14,6 +14,9 @@ namespace OrchardCore.Media.Azure
         private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
+        // Local instance since it can be discarded once the startup is over
+        private readonly FluidParser _fluidParser = new();
+
         public MediaBlobStorageOptionsConfiguration(
             IShellConfiguration shellConfiguration,
             ShellSettings shellSettings,
@@ -29,14 +32,16 @@ namespace OrchardCore.Media.Azure
         {
             var section = _shellConfiguration.GetSection("OrchardCore_Media_Azure");
 
-            options.BasePath = section.GetValue(nameof(options.BasePath), String.Empty);
-            options.ContainerName = section.GetValue(nameof(options.ContainerName), String.Empty);
-            options.ConnectionString = section.GetValue(nameof(options.ConnectionString), String.Empty);
+            options.BasePath = section.GetValue(nameof(options.BasePath), string.Empty);
+            options.ContainerName = section.GetValue(nameof(options.ContainerName), string.Empty);
+            options.ConnectionString = section.GetValue(nameof(options.ConnectionString), string.Empty);
             options.CreateContainer = section.GetValue(nameof(options.CreateContainer), true);
+            options.RemoveContainer = section.GetValue(nameof(options.RemoveContainer), false);
 
-            var templateContext = new TemplateContext();
-            templateContext.MemberAccessStrategy.Register<ShellSettings>();
-            templateContext.MemberAccessStrategy.Register<MediaBlobStorageOptions>();
+            var templateOptions = new TemplateOptions();
+            var templateContext = new TemplateContext(templateOptions);
+            templateOptions.MemberAccessStrategy.Register<ShellSettings>();
+            templateOptions.MemberAccessStrategy.Register<MediaBlobStorageOptions>();
             templateContext.SetValue("ShellSettings", _shellSettings);
 
             ParseContainerName(options, templateContext);
@@ -48,11 +53,11 @@ namespace OrchardCore.Media.Azure
             // Use Fluid directly as this is transient and cannot invoke _liquidTemplateManager.
             try
             {
-                var template = FluidTemplate.Parse(options.ContainerName);
+                var template = _fluidParser.Parse(options.ContainerName);
 
                 // container name must be lowercase
                 options.ContainerName = template.Render(templateContext, NullEncoder.Default).ToLower();
-                options.ContainerName = options.ContainerName.Replace("\r", String.Empty).Replace("\n", String.Empty);
+                options.ContainerName = options.ContainerName.Replace("\r", string.Empty).Replace("\n", string.Empty);
             }
             catch (Exception e)
             {
@@ -65,10 +70,10 @@ namespace OrchardCore.Media.Azure
         {
             try
             {
-                var template = FluidTemplate.Parse(options.BasePath);
+                var template = _fluidParser.Parse(options.BasePath);
 
                 options.BasePath = template.Render(templateContext, NullEncoder.Default);
-                options.BasePath = options.BasePath.Replace("\r", String.Empty).Replace("\n", String.Empty);
+                options.BasePath = options.BasePath.Replace("\r", string.Empty).Replace("\n", string.Empty);
             }
             catch (Exception e)
             {

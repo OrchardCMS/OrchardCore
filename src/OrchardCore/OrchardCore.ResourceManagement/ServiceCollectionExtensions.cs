@@ -11,7 +11,6 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddResourceManagement(this IServiceCollection services)
         {
             services.TryAddScoped<IResourceManager, ResourceManager>();
-            services.TryAddSingleton<IResourceManifestState, ResourceManifestState>();
 
             return services;
         }

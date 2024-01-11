@@ -1,12 +1,10 @@
 name: PR - CI
 on: 
   pull_request:
-    paths-ignore:
-      - '**/*.md'	
-      - 'mkdocs.yml'	
-      - 'src/docs/**/*'
-    branches:
-      - dev
+    branches: [ main, release/** ]
+concurrency:
+  group: ${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
@@ -19,26 +17,23 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     name: Build & Test
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET Core 3.1 on ${{ matrix.os }}
-      uses: actions/setup-dotnet@v1
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
       with:
-        dotnet-version: 3.1.*
-    - name: Setup .NET Core 5.0 on ${{ matrix.os }}
-      uses: actions/setup-dotnet@v1
+        node-version: "15"
+    - uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 5.0.*
+        dotnet-version: '8.0.x'
     - name: Build
       run: |
-        dotnet build --configuration Release --framework net5.0
-        dotnet build --configuration Release --framework netcoreapp3.1
+        dotnet build -c Release
     - name: Unit Tests
       run: |
-        dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj 
+        dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
     - name: Functional Tests
       if: matrix.os == 'ubuntu-latest'
       run: |
-        cd test/Functional
+        cd test/OrchardCore.Tests.Functional
         npm install
         npm run cms:test
         npm run mvc:test
@@ -47,6 +42,5 @@ jobs:
       with:
         name: functional-test-failure
         path: |
-          test/Functional/cms-tests/cypress/screenshots
+          test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
           src/OrchardCore.Cms.Web/App_Data/logs
-  

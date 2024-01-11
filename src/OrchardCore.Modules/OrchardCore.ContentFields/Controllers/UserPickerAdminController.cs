@@ -1,18 +1,17 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Admin;
-using OrchardCore.Contents;
 using OrchardCore.ContentFields.Settings;
-using OrchardCore.ContentFields.Services;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.Contents;
 using OrchardCore.Modules;
-using System.Security.Claims;
 
 namespace OrchardCore.ContentFields.Controllers
 {
@@ -44,16 +43,16 @@ namespace OrchardCore.ContentFields.Controllers
             {
                 return BadRequest("Part, field and contentType are required parameters");
             }
-            
+
             var contentItem = await _contentManager.NewAsync(contentType);
             contentItem.Owner = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
             {
                 return Forbid();
-            }            
+            }
 
-            var partFieldDefinition = _contentDefinitionManager.GetPartDefinition(part)?.Fields
+            var partFieldDefinition = (await _contentDefinitionManager.GetPartDefinitionAsync(part))?.Fields
                 .FirstOrDefault(f => f.Name == field);
 
             var fieldSettings = partFieldDefinition?.GetSettings<UserPickerFieldSettings>();
@@ -63,7 +62,10 @@ namespace OrchardCore.ContentFields.Controllers
             }
 
             var editor = partFieldDefinition.Editor() ?? "Default";
-            var resultProvider = _resultProviders.FirstOrDefault(p => p.Name == editor);
+
+            var resultProvider = _resultProviders.FirstOrDefault(p => p.Name == editor)
+                ?? _resultProviders.FirstOrDefault(p => p.Name == "Default");
+
             if (resultProvider == null)
             {
                 return new ObjectResult(new List<UserPickerResult>());

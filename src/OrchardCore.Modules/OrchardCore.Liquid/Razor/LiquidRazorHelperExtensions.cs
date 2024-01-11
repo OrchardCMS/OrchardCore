@@ -5,7 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
 using OrchardCore.Liquid;
 
+#pragma warning disable CA1050 // Declare types in namespaces
 public static class LiquidRazorHelperExtensions
+#pragma warning restore CA1050 // Declare types in namespaces
 {
     /// <summary>
     /// Parses a liquid string to HTML.
@@ -30,7 +32,7 @@ public static class LiquidRazorHelperExtensions
         var liquidTemplateManager = serviceProvider.GetRequiredService<ILiquidTemplateManager>();
         var htmlEncoder = serviceProvider.GetRequiredService<HtmlEncoder>();
 
-        liquid = await liquidTemplateManager.RenderAsync(liquid, htmlEncoder, model);
-        return new HtmlString(liquid);
+        var result = await liquidTemplateManager.RenderHtmlContentAsync(liquid, htmlEncoder, model);
+        return result;
     }
 }

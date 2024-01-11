@@ -43,7 +43,7 @@ namespace OrchardCore.Facebook.Drivers
         public override async Task<IDisplayResult> EditAsync(FacebookSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
             {
                 return null;
             }
@@ -79,7 +79,7 @@ namespace OrchardCore.Facebook.Drivers
             {
                 var user = _httpContextAccessor.HttpContext?.User;
 
-                if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
+                if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
                 {
                     return null;
                 }

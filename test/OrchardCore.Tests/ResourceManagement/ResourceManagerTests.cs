@@ -1,46 +1,36 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using AngleSharp;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
-using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.Extensions.Options;
 using OrchardCore.ResourceManagement;
-using Xunit;
+using ResourceLocation = OrchardCore.ResourceManagement.ResourceLocation;
 
 namespace OrchardCore.Tests.ResourceManagement
 {
     public class ResourceManagerTests
     {
-        private const string basePath = "http://host";
+        private const string BasePath = "http://host";
 
-        private readonly IBrowsingContext browsingContext;
+        private readonly IBrowsingContext _browsingContext;
 
         public ResourceManagerTests()
         {
-            browsingContext = BrowsingContext.New();
+            _browsingContext = BrowsingContext.New();
         }
 
         [Fact]
         public void FindResourceFromManifestProviders()
         {
+            var options = new ResourceManagementOptions();
+            var manifest = new ResourceManifest();
+
+            manifest.DefineResource("foo", "bar1").SetAttribute("attr", "bar1");
+            manifest.DefineResource("foo", "bar2").SetAttribute("attr", "bar2");
+            manifest.DefineResource("foo", "bar3").SetAttribute("attr", "bar3");
+
+            options.ResourceManifests.Add(manifest);
+
             var resourceManager = new ResourceManager(
-                new[] {
-                    new StubResourceManifestProvider(builder => {
-                        var manifest = builder.Add();
-                        manifest.DefineResource("foo", "bar1").SetAttribute("attr", "bar1");
-                        manifest.DefineResource("foo", "bar2").SetAttribute("attr", "bar2");
-                        manifest.DefineResource("foo", "bar3").SetAttribute("attr", "bar3");
-                    })
-                },
-                new ResourceManifestState(),
-                new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+                new OptionsWrapper<ResourceManagementOptions>(options),
                 StubFileVersionProvider.Instance
             );
 
@@ -54,11 +44,41 @@ namespace OrchardCore.Tests.ResourceManagement
         }
 
         [Fact]
+        public void FindHighestVersionedResourceFromManifest()
+        {
+            var options = new ResourceManagementOptions();
+            var manifest = new ResourceManifest();
+
+            manifest.DefineResource("foo", "bar")
+                .SetUrl("~/bar1.js");
+            manifest.DefineResource("foo", "bar")
+                .SetUrl("~/bar2.js")
+                .SetVersion("1.0.0");
+            manifest.DefineResource("foo", "bar")
+                .SetUrl("~/bar3.js")
+                .SetVersion("2.0.0");
+            manifest.DefineResource("foo", "bar")
+                .SetUrl("~/bar4.js");
+
+            options.ResourceManifests.Add(manifest);
+
+            var resourceManager = new ResourceManager(
+                new OptionsWrapper<ResourceManagementOptions>(options),
+                StubFileVersionProvider.Instance
+            );
+
+            var resourceDefinition = resourceManager.FindResource(new RequireSettings { Type = "foo", Name = "bar" });
+            Assert.NotNull(resourceDefinition);
+            Assert.Equal("foo", resourceDefinition.Type);
+            Assert.Equal("bar", resourceDefinition.Name);
+            Assert.Contains("~/bar3.js", resourceDefinition.Url);
+            Assert.Contains("2.0.0", resourceDefinition.Version);
+        }
+
+        [Fact]
         public void RegisterResouceUrl()
         {
             var resourceManager = new ResourceManager(
-                Enumerable.Empty<IResourceManifestProvider>(),
-                new ResourceManifestState(),
                 new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
                 StubFileVersionProvider.Instance
             );
@@ -76,8 +96,6 @@ namespace OrchardCore.Tests.ResourceManagement
         public void RegisteredResouceUrlIsRequired()
         {
             var resourceManager = new ResourceManager(
-                Enumerable.Empty<IResourceManifestProvider>(),
-                new ResourceManifestState(),
                 new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
                 StubFileVersionProvider.Instance
             );
@@ -96,16 +114,15 @@ namespace OrchardCore.Tests.ResourceManagement
         [Fact]
         public void RegisteredResouceNameIsRequired()
         {
+            var options = new ResourceManagementOptions();
+            var manifest = new ResourceManifest();
+
+            manifest.DefineResource("foo", "bar").SetUrl("schema://domain.ext/resource", "schema://domain.ext/resource.debug");
+
+            options.ResourceManifests.Add(manifest);
+
             var resourceManager = new ResourceManager(
-                new[] {
-                    new StubResourceManifestProvider(builder => {
-                        var manifest = builder.Add();
-                        manifest.DefineResource("foo", "bar")
-                            .SetUrl("schema://domain.ext/resource", "schema://domain.ext/resource.debug");
-                    })
-                },
-                new ResourceManifestState(),
-                new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+                new OptionsWrapper<ResourceManagementOptions>(options),
                 StubFileVersionProvider.Instance
             );
 
@@ -123,32 +140,32 @@ namespace OrchardCore.Tests.ResourceManagement
         [Fact]
         public void RequireDependencies()
         {
+            var options = new ResourceManagementOptions();
+            var manifest = new ResourceManifest();
+
+            manifest.DefineResource("foo", "first-resource")
+                .SetDependencies("first-dependency")
+                .SetPosition(ResourcePosition.First);
+            manifest.DefineResource("foo", "requires-dependency")
+                .SetDependencies("dependency");
+            manifest.DefineResource("foo", "dependency");
+            manifest.DefineResource("foo", "another-dependency")
+                .SetDependencies("first-dependency");
+            manifest.DefineResource("foo", "first-dependency");
+            manifest.DefineResource("foo", "last-dependency")
+                .SetPosition(ResourcePosition.Last)
+                .SetDependencies("another-dependency");
+            manifest.DefineResource("foo", "simple-resource")
+                .SetDependencies("first-dependency");
+            manifest.DefineResource("foo", "last-resource")
+                .SetPosition(ResourcePosition.Last)
+                .SetDependencies("last-dependency");
+            manifest.DefineResource("foo", "not-used-resource");
+
+            options.ResourceManifests.Add(manifest);
+
             var resourceManager = new ResourceManager(
-                new[] {
-                    new StubResourceManifestProvider(builder => {
-                        var manifest = builder.Add();
-                        manifest.DefineResource("foo", "first-resource")
-                            .SetDependencies("first-dependency")
-                            .SetPosition(ResourcePosition.First);
-                        manifest.DefineResource("foo", "requires-dependency")
-                            .SetDependencies("dependency");
-                        manifest.DefineResource("foo", "dependency");
-                        manifest.DefineResource("foo", "another-dependency")
-                            .SetDependencies("first-dependency");
-                        manifest.DefineResource("foo", "first-dependency");
-                        manifest.DefineResource("foo", "last-dependency")
-                            .SetPosition(ResourcePosition.Last)
-                            .SetDependencies("another-dependency");
-                        manifest.DefineResource("foo", "simple-resource")
-                            .SetDependencies("first-dependency");
-                        manifest.DefineResource("foo", "last-resource")
-                            .SetPosition(ResourcePosition.Last)
-                            .SetDependencies("last-dependency");
-                        manifest.DefineResource("foo","not-used-resource");
-                    })
-                },
-                new ResourceManifestState(),
-                new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+                new OptionsWrapper<ResourceManagementOptions>(options),
                 StubFileVersionProvider.Instance
             );
 
@@ -186,18 +203,18 @@ namespace OrchardCore.Tests.ResourceManagement
         [Fact]
         public void RequireCircularDependenciesShouldThrowException()
         {
+            var options = new ResourceManagementOptions();
+            var manifest = new ResourceManifest();
+
+            manifest.DefineResource("foo", "required")
+                .SetDependencies("dependency");
+            manifest.DefineResource("foo", "dependency")
+                .SetDependencies("required");
+
+            options.ResourceManifests.Add(manifest);
+
             var resourceManager = new ResourceManager(
-                new[] {
-                    new StubResourceManifestProvider(builder => {
-                        var manifest = builder.Add();
-                        manifest.DefineResource("foo", "required")
-                            .SetDependencies("dependency");
-                        manifest.DefineResource("foo", "dependency")
-                            .SetDependencies("required");;
-                    })
-                },
-                new ResourceManifestState(),
-                new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+                new OptionsWrapper<ResourceManagementOptions>(options),
                 StubFileVersionProvider.Instance
             );
 
@@ -210,20 +227,20 @@ namespace OrchardCore.Tests.ResourceManagement
         [Fact]
         public void RequireCircularNestedDependencyShouldThrowException()
         {
+            var options = new ResourceManagementOptions();
+            var manifest = new ResourceManifest();
+
+            manifest.DefineResource("foo", "requires-dependency")
+                .SetDependencies("dependency");
+            manifest.DefineResource("foo", "requires-indirect-dependency")
+                .SetDependencies("requires-dependency");
+            manifest.DefineResource("foo", "dependency")
+                .SetDependencies("requires-indirect-dependency");
+
+            options.ResourceManifests.Add(manifest);
+
             var resourceManager = new ResourceManager(
-                new[] {
-                    new StubResourceManifestProvider(builder => {
-                        var manifest = builder.Add();
-                        manifest.DefineResource("foo", "requires-dependency")
-                            .SetDependencies("dependency");
-                        manifest.DefineResource("foo", "requires-indirect-dependency")
-                            .SetDependencies("requires-dependency");
-                        manifest.DefineResource("foo", "dependency")
-                            .SetDependencies("requires-indirect-dependency");
-                    })
-                },
-                new ResourceManifestState(),
-                new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+                new OptionsWrapper<ResourceManagementOptions>(options),
                 StubFileVersionProvider.Instance
             );
 
@@ -237,18 +254,18 @@ namespace OrchardCore.Tests.ResourceManagement
         [Fact]
         public void RequireByDependencyResourceThatDependsOnLastPositionedResourceShouldRegisterResourceLast()
         {
+            var options = new ResourceManagementOptions();
+            var manifest = new ResourceManifest();
+
+            manifest.DefineResource("foo", "resource")
+                .SetDependencies("last-resource");
+            manifest.DefineResource("foo", "last-resource")
+                .SetPosition(ResourcePosition.Last);
+
+            options.ResourceManifests.Add(manifest);
+
             var resourceManager = new ResourceManager(
-                new[] {
-                    new StubResourceManifestProvider(builder => {
-                        var manifest = builder.Add();
-                        manifest.DefineResource("foo", "resource")
-                            .SetDependencies("last-resource");
-                        manifest.DefineResource("foo", "last-resource")
-                            .SetPosition(ResourcePosition.Last);
-                    })
-                },
-                new ResourceManifestState(),
-                new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+                new OptionsWrapper<ResourceManagementOptions>(options),
                 StubFileVersionProvider.Instance
             );
 
@@ -271,18 +288,18 @@ namespace OrchardCore.Tests.ResourceManagement
         [Fact]
         public void RequireFirstPositionedResourceThatDependsOnByDependencyResourceShouldRegisterDependencyFirst()
         {
+            var options = new ResourceManagementOptions();
+            var manifest = new ResourceManifest();
+
+            manifest.DefineResource("foo", "dependency");
+            manifest.DefineResource("foo", "first-resource")
+                .SetDependencies("dependency")
+                .SetPosition(ResourcePosition.First);
+
+            options.ResourceManifests.Add(manifest);
+
             var resourceManager = new ResourceManager(
-                new[] {
-                    new StubResourceManifestProvider(builder => {
-                        var manifest = builder.Add();
-                        manifest.DefineResource("foo", "dependency");
-                        manifest.DefineResource("foo", "first-resource")
-                            .SetDependencies("dependency")
-                            .SetPosition(ResourcePosition.First);
-                    })
-                },
-                new ResourceManifestState(),
-                new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+                new OptionsWrapper<ResourceManagementOptions>(options),
                 StubFileVersionProvider.Instance
             );
 
@@ -305,21 +322,21 @@ namespace OrchardCore.Tests.ResourceManagement
         [Fact]
         public void RequireFirstPositionedResourceWithDependencyToResourcePositionedLastShouldThrowException()
         {
+            var options = new ResourceManagementOptions();
+            var manifest = new ResourceManifest();
+
+            manifest.DefineResource("foo", "resource")
+                .SetDependencies("last-resource");
+            manifest.DefineResource("foo", "last-resource")
+                .SetPosition(ResourcePosition.Last);
+            manifest.DefineResource("foo", "first-resource")
+                .SetPosition(ResourcePosition.First)
+                .SetDependencies("resource");
+
+            options.ResourceManifests.Add(manifest);
+
             var resourceManager = new ResourceManager(
-                new[] {
-                    new StubResourceManifestProvider(builder => {
-                        var manifest = builder.Add();
-                        manifest.DefineResource("foo", "resource")
-                            .SetDependencies("last-resource");
-                        manifest.DefineResource("foo", "last-resource")
-                            .SetPosition(ResourcePosition.Last);
-                        manifest.DefineResource("foo", "first-resource")
-                            .SetPosition(ResourcePosition.First)
-                            .SetDependencies("resource");
-                    })
-                },
-                new ResourceManifestState(),
-                new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+                new OptionsWrapper<ResourceManagementOptions>(options),
                 StubFileVersionProvider.Instance
             );
 
@@ -333,17 +350,17 @@ namespace OrchardCore.Tests.ResourceManagement
         [Fact]
         public void RemoveRequiredResource()
         {
+            var options = new ResourceManagementOptions();
+            var manifest = new ResourceManifest();
+
+            manifest.DefineResource("foo", "required");
+            manifest.DefineResource("foo", "to-remove");
+            manifest.DefineResource("foo", "not-required");
+
+            options.ResourceManifests.Add(manifest);
+
             var resourceManager = new ResourceManager(
-                new[] {
-                    new StubResourceManifestProvider(builder => {
-                        var manifest = builder.Add();
-                        manifest.DefineResource("foo", "required");
-                        manifest.DefineResource("foo", "to-remove");
-                        manifest.DefineResource("foo", "not-required");
-                    })
-                },
-                new ResourceManifestState(),
-                new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+                new OptionsWrapper<ResourceManagementOptions>(options),
                 StubFileVersionProvider.Instance
             );
 
@@ -364,19 +381,19 @@ namespace OrchardCore.Tests.ResourceManagement
         [Fact]
         public void RemoveRequiredResourceDependency()
         {
+            var options = new ResourceManagementOptions();
+            var manifest = new ResourceManifest();
+
+            manifest.DefineResource("foo", "required");
+            manifest.DefineResource("foo", "to-remove")
+                .SetDependencies("dependency");
+            manifest.DefineResource("foo", "dependency");
+            manifest.DefineResource("foo", "not-required");
+
+            options.ResourceManifests.Add(manifest);
+
             var resourceManager = new ResourceManager(
-                new[] {
-                    new StubResourceManifestProvider(builder => {
-                        var manifest = builder.Add();
-                        manifest.DefineResource("foo", "required");
-                        manifest.DefineResource("foo", "to-remove")
-                            .SetDependencies("dependency");
-                        manifest.DefineResource("foo", "dependency");
-                        manifest.DefineResource("foo", "not-required");
-                    })
-                },
-                new ResourceManifestState(),
-                new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+                new OptionsWrapper<ResourceManagementOptions>(options),
                 StubFileVersionProvider.Instance
             );
 
@@ -399,8 +416,6 @@ namespace OrchardCore.Tests.ResourceManagement
         public void RegisterHeadScript()
         {
             var resourceManager = new ResourceManager(
-                Enumerable.Empty<IResourceManifestProvider>(),
-                new ResourceManifestState(),
                 new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
                 StubFileVersionProvider.Instance
             );
@@ -417,8 +432,6 @@ namespace OrchardCore.Tests.ResourceManagement
         public void RegisterFootScript()
         {
             var resourceManager = new ResourceManager(
-                Enumerable.Empty<IResourceManifestProvider>(),
-                new ResourceManifestState(),
                 new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
                 StubFileVersionProvider.Instance
             );
@@ -435,8 +448,6 @@ namespace OrchardCore.Tests.ResourceManagement
         public void RegisterStyle()
         {
             var resourceManager = new ResourceManager(
-                Enumerable.Empty<IResourceManifestProvider>(),
-                new ResourceManifestState(),
                 new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
                 StubFileVersionProvider.Instance
             );
@@ -453,8 +464,6 @@ namespace OrchardCore.Tests.ResourceManagement
         public void RegisterLink()
         {
             var resourceManager = new ResourceManager(
-                Enumerable.Empty<IResourceManifestProvider>(),
-                new ResourceManifestState(),
                 new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
                 StubFileVersionProvider.Instance
             );
@@ -476,8 +485,6 @@ namespace OrchardCore.Tests.ResourceManagement
         public void RegisterMeta()
         {
             var resourceManager = new ResourceManager(
-                Enumerable.Empty<IResourceManifestProvider>(),
-                new ResourceManifestState(),
                 new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
                 StubFileVersionProvider.Instance
             );
@@ -495,8 +502,6 @@ namespace OrchardCore.Tests.ResourceManagement
         public async Task AppendMeta()
         {
             var resourceManager = new ResourceManager(
-                Enumerable.Empty<IResourceManifestProvider>(),
-                new ResourceManifestState(),
                 new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
                 StubFileVersionProvider.Instance
             );
@@ -525,8 +530,6 @@ namespace OrchardCore.Tests.ResourceManagement
         public async Task RenderMeta()
         {
             var resourceManager = new ResourceManager(
-                Enumerable.Empty<IResourceManifestProvider>(),
-                new ResourceManifestState(),
                 new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
                 StubFileVersionProvider.Instance
             );
@@ -535,8 +538,10 @@ namespace OrchardCore.Tests.ResourceManagement
             resourceManager.RegisterMeta(new MetaEntry { Name = "description", Content = "Some content" });
             resourceManager.RegisterMeta(new MetaEntry { HttpEquiv = "refresh", Content = "3;url=https://www.orchardcore.net/" });
 
+            using var sw = new StringWriter();
+            resourceManager.RenderMeta(sw);
             var htmlBuilder = new HtmlContentBuilder();
-            resourceManager.RenderMeta(htmlBuilder);
+            htmlBuilder.AppendHtml(sw.ToString());
 
             var document = await ParseHtmlAsync(htmlBuilder);
             var metas = document
@@ -552,8 +557,6 @@ namespace OrchardCore.Tests.ResourceManagement
         public async Task RenderHeadLink()
         {
             var resourceManager = new ResourceManager(
-                Enumerable.Empty<IResourceManifestProvider>(),
-                new ResourceManifestState(),
                 new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
                 StubFileVersionProvider.Instance
             );
@@ -562,33 +565,35 @@ namespace OrchardCore.Tests.ResourceManagement
             resourceManager.RegisterLink(new LinkEntry { Rel = "icon", Href = "/favicon.ico" });
             resourceManager.RegisterLink(new LinkEntry { Rel = "alternate", Type = "application/pdf", Href = "/pdf" });
 
+            using var sw = new StringWriter();
+            resourceManager.RenderHeadLink(sw);
             var htmlBuilder = new HtmlContentBuilder();
-            resourceManager.RenderHeadLink(htmlBuilder);
+            htmlBuilder.AppendHtml(sw.ToString());
 
             var document = await ParseHtmlAsync(htmlBuilder);
             var links = document
                 .QuerySelectorAll<IHtmlLinkElement>("link");
 
             Assert.Equal(2, links.Count());
-            Assert.Contains(links, link => link.Relation == "icon" && link.Href == $"{basePath}/favicon.ico");
-            Assert.Contains(links, link => link.Relation == "alternate" && link.Type == "application/pdf" && link.Href == $"{basePath}/pdf");
+            Assert.Contains(links, link => link.Relation == "icon" && link.Href == $"{BasePath}/favicon.ico");
+            Assert.Contains(links, link => link.Relation == "alternate" && link.Type == "application/pdf" && link.Href == $"{BasePath}/pdf");
         }
 
         [Fact]
         public async Task RenderStylesheet()
         {
+            var options = new ResourceManagementOptions();
+            var manifest = new ResourceManifest();
+
+            manifest.DefineStyle("required").SetUrl("required.css")
+                .SetDependencies("dependency");
+            manifest.DefineStyle("dependency").SetUrl("dependency.css");
+            manifest.DefineStyle("not-required").SetUrl("not-required.css");
+
+            options.ResourceManifests.Add(manifest);
+
             var resourceManager = new ResourceManager(
-                new[] {
-                    new StubResourceManifestProvider(builder => {
-                        var manifest = builder.Add();
-                        manifest.DefineStyle("required").SetUrl("required.css")
-                            .SetDependencies("dependency");
-                        manifest.DefineStyle("dependency").SetUrl("dependency.css");
-                        manifest.DefineStyle("not-required").SetUrl("not-required.css");
-                    })
-                },
-                new ResourceManifestState(),
-                new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+                new OptionsWrapper<ResourceManagementOptions>(options),
                 StubFileVersionProvider.Instance
             );
 
@@ -601,8 +606,10 @@ namespace OrchardCore.Tests.ResourceManagement
             var customStyle = ".my-class { prop: value; }";
             resourceManager.RegisterStyle(new HtmlString($"<style>{customStyle}</style>"));
 
+            using var sw = new StringWriter();
+            resourceManager.RenderStylesheet(sw);
             var htmlBuilder = new HtmlContentBuilder();
-            resourceManager.RenderStylesheet(htmlBuilder);
+            htmlBuilder.AppendHtml(sw.ToString());
 
             var document = await ParseHtmlAsync(htmlBuilder);
             var links = document
@@ -611,18 +618,18 @@ namespace OrchardCore.Tests.ResourceManagement
                 .QuerySelectorAll<IHtmlStyleElement>("style");
 
             Assert.Equal(2, links.Count());
-            Assert.Contains(links, link => link.Href == $"{basePath}/dependency.css");
-            Assert.Contains(links, link => link.Href == $"{basePath}/required.css");
+            Assert.Contains(links, link => link.Href == $"{BasePath}/dependency.css");
+            Assert.Contains(links, link => link.Href == $"{BasePath}/required.css");
             Assert.Single(styles);
             Assert.Contains(styles, style => style.InnerHtml == customStyle);
             // Required stylesheet after its dependency
-            Assert.Equal(DocumentPositions.Following, links.First(link => link.Href == $"{basePath}/dependency.css")
+            Assert.Equal(DocumentPositions.Following, links.First(link => link.Href == $"{BasePath}/dependency.css")
                 .CompareDocumentPosition(
-                    links.First(link => link.Href == $"{basePath}/required.css")
+                    links.First(link => link.Href == $"{BasePath}/required.css")
                 )
             );
             // Custom style after resources
-            Assert.Equal(DocumentPositions.Following, links.First(link => link.Href == $"{basePath}/required.css")
+            Assert.Equal(DocumentPositions.Following, links.First(link => link.Href == $"{BasePath}/required.css")
                 .CompareDocumentPosition(
                     styles.First(style => style.InnerHtml == customStyle)
                 )
@@ -632,18 +639,18 @@ namespace OrchardCore.Tests.ResourceManagement
         [Fact]
         public async Task RenderHeadScript()
         {
+            var options = new ResourceManagementOptions();
+            var manifest = new ResourceManifest();
+
+            manifest.DefineScript("required").SetUrl("required.js")
+                .SetDependencies("dependency");
+            manifest.DefineScript("dependency").SetUrl("dependency.js");
+            manifest.DefineScript("not-required").SetUrl("not-required.js");
+
+            options.ResourceManifests.Add(manifest);
+
             var resourceManager = new ResourceManager(
-                new[] {
-                    new StubResourceManifestProvider(builder => {
-                        var manifest = builder.Add();
-                        manifest.DefineScript("required").SetUrl("required.js")
-                            .SetDependencies("dependency");
-                        manifest.DefineScript("dependency").SetUrl("dependency.js");
-                        manifest.DefineScript("not-required").SetUrl("not-required.js");
-                    })
-                },
-                new ResourceManifestState(),
-                new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+                new OptionsWrapper<ResourceManagementOptions>(options),
                 StubFileVersionProvider.Instance
             );
 
@@ -654,8 +661,10 @@ namespace OrchardCore.Tests.ResourceManagement
             var customScript = "doSomeAction();";
             resourceManager.RegisterHeadScript(new HtmlString($"<script>{customScript}</script>"));
 
+            using var sw = new StringWriter();
+            resourceManager.RenderHeadScript(sw);
             var htmlBuilder = new HtmlContentBuilder();
-            resourceManager.RenderHeadScript(htmlBuilder);
+            htmlBuilder.AppendHtml(sw.ToString());
 
             var document = await ParseHtmlAsync(htmlBuilder);
             var scripts = document
@@ -682,18 +691,18 @@ namespace OrchardCore.Tests.ResourceManagement
         [Fact]
         public async Task RenderFootScript()
         {
+            var options = new ResourceManagementOptions();
+            var manifest = new ResourceManifest();
+
+            manifest.DefineScript("required").SetUrl("required.js")
+                .SetDependencies("dependency");
+            manifest.DefineScript("dependency").SetUrl("dependency.js");
+            manifest.DefineScript("not-required").SetUrl("not-required.js");
+
+            options.ResourceManifests.Add(manifest);
+
             var resourceManager = new ResourceManager(
-                new[] {
-                    new StubResourceManifestProvider(builder => {
-                        var manifest = builder.Add();
-                        manifest.DefineScript("required").SetUrl("required.js")
-                            .SetDependencies("dependency");
-                        manifest.DefineScript("dependency").SetUrl("dependency.js");
-                        manifest.DefineScript("not-required").SetUrl("not-required.js");
-                    })
-                },
-                new ResourceManifestState(),
-                new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+                new OptionsWrapper<ResourceManagementOptions>(options),
                 StubFileVersionProvider.Instance
             );
 
@@ -704,8 +713,10 @@ namespace OrchardCore.Tests.ResourceManagement
             var customScript = "doSomeAction();";
             resourceManager.RegisterFootScript(new HtmlString($"<script>{customScript}</script>"));
 
+            using var sw = new StringWriter();
+            resourceManager.RenderFootScript(sw);
             var htmlBuilder = new HtmlContentBuilder();
-            resourceManager.RenderFootScript(htmlBuilder);
+            htmlBuilder.AppendHtml(sw.ToString());
 
             var document = await ParseHtmlAsync(htmlBuilder);
             var scripts = document
@@ -730,27 +741,98 @@ namespace OrchardCore.Tests.ResourceManagement
         }
 
         [Fact]
+        public async Task RenderHeadAndFootScriptWithSameDependency()
+        {
+            var options = new ResourceManagementOptions();
+            var manifest = new ResourceManifest();
+
+            manifest.DefineScript("required")
+                .SetUrl("required.js")
+                .SetDependencies("dependency");
+
+            manifest.DefineScript("dependency")
+                .SetUrl("dependency.js");
+
+            manifest.DefineScript("required-at-foot")
+                .SetUrl("required-at-foot.js")
+                .SetDependencies("dependency");
+
+            manifest.DefineScript("not-required")
+                .SetUrl("not-required.js");
+
+            options.ResourceManifests.Add(manifest);
+
+            var resourceManager = new ResourceManager
+            (
+                new OptionsWrapper<ResourceManagementOptions>(options),
+                StubFileVersionProvider.Instance
+            );
+
+            // Require resource.
+            resourceManager.RegisterResource("script", "required").AtHead();
+
+            // Register custom script.
+            var customScript = "doSomeAction();";
+            resourceManager.RegisterHeadScript(new HtmlString($"<script>{customScript}</script>"));
+
+            // Require resource at Foot with same dependency at Head
+            resourceManager.RegisterResource("script", "required-at-foot").AtFoot();
+
+            using var sw1 = new StringWriter();
+            resourceManager.RenderHeadScript(sw1);
+            var htmlBuilder = new HtmlContentBuilder();
+            htmlBuilder.AppendHtml(sw1.ToString());
+
+            var document = await ParseHtmlAsync(htmlBuilder);
+            var headScripts = document
+                .QuerySelectorAll<IHtmlScriptElement>("script");
+
+            using var sw2 = new StringWriter();
+            resourceManager.RenderFootScript(sw2);
+            htmlBuilder = new HtmlContentBuilder();
+            htmlBuilder.AppendHtml(sw2.ToString());
+
+            document = await ParseHtmlAsync(htmlBuilder);
+            var footScripts = document
+                .QuerySelectorAll<IHtmlScriptElement>("script");
+
+            // Should render 4 scripts in total, 3 at head and 1 at foot.
+            Assert.Equal(4, headScripts.Count() + footScripts.Count());
+
+            //Check head script positions.
+            Assert.Contains("dependency.js", headScripts.ElementAt(0).Source);
+            Assert.Contains("required.js", headScripts.ElementAt(1).Source);
+            Assert.Contains(customScript, headScripts.ElementAt(2).Text);
+
+            //Check foot script positions.
+            Assert.Contains("required-at-foot.js", footScripts.ElementAt(0).Source);
+        }
+
+        [Fact]
         public async Task RenderLocalScript()
         {
+            var options = new ResourceManagementOptions();
+            var manifest = new ResourceManifest();
+
+            manifest.DefineScript("required").SetUrl("required.js")
+                .SetDependencies("dependency");
+            manifest.DefineScript("dependency").SetUrl("dependency.js");
+            manifest.DefineScript("not-required").SetUrl("not-required.js");
+
+            options.ResourceManifests.Add(manifest);
+
             var resourceManager = new ResourceManager(
-                new[] {
-                    new StubResourceManifestProvider(builder => {
-                        var manifest = builder.Add();
-                        manifest.DefineScript("required").SetUrl("required.js")
-                            .SetDependencies("dependency");
-                        manifest.DefineScript("dependency").SetUrl("dependency.js");
-                        manifest.DefineScript("not-required").SetUrl("not-required.js");
-                    })
-                },
-                new ResourceManifestState(),
-                new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+                new OptionsWrapper<ResourceManagementOptions>(options),
                 StubFileVersionProvider.Instance
             );
 
             var requireSetting = resourceManager.RegisterResource("script", "required");
 
+            using var sw = new StringWriter();
+            resourceManager.RenderLocalScript(requireSetting, sw);
             var htmlBuilder = new HtmlContentBuilder();
-            resourceManager.RenderLocalScript(requireSetting, htmlBuilder);
+            htmlBuilder.AppendHtml(sw.ToString());
+
 
             var document = await ParseHtmlAsync(htmlBuilder);
             var scripts = document
@@ -769,25 +851,27 @@ namespace OrchardCore.Tests.ResourceManagement
         [Fact]
         public async Task RenderLocalStyle()
         {
+            var options = new ResourceManagementOptions();
+            var manifest = new ResourceManifest();
+
+            manifest.DefineStyle("required").SetUrl("required.css")
+                .SetDependencies("dependency");
+            manifest.DefineStyle("dependency").SetUrl("dependency.css");
+            manifest.DefineStyle("not-required").SetUrl("not-required.css");
+
+            options.ResourceManifests.Add(manifest);
+
             var resourceManager = new ResourceManager(
-                new[] {
-                    new StubResourceManifestProvider(builder => {
-                        var manifest = builder.Add();
-                        manifest.DefineStyle("required").SetUrl("required.css")
-                            .SetDependencies("dependency");
-                        manifest.DefineStyle("dependency").SetUrl("dependency.css");
-                        manifest.DefineStyle("not-required").SetUrl("not-required.css");
-                    })
-                },
-                new ResourceManifestState(),
-                new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+                new OptionsWrapper<ResourceManagementOptions>(options),
                 StubFileVersionProvider.Instance
             );
 
             var requireSetting = resourceManager.RegisterResource("stylesheet", "required").AtLocation(ResourceLocation.Inline);
 
+            using var sw = new StringWriter();
+            resourceManager.RenderLocalStyle(requireSetting, sw);
             var htmlBuilder = new HtmlContentBuilder();
-            resourceManager.RenderLocalStyle(requireSetting, htmlBuilder);
+            htmlBuilder.AppendHtml(sw.ToString());
 
             var document = await ParseHtmlAsync(htmlBuilder);
             var scripts = document
@@ -803,33 +887,31 @@ namespace OrchardCore.Tests.ResourceManagement
             );
         }
 
-
         #region Helpers
         private async Task<IDocument> ParseHtmlAsync(IHtmlContent content)
         {
-            using (var writer = new StringWriter())
-            {
-                content.WriteTo(writer, HtmlEncoder.Default);
+            using var writer = new StringWriter();
 
-                return await browsingContext.OpenAsync(res => res.Content(writer.ToString()).Address(basePath));
-            }
+            content.WriteTo(writer, HtmlEncoder.Default);
+
+            return await _browsingContext.OpenAsync(res => res.Content(writer.ToString()).Address(BasePath));
         }
 
         #endregion
 
         #region Stubs
-        private class StubResourceManifestProvider : IResourceManifestProvider
+        private class StubResourceManifestProvider : IConfigureOptions<ResourceManagementOptions>
         {
-            private readonly Action<IResourceManifestBuilder> _configureManifestAction;
+            private readonly Action<ResourceManagementOptions> _configureManifestAction;
 
-            public StubResourceManifestProvider(Action<IResourceManifestBuilder> configureManifestAction)
+            public StubResourceManifestProvider(Action<ResourceManagementOptions> configureManifestAction)
             {
                 _configureManifestAction = configureManifestAction;
             }
 
-            public void BuildManifests(IResourceManifestBuilder builder)
+            public void Configure(ResourceManagementOptions options)
             {
-                _configureManifestAction?.Invoke(builder);
+                _configureManifestAction?.Invoke(options);
             }
         }
 

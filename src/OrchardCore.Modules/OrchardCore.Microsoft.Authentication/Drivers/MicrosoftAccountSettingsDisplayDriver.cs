@@ -42,7 +42,7 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
         public override async Task<IDisplayResult> EditAsync(MicrosoftAccountSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
             {
                 return null;
             }
@@ -56,13 +56,13 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
                     {
                         var protector = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount);
                         model.AppSecret = protector.Unprotect(settings.AppSecret);
-                    } 
+                    }
                     catch (CryptographicException)
                     {
                         _logger.LogError("The app secret could not be decrypted. It may have been encrypted using a different key.");
                         model.AppSecret = string.Empty;
                         model.HasDecryptionError = true;
-                    } 
+                    }
                 }
                 else
                 {
@@ -81,7 +81,7 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
             if (context.GroupId == MicrosoftAuthenticationConstants.Features.MicrosoftAccount)
             {
                 var user = _httpContextAccessor.HttpContext?.User;
-                if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
+                if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
                 {
                     return null;
                 }

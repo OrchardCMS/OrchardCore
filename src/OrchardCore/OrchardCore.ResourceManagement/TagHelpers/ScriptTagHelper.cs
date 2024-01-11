@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -49,11 +50,12 @@ namespace OrchardCore.ResourceManagement.TagHelpers
         {
             output.SuppressOutput();
 
-            if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
+            if (string.IsNullOrEmpty(Name) && !string.IsNullOrEmpty(Src))
             {
+                // <script asp-src="~/TheBlogTheme/js/clean-blog.min.js"></script>
                 RequireSettings setting;
 
-                if (String.IsNullOrEmpty(DependsOn))
+                if (string.IsNullOrEmpty(DependsOn))
                 {
                     // Include custom script url
                     setting = _resourceManager.RegisterUrl("script", Src, DebugSrc);
@@ -68,22 +70,22 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     var definition = _resourceManager.InlineManifest.DefineScript(name);
                     definition.SetUrl(Src, DebugSrc);
 
-                    if (!String.IsNullOrEmpty(Version))
+                    if (!string.IsNullOrEmpty(Version))
                     {
                         definition.SetVersion(Version);
                     }
 
-                    if (!String.IsNullOrEmpty(CdnSrc))
+                    if (!string.IsNullOrEmpty(CdnSrc))
                     {
                         definition.SetCdn(CdnSrc, DebugCdnSrc);
                     }
 
-                    if (!String.IsNullOrEmpty(Culture))
+                    if (!string.IsNullOrEmpty(Culture))
                     {
                         definition.SetCultures(Culture.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
                     }
 
-                    if (!String.IsNullOrEmpty(DependsOn))
+                    if (!string.IsNullOrEmpty(DependsOn))
                     {
                         definition.SetDependencies(DependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
                     }
@@ -93,7 +95,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                         definition.ShouldAppendVersion(AppendVersion);
                     }
 
-                    if (!String.IsNullOrEmpty(Version))
+                    if (!string.IsNullOrEmpty(Version))
                     {
                         definition.SetVersion(Version);
                     }
@@ -106,7 +108,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.AtLocation(At);
                 }
 
-                if (!String.IsNullOrEmpty(Condition))
+                if (!string.IsNullOrEmpty(Condition))
                 {
                     setting.UseCondition(Condition);
                 }
@@ -116,7 +118,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseDebugMode(Debug.Value);
                 }
 
-                if (!String.IsNullOrEmpty(Culture))
+                if (!string.IsNullOrEmpty(Culture))
                 {
                     setting.UseCulture(Culture);
                 }
@@ -133,12 +135,15 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 if (At == ResourceLocation.Unspecified || At == ResourceLocation.Inline)
                 {
-                    _resourceManager.RenderLocalScript(setting, output.Content);
+                    using var sw = new StringWriter();
+                    _resourceManager.RenderLocalScript(setting, sw);
+                    output.Content.AppendHtml(sw.ToString());
                 }
             }
-            else if (!String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
+            else if (!string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Src))
             {
                 // Resource required
+                // <script asp-name="bootstrap"></script>
 
                 var setting = _resourceManager.RegisterResource("script", Name);
 
@@ -152,7 +157,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseCdn(UseCdn.Value);
                 }
 
-                if (!String.IsNullOrEmpty(Condition))
+                if (!string.IsNullOrEmpty(Condition))
                 {
                     setting.UseCondition(Condition);
                 }
@@ -162,7 +167,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseDebugMode(Debug.Value);
                 }
 
-                if (!String.IsNullOrEmpty(Culture))
+                if (!string.IsNullOrEmpty(Culture))
                 {
                     setting.UseCulture(Culture);
                 }
@@ -172,15 +177,20 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.ShouldAppendVersion(AppendVersion);
                 }
 
-                if (!String.IsNullOrEmpty(Version))
+                if (!string.IsNullOrEmpty(Version))
                 {
                     setting.UseVersion(Version);
                 }
 
                 // This allows additions to the pre registered scripts dependencies.
-                if (!String.IsNullOrEmpty(DependsOn))
+                if (!string.IsNullOrEmpty(DependsOn))
                 {
                     setting.SetDependencies(DependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                }
+
+                foreach (var attribute in output.Attributes)
+                {
+                    setting.SetAttribute(attribute.Name, attribute.Value.ToString());
                 }
 
                 // Allow Inline to work with both named scripts, and named inline scripts.
@@ -192,42 +202,46 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     {
                         // Inline content definition
                         _resourceManager.InlineManifest.DefineScript(Name)
-                            .SetInnerContent(childContent.GetContent());
+                           .SetInnerContent(childContent.GetContent());
                     }
 
                     if (At == ResourceLocation.Inline)
                     {
-                        _resourceManager.RenderLocalScript(setting, output.Content);
+                        using var sw = new StringWriter();
+                        _resourceManager.RenderLocalScript(setting, sw);
+                        output.Content.AppendHtml(sw.ToString());
                     }
                 }
                 else
                 {
-                    _resourceManager.RenderLocalScript(setting, output.Content);
+                    using var sw = new StringWriter();
+                    _resourceManager.RenderLocalScript(setting, sw);
+                    output.Content.AppendHtml(sw.ToString());
                 }
             }
-            else if (!String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
+            else if (!string.IsNullOrEmpty(Name) && !string.IsNullOrEmpty(Src))
             {
                 // Inline declaration
 
                 var definition = _resourceManager.InlineManifest.DefineScript(Name);
                 definition.SetUrl(Src, DebugSrc);
 
-                if (!String.IsNullOrEmpty(Version))
+                if (!string.IsNullOrEmpty(Version))
                 {
                     definition.SetVersion(Version);
                 }
 
-                if (!String.IsNullOrEmpty(CdnSrc))
+                if (!string.IsNullOrEmpty(CdnSrc))
                 {
                     definition.SetCdn(CdnSrc, DebugCdnSrc);
                 }
 
-                if (!String.IsNullOrEmpty(Culture))
+                if (!string.IsNullOrEmpty(Culture))
                 {
                     definition.SetCultures(Culture.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
                 }
 
-                if (!String.IsNullOrEmpty(DependsOn))
+                if (!string.IsNullOrEmpty(DependsOn))
                 {
                     definition.SetDependencies(DependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
                 }
@@ -237,7 +251,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     definition.ShouldAppendVersion(AppendVersion);
                 }
 
-                if (!String.IsNullOrEmpty(Version))
+                if (!string.IsNullOrEmpty(Version))
                 {
                     definition.SetVersion(Version);
                 }
@@ -254,7 +268,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                         setting.UseCdn(UseCdn.Value);
                     }
 
-                    if (!String.IsNullOrEmpty(Condition))
+                    if (!string.IsNullOrEmpty(Condition))
                     {
                         setting.UseCondition(Condition);
                     }
@@ -264,7 +278,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                         setting.UseDebugMode(Debug.Value);
                     }
 
-                    if (!String.IsNullOrEmpty(Culture))
+                    if (!string.IsNullOrEmpty(Culture))
                     {
                         setting.UseCulture(Culture);
                     }
@@ -276,11 +290,13 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                     if (At == ResourceLocation.Inline)
                     {
-                        _resourceManager.RenderLocalScript(setting, output.Content);
+                        using var sw = new StringWriter();
+                        _resourceManager.RenderLocalScript(setting, sw);
+                        output.Content.AppendHtml(sw.ToString());
                     }
                 }
             }
-            else if (String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
+            else if (string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Src))
             {
                 // Custom script content
 
@@ -302,7 +318,8 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 else if (At == ResourceLocation.Inline)
                 {
                     output.Content.SetHtmlContent(builder);
-                } else 
+                }
+                else
                 {
                     _resourceManager.RegisterFootScript(builder);
                 }

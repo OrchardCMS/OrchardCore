@@ -1,5 +1,5 @@
 using System;
-using System.Linq;
+using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -9,6 +9,7 @@ using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
@@ -20,6 +21,7 @@ using OrchardCore.Layers.Indexes;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Recipes;
 using OrchardCore.Layers.Services;
+using OrchardCore.Layers.ViewModels;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
@@ -27,7 +29,6 @@ using OrchardCore.Recipes;
 using OrchardCore.Scripting;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
-using YesSql.Indexes;
 
 namespace OrchardCore.Layers
 {
@@ -42,6 +43,11 @@ namespace OrchardCore.Layers
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<WidgetWrapper>();
+            });
+
             services.Configure<MvcOptions>((options) =>
             {
                 options.Filters.Add(typeof(LayerFilter));
@@ -53,8 +59,8 @@ namespace OrchardCore.Layers
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<ILayerService, LayerService>();
             services.AddScoped<IContentHandler, LayerMetadataHandler>();
-            services.AddSingleton<IIndexProvider, LayerMetadataIndexProvider>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddIndexProvider<LayerMetadataIndexProvider>();
+            services.AddDataMigration<Migrations>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddRecipeExecutionStep<LayerStep>();
 
@@ -117,14 +123,14 @@ namespace OrchardCore.Layers
                 areaName: "OrchardCore.Layers",
                 pattern: _adminOptions.AdminUrlPrefix + "/Layers/Rules/Edit",
                 defaults: new { controller = layerRuleControllerName, action = nameof(LayerRuleController.Edit) }
-            ); 
+            );
 
             routes.MapAreaControllerRoute(
                 name: "Layers.Rules.Order",
                 areaName: "OrchardCore.Layers",
                 pattern: _adminOptions.AdminUrlPrefix + "/Layers/Rules/Order",
                 defaults: new { controller = layerRuleControllerName, action = nameof(LayerRuleController.UpdateOrder) }
-            ); 
+            );
         }
     }
 }

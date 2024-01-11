@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,16 +17,18 @@ namespace OrchardCore.Deployment
         {
             FileBuilder = fileBuilder;
 
-            Recipe = new JObject();
-            Recipe["name"] = recipeDescriptor.Name ?? "";
-            Recipe["displayName"] = recipeDescriptor.DisplayName ?? "";
-            Recipe["description"] = recipeDescriptor.Description ?? "";
-            Recipe["author"] = recipeDescriptor.Author ?? "";
-            Recipe["website"] = recipeDescriptor.WebSite ?? "";
-            Recipe["version"] = recipeDescriptor.Version ?? "";
-            Recipe["issetuprecipe"] = recipeDescriptor.IsSetupRecipe;
-            Recipe["categories"] = new JArray(recipeDescriptor.Categories ?? new string[] { });
-            Recipe["tags"] = new JArray(recipeDescriptor.Tags ?? new string[] { });
+            Recipe = new JObject
+            {
+                ["name"] = recipeDescriptor.Name ?? "",
+                ["displayName"] = recipeDescriptor.DisplayName ?? "",
+                ["description"] = recipeDescriptor.Description ?? "",
+                ["author"] = recipeDescriptor.Author ?? "",
+                ["website"] = recipeDescriptor.WebSite ?? "",
+                ["version"] = recipeDescriptor.Version ?? "",
+                ["issetuprecipe"] = recipeDescriptor.IsSetupRecipe,
+                ["categories"] = new JArray(recipeDescriptor.Categories ?? Array.Empty<string>()),
+                ["tags"] = new JArray(recipeDescriptor.Tags ?? Array.Empty<string>()),
+            };
         }
 
         public JObject Recipe { get; }

@@ -16,7 +16,7 @@ namespace OrchardCore.ContentFields.Drivers
 {
     public class YoutubeFieldDisplayDriver : ContentFieldDisplayDriver<YoutubeField>
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public YoutubeFieldDisplayDriver(IStringLocalizer<YoutubeFieldDisplayDriver> localizer)
         {
@@ -49,12 +49,12 @@ namespace OrchardCore.ContentFields.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(YoutubeField field, IUpdateModel updater, UpdateFieldEditorContext context)
         {
-            EditYoutubeFieldViewModel model = new EditYoutubeFieldViewModel();
+            var model = new EditYoutubeFieldViewModel();
 
             if (await updater.TryUpdateModelAsync(model, Prefix))
             {
                 var settings = context.PartFieldDefinition.GetSettings<YoutubeFieldSettings>();
-                if (settings.Required && String.IsNullOrWhiteSpace(model.RawAddress))
+                if (settings.Required && string.IsNullOrWhiteSpace(model.RawAddress))
                 {
                     updater.ModelState.AddModelError(Prefix, nameof(model.RawAddress), S["A value is required for '{0}'.", context.PartFieldDefinition.DisplayName()]);
                 }
@@ -64,13 +64,13 @@ namespace OrchardCore.ContentFields.Drivers
                     {
                         var uri = new Uri(model.RawAddress);
 
-                        // if it is a url with QueryString
-                        if (!String.IsNullOrWhiteSpace(uri.Query))
+                        // If it is a url with QueryString.
+                        if (!string.IsNullOrWhiteSpace(uri.Query))
                         {
                             var query = QueryHelpers.ParseQuery(uri.Query);
-                            if (query.ContainsKey("v"))
+                            if (query.TryGetValue("v", out var values))
                             {
-                                model.EmbeddedAddress = $"{uri.GetLeftPart(UriPartial.Authority)}/embed/{query["v"]}";
+                                model.EmbeddedAddress = $"{uri.GetLeftPart(UriPartial.Authority)}/embed/{values}";
                             }
                             else
                             {

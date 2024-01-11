@@ -9,31 +9,31 @@ namespace OrchardCore.Rules.Models
     {
     }
 
-    public class StringNotEqualsOperator : StringOperator
+    public class StringNotEqualsOperator : StringOperator, INegateOperator
     {
-    }    
+    }
 
     public class StringStartsWithOperator : StringOperator
     {
     }
 
-    public class StringNotStartsWithOperator : StringOperator
+    public class StringNotStartsWithOperator : StringOperator, INegateOperator
     {
-    }   
+    }
 
     public class StringEndsWithOperator : StringOperator
     {
     }
 
-    public class StringNotEndsWithOperator : StringOperator
+    public class StringNotEndsWithOperator : StringOperator, INegateOperator
     {
-    }   
-     
+    }
+
     public class StringContainsOperator : StringOperator
     {
     }
 
-    public class StringNotContainsOperator : StringOperator
+    public class StringNotContainsOperator : StringOperator, INegateOperator
     {
-    }    
+    }
 }

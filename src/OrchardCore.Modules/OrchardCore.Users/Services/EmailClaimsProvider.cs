@@ -13,7 +13,7 @@ namespace OrchardCore.Users.Services
         {
             _userManager = userManager;
         }
-        
+
         public async Task GenerateAsync(IUser user, ClaimsIdentity claims)
         {
             if (user == null)
@@ -31,7 +31,7 @@ namespace OrchardCore.Users.Services
             // new 'IdentityOptions.ClaimsIdentity.EmailClaimType' or at least its default value which is 'ClaimTypes.Email'.
 
             var email = await _userManager.GetEmailAsync(user);
-            if (!String.IsNullOrEmpty(email))
+            if (!string.IsNullOrEmpty(email))
             {
                 claims.AddClaim(new Claim("email", email));
 

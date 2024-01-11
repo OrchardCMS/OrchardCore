@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.ContentManagement.Metadata.Settings;
 
 namespace OrchardCore.ContentManagement.Metadata.Models
@@ -9,9 +8,18 @@ namespace OrchardCore.ContentManagement.Metadata.Models
         {
             var displayName = typePart.GetSettings<ContentTypePartSettings>().DisplayName;
 
-            if (String.IsNullOrEmpty(displayName))
+            if (string.IsNullOrEmpty(displayName))
             {
-                displayName = typePart.PartDefinition.DisplayName();
+                // ContentType creates a same named ContentPart. As DisplayName is not stored in ContentPart,
+                // fetching it from the parent ContentType
+                if (typePart.PartDefinition.Name == typePart.ContentTypeDefinition.Name)
+                {
+                    displayName = typePart.ContentTypeDefinition.DisplayName;
+                }
+                else
+                {
+                    displayName = typePart.PartDefinition.DisplayName();
+                }
             }
 
             return displayName;
@@ -21,7 +29,7 @@ namespace OrchardCore.ContentManagement.Metadata.Models
         {
             var description = typePart.GetSettings<ContentTypePartSettings>().Description;
 
-            if (String.IsNullOrEmpty(description))
+            if (string.IsNullOrEmpty(description))
             {
                 description = typePart.PartDefinition.Description();
             }
@@ -38,5 +46,8 @@ namespace OrchardCore.ContentManagement.Metadata.Models
         {
             return typePart.GetSettings<ContentTypePartSettings>().DisplayMode;
         }
+
+        public static bool IsNamedPart(this ContentTypePartDefinition typePart)
+            => typePart.PartDefinition.IsReusable() && typePart.Name != typePart.PartDefinition.Name;
     }
 }

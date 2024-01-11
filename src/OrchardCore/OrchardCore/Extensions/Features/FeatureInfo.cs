@@ -1,7 +1,16 @@
+using System;
+
 namespace OrchardCore.Environment.Extensions.Features
 {
     public class FeatureInfo : IFeatureInfo
     {
+        public FeatureInfo(string id, IExtensionInfo extensionInfo)
+        {
+            Id = Name = id;
+            Extension = extensionInfo;
+            Dependencies = Array.Empty<string>();
+        }
+
         public FeatureInfo(
             string id,
             string name,
@@ -11,7 +20,8 @@ namespace OrchardCore.Environment.Extensions.Features
             IExtensionInfo extension,
             string[] dependencies,
             bool defaultTenantOnly,
-            bool isAlwaysEnabled)
+            bool isAlwaysEnabled,
+            bool enabledByDependencyOnly)
         {
             Id = id;
             Name = name;
@@ -22,6 +32,7 @@ namespace OrchardCore.Environment.Extensions.Features
             Dependencies = dependencies;
             DefaultTenantOnly = defaultTenantOnly;
             IsAlwaysEnabled = isAlwaysEnabled;
+            EnabledByDependencyOnly = enabledByDependencyOnly;
         }
 
         public string Id { get; }
@@ -33,5 +44,6 @@ namespace OrchardCore.Environment.Extensions.Features
         public IExtensionInfo Extension { get; }
         public string[] Dependencies { get; }
         public bool IsAlwaysEnabled { get; }
+        public bool EnabledByDependencyOnly { get; }
     }
 }

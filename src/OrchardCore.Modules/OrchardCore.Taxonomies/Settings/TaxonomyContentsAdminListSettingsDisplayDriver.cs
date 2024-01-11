@@ -35,7 +35,7 @@ namespace OrchardCore.Taxonomies.Settings
         public override async Task<IDisplayResult> EditAsync(TaxonomyContentsAdminListSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageTaxonomies))
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageTaxonomies))
             {
                 return null;
             }
@@ -46,7 +46,7 @@ namespace OrchardCore.Taxonomies.Settings
             {
                 DisplayText = x.DisplayText,
                 ContentItemId = x.ContentItemId,
-                IsChecked = settings.TaxonomyContentItemIds.Any(id => String.Equals(x.ContentItemId, id, StringComparison.OrdinalIgnoreCase))
+                IsChecked = settings.TaxonomyContentItemIds.Any(id => string.Equals(x.ContentItemId, id, StringComparison.OrdinalIgnoreCase))
             }).ToArray();
 
             return Initialize<TaxonomyContentsAdminListSettingsViewModel>("TaxonomyContentsAdminListSettings_Edit", model =>

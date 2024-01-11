@@ -9,7 +9,7 @@ namespace OrchardCore.Queries.Services
     public class QueryManager : IQueryManager
     {
         private readonly IDocumentManager<QueriesDocument> _documentManager;
-        private IEnumerable<IQuerySource> _querySources;
+        private readonly IEnumerable<IQuerySource> _querySources;
 
         public QueryManager(IDocumentManager<QueriesDocument> documentManager, IEnumerable<IQuerySource> querySources)
         {
@@ -75,12 +75,8 @@ namespace OrchardCore.Queries.Services
 
         public Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {
-            var querySource = _querySources.FirstOrDefault(q => q.Name == query.Source);
-
-            if (querySource == null)
-            {
-                throw new ArgumentException("Query source not found: " + query.Source);
-            }
+            var querySource = _querySources.FirstOrDefault(q => q.Name == query.Source)
+                ?? throw new ArgumentException("Query source not found: " + query.Source);
 
             return querySource.ExecuteQueryAsync(query, parameters);
         }

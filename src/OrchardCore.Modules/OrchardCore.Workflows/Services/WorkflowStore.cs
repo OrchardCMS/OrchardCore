@@ -56,7 +56,7 @@ namespace OrchardCore.Workflows.Services
             return _session.Query<Workflow, WorkflowIndex>(x => x.WorkflowTypeId.IsIn(workflowTypeIds)).ListAsync();
         }
 
-        public Task<Workflow> GetAsync(int id)
+        public Task<Workflow> GetAsync(long id)
         {
             return _session.GetAsync<Workflow>(id);
         }
@@ -71,7 +71,7 @@ namespace OrchardCore.Workflows.Services
             return _session.Query<Workflow, WorkflowBlockingActivitiesIndex>(x => x.WorkflowId.IsIn(workflowIds)).ListAsync();
         }
 
-        public Task<IEnumerable<Workflow>> GetAsync(IEnumerable<int> ids)
+        public Task<IEnumerable<Workflow>> GetAsync(IEnumerable<long> ids)
         {
             return _session.GetAsync<Workflow>(ids.ToArray());
         }
@@ -85,14 +85,20 @@ namespace OrchardCore.Workflows.Services
                 .ListAsync();
         }
 
-        public Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, string activityName, string correlationId = null)
+        public Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, string activityName, string correlationId = null, bool isAlwaysCorrelated = false)
         {
-            return _session
-                .Query<Workflow, WorkflowBlockingActivitiesIndex>(index =>
-                    index.WorkflowTypeId == workflowTypeId &&
-                    index.ActivityName == activityName &&
-                    index.WorkflowCorrelationId == (correlationId ?? ""))
-                .ListAsync();
+            var query = _session.Query<Workflow, WorkflowBlockingActivitiesIndex>();
+
+            if (isAlwaysCorrelated)
+            {
+                query = query.Where(index => index.WorkflowTypeId == workflowTypeId && index.ActivityName == activityName);
+            }
+            else
+            {
+                query = query.Where(index => index.WorkflowTypeId == workflowTypeId && index.ActivityName == activityName && index.WorkflowCorrelationId == (correlationId ?? ""));
+            }
+
+            return query.ListAsync();
         }
 
         public Task<IEnumerable<Workflow>> ListByActivityNameAsync(string activityName, string correlationId = null, bool isAlwaysCorrelated = false)
@@ -111,21 +117,24 @@ namespace OrchardCore.Workflows.Services
             return query.ListAsync();
         }
 
-        public Task SaveAsync(Workflow workflow)
+        public async Task SaveAsync(Workflow workflow)
         {
             var isNew = workflow.Id == 0;
-            _session.Save(workflow);
+            await _session.SaveAsync(workflow);
 
             if (isNew)
             {
                 var context = new WorkflowCreatedContext(workflow);
-                return _handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
+                await _handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
             }
             else
             {
                 var context = new WorkflowUpdatedContext(workflow);
-                return _handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
+                await _handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
             }
+
+            // Allow an atomic workflow to get up to date data.
+            await _session.FlushAsync();
         }
 
         public Task DeleteAsync(Workflow workflow)
@@ -136,7 +145,7 @@ namespace OrchardCore.Workflows.Services
             return _handlers.InvokeAsync((handler, context) => handler.DeletedAsync(context), context, _logger);
         }
 
-        private IQuery<Workflow, WorkflowIndex> FilterByWorkflowTypeId(IQuery<Workflow, WorkflowIndex> query, string workflowTypeId)
+        private static IQuery<Workflow, WorkflowIndex> FilterByWorkflowTypeId(IQuery<Workflow, WorkflowIndex> query, string workflowTypeId)
         {
             if (workflowTypeId != null)
             {

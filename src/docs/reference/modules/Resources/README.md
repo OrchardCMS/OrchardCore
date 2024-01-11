@@ -18,24 +18,23 @@ All script or stylesheet resources should be prefixed with the `~` character.
 
 Resource Settings are configured through the site admin.
 
-### AppendVersion
+### `AppendVersion`
 
 Enabling `AppendVersion` or Resources cache busting will automatically append a version hash to all local scripts and style sheets.
 This is turned on by default.
 
-### UseCdn
+### `UseCdn`
 
 Enabling UseCdn will configure the `IResourceManager` to provide any scripts or styles, such as `jQuery`, from the configured CDN.
 
-### ResourceDebugMode
+### `ResourceDebugMode`
 
 When enabled will serve scripts or styles, that have a CDN configured, or a debug-src, from the local server in non minified format.  
-This will also disabled the CdnBaseUrl prepending.
+This will also disable the `CdnBaseUrl` prepending.
 
-### CdnBaseUrl
+### `CdnBaseUrl`
 
-When supplied this will prepend local resources served via the `IResourceManager` or Tag Helpers with the absolute url provided. This will
-be disabled in `ResourceDebugMode`
+When supplied this will prepend local resources served via the `IResourceManager` or Tag Helpers with the absolute url provided. This will be disabled in `ResourceDebugMode`
 
 ## Named Resources
 
@@ -45,67 +44,106 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 
 | Name                  | Type   | Versions      | Dependencies   |
 | --------------------- | ------ | ------------- | -------------- |
-| jQuery                | Script | 3.6.0         | -              |
-| jQuery.slim           | Script | 3.6.0         | -              |
+| jQuery                | Script | 3.7.1         | -              |
+| jQuery.slim           | Script | 3.7.1         | -              |
 | jQuery-ui             | Script | 1.12.1        | jQuery         |
 | jQuery-ui-i18n        | Script | 1.7.2         | jQuery-ui      |
 | jquery.easing         | Script | 1.4.1         | -              |
 | jquery-resizable-dom  | Script | 0.35.0        | -              |
-| js-cookie             | Script | 2.2.1         | jQuery         |
+| js-cookie             | Script | 3.0.5         | -              |
 | popper                | Script | 1.16.1        | -              |
-| bootstrap             | Script | 3.4.0, 4.6.0  | jQuery, Popper |
-| bootstrap             | Style  | 3.4.0, 4.6.0  | -              |
-| bootstrap-select      | Script | 1.13.18       | -              |
-| bootstrap-select      | Style  | 1.13.18       | -              |
-| bootstrap-slider      | Script | 11.0.2        | -              |
-| bootstrap-slider      | Style  | 11.0.2        | -              |
-| codemirror            | Script | 5.59.4        | -              |
-| codemirror            | Style  | 5.59.4        | -              |
-| font-awesome          | Style  | 4.7.0, 5.15.2 | -              |
-| font-awesome          | Script | 5.15.2        | -              |
-| font-awesome-v4-shims | Script | 5.15.2        | -              |
+| popperjs              | Script | 2.11.8        | -              |
+| bootstrap             | Script | 4.6.1         | popper         |
+| bootstrap             | Script | 5.3.2         | popperjs       |
+| bootstrap             | Style  | 4.6.1, 5.3.2  | -              |
+| bootstrap-select      | Script | 1.14.0-beta3  | -              |
+| bootstrap-select      | Style  | 1.14.0-beta3  | -              |
+| codemirror            | Script | 5.65.7        | -              |
+| codemirror            | Style  | 5.65.7        | -              |
+| font-awesome          | Style  | 6.5.1         | -              |
+| font-awesome          | Script | 6.5.1         | -              |
+| font-awesome-v4-shims | Script | 6.5.1         | -              |
 | Sortable              | Script | 1.10.2        | -              |
-| trumbowyg             | Script | 2.23.0        | -              |
+| trumbowyg             | Style  | 2.27.3        | -              |
+| trumbowyg             | Script | 2.27.3        | -              |
 | vue-multiselect       | Script | 2.1.6         | -              |
 | vuedraggable          | Script | 2.24.3        | Sortable       |
+| monaco-loader         | Script | 0.44.0        | -              |
+| monaco                | Script | 0.44.0        | monaco-loader  |
+| nouislider            | Script | 15.6.1        | -              |
+| nouislider            | Style  | 15.6.1        | -              |
 
 ### Registering a Resource Manifest
 
-Named resources are registered by implementing the `IResourceManifestProvider` interface.
+Named resources are registered by configuring the `ResourceManagementOptions` options.
 
 This example is provided from `TheBlogTheme` to demonstrate.
 
 ```csharp
-public class ResourceManifest : IResourceManifestProvider
+public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
 {
-    public void BuildManifests(IResourceManifestBuilder builder)
-    {
-        var manifest = builder.Add();
+    private static ResourceManifest _manifest;
 
-        manifest
+    static ResourceManagementOptionsConfiguration()
+    {
+        _manifest = new ResourceManifest();
+
+        _manifest
             .DefineScript("TheBlogTheme-vendor-jQuery")
             .SetUrl("~/TheBlogTheme/vendor/jquery/jquery.min.js", "~/TheBlogTheme/vendor/jquery/jquery.js")
             .SetCdn("https://code.jquery.com/jquery-3.4.1.min.js", "https://code.jquery.com/jquery-3.4.1.js")
             .SetCdnIntegrity("sha384-vk5WoKIaW/vJyUAd9n/wmopsmNhiy+L2Z+SBxGYnUkunIxVxAv/UtMOhba/xskxh", "sha384-mlceH9HlqLp7GMKHrj5Ara1+LvdTZVMx4S1U43/NxCvAkzIo8WJ0FE7duLel3wVo")
             .SetVersion("3.4.1");
-        }
     }
+
+    public void Configure(ResourceManagementOptions options)
+    {
+        options.ResourceManifests.Add(_manifest);
+    }
+}
 
 ```
 
-In this example we define a script with the unique name `TheBlogTheme-vendor-jQuery`. 
-We use a name that is unique to `TheBlogTheme` to prevent collisions when multiple themes are active. 
+In this example we define a script with the unique name `TheBlogTheme-vendor-jQuery`.
+We use a name that is unique to `TheBlogTheme` to prevent collisions when multiple themes are active.
 
 We set a url for the minified version, and the unminified version, which will be used in `ResourceDebugMode`.
-For the same reason we define two CDN Url's, which will be preferred over the local urls if the `UseCdn` setting in the site admin is set. 
+For the same reason we define two CDN Url's, which will be preferred over the local urls if the `UseCdn` setting in the site admin is set.
 We set the Cdn Integrity Hashes and the version to `3.4.1`
 
-This script will then be available for the tag helper or API to register by name. 
+This script will then be available for the tag helper or API to register by name.
+
+Additionally, we can use the `SetDependencies` method to ensure the script or style is loaded after their dependency.
+
+```csharp
+public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
+{
+    private static ResourceManifest _manifest;
+
+    static ResourceManagementOptionsConfiguration()
+    {
+        _manifest = new ResourceManifest();
+
+        _manifest
+            .DefineStyle("ModuleName-Bootstrap-Select")
+            .SetUrl("~/ModuleName/bootstrap-select.min.css", "~/ModuleName/bootstrap-select.css")
+            .SetDependencies("bootstrap:4");
+    }
+
+    public void Configure(ResourceManagementOptions options)
+    {
+        options.ResourceManifests.Add(_manifest);
+    }
+}
+
+```
+
+In this example, we define a style that depends on Bootstrap version 4. In this case, the latest available minor version of bootstrap version 4 will be added. Alternatively, you can set a specific version of your choice or the latest version available. [See Inline definition](#inline-definition) for more details about versioning usage.
 
 !!! note "Registration"
-    Make sure to register this `IResourceManifestProvider` in the `Startup` or your theme or module.
-    `serviceCollection.AddScoped<IResourceManifestProvider, ResourceManifest>();`
-
+    Make sure to register this `IConfigureOptions<ResourceManagementOptions>` in the `Startup` or your theme or module.
+    `serviceCollection.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();`
+  
 ## Usage
 
 There are two ways to invoke a resource: either by using the `IResourceManager` API or a Tag Helper.  
@@ -297,7 +335,7 @@ You can declare a new resource directly from a view, and it will be injected onl
     <script asp-name="bar" asp-src="~/TheTheme/js/bar.min.js?v=1.0" debug-src="~/TheTheme/js/bar.js?v=1.0" depends-on="foo:1.0" version="1.0"></script>
     ```
 
-We define a script named `foo` with a dependency on `jQuery` with the version `1.0`. 
+We define a script named `foo` with a dependency on `jQuery` with the version `1.0`.
 
 We then define a script named `bar` which also takes a dependency on version `1.0` of the `foo` script.
 
@@ -336,7 +374,7 @@ When rendering the scripts the resource manager will order the output based on t
 3. `bar`
 
 !!! note
-    You do not have to define a name for your script or style unless you want to reference it as a dependency, or declare it as `Inline`.
+    You do not have to define a name for your script or style unless you want to reference it as a dependency, or declare it as `Inline`. Hence why the above inline examples all include a name.
 
 #### Custom scripts
 
@@ -428,7 +466,7 @@ The style block will only be injected once based on its name and can optionally 
 
 #### Link tag
 
-A link tag is used to define the relationship between the current document and an external resource such as a favicon or stylesheet. For a stylesheet, however, use the [style helper](#register-a-named-script). 
+A link tag is used to define the relationship between the current document and an external resource such as a favicon or stylesheet. For a stylesheet, however, use the [style helper](#register-a-named-script).
 
 === "Liquid"
 
@@ -449,6 +487,7 @@ Output
 ```
 
 ##### Using a file in the media library
+
 If you wish to use files contained in the media library when using the link tag helper, you can use the `AssetUrl` helper directly in razor but in liquid you will need to first assign the filter result to a variable like so to generate the correct URL:
 
 === "Liquid"
@@ -544,7 +583,7 @@ These should be rendered at the bottom of the `<body>` section.
 
 !!! note
     When using tag helpers in Razor, you must take a direct reference to the `OrchardCore.ResourceManagement` nuget package in each theme or module that uses the tag helpers. This is not required when using Liquid.
-    
+
 ### Logging
 
 If you register a resource by name and it is not found this will be logged as an error in your `App_Data/Logs` folder.

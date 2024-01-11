@@ -1,6 +1,9 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Fluid.Values;
+using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -30,9 +33,9 @@ namespace OrchardCore.ContentFields.GraphQL
                 .ResolveLockedAsync(RenderHtml);
         }
 
-        private static async Task<object> RenderHtml(ResolveFieldContext<HtmlField> ctx)
+        private static async Task<object> RenderHtml(IResolveFieldContext<HtmlField> ctx)
         {
-            var serviceProvider = ctx.ResolveServiceProvider();
+            var serviceProvider = ctx.RequestServices;
             var shortcodeService = serviceProvider.GetRequiredService<IShortcodeService>();
             var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
@@ -42,10 +45,10 @@ namespace OrchardCore.ContentFields.GraphQL
             var paths = jsonPath.Split('.');
             var partName = paths[0];
             var fieldName = paths[1];
-            var contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(ctx.Source.ContentItem.ContentType);
+            var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(ctx.Source.ContentItem.ContentType);
             var contentPartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.Name, partName));
-            var contentPartFieldDefintion = contentPartDefinition.PartDefinition.Fields.FirstOrDefault(x => string.Equals(x.Name, fieldName));
-            var settings = contentPartFieldDefintion.GetSettings<HtmlFieldSettings>();
+            var contentPartFieldDefinition = contentPartDefinition.PartDefinition.Fields.FirstOrDefault(x => string.Equals(x.Name, fieldName));
+            var settings = contentPartFieldDefinition.GetSettings<HtmlFieldSettings>();
 
             var html = ctx.Source.Html;
 
@@ -56,20 +59,20 @@ namespace OrchardCore.ContentFields.GraphQL
                     Html = ctx.Source.Html,
                     Field = ctx.Source,
                     Part = ctx.Source.ContentItem.Get<ContentPart>(partName),
-                    PartFieldDefinition = contentPartFieldDefintion
+                    PartFieldDefinition = contentPartFieldDefinition
                 };
                 var liquidTemplateManager = serviceProvider.GetRequiredService<ILiquidTemplateManager>();
                 var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
 
-                html = await liquidTemplateManager.RenderAsync(html, htmlEncoder, model,
-                    scope => scope.SetValue("ContentItem", ctx.Source.ContentItem));
+                html = await liquidTemplateManager.RenderStringAsync(html, htmlEncoder, model,
+                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(ctx.Source.ContentItem) });
             }
 
             return await shortcodeService.ProcessAsync(html,
                 new Context
                 {
                     ["ContentItem"] = ctx.Source.ContentItem,
-                    ["PartFieldDefinition"] = contentPartFieldDefintion
+                    ["PartFieldDefinition"] = contentPartFieldDefinition
                 });
         }
     }

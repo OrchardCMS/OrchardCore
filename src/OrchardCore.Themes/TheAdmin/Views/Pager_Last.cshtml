@@ -1,0 +1,18 @@
+﻿@using Microsoft.AspNetCore.Html
+
+@{
+    Model.Metadata.Alternates.Clear();
+    Model.Metadata.Type = "Pager_Link";
+    var value = new HtmlContentBuilder();
+    value.AppendHtml("<i class=\"fa-solid fa-angles-right\"></i>");
+    Model.Value = value;
+
+    var parentTag = Model.Tag as TagBuilder;
+
+    if (parentTag != null)
+    {
+        parentTag.MergeAttribute("title", T["Go to last page."].Value);
+    }
+}
+
+@await DisplayAsync(Model)
