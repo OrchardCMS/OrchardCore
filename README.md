@@ -30,15 +30,17 @@ Nightly (main):
 
 ## Status
 
-### 1.8.1
+### v1.8.1
 
-The software is finished -- and by finished, we mean there are no show-stopping, little-children-killing bugs in it. That we know of. There are probably numerous lower-priority bugs triaged into the next point release or service pack, as well.
+The software is production-ready, capable of serving large mission-critical applications as well, and we're not aware of any fundamental bugs or missing features we deem crucial. Orchard Core continues to evolve, with each version bringing new improvements, and keeping up with the cutting-edge of .NET.
 
-Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki/Roadmap).
+Check out [the Reference of Built-in Modules](https://docs.orchardcore.net/en/latest/docs/reference/) to see what kind of features Orchard Core provides built-in.
+
+See the [issue milestones](https://github.com/OrchardCMS/OrchardCore/milestones) for information on what we have planned for the next releases and what are the priorities.
 
 ## Getting Started and Documentation
 
-The documentation can be accessed here: <https://docs.orchardcore.net/>. See [the getting started docs](https://docs.orchardcore.net/en/latest/docs/getting-started/) on how to start using Orchard Core.
+The documentation can be accessed under <https://docs.orchardcore.net/>. See [the getting started docs](https://docs.orchardcore.net/en/latest/docs/getting-started/) on how to start using Orchard Core.
 
 You can also run Orchard Core from Docker:
 
@@ -47,6 +49,13 @@ docker run --name orchardcms -p 8080:80 orchardproject/orchardcore-cms-linux:lat
 ```
 
 Docker images and parameters can be found at <https://hub.docker.com/u/orchardproject/>. See [our Docker documentation](https://docs.orchardcore.net/en/latest/docs/topics/docker/) for more details, especially if you're new to Docker.
+
+## Help and Support
+
+Do you need some help with Orchard Core? Don't worry, there are ways to get help from the community:
+
+- Did you find a bug or have a feature request? Open an issue [in the issue tracker](https://github.com/OrchardCMS/OrchardCore/issues).
+- Do you have a question about how to do something with Orchard Core, or would like a second opinion on your code? Open [a discussion](https://github.com/OrchardCMS/OrchardCore/discussions).
 
 ## Contributing
 
@@ -69,7 +78,7 @@ First, clone the repository using the command `git clone https://github.com/Orch
 
 ## Code of Conduct
 
-See [CODE-OF-CONDUCT](./CODE-OF-CONDUCT.md).
+See [our Code of Conduct](./CODE-OF-CONDUCT.md).
 
 ## .NET Foundation
 
