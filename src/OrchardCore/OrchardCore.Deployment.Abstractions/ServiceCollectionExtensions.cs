@@ -17,8 +17,8 @@ public static class ServiceCollectionExtensions
         where TSource : IDeploymentSource
         where TStep : DeploymentStep, new()
     {
-        services.AddTransient<IDeploymentSource, IDeploymentSource>();
-        services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<TStep>());
+        services.AddDeploymentSource<TSource>();
+        services.AddDeploymentStep<TStep>();
     }
 
     public static void AddDeployment<TSource, TStep, TDisplayDriver>(this IServiceCollection services)
@@ -27,14 +27,33 @@ public static class ServiceCollectionExtensions
         where TDisplayDriver : DisplayDriver<DeploymentStep, TStep>
     {
         services.AddDeployment<TSource, TStep>();
-        services.AddScoped<IDisplayDriver<DeploymentStep>, TDisplayDriver>();
+        services.AddDeploymentStepDisplayDriver<TDisplayDriver, TStep>();
     }
 
     public static void AddDeploymentWithoutSource<TStep, TDisplayDriver>(this IServiceCollection services)
         where TStep : DeploymentStep, new()
         where TDisplayDriver : DisplayDriver<DeploymentStep, TStep>
     {
-        services.AddScoped<IDisplayDriver<DeploymentStep>, TDisplayDriver>();
+        services.AddDeploymentStep<TStep>();
+        services.AddDeploymentStepDisplayDriver<TDisplayDriver, TStep>();
+    }
+
+    private static void AddDeploymentSource<TSource>(this IServiceCollection services)
+        where TSource : IDeploymentSource
+    {
+        services.AddTransient(typeof(IDeploymentSource), typeof(TSource));
+    }
+
+    private static void AddDeploymentStep<TStep>(this IServiceCollection services)
+        where TStep : DeploymentStep, new()
+    {
+        services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<TStep>());
+    }
+
+    private static void AddDeploymentStepDisplayDriver<TDisplayDriver, TStep>(this IServiceCollection services)
+        where TDisplayDriver : DisplayDriver<DeploymentStep, TStep>
+        where TStep : DeploymentStep, new()
+    {
         services.AddScoped<IDisplayDriver<DeploymentStep>, TDisplayDriver>();
     }
 }

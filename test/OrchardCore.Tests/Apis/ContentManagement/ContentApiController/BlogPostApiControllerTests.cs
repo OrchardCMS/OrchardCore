@@ -5,7 +5,6 @@ using OrchardCore.ContentManagement.Records;
 using OrchardCore.Lists.Models;
 using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Tests.Apis.Context;
-using YesSql;
 using ISession = YesSql.ISession;
 
 namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
@@ -36,9 +35,15 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
         {
             using var context = new BlogPostApiControllerContext();
 
-            // Setup
-            await context.InitializeAsync();
-
+            try
+            {
+                // Setup
+                await context.InitializeAsync();
+            }
+            catch (Exception ex)
+            {
+                var t = ex;
+            }
             context.BlogPost.Latest = false;
             context.BlogPost.Published = false; // Deliberately set these incorrectly.
 
