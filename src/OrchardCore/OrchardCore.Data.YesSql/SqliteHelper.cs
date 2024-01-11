@@ -6,27 +6,17 @@ namespace OrchardCore.Data;
 
 public static class SqliteHelper
 {
-    private static readonly string _defaultDatabaseName = "yessql.db";
-
     public static string GetConnectionString(SqliteOptions sqliteOptions, ShellOptions shellOptions, string shellName) =>
-        GetConnectionString(sqliteOptions, GetDatabaseFolder(shellOptions, shellName), shellName);
+            GetConnectionString(sqliteOptions, GetDatabaseFolder(shellOptions, shellName));
 
-    public static string GetConnectionString(SqliteOptions sqliteOptions, string databaseFolder, string shellName)
-    {
-        var databasePath = Path.Combine(databaseFolder, shellName);
-        if (!File.Exists(databaseFolder))
+    public static string GetConnectionString(SqliteOptions sqliteOptions, string databaseFolder) =>
+        new SqliteConnectionStringBuilder
         {
-            databasePath = Path.Combine(databaseFolder, _defaultDatabaseName);
-        }
-
-        return new SqliteConnectionStringBuilder
-        {
-            DataSource = databasePath,
+            DataSource = Path.Combine(databaseFolder, sqliteOptions.DatabaseName),
             Cache = SqliteCacheMode.Shared,
             Pooling = sqliteOptions.UseConnectionPooling
         }
         .ToString();
-    }
 
     public static string GetDatabaseFolder(ShellOptions shellOptions, string shellName) =>
         Path.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellName);
