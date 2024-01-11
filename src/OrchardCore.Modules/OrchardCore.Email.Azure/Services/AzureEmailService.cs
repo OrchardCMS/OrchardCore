@@ -196,7 +196,7 @@ public class AzureEmailService(
                 }
                 else
                 {
-                    Logger.LogWarning("The mime type for the attachment '{attachment}' is not supported.", attachment.Filename);
+                    Logger.LogWarning("The MIME type for the attachment '{attachment}' is not supported.", attachment.Filename);
                 }
             }
         }
