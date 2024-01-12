@@ -9,48 +9,47 @@ using OrchardCore.Users.TimeZone.Models;
 using OrchardCore.Users.TimeZone.Services;
 using OrchardCore.Users.TimeZone.ViewModels;
 
-namespace OrchardCore.Users.TimeZone.Drivers
+namespace OrchardCore.Users.TimeZone.Drivers;
+
+public class UserTimeZoneDisplayDriver : SectionDisplayDriver<User, UserTimeZone>
 {
-    public class UserTimeZoneDisplayDriver : SectionDisplayDriver<User, UserTimeZone>
+    private readonly UserTimeZoneService _userTimeZoneService;
+    private readonly ISiteService _siteService;
+
+    public UserTimeZoneDisplayDriver(UserTimeZoneService userTimeZoneService, ISiteService siteService)
     {
-        private readonly UserTimeZoneService _userTimeZoneService;
-        private readonly ISiteService _siteService;
+        _userTimeZoneService = userTimeZoneService;
+        _siteService = siteService;
+    }
 
-        public UserTimeZoneDisplayDriver(UserTimeZoneService userTimeZoneService, ISiteService siteService)
+    public override IDisplayResult Edit(UserTimeZone userTimeZone, BuildEditorContext context)
+    {
+        return Initialize<UserTimeZoneViewModel>("UserTimeZone_Edit", async model =>
         {
-            _userTimeZoneService = userTimeZoneService;
-            _siteService = siteService;
-        }
-
-        public override IDisplayResult Edit(UserTimeZone userTimeZone, BuildEditorContext context)
-        {
-            return Initialize<UserTimeZoneViewModel>("UserTimeZone_Edit", async model =>
+            var timeZoneId = userTimeZone.TimeZoneId;
+            if (timeZoneId == null)
             {
-                var timeZoneId = userTimeZone.TimeZoneId;
-                if (timeZoneId == null)
-                {
-                    var siteSettings = await _siteService.GetSiteSettingsAsync();
+                var siteSettings = await _siteService.GetSiteSettingsAsync();
 
-                    timeZoneId = siteSettings.TimeZoneId;
-                }
-
-                model.TimeZoneId = timeZoneId;
-            }).Location("Content:3");
-        }
-
-        public override async Task<IDisplayResult> UpdateAsync(User user, UserTimeZone userTimeZone, IUpdateModel updater, BuildEditorContext context)
-        {
-            var model = new UserTimeZoneViewModel();
-
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
-            {
-                userTimeZone.TimeZoneId = model.TimeZoneId;
-
-                // Remove the cache entry, don't update it, as the form might still fail validation for other reasons.
-                await _userTimeZoneService.UpdateUserTimeZoneAsync(user);
+                timeZoneId = siteSettings.TimeZoneId;
             }
 
-            return await EditAsync(userTimeZone, context);
+            model.TimeZoneId = timeZoneId;
+        }).Location("Content:3");
+    }
+
+    public override async Task<IDisplayResult> UpdateAsync(User user, UserTimeZone userTimeZone, IUpdateModel updater, BuildEditorContext context)
+    {
+        var model = new UserTimeZoneViewModel();
+
+        if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+        {
+            userTimeZone.TimeZoneId = model.TimeZoneId;
+
+            // Remove the cache entry, don't update it, as the form might still fail validation for other reasons.
+            await _userTimeZoneService.UpdateUserTimeZoneAsync(user);
         }
+
+        return await EditAsync(userTimeZone, context);
     }
 }
