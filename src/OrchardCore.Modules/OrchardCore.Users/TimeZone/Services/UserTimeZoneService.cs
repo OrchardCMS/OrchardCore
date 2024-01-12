@@ -13,8 +13,8 @@ namespace OrchardCore.Users.TimeZone.Services
     public class UserTimeZoneService
     {
         private const string CacheKey = "UserTimeZone/";
-        private readonly TimeSpan _slidingExpiration = TimeSpan.FromMinutes(1);
 
+        private readonly TimeSpan _slidingExpiration = TimeSpan.FromMinutes(1);
         private readonly IClock _clock;
         private readonly IDistributedCache _distributedCache;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -24,8 +24,7 @@ namespace OrchardCore.Users.TimeZone.Services
             IClock clock,
             IDistributedCache distributedCache,
             IHttpContextAccessor httpContextAccessor,
-            UserManager<IUser> userManager
-            )
+            UserManager<IUser> userManager)
         {
             _clock = clock;
             _distributedCache = distributedCache;
@@ -36,6 +35,7 @@ namespace OrchardCore.Users.TimeZone.Services
         public async Task<ITimeZone> GetUserTimeZoneAsync()
         {
             var currentTimeZoneId = await GetCurrentUserTimeZoneIdAsync();
+
             if (string.IsNullOrEmpty(currentTimeZoneId))
             {
                 return null;
@@ -48,12 +48,9 @@ namespace OrchardCore.Users.TimeZone.Services
         {
             var userName = user?.UserName;
 
-            if (!string.IsNullOrEmpty(userName))
-            {
-                return _distributedCache.RemoveAsync(GetCacheKey(userName));
-            }
-
-            return Task.CompletedTask;
+            return string.IsNullOrEmpty(userName)
+                ? Task.CompletedTask
+                : _distributedCache.RemoveAsync(GetCacheKey(userName));
         }
 
         public async Task<string> GetCurrentUserTimeZoneIdAsync()
@@ -71,6 +68,7 @@ namespace OrchardCore.Users.TimeZone.Services
             if (string.IsNullOrEmpty(timeZoneId))
             {
                 var user = await _userManager.FindByNameAsync(userName) as User;
+
                 timeZoneId = user.As<UserTimeZone>()?.TimeZoneId;
 
                 if (!string.IsNullOrEmpty(timeZoneId))
