@@ -25,7 +25,7 @@ dotnet new install OrchardCore.ProjectTemplates::1.8.2-* --nuget-source https://
 #### Generate an Orchard Cms Web Application
 
 !!! warning
-    Due to a bug in the current published version, the following `dotnet new` commands will require the extra argument `--orchard-version 1.8.2`. For instance, instead of typing `dotnet new occms` use `dotnet new occms --orchard-version 1.8.1`
+    Due to a bug in the current published version, the following `dotnet new` commands will require the extra argument `--orchard-version 1.8.2`. For instance, instead of typing `dotnet new occms` use `dotnet new occms --orchard-version 1.8.2`
 
 ```CMD
 dotnet new occms
