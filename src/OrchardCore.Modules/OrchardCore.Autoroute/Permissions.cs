@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Autoroute
@@ -18,7 +19,7 @@ namespace OrchardCore.Autoroute
             {
                 new PermissionStereotype
                 {
-                    Name = "Administrator",
+                    Name = RoleNames.Administrator,
                     Permissions = GetPermissions(),
                 },
             };

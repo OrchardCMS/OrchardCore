@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Contents
@@ -57,35 +58,35 @@ namespace OrchardCore.Contents
             return new[] {
                 new PermissionStereotype
                 {
-                    Name = "Administrator",
+                    Name = RoleNames.Administrator,
                     Permissions = new[] { PublishContent, EditContent, DeleteContent, PreviewContent, CloneContent, AccessContentApi, ListContent, EditContentOwner },
                 },
                 new PermissionStereotype
                 {
-                    Name = "Editor",
+                    Name = RoleNames.Editor,
                     Permissions = new[] { PublishContent, EditContent, DeleteContent, PreviewContent, CloneContent, ListContent },
                 },
                 new PermissionStereotype
                 {
-                    Name = "Moderator"
+                    Name = RoleNames.Moderator
                 },
                 new PermissionStereotype {
-                    Name = "Author",
+                    Name = RoleNames.Author,
                     Permissions = new[] { PublishOwnContent, EditOwnContent, DeleteOwnContent, PreviewOwnContent, CloneOwnContent },
                 },
                 new PermissionStereotype
                 {
-                    Name = "Contributor",
+                    Name = RoleNames.Contributor,
                     Permissions = new[] { EditOwnContent, PreviewOwnContent, CloneOwnContent },
                 },
                 new PermissionStereotype
                 {
-                    Name = "Authenticated",
+                    Name = RoleNames.Authenticated,
                     Permissions = new[] { ViewContent },
                 },
                 new PermissionStereotype
                 {
-                    Name = "Anonymous",
+                    Name = RoleNames.Anonymous,
                     Permissions = new[] { ViewContent },
                 },
             };

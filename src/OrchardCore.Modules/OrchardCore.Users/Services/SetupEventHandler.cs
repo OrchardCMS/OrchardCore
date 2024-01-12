@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using OrchardCore.Abstractions.Setup;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Setup.Events;
 using OrchardCore.Setup.Services;
 using OrchardCore.Users.Models;
@@ -29,7 +30,7 @@ namespace OrchardCore.Users.Services
                 EmailConfirmed = true
             };
 
-            user.RoleNames.Add("Administrator");
+            user.RoleNames.Add(RoleNames.Administrator);
 
             return _userService.CreateUserAsync(user, context.Properties[SetupConstants.AdminPassword]?.ToString(), (key, message) =>
             {

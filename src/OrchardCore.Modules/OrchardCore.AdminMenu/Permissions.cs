@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.AdminMenu.Services;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.AdminMenu
@@ -39,12 +40,12 @@ namespace OrchardCore.AdminMenu
             {
                 new PermissionStereotype
                 {
-                    Name = "Administrator",
+                    Name = RoleNames.Administrator,
                     Permissions = new[] { ManageAdminMenu }
                 },
                 new PermissionStereotype
                 {
-                    Name = "Editor",
+                    Name = RoleNames.Editor,
                     Permissions = new[] { ManageAdminMenu }
                 },
             };

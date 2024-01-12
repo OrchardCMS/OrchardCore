@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Security.Services;
@@ -30,7 +31,7 @@ namespace OrchardCore.Roles
             };
 
             var roles = (await _roleService.GetRoleNamesAsync())
-                .Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase);
+                .Except(RoleNames.SystemRoles, StringComparer.OrdinalIgnoreCase);
 
             foreach (var role in roles)
             {
@@ -44,7 +45,7 @@ namespace OrchardCore.Roles
         {
             return new[] {
                 new PermissionStereotype {
-                    Name = "Administrator",
+                    Name = RoleNames.Administrator,
                     Permissions = new[] { ManageRoles, StandardPermissions.SiteOwner },
                 },
             };

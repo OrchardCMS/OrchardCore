@@ -3,6 +3,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Security.Services
@@ -23,7 +24,7 @@ namespace OrchardCore.Security.Services
             var accessibleRoles = new List<IRole>();
             foreach (var role in roles)
             {
-                if (RoleHelper.SystemRoleNames.Contains(role.RoleName))
+                if (RoleNames.IsSystemRole(role.RoleName))
                 {
                     continue;
                 }

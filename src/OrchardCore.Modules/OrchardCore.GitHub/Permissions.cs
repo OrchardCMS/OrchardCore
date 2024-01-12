@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.GitHub
@@ -19,7 +20,7 @@ namespace OrchardCore.GitHub
         {
             yield return new PermissionStereotype
             {
-                Name = "Administrator",
+                Name = RoleNames.Administrator,
                 Permissions = new[]
                 {
                     ManageGitHubAuthentication,

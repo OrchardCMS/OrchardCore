@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Security.Services;
 
@@ -18,7 +19,7 @@ public class UserRolePermissions : IPermissionProvider
     public async Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
         var roleNames = (await _roleService.GetRoleNamesAsync())
-            .Where(roleName => !RoleHelper.SystemRoleNames.Contains(roleName))
+            .Where(roleName => !RoleNames.IsSystemRole(roleName))
             .OrderBy(roleName => roleName);
 
         var list = new List<Permission>()
@@ -43,7 +44,7 @@ public class UserRolePermissions : IPermissionProvider
         return new[] {
             new PermissionStereotype
             {
-                Name = "Administrator",
+                Name = RoleNames.Administrator,
                 Permissions = new[] {
                     CommonPermissions.AssignRoleToUsers,
                 }

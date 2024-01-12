@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Users
@@ -27,7 +28,7 @@ namespace OrchardCore.Users
         {
             return new[] {
                 new PermissionStereotype {
-                    Name = "Administrator",
+                    Name = RoleNames.Administrator,
                     Permissions = new[]
                     {
                         CommonPermissions.ManageUsers,
@@ -40,22 +41,22 @@ namespace OrchardCore.Users
                 },
                 new PermissionStereotype
                 {
-                    Name = "Editor",
+                    Name = RoleNames.Editor,
                     Permissions = new[] { CommonPermissions.EditOwnUser },
                 },
                 new PermissionStereotype
                 {
-                    Name = "Moderator",
+                    Name = RoleNames.Moderator,
                     Permissions = new[] { CommonPermissions.EditOwnUser },
                 },
                 new PermissionStereotype
                 {
-                    Name = "Contributor",
+                    Name = RoleNames.Contributor,
                     Permissions = new[] { CommonPermissions.EditOwnUser },
                 },
                 new PermissionStereotype
                 {
-                    Name = "Author",
+                    Name = RoleNames.Author,
                     Permissions = new[] { CommonPermissions.EditOwnUser },
                 }
             };

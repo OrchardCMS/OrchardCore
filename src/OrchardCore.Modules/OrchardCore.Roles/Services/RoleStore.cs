@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Documents;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Modules;
 using OrchardCore.Roles.Models;
 using OrchardCore.Security;
@@ -90,8 +91,8 @@ namespace OrchardCore.Roles.Services
 
             var roleToRemove = (Role)role;
 
-            if (string.Equals(roleToRemove.NormalizedRoleName, "ANONYMOUS") ||
-                string.Equals(roleToRemove.NormalizedRoleName, "AUTHENTICATED"))
+            if (string.Equals(roleToRemove.RoleName, RoleNames.Anonymous, StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(roleToRemove.RoleName, RoleNames.Authenticated, StringComparison.OrdinalIgnoreCase))
             {
                 return IdentityResult.Failed(new IdentityError { Description = S["Can't delete system roles."] });
             }

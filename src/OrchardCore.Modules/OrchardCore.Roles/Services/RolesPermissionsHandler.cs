@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Security;
 
 namespace OrchardCore.Roles
@@ -36,14 +37,14 @@ namespace OrchardCore.Roles
             }
 
             var claims = new HashSet<Claim>();
-            foreach (var claim in _anonymousClaims ??= await GetRoleClaimsAsync("Anonymous"))
+            foreach (var claim in _anonymousClaims ??= await GetRoleClaimsAsync(RoleNames.Anonymous))
             {
                 claims.Add(claim);
             }
 
             if (context.User.Identity.IsAuthenticated)
             {
-                foreach (var claim in _authenticatedClaims ??= await GetRoleClaimsAsync("Authenticated"))
+                foreach (var claim in _authenticatedClaims ??= await GetRoleClaimsAsync(RoleNames.Authenticated))
                 {
                     claims.Add(claim);
                 }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Sms;
@@ -16,7 +17,7 @@ public class SmsPermissionProvider : IPermissionProvider
     {
         yield return new PermissionStereotype
         {
-            Name = "Administrator",
+            Name = RoleNames.Administrator,
             Permissions = new[]
             {
                 SmsPermissions.ManageSmsSettings

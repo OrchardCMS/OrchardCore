@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Security.Services;
@@ -77,7 +78,7 @@ public class RoleAuthorizationHandler : AuthorizationHandler<PermissionRequireme
             if (!roleNames.Any())
             {
                 // When the user is in no roles, we check to see if the current user can manage any roles.
-                roleNames = (await _roleService.GetRoleNamesAsync()).Where(roleName => !RoleHelper.SystemRoleNames.Contains(roleName));
+                roleNames = (await _roleService.GetRoleNamesAsync()).Where(roleName => !RoleNames.IsSystemRole(roleName));
             }
 
             // Check every role to see if the current user has permission to at least one role.

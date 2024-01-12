@@ -15,6 +15,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Security.Services;
@@ -175,7 +176,7 @@ namespace OrchardCore.Users.Controllers
             options.UserRoleFilters =
             [
                 new SelectListItem() { Text = S["Any role"], Value = string.Empty, Selected = options.SelectedRole == string.Empty },
-                new SelectListItem() { Text = S["Authenticated (no roles)"], Value = "Authenticated", Selected = string.Equals(options.SelectedRole, "Authenticated", StringComparison.OrdinalIgnoreCase) },
+                new SelectListItem() { Text = S["Authenticated (no roles)"], Value = RoleNames.Authenticated, Selected = string.Equals(options.SelectedRole, RoleNames.Authenticated, StringComparison.OrdinalIgnoreCase) },
                 // TODO Candidate for dynamic localization.
                 .. roleNames.Select(roleName =>
                     new SelectListItem

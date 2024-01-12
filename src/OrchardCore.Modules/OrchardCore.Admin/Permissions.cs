@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Admin
@@ -19,27 +20,27 @@ namespace OrchardCore.Admin
             {
                 new PermissionStereotype
                 {
-                    Name = "Administrator",
+                    Name = RoleNames.Administrator,
                     Permissions = GetPermissions(),
                 },
                 new PermissionStereotype
                 {
-                    Name = "Editor",
+                    Name = RoleNames.Editor,
                     Permissions = GetPermissions(),
                 },
                 new PermissionStereotype
                 {
-                    Name = "Moderator",
+                    Name = RoleNames.Moderator,
                     Permissions = GetPermissions(),
                 },
                 new PermissionStereotype
                 {
-                    Name = "Author",
+                    Name = RoleNames.Author,
                     Permissions = GetPermissions(),
                 },
                 new PermissionStereotype
                 {
-                    Name = "Contributor",
+                    Name = RoleNames.Contributor,
                     Permissions = GetPermissions(),
                 }
             };

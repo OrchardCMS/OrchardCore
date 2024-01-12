@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.ContentManagement.GraphQL
@@ -23,32 +24,32 @@ namespace OrchardCore.ContentManagement.GraphQL
             return new[] {
                 new PermissionStereotype
                 {
-                    Name = "Administrator",
+                    Name = RoleNames.Administrator,
                     Permissions = new[] { ApiViewContent }
                 },
                 new PermissionStereotype
                 {
-                    Name = "Editor"
+                    Name = RoleNames.Editor
                 },
                 new PermissionStereotype
                 {
-                    Name = "Moderator"
+                    Name = RoleNames.Moderator
                 },
                 new PermissionStereotype
                 {
-                    Name = "Author"
+                    Name = RoleNames.Author
                 },
                 new PermissionStereotype
                 {
-                    Name = "Contributor"
+                    Name = RoleNames.Contributor
                 },
                 new PermissionStereotype
                 {
-                    Name = "Authenticated"
+                    Name = RoleNames.Authenticated
                 },
                 new PermissionStereotype
                 {
-                    Name = "Anonymous"
+                    Name = RoleNames.Anonymous
                 },
             };
         }

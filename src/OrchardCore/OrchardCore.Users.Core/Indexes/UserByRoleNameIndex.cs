@@ -1,5 +1,6 @@
 using System.Linq;
 using Microsoft.AspNetCore.Identity;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Users.Models;
 using YesSql.Indexes;
 
@@ -32,7 +33,7 @@ namespace OrchardCore.Users.Indexes
                         {
                             new UserByRoleNameIndex
                             {
-                                RoleName = NormalizeKey("Authenticated"),
+                                RoleName = NormalizeKey(RoleNames.Authenticated),
                                 Count = 1
                             }
                         };

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Search.AzureAI.Services;
 using OrchardCore.Security.Permissions;
 
@@ -33,7 +34,7 @@ public class Permissions(AzureAISearchIndexSettingsService indexSettingsService)
         {
             new PermissionStereotype
             {
-                Name = "Administrator",
+                Name = RoleNames.Administrator,
                 Permissions = new[]
                 {
                     AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes,

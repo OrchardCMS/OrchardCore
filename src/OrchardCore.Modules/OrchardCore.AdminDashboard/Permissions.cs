@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.AdminDashboard
@@ -30,27 +31,27 @@ namespace OrchardCore.AdminDashboard
             {
                 new PermissionStereotype
                 {
-                    Name = "Administrator",
+                    Name = RoleNames.Administrator,
                     Permissions = new[] { AccessAdminDashboard, ManageAdminDashboard },
                 },
                 new PermissionStereotype
                 {
-                    Name = "Editor",
+                    Name = RoleNames.Editor,
                     Permissions = new[] { AccessAdminDashboard },
                 },
                 new PermissionStereotype
                 {
-                    Name = "Moderator",
+                    Name = RoleNames.Moderator,
                     Permissions = new[] { AccessAdminDashboard },
                 },
                 new PermissionStereotype
                 {
-                    Name = "Author",
+                    Name = RoleNames.Author,
                     Permissions = new[] { AccessAdminDashboard },
                 },
                 new PermissionStereotype
                 {
-                    Name = "Contributor",
+                    Name = RoleNames.Contributor,
                     Permissions = new[] { AccessAdminDashboard },
                 }
             };

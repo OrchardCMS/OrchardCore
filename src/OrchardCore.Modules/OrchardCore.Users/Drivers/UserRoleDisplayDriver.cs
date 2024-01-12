@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Security;
 using OrchardCore.Security.Services;
 using OrchardCore.Users.Models;
@@ -19,8 +20,6 @@ namespace OrchardCore.Users.Drivers
 {
     public class UserRoleDisplayDriver : DisplayDriver<User>
     {
-        private const string AdministratorRole = "Administrator";
-
         private readonly UserManager<IUser> _userManager;
         private readonly IRoleService _roleService;
         private readonly IUserRoleStore<IUser> _userRoleStore;
@@ -140,9 +139,9 @@ namespace OrchardCore.Users.Drivers
 
                     foreach (var role in rolesToRemove)
                     {
-                        if (string.Equals(role, AdministratorRole, StringComparison.OrdinalIgnoreCase))
+                        if (string.Equals(role, RoleNames.Administrator, StringComparison.OrdinalIgnoreCase))
                         {
-                            var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole))
+                            var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(RoleNames.Administrator))
                                 .Cast<User>()
                                 .Where(user => user.IsEnabled)
                                 .ToList();
@@ -150,7 +149,7 @@ namespace OrchardCore.Users.Drivers
                             // Make sure we always have at least one enabled administrator account.
                             if (enabledUsersOfAdminRole.Count == 1 && user.UserId == enabledUsersOfAdminRole.First().UserId)
                             {
-                                await _notifier.WarningAsync(H[$"Cannot remove {AdministratorRole} role from the only enabled administrator."]);
+                                await _notifier.WarningAsync(H[$"Cannot remove {RoleNames.Administrator} role from the only enabled administrator."]);
 
                                 continue;
                             }
@@ -178,7 +177,7 @@ namespace OrchardCore.Users.Drivers
         {
             var roles = await _roleService.GetRolesAsync();
 
-            return roles.Where(role => !RoleHelper.SystemRoleNames.Contains(role.RoleName));
+            return roles.Where(role => !RoleNames.IsSystemRole(role.RoleName));
         }
 
         private async Task<IEnumerable<string>> GetAccessibleRoleNamesAsync(IEnumerable<IRole> roles)

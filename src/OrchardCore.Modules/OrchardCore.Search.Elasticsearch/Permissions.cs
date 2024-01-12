@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Security.Permissions;
 
@@ -41,12 +42,12 @@ namespace OrchardCore.Search.Elasticsearch
             {
                 new PermissionStereotype
                 {
-                    Name = "Administrator",
+                    Name = RoleNames.Administrator,
                     Permissions = new[] { ManageElasticIndexes },
                 },
                 new PermissionStereotype
                 {
-                    Name = "Editor",
+                    Name = RoleNames.Editor,
                     Permissions = new[] { QueryElasticApi },
                 },
             };

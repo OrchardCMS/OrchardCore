@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Users;
 
@@ -22,27 +23,27 @@ namespace OrchardCore.Demo
             {
                 new PermissionStereotype
                 {
-                    Name = "Authenticated",
+                    Name = RoleNames.Authenticated,
                     Permissions = new[] { DemoAPIAccess },
                 },
                 new PermissionStereotype
                 {
-                    Name = "Editor",
+                    Name = RoleNames.Editor,
                     Permissions = new[] { ManageOwnUserProfile },
                 },
                 new PermissionStereotype
                 {
-                    Name = "Moderator",
+                    Name = RoleNames.Moderator,
                     Permissions = new[] { ManageOwnUserProfile },
                 },
                 new PermissionStereotype
                 {
-                    Name = "Contributor",
+                    Name = RoleNames.Contributor,
                     Permissions = new[] { ManageOwnUserProfile },
                 },
                 new PermissionStereotype
                 {
-                    Name = "Author",
+                    Name = RoleNames.Author,
                     Permissions = new[] { ManageOwnUserProfile },
                 },
             };

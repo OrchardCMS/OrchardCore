@@ -5,6 +5,7 @@ using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Security.Services;
 
 namespace OrchardCore.ContentFields.Settings
@@ -27,7 +28,7 @@ namespace OrchardCore.ContentFields.Settings
                 model.Required = settings.Required;
                 model.Multiple = settings.Multiple;
                 var roles = (await _roleService.GetRoleNamesAsync())
-                    .Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase)
+                    .Except(RoleNames.SystemRoles, StringComparer.OrdinalIgnoreCase)
                     .Select(roleName => new RoleEntry
                     {
                         Role = roleName,
