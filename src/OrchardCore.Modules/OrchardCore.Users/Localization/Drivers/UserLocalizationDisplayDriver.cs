@@ -33,12 +33,18 @@ public class UserLocalizationDisplayDriver : SectionDisplayDriver<User, UserLoca
     {
         return Task.FromResult<IDisplayResult>(Initialize<UserLocalizationViewModel>("UserCulture_Edit", async model =>
         {
+            var defaultCulture = await _localizationService.GetDefaultCultureAsync();
             var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
             var currentUserCulture = _httpContextAccessor.HttpContext.User.FindFirstValue("culture");
 
+            if (currentUserCulture == null)
+            {
+                currentUserCulture = defaultCulture;
+            }
+
             model.Culture = section.Culture;
             model.SupportedCultures = supportedCultures.Select(culture =>
-            new SelectListItem()
+            new SelectListItem
             {
                 Text = CultureInfo.GetCultureInfo(culture).DisplayName + " (" + culture + ")",
                 Value = culture,
