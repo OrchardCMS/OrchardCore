@@ -3,6 +3,7 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.TimeZone.Models;
 using OrchardCore.Users.TimeZone.Services;
@@ -13,17 +14,27 @@ namespace OrchardCore.Users.TimeZone.Drivers
     public class UserTimeZoneDisplayDriver : SectionDisplayDriver<User, UserTimeZone>
     {
         private readonly UserTimeZoneService _userTimeZoneService;
+        private readonly ISiteService _siteService;
 
-        public UserTimeZoneDisplayDriver(UserTimeZoneService userTimeZoneService)
+        public UserTimeZoneDisplayDriver(UserTimeZoneService userTimeZoneService, ISiteService siteService)
         {
             _userTimeZoneService = userTimeZoneService;
+            _siteService = siteService;
         }
 
         public override IDisplayResult Edit(UserTimeZone userTimeZone, BuildEditorContext context)
         {
-            return Initialize<UserTimeZoneViewModel>("UserTimeZone_Edit", model =>
+            return Initialize<UserTimeZoneViewModel>("UserTimeZone_Edit", async model =>
             {
-                model.TimeZoneId = userTimeZone.TimeZoneId;
+                var timeZoneId = userTimeZone.TimeZoneId;
+                if (timeZoneId == null)
+                {
+                    var siteSettings = await _siteService.GetSiteSettingsAsync();
+
+                    timeZoneId = siteSettings.TimeZoneId;
+                }
+
+                model.TimeZoneId = timeZoneId;
             }).Location("Content:3");
         }
 
