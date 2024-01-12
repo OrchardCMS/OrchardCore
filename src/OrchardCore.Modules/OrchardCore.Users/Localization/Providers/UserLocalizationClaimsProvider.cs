@@ -1,11 +1,10 @@
+using System;
 using System.Security.Claims;
-using OrchardCore.Users.Localization.Models;
+using System.Threading.Tasks;
 using OrchardCore.Entities;
-using OrchardCore.Users;
+using OrchardCore.Users.Localization.Models;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
-using System.Threading.Tasks;
-using System;
 
 namespace OrchardCore.Users.Localization.Providers;
 
@@ -25,7 +24,7 @@ public class UserLocalizationClaimsProvider : IUserClaimsProvider
         {
             var localizationSetting = u.As<UserLocalizationSettings>();
 
-            if (!String.IsNullOrEmpty(localizationSetting.Culture))
+            if (!string.IsNullOrEmpty(localizationSetting.Culture))
             {
                 claims.AddClaim(new Claim("culture", localizationSetting.Culture));
             }
