@@ -8,7 +8,7 @@ Most database configuration is handled automatically, but there are limited opti
 
 #### `DatabaseName` (string)
 
-By default 'OrchardCore.db` has been used as default name for the SQLite database, this property allows you to use a database name of your choice.
+By default, "OrchardCore.db" is used as the name for the SQLite database. This property allows you to use a database name of your choice. For backward compatibility with Orchard Core 1.8 and earlier, configure `"yessql.db"`.
 
 #### `UseConnectionPooling` (boolean)
 
