@@ -17,9 +17,9 @@ public class SmsService : ISmsService
         S = stringLocalizer;
     }
 
-    public async Task<SmsResult> SendAsync(SmsMessage message)
+    public async Task<SmsResult> SendAsync(SmsMessage message, ISmsProvider provider = null)
     {
-        var provider = await _smsProviderResolver.GetAsync();
+        provider ??= await _smsProviderResolver.GetAsync();
 
         if (provider == null)
         {

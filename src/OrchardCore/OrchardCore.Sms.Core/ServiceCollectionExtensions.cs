@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -11,7 +10,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddSmsServices(this IServiceCollection services)
     {
         services.AddScoped<ISmsService, SmsService>();
-        services.AddScoped<ISmsProviderResolver, SmsProviderResolver>();
+        services.AddScoped<ISmsProviderResolver, DefaultSmsProviderResolver>();
         services.AddTransient<IPostConfigureOptions<SmsSettings>, SmsSettingsConfiguration>();
 
         return services;
@@ -31,16 +30,7 @@ public static class ServiceCollectionExtensions
     }
 
     public static IServiceCollection AddTwilioSmsProvider(this IServiceCollection services)
-    {
-        services.AddHttpClient<TwilioSmsProvider>(client =>
-        {
-            client.BaseAddress = new Uri("https://api.twilio.com/2010-04-01/Accounts/");
-        }).AddStandardResilienceHandler();
-
-        services.AddSmsProvider<TwilioSmsProvider>(TwilioSmsProvider.TechnicalName);
-
-        return services;
-    }
+        => services.AddSmsProvider<TwilioSmsProvider>(TwilioSmsProvider.TechnicalName);
 
     public static IServiceCollection AddLogSmsProvider(this IServiceCollection services)
         => services.AddSmsProvider<LogSmsProvider>(LogSmsProvider.TechnicalName);

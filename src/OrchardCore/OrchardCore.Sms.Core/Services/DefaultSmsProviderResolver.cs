@@ -1,23 +1,23 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Sms.Services;
 
-public class SmsProviderResolver : ISmsProviderResolver
+public class DefaultSmsProviderResolver : ISmsProviderResolver
 {
     private readonly ISiteService _siteService;
     private readonly ILogger _logger;
     private readonly IServiceProvider _serviceProvider;
     private readonly SmsProviderOptions _smsProviderOptions;
 
-    public SmsProviderResolver(
+    public DefaultSmsProviderResolver(
         ISiteService siteService,
-        ILogger<SmsProviderResolver> logger,
+        ILogger<DefaultSmsProviderResolver> logger,
         IOptions<SmsProviderOptions> smsProviderOptions,
         IServiceProvider serviceProvider)
     {
@@ -40,12 +40,12 @@ public class SmsProviderResolver : ISmsProviderResolver
 
         if (name != null && _smsProviderOptions.Providers.TryGetValue(name, out var providerType))
         {
-            return (ISmsProvider)_serviceProvider.GetRequiredService(providerType);
+            return _serviceProvider.CreateInstance<ISmsProvider>(providerType);
         }
 
         if (string.IsNullOrEmpty(name) && _smsProviderOptions.Providers.Count > 0)
         {
-            return (ISmsProvider)_serviceProvider.GetRequiredService(_smsProviderOptions.Providers.Values.Last());
+            return _serviceProvider.CreateInstance<ISmsProvider>(_smsProviderOptions.Providers.Values.Last());
         }
 
         if (_logger.IsEnabled(LogLevel.Error))

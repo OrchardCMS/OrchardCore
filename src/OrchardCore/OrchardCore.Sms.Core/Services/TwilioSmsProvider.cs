@@ -30,29 +30,27 @@ public class TwilioSmsProvider : ISmsProvider
     private readonly ISiteService _siteService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ILogger<TwilioSmsProvider> _logger;
-    private readonly HttpClient _httpClient;
+    private readonly IHttpClientFactory _httpClientFactory;
+
     protected readonly IStringLocalizer S;
 
     public TwilioSmsProvider(
         ISiteService siteService,
         IDataProtectionProvider dataProtectionProvider,
         ILogger<TwilioSmsProvider> logger,
-        HttpClient httpClient,
+        IHttpClientFactory httpClientFactory,
         IStringLocalizer<TwilioSmsProvider> stringLocalizer)
     {
         _siteService = siteService;
         _dataProtectionProvider = dataProtectionProvider;
         _logger = logger;
-        _httpClient = httpClient;
+        _httpClientFactory = httpClientFactory;
         S = stringLocalizer;
     }
 
     public async Task<SmsResult> SendAsync(SmsMessage message)
     {
-        if (message == null)
-        {
-            throw new ArgumentNullException(nameof(message));
-        }
+        ArgumentNullException.ThrowIfNull(message);
 
         if (string.IsNullOrEmpty(message.To))
         {
@@ -104,9 +102,12 @@ public class TwilioSmsProvider : ISmsProvider
     {
         var token = $"{settings.AccountSID}:{settings.AuthToken}";
         var base64Token = Convert.ToBase64String(Encoding.ASCII.GetBytes(token));
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64Token);
 
-        return _httpClient;
+        var client = _httpClientFactory.CreateClient(TechnicalName);
+
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64Token);
+
+        return client;
     }
 
     private TwilioSettings _settings;
@@ -124,7 +125,7 @@ public class TwilioSmsProvider : ISmsProvider
             {
                 PhoneNumber = settings.PhoneNumber,
                 AccountSID = settings.AccountSID,
-                AuthToken = protector.Unprotect(settings.AuthToken),
+                AuthToken = settings.AuthToken == null ? null : protector.Unprotect(settings.AuthToken),
             };
         }
 
