@@ -11,7 +11,7 @@ Enabling the `SMS` feature will add a new settings page under `Configurations` >
 The `OrchardCore.Sms` module provides you with the capability to integrate additional providers for dispatching SMS messages. To achieve this, you can easily create an implementation of the `ISmsProvider` interface and then proceed to register it using the following approach.
 
 ```csharp
-    services.AddSmsProvider<YourCustomImplemenation>("A technical name for your implementation")
+services.AddSmsProvider<YourCustomImplemenation>("A technical name for your implementation")
 ```
 
 ## Sending SMS Message

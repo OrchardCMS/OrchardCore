@@ -1,6 +1,6 @@
 # SMS (`OrchardCore.Sms.Twilio`)
 
-This feature provides the necessary services to send messages using the `Twilio` service.
+This feature provides the necessary services to send messages using the [Twilio](https://www.twilio.com) service.
 
 ## Twilio Settings
 
