@@ -10,14 +10,9 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddSmsServices(this IServiceCollection services)
     {
-        services.AddTransient<IPostConfigureOptions<SmsSettings>, SmsSettingsConfiguration>();
-
-        services.AddHttpClient<TwilioSmsProvider>(client =>
-        {
-            client.BaseAddress = new Uri("https://api.twilio.com/2010-04-01/Accounts/");
-        }).AddStandardResilienceHandler();
-
         services.AddScoped<ISmsService, SmsService>();
+        services.AddScoped<ISmsProviderResolver, SmsProviderResolver>();
+        services.AddTransient<IPostConfigureOptions<SmsSettings>, SmsSettingsConfiguration>();
 
         return services;
     }
@@ -26,11 +21,27 @@ public static class ServiceCollectionExtensions
         => services.TryAddScoped<IPhoneFormatValidator, DefaultPhoneFormatValidator>();
 
     public static IServiceCollection AddSmsProvider<T>(this IServiceCollection services, string name) where T : class, ISmsProvider
-        => services.AddKeyedScoped<ISmsProvider, T>(name);
+    {
+        services.Configure<SmsProviderOptions>(options =>
+        {
+            options.TryAddProvider(name, typeof(T));
+        });
+
+        return services;
+    }
 
     public static IServiceCollection AddTwilioSmsProvider(this IServiceCollection services)
-        => services.AddKeyedScoped<ISmsProvider, TwilioSmsProvider>(TwilioSmsProvider.TechnicalName);
+    {
+        services.AddHttpClient<TwilioSmsProvider>(client =>
+        {
+            client.BaseAddress = new Uri("https://api.twilio.com/2010-04-01/Accounts/");
+        }).AddStandardResilienceHandler();
+
+        services.AddSmsProvider<TwilioSmsProvider>(TwilioSmsProvider.TechnicalName);
+
+        return services;
+    }
 
     public static IServiceCollection AddLogSmsProvider(this IServiceCollection services)
-        => services.AddKeyedScoped<ISmsProvider, LogSmsProvider>(LogSmsProvider.TechnicalName);
+        => services.AddSmsProvider<LogSmsProvider>(LogSmsProvider.TechnicalName);
 }

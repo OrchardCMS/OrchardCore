@@ -26,11 +26,11 @@ The `OrchardCore.Sms` module provides you with the capability to integrate addit
 An SMS message can be send by injecting `ISmsService` and invoke the `SendAsync` method. For instance
 
 ```c#
-public class Test
+public class TestController
 {
-    private ISmsService _smsService;
+    private readonly ISmsService _smsService;
 
-    public Test(ISmsService smsService)
+    public TestController(ISmsService smsService)
     {
         _smsService = smsService;
     }
@@ -40,7 +40,7 @@ public class Test
         var message = new SmsMessage
         {
             To = "17023451234",
-            Message = "It's easy to send an SMS message using Orcahred!",
+            Message = "It's easy to send an SMS message using Orchard!",
         };
 
         var result = await _smsService.SendAsync(message);
@@ -48,7 +48,11 @@ public class Test
         if (result.Succeeded) 
         {
             // message was sent!
+
+            return Ok(result);
         }
+
+        return BadRequest(result);
     }
 }
 ```

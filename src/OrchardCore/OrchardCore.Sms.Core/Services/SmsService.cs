@@ -1,49 +1,31 @@
-using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Sms.Services;
 
 public class SmsService : ISmsService
 {
-    private readonly SmsSettings _smsOptions;
-    private readonly IServiceProvider _serviceProvider;
+    private readonly ISmsProviderResolver _smsProviderResolver;
 
-    protected readonly IStringLocalizer<SmsService> S;
+    protected readonly IStringLocalizer S;
 
     public SmsService(
-        IServiceProvider serviceProvider,
-        IOptions<SmsSettings> smsOptions,
+        ISmsProviderResolver smsProviderResolver,
         IStringLocalizer<SmsService> stringLocalizer)
     {
-        _smsOptions = smsOptions.Value;
-        _serviceProvider = serviceProvider;
+        _smsProviderResolver = smsProviderResolver;
         S = stringLocalizer;
     }
 
-    public Task<SmsResult> SendAsync(SmsMessage message)
+    public async Task<SmsResult> SendAsync(SmsMessage message)
     {
-        var provider = GetProvider();
+        var provider = await _smsProviderResolver.GetAsync();
 
         if (provider == null)
         {
-            return Task.FromResult(SmsResult.Failed(S["SMS settings must be configured before an SMS message can be sent."]));
+            return SmsResult.Failed(S["SMS settings must be configured before an SMS message can be sent."]);
         }
 
-        return provider.SendAsync(message);
+        return await provider.SendAsync(message);
     }
-
-    private ISmsProvider GetProvider()
-    {
-        if (_provider == null && !string.IsNullOrEmpty(_smsOptions.DefaultProviderName))
-        {
-            _provider = _serviceProvider.GetRequiredKeyedService<ISmsProvider>(_smsOptions.DefaultProviderName);
-        }
-
-        return _provider;
-    }
-
-    private ISmsProvider _provider;
 }

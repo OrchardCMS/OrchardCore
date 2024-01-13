@@ -22,6 +22,7 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
     private readonly IAuthorizationService _authorizationService;
     private readonly IPhoneFormatValidator _phoneFormatValidator;
     private readonly IDataProtectionProvider _dataProtectionProvider;
+
     protected readonly IStringLocalizer S;
 
     public TwilioSettingsDisplayDriver(
@@ -47,6 +48,7 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
             model.HasAuthToken = !string.IsNullOrEmpty(settings.AuthToken);
         }).Location("Content:5#Twilio")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings))
+        .Prefix(Prefix)
         .OnGroup(SmsSettings.GroupId);
     }
 
@@ -95,5 +97,15 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
         }
 
         return await EditAsync(settings, context);
+    }
+
+    protected override void BuildPrefix(ISite model, string htmlFieldPrefix)
+    {
+        Prefix = typeof(TwilioSettings).Name;
+
+        if (!string.IsNullOrEmpty(htmlFieldPrefix))
+        {
+            Prefix = htmlFieldPrefix + "." + Prefix;
+        }
     }
 }
