@@ -2,35 +2,29 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Indexing
+namespace OrchardCore.Indexing;
+
+public class Permissions : IPermissionProvider
 {
-    public class Permissions : IPermissionProvider
-    {
-        public static readonly Permission ManageIndexes = new("ManageIndexes", "Manage Indexes");
+    public static readonly Permission ManageIndexes = new("ManageIndexes", "Manage Indexes");
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        {
-            return Task.FromResult(GetPermissions());
-        }
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+           => Task.FromResult(_allPermissions);
 
-        private static IEnumerable<Permission> GetPermissions()
-        {
-            return new[]
-            {
-                ManageIndexes,
-            };
-        }
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+        => _allStereotypes;
 
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    private readonly static IEnumerable<PermissionStereotype> _allStereotypes =
+    [
+        new PermissionStereotype
         {
-            return new[]
-            {
-                new PermissionStereotype
-                {
-                    Name = "Administrator",
-                    Permissions = new[] { ManageIndexes },
-                },
-            };
-        }
-    }
+            Name = "Administrator",
+            Permissions = _allPermissions,
+        },
+    ];
+
+    private readonly static IEnumerable<Permission> _allPermissions =
+    [
+        ManageIndexes,
+    ];
 }

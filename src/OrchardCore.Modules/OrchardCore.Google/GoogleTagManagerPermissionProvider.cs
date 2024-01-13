@@ -2,14 +2,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Admin;
+namespace OrchardCore.Google;
 
-public class PermissionsAdminSettings : IPermissionProvider
+public class GoogleTagManagerPermissionProvider : IPermissionProvider
 {
-    public static readonly Permission ManageAdminSettings = new("ManageAdminSettings", "Manage Admin Settings");
-
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
+           => Task.FromResult(_allPermissions);
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
         => _allStereotypes;
@@ -25,6 +23,6 @@ public class PermissionsAdminSettings : IPermissionProvider
 
     private readonly static IEnumerable<Permission> _allPermissions =
     [
-        ManageAdminSettings,
+        Permissions.ManageGoogleTagManager,
     ];
 }

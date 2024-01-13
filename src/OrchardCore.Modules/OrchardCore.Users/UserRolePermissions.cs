@@ -21,10 +21,7 @@ public class UserRolePermissions : IPermissionProvider
             .Where(roleName => !RoleHelper.SystemRoleNames.Contains(roleName))
             .OrderBy(roleName => roleName);
 
-        var list = new List<Permission>()
-        {
-            CommonPermissions.AssignRoleToUsers,
-        };
+        var list = new List<Permission>(_allPermissions);
 
         foreach (var roleName in roleNames)
         {
@@ -39,15 +36,19 @@ public class UserRolePermissions : IPermissionProvider
     }
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-    {
-        return new[] {
-            new PermissionStereotype
-            {
-                Name = "Administrator",
-                Permissions = new[] {
-                    CommonPermissions.AssignRoleToUsers,
-                }
-            }
-        };
-    }
+        => _allStereotypes;
+
+    private readonly static IEnumerable<PermissionStereotype> _allStereotypes =
+    [
+        new PermissionStereotype
+        {
+            Name = "Administrator",
+            Permissions = _allPermissions,
+        },
+    ];
+
+    private readonly static IEnumerable<Permission> _allPermissions =
+    [
+        CommonPermissions.AssignRoleToUsers,
+    ];
 }

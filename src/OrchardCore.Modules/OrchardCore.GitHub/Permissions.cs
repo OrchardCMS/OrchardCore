@@ -1,30 +1,31 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.GitHub
+namespace OrchardCore.GitHub;
+
+public class Permissions : IPermissionProvider
 {
-    public class Permissions : IPermissionProvider
-    {
-        public static readonly Permission ManageGitHubAuthentication
-            = new(nameof(ManageGitHubAuthentication), "Manage GitHub Authentication settings");
+    public static readonly Permission ManageGitHubAuthentication
+        = new(nameof(ManageGitHubAuthentication), "Manage GitHub Authentication settings");
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        {
-            return Task.FromResult(new[] { ManageGitHubAuthentication }.AsEnumerable());
-        }
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
 
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+        => _allStereotypes;
+
+    private readonly static IEnumerable<PermissionStereotype> _allStereotypes =
+    [
+        new PermissionStereotype
         {
-            yield return new PermissionStereotype
-            {
-                Name = "Administrator",
-                Permissions = new[]
-                {
-                    ManageGitHubAuthentication,
-                }
-            };
-        }
-    }
+            Name = "Administrator",
+            Permissions = _allPermissions,
+        },
+    ];
+
+    private readonly static IEnumerable<Permission> _allPermissions =
+    [
+        ManageGitHubAuthentication,
+    ];
 }

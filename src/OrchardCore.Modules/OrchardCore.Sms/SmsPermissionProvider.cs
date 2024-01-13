@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
@@ -8,19 +7,22 @@ namespace OrchardCore.Sms;
 public class SmsPermissionProvider : IPermissionProvider
 {
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
-    {
-        return Task.FromResult(new[] { SmsPermissions.ManageSmsSettings }.AsEnumerable());
-    }
+        => Task.FromResult(_allPermissions);
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-    {
-        yield return new PermissionStereotype
+        => _allStereotypes;
+
+    private readonly static IEnumerable<PermissionStereotype> _allStereotypes =
+    [
+        new PermissionStereotype
         {
             Name = "Administrator",
-            Permissions = new[]
-            {
-                SmsPermissions.ManageSmsSettings
-            }
-        };
-    }
+            Permissions = _allPermissions,
+        },
+    ];
+
+    private readonly static IEnumerable<Permission> _allPermissions =
+    [
+        SmsPermissions.ManageSmsSettings,
+    ];
 }

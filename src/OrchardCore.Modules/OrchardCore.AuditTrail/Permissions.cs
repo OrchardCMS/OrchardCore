@@ -1,32 +1,29 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.AuditTrail
-{
-    public class Permissions : IPermissionProvider
-    {
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
-            new[]
-            {
-                new PermissionStereotype
-                {
-                    Name = "Administrator",
-                    Permissions = new[]
-                    {
-                        AuditTrailPermissions.ViewAuditTrail,
-                        AuditTrailPermissions.ManageAuditTrailSettings,
-                    }
-                },
-            };
+namespace OrchardCore.AuditTrail;
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync() =>
-            Task.FromResult(new[]
-            {
-                AuditTrailPermissions.ViewAuditTrail,
-                AuditTrailPermissions.ManageAuditTrailSettings,
-            }
-            .AsEnumerable());
-    }
+public class Permissions : IPermissionProvider
+{
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+        => _allStereotypes;
+
+    private readonly static IEnumerable<PermissionStereotype> _allStereotypes =
+    [
+        new PermissionStereotype
+        {
+            Name = "Administrator",
+            Permissions = _allPermissions
+        },
+    ];
+
+    private readonly static IEnumerable<Permission> _allPermissions =
+    [
+        AuditTrailPermissions.ViewAuditTrail,
+        AuditTrailPermissions.ManageAuditTrailSettings,
+    ];
 }

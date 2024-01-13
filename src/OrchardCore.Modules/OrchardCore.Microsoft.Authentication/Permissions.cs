@@ -1,30 +1,31 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Microsoft.Authentication
+namespace OrchardCore.Microsoft.Authentication;
+
+public class Permissions : IPermissionProvider
 {
-    public class Permissions : IPermissionProvider
-    {
-        public static readonly Permission ManageMicrosoftAuthentication
-            = new(nameof(ManageMicrosoftAuthentication), "Manage Microsoft Authentication settings");
+    public static readonly Permission ManageMicrosoftAuthentication
+        = new("ManageMicrosoftAuthentication", "Manage Microsoft Authentication settings");
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        {
-            return Task.FromResult(new[] { ManageMicrosoftAuthentication }.AsEnumerable());
-        }
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
 
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+        => _allStereotypes;
+
+    private readonly static IEnumerable<PermissionStereotype> _allStereotypes =
+    [
+        new PermissionStereotype
         {
-            yield return new PermissionStereotype
-            {
-                Name = "Administrator",
-                Permissions = new[]
-                {
-                    ManageMicrosoftAuthentication,
-                }
-            };
-        }
-    }
+            Name = "Administrator",
+            Permissions = _allPermissions,
+        },
+    ];
+
+    private readonly static IEnumerable<Permission> _allPermissions =
+    [
+        ManageMicrosoftAuthentication,
+    ];
 }

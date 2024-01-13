@@ -1,29 +1,29 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.ReverseProxy
+namespace OrchardCore.ReverseProxy;
+
+public class Permissions : IPermissionProvider
 {
-    public class Permissions : IPermissionProvider
-    {
-        public static readonly Permission ManageReverseProxySettings = new("ManageReverseProxySettings", "Manage Reverse Proxy Settings");
+    public static readonly Permission ManageReverseProxySettings = new("ManageReverseProxySettings", "Manage Reverse Proxy Settings");
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        {
-            return Task.FromResult(new[] { ManageReverseProxySettings }.AsEnumerable());
-        }
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+        => _allStereotypes;
 
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    private readonly static IEnumerable<PermissionStereotype> _allStereotypes =
+    [
+        new PermissionStereotype
         {
-            return new[]
-            {
-                new PermissionStereotype
-                {
-                    Name = "Administrator",
-                    Permissions = new[] { ManageReverseProxySettings },
-                },
-            };
-        }
-    }
+            Name = "Administrator",
+            Permissions = _allPermissions,
+        },
+    ];
+
+    private readonly static IEnumerable<Permission> _allPermissions =
+    [
+        ManageReverseProxySettings,
+    ];
 }

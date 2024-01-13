@@ -2,55 +2,49 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Admin
+namespace OrchardCore.Admin;
+
+public class Permissions : IPermissionProvider
 {
-    public class Permissions : IPermissionProvider
-    {
-        public static readonly Permission AccessAdminPanel = new("AccessAdminPanel", "Access admin panel");
+    public static readonly Permission AccessAdminPanel = new("AccessAdminPanel", "Access admin panel");
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        {
-            return Task.FromResult(GetPermissions());
-        }
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
 
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        {
-            return new[]
-            {
-                new PermissionStereotype
-                {
-                    Name = "Administrator",
-                    Permissions = GetPermissions(),
-                },
-                new PermissionStereotype
-                {
-                    Name = "Editor",
-                    Permissions = GetPermissions(),
-                },
-                new PermissionStereotype
-                {
-                    Name = "Moderator",
-                    Permissions = GetPermissions(),
-                },
-                new PermissionStereotype
-                {
-                    Name = "Author",
-                    Permissions = GetPermissions(),
-                },
-                new PermissionStereotype
-                {
-                    Name = "Contributor",
-                    Permissions = GetPermissions(),
-                }
-            };
-        }
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+        => _allStereotypes;
 
-        private static IEnumerable<Permission> GetPermissions()
+    private readonly static IEnumerable<PermissionStereotype> _allStereotypes =
+    [
+        new PermissionStereotype
         {
-            return new[]
-            {
-                AccessAdminPanel,
-            };
-        }
-    }
+            Name = "Administrator",
+            Permissions = _allPermissions,
+        },
+        new PermissionStereotype
+        {
+            Name = "Editor",
+            Permissions = _allPermissions,
+        },
+        new PermissionStereotype
+        {
+            Name = "Moderator",
+            Permissions = _allPermissions,
+        },
+        new PermissionStereotype
+        {
+            Name = "Author",
+            Permissions = _allPermissions,
+        },
+        new PermissionStereotype
+        {
+            Name = "Contributor",
+            Permissions = _allPermissions,
+        },
+    ];
+
+    private readonly static IEnumerable<Permission> _allPermissions =
+    [
+        AccessAdminPanel,
+    ];
 }

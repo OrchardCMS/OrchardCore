@@ -1,37 +1,36 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Localization
+namespace OrchardCore.Localization;
+
+/// <summary>
+/// Represents the localization module permissions.
+/// </summary>
+public class Permissions : IPermissionProvider
 {
     /// <summary>
-    /// Represents the localization module permissions.
+    /// Gets a permission for managing the cultures.
     /// </summary>
-    public class Permissions : IPermissionProvider
-    {
-        /// <summary>
-        /// Gets a permission for managing the cultures.
-        /// </summary>
-        public static readonly Permission ManageCultures = new("ManageCultures", "Manage supported culture");
+    public static readonly Permission ManageCultures = new("ManageCultures", "Manage supported culture");
 
-        /// <inheritdocs />
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        {
-            return Task.FromResult(new[] { ManageCultures }.AsEnumerable());
-        }
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+           => Task.FromResult(_allPermissions);
 
-        /// <inheritdocs />
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+        => _allStereotypes;
+
+    private readonly static IEnumerable<PermissionStereotype> _allStereotypes =
+    [
+        new PermissionStereotype
         {
-            return new[]
-            {
-                new PermissionStereotype
-                {
-                    Name = "Administrator",
-                    Permissions = new[] { ManageCultures },
-                }
-            };
-        }
-    }
+            Name = "Administrator",
+            Permissions = _allPermissions,
+        },
+    ];
+
+    private readonly static IEnumerable<Permission> _allPermissions =
+    [
+        ManageCultures,
+    ];
 }
