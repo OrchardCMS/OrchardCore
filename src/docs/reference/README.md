@@ -120,6 +120,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - [Diagnostics](modules/Diagnostics/README.md)
 - [Remote Deployment](modules/Deployment.Remote/README.md)
 - [Sms](modules/Sms/README.md)
+  - [Twilio](modules/Sms.Twilio/README.md)
 
 ### Localization
 

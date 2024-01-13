@@ -43,7 +43,6 @@
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="$(AspNetCorePackagesVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(AspNetCorePackagesVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Owin" Version="$(AspNetCorePackagesVersion)" />
-    <PackageManagement Include="Microsoft.Extensions.Http.Resilience" Version="$(AspNetCorePackagesVersion)" />
   </ItemGroup>
 
   <!-- 'Microsoft.Extensions' packages that are not included in the ASP.NET Core shared framework -->

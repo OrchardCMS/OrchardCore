@@ -14,13 +14,24 @@ using OrchardCore.Modules.Manifest;
 )]
 
 [assembly: Feature(
+    Name = "Twilio SMS Provider",
+    Id = "OrchardCore.Sms.Twilio",
+    Description = "Provides Twilio SMS services for sending messages to users.",
+    Category = "SMS",
+    Dependencies =
+    [
+        "OrchardCore.Sms",
+    ]
+)]
+
+[assembly: Feature(
     Name = "SMS Notifications",
     Id = "OrchardCore.Notifications.Sms",
     Description = "Provides a way to send SMS notifications to users.",
     Category = "Notifications",
-    Dependencies = new[]
-    {
+    Dependencies =
+    [
         "OrchardCore.Notifications",
         "OrchardCore.Sms",
-    }
+    ]
 )]
