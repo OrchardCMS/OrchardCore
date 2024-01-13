@@ -17,10 +17,11 @@ public class AdminController : Controller
     private readonly IPhoneFormatValidator _phoneFormatValidator;
     private readonly INotifier _notifier;
     private readonly IAuthorizationService _authorizationService;
-    protected readonly IHtmlLocalizer H;
-    protected readonly IStringLocalizer S;
     private readonly ISmsProviderResolver _smsProviderResolver;
     private readonly ISmsService _smsService;
+
+    protected readonly IHtmlLocalizer H;
+    protected readonly IStringLocalizer S;
 
     public AdminController(
         IOptions<SmsProviderOptions> smsProviderOptions,
