@@ -263,6 +263,9 @@ nav:
       - 1.0.0-beta1: docs/releases/1.0.0-beta1.md
   - Community:
       - Overview: docs/community/README.md
+      - Contributors:
+          - Our wonderful contributors: docs/community/contributors/README.md
+          - Contributors Map: docs/community/contributors/Map.md
       - Honorable Members:
           - Jean-Thierry Kéchichian: docs/community/jean-thierry/README.md
       - Jean-Thierry Kéchichian Community Award: docs/community/jean-thierry-community-award/README.md
