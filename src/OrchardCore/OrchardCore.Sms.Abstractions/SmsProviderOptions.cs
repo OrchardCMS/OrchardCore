@@ -8,7 +8,7 @@ public class SmsProviderOptions
 {
     private Dictionary<string, Type> _providers { get; } = [];
 
-    private IReadOnlyDictionary<string, Type> _readonlyProviders;
+    private FrozenDictionary<string, Type> _readonlyProviders;
 
     /// <summary>
     /// This read-only collections contains all registered SMS providers.

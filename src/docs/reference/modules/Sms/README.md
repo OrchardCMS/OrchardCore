@@ -67,6 +67,6 @@ This feature provides you a way to send user notifications using SMS based on us
 
 ## Credits
 
-### Google's libphonenumber library.
+### Google's libphonenumber library
 
 <https://github.com/twcclegg/libphonenumber-csharp>

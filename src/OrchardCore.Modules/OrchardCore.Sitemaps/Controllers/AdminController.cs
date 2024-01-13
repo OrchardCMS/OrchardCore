@@ -24,6 +24,8 @@ namespace OrchardCore.Sitemaps.Controllers
     [Admin]
     public class AdminController : Controller
     {
+        private const string _optionsSearch = "Options.Search";
+
         private readonly ISitemapHelperService _sitemapService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IDisplayManager<SitemapSource> _displayManager;
@@ -33,9 +35,10 @@ namespace OrchardCore.Sitemaps.Controllers
         private readonly PagerOptions _pagerOptions;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly INotifier _notifier;
+        private readonly IShapeFactory _shapeFactory;
+
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
-        protected readonly dynamic New;
 
         public AdminController(
             ISitemapHelperService sitemapService,
@@ -60,9 +63,9 @@ namespace OrchardCore.Sitemaps.Controllers
             _pagerOptions = pagerOptions.Value;
             _updateModelAccessor = updateModelAccessor;
             _notifier = notifier;
+            _shapeFactory = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
-            New = shapeFactory;
         }
 
         public async Task<IActionResult> List(ContentOptions options, PagerParameters pagerParameters)
@@ -89,34 +92,36 @@ namespace OrchardCore.Sitemaps.Controllers
                 .Take(pager.PageSize)
                 .ToList();
 
-            // Maintain previous route data when generating page links
+            // Maintain previous route data when generating page links.
             var routeData = new RouteData();
-            routeData.Values.Add("Options.Search", options.Search);
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
+            if (!string.IsNullOrEmpty(options.Search))
+            {
+                routeData.Values.TryAdd(_optionsSearch, options.Search);
+            }
 
             var model = new ListSitemapViewModel
             {
                 Sitemaps = results.Select(sm => new SitemapListEntry { SitemapId = sm.SitemapId, Name = sm.Name, Enabled = sm.Enabled }).ToList(),
                 Options = options,
-                Pager = pagerShape
+                Pager = await _shapeFactory.PagerAsync(pager, count, routeData)
             };
 
-            model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
-            };
+            model.Options.ContentsBulkAction =
+            [
+                new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
+            ];
 
             return View(model);
         }
 
-        [HttpPost, ActionName("List")]
+        [HttpPost, ActionName(nameof(List))]
         [FormValueRequired("submit.Filter")]
         public ActionResult ListFilterPOST(ListSitemapViewModel model)
-        {
-            return RedirectToAction(nameof(List), new RouteValueDictionary {
-                { "Options.Search", model.Options.Search }
+            => RedirectToAction(nameof(List), new RouteValueDictionary
+            {
+                { _optionsSearch, model.Options.Search }
             });
-        }
 
         public async Task<IActionResult> Display(string sitemapId)
         {

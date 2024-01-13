@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Cysharp.Text;
 using OrchardCore.ContentManagement;
@@ -7,14 +6,9 @@ using OrchardCore.Indexing;
 
 namespace OrchardCore.Contents.Indexing
 {
-    public class FullTextContentIndexHandler : IContentItemIndexHandler
+    public class FullTextContentIndexHandler(IContentManager contentManager) : IContentItemIndexHandler
     {
-        private readonly IContentManager _contentManager;
-
-        public FullTextContentIndexHandler(IContentManager contentManager)
-        {
-            _contentManager = contentManager;
-        }
+        private readonly IContentManager _contentManager = contentManager;
 
         public async Task BuildIndexAsync(BuildIndexContext context)
         {
@@ -24,16 +18,18 @@ namespace OrchardCore.Contents.Indexing
 
             foreach (var segment in result.Segments)
             {
-                stringBuilder.Append(segment + " ");
+                stringBuilder.Append(segment);
+                stringBuilder.Append(" ");
             }
 
-            if (!string.IsNullOrEmpty(stringBuilder.ToString()))
+            var value = stringBuilder.ToString();
+
+            if (string.IsNullOrEmpty(value))
             {
-                context.DocumentIndex.Set(
-                    IndexingConstants.FullTextKey,
-                    stringBuilder.ToString(),
-                    DocumentIndexOptions.Sanitize);
+                return;
             }
+
+            context.DocumentIndex.Set(IndexingConstants.FullTextKey, value, DocumentIndexOptions.Sanitize);
         }
     }
 }
