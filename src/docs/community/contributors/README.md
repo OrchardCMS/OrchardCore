@@ -1,10 +1,10 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-302-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-303-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))! You can add new contributors by [using the All Contributors bot](https://allcontributors.org/docs/en/bot/usage).
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
@@ -414,6 +414,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <tr>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/vjacquet"><img src="https://avatars.githubusercontent.com/u/6363920?v=4?s=100" width="100px;" alt="vjacquet"/><br /><sub><b>vjacquet</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=vjacquet" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/yaricrolletservico"><img src="https://avatars.githubusercontent.com/u/101557629?v=4?s=100" width="100px;" alt="yaricrolletservico"/><br /><sub><b>yaricrolletservico</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=yaricrolletservico" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/viktoriamagyar"><img src="https://avatars.githubusercontent.com/u/84029837?v=4?s=100" width="100px;" alt="Viktória Magyar"/><br /><sub><b>Viktória Magyar</b></sub></a><br /><a href="#eventOrganizing-viktoriamagyar" title="Event Organizing">📋</a></td>
     </tr>
   </tbody>
 </table>
