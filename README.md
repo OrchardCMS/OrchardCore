@@ -30,43 +30,55 @@ Nightly (main):
 
 ## Status
 
-### 1.8.1
+### v1.8.1
 
-The software is finished -- and by finished, we mean there are no show-stopping, little-children-killing bugs in it. That we know of. There are probably numerous lower-priority bugs triaged into the next point release or service pack, as well.
+The software is production-ready, and capable of serving large mission-critical applications as well, and we're not aware of any fundamental bugs or missing features we deem crucial. Orchard Core continues to evolve, with each version bringing new improvements, and keeping up with the cutting-edge of .NET.
 
-Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki/Roadmap).
+Check out [the Reference of Built-in Modules](https://docs.orchardcore.net/en/latest/docs/reference/) to see what kind of features Orchard Core provides built-in.
 
-## Getting Started
+See the [issue milestones](https://github.com/OrchardCMS/OrchardCore/milestones) for information on what we have planned for the next releases and what are the priorities.
 
-- Clone the repository using the command `git clone https://github.com/OrchardCMS/OrchardCore.git` and checkout the `main` branch.
+## Getting Started and Documentation
+
+The documentation can be accessed under <https://docs.orchardcore.net/>. See [the getting started docs](https://docs.orchardcore.net/en/latest/docs/getting-started/) on how to start using Orchard Core.
+
+You can also run Orchard Core from Docker:
+
+```
+docker run --name orchardcms -p 8080:80 orchardproject/orchardcore-cms-linux:latest
+```
+
+Docker images and parameters can be found at <https://hub.docker.com/u/orchardproject/>. See [our Docker documentation](https://docs.orchardcore.net/en/latest/docs/topics/docker/) for more details, especially if you're new to Docker.
+
+## Help and Support
+
+Do you need some help with Orchard Core? Don't worry, there are ways to get help from the community:
+
+- Did you find a bug or have a feature request? Open an issue [in the issue tracker](https://github.com/OrchardCMS/OrchardCore/issues).
+- Do you have a question about how to do something with Orchard Core, or would like a second opinion on your code? Open [a discussion](https://github.com/OrchardCMS/OrchardCore/discussions).
+
+## Contributing
+
+It's great that you're thinking about contributing to Orchard Core! You'd join [our wonderful community of contributors](https://docs.orchardcore.net/en/latest/docs/community/).
+
+First, clone the repository using the command `git clone https://github.com/OrchardCMS/OrchardCore.git` and checkout the `main` branch. Then, you have multiple options, see below. And when you're ready, head over to [our contribution guide](CONTRIBUTING.md).
 
 ### Command Line
 
-- Install the latest version of the .NET SDK from this page <https://dotnet.microsoft.com/download>
-- Next, navigate to `./OrchardCore/src/OrchardCore.Cms.Web`.
-- Call `dotnet run`.
-- Then open the `http://localhost:5000` URL in your browser.
+1. Install the latest version of the .NET SDK from this page: <https://dotnet.microsoft.com/download>.
+2. Navigate to `./OrchardCore/src/OrchardCore.Cms.Web`.
+3. Run `dotnet run`.
+4. Ppen the `http://localhost:5000` URL in your browser.
 
 ### Visual Studio
 
-- Download Visual Studio 2022 (v17.5+) from <https://www.visualstudio.com/downloads>.
-- Launch the solution by clicking on `OrchardCore.sln`. Give Visual Studio time to restore all missing Nuget packages.
-- Ensure `OrchardCore.Cms.Web` is set as the startup project. Then run the app.
-
-### Docker
-
-- Run `docker run --name orchardcms -p 8080:80 orchardproject/orchardcore-cms-linux:latest`
-
-Docker images and parameters can be found at <https://hub.docker.com/u/orchardproject/>  
-See [Docker documentation](https://docs.docker.com/engine/reference/commandline/run/#publish-or-expose-port--p---expose) to expose different port.
-
-### Documentation
-
-The documentation can be accessed here: <https://docs.orchardcore.net/>
+1. Download Visual Studio 2022 (v17.8+) from <https://www.visualstudio.com/downloads>.
+2. Launch the solution by clicking on `OrchardCore.sln`. Give Visual Studio time to restore all missing Nuget packages.
+3. Ensure `OrchardCore.Cms.Web` is set as the startup project. Then run the app.
 
 ## Code of Conduct
 
-See [CODE-OF-CONDUCT](./CODE-OF-CONDUCT.md)
+See [our Code of Conduct](./CODE-OF-CONDUCT.md).
 
 ## .NET Foundation
 
