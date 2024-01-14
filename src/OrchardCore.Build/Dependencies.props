@@ -38,7 +38,7 @@
     <PackageManagement Include="Markdig" Version="0.34.0" />
     <PackageManagement Include="MessagePack" Version="2.2.60" />
     <PackageManagement Include="Microsoft.Extensions.Azure" Version="1.7.1" />
-    <PackageManagement Include="Microsoft.Identity.Web" Version="2.16.0" />
+    <PackageManagement Include="Microsoft.Identity.Web" Version="2.16.1" />
     <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageManagement Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
     <PackageManagement Include="MimeKit" Version="4.3.0" />
