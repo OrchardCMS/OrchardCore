@@ -40,9 +40,11 @@ public class Startup : StartupBase
 
         if (_hostEnvironment.IsDevelopment())
         {
-            // Add Log provider.
             services.AddLogSmsProvider();
         }
+
+        services.AddTwilioSmsProvider()
+            .AddScoped<IDisplayDriver<ISite>, TwilioSettingsDisplayDriver>();
 
         services.AddScoped<IPermissionProvider, SmsPermissionProvider>();
         services.AddScoped<INavigationProvider, AdminMenu>();
@@ -52,26 +54,11 @@ public class Startup : StartupBase
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
         routes.MapAreaControllerRoute(
-            name: "SMSTest",
+            name: "SmsProviderTest",
             areaName: "OrchardCore.Sms",
-            pattern: _adminOptions.AdminUrlPrefix + "/SMS/test",
+            pattern: _adminOptions.AdminUrlPrefix + "/sms/test",
             defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Test) }
         );
-    }
-}
-
-[Feature("OrchardCore.Sms.Twilio")]
-public class TwilioStartup : StartupBase
-{
-    public override void ConfigureServices(IServiceCollection services)
-    {
-        services.AddHttpClient(TwilioSmsProvider.TechnicalName, client =>
-        {
-            client.BaseAddress = new Uri("https://api.twilio.com/2010-04-01/Accounts/");
-        }).AddStandardResilienceHandler();
-
-        services.AddTwilioSmsProvider()
-            .AddScoped<IDisplayDriver<ISite>, TwilioSettingsDisplayDriver>();
     }
 }
 

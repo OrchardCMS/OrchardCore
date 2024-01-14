@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -19,18 +20,37 @@ public static class ServiceCollectionExtensions
     public static void AddPhoneFormatValidator(this IServiceCollection services)
         => services.TryAddScoped<IPhoneFormatValidator, DefaultPhoneFormatValidator>();
 
-    public static IServiceCollection AddSmsProvider<T>(this IServiceCollection services, string name) where T : class, ISmsProvider
+    public static IServiceCollection AddSmsProvider<T>(this IServiceCollection services, string name)
+        where T : class, ISmsProvider
     {
         services.Configure<SmsProviderOptions>(options =>
         {
-            options.TryAddProvider(name, typeof(T));
+            options.TryAddProvider(name, new SmsProviderTypeOptions(typeof(T))
+            {
+                IsEnabled = true,
+            });
         });
 
         return services;
     }
 
+    public static IServiceCollection AddSmsProviderOptionsConfiguration<TConfiguration>(this IServiceCollection services)
+        where TConfiguration : class, IConfigureOptions<SmsProviderOptions>
+    {
+        services.AddTransient<IConfigureOptions<SmsProviderOptions>, TConfiguration>();
+
+        return services;
+    }
+
     public static IServiceCollection AddTwilioSmsProvider(this IServiceCollection services)
-        => services.AddSmsProvider<TwilioSmsProvider>(TwilioSmsProvider.TechnicalName);
+    {
+        services.AddHttpClient(TwilioSmsProvider.TechnicalName, client =>
+        {
+            client.BaseAddress = new Uri("https://api.twilio.com/2010-04-01/Accounts/");
+        }).AddStandardResilienceHandler();
+
+        return services.AddSmsProviderOptionsConfiguration<TwilioProviderOptionsConfigurations>();
+    }
 
     public static IServiceCollection AddLogSmsProvider(this IServiceCollection services)
         => services.AddSmsProvider<LogSmsProvider>(LogSmsProvider.TechnicalName);

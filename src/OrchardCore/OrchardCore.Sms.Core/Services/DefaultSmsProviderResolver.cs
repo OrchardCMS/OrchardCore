@@ -40,12 +40,12 @@ public class DefaultSmsProviderResolver : ISmsProviderResolver
 
         if (name != null && _smsProviderOptions.Providers.TryGetValue(name, out var providerType))
         {
-            return _serviceProvider.CreateInstance<ISmsProvider>(providerType);
+            return _serviceProvider.CreateInstance<ISmsProvider>(providerType.Type);
         }
 
         if (string.IsNullOrEmpty(name) && _smsProviderOptions.Providers.Count > 0)
         {
-            return _serviceProvider.CreateInstance<ISmsProvider>(_smsProviderOptions.Providers.Values.Last());
+            return _serviceProvider.CreateInstance<ISmsProvider>(_smsProviderOptions.Providers.Values.Last().Type);
         }
 
         if (_logger.IsEnabled(LogLevel.Error))

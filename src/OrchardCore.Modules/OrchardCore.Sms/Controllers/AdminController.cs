@@ -106,8 +106,9 @@ public class AdminController : Controller
 
     private void PopulateModel(SmsTestViewModel model)
     {
-        model.Providers = _smsProviderOptions.Providers.Keys
-            .Select(key => new SelectListItem(key, key))
+        model.Providers = _smsProviderOptions.Providers
+            .Where(entry => entry.Value.IsEnabled)
+            .Select(entry => new SelectListItem(entry.Key, entry.Key))
             .OrderBy(item => item.Text)
             .ToArray();
     }
