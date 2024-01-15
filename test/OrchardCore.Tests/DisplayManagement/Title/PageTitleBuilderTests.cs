@@ -131,6 +131,7 @@ namespace OrchardCore.DisplayManagement.Title
                 new HtmlString(FirstPartTitle),
                 new HtmlString(SecondPartTitle)
             };
+
             pageTitleBuilder.AddSegments(elements, "after");
 
             // Act & Assert
