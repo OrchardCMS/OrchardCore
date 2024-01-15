@@ -148,7 +148,7 @@ namespace OrchardCore.Users.Drivers
                             // Make sure we always have at least one enabled administrator account.
                             if (enabledUsersOfAdminRole.Count == 1 && user.UserId == enabledUsersOfAdminRole.First().UserId)
                             {
-                                await _notifier.WarningAsync(H[$"Cannot remove {RoleNames.Administrator} role from the only enabled administrator."]);
+                                await _notifier.WarningAsync(H["Cannot remove {0} role from the only enabled administrator.", RoleNames.Administrator]);
 
                                 continue;
                             }
