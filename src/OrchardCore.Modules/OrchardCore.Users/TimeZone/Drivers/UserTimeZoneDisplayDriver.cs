@@ -41,12 +41,12 @@ public class UserTimeZoneDisplayDriver : SectionDisplayDriver<User, UserTimeZone
 
             model.TimeZoneId = timeZoneId;
             model.TimeZones = _clock.GetTimeZones().Select(tz =>
-            new SelectListItem
-            {
-                Text = tz.ToString(),
-                Value = tz.TimeZoneId,
-                Selected = tz.TimeZoneId == timeZoneId
-            });
+                new SelectListItem
+                {
+                    Text = tz.ToString(),
+                    Value = tz.TimeZoneId,
+                    Selected = tz.TimeZoneId == timeZoneId
+                });
         }).Location("Content:3");
     }
 

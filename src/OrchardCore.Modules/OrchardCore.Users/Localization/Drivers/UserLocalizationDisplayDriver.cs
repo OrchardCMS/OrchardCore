@@ -44,12 +44,12 @@ public class UserLocalizationDisplayDriver : SectionDisplayDriver<User, UserLoca
 
             model.Culture = section.Culture;
             model.SupportedCultures = supportedCultures.Select(culture =>
-            new SelectListItem
-            {
-                Text = CultureInfo.GetCultureInfo(culture).DisplayName + " (" + culture + ")",
-                Value = culture,
-                Selected = currentUserCulture == culture
-            });
+                new SelectListItem
+                {
+                    Text = CultureInfo.GetCultureInfo(culture).DisplayName + " (" + culture + ")",
+                    Value = culture,
+                    Selected = currentUserCulture == culture
+                });
         }).Location("Content:2"));
     }
 
