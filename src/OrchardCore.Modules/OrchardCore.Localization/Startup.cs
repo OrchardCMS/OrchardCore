@@ -25,7 +25,7 @@ namespace OrchardCore.Localization
     /// </summary>
     public class Startup : StartupBase
     {
-        // Don't change this order to lower value because this will break the user default culture if OrchardCore.Users.Localization feature is enabled
+        // Don't change this order to a lower value because this will break the user default culture if OrchardCore.Users.Localization feature is enabled.
         public override int ConfigureOrder => 100;
 
         /// <inheritdocs />
