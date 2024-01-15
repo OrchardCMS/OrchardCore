@@ -17,7 +17,7 @@ public class UserLocalizationRequestCultureProvider : RequestCultureProvider
             return NullProviderCultureResult;
         }
 
-        var userCulture = httpContext.User.FindFirstValue("culture");
+        var userCulture = httpContext.User.FindFirstValue(UserLocalizationClaimsProvider.CultureClaimType);
 
         if (string.IsNullOrWhiteSpace(userCulture))
         {

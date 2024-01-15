@@ -10,6 +10,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Localization;
 using OrchardCore.Users.Localization.Models;
+using OrchardCore.Users.Localization.Providers;
 using OrchardCore.Users.Localization.ViewModels;
 using OrchardCore.Users.Models;
 
@@ -20,10 +21,7 @@ public class UserLocalizationDisplayDriver : SectionDisplayDriver<User, UserLoca
     private readonly ILocalizationService _localizationService;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public UserLocalizationDisplayDriver(
-        ILocalizationService localizationService,
-        IHttpContextAccessor httpContextAccessor
-        )
+    public UserLocalizationDisplayDriver(ILocalizationService localizationService, IHttpContextAccessor httpContextAccessor)
     {
         _localizationService = localizationService;
         _httpContextAccessor = httpContextAccessor;
@@ -35,7 +33,7 @@ public class UserLocalizationDisplayDriver : SectionDisplayDriver<User, UserLoca
         {
             var defaultCulture = await _localizationService.GetDefaultCultureAsync();
             var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
-            var currentUserCulture = _httpContextAccessor.HttpContext.User.FindFirstValue("culture");
+            var currentUserCulture = _httpContextAccessor.HttpContext.User.FindFirstValue(UserLocalizationClaimsProvider.CultureClaimType);
 
             if (currentUserCulture == null)
             {

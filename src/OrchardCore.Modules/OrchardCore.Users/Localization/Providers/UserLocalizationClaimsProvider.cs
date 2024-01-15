@@ -10,6 +10,8 @@ namespace OrchardCore.Users.Localization.Providers;
 
 public class UserLocalizationClaimsProvider : IUserClaimsProvider
 {
+    internal const string CultureClaimType = "culture";
+
     public Task GenerateAsync(IUser user, ClaimsIdentity claims)
     {
         ArgumentNullException.ThrowIfNull(user);
@@ -26,7 +28,7 @@ public class UserLocalizationClaimsProvider : IUserClaimsProvider
 
             if (!string.IsNullOrEmpty(localizationSetting.Culture))
             {
-                claims.AddClaim(new Claim("culture", localizationSetting.Culture));
+                claims.AddClaim(new Claim(CultureClaimType, localizationSetting.Culture));
             }
         }
 
