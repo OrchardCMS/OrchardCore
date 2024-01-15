@@ -3,7 +3,7 @@ namespace OrchardCore.DependencyInjection.Tests;
 public class OrchardCoreServiceProviderFactoryTests
 {
     [Fact]
-    public void CanResolveKeys()
+    public void ResolveKeys()
     {
         // Arrange
         var services = new ServiceCollection();
@@ -22,9 +22,5 @@ public class OrchardCoreServiceProviderFactoryTests
         Assert.Equal("foo", keys[0]);
         Assert.Equal("bar", keys[1]);
         Assert.Equal("baz", keys[2]);
-    }
-
-    public class FooService
-    {
     }
 }
