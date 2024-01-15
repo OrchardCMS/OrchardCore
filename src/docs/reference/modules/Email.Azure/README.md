@@ -1,6 +1,6 @@
 # Azure Email (`OrchardCore.Email.Azure`)
 
-This module provides the infrastructure necessary to send emails using `Azure Communication Services`.
+This module provides the infrastructure necessary to send emails using [Azure Communication Services Email](https://learn.microsoft.com/en-us/azure/communication-services/concepts/email/email-overview).
 
 ## Azure Email Settings
 
@@ -9,10 +9,11 @@ Enabling the `OrchardCore.Email.Azure` module will allow the user to set the fol
 | Setting | Description |
 | --- | --- |
 | `ConnectionString` | The ACS connection string that will be used to deliver the email.
+| `DefaultSender` | The email of the sender. |
 
 ## Azure Email Settings Configuration
 
-The `OrchardCore.Email.Azure` module allows the user to use configuration values to override the settings configured from the admin area by calling the `ConfigureEmailSettings()` extension method on `OrchardCoreBuilder` when initializing the app.
+The `OrchardCore.Email.Azure` module allows the user to use configuration values to override the settings configured from the admin area by calling the `ConfigureAzureEmailSettings()` extension method on `OrchardCoreBuilder` when initializing the app.
 
 The following configuration values can be customized:
 

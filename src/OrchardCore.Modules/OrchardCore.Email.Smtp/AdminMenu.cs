@@ -1,10 +1,10 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Email.Drivers;
+using OrchardCore.Email.Smtp.Drivers;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Email
+namespace OrchardCore.Email.Smtp
 {
     public class AdminMenu : INavigationProvider
     {

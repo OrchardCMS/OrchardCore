@@ -1,15 +1,14 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Email.Drivers;
 using OrchardCore.Email.Services;
-using OrchardCore.Email.ViewModels;
-using OrchardCore.Modules;
+using OrchardCore.Email.Smtp.Drivers;
+using OrchardCore.Email.Smtp.Services;
+using OrchardCore.Email.Smtp.ViewModels;
 
-namespace OrchardCore.Email.Controllers
+namespace OrchardCore.Email.Smtp.Controllers
 {
     public class AdminController : Controller
     {

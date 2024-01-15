@@ -2,6 +2,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email;
 using OrchardCore.Email.Services;
+using OrchardCore.Email.Smtp.Services;
 using OrchardCore.Settings;
 using OrchardCore.Tests.Utilities;
 using OrchardCore.Users;

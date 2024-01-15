@@ -1,13 +1,12 @@
-namespace OrchardCore.Email.Azure
+namespace OrchardCore.Email.Azure;
+
+/// <summary>
+/// Represents a settings for Azure email.
+/// </summary>
+public class AzureEmailSettings : EmailSettings
 {
     /// <summary>
-    /// Represents a settings for Azure email.
+    /// Gets or sets the connection string.
     /// </summary>
-    public class AzureEmailSettings : EmailSettings
-    {
-        /// <summary>
-        /// Gets or sets the connection string.
-        /// </summary>
-        public string ConnectionString { get; set; }
-    }
+    public string ConnectionString { get; set; }
 }

@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Configuration;
-using OrchardCore.Email;
+using OrchardCore.Email.Smtp;
 using OrchardCore.Environment.Shell.Configuration;
 
 namespace Microsoft.Extensions.DependencyInjection

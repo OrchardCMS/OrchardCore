@@ -4,33 +4,32 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using OrchardCore.Email.Azure.ViewModels;
 
-namespace OrchardCore.Email.Azure.Controllers
+namespace OrchardCore.Email.Azure.Controllers;
+
+public class AdminController : Controller
 {
-    public class AdminController : Controller
+    private readonly IAuthorizationService _authorizationService;
+    private readonly AzureEmailSettings _options;
+
+    public AdminController(IAuthorizationService authorizationService, IOptions<AzureEmailSettings> options)
     {
-        private readonly IAuthorizationService _authorizationService;
-        private readonly AzureEmailSettings _options;
+        _authorizationService = authorizationService;
+        _options = options.Value;
+    }
 
-        public AdminController(IAuthorizationService authorizationService, IOptions<AzureEmailSettings> options)
+    public async Task<IActionResult> Options()
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewAzureEmailOptions))
         {
-            _authorizationService = authorizationService;
-            _options = options.Value;
+            return Forbid();
         }
 
-        public async Task<IActionResult> Options()
+        var model = new OptionsViewModel
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewAzureEmailOptions))
-            {
-                return Forbid();
-            }
+            DefaultSender = _options.DefaultSender,
+            ConnectionString = _options.ConnectionString
+        };
 
-            var model = new OptionsViewModel
-            {
-                DefaultSender = _options.DefaultSender,
-                ConnectionString = _options.ConnectionString
-            };
-
-            return View(model);
-        }
+        return View(model);
     }
 }

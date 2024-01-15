@@ -7,12 +7,11 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Email.Services;
+using OrchardCore.Email.Smtp.Services;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Email.Drivers
+namespace OrchardCore.Email.Smtp.Drivers
 {
     public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpEmailSettings>
     {

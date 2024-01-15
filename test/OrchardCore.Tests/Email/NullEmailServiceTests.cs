@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging.Testing;
 using OrchardCore.Email.Services;
 
 namespace OrchardCore.Email.Tests;
@@ -15,7 +14,7 @@ public class NullEmailServiceTests
         });
         var emailService = new NullEmailService(
             emailOptions,
-            new FakeLogger<NullEmailService>(),
+            Mock.Of<NullLogger<NullEmailService>>(),
             Mock.Of<IStringLocalizer<NullEmailService>>(),
             Mock.Of<IEmailAddressValidator>());
         var message = new MailMessage

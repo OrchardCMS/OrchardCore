@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Threading.Tasks;
 using Azure;
 using Azure.Communication.Email;
@@ -123,7 +124,7 @@ public class AzureEmailService(
                 return EmailResult.Failed([.. errors]);
             }
 
-            var emailMessage = FromMailMessage(message);
+            var emailMessage = FromMailMessage(message, out result);
 
             await client.SendAsync(WaitUntil.Completed, emailMessage);
 
@@ -132,12 +133,13 @@ public class AzureEmailService(
         catch (Exception ex)
         {
             result = EmailResult.Failed(S["An error occurred while sending an email: '{0}'", ex.Message]);
+            Logger.LogError(ex, message: ex.Message);
         }
 
         return result;
     }
 
-    private EmailMessage FromMailMessage(MailMessage message)
+    private EmailMessage FromMailMessage(MailMessage message, out EmailResult result)
     {
         var recipients = message.GetRecipients();
 
@@ -196,10 +198,14 @@ public class AzureEmailService(
                 }
                 else
                 {
+                    result = EmailResult.Failed(S["Unable to attach the file named '{0}'.", attachment.Filename]);
+
                     Logger.LogWarning("The MIME type for the attachment '{attachment}' is not supported.", attachment.Filename);
                 }
             }
         }
+
+        result = EmailResult.Success;
 
         return emailMessage;
     }

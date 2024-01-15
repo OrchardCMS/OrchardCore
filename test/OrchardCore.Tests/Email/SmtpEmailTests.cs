@@ -1,10 +1,11 @@
 using MimeKit;
 using OrchardCore.Email;
 using OrchardCore.Email.Services;
+using OrchardCore.Email.Smtp.Services;
 
 namespace OrchardCore.Tests.Email
 {
-    public class EmailTests
+    public class SmtpEmailTests
     {
         [Fact]
         public async Task SendEmail_WithToHeader()

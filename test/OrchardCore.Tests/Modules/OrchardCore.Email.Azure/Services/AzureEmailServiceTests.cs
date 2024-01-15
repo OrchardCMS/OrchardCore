@@ -5,7 +5,7 @@ namespace OrchardCore.Email.Azure.Services.Tests;
 public class AzureEmailServiceTests
 {
     [Fact(Skip = "Configure the default sender and connection string for Email Communication Services (ECS) before run this test.")]
-    public async Task SendEmail()
+    public async Task SendEmailShouldSucceed()
     {
         // Arrange
         var emailOptions = Options.Create(new AzureEmailSettings

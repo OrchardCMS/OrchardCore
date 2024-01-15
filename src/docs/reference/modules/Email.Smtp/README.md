@@ -8,6 +8,7 @@ Enabling the `OrchardCore.Email.Smtp` feature will allow the user to set the fol
 
 | Setting | Description |
 | --- | --- |
+| `DefaultSender` | The email of the sender. |
 | `DeliveryMethod` | The method for sending the email, `SmtpDeliveryMethod.Network` (online) or `SmtpDeliveryMethod.SpecifiedPickupDirectory` (offline). |
 | `PickupDirectoryLocation` | The directory location for the mailbox (`SmtpDeliveryMethod.SpecifiedPickupDirectory`). |
 | `Host` | The SMTP server. |
@@ -26,7 +27,7 @@ Enabling the `OrchardCore.Email.Smtp` feature will allow the user to set the fol
 
 ## SMTP Email Settings Configuration
 
-The `OrchardCore.Email.Smtp` module allows the user to use configuration values to override the settings configured from the admin area by calling the `ConfigureEmailSettings()` extension method on `OrchardCoreBuilder` when initializing the app.
+The `OrchardCore.Email.Smtp` module allows the user to use configuration values to override the settings configured from the admin area by calling the `ConfigureSmtpEmailSettings()` extension method on `OrchardCoreBuilder` when initializing the app.
 
 The following configuration values can be customized:
 
