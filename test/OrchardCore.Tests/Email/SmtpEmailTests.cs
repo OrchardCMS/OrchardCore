@@ -1,6 +1,6 @@
 using MimeKit;
 using OrchardCore.Email;
-using OrchardCore.Email.Services;
+using OrchardCore.Email.Smtp;
 using OrchardCore.Email.Smtp.Services;
 
 namespace OrchardCore.Tests.Email

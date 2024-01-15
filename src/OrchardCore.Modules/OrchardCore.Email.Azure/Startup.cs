@@ -40,7 +40,7 @@ public class Startup : StartupBase
         services.AddScoped<INavigationProvider, AdminMenu>();
         services.AddScoped<IEmailService, AzureEmailService>();
 
-        services.AddTransient<IConfigureOptions<AzureEmailSettings>, AzureEmailSettingsConfiguration>();
+        services.AddTransient<IAsyncConfigureOptions<AzureEmailSettings>, AzureEmailSettingsConfiguration>();
 
         var connectionString = _configuration[$"OrchardCore_Email_Azure:{nameof(AzureEmailSettings.ConnectionString)}"];
 

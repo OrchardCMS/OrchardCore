@@ -34,7 +34,7 @@ public class Startup : StartupBase
         services.AddScoped<SmtpEmailService>();
         services.AddScoped<IEmailService>(sp => sp.GetService<SmtpEmailService>());
 
-        services.AddTransient<IConfigureOptions<SmtpEmailSettings>, SmtpEmailSettingsConfiguration>();
+        services.AddTransient<IAsyncConfigureOptions<SmtpEmailSettings>, SmtpEmailSettingsConfiguration>();
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

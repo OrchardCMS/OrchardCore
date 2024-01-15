@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Logging.Testing;
-
 namespace OrchardCore.Email.Azure.Services.Tests;
 
 public class AzureEmailServiceTests
@@ -13,10 +11,9 @@ public class AzureEmailServiceTests
             DefaultSender = "<<Sender>>",
             ConnectionString = "<<ConnectionString>>"
         });
-        var logger = new FakeLogger<AzureEmailService>();
         var emailService = new AzureEmailService(
             emailOptions,
-            logger,
+            Mock.Of<NullLogger<AzureEmailService>>(),
             Mock.Of<IStringLocalizer<AzureEmailService>>(),
             new EmailAddressValidator());
         var message = new MailMessage

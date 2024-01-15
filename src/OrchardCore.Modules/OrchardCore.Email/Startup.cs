@@ -19,7 +19,7 @@ namespace OrchardCore.Email
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IEmailService, NullEmailService>();
 
-            services.AddTransient<IConfigureOptions<EmailSettings>, EmailSettingsConfiguration>();
+            services.AddTransient<IAsyncConfigureOptions<EmailSettings>, EmailSettingsConfiguration>();
         }
     }
 }
