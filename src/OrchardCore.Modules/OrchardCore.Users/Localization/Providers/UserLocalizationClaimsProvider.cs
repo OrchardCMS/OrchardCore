@@ -15,14 +15,14 @@ public class UserLocalizationClaimsProvider : IUserClaimsProvider
         ArgumentNullException.ThrowIfNull(user);
         ArgumentNullException.ThrowIfNull(claims);
 
-        if (user is not User u)
+        if (user is not User currentUser)
         {
             return Task.CompletedTask;
         }
 
-        if (u.Has<UserLocalizationSettings>())
+        if (currentUser.Has<UserLocalizationSettings>())
         {
-            var localizationSetting = u.As<UserLocalizationSettings>();
+            var localizationSetting = currentUser.As<UserLocalizationSettings>();
 
             if (!string.IsNullOrEmpty(localizationSetting.Culture))
             {

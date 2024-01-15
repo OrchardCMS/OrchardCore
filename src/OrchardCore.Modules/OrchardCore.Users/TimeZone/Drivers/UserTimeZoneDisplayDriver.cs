@@ -59,7 +59,7 @@ public class UserTimeZoneDisplayDriver : SectionDisplayDriver<User, UserTimeZone
             userTimeZone.TimeZoneId = model.TimeZoneId;
 
             // Remove the cache entry, don't update it, as the form might still fail validation for other reasons.
-            await _userTimeZoneService.UpdateUserTimeZoneAsync(user);
+            await _userTimeZoneService.ClearUserTimeZoneCacheAsync(user);
         }
 
         return await EditAsync(userTimeZone, context);
