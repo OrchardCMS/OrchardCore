@@ -40,8 +40,7 @@ namespace OrchardCore.OpenId.YesSql.Models
         /// <summary>
         /// Gets or sets the scopes associated with the current authorization.
         /// </summary>
-        public ImmutableArray<string> Scopes { get; set; }
-            = ImmutableArray.Create<string>();
+        public ImmutableArray<string> Scopes { get; set; } = [];
 
         /// <summary>
         /// Gets or sets the status of the current authorization.

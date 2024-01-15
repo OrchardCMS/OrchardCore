@@ -1,8 +1,9 @@
-using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Workflows;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -17,7 +18,10 @@ namespace OrchardCore.Contents.Workflows.Activities
     {
         protected readonly IStringLocalizer S;
 
-        protected ContentActivity(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer localizer)
+        protected ContentActivity(
+            IContentManager contentManager,
+            IWorkflowScriptEvaluator scriptEvaluator,
+            IStringLocalizer localizer)
         {
             ContentManager = contentManager;
             ScriptEvaluator = scriptEvaluator;
@@ -66,6 +70,40 @@ namespace OrchardCore.Contents.Workflows.Activities
         public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Outcomes("Done");
+        }
+
+        public override async Task OnWorkflowRestartingAsync(WorkflowExecutionContext workflowContext, CancellationToken cancellationToken = default)
+        {
+            ContentItem contentItem = null;
+
+            if (workflowContext.Input.TryGetValue(ContentEventConstants.ContentEventInputKey, out var contentEvent))
+            {
+                var contentEventContext = ((JObject)contentEvent).ToObject<ContentEventContext>();
+
+                if (contentEventContext?.ContentItemVersionId != null)
+                {
+                    contentItem = await ContentManager.GetVersionAsync(contentEventContext.ContentItemVersionId);
+                }
+                if (contentItem == null && contentEventContext?.ContentItemId != null)
+                {
+                    contentItem = await ContentManager.GetAsync(contentEventContext.ContentItemId);
+                }
+            }
+
+            if (contentItem == null && workflowContext.Input.TryGetValue(ContentEventConstants.ContentItemInputKey, out var contentItemEvent))
+            {
+                var item = ((JObject)contentItemEvent).ToObject<ContentItem>();
+
+                if (item?.ContentItemId != null)
+                {
+                    contentItem = await ContentManager.GetAsync(item.ContentItemId);
+                }
+            }
+
+            if (contentItem != null)
+            {
+                workflowContext.Input[ContentEventConstants.ContentItemInputKey] = contentItem;
+            }
         }
 
         protected virtual async Task<IContent> GetContentAsync(WorkflowExecutionContext workflowContext)

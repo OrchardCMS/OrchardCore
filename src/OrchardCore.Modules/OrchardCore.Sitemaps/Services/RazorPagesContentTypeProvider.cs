@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -45,11 +44,11 @@ namespace OrchardCore.Sitemaps.Services
             return Task.FromResult<string>(null);
         }
 
-        public IEnumerable<ContentTypeDefinition> ListRoutableTypeDefinitions()
+        public async Task<IEnumerable<ContentTypeDefinition>> ListRoutableTypeDefinitionsAsync()
         {
-            var ctds = _contentDefinitionManager.ListTypeDefinitions();
-            var rctds = ctds.Where(ctd => _options.ContentTypeOptions.Any(o => o.ContentType == ctd.Name));
-            return rctds;
+            var definitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
+
+            return definitions.Where(definition => _options.ContentTypeOptions.Any(o => o.ContentType == definition.Name));
         }
     }
 }

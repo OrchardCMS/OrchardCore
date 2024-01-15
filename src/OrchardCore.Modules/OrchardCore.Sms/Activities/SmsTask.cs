@@ -9,7 +9,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Sms.Activities;
 
-public class SmsTask : TaskActivity
+public class SmsTask : TaskActivity<SmsTask>
 {
     private readonly ISmsProvider _smsProvider;
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
@@ -29,8 +29,8 @@ public class SmsTask : TaskActivity
         S = stringLocalizer;
     }
 
-    public override string Name => nameof(SmsTask);
     public override LocalizedString DisplayText => S["SMS Task"];
+
     public override LocalizedString Category => S["Messaging"];
 
     public WorkflowExpression<string> PhoneNumber

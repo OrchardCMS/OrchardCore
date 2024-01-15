@@ -12,30 +12,33 @@ using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Environment.Shell
 {
-    public class ShellSettingsManager : IShellSettingsManager
+    public class ShellSettingsManager : IShellSettingsManager, IDisposable
     {
         private readonly IConfiguration _applicationConfiguration;
         private readonly IShellsConfigurationSources _tenantsConfigSources;
         private readonly IShellConfigurationSources _tenantConfigSources;
-        private readonly IShellsSettingsSources _settingsSources;
+        private readonly IShellsSettingsSources _tenantsSettingsSources;
 
         private IConfiguration _configuration;
+        private IConfigurationRoot _configurationRoot;
+        private IConfigurationRoot _tenantsSettingsRoot;
         private IEnumerable<string> _configuredTenants;
         private readonly SemaphoreSlim _semaphore = new(1);
 
-        private Func<string, Task<IConfigurationBuilder>> _tenantConfigBuilderFactory;
+        private Func<string, Action<IConfigurationBuilder>, Task<IConfigurationRoot>> _tenantConfigFactoryAsync;
         private readonly SemaphoreSlim _tenantConfigSemaphore = new(1);
+        private bool _disposed;
 
         public ShellSettingsManager(
             IConfiguration applicationConfiguration,
             IShellsConfigurationSources tenantsConfigSources,
             IShellConfigurationSources tenantConfigSources,
-            IShellsSettingsSources settingsSources)
+            IShellsSettingsSources tenantsSettingsSources)
         {
             _applicationConfiguration = applicationConfiguration;
             _tenantsConfigSources = tenantsConfigSources;
             _tenantConfigSources = tenantConfigSources;
-            _settingsSources = settingsSources;
+            _tenantsSettingsSources = tenantsSettingsSources;
         }
 
         public ShellSettings CreateDefaultSettings()
@@ -53,26 +56,22 @@ namespace OrchardCore.Environment.Shell
             try
             {
                 await EnsureConfigurationAsync();
+                await ReloadTenantsSettingsAsync();
 
-                var tenantsSettings = (await new ConfigurationBuilder()
-                    .AddSourcesAsync(_settingsSources))
-                    .Build();
-
-                var tenants = tenantsSettings.GetChildren().Select(section => section.Key);
+                var tenants = _tenantsSettingsRoot.GetChildren().Select(section => section.Key);
                 var allTenants = _configuredTenants.Concat(tenants).Distinct().ToArray();
 
                 var allSettings = new List<ShellSettings>();
 
                 foreach (var tenant in allTenants)
                 {
-                    var tenantSettings = new ConfigurationBuilder()
+                    var tenantSettingsBuilder = new ConfigurationBuilder()
                         .AddConfiguration(_configuration)
                         .AddConfiguration(_configuration.GetSection(tenant))
-                        .AddConfiguration(tenantsSettings.GetSection(tenant))
-                        .Build();
+                        .AddConfiguration(_tenantsSettingsRoot.GetSection(tenant));
 
-                    var settings = new ShellConfiguration(tenantSettings);
-                    var configuration = new ShellConfiguration(tenant, _tenantConfigBuilderFactory);
+                    var settings = new ShellConfiguration(tenantSettingsBuilder);
+                    var configuration = new ShellConfiguration(tenant, _tenantConfigFactoryAsync);
 
                     var shellSettings = new ShellSettings(settings, configuration)
                     {
@@ -96,12 +95,9 @@ namespace OrchardCore.Environment.Shell
             try
             {
                 await EnsureConfigurationAsync();
+                await ReloadTenantsSettingsAsync();
 
-                var tenantsSettings = (await new ConfigurationBuilder()
-                    .AddSourcesAsync(_settingsSources))
-                    .Build();
-
-                var tenants = tenantsSettings.GetChildren().Select(section => section.Key);
+                var tenants = _tenantsSettingsRoot.GetChildren().Select(section => section.Key);
                 return _configuredTenants.Concat(tenants).Distinct().ToArray();
             }
             finally
@@ -116,19 +112,15 @@ namespace OrchardCore.Environment.Shell
             try
             {
                 await EnsureConfigurationAsync();
+                await ReloadTenantsSettingsAsync();
 
-                var tenantsSettings = (await new ConfigurationBuilder()
-                    .AddSourcesAsync(tenant, _settingsSources))
-                    .Build();
-
-                var tenantSettings = new ConfigurationBuilder()
+                var tenantSettingsBuilder = new ConfigurationBuilder()
                     .AddConfiguration(_configuration)
                     .AddConfiguration(_configuration.GetSection(tenant))
-                    .AddConfiguration(tenantsSettings.GetSection(tenant))
-                    .Build();
+                    .AddConfiguration(_tenantsSettingsRoot.GetSection(tenant));
 
-                var settings = new ShellConfiguration(tenantSettings);
-                var configuration = new ShellConfiguration(tenant, _tenantConfigBuilderFactory);
+                var settings = new ShellConfiguration(tenantSettingsBuilder);
+                var configuration = new ShellConfiguration(tenant, _tenantConfigFactoryAsync);
 
                 return new ShellSettings(settings, configuration)
                 {
@@ -148,7 +140,7 @@ namespace OrchardCore.Environment.Shell
             {
                 await EnsureConfigurationAsync();
 
-                if (settings == null)
+                if (settings is null)
                 {
                     throw new ArgumentNullException(nameof(settings));
                 }
@@ -185,23 +177,23 @@ namespace OrchardCore.Environment.Shell
 
                 tenantSettings.Remove("Name");
 
-                await _settingsSources.SaveAsync(settings.Name, tenantSettings.ToObject<Dictionary<string, string>>());
+                await _tenantsSettingsSources.SaveAsync(settings.Name, tenantSettings.ToObject<Dictionary<string, string>>());
 
-                var tenantConfig = new JObject();
-
-                var sections = settings.ShellConfiguration.GetChildren()
-                    .Where(s => !s.GetChildren().Any())
-                    .ToArray();
-
-                foreach (var section in sections)
+                var tenantConfig = new Dictionary<string, string>();
+                foreach (var config in settings.ShellConfiguration.AsEnumerable())
                 {
-                    if (settings[section.Key] != configuration[section.Key])
+                    if (settings.ShellConfiguration.GetSection(config.Key).GetChildren().Any())
                     {
-                        tenantConfig[section.Key] = settings[section.Key];
+                        continue;
+                    }
+
+                    if (settings[config.Key] != configuration[config.Key])
+                    {
+                        tenantConfig[config.Key] = settings[config.Key];
                     }
                     else
                     {
-                        tenantConfig[section.Key] = null;
+                        tenantConfig[config.Key] = null;
                     }
                 }
 
@@ -210,7 +202,7 @@ namespace OrchardCore.Environment.Shell
                 await _tenantConfigSemaphore.WaitAsync();
                 try
                 {
-                    await _tenantConfigSources.SaveAsync(settings.Name, tenantConfig.ToObject<Dictionary<string, string>>());
+                    await _tenantConfigSources.SaveAsync(settings.Name, tenantConfig);
                 }
                 finally
                 {
@@ -230,12 +222,12 @@ namespace OrchardCore.Environment.Shell
             {
                 await EnsureConfigurationAsync();
 
-                if (settings == null)
+                if (settings is null)
                 {
                     throw new ArgumentNullException(nameof(settings));
                 }
 
-                await _settingsSources.RemoveAsync(settings.Name);
+                await _tenantsSettingsSources.RemoveAsync(settings.Name);
 
                 await _tenantConfigSemaphore.WaitAsync();
                 try
@@ -255,7 +247,7 @@ namespace OrchardCore.Environment.Shell
 
         private async Task EnsureConfigurationAsync()
         {
-            if (_configuration != null)
+            if (_configuration is not null)
             {
                 return;
             }
@@ -263,18 +255,20 @@ namespace OrchardCore.Environment.Shell
             var lastProviders = (_applicationConfiguration as IConfigurationRoot)?.Providers
                 .Where(p => p is EnvironmentVariablesConfigurationProvider ||
                             p is CommandLineConfigurationProvider)
-                .ToArray();
+                .ToArray()
+                ?? Array.Empty<IConfigurationProvider>();
 
             var configurationBuilder = await new ConfigurationBuilder()
                 .AddConfiguration(_applicationConfiguration)
                 .AddSourcesAsync(_tenantsConfigSources);
 
-            if (lastProviders?.Length > 0)
+            if (lastProviders.Length > 0)
             {
                 configurationBuilder.AddConfiguration(new ConfigurationRoot(lastProviders));
             }
 
-            var configuration = configurationBuilder.Build().GetSection("OrchardCore");
+            _configurationRoot = configurationBuilder.Build();
+            var configuration = _configurationRoot.GetSection("OrchardCore");
 
             _configuredTenants = configuration.GetChildren()
                 .Where(section => Enum.TryParse<TenantState>(section["State"], ignoreCase: true, out _))
@@ -282,14 +276,19 @@ namespace OrchardCore.Environment.Shell
                 .Distinct()
                 .ToArray();
 
-            _tenantConfigBuilderFactory = async (tenant) =>
+            _tenantConfigFactoryAsync = async (tenant, configure) =>
             {
                 await _tenantConfigSemaphore.WaitAsync();
                 try
                 {
-                    var builder = new ConfigurationBuilder().AddConfiguration(_configuration);
-                    builder.AddConfiguration(configuration.GetSection(tenant));
-                    return await builder.AddSourcesAsync(tenant, _tenantConfigSources);
+                    var builder = await new ConfigurationBuilder()
+                        .AddConfiguration(_configuration)
+                        .AddConfiguration(_configuration.GetSection(tenant))
+                        .AddSourcesAsync(tenant, _tenantConfigSources);
+
+                    configure(builder);
+
+                    return builder.Build();
                 }
                 finally
                 {
@@ -298,6 +297,33 @@ namespace OrchardCore.Environment.Shell
             };
 
             _configuration = configuration;
+        }
+
+        private async Task ReloadTenantsSettingsAsync()
+        {
+            using var disposable = _tenantsSettingsRoot as IDisposable;
+
+            _tenantsSettingsRoot = (await new ConfigurationBuilder()
+                .AddSourcesAsync(_tenantsSettingsSources))
+                .Build();
+        }
+
+        public void Dispose()
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            _disposed = true;
+
+            (_configurationRoot as IDisposable)?.Dispose();
+            (_tenantsSettingsRoot as IDisposable)?.Dispose();
+
+            _semaphore?.Dispose();
+            _tenantConfigSemaphore?.Dispose();
+
+            GC.SuppressFinalize(this);
         }
     }
 }

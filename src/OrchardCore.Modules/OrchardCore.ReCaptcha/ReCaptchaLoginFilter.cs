@@ -17,6 +17,8 @@ namespace OrchardCore.ReCaptcha
         private readonly ReCaptchaService _reCaptchaService;
         private readonly IShapeFactory _shapeFactory;
 
+        private ReCaptchaSettings _reCaptchaSettings;
+
         public ReCaptchaLoginFilter(
             ILayoutAccessor layoutAccessor,
             ISiteService siteService,
@@ -38,9 +40,9 @@ namespace OrchardCore.ReCaptcha
                 return;
             }
 
-            var settings = (await _siteService.GetSiteSettingsAsync()).As<ReCaptchaSettings>();
+            _reCaptchaSettings ??= (await _siteService.GetSiteSettingsAsync()).As<ReCaptchaSettings>();
 
-            if (!settings.IsValid())
+            if (!_reCaptchaSettings.IsValid())
             {
                 await next();
                 return;

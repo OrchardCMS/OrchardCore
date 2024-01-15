@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -64,6 +65,15 @@ namespace Microsoft.Extensions.DependencyInjection
             .ToArray();
 
         /// <summary>
+        /// Metrics singletons used to isolate tenants from the host.
+        /// </summary>
+        private static readonly Type[] _metricsTypesToIsolate = new ServiceCollection()
+            .AddMetrics()
+            .Where(sd => sd.Lifetime == ServiceLifetime.Singleton)
+            .Select(sd => sd.GetImplementationType())
+            .ToArray();
+
+        /// <summary>
         /// Adds OrchardCore services to the host service collection.
         /// </summary>
         public static OrchardCoreBuilder AddOrchardCore(this IServiceCollection services)
@@ -89,6 +99,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 AddExtensionServices(builder);
                 AddStaticFiles(builder);
 
+                AddMetrics(builder);
                 AddRouting(builder);
                 IsolateHttpClient(builder);
                 AddEndpointsApiExplorer(builder);
@@ -145,7 +156,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
 
             services.AddScoped<IOrchardHelper, DefaultOrchardHelper>();
-            services.AddScoped<IClientIPAddressAccessor, DefaultClientIPAddressAccessor>();
+            services.AddSingleton<IClientIPAddressAccessor, DefaultClientIPAddressAccessor>();
 
             builder.ConfigureServices((services, serviceProvider) =>
             {
@@ -271,6 +282,34 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
+        /// Adds isolated tenant level metrics services.
+        /// </summary>
+        private static void AddMetrics(OrchardCoreBuilder builder)
+        {
+            // 'AddMetrics()' is called by the host.
+
+            builder.ConfigureServices(collection =>
+            {
+                // The 'DefaultMeterFactory' caches 'Meters' in a non thread safe dictionary.
+                // So, we need to register an isolated 'IMeterFactory' singleton per tenant.
+                var descriptorsToRemove = collection
+                    .Where(sd =>
+                        sd is ClonedSingletonDescriptor &&
+                        _metricsTypesToIsolate.Contains(sd.GetImplementationType()))
+                    .ToArray();
+                // Isolate each tenant from the host.
+
+                foreach (var descriptor in descriptorsToRemove)
+                {
+                    collection.Remove(descriptor);
+                }
+
+                collection.AddMetrics();
+            },
+            order: int.MinValue + 100);
+        }
+
+        /// <summary>
         /// Adds isolated tenant level routing services.
         /// </summary>
         private static void AddRouting(OrchardCoreBuilder builder)
@@ -331,6 +370,11 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     collection.Remove(descriptor);
                 }
+
+                // Make the http client factory 'IDisposable'.
+                collection.AddSingleton<TenantHttpClientFactory>();
+                collection.AddSingleton<IHttpClientFactory>(sp => sp.GetRequiredService<TenantHttpClientFactory>());
+                collection.AddSingleton<IHttpMessageHandlerFactory>(sp => sp.GetRequiredService<TenantHttpClientFactory>());
             },
             order: int.MinValue + 100);
         }

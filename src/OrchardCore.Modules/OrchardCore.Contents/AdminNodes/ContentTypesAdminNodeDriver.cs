@@ -82,7 +82,7 @@ namespace OrchardCore.Contents.AdminNodes
 
         private async Task<IEnumerable<ContentTypeDefinition>> GetListableContentTypeDefinitionsAsync()
         {
-            var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions();
+            var contentTypeDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
 
             var listableContentTypeDefinitions = new List<ContentTypeDefinition>();
 

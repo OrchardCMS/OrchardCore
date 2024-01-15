@@ -19,7 +19,7 @@ namespace OrchardCore.Environment.Shell.Configuration
 
         public Task AddSourcesAsync(IConfigurationBuilder builder)
         {
-            builder.AddJsonFile(_tenants, optional: true);
+            builder.AddTenantJsonFile(_tenants, optional: true);
             return Task.CompletedTask;
         }
 
@@ -32,6 +32,7 @@ namespace OrchardCore.Environment.Shell.Configuration
             {
                 using var streamReader = File.OpenText(_tenants);
                 using var jsonReader = new JsonTextReader(streamReader);
+
                 tenantsSettings = await JObject.LoadAsync(jsonReader);
             }
             else
@@ -43,7 +44,7 @@ namespace OrchardCore.Environment.Shell.Configuration
 
             foreach (var key in data.Keys)
             {
-                if (data[key] != null)
+                if (data[key] is not null)
                 {
                     settings[key] = data[key];
                 }
@@ -57,6 +58,7 @@ namespace OrchardCore.Environment.Shell.Configuration
 
             using var streamWriter = File.CreateText(_tenants);
             using var jsonWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.Indented };
+
             await tenantsSettings.WriteToAsync(jsonWriter);
         }
 
@@ -75,6 +77,7 @@ namespace OrchardCore.Environment.Shell.Configuration
 
                 using var streamWriter = File.CreateText(_tenants);
                 using var jsonWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.Indented };
+
                 await tenantsSettings.WriteToAsync(jsonWriter);
             }
         }
