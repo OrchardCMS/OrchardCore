@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using OrchardCore.Infrastructure.Security;
 using OrchardCore.Search.AzureAI.Services;
+using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Search.AzureAI;

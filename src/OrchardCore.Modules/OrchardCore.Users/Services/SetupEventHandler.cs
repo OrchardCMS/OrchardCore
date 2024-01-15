@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using OrchardCore.Abstractions.Setup;
-using OrchardCore.Infrastructure.Security;
+using OrchardCore.Security;
 using OrchardCore.Setup.Events;
 using OrchardCore.Setup.Services;
 using OrchardCore.Users.Models;

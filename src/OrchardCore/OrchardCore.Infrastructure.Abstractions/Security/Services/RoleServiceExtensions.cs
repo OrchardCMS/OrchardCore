@@ -3,7 +3,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using OrchardCore.Infrastructure.Security;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Security.Services

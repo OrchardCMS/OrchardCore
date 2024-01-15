@@ -12,7 +12,6 @@ using OrchardCore.Data.Documents;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
-using OrchardCore.Infrastructure.Security;
 using OrchardCore.Roles.ViewModels;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;

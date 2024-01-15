@@ -4,7 +4,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Infrastructure.Security;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Security.Services;

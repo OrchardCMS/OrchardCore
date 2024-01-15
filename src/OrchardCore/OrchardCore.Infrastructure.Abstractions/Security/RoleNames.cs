@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace OrchardCore.Infrastructure.Security
+namespace OrchardCore.Security
 {
     /// <summary>
     /// Defines well-known default and system role names.

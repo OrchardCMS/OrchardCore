@@ -5,7 +5,7 @@ using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Infrastructure.Security;
+using OrchardCore.Security;
 using OrchardCore.Security.Services;
 
 namespace OrchardCore.ContentFields.Settings

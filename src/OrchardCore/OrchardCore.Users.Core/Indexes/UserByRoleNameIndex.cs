@@ -1,6 +1,6 @@
 using System.Linq;
 using Microsoft.AspNetCore.Identity;
-using OrchardCore.Infrastructure.Security;
+using OrchardCore.Security;
 using OrchardCore.Users.Models;
 using YesSql.Indexes;
 
