@@ -1,4 +1,3 @@
-using OrchardCore.Cms.Web;
 using OrchardCore.DependencyInjection;
 using OrchardCore.Logging;
 
@@ -11,11 +10,6 @@ builder.Host
 builder.Services
     .AddOrchardCms()
     .AddSetupFeatures("OrchardCore.AutoSetup");
-
-builder.Services
-    .AddKeyedTransient<IService, FooService>("foo")
-    .AddKeyedTransient<IService, BarService>("bar")
-    .AddKeyedTransient<IService, BazService>("baz");
 
 var app = builder.Build();
 
