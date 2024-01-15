@@ -44,7 +44,7 @@ public class UserTimeZoneService
         return _clock.GetTimeZone(currentTimeZoneId);
     }
 
-    public Task UpdateUserTimeZoneAsync(User user)
+    public Task ClearUserTimeZoneCacheAsync(User user)
     {
         var userName = user?.UserName;
 
