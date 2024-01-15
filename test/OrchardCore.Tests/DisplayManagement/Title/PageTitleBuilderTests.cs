@@ -136,7 +136,6 @@ namespace OrchardCore.DisplayManagement.Title
             // Act & Assert
             Assert.Equal($"{FirstPartTitle}{Separator}{SecondPartTitle}", ToString(pageTitleBuilder.GenerateTitle(new HtmlString(Separator))));
         }
-
         private static string ToString(IHtmlContent content)
         {
             using var writer = new ZStringWriter();
