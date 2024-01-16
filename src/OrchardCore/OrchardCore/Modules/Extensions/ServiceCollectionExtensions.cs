@@ -520,7 +520,7 @@ namespace Microsoft.Extensions.DependencyInjection
             .Configure(app =>
             {
                 app.UseAuthentication();
-            });
+            }, order: -150);
         }
 
         /// <summary>
