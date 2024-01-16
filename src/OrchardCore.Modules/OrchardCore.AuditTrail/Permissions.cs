@@ -6,13 +6,16 @@ namespace OrchardCore.AuditTrail;
 
 public class Permissions : IPermissionProvider
 {
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
+    public static readonly Permission ViewAuditTrail = AuditTrailPermissions.ViewAuditTrail;
+    public static readonly Permission ManageAuditTrailSettings = AuditTrailPermissions.ManageAuditTrailSettings;
 
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => _allStereotypes;
+    private static readonly IEnumerable<Permission> _allPermissions =
+    [
+        ViewAuditTrail,
+        ManageAuditTrailSettings,
+    ];
 
-    private readonly static IEnumerable<PermissionStereotype> _allStereotypes =
+    private static readonly IEnumerable<PermissionStereotype> _stereotypes =
     [
         new PermissionStereotype
         {
@@ -21,9 +24,9 @@ public class Permissions : IPermissionProvider
         },
     ];
 
-    private readonly static IEnumerable<Permission> _allPermissions =
-    [
-        AuditTrailPermissions.ViewAuditTrail,
-        AuditTrailPermissions.ManageAuditTrailSettings,
-    ];
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+        => _stereotypes;
 }

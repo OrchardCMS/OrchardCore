@@ -9,14 +9,27 @@ public class Permissions : IPermissionProvider
     public static readonly Permission ManageUsers = CommonPermissions.ManageUsers;
     public static readonly Permission ViewUsers = CommonPermissions.ViewUsers;
     public static readonly Permission ManageOwnUserInformation = CommonPermissions.EditOwnUser;
+    public static readonly Permission EditOwnUser = CommonPermissions.EditOwnUser;
+    public static readonly Permission ListUsers = CommonPermissions.ListUsers;
+    public static readonly Permission EditUsers = CommonPermissions.EditUsers;
+    public static readonly Permission DeleteUsers = CommonPermissions.DeleteUsers;
 
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
+    private static readonly IEnumerable<Permission> _allPermissions =
+    [
+        ManageUsers,
+        ViewUsers,
+        EditOwnUser,
+        ListUsers,
+        EditUsers,
+        DeleteUsers,
+    ];
 
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => _allStereotypes;
+    private static readonly IEnumerable<Permission> _generalPermissions =
+    [
+        EditOwnUser,
+    ];
 
-    private readonly static IEnumerable<PermissionStereotype> _allStereotypes =
+    private static readonly IEnumerable<PermissionStereotype> _stereotypes =
     [
          new PermissionStereotype
          {
@@ -45,18 +58,9 @@ public class Permissions : IPermissionProvider
         }
     ];
 
-    private readonly static IEnumerable<Permission> _allPermissions =
-    [
-        CommonPermissions.ManageUsers,
-        CommonPermissions.ViewUsers,
-        CommonPermissions.EditOwnUser,
-        CommonPermissions.ListUsers,
-        CommonPermissions.EditUsers,
-        CommonPermissions.DeleteUsers,
-    ];
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
 
-    private readonly static IEnumerable<Permission> _generalPermissions =
-    [
-        CommonPermissions.EditOwnUser,
-    ];
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+        => _stereotypes;
 }

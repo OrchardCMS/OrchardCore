@@ -8,13 +8,12 @@ public class Permissions : IPermissionProvider
 {
     public static readonly Permission ManageIndexes = new("ManageIndexes", "Manage Indexes");
 
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-           => Task.FromResult(_allPermissions);
+    private static readonly IEnumerable<Permission> _allPermissions =
+    [
+        ManageIndexes,
+    ];
 
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => _allStereotypes;
-
-    private readonly static IEnumerable<PermissionStereotype> _allStereotypes =
+    private static readonly IEnumerable<PermissionStereotype> _stereotypes =
     [
         new PermissionStereotype
         {
@@ -22,9 +21,9 @@ public class Permissions : IPermissionProvider
             Permissions = _allPermissions,
         },
     ];
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+       => Task.FromResult(_allPermissions);
 
-    private readonly static IEnumerable<Permission> _allPermissions =
-    [
-        ManageIndexes,
-    ];
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+        => _stereotypes;
 }

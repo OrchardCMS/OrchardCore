@@ -14,13 +14,23 @@ public class Permissions : IPermissionProvider
     public static readonly Permission ManageMediaProfiles = new("ManageMediaProfiles", "Manage Media Profiles");
     public static readonly Permission ViewMediaOptions = new("ViewMediaOptions", "View Media Options");
 
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
+    private static readonly IEnumerable<Permission> _allPermissions =
+    [
+        ManageMedia,
+        ManageMediaFolder,
+        ManageOthersMedia,
+        ManageOwnMedia,
+        ManageAttachedMediaFieldsFolder,
+        ManageMediaProfiles,
+        ViewMediaOptions,
+    ];
 
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => _allStereotypes;
+    private static readonly IEnumerable<Permission> _generalPermissions =
+    [
+        ManageOwnMedia,
+    ];
 
-    private readonly static IEnumerable<PermissionStereotype> _allStereotypes =
+    private static readonly IEnumerable<PermissionStereotype> _stereotypes =
     [
         new PermissionStereotype
         {
@@ -41,10 +51,6 @@ public class Permissions : IPermissionProvider
                 ManageOwnMedia,
             ],
         },
-        // new PermissionStereotype
-        // {
-        //     Name = "Moderator",
-        // },
         new PermissionStereotype
         {
             Name = "Author",
@@ -57,19 +63,9 @@ public class Permissions : IPermissionProvider
         },
     ];
 
-    private readonly static IEnumerable<Permission> _allPermissions =
-    [
-        ManageMedia,
-        ManageMediaFolder,
-        ManageOthersMedia,
-        ManageOwnMedia,
-        ManageAttachedMediaFieldsFolder,
-        ManageMediaProfiles,
-        ViewMediaOptions,
-    ];
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
 
-    private readonly static IEnumerable<Permission> _generalPermissions =
-    [
-        ManageOwnMedia,
-    ];
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+        => _stereotypes;
 }

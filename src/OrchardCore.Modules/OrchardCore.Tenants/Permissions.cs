@@ -9,13 +9,13 @@ public class Permissions : IPermissionProvider
     public static readonly Permission ManageTenants = new("ManageTenants", "Manage tenants");
     public static readonly Permission ManageTenantFeatureProfiles = new("ManageTenantFeatureProfiles", "Manage tenant feature profiles");
 
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
+    private static readonly IEnumerable<Permission> _allPermissions =
+    [
+        ManageTenants,
+        ManageTenantFeatureProfiles,
+    ];
 
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => _allStereotypes;
-
-    private readonly static IEnumerable<PermissionStereotype> _allStereotypes =
+    private static readonly IEnumerable<PermissionStereotype> _stereotypes =
     [
         new PermissionStereotype
         {
@@ -24,9 +24,9 @@ public class Permissions : IPermissionProvider
         },
     ];
 
-    private readonly static IEnumerable<Permission> _allPermissions =
-    [
-        ManageTenants,
-        ManageTenantFeatureProfiles,
-    ];
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+        => _stereotypes;
 }

@@ -1,31 +1,30 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Media
+namespace OrchardCore.Media;
+
+public class MediaCachePermissions : IPermissionProvider
 {
-    public class MediaCachePermissions : IPermissionProvider
-    {
-        public static readonly Permission ManageAssetCache = new("ManageAssetCache", "Manage Asset Cache Folder");
+    public static readonly Permission ManageAssetCache = new("ManageAssetCache", "Manage Asset Cache Folder");
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
-               => Task.FromResult(_allPermissions);
+    private static readonly IEnumerable<Permission> _allPermissions =
+    [
+        ManageAssetCache,
+    ];
 
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-            => _allStereotypes;
+    private static readonly IEnumerable<PermissionStereotype> _stereotypes =
+    [
+        new PermissionStereotype
+        {
+            Name = "Administrator",
+            Permissions = _allPermissions,
+        },
+    ];
 
-        private readonly static IEnumerable<PermissionStereotype> _allStereotypes =
-        [
-            new PermissionStereotype
-            {
-                Name = "Administrator",
-                Permissions = _allPermissions,
-            },
-        ];
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+           => Task.FromResult(_allPermissions);
 
-        private readonly static IEnumerable<Permission> _allPermissions =
-        [
-            ManageAssetCache,
-        ];
-    }
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+        => _stereotypes;
 }

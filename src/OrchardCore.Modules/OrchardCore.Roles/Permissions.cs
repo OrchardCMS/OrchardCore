@@ -11,6 +11,20 @@ public class Permissions : IPermissionProvider
 {
     public static readonly Permission ManageRoles = CommonPermissions.ManageRoles;
     public static readonly Permission AssignRoles = CommonPermissions.AssignRoles;
+    public static readonly Permission SiteOwner = StandardPermissions.SiteOwner;
+
+    private static readonly IEnumerable<PermissionStereotype> _stereotypes =
+    [
+        new PermissionStereotype
+        {
+            Name = "Administrator",
+            Permissions =
+            [
+                ManageRoles,
+                SiteOwner,
+            ],
+        },
+    ];
 
     private readonly IRoleService _roleService;
 
@@ -21,7 +35,12 @@ public class Permissions : IPermissionProvider
 
     public async Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        var list = new List<Permission>(_allPermissions);
+        var list = new List<Permission>()
+        {
+            ManageRoles,
+            AssignRoles,
+            SiteOwner,
+        };
 
         var roleNames = (await _roleService.GetRoleNamesAsync())
             .Where(roleName => !RoleHelper.SystemRoleNames.Contains(roleName));
@@ -35,25 +54,5 @@ public class Permissions : IPermissionProvider
     }
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => _allStereotypes;
-
-    private readonly static IEnumerable<PermissionStereotype> _allStereotypes =
-    [
-        new PermissionStereotype
-        {
-            Name = "Administrator",
-            Permissions =
-            [
-                ManageRoles,
-                StandardPermissions.SiteOwner,
-            ],
-        },
-    ];
-
-    private readonly static IEnumerable<Permission> _allPermissions =
-    [
-        ManageRoles,
-        AssignRoles,
-        StandardPermissions.SiteOwner,
-    ];
+        => _stereotypes;
 }

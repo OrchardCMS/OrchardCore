@@ -25,16 +25,33 @@ public class Permissions : IPermissionProvider
     public static readonly Permission CloneOwnContent = CommonPermissions.CloneOwnContent;
     public static readonly Permission ListContent = CommonPermissions.ListContent;
     public static readonly Permission EditContentOwner = CommonPermissions.EditContentOwner;
-
     public static readonly Permission AccessContentApi = new("AccessContentApi", "Access content via the api");
 
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
+    private static readonly IEnumerable<Permission> _readerPermissions =
+    [
+        ViewContent,
+    ];
 
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => _allStereotypes;
+    private static readonly IEnumerable<Permission> _allPermissions =
+    [
+        EditContent,
+        EditOwnContent,
+        PublishContent,
+        PublishOwnContent,
+        DeleteContent,
+        DeleteOwnContent,
+        ViewContent,
+        ViewOwnContent,
+        PreviewContent,
+        PreviewOwnContent,
+        CloneContent,
+        CloneOwnContent,
+        AccessContentApi,
+        ListContent,
+        EditContentOwner,
+    ];
 
-    private readonly static IEnumerable<PermissionStereotype> _allStereotypes =
+    private static readonly IEnumerable<PermissionStereotype> _stereotypes =
     [
         new PermissionStereotype
         {
@@ -64,10 +81,6 @@ public class Permissions : IPermissionProvider
                 ListContent,
             ],
         },
-        // new PermissionStereotype
-        // {
-        //     Name = "Moderator"
-        // },
         new PermissionStereotype
         {
             Name = "Author",
@@ -102,27 +115,9 @@ public class Permissions : IPermissionProvider
         },
     ];
 
-    private readonly static IEnumerable<Permission> _allPermissions =
-    [
-        EditContent,
-        EditOwnContent,
-        PublishContent,
-        PublishOwnContent,
-        DeleteContent,
-        DeleteOwnContent,
-        ViewContent,
-        ViewOwnContent,
-        PreviewContent,
-        PreviewOwnContent,
-        CloneContent,
-        CloneOwnContent,
-        AccessContentApi,
-        ListContent,
-        EditContentOwner,
-    ];
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
 
-    private readonly static IEnumerable<Permission> _readerPermissions =
-    [
-        ViewContent,
-    ];
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+        => _stereotypes;
 }

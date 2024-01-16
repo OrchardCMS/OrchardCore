@@ -10,13 +10,19 @@ public class Permissions : IPermissionProvider
     public static readonly Permission LocalizeOwnContent = new("LocalizeOwnContent", "Localize own content", new[] { LocalizeContent });
     public static readonly Permission ManageContentCulturePicker = new("ManageContentCulturePicker", "Manage ContentCulturePicker settings");
 
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
+    private static readonly IEnumerable<Permission> _allPermissions =
+    [
+        LocalizeContent,
+        LocalizeOwnContent,
+        ManageContentCulturePicker,
+    ];
 
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => _allStereotypes;
+    private static readonly IEnumerable<Permission> _generalPermissions =
+    [
+        LocalizeOwnContent,
+    ];
 
-    private readonly static IEnumerable<PermissionStereotype> _allStereotypes =
+    private static readonly IEnumerable<PermissionStereotype> _stereotypes =
     [
         new PermissionStereotype
         {
@@ -28,10 +34,6 @@ public class Permissions : IPermissionProvider
             Name = "Editor",
             Permissions = _allPermissions,
         },
-        // new PermissionStereotype
-        // {
-        //     Name = "Moderator",
-        // },
         new PermissionStereotype
         {
             Name = "Author",
@@ -42,25 +44,11 @@ public class Permissions : IPermissionProvider
             Name = "Contributor",
             Permissions = _generalPermissions,
         },
-        // new PermissionStereotype
-        // {
-        //     Name = "Authenticated",
-        // },
-        // new PermissionStereotype
-        // {
-        //     Name = "Anonymous",
-        // },
     ];
 
-    private readonly static IEnumerable<Permission> _allPermissions =
-    [
-        LocalizeContent,
-        LocalizeOwnContent,
-        ManageContentCulturePicker,
-    ];
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
 
-    private readonly static IEnumerable<Permission> _generalPermissions =
-    [
-        LocalizeOwnContent,
-    ];
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+        => _stereotypes;
 }

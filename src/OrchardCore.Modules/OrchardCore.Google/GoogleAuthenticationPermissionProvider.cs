@@ -6,13 +6,14 @@ namespace OrchardCore.Google;
 
 public class GoogleAuthenticationPermissionProvider : IPermissionProvider
 {
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-           => Task.FromResult(_allPermissions);
+    public static readonly Permission ManageGoogleAuthentication = Permissions.ManageGoogleAuthentication;
 
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => _allStereotypes;
+    private readonly static IEnumerable<Permission> _allPermissions =
+    [
+        ManageGoogleAuthentication,
+    ];
 
-    private readonly static IEnumerable<PermissionStereotype> _allStereotypes =
+    private readonly static IEnumerable<PermissionStereotype> _stereotypes =
     [
         new PermissionStereotype
         {
@@ -21,9 +22,10 @@ public class GoogleAuthenticationPermissionProvider : IPermissionProvider
         },
     ];
 
-    private readonly static IEnumerable<Permission> _allPermissions =
-    [
-        Permissions.ManageGoogleAuthentication,
-    ];
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+       => Task.FromResult(_allPermissions);
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+        => _stereotypes;
 }
 
