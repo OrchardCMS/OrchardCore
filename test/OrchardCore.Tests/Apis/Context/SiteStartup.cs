@@ -1,6 +1,10 @@
+using NLog.Config;
+using NLog.Web;
+using NLog;
 using OrchardCore.Modules;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Recipes.Services;
+using OrchardCore.Logging;
 
 namespace OrchardCore.Tests.Apis.Context
 {
@@ -15,6 +19,14 @@ namespace OrchardCore.Tests.Apis.Context
 
         public void ConfigureServices(IServiceCollection services)
         {
+            LogManager.Setup().SetupExtensions(delegate (ISetupExtensionsBuilder ext)
+            {
+                ext.RegisterLayoutRenderer<TenantLayoutRenderer>("orchard-tenant-name");
+            });
+            services.AddLogging(loggingBuilder =>
+            {
+                loggingBuilder.AddNLogWeb();
+            });
             services.AddOrchardCms(builder =>
                 builder.AddSetupFeatures(
                     "OrchardCore.Tenants"

@@ -30,7 +30,7 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
             return await Task.FromResult(new NodeVisitors(
                 new MatchingNodeVisitor<GraphQLOperationDefinition>(async (operationDefinition, validationContext) =>
                 {
-                    await AuthorizeOperationAsync(operationDefinition, validationContext, userContext, operationDefinition.Operation, operationDefinition.Name.StringValue);
+                    await AuthorizeOperationAsync(operationDefinition, validationContext, userContext, operationDefinition.Operation, operationDefinition.Name?.StringValue);
                 }),
                 new MatchingNodeVisitor<GraphQLObjectField>(async (objectFieldAst, validationContext) =>
                 {

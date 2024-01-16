@@ -8,13 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageManagement Include="AngleSharp" Version="0.17.1" />
+    <PackageManagement Include="AngleSharp" Version="1.0.7" />
     <PackageManagement Include="AWSSDK.S3" Version="3.7.9.10" />
     <PackageManagement Include="AWSSDK.SecurityToken" Version="3.7.1.159" />
     <PackageManagement Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.2" />
     <PackageManagement Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.2" />
     <PackageManagement Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.2.3" />
-    <PackageManagement Include="Azure.Identity" Version="1.8.1" />
+    <PackageManagement Include="Azure.Identity" Version="1.10.4" />
     <PackageManagement Include="Azure.Storage.Blobs" Version="12.14.1" />
     <PackageManagement Include="BenchmarkDotNet" Version="0.13.4" />
     <PackageManagement Include="Castle.Core" Version="5.1.1" />
@@ -25,7 +25,7 @@
     <PackageManagement Include="GraphQL.MicrosoftDI" Version="7.2.2" />
     <PackageManagement Include="GraphQL.SystemTextJson" Version="7.2.2" />
     <PackageManagement Include="Jint" Version="3.0.0-beta-2043" />
-    <PackageManagement Include="HtmlSanitizer" Version="8.0.645" />
+    <PackageManagement Include="HtmlSanitizer" Version="8.1.812-beta" />
     <PackageManagement Include="Lorem.Universal.NET" Version="4.0.80" />
     <PackageManagement Include="Lucene.Net" Version="4.8.0-beta00016" />
     <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00016" />
