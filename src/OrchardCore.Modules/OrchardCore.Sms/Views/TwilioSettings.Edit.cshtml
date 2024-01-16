@@ -4,7 +4,15 @@
 
 @model TwilioSettingsViewModel
 
-<div class="sms-settings-container d-none" data-provider-name="@(TwilioSmsProvider.TechnicalName)">
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="IsEnabled" checked="@Model.IsEnabled" role="button" data-bs-toggle="collapse" data-bs-target="#Twilio_Provider_Settings" aria-expanded="@Model.IsEnabled.ToString().ToLowerInvariant()" aria-controls="Twilio_Provider_Settings" />
+        <label class="form-check-label" asp-for="IsEnabled">@T["Enable Twilio Provider"]</label>
+    </div>
+</div>
+
+<div id="Twilio_Provider_Settings" class="collapse @(Model.IsEnabled ? " show" : string.Empty)">
+
     <h4>@T["Twilio Account Info"]</h4>
     <div class="mb-3" asp-validation-class-for="PhoneNumber">
         <label asp-for="PhoneNumber" class="form-label">@T["Phone Number"]</label>
