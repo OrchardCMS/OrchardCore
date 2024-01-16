@@ -11,15 +11,18 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
     {
         private readonly int _maxNumberOfResults;
         private readonly MaxNumberOfResultsValidationMode _maxNumberOfResultsValidationMode;
-        private readonly IStringLocalizer<MaxNumberOfResultsValidationRule> _localizer;
-        private readonly ILogger<MaxNumberOfResultsValidationRule> _logger;
+        protected readonly IStringLocalizer S;
+        private readonly ILogger _logger;
 
-        public MaxNumberOfResultsValidationRule(IOptions<GraphQLSettings> options, IStringLocalizer<MaxNumberOfResultsValidationRule> localizer, ILogger<MaxNumberOfResultsValidationRule> logger)
+        public MaxNumberOfResultsValidationRule(
+            IOptions<GraphQLSettings> options,
+            IStringLocalizer<MaxNumberOfResultsValidationRule> localizer,
+            ILogger<MaxNumberOfResultsValidationRule> logger)
         {
             var settings = options.Value;
             _maxNumberOfResults = settings.MaxNumberOfResults;
             _maxNumberOfResultsValidationMode = settings.MaxNumberOfResultsValidationMode;
-            _localizer = localizer;
+            S = localizer;
             _logger = logger;
         }
 
@@ -48,7 +51,7 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
 
                     if (value.HasValue && value > _maxNumberOfResults)
                     {
-                        var errorMessage = _localizer["'{0}' exceeds the maximum number of results for '{1}' ({2})", value.Value, arg.Name, _maxNumberOfResults];
+                        var errorMessage = S["'{0}' exceeds the maximum number of results for '{1}' ({2})", value.Value, arg.Name, _maxNumberOfResults];
 
                         if (_maxNumberOfResultsValidationMode == MaxNumberOfResultsValidationMode.Enabled)
                         {
@@ -60,8 +63,13 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
                         }
                         else
                         {
-                            _logger.LogInformation(errorMessage);
-                            arg = new Argument(arg.NameNode, new IntValue(_maxNumberOfResults)); // if disabled mode we just log info and override the arg to be maxvalue
+                            _logger.LogInformation("'{IntValue}' exceeds the maximum number of results for '{ArgumentName}' ({MaxNumber})",
+                                value.Value,
+                                arg.Name,
+                                _maxNumberOfResults);
+
+                            // If disabled mode we just log info and override the arg to be maxvalue.
+                            arg = new Argument(arg.NameNode, new IntValue(_maxNumberOfResults));
                         }
                     }
                 }

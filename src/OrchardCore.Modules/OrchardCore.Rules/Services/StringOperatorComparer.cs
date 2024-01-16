@@ -7,16 +7,16 @@ namespace OrchardCore.Rules.Services
     {
         public override bool Compare(StringOperator conditionOperator, string a, string b)
             => conditionOperator.CaseSensitive ?
-                String.Equals(a, b) :
-                String.Equals(a, b, StringComparison.OrdinalIgnoreCase);
+                string.Equals(a, b) :
+                string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
     }
 
     public class StringNotEqualsOperatorComparer : OperatorComparer<StringOperator, string>
     {
         public override bool Compare(StringOperator conditionOperator, string a, string b)
             => conditionOperator.CaseSensitive ?
-                !String.Equals(a, b) :
-                !String.Equals(a, b, StringComparison.OrdinalIgnoreCase);
+                !string.Equals(a, b) :
+                !string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
     }
 
     public class StringStartsWithOperatorComparer : OperatorComparer<StringOperator, string>

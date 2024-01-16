@@ -31,7 +31,7 @@ namespace OrchardCore.Layers.Services
                     var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
                     var requestPath = httpContext.Request.Path.Value;
                     return requestPath == "/" || string.IsNullOrEmpty(requestPath);
-                })
+                }),
             };
 
             _isAnonymous = new GlobalMethod
@@ -41,7 +41,7 @@ namespace OrchardCore.Layers.Services
                 {
                     var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
                     return httpContext.User?.Identity.IsAuthenticated != true;
-                })
+                }),
             };
 
             _isAuthenticated = new GlobalMethod
@@ -51,19 +51,21 @@ namespace OrchardCore.Layers.Services
                 {
                     var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
                     return httpContext.User?.Identity.IsAuthenticated == true;
-                })
+                }),
             };
 
             _isInRole = new GlobalMethod
             {
                 Name = "isInRole",
                 Method = serviceProvider => (Func<string, bool>)(role =>
-               {
-                   var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
-                   var optionsAccessor = serviceProvider.GetRequiredService<IOptions<IdentityOptions>>();
-                   var roleClaimType = optionsAccessor.Value.ClaimsIdentity.RoleClaimType;
-                   return httpContext.User?.Claims.Any(claim => claim.Type == roleClaimType && claim.Value.Equals(role, StringComparison.OrdinalIgnoreCase)) == true; // IsInRole() & HasClaim() are case sensitive
-               })
+                {
+                    var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+                    var optionsAccessor = serviceProvider.GetRequiredService<IOptions<IdentityOptions>>();
+                    var roleClaimType = optionsAccessor.Value.ClaimsIdentity.RoleClaimType;
+
+                    // IsInRole() & HasClaim() are case sensitive.
+                    return httpContext.User?.Claims.Any(claim => claim.Type == roleClaimType && claim.Value.Equals(role, StringComparison.OrdinalIgnoreCase)) == true;
+                }),
             };
 
             _url = new GlobalMethod
@@ -73,11 +75,11 @@ namespace OrchardCore.Layers.Services
                 {
                     if (url.StartsWith("~/", StringComparison.Ordinal))
                     {
-                        url = url.Substring(1);
+                        url = url[1..];
                     }
 
                     var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
-                    string requestPath = httpContext.Request.Path.Value;
+                    var requestPath = httpContext.Request.Path.Value;
 
                     // Tenant home page could have an empty string as a request path, where
                     // the default tenant does not.
@@ -89,7 +91,7 @@ namespace OrchardCore.Layers.Services
                     return url.EndsWith('*')
                         ? requestPath.StartsWith(url.TrimEnd('*'), StringComparison.OrdinalIgnoreCase)
                         : string.Equals(requestPath, url, StringComparison.OrdinalIgnoreCase);
-                })
+                }),
             };
 
             _culture = new GlobalMethod
@@ -101,7 +103,7 @@ namespace OrchardCore.Layers.Services
 
                     return string.Equals(culture, currentCulture.Name, StringComparison.OrdinalIgnoreCase) ||
                         string.Equals(culture, currentCulture.Parent.Name, StringComparison.OrdinalIgnoreCase);
-                })
+                }),
             };
 
             _allMethods = new[] { _isAnonymous, _isAuthenticated, _isInRole, _isHomepage, _url, _culture };

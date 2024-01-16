@@ -15,7 +15,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
     public class FluidTagHelper
     {
-        public static Dictionary<string, string> DefaultArgumentsMapping = new Dictionary<string, string>();
+        public static readonly Dictionary<string, string> DefaultArgumentsMapping = new();
         private static long _uniqueId;
 
         public static ValueTask<Completion> WriteArgumentsTagHelperAsync(List<FilterArgument> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)

@@ -4,7 +4,7 @@
 
 @{
     ContentItem contentItem = Model.ContentItem;
-    var contentType = ContentDefinitionManager.GetTypeDefinition(contentItem.ContentType).DisplayName;
+    var contentType = (await ContentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType))?.DisplayName;
     var collapsed = !Model.Inline;
 
     if (!ViewContext.ModelState.IsValid && ViewContext.ModelState.Keys.Any(key => key.StartsWith(Model.PrefixValue, StringComparison.OrdinalIgnoreCase)))
@@ -13,7 +13,7 @@
     }
 }
 
-<div class="widget widget-editor card@(collapsed ? " collapsed" : String.Empty)">
+<div class="widget widget-editor card@(collapsed ? " collapsed" : string.Empty)">
     <div class="widget-editor-header card-header text-muted py-1 ps-2 pe-1">
         @if (Model.CanMove)
         {

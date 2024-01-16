@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -73,7 +72,7 @@ namespace OrchardCore.PublishLater.Drivers
             viewModel.ScheduledPublishUtc = part.ScheduledPublishUtc;
             viewModel.ScheduledPublishLocalDateTime = part.ScheduledPublishUtc.HasValue ?
                 (await _localClock.ConvertToLocalAsync(part.ScheduledPublishUtc.Value)).DateTime :
-                (DateTime?)null;
+                null;
         }
     }
 }

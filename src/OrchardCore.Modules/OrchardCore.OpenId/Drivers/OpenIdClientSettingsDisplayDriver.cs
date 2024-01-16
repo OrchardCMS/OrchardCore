@@ -24,9 +24,9 @@ namespace OrchardCore.OpenId.Drivers
     public class OpenIdClientSettingsDisplayDriver : SectionDisplayDriver<ISite, OpenIdClientSettings>
     {
         private const string SettingsGroupId = "OrchardCore.OpenId.Client";
-        private static readonly JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings
+        private static readonly JsonSerializerSettings _jsonSerializerSettings = new()
         {
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
         };
 
         private readonly IAuthorizationService _authorizationService;
@@ -35,7 +35,7 @@ namespace OrchardCore.OpenId.Drivers
         private readonly IOpenIdClientService _clientService;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public OpenIdClientSettingsDisplayDriver(
             IAuthorizationService authorizationService,
@@ -101,7 +101,7 @@ namespace OrchardCore.OpenId.Drivers
                     model.UseIdTokenTokenFlow = true;
                 }
 
-                model.Parameters = JsonConvert.SerializeObject(settings.Parameters, JsonSerializerSettings);
+                model.Parameters = JsonConvert.SerializeObject(settings.Parameters, _jsonSerializerSettings);
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
@@ -119,7 +119,7 @@ namespace OrchardCore.OpenId.Drivers
                 var model = new OpenIdClientSettingsViewModel();
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                model.Scopes = model.Scopes ?? string.Empty;
+                model.Scopes ??= string.Empty;
 
                 settings.DisplayName = model.DisplayName;
                 settings.Scopes = model.Scopes.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
@@ -131,7 +131,7 @@ namespace OrchardCore.OpenId.Drivers
                 settings.ResponseMode = model.ResponseMode;
                 settings.StoreExternalTokens = model.StoreExternalTokens;
 
-                bool useClientSecret = true;
+                var useClientSecret = true;
 
                 if (model.UseCodeFlow)
                 {

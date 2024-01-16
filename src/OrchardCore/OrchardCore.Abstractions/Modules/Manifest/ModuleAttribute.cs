@@ -61,30 +61,30 @@ namespace OrchardCore.Modules.Manifest
         /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public ModuleAttribute(
-            string id
-            , string description
-            , string author
-            , string semVer
-            , string websiteUrl
-            , string featureDependencies
-            , string tags
-            , object defaultTenant
-            , object alwaysEnabled
-            , object enabledByDependencyOnly
+            string id,
+            string description,
+            string author,
+            string semVer,
+            string websiteUrl,
+            string featureDependencies,
+            string tags,
+            object defaultTenant,
+            object alwaysEnabled,
+            object enabledByDependencyOnly
         ) : this(
-            id
-            , default
-            , default
-            , default
-            , description
-            , author
-            , semVer
-            , websiteUrl
-            , featureDependencies
-            , tags
-            , defaultTenant
-            , alwaysEnabled
-            , enabledByDependencyOnly
+            id,
+            default,
+            default,
+            default,
+            description,
+            author,
+            semVer,
+            websiteUrl,
+            featureDependencies,
+            tags,
+            defaultTenant,
+            alwaysEnabled,
+            enabledByDependencyOnly
         )
         {
         }
@@ -114,31 +114,31 @@ namespace OrchardCore.Modules.Manifest
         /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public ModuleAttribute(
-            string id
-            , string name
-            , string description
-            , string author
-            , string semVer
-            , string websiteUrl
-            , string featureDependencies
-            , string tags
-            , object defaultTenant
-            , object alwaysEnabled
-            , object enabledByDependencyOnly
+            string id,
+            string name,
+            string description,
+            string author,
+            string semVer,
+            string websiteUrl,
+            string featureDependencies,
+            string tags,
+            object defaultTenant,
+            object alwaysEnabled,
+            object enabledByDependencyOnly
         ) : this(
-            id
-            , name
-            , default
-            , default
-            , description
-            , author
-            , semVer
-            , websiteUrl
-            , featureDependencies
-            , tags
-            , defaultTenant
-            , alwaysEnabled
-            , enabledByDependencyOnly
+            id,
+            name,
+            default,
+            default,
+            description,
+            author,
+            semVer,
+            websiteUrl,
+            featureDependencies,
+            tags,
+            defaultTenant,
+            alwaysEnabled,
+            enabledByDependencyOnly
         )
         {
         }
@@ -170,29 +170,29 @@ namespace OrchardCore.Modules.Manifest
         /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public ModuleAttribute(
-            string id
-            , string name
-            , string category
-            , string priority
-            , string description
-            , string author
-            , string semVer
-            , string websiteUrl
-            , string featureDependencies
-            , string tags
-            , object defaultTenant
-            , object alwaysEnabled
-            , object enabledByDependencyOnly
+            string id,
+            string name,
+            string category,
+            string priority,
+            string description,
+            string author,
+            string semVer,
+            string websiteUrl,
+            string featureDependencies,
+            string tags,
+            object defaultTenant,
+            object alwaysEnabled,
+            object enabledByDependencyOnly
         ) : base(
-            id
-            , name
-            , category
-            , priority
-            , description
-            , featureDependencies
-            , defaultTenant
-            , alwaysEnabled
-            , enabledByDependencyOnly
+            id,
+            name,
+            category,
+            priority,
+            description,
+            featureDependencies,
+            defaultTenant,
+            alwaysEnabled,
+            enabledByDependencyOnly
         )
         {
             Author = author;
@@ -229,38 +229,38 @@ namespace OrchardCore.Modules.Manifest
         /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public ModuleAttribute(
-            string id
-            , string name
-            , string type
-            , string category
-            , string priority
-            , string description
-            , string author
-            , string semVer
-            , string websiteUrl
-            , string featureDependencies
-            , string tags
-            , object defaultTenant
-            , object alwaysEnabled
-            , object enabledByDependencyOnly
+            string id,
+            string name,
+            string type,
+            string category,
+            string priority,
+            string description,
+            string author,
+            string semVer,
+            string websiteUrl,
+            string featureDependencies,
+            string tags,
+            object defaultTenant,
+            object alwaysEnabled,
+            object enabledByDependencyOnly
         ) : this(
-            id
-            , name
-            , category
-            , priority
-            , description
-            , author
-            , semVer
-            , websiteUrl
-            , featureDependencies
-            , tags
-            , defaultTenant
-            , alwaysEnabled
-            , enabledByDependencyOnly
+            id,
+            name,
+            category,
+            priority,
+            description,
+            author,
+            semVer,
+            websiteUrl,
+            featureDependencies,
+            tags,
+            defaultTenant,
+            alwaysEnabled,
+            enabledByDependencyOnly
         )
         {
-            type = (type ?? String.Empty).Trim();
-            _type = String.IsNullOrEmpty(type) ? null : type;
+            type = (type ?? string.Empty).Trim();
+            _type = string.IsNullOrEmpty(type) ? null : type;
         }
 
         /// <summary>
@@ -276,7 +276,7 @@ namespace OrchardCore.Modules.Manifest
             // Drops the 'Attribute' suffix from the conventional abbreviation, or leaves it alone
             static string GetTypeNamePrefix(string typeName) =>
                 typeName.EndsWith(attributeSuffix)
-                ? typeName.Substring(0, typeName.Length - attributeSuffix.Length)
+                ? typeName[..^attributeSuffix.Length]
                 : typeName
                 ;
 

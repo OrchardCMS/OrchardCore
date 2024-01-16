@@ -19,7 +19,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
     public class LuceneQueryFieldTypeProvider : ISchemaBuilder
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ILogger<LuceneQueryFieldTypeProvider> _logger;
+        private readonly ILogger _logger;
 
         public LuceneQueryFieldTypeProvider(IHttpContextAccessor httpContextAccessor, ILogger<LuceneQueryFieldTypeProvider> logger)
         {
@@ -41,7 +41,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
             foreach (var query in queries.OfType<LuceneQuery>())
             {
-                if (String.IsNullOrWhiteSpace(query.Schema))
+                if (string.IsNullOrWhiteSpace(query.Schema))
                     continue;
 
                 var name = query.Name;
@@ -82,7 +82,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
             }
         }
 
-        private FieldType BuildSchemaBasedFieldType(LuceneQuery query, JToken querySchema, string fieldTypeName)
+        private static FieldType BuildSchemaBasedFieldType(LuceneQuery query, JToken querySchema, string fieldTypeName)
         {
             var properties = querySchema["properties"];
 
@@ -96,7 +96,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                 Name = fieldTypeName
             };
 
-            foreach (JProperty child in properties.Children())
+            foreach (var child in properties.Children().Cast<JProperty>())
             {
                 var name = child.Name;
                 var nameLower = name.Replace('.', '_');
@@ -160,7 +160,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
             return fieldType;
         }
 
-        private FieldType BuildContentTypeFieldType(ISchema schema, string contentType, LuceneQuery query, string fieldTypeName)
+        private static FieldType BuildContentTypeFieldType(ISchema schema, string contentType, LuceneQuery query, string fieldTypeName)
         {
             var typetype = schema.Query.Fields.OfType<ContentItemsFieldType>().FirstOrDefault(x => x.Name == contentType);
 

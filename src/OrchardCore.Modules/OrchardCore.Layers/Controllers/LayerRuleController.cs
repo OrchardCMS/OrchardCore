@@ -25,8 +25,8 @@ namespace OrchardCore.Layers.Controllers
         private readonly IConditionIdGenerator _conditionIdGenerator;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IHtmlLocalizer H;
-        private readonly dynamic New;
+
+        protected readonly IHtmlLocalizer H;
 
         public LayerRuleController(
             IAuthorizationService authorizationService,
@@ -34,7 +34,6 @@ namespace OrchardCore.Layers.Controllers
             IEnumerable<IConditionFactory> factories,
             ILayerService layerService,
             IConditionIdGenerator conditionIdGenerator,
-            IShapeFactory shapeFactory,
             IHtmlLocalizer<LayerRuleController> htmlLocalizer,
             INotifier notifier,
             IUpdateModelAccessor updateModelAccessor)
@@ -46,11 +45,10 @@ namespace OrchardCore.Layers.Controllers
             _conditionIdGenerator = conditionIdGenerator;
             _notifier = notifier;
             _updateModelAccessor = updateModelAccessor;
-            New = shapeFactory;
             H = htmlLocalizer;
         }
 
-        public async Task<IActionResult> Create(string queryType, string name, string type, string conditionGroupId)
+        public async Task<IActionResult> Create(string name, string type, string conditionGroupId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
@@ -58,7 +56,7 @@ namespace OrchardCore.Layers.Controllers
             }
 
             var layers = await _layerService.GetLayersAsync();
-            var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, name));
+            var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name));
 
             if (layer == null)
             {
@@ -84,7 +82,7 @@ namespace OrchardCore.Layers.Controllers
                 Name = name,
                 ConditionGroupId = conditionGroup.ConditionId,
                 ConditionType = type,
-                Editor = await _displayManager.BuildEditorAsync(condition, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "")
+                Editor = await _displayManager.BuildEditorAsync(condition, updater: _updateModelAccessor.ModelUpdater, isNew: true, string.Empty, string.Empty)
             };
 
             return View(model);
@@ -99,7 +97,7 @@ namespace OrchardCore.Layers.Controllers
             }
 
             var layers = await _layerService.LoadLayersAsync();
-            var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, model.Name));
+            var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, model.Name));
 
             if (layer == null)
             {
@@ -133,7 +131,7 @@ namespace OrchardCore.Layers.Controllers
 
             model.Editor = editor;
 
-            // If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay form.
             return View(model);
         }
 
@@ -145,7 +143,7 @@ namespace OrchardCore.Layers.Controllers
             }
 
             var layers = await _layerService.GetLayersAsync();
-            var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, name));
+            var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name));
 
             if (layer == null)
             {
@@ -177,7 +175,7 @@ namespace OrchardCore.Layers.Controllers
             }
 
             var layers = await _layerService.LoadLayersAsync();
-            var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, model.Name));
+            var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, model.Name));
 
             if (layer == null)
             {
@@ -203,7 +201,7 @@ namespace OrchardCore.Layers.Controllers
             await _notifier.ErrorAsync(H["The condition has validation errors."]);
             model.Editor = editor;
 
-            // If we got this far, something failed, redisplay form
+            // If we got this far, something failed, redisplay form.
             return View(model);
         }
 
@@ -216,7 +214,7 @@ namespace OrchardCore.Layers.Controllers
             }
 
             var layers = await _layerService.LoadLayersAsync();
-            var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, name));
+            var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name));
 
             if (layer == null)
             {
@@ -236,7 +234,7 @@ namespace OrchardCore.Layers.Controllers
 
             await _notifier.SuccessAsync(H["Condition deleted successfully."]);
 
-            return RedirectToAction(nameof(Edit), "Admin", new { name = name });
+            return RedirectToAction(nameof(Edit), "Admin", new { name });
         }
 
         public async Task<IActionResult> UpdateOrder(string name, string conditionId, string toConditionId, int toPosition)
@@ -247,7 +245,7 @@ namespace OrchardCore.Layers.Controllers
             }
 
             var layers = await _layerService.LoadLayersAsync();
-            var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, name));
+            var layer = layers.Layers.FirstOrDefault(x => string.Equals(x.Name, name));
 
             if (layer == null)
             {
@@ -273,7 +271,7 @@ namespace OrchardCore.Layers.Controllers
 
         private Condition FindCondition(Condition condition, string conditionId)
         {
-            if (String.Equals(condition.ConditionId, conditionId, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(condition.ConditionId, conditionId, StringComparison.OrdinalIgnoreCase))
             {
                 return condition;
             }
@@ -292,7 +290,7 @@ namespace OrchardCore.Layers.Controllers
 
             foreach (var nestedCondition in conditionGroup.Conditions)
             {
-                // Search in inner conditions
+                // Search in inner conditions.
                 result = FindCondition(nestedCondition, conditionId);
 
                 if (result != null)
@@ -304,14 +302,14 @@ namespace OrchardCore.Layers.Controllers
             return null;
         }
 
-        private ConditionGroup FindConditionGroup(ConditionGroup condition, string groupconditionId)
+        private static ConditionGroup FindConditionGroup(ConditionGroup condition, string groupConditionId)
         {
-            if (String.Equals(condition.ConditionId, groupconditionId, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(condition.ConditionId, groupConditionId, StringComparison.OrdinalIgnoreCase))
             {
                 return condition;
             }
 
-            if (!condition.Conditions.Any())
+            if (condition.Conditions.Count == 0)
             {
                 return null;
             }
@@ -320,8 +318,8 @@ namespace OrchardCore.Layers.Controllers
 
             foreach (var nestedCondition in condition.Conditions.OfType<ConditionGroup>())
             {
-                // Search in inner conditions
-                result = FindConditionGroup(nestedCondition, groupconditionId);
+                // Search in inner conditions.
+                result = FindConditionGroup(nestedCondition, groupConditionId);
 
                 if (result != null)
                 {
@@ -332,13 +330,13 @@ namespace OrchardCore.Layers.Controllers
             return null;
         }
 
-        private ConditionGroup FindConditionParent(ConditionGroup condition, string conditionId)
+        private static ConditionGroup FindConditionParent(ConditionGroup condition, string conditionId)
         {
             ConditionGroup result;
 
             foreach (var nestedCondition in condition.Conditions)
             {
-                if (String.Equals(nestedCondition.ConditionId, conditionId, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(nestedCondition.ConditionId, conditionId, StringComparison.OrdinalIgnoreCase))
                 {
                     return condition;
                 }

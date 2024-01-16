@@ -45,9 +45,8 @@ namespace OrchardCore.Users.Controllers
         private readonly IShapeFactory _shapeFactory;
         private readonly ILogger _logger;
 
-        private readonly dynamic New;
-        private readonly IHtmlLocalizer H;
-        private readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
+        protected readonly IStringLocalizer S;
 
         public AdminController(
             IDisplayManager<User> userDisplayManager,
@@ -81,8 +80,6 @@ namespace OrchardCore.Users.Controllers
             _updateModelAccessor = updateModelAccessor;
             _shapeFactory = shapeFactory;
             _logger = logger;
-
-            New = shapeFactory;
             H = htmlLocalizer;
             S = stringLocalizer;
         }
@@ -90,9 +87,7 @@ namespace OrchardCore.Users.Controllers
         public async Task<ActionResult> Index([ModelBinder(BinderType = typeof(UserFilterEngineModelBinder), Name = "q")] QueryFilterResult<User> queryFilterResult, PagerParameters pagerParameters)
         {
             // Check a dummy user account to see if the current user has permission to view users.
-            var authUser = new User();
-
-            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ListUsers, authUser))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ListUsers, new User()))
             {
                 return Forbid();
             }
@@ -115,8 +110,6 @@ namespace OrchardCore.Users.Controllers
             // Populate route values to maintain previous route data when generating page links.
             options.RouteValues.TryAdd("q", options.FilterResult.ToString());
 
-            var routeData = new RouteData(options.RouteValues);
-
             var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
             var count = await users.CountAsync();
@@ -126,7 +119,7 @@ namespace OrchardCore.Users.Controllers
                 .Take(pager.PageSize)
                 .ListAsync();
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
+            dynamic pagerShape = await _shapeFactory.PagerAsync(pager, count, options.RouteValues);
 
             var userEntries = new List<UserEntry>();
 
@@ -139,52 +132,69 @@ namespace OrchardCore.Users.Controllers
                 });
             }
 
-            options.UserFilters = new List<SelectListItem>()
-            {
+            options.UserFilters =
+            [
                 new SelectListItem() { Text = S["All Users"], Value = nameof(UsersFilter.All), Selected = (options.Filter == UsersFilter.All) },
                 new SelectListItem() { Text = S["Enabled Users"], Value = nameof(UsersFilter.Enabled), Selected = (options.Filter == UsersFilter.Enabled) },
                 new SelectListItem() { Text = S["Disabled Users"], Value = nameof(UsersFilter.Disabled), Selected = (options.Filter == UsersFilter.Disabled) }
-                //new SelectListItem() { Text = S["Approved"], Value = nameof(UsersFilter.Approved) },
-                //new SelectListItem() { Text = S["Email pending"], Value = nameof(UsersFilter.EmailPending) },
-                //new SelectListItem() { Text = S["Pending"], Value = nameof(UsersFilter.Pending) }
-            };
+                // new SelectListItem() { Text = S["Approved"], Value = nameof(UsersFilter.Approved) },
+                // new SelectListItem() { Text = S["Email pending"], Value = nameof(UsersFilter.EmailPending) },
+                // new SelectListItem() { Text = S["Pending"], Value = nameof(UsersFilter.Pending) }
+            ];
 
-            options.UserSorts = new List<SelectListItem>()
-            {
+            options.UserSorts =
+            [
                 new SelectListItem() { Text = S["Name"], Value = nameof(UsersOrder.Name), Selected = (options.Order == UsersOrder.Name) },
                 new SelectListItem() { Text = S["Email"], Value = nameof(UsersOrder.Email), Selected = (options.Order == UsersOrder.Email) },
-                //new SelectListItem() { Text = S["Created date"], Value = nameof(UsersOrder.CreatedUtc) },
-                //new SelectListItem() { Text = S["Last Login date"], Value = nameof(UsersOrder.LastLoginUtc) }
-            };
+                // new SelectListItem() { Text = S["Created date"], Value = nameof(UsersOrder.CreatedUtc) },
+                // new SelectListItem() { Text = S["Last Login date"], Value = nameof(UsersOrder.LastLoginUtc) }
+            ];
 
-            options.UsersBulkAction = new List<SelectListItem>()
-            {
+            options.UsersBulkAction =
+            [
                 new SelectListItem() { Text = S["Approve"], Value = nameof(UsersBulkAction.Approve) },
                 new SelectListItem() { Text = S["Enable"], Value = nameof(UsersBulkAction.Enable) },
                 new SelectListItem() { Text = S["Disable"], Value = nameof(UsersBulkAction.Disable) },
                 new SelectListItem() { Text = S["Delete"], Value = nameof(UsersBulkAction.Delete) }
-            };
+            ];
 
-            var allRoles = (await _roleService.GetRoleNamesAsync())
-                .Except(RoleHelper.SystemRoleNames, StringComparer.OrdinalIgnoreCase);
+            var roleNames = new List<string>();
 
-            options.UserRoleFilters = new List<SelectListItem>()
+            foreach (var roleName in await _roleService.GetRoleNamesAsync())
             {
-                new SelectListItem() { Text = S["All roles"], Value = String.Empty, Selected = (options.SelectedRole == String.Empty) },
-                new SelectListItem() { Text = S["Authenticated (no roles)"], Value = "Authenticated", Selected = String.Equals(options.SelectedRole, "Authenticated", StringComparison.OrdinalIgnoreCase) }
-            };
+                var permission = CommonPermissions.CreateListUsersInRolePermission(roleName);
 
-            // TODO Candidate for dynamic localization.
-            options.UserRoleFilters.AddRange(allRoles.Select(x => new SelectListItem { Text = x, Value = x, Selected = String.Equals(options.SelectedRole, x, StringComparison.OrdinalIgnoreCase) }));
+                if (!await _authorizationService.AuthorizeAsync(User, permission))
+                {
+                    continue;
+                }
+
+                roleNames.Add(roleName);
+            }
+
+            options.UserRoleFilters =
+            [
+                new SelectListItem() { Text = S["Any role"], Value = string.Empty, Selected = options.SelectedRole == string.Empty },
+                new SelectListItem() { Text = S["Authenticated (no roles)"], Value = "Authenticated", Selected = string.Equals(options.SelectedRole, "Authenticated", StringComparison.OrdinalIgnoreCase) },
+                // TODO Candidate for dynamic localization.
+                .. roleNames.Select(roleName =>
+                    new SelectListItem
+                    {
+                        Text = roleName,
+                        Value = roleName.Contains(' ') ? $"\"{roleName}\"" : roleName,
+                        Selected = string.Equals(options.SelectedRole?.Trim('"'), roleName, StringComparison.OrdinalIgnoreCase)
+                    })
+,
+            ];
 
             // Populate options pager summary values.
-            var startIndex = (pagerShape.Page - 1) * (pagerShape.PageSize) + 1;
+            var startIndex = (pagerShape.Page - 1) * pagerShape.PageSize + 1;
             options.StartIndex = startIndex;
             options.EndIndex = startIndex + userEntries.Count - 1;
             options.UsersCount = userEntries.Count;
             options.TotalItemCount = pagerShape.TotalItemCount;
 
-            var header = await _userOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false, String.Empty, String.Empty);
+            var header = await _userOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
 
             var shapeViewModel = await _shapeFactory.CreateAsync<UsersIndexViewModel>("UsersAdminList", viewModel =>
             {
@@ -197,18 +207,18 @@ namespace OrchardCore.Users.Controllers
             return View(shapeViewModel);
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
         public async Task<ActionResult> IndexFilterPOST(UserIndexOptions options)
         {
             // When the user has typed something into the search input no further evaluation of the form post is required.
-            if (!String.Equals(options.SearchText, options.OriginalSearchText, StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(options.SearchText, options.OriginalSearchText, StringComparison.OrdinalIgnoreCase))
             {
                 return RedirectToAction(nameof(Index), new RouteValueDictionary { { "q", options.SearchText } });
             }
 
             // Evaluate the values provided in the form post and map them to the filter result and route values.
-            await _userOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false, String.Empty, String.Empty);
+            await _userOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
 
             // The route value must always be added after the editors have updated the models.
             options.RouteValues.TryAdd("q", options.FilterResult.ToString());
@@ -216,7 +226,7 @@ namespace OrchardCore.Users.Controllers
             return RedirectToAction(nameof(Index), options.RouteValues);
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.BulkAction")]
         public async Task<ActionResult> IndexPOST(UserIndexOptions options, IEnumerable<string> itemIds)
         {
@@ -272,13 +282,14 @@ namespace OrchardCore.Users.Controllers
                             }
                             break;
                         default:
-                            throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk options.");
+                            throw new ArgumentOutOfRangeException(options.BulkAction.ToString(), "Invalid bulk options.");
                     }
                 }
-
             }
+
             return RedirectToAction(nameof(Index));
         }
+
         public async Task<IActionResult> Create()
         {
             var user = new User();
@@ -288,7 +299,7 @@ namespace OrchardCore.Users.Controllers
                 return Forbid();
             }
 
-            var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: true, String.Empty, String.Empty);
+            var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: true, string.Empty, string.Empty);
 
             return View(shape);
         }
@@ -304,7 +315,7 @@ namespace OrchardCore.Users.Controllers
                 return Forbid();
             }
 
-            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: true, String.Empty, String.Empty);
+            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: true, string.Empty, string.Empty);
 
             if (!ModelState.IsValid)
             {
@@ -327,7 +338,7 @@ namespace OrchardCore.Users.Controllers
         {
             // When no id is provided we assume the user is trying to edit their own profile.
             var editingOwnUser = false;
-            if (String.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(id))
             {
                 id = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditOwnUser))
@@ -347,7 +358,7 @@ namespace OrchardCore.Users.Controllers
                 return Forbid();
             }
 
-            var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false, String.Empty, String.Empty);
+            var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false, string.Empty, string.Empty);
 
             ViewData["ReturnUrl"] = returnUrl;
 
@@ -360,7 +371,7 @@ namespace OrchardCore.Users.Controllers
         {
             // When no id is provided we assume the user is trying to edit their own profile.
             var editingOwnUser = false;
-            if (String.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(id))
             {
                 editingOwnUser = true;
                 id = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -380,7 +391,7 @@ namespace OrchardCore.Users.Controllers
                 return Forbid();
             }
 
-            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false, String.Empty, String.Empty);
+            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false, string.Empty, string.Empty);
 
             if (!ModelState.IsValid)
             {
@@ -391,7 +402,7 @@ namespace OrchardCore.Users.Controllers
 
             foreach (var error in result.Errors)
             {
-                ModelState.AddModelError(String.Empty, error.Description);
+                ModelState.AddModelError(string.Empty, error.Description);
             }
 
             if (!ModelState.IsValid)
@@ -408,7 +419,7 @@ namespace OrchardCore.Users.Controllers
 
             if (editingOwnUser)
             {
-                if (!String.IsNullOrEmpty(returnUrl))
+                if (!string.IsNullOrEmpty(returnUrl))
                 {
                     return this.LocalRedirect(returnUrl, true);
                 }
@@ -416,7 +427,7 @@ namespace OrchardCore.Users.Controllers
                 return RedirectToAction(nameof(Edit));
             }
 
-            if (!String.IsNullOrEmpty(returnUrl))
+            if (!string.IsNullOrEmpty(returnUrl))
             {
                 return this.LocalRedirect(returnUrl, true);
             }
@@ -548,7 +559,9 @@ namespace OrchardCore.Users.Controllers
 
                 foreach (var error in result.Errors)
                 {
+#pragma warning disable CA2254 // Template should be a static expression
                     _logger.LogWarning(error.Description);
+#pragma warning restore CA2254 // Template should be a static expression
                 }
             }
 

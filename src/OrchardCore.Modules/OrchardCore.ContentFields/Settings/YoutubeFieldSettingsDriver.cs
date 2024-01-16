@@ -13,8 +13,8 @@ namespace OrchardCore.ContentFields.Settings
             return Initialize<YoutubeFieldSettings>("YoutubeFieldSetting_Edit", model =>
              {
                  partFieldDefinition.PopulateSettings(model);
-                 model.Height = model.Height != default(int) ? model.Height : 315;
-                 model.Width = model.Width != default(int) ? model.Width : 560;
+                 model.Height = model.Height != default ? model.Height : 315;
+                 model.Width = model.Width != default ? model.Width : 560;
              }).Location("Content");
         }
 

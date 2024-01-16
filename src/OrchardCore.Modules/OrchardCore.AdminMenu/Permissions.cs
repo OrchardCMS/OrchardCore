@@ -8,11 +8,11 @@ namespace OrchardCore.AdminMenu
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageAdminMenu = new Permission("ManageAdminMenu", "Manage the admin menu");
+        public static readonly Permission ManageAdminMenu = new("ManageAdminMenu", "Manage the admin menu");
 
-        public static readonly Permission ViewAdminMenuAll = new Permission("ViewAdminMenuAll", "View Admin Menu - View All", new[] { ManageAdminMenu });
+        public static readonly Permission ViewAdminMenuAll = new("ViewAdminMenuAll", "View Admin Menu - View All", new[] { ManageAdminMenu });
 
-        private static readonly Permission ViewAdminMenu = new Permission("ViewAdminMenu_{0}", "View Admin Menu - {0}", new[] { ManageAdminMenu, ViewAdminMenuAll });
+        private static readonly Permission _viewAdminMenu = new("ViewAdminMenu_{0}", "View Admin Menu - {0}", new[] { ManageAdminMenu, ViewAdminMenuAll });
 
         private readonly IAdminMenuService _adminMenuService;
 
@@ -42,19 +42,20 @@ namespace OrchardCore.AdminMenu
                     Name = "Administrator",
                     Permissions = new[] { ManageAdminMenu }
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Editor",
                     Permissions = new[] { ManageAdminMenu }
-                }
+                },
             };
         }
 
         public static Permission CreatePermissionForAdminMenu(string name)
         {
             return new Permission(
-                    String.Format(ViewAdminMenu.Name, name),
-                    String.Format(ViewAdminMenu.Description, name),
-                    ViewAdminMenu.ImpliedBy
+                    string.Format(_viewAdminMenu.Name, name),
+                    string.Format(_viewAdminMenu.Description, name),
+                    _viewAdminMenu.ImpliedBy
                 );
         }
     }

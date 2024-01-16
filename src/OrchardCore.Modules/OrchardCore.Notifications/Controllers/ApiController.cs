@@ -61,7 +61,7 @@ public class ApiController : Controller
 
             updated = true;
 
-            _session.Save(notification, collection: NotificationConstants.NotificationCollection);
+            await _session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection);
         }
 
         return Ok(new
@@ -71,7 +71,5 @@ public class ApiController : Controller
         });
     }
     private string CurrentUserId()
-    {
-        return User.FindFirstValue(ClaimTypes.NameIdentifier);
-    }
+        => User.FindFirstValue(ClaimTypes.NameIdentifier);
 }

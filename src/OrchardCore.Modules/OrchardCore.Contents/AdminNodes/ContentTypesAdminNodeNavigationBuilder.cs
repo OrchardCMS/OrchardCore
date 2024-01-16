@@ -54,7 +54,7 @@ namespace OrchardCore.Contents.AdminNodes
             {
                 builder.Add(new LocalizedString(ctd.DisplayName, ctd.DisplayName), cTypeMenu =>
                 {
-                    cTypeMenu.Url(_linkGenerator.GetPathByRouteValues(_httpContextAccessor.HttpContext, String.Empty, new
+                    cTypeMenu.Url(_linkGenerator.GetPathByRouteValues(_httpContextAccessor.HttpContext, string.Empty, new
                     {
                         area = "OrchardCore.Contents",
                         controller = "Admin",
@@ -88,13 +88,13 @@ namespace OrchardCore.Contents.AdminNodes
 
         private async Task<IEnumerable<ContentTypeDefinition>> GetListableContentTypeDefinitionsAsync(ContentTypesAdminNode node)
         {
-            var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions();
+            var contentTypeDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
 
             var listableContentTypeDefinitions = new List<ContentTypeDefinition>();
 
             foreach (var contentTypeDefinition in contentTypeDefinitions)
             {
-                if (!node.ShowAll && !node.ContentTypes.Any(entry => String.Equals(contentTypeDefinition.Name, entry.ContentTypeId, StringComparison.OrdinalIgnoreCase)))
+                if (!node.ShowAll && !node.ContentTypes.Any(entry => string.Equals(contentTypeDefinition.Name, entry.ContentTypeId, StringComparison.OrdinalIgnoreCase)))
                 {
                     continue;
                 }
@@ -119,7 +119,7 @@ namespace OrchardCore.Contents.AdminNodes
             else
             {
                 var typeEntry = node.ContentTypes
-                                .Where(x => String.Equals(x.ContentTypeId, contentType.Name, StringComparison.OrdinalIgnoreCase))
+                                .Where(x => string.Equals(x.ContentTypeId, contentType.Name, StringComparison.OrdinalIgnoreCase))
                                 .FirstOrDefault();
 
                 return AddPrefixToClasses(typeEntry.IconClass);
