@@ -20,7 +20,11 @@ public class Permissions : IPermissionProvider
 
     public async Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        var list = new List<Permission>(_allPermissions);
+        var list = new List<Permission>()
+        {
+            ManageQueries,
+            ExecuteApiAll,
+        };
 
         foreach (var query in await _queryManager.ListQueriesAsync())
         {
@@ -45,18 +49,17 @@ public class Permissions : IPermissionProvider
         new PermissionStereotype
         {
             Name = "Administrator",
-            Permissions = _allPermissions,
+            Permissions = _generalPermissions,
         },
         new PermissionStereotype
         {
             Name = "Editor",
-            Permissions = _allPermissions,
+            Permissions = _generalPermissions,
         },
     ];
 
-    private readonly static IEnumerable<Permission> _allPermissions =
+    private readonly static IEnumerable<Permission> _generalPermissions =
     [
         ManageQueries,
-        ExecuteApiAll,
     ];
 }

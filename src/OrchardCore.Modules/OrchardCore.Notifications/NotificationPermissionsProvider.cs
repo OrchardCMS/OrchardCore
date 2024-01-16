@@ -17,32 +17,32 @@ public class NotificationPermissionsProvider : IPermissionProvider
         new PermissionStereotype
         {
             Name = "Administrator",
-            Permissions = new[] { NotificationPermissions.ManageNotifications }
+            Permissions = _allPermissions,
         },
         new PermissionStereotype
         {
             Name = "Editor",
-            Permissions = new[] { NotificationPermissions.ManageNotifications }
+            Permissions = _allPermissions,
         },
         new PermissionStereotype
         {
             Name = "Moderator",
-            Permissions = new[] { NotificationPermissions.ManageNotifications }
+            Permissions = _allPermissions,
         },
         new PermissionStereotype
         {
             Name = "Author",
-            Permissions = new[] { NotificationPermissions.ManageNotifications }
+            Permissions = _allPermissions,
         },
         new PermissionStereotype
         {
             Name = "Contributor",
-            Permissions = new[] { NotificationPermissions.ManageNotifications }
+            Permissions = _allPermissions,
         },
         new PermissionStereotype
         {
             Name = "Authenticated",
-            Permissions = new[] { NotificationPermissions.ManageNotifications }
+            Permissions = _allPermissions,
         },
     ];
 

@@ -28,6 +28,10 @@ public class Permissions : IPermissionProvider
             Name = "Editor",
             Permissions = _allPermissions,
         },
+        // new PermissionStereotype
+        // {
+        //     Name = "Moderator",
+        // },
         new PermissionStereotype
         {
             Name = "Author",
@@ -38,6 +42,14 @@ public class Permissions : IPermissionProvider
             Name = "Contributor",
             Permissions = _generalPermissions,
         },
+        // new PermissionStereotype
+        // {
+        //     Name = "Authenticated",
+        // },
+        // new PermissionStereotype
+        // {
+        //     Name = "Anonymous",
+        // },
     ];
 
     private readonly static IEnumerable<Permission> _allPermissions =

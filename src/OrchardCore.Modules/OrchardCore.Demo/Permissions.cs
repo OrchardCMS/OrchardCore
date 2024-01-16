@@ -18,10 +18,18 @@ public class Permissions : IPermissionProvider
 
     private readonly static IEnumerable<PermissionStereotype> _allStereotypes =
     [
+        // new PermissionStereotype
+        // {
+        //     Name = "Administrator",
+        //     Permissions = _allPermissions,
+        // },
         new PermissionStereotype
         {
             Name = "Authenticated",
-            Permissions = _allPermissions,
+            Permissions =
+            [
+                DemoAPIAccess,
+            ],
         },
         new PermissionStereotype
         {

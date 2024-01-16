@@ -25,7 +25,7 @@ public class CustomUserSettingsPermissions : IPermissionProvider
             .Select(CreatePermissionForType);
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => [];
+        => Enumerable.Empty<PermissionStereotype>();
 
     public static Permission CreatePermissionForType(ContentTypeDefinition type) =>
         new(

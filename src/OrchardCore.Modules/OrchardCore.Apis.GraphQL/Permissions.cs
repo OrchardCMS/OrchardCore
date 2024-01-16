@@ -20,7 +20,10 @@ public class Permissions : IPermissionProvider
         new PermissionStereotype
         {
             Name = "Administrator",
-            Permissions = _allPermissions,
+            Permissions =
+            [
+                ExecuteGraphQLMutations,
+            ],
         },
     ];
 

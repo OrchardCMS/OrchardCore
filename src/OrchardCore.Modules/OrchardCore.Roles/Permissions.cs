@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,12 +23,12 @@ public class Permissions : IPermissionProvider
     {
         var list = new List<Permission>(_allPermissions);
 
-        var roles = (await _roleService.GetRoleNamesAsync())
-            .Except(_systemRoles, StringComparer.OrdinalIgnoreCase);
+        var roleNames = (await _roleService.GetRoleNamesAsync())
+            .Where(roleName => !RoleHelper.SystemRoleNames.Contains(roleName));
 
-        foreach (var role in roles)
+        foreach (var roleName in roleNames)
         {
-            list.Add(CommonPermissions.CreatePermissionForAssignRole(role));
+            list.Add(CommonPermissions.CreatePermissionForAssignRole(roleName));
         }
 
         return list;
@@ -43,7 +42,11 @@ public class Permissions : IPermissionProvider
         new PermissionStereotype
         {
             Name = "Administrator",
-            Permissions = _allPermissions,
+            Permissions =
+            [
+                ManageRoles,
+                StandardPermissions.SiteOwner,
+            ],
         },
     ];
 
@@ -52,11 +55,5 @@ public class Permissions : IPermissionProvider
         ManageRoles,
         AssignRoles,
         StandardPermissions.SiteOwner,
-    ];
-
-    private static readonly string[] _systemRoles =
-    [
-        "Anonymous",
-        "Authenticated",
     ];
 }

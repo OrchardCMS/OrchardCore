@@ -25,13 +25,26 @@ public class Permissions : IPermissionProvider
         new PermissionStereotype
         {
             Name = "Administrator",
-            Permissions = _allPermissions,
+            Permissions =
+            [
+                ManageMediaFolder,
+                ManageMediaProfiles,
+                ViewMediaOptions,
+            ],
         },
         new PermissionStereotype
         {
             Name = "Editor",
-            Permissions = _editorPermissions,
+            Permissions =
+            [
+                ManageMedia,
+                ManageOwnMedia,
+            ],
         },
+        // new PermissionStereotype
+        // {
+        //     Name = "Moderator",
+        // },
         new PermissionStereotype
         {
             Name = "Author",
@@ -53,12 +66,6 @@ public class Permissions : IPermissionProvider
         ManageAttachedMediaFieldsFolder,
         ManageMediaProfiles,
         ViewMediaOptions,
-    ];
-
-    private readonly static IEnumerable<Permission> _editorPermissions =
-    [
-        ManageMedia,
-        ManageOwnMedia,
     ];
 
     private readonly static IEnumerable<Permission> _generalPermissions =

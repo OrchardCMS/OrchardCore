@@ -21,6 +21,30 @@ public class Permissions : IPermissionProvider
             Name = "Administrator",
             Permissions = _allPermissions,
         },
+        // new PermissionStereotype
+        // {
+        //     Name = "Editor"
+        // },
+        // new PermissionStereotype
+        // {
+        //     Name = "Moderator"
+        // },
+        // new PermissionStereotype
+        // {
+        //     Name = "Author"
+        // },
+        // new PermissionStereotype
+        // {
+        //     Name = "Contributor"
+        // },
+        // new PermissionStereotype
+        // {
+        //     Name = "Authenticated"
+        // },
+        // new PermissionStereotype
+        // {
+        //     Name = "Anonymous"
+        // },
     ];
 
     private readonly static IEnumerable<Permission> _allPermissions =

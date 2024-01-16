@@ -39,22 +39,56 @@ public class Permissions : IPermissionProvider
         new PermissionStereotype
         {
             Name = "Administrator",
-            Permissions = _allPermissions,
+            Permissions =
+            [
+                PublishContent,
+                EditContent,
+                DeleteContent,
+                PreviewContent,
+                CloneContent,
+                AccessContentApi,
+                ListContent,
+                EditContentOwner
+            ],
         },
         new PermissionStereotype
         {
             Name = "Editor",
-            Permissions = _editorPermissions,
+            Permissions =
+            [
+                PublishContent,
+                EditContent,
+                DeleteContent,
+                PreviewContent,
+                CloneContent,
+                ListContent,
+            ],
         },
+        // new PermissionStereotype
+        // {
+        //     Name = "Moderator"
+        // },
         new PermissionStereotype
         {
             Name = "Author",
-            Permissions = _authorPermissions,
+            Permissions =
+            [
+                PublishOwnContent,
+                EditOwnContent,
+                DeleteOwnContent,
+                PreviewOwnContent,
+                CloneOwnContent,
+            ],
         },
         new PermissionStereotype
         {
             Name = "Contributor",
-            Permissions = _contributorPermissions,
+            Permissions =
+            [
+                EditOwnContent,
+                PreviewOwnContent,
+                CloneOwnContent,
+            ],
         },
         new PermissionStereotype
         {
@@ -70,47 +104,21 @@ public class Permissions : IPermissionProvider
 
     private readonly static IEnumerable<Permission> _allPermissions =
     [
-        EditOwnContent,
         EditContent,
-        PublishOwnContent,
+        EditOwnContent,
         PublishContent,
-        DeleteOwnContent,
+        PublishOwnContent,
         DeleteContent,
+        DeleteOwnContent,
         ViewContent,
         ViewOwnContent,
-        PreviewOwnContent,
         PreviewContent,
+        PreviewOwnContent,
         CloneContent,
         CloneOwnContent,
         AccessContentApi,
         ListContent,
         EditContentOwner,
-    ];
-
-    private readonly static IEnumerable<Permission> _editorPermissions =
-    [
-        PublishContent,
-        EditContent,
-        DeleteContent,
-        PreviewContent,
-        CloneContent,
-        ListContent,
-    ];
-
-    private readonly static IEnumerable<Permission> _authorPermissions =
-    [
-        PublishOwnContent,
-        EditOwnContent,
-        DeleteOwnContent,
-        PreviewOwnContent,
-        CloneOwnContent,
-    ];
-
-    private readonly static IEnumerable<Permission> _contributorPermissions =
-    [
-        EditOwnContent,
-        PreviewOwnContent,
-        CloneOwnContent,
     ];
 
     private readonly static IEnumerable<Permission> _readerPermissions =

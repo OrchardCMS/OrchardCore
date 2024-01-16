@@ -29,6 +29,5 @@ public class Permissions : IPermissionProvider
     private readonly static IEnumerable<Permission> _allPermissions =
     [
         ManageSettings,
-        ManageGroupSettings,
     ];
 }

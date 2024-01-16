@@ -22,7 +22,11 @@ public class Permissions : IPermissionProvider
 
     public async Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        var list = new List<Permission>(_allPermissions);
+        var list = new List<Permission>()
+        {
+            ViewAdminMenuAll,
+            ManageAdminMenu,
+        };
 
         foreach (var adminMenu in (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu)
         {
@@ -47,19 +51,13 @@ public class Permissions : IPermissionProvider
         new PermissionStereotype
         {
             Name = "Administrator",
-            Permissions = _allPermissions,
+            Permissions = _generalPermissions,
         },
         new PermissionStereotype
         {
             Name = "Editor",
             Permissions = _generalPermissions,
         },
-    ];
-
-    private readonly static IEnumerable<Permission> _allPermissions =
-    [
-        ViewAdminMenuAll,
-        ManageAdminMenu,
     ];
 
     private readonly static IEnumerable<Permission> _generalPermissions =
