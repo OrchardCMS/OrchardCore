@@ -5,8 +5,6 @@ using OrchardCore.Environment.Extensions.Features;
 
 namespace OrchardCore.DisplayManagement.Extensions
 {
-    public interface IThemeExtensionInfo : IExtensionInfo { }
-
     public class ThemeExtensionInfo : IThemeExtensionInfo
     {
         private readonly IExtensionInfo _extensionInfo;

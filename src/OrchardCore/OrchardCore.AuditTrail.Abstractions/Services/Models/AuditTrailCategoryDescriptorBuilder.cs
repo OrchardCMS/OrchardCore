@@ -20,7 +20,7 @@ namespace OrchardCore.AuditTrail.Services.Models
 
         private readonly Type _localizerType;
         private readonly Func<IServiceProvider, LocalizedString> _localizedCategoryName;
-        private readonly Dictionary<string, AuditTrailEventDescriptor> _events = new Dictionary<string, AuditTrailEventDescriptor>();
+        private readonly Dictionary<string, AuditTrailEventDescriptor> _events = new();
 
         public AuditTrailCategoryDescriptorBuilder(string categoryName, Type localizerType, Func<IStringLocalizer, LocalizedString> localizedName)
         {
@@ -56,7 +56,6 @@ namespace OrchardCore.AuditTrail.Services.Models
             return this;
         }
 
-        internal AuditTrailCategoryDescriptor Build()
-            => new AuditTrailCategoryDescriptor(_categoryName, _localizedCategoryName, _events);
+        internal AuditTrailCategoryDescriptor Build() => new(_categoryName, _localizedCategoryName, _events);
     }
 }

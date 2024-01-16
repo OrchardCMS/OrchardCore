@@ -15,7 +15,7 @@ namespace OrchardCore.Recipes
             _globalMethod = new GlobalMethod
             {
                 Name = "configuration",
-                Method = serviceprovider => (Func<string, object, object>)((key, defaultValue) => configuration.GetValue<object>(key, defaultValue))
+                Method = serviceprovider => (Func<string, object, object>)((key, defaultValue) => configuration.GetValue<object>(key, defaultValue)),
             };
         }
 

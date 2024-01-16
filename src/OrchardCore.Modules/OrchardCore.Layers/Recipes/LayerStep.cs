@@ -17,9 +17,9 @@ namespace OrchardCore.Layers.Recipes
     /// </summary>
     public class LayerStep : IRecipeStepHandler
     {
-        private readonly static JsonSerializer JsonSerializer = new JsonSerializer()
+        private readonly static JsonSerializer _jsonSerializer = new()
         {
-            TypeNameHandling = TypeNameHandling.Auto
+            TypeNameHandling = TypeNameHandling.Auto,
         };
 
         private readonly ILayerService _layerService;
@@ -41,7 +41,7 @@ namespace OrchardCore.Layers.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "Layers", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "Layers", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
@@ -55,7 +55,7 @@ namespace OrchardCore.Layers.Recipes
 
             foreach (var layerStep in model.Layers)
             {
-                var layer = allLayers.Layers.FirstOrDefault(x => String.Equals(x.Name, layerStep.Name, StringComparison.OrdinalIgnoreCase));
+                var layer = allLayers.Layers.FirstOrDefault(x => string.Equals(x.Name, layerStep.Name, StringComparison.OrdinalIgnoreCase));
 
                 if (layer == null)
                 {
@@ -70,19 +70,19 @@ namespace OrchardCore.Layers.Recipes
                     _conditionIdGenerator.GenerateUniqueId(layer.LayerRule);
                 }
 
-                // Replace any property that is set in the recipe step
-                if (!String.IsNullOrEmpty(layerStep.Name))
+                // Replace any property that is set in the recipe step.
+                if (!string.IsNullOrEmpty(layerStep.Name))
                 {
                     layer.Name = layerStep.Name;
                 }
                 else
                 {
-                    throw new ArgumentNullException($"{nameof(layer.Name)} is required");
+                    throw new InvalidOperationException($"The layer '{nameof(layer.Name)}' is required.");
                 }
 
                 if (layerStep.LayerRule != null)
                 {
-                    if (!String.IsNullOrEmpty(layerStep.LayerRule.ConditionId))
+                    if (!string.IsNullOrEmpty(layerStep.LayerRule.ConditionId))
                     {
                         layer.LayerRule.ConditionId = layerStep.LayerRule.ConditionId;
                     }
@@ -94,7 +94,7 @@ namespace OrchardCore.Layers.Recipes
                         var name = jCondition["Name"].ToString();
                         if (factories.TryGetValue(name, out var factory))
                         {
-                            var factoryCondition = (Condition)jCondition.ToObject(factory.Create().GetType(), JsonSerializer);
+                            var factoryCondition = (Condition)jCondition.ToObject(factory.Create().GetType(), _jsonSerializer);
 
                             layer.LayerRule.Conditions.Add(factoryCondition);
                         }
@@ -105,16 +105,14 @@ namespace OrchardCore.Layers.Recipes
                     }
                 }
 
-#pragma warning disable 0618
                 // Migrate any old rule in a recipe to the new rule format.
                 // Do not import the old rule.
-                if (!String.IsNullOrEmpty(layerStep.Rule))
+                if (!string.IsNullOrEmpty(layerStep.Rule))
                 {
                     _ruleMigrator.Migrate(layerStep.Rule, layer.LayerRule);
                 }
-#pragma warning restore 0618
 
-                if (!String.IsNullOrEmpty(layerStep.Description))
+                if (!string.IsNullOrEmpty(layerStep.Description))
                 {
                     layer.Description = layerStep.Description;
                 }
@@ -125,7 +123,7 @@ namespace OrchardCore.Layers.Recipes
                 var prefix = "No changes have been made. The following types of conditions cannot be added:";
                 var suffix = "Please ensure that the related features are enabled to add these types of conditions.";
 
-                throw new InvalidOperationException($"{prefix} {String.Join(", ", unknownTypes)}. {suffix}");
+                throw new InvalidOperationException($"{prefix} {string.Join(", ", unknownTypes)}. {suffix}");
             }
 
             await _layerService.UpdateAsync(allLayers);

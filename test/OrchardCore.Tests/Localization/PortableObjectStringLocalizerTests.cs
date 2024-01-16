@@ -203,20 +203,19 @@ namespace OrchardCore.Tests.Localization
         [InlineData("zh-Hans", "球", 2, new string[] { "球" })]
         public void LocalizerReturnsCorrectTranslationForPluralIfNoPluralFormsSpecified(string culture, string expected, int count, string[] translations)
         {
-            using (var cultureScope = CultureScope.Create(culture))
-            {
-                // using DefaultPluralRuleProvider to test it returns correct rule
-                TryGetRuleFromDefaultPluralRuleProvider(cultureScope.UICulture, out var rule);
+            using var cultureScope = CultureScope.Create(culture);
 
-                Assert.NotNull(rule);
+            // using DefaultPluralRuleProvider to test it returns correct rule.
+            TryGetRuleFromDefaultPluralRuleProvider(cultureScope.UICulture, out var rule);
 
-                SetupDictionary(culture, new[] { new CultureDictionaryRecord("ball", translations), }, rule);
+            Assert.NotNull(rule);
 
-                var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, true, _logger.Object);
-                var translation = localizer.Plural(count, "ball", "{0} balls", count);
+            SetupDictionary(culture, new[] { new CultureDictionaryRecord("ball", translations), }, rule);
 
-                Assert.Equal(expected, translation);
-            }
+            var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, true, _logger.Object);
+            var translation = localizer.Plural(count, "ball", "{0} balls", count);
+
+            Assert.Equal(expected, translation);
         }
 
         [Theory]
@@ -365,13 +364,17 @@ namespace OrchardCore.Tests.Localization
 
         public class PortableObjectLocalizationStartup
         {
+#pragma warning disable CA1822 // Mark members as static
             public void ConfigureServices(IServiceCollection services)
+#pragma warning restore CA1822 // Mark members as static
             {
                 services.AddMvc();
                 services.AddPortableObjectLocalization();
             }
 
+#pragma warning disable CA1822 // Mark members as static
             public void Configure(
+#pragma warning restore CA1822 // Mark members as static
                 IApplicationBuilder app,
                 IStringLocalizer<PortableObjectLocalizationStartup> localizer)
             {

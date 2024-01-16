@@ -50,7 +50,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
         public override FieldType AddField(FieldType fieldType)
         {
-            if (!_options.ShouldSkip(this.GetType(), fieldType.Name))
+            if (!_options.ShouldSkip(GetType(), fieldType.Name))
             {
                 return base.AddField(fieldType);
             }

@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace OrchardCore.Sitemaps.ViewModels
@@ -12,7 +13,7 @@ namespace OrchardCore.Sitemaps.ViewModels
 
         public bool Enabled { get; set; }
 
-        public ContainableSitemapEntryViewModel[] ContainableSitemaps { get; set; } = new ContainableSitemapEntryViewModel[] { };
+        public ContainableSitemapEntryViewModel[] ContainableSitemaps { get; set; } = Array.Empty<ContainableSitemapEntryViewModel>();
 
     }
 
@@ -23,4 +24,3 @@ namespace OrchardCore.Sitemaps.ViewModels
         public string Name { get; set; }
     }
 }
-

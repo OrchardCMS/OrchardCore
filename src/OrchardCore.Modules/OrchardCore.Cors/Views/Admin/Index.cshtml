@@ -25,12 +25,12 @@
     <input type="hidden" name="CorsSettings" id="CorsSettings" value='@Html.Raw(Json.Serialize(Model.Policies, settings))' />
     <div id="corsAdmin">
         <div v-if="!selectedPolicy">
-            <div class="card mb-3 bg-primary position-sticky action-bar">
+            <div class="card mb-3 text-bg-theme position-sticky action-bar">
                 <div class="card-body">
                     <div class="row gx-3">
                         <div class="col">
                             <div class="has-search">
-                                <i class="fa fa-search form-control-feedback" aria-hidden="true"></i>
+                                <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
                                 <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
                             </div>
                         </div>
@@ -152,7 +152,7 @@
 
 <script type="text/x-template" id="options-list">
     <div>
-        <label>{{ title }}</label>
+        <label class="form-label">{{ title }}</label>
         <span class="hint" v-if="subTitle">{{ subTitle }}</span>
         <div class="input-group input-group-sm mb-2 w-50">
             <input type="text" class="form-control" v-model="newOption">

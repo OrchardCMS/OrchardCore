@@ -16,7 +16,7 @@ namespace OrchardCore.Media.GraphQL
 {
     public class MediaAssetQuery : ISchemaBuilder
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
         private readonly GraphQLContentOptions _graphQLContentOptions;
 
         public MediaAssetQuery(
@@ -27,7 +27,7 @@ namespace OrchardCore.Media.GraphQL
             _graphQLContentOptions = graphQLContentOptions.Value;
         }
 
-        public Task<string> GetIdentifierAsync() => Task.FromResult(String.Empty);
+        public Task<string> GetIdentifierAsync() => Task.FromResult(string.Empty);
 
         public Task BuildAsync(ISchema schema)
         {

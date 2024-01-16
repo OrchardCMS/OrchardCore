@@ -32,14 +32,11 @@ namespace OrchardCore.Environment.Extensions
         private Dictionary<string, FeatureEntry> _features;
         private IFeatureInfo[] _featureInfos;
 
-        private readonly ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _featureDependencies
-            = new ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>>();
+        private readonly ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _featureDependencies = new();
+        private readonly ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _dependentFeatures = new();
 
-        private readonly ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>> _dependentFeatures
-            = new ConcurrentDictionary<string, Lazy<IEnumerable<IFeatureInfo>>>();
-
-        private bool _isInitialized = false;
-        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+        private bool _isInitialized;
+        private readonly SemaphoreSlim _semaphore = new(1);
 
         public ExtensionManager(
             IApplicationContext applicationContext,
@@ -51,7 +48,7 @@ namespace OrchardCore.Environment.Extensions
         {
             _applicationContext = applicationContext;
             _extensionDependencyStrategies = extensionDependencyStrategies as IExtensionDependencyStrategy[] ?? extensionDependencyStrategies.ToArray();
-            _extensionPriorityStrategies = extensionPriorityStrategies as IExtensionPriorityStrategy[] ?? _extensionPriorityStrategies.ToArray();
+            _extensionPriorityStrategies = extensionPriorityStrategies as IExtensionPriorityStrategy[] ?? extensionPriorityStrategies.ToArray();
             _typeFeatureProvider = typeFeatureProvider;
             _featuresProvider = featuresProvider;
             L = logger;
@@ -63,7 +60,7 @@ namespace OrchardCore.Environment.Extensions
         {
             EnsureInitialized();
 
-            if (!String.IsNullOrEmpty(extensionId) && _extensions.TryGetValue(extensionId, out var extension))
+            if (!string.IsNullOrEmpty(extensionId) && _extensions.TryGetValue(extensionId, out var extension))
             {
                 return extension.ExtensionInfo;
             }
@@ -365,7 +362,7 @@ namespace OrchardCore.Environment.Extensions
 
                         loadedFeatures.Add(feature.Id, new FeatureEntry(feature, featureTypes));
                     }
-                };
+                }
 
                 // Feature infos and entries are ordered by priority and dependencies.
                 _featureInfos = Order(loadedFeatures.Values.Select(f => f.FeatureInfo));

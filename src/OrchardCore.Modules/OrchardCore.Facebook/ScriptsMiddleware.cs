@@ -60,7 +60,7 @@ namespace OrchardCore.Facebook
                 {
                     var bytes = Encoding.UTF8.GetBytes(script);
                     var cancellationToken = httpContext?.RequestAborted ?? CancellationToken.None;
-                    await httpContext.Response.Body.WriteAsync(Encoding.UTF8.GetBytes(script), 0, bytes.Length, cancellationToken);
+                    await httpContext.Response.Body.WriteAsync(Encoding.UTF8.GetBytes(script).AsMemory(0, bytes.Length), cancellationToken);
                     return;
                 }
             }

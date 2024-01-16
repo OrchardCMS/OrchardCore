@@ -10,7 +10,7 @@ namespace OrchardCore.ContentManagement
     /// </summary>
     public class ContentFieldFactory : ITypeActivatorFactory<ContentField>
     {
-        private readonly ITypeActivator<ContentField> ContentFieldActivator = new GenericTypeActivator<ContentField, ContentField>();
+        private readonly ITypeActivator<ContentField> _contentFieldActivator = new GenericTypeActivator<ContentField, ContentField>();
 
         private readonly Dictionary<string, ITypeActivator<ContentField>> _contentFieldActivators;
 
@@ -35,7 +35,7 @@ namespace OrchardCore.ContentManagement
                 return activator;
             }
 
-            return ContentFieldActivator;
+            return _contentFieldActivator;
         }
     }
 }

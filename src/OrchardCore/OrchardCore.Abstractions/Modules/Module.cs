@@ -13,11 +13,11 @@ namespace OrchardCore.Modules
     public class Module
     {
         public const string WebRootPath = "wwwroot";
-        public static string WebRoot = WebRootPath + "/";
+        public const string WebRoot = WebRootPath + "/";
 
         private readonly string _baseNamespace;
         private readonly DateTimeOffset _lastModified;
-        private readonly IDictionary<string, IFileInfo> _fileInfos = new Dictionary<string, IFileInfo>();
+        private readonly Dictionary<string, IFileInfo> _fileInfos = new();
 
         // TODO: MWP: trace back to usage, etc...
         // TODO: MWP: perhaps we filter up front so we are not discovering all this during ctor...
@@ -25,13 +25,13 @@ namespace OrchardCore.Modules
         /// <summary>
         /// Constructs an instance of the Module.
         /// </summary>
-        /// <param name="assyName">The assembly name to use when loading itself.</param>
+        /// <param name="assemblyName">The assembly name to use when loading itself.</param>
         /// <param name="isApplication">Whether the Module may be considered to be the &quot;Application&quot;.</param>
-        public Module(string assyName, bool isApplication = false)
+        public Module(string assemblyName, bool isApplication = false)
         {
-            if (!string.IsNullOrWhiteSpace(assyName))
+            if (!string.IsNullOrWhiteSpace(assemblyName))
             {
-                Assembly = Assembly.Load(new AssemblyName(assyName));
+                Assembly = Assembly.Load(new AssemblyName(assemblyName));
 
                 Assets = Assembly.GetCustomAttributes<ModuleAssetAttribute>()
                     .Select(a => new Asset(a.Asset)).ToArray();
@@ -42,10 +42,10 @@ namespace OrchardCore.Modules
                 var moduleInfos = Assembly.GetCustomAttributes<ModuleAttribute>();
 
                 ModuleInfo =
-                    moduleInfos.Where(f => f is not ModuleMarkerAttribute).FirstOrDefault() ??
-                    moduleInfos.Where(f => f is ModuleMarkerAttribute).FirstOrDefault() ??
-                    // This is better use the default parameterless ctor and assign the property
-                    new ModuleAttribute() { Name = assyName };
+                    moduleInfos.Where(f => f is not ModuleMarkerAttribute).FirstOrDefault()
+                    ?? moduleInfos.Where(f => f is ModuleMarkerAttribute).FirstOrDefault()
+                    // This is better use the default parameterless ctor and assign the property.
+                    ?? new ModuleAttribute() { Name = assemblyName };
 
                 var features = Assembly.GetCustomAttributes<Manifest.FeatureAttribute>()
                     .Where(f => f is not ModuleAttribute).ToList();
@@ -60,28 +60,28 @@ namespace OrchardCore.Modules
 
                     // Adds the application primary feature.
                     features.Insert(0, new Manifest.FeatureAttribute(
-                        assyName
-                        , Application.ModuleName
-                        , Application.ModuleCategory
-                        , Application.ModulePriority
-                        , Application.ModuleDescription
-                        , null
-                        , true
-                        , default
-                        , default
+                        assemblyName,
+                        Application.ModuleName,
+                        Application.ModuleCategory,
+                        Application.ModulePriority,
+                        Application.ModuleDescription,
+                        null,
+                        true,
+                        default,
+                        default
                     ));
 
                     // Adds the application default feature.
                     features.Insert(1, new Manifest.FeatureAttribute(
-                        Application.DefaultFeatureId
-                        , Application.DefaultFeatureName
-                        , Application.ModuleCategory
-                        , Application.ModulePriority
-                        , Application.DefaultFeatureDescription
-                        , null
-                        , true
-                        , default
-                        , default
+                        Application.DefaultFeatureId,
+                        Application.DefaultFeatureName,
+                        Application.ModuleCategory,
+                        Application.ModulePriority,
+                        Application.DefaultFeatureDescription,
+                        null,
+                        true,
+                        default,
+                        default
                     ));
                 }
 
@@ -90,7 +90,7 @@ namespace OrchardCore.Modules
                 // The 'ModuleInfo.Id' allows a module project to change its 'AssemblyName'
                 // without to update the code. If not provided, the assembly name is used.
 
-                var logicalName = ModuleInfo.Id ?? assyName;
+                var logicalName = ModuleInfo.Id ?? assemblyName;
 
                 Name = ModuleInfo.Id = logicalName;
                 SubPath = Application.ModulesRoot + Name;
@@ -98,7 +98,7 @@ namespace OrchardCore.Modules
             }
             else
             {
-                Name = Root = SubPath = String.Empty;
+                Name = Root = SubPath = string.Empty;
                 Assets = Enumerable.Empty<Asset>();
                 AssetPaths = Enumerable.Empty<string>();
                 ModuleInfo = new ModuleAttribute();

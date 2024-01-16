@@ -5,21 +5,21 @@
 
 @{
     var contentItem = (IContent)Model.ContentItem;
-    var contentTypeDisplayText = ContentDefinitionManager.GetTypeDefinition((string)Model.ContentItem.ContentType).DisplayName;
+    var contentTypeDisplayText = (await ContentDefinitionManager.GetTypeDefinitionAsync((string)Model.ContentItem.ContentType)).DisplayName;
     var contentItemDisplayText = contentItem.ContentItem.DisplayText;
     var widgetContentTypes = (IEnumerable<ContentTypeDefinition>)Model.ContainedContentTypes;
 
     var editorId = "contentEditor_" + Model.PrefixValue;
 }
 
-<div class="widget widget-editor card my-1@(Model.Inline ? " collapsed" : String.Empty)">
+<div class="widget widget-editor card my-1@(Model.Inline ? " collapsed" : string.Empty)">
     <div class="widget-editor-header card-header text-muted py-1 ps-2 pe-1">
         @if (Model.CanMove != false)
         {
-            <div class="widget-editor-handle"><i class="fas fa-arrows-alt" aria-hidden="true"></i></div>
+            <div class="widget-editor-handle"><i class="fa-solid fa-arrows-alt" aria-hidden="true"></i></div>
         }
-        <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-collapse"><i class="fa fa-angle-down" aria-hidden="true"></i></button>
-        <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-expand"><i class="fa fa-angle-@(Orchard.CultureDir() == LanguageDirection.LTR ? "right" : "left")" aria-hidden="true"></i></button>
+        <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-collapse"><i class="fa-solid fa-angle-down" aria-hidden="true"></i></button>
+        <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-expand"><i class="fa-solid fa-angle-@(Orchard.CultureDir() == LanguageDirection.LTR ? "right" : "left")" aria-hidden="true"></i></button>
         <span data-content-type-display-text="@contentTypeDisplayText" class="widget-editor-header-text">@T["{0} {1}", contentItemDisplayText, contentTypeDisplayText]</span>
         <div class="btn-widget-metadata border border-info w-100">
             <div class="btn-group">
@@ -31,25 +31,27 @@
                 {
                     <div class="btn-group">
                         <button type="button" class="toggleAll btn btn-secondary btn-sm" onclick="toggleWidgets();" title="@T["Toggle all widgets"]">
-                            <i class="fas fa-angles-up dot" aria-hidden="true"></i>
+                            <i class="fa-solid fa-angles-up dot" aria-hidden="true"></i>
                         </button>
                         <button type="button" title="@T["Insert Widget"]" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-plus" aria-hidden="true"></i>
+                            <i class="fa-solid fa-plus" aria-hidden="true"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
                             @foreach (var type in widgetContentTypes.OrderBy(w => w.DisplayName))
                             {
-                                <li><a class="dropdown-item insert-widget btn-sm"
-                                   data-target-id="@Model.TargetId"
-                                   data-html-field-prefix="@Model.HtmlFieldPrefix"
-                                   data-prefixes-name="@Model.PrefixesName"
-                                   data-flowmetadata="true"
-                                   data-parent-content-type="@Model.ParentContentType"
-                                   data-part-name="@Model.CollectionPartName"
-                                   data-contenttypes-name="@Model.ContentTypesName"
-                                   data-contentitems-name="@Model.ContentItemsName"
-                                   data-widget-type="@type.Name"
-                                   href="javascript:;">@type.DisplayName</a></li>
+                                <li>
+                                    <a class="dropdown-item insert-widget btn-sm"
+                                       data-target-id="@Model.TargetId"
+                                       data-html-field-prefix="@Model.HtmlFieldPrefix"
+                                       data-prefixes-name="@Model.PrefixesName"
+                                       data-flowmetadata="true"
+                                       data-parent-content-type="@Model.ParentContentType"
+                                       data-part-name="@Model.CollectionPartName"
+                                       data-contenttypes-name="@Model.ContentTypesName"
+                                       data-contentitems-name="@Model.ContentItemsName"
+                                       data-widget-type="@type.Name"
+                                       href="javascript:;">@type.DisplayName</a>
+                                </li>
                             }
                         </ul>
                     </div>
@@ -59,7 +61,7 @@
         <div class="btn-group btn-group-sm float-end" role="group">
             @if (Model.CanDelete != false)
             {
-                <button type="button" class="btn btn-danger widget-delete" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this item?"]"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                <button type="button" class="btn btn-danger widget-delete" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this item?"]"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
             }
         </div>
     </div>

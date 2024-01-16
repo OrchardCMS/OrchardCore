@@ -4,7 +4,7 @@
 }
 
 <style asp-name="codemirror"></style>
-<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror" at="Foot"></script>
 <script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
 <script asp-name="codemirror-addon-selection-active-line" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
@@ -19,14 +19,14 @@
     }
 
     <div class="mb-3" asp-validation-class-for="ShapeType">
-        <label asp-for="ShapeType">@T["Shape type"]</label>
+        <label asp-for="ShapeType" class="form-label">@T["Shape type"]</label>
         <input asp-for="ShapeType" asp-is-disabled="!Model.Creating" class="form-control" required autofocus />
         <span asp-validation-for="ShapeType"></span>
         <span class="hint">@T["The type of the shape."]</span>
     </div>
 
     <div class="mb-3" asp-validation-class-for="Nodes">
-        <label asp-for="Nodes">@T["Placement rules"]</label>
+        <label asp-for="Nodes" class="form-label">@T["Placement rules"]</label>
         <textarea asp-for="Nodes" rows="10" class="form-control"></textarea>
     </div>
 

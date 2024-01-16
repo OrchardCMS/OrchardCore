@@ -155,6 +155,29 @@ namespace OrchardCore.Tests.Localization
         }
 
         [Fact]
+        public void ParseReadsPluralAndMultilineText()
+        {
+            // msgid ""
+            // "Here is an example of how one might continue a very long string\n"
+            // "for the common case the string represents multi-line output."
+            // msgid_plural ""
+            // "Here are examples of how one might continue a very long string\n"
+            // "for the common case the string represents multi-line output."
+            // msgstr[0] ""
+            // "Here is an example of how one might continue a very long translation\n"
+            // "for the common case the string represents multi-line output."
+            // msgstr[1] ""
+            // "Here are examples of how one might continue a very long translation\n"
+            // "for the common case the string represents multi-line output."
+
+            var entries = ParseText("EntryWithPluralAndMultilineText");
+
+            Assert.Equal("Here is an example of how one might continue a very long string\nfor the common case the string represents multi-line output.", entries[0].Key);
+            Assert.Equal("Here is an example of how one might continue a very long translation\nfor the common case the string represents multi-line output.", entries[0].Translations[0]);
+            Assert.Equal("Here are examples of how one might continue a very long translation\nfor the common case the string represents multi-line output.", entries[0].Translations[1]);
+        }
+
+        [Fact]
         public void ParseReadsMultipleEntries()
         {
             // #. "File {0} does not exist"
@@ -178,18 +201,14 @@ namespace OrchardCore.Tests.Localization
             Assert.Equal("Složka {0} neexistuje", entries[1].Translations[0]);
         }
 
-        private CultureDictionaryRecord[] ParseText(string resourceName)
+        private static CultureDictionaryRecord[] ParseText(string resourceName)
         {
             var parser = new PoParser();
 
             var testAssembly = typeof(PoParserTests).Assembly;
-            using (var resource = testAssembly.GetManifestResourceStream("OrchardCore.Tests.Localization.PoFiles." + resourceName + ".po"))
-            {
-                using (var reader = new StreamReader(resource))
-                {
-                    return parser.Parse(reader).ToArray();
-                }
-            }
+            using var resource = testAssembly.GetManifestResourceStream("OrchardCore.Tests.Localization.PoFiles." + resourceName + ".po");
+            using var reader = new StreamReader(resource);
+            return parser.Parse(reader).ToArray();
         }
     }
 }

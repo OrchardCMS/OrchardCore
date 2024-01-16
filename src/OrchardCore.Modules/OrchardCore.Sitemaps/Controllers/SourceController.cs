@@ -25,9 +25,9 @@ namespace OrchardCore.Sitemaps.Controllers
         private readonly ISitemapManager _sitemapManager;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly INotifier _notifier;
-        private readonly dynamic New;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
+
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
 
         public SourceController(
             IAuthorizationService authorizationService,
@@ -36,7 +36,6 @@ namespace OrchardCore.Sitemaps.Controllers
             ISitemapManager sitemapManager,
             IUpdateModelAccessor updateModelAccessor,
             INotifier notifier,
-            IShapeFactory shapeFactory,
             IStringLocalizer<SourceController> stringLocalizer,
             IHtmlLocalizer<SourceController> htmlLocalizer)
         {
@@ -46,7 +45,6 @@ namespace OrchardCore.Sitemaps.Controllers
             _sitemapManager = sitemapManager;
             _updateModelAccessor = updateModelAccessor;
             _notifier = notifier;
-            New = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
@@ -142,7 +140,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 return NotFound();
             }
 
-            var source = sitemap.SitemapSources.FirstOrDefault(x => String.Equals(x.Id, sourceId, StringComparison.OrdinalIgnoreCase));
+            var source = sitemap.SitemapSources.FirstOrDefault(x => string.Equals(x.Id, sourceId, StringComparison.OrdinalIgnoreCase));
 
             if (source == null)
             {
@@ -177,7 +175,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 return NotFound();
             }
 
-            var source = sitemap.SitemapSources.FirstOrDefault(x => String.Equals(x.Id, model.SitemapSourceId, StringComparison.OrdinalIgnoreCase));
+            var source = sitemap.SitemapSources.FirstOrDefault(x => string.Equals(x.Id, model.SitemapSourceId, StringComparison.OrdinalIgnoreCase));
 
             if (source == null)
             {
@@ -216,7 +214,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 return NotFound();
             }
 
-            var source = sitemap.SitemapSources.FirstOrDefault(x => String.Equals(x.Id, sourceId, StringComparison.OrdinalIgnoreCase));
+            var source = sitemap.SitemapSources.FirstOrDefault(x => string.Equals(x.Id, sourceId, StringComparison.OrdinalIgnoreCase));
 
             if (source == null)
             {

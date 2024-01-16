@@ -6,7 +6,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 {
     public class ContentFieldDisplayOption : ContentFieldOptionBase
     {
-        private readonly List<ContentFieldDisplayDriverOption> _fieldDisplayDrivers = new List<ContentFieldDisplayDriverOption>();
+        private readonly List<ContentFieldDisplayDriverOption> _fieldDisplayDrivers = new();
 
         public ContentFieldDisplayOption(Type contentFieldType) : base(contentFieldType)
         {

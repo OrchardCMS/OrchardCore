@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -11,8 +12,8 @@ namespace OrchardCore.Facebook.Widgets.Settings
 {
     public class FacebookPluginPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<FacebookPluginPart>
     {
-        private readonly ILiquidTemplateManager _templateManager;
-        private readonly IStringLocalizer S;
+        protected readonly ILiquidTemplateManager _templateManager;
+        protected readonly IStringLocalizer S;
 
         public FacebookPluginPartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<FacebookPluginPartSettingsDisplayDriver> localizer)
         {

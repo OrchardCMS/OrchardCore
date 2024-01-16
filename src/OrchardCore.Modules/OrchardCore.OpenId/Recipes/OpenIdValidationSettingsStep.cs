@@ -19,7 +19,7 @@ namespace OrchardCore.OpenId.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, nameof(OpenIdValidationSettings), StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, nameof(OpenIdValidationSettings), StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }

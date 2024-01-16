@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Lists.Feeds
+namespace OrchardCore.Lists.Feeds
 {
     public class ListFeedQueryViewModel
     {

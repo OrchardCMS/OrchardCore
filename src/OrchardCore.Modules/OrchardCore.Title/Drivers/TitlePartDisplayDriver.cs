@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -12,7 +13,7 @@ namespace OrchardCore.Title.Drivers
 {
     public class TitlePartDisplayDriver : ContentPartDisplayDriver<TitlePart>
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public TitlePartDisplayDriver(IStringLocalizer<TitlePartDisplayDriver> localizer)
         {
@@ -34,9 +35,8 @@ namespace OrchardCore.Title.Drivers
                 model.TitlePart = titlePart;
                 model.ContentItem = titlePart.ContentItem;
             })
-            .Location("Detail", "Header:5")
-            .Location("Summary", "Header:5");
-
+            .Location("Detail", "Header")
+            .Location("Summary", "Header");
         }
 
         public override IDisplayResult Edit(TitlePart titlePart, BuildPartEditorContext context)

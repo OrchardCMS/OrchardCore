@@ -19,11 +19,11 @@ namespace OrchardCore.ContentTypes.RecipeSteps
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public Task ExecuteAsync(RecipeExecutionContext context)
+        public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "ReplaceContentDefinition", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "ReplaceContentDefinition", StringComparison.OrdinalIgnoreCase))
             {
-                return Task.CompletedTask;
+                return;
             }
 
             var step = context.Step.ToObject<ReplaceContentDefinitionStepModel>();
@@ -31,28 +31,26 @@ namespace OrchardCore.ContentTypes.RecipeSteps
             // Delete existing parts first, as deleting them later will clear any imported content types using them.
             foreach (var contentPart in step.ContentParts)
             {
-                _contentDefinitionManager.DeletePartDefinition(contentPart.Name);
+                await _contentDefinitionManager.DeletePartDefinitionAsync(contentPart.Name);
             }
 
             foreach (var contentType in step.ContentTypes)
             {
-                _contentDefinitionManager.DeleteTypeDefinition(contentType.Name);
-                AlterContentType(contentType);
+                await _contentDefinitionManager.DeleteTypeDefinitionAsync(contentType.Name);
+                await AlterContentTypeAsync(contentType);
             }
 
             foreach (var contentPart in step.ContentParts)
             {
-                AlterContentPart(contentPart);
+                await AlterContentPartAsync(contentPart);
             }
-
-            return Task.CompletedTask;
         }
 
-        private void AlterContentType(ContentTypeDefinitionRecord record)
+        private async Task AlterContentTypeAsync(ContentTypeDefinitionRecord record)
         {
-            _contentDefinitionManager.AlterTypeDefinition(record.Name, builder =>
+            await _contentDefinitionManager.AlterTypeDefinitionAsync(record.Name, builder =>
             {
-                if (!String.IsNullOrEmpty(record.DisplayName))
+                if (!string.IsNullOrEmpty(record.DisplayName))
                 {
                     builder.DisplayedAs(record.DisplayName);
                     builder.MergeSettings(record.Settings);
@@ -65,9 +63,9 @@ namespace OrchardCore.ContentTypes.RecipeSteps
             });
         }
 
-        private void AlterContentPart(ContentPartDefinitionRecord record)
+        private async Task AlterContentPartAsync(ContentPartDefinitionRecord record)
         {
-            _contentDefinitionManager.AlterPartDefinition(record.Name, builder =>
+            await _contentDefinitionManager.AlterPartDefinitionAsync(record.Name, builder =>
             {
                 builder.MergeSettings(record.Settings);
 

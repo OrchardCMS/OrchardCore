@@ -1,0 +1,18 @@
+name: Contributor Map
+
+on:
+  workflow_dispatch:
+  schedule:
+    # At 3:00 AM UTC every Monday.
+    - cron: "0 3 * * 1"
+    
+jobs:
+  update-contributor-map:
+    name: Update Contributor Map
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Update Contributor Map
+        uses: tunaitis/contributor-map@da8a84b848781bccaa56bc73519c055f4814e512 #v1
+        with:
+            output: src/docs/community/contributors/images/contributors-map.svg

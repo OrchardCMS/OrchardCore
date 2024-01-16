@@ -4,7 +4,7 @@
   "repoType": "github",
   "repoHost": "https://github.com",
   "files": [
-    "Contributors.md"
+    "src/docs/community/contributors/README.md"
   ],
   "imageSize": 100,
   "commit": true,
@@ -2651,7 +2651,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/1770309?v=4",
       "profile": "https://github.com/stoyandimov",
       "contributions": [
-        "doc"
+        "doc",
+        "code"
       ]
     },
     {
@@ -2671,7 +2672,152 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "fuzl-llc",
+      "name": "Brent",
+      "avatar_url": "https://avatars.githubusercontent.com/u/62618663?v=4",
+      "profile": "https://github.com/fuzl-llc",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "tbolon",
+      "name": "Thomas Bolon",
+      "avatar_url": "https://avatars.githubusercontent.com/u/127185?v=4",
+      "profile": "https://github.com/tbolon",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "rros",
+      "name": "Robert Ros",
+      "avatar_url": "https://avatars.githubusercontent.com/u/279664?v=4",
+      "profile": "https://www.robertros.nl/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "0liver",
+      "name": "0liver",
+      "avatar_url": "https://avatars.githubusercontent.com/u/164360?v=4",
+      "profile": "https://github.com/0liver",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "al3xjohnson",
+      "name": "Alex Johnson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5759745?v=4",
+      "profile": "https://github.com/al3xjohnson",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "derandre84",
+      "name": "André Göpel",
+      "avatar_url": "https://avatars.githubusercontent.com/u/22834588?v=4",
+      "profile": "https://github.com/derandre84",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "wAsnk",
+      "name": "Krisztián Németh",
+      "avatar_url": "https://avatars.githubusercontent.com/u/19938236?v=4",
+      "profile": "https://github.com/wAsnk",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "BinderDyn",
+      "name": "Marvin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/43495737?v=4",
+      "profile": "https://github.com/BinderDyn",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "dministro",
+      "name": "József Horváth",
+      "avatar_url": "https://avatars.githubusercontent.com/u/15349881?v=4",
+      "profile": "https://github.com/dministro",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "brutoledo",
+      "name": "Bruno Toledo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5890282?v=4",
+      "profile": "https://github.com/brutoledo",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "dannyd89",
+      "name": "Daniel Draghici",
+      "avatar_url": "https://avatars.githubusercontent.com/u/15252548?v=4",
+      "profile": "https://github.com/dannyd89",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "ludovic-th",
+      "name": "ludovic-th",
+      "avatar_url": "https://avatars.githubusercontent.com/u/65158865?v=4",
+      "profile": "https://github.com/ludovic-th",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "emrahtokalak",
+      "name": "Emrah Tokalak",
+      "avatar_url": "https://avatars.githubusercontent.com/u/90242?v=4",
+      "profile": "http://emrahtokalak.com/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "vjacquet",
+      "name": "vjacquet",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6363920?v=4",
+      "profile": "https://github.com/vjacquet",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "yaricrolletservico",
+      "name": "yaricrolletservico",
+      "avatar_url": "https://avatars.githubusercontent.com/u/101557629?v=4",
+      "profile": "https://github.com/yaricrolletservico",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "viktoriamagyar",
+      "name": "Viktória Magyar",
+      "avatar_url": "https://avatars.githubusercontent.com/u/84029837?v=4",
+      "profile": "https://github.com/viktoriamagyar",
+      "contributions": [
+        "eventOrganizing"
+      ]
     }
   ],
-  "skipCi": true
+  "skipCi": true,
+  "commitType": "docs"
 }

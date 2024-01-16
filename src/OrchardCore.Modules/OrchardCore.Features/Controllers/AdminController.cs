@@ -12,7 +12,6 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Features.Services;
 using OrchardCore.Features.ViewModels;
 using OrchardCore.Routing;
@@ -24,33 +23,34 @@ namespace OrchardCore.Features.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
-        private readonly INotifier _notifier;
         private readonly IExtensionManager _extensionManager;
         private readonly IShellFeaturesManager _shellFeaturesManager;
-        private readonly IStringLocalizer S;
         private readonly AdminOptions _adminOptions;
-        private readonly IHtmlLocalizer H;
+        private readonly INotifier _notifier;
+
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
 
         public AdminController(
-            IExtensionManager extensionManager,
-            IHtmlLocalizer<AdminController> localizer,
-            IShellFeaturesManager shellFeaturesManager,
             IAuthorizationService authorizationService,
             IShellHost shellHost,
             ShellSettings shellSettings,
+            IExtensionManager extensionManager,
+            IShellFeaturesManager shellFeaturesManager,
+            IOptions<AdminOptions> adminOptions,
             INotifier notifier,
             IStringLocalizer<AdminController> stringLocalizer,
-            IOptions<AdminOptions> adminOptions)
+            IHtmlLocalizer<AdminController> htmlLocalizer)
         {
             _authorizationService = authorizationService;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
-            _notifier = notifier;
             _extensionManager = extensionManager;
             _shellFeaturesManager = shellFeaturesManager;
-            H = localizer;
-            S = stringLocalizer;
             _adminOptions = adminOptions.Value;
+            _notifier = notifier;
+            S = stringLocalizer;
+            H = htmlLocalizer;
         }
 
         public async Task<ActionResult> Features(string tenant)
@@ -178,11 +178,11 @@ namespace OrchardCore.Features.Controllers
 
         private async Task ExecuteAsync(string tenant, Func<FeatureService, ShellSettings, bool, Task> action)
         {
-            if (_shellSettings.IsDefaultShell()
-                && !String.IsNullOrWhiteSpace(tenant)
-                && _shellHost.TryGetSettings(tenant, out var settings)
-                && !settings.IsDefaultShell()
-                && settings.State == TenantState.Running)
+            if (_shellSettings.IsDefaultShell() &&
+                !string.IsNullOrWhiteSpace(tenant) &&
+                _shellHost.TryGetSettings(tenant, out var settings) &&
+                !settings.IsDefaultShell() &&
+                settings.IsRunning())
             {
                 // At this point, we know that this request is being executed from the Default tenant.
                 // Also, we were able to find a matching and running tenant that isn't the Default one.
@@ -213,7 +213,7 @@ namespace OrchardCore.Features.Controllers
 
             ShellSettings settings = null;
 
-            if (!String.IsNullOrWhiteSpace(tenant))
+            if (!string.IsNullOrWhiteSpace(tenant))
             {
                 _shellHost.TryGetSettings(tenant, out settings);
             }
@@ -223,7 +223,7 @@ namespace OrchardCore.Features.Controllers
                 return Url.Action(nameof(Features), new { tenant });
             }
 
-            if ((settings == null || !settings.IsDefaultShell()) && featureId == FeaturesConstants.FeatureId)
+            if (!settings.IsDefaultShell() && featureId == FeaturesConstants.FeatureId)
             {
                 return Url.Content("~/" + _adminOptions.AdminUrlPrefix);
             }

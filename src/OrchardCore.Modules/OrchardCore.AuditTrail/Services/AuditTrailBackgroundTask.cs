@@ -39,7 +39,7 @@ namespace OrchardCore.AuditTrail.Services
 
                 logger.LogDebug("Starting Audit Trail trimming.");
                 var deletedEvents = await auditTrailManager.TrimEventsAsync(TimeSpan.FromDays(settings.RetentionDays));
-                logger.LogDebug("Audit Trail trimming completed. {0} events were deleted.", deletedEvents);
+                logger.LogDebug("Audit Trail trimming completed. {EventCount} events were deleted.", deletedEvents);
                 settings.LastRunUtc = clock.UtcNow;
 
                 var container = await siteService.LoadSiteSettingsAsync();

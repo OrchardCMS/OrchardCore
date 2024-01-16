@@ -15,8 +15,8 @@ namespace OrchardCore.Apis.GraphQL.Services
     {
         private readonly IEnumerable<ISchemaBuilder> _schemaBuilders;
         private readonly IServiceProvider _serviceProvider;
-        private readonly SemaphoreSlim _schemaGenerationSemaphore = new SemaphoreSlim(1, 1);
-        private readonly ConcurrentDictionary<ISchemaBuilder, string> _identifiers = new ConcurrentDictionary<ISchemaBuilder, string>();
+        private readonly SemaphoreSlim _schemaGenerationSemaphore = new(1, 1);
+        private readonly ConcurrentDictionary<ISchemaBuilder, string> _identifiers = new();
 
         private ISchema _schema;
 
@@ -86,8 +86,8 @@ namespace OrchardCore.Apis.GraphQL.Services
                 {
                     var identifier = await builder.GetIdentifierAsync();
 
-                    // null being a valid value not yet updated.
-                    if (identifier != String.Empty)
+                    // Null being a valid value not yet updated.
+                    if (identifier != string.Empty)
                     {
                         _identifiers[builder] = identifier;
                     }

@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <None Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="..\..\src\OrchardCore.Cms.Web\NLog.config" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\src\OrchardCore.Cms.Web\*.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\src\OrchardCore.Cms.Web\wwwroot\**\*" Link="wwwroot\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
@@ -24,6 +23,7 @@
     <None Remove="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe2.json" />
     <None Remove="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe3.json" />
     <None Remove="Modules\OrchardCore.OpenId\RecipeFiles\scope-recipe.json" />
+    <None Remove="NLog.config" />
     <None Remove="Recipes\RecipeFiles\recipe1.json" />
     <None Remove="Recipes\RecipeFiles\recipe2.json" />
     <None Remove="Recipes\RecipeFiles\recipe3.json" />
@@ -33,16 +33,21 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Localization\PoFiles\*.po" />
+    <Content Include="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <EmbeddedResource Include="Apis\Lucene\Recipes\luceneQueryTest.json" />
     <EmbeddedResource Include="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe3.json" />
     <EmbeddedResource Include="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe2.json" />
     <EmbeddedResource Include="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe1.json" />
     <EmbeddedResource Include="Modules\OrchardCore.OpenId\RecipeFiles\scope-recipe.json" />
-    <EmbeddedResource Include="Recipes\RecipeFiles\recipe5.json" />
-    <EmbeddedResource Include="Recipes\RecipeFiles\recipe4.json" />
     <EmbeddedResource Include="Recipes\RecipeFiles\recipe1.json" />
     <EmbeddedResource Include="Recipes\RecipeFiles\recipe2.json" />
     <EmbeddedResource Include="Recipes\RecipeFiles\recipe3.json" />
-    <EmbeddedResource Include="Apis\Lucene\Recipes\luceneQueryTest.json" />
+    <EmbeddedResource Include="Recipes\RecipeFiles\recipe4.json" />
+    <EmbeddedResource Include="Recipes\RecipeFiles\recipe5.json" />
   </ItemGroup>
 
   <ItemGroup>

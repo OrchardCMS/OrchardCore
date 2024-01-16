@@ -24,7 +24,7 @@ namespace OrchardCore.Localization
 
             public static NullLocalizer Instance { get; } = new NullLocalizer();
 
-            public LocalizedString this[string name] => new LocalizedString(name, name, false);
+            public LocalizedString this[string name] => new(name, name, false);
 
             public LocalizedString this[string name, params object[] arguments]
             {
@@ -41,7 +41,7 @@ namespace OrchardCore.Localization
                         Array.Copy(pluralArgument.Arguments, 0, arguments, 1, pluralArgument.Arguments.Length);
                     }
 
-                    translation = String.Format(translation, arguments);
+                    translation = string.Format(translation, arguments);
 
                     return new LocalizedString(name, translation, false);
                 }

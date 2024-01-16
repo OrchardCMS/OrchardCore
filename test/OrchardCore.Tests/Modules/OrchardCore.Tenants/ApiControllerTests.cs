@@ -109,11 +109,10 @@ public class ApiControllerTests
 
     private ApiController CreateController()
     {
-        var defaultShellSettings = new ShellSettings
-        {
-            Name = ShellHelper.DefaultShellName,
-            State = TenantState.Running
-        };
+        var defaultShellSettings = new ShellSettings()
+            .AsDefaultShell()
+            .AsRunning();
+
         var shellHostMock = new Mock<IShellHost>();
         shellHostMock
             .Setup(host => host.UpdateShellSettingsAsync(It.IsAny<ShellSettings>()))
