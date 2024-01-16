@@ -12,8 +12,6 @@ namespace OrchardCore.Users.Localization;
 [Feature("OrchardCore.Users.Localization")]
 public class Startup : StartupBase
 {
-    public override int ConfigureOrder => -200;
-
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IDisplayDriver<User>, UserLocalizationDisplayDriver>();
