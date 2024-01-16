@@ -74,12 +74,14 @@ namespace OrchardCore.Apis.GraphQL.Services
 
                 foreach (var type in serviceProvider.GetServices<IInputObjectGraphType>())
                 {
-                    schema.RegisterType(type);
+                    type.Initialize(schema);
+                    //schema.RegisterType(type);
                 }
 
                 foreach (var type in serviceProvider.GetServices<IObjectGraphType>())
                 {
-                    schema.RegisterType(type);
+                    type.Initialize(schema);
+                    //schema.RegisterType(type);
                 }
 
                 foreach (var builder in _schemaBuilders)
