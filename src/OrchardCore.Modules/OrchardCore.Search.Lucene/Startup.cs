@@ -1,5 +1,4 @@
 using System;
-using Fluid;
 using Lucene.Net.Analysis.Standard;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -30,7 +29,6 @@ using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Search.Lucene.Recipes;
 using OrchardCore.Search.Lucene.Services;
 using OrchardCore.Search.Lucene.Settings;
-using OrchardCore.Search.ViewModels;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
@@ -47,13 +45,6 @@ namespace OrchardCore.Search.Lucene
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<TemplateOptions>(o =>
-            {
-                o.MemberAccessStrategy.Register<SearchIndexViewModel>();
-                o.MemberAccessStrategy.Register<SearchFormViewModel>();
-                o.MemberAccessStrategy.Register<SearchResultsViewModel>();
-            });
-
             services.AddDataMigration<Migrations>();
             services.AddSingleton<LuceneIndexingState>();
             services.AddSingleton<LuceneIndexSettingsService>();
@@ -74,13 +65,12 @@ namespace OrchardCore.Search.Lucene
             services.AddScoped<IContentHandler, LuceneIndexingContentHandler>();
             services.AddLuceneQueries();
 
-            // LuceneQuerySource is registered for both the Queries module and local usage
+            // LuceneQuerySource is registered for both the Queries module and local usage.
             services.AddScoped<IQuerySource, LuceneQuerySource>();
             services.AddScoped<LuceneQuerySource>();
             services.AddRecipeExecutionStep<LuceneIndexStep>();
             services.AddRecipeExecutionStep<LuceneIndexRebuildStep>();
             services.AddRecipeExecutionStep<LuceneIndexResetStep>();
-            services.AddScoped<IAuthorizationHandler, LuceneAuthorizationHandler>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -131,6 +121,7 @@ namespace OrchardCore.Search.Lucene
         {
             services.AddScoped<ISearchService, LuceneSearchService>();
             services.AddScoped<IDisplayDriver<ISite>, LuceneSettingsDisplayDriver>();
+            services.AddScoped<IAuthorizationHandler, LuceneAuthorizationHandler>();
         }
     }
 
@@ -139,21 +130,10 @@ namespace OrchardCore.Search.Lucene
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, LuceneIndexDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<LuceneIndexDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, LuceneIndexDeploymentStepDriver>();
-
-            services.AddTransient<IDeploymentSource, LuceneSettingsDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<LuceneSettingsDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, LuceneSettingsDeploymentStepDriver>();
-
-            services.AddTransient<IDeploymentSource, LuceneIndexRebuildDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<LuceneIndexRebuildDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, LuceneIndexRebuildDeploymentStepDriver>();
-
-            services.AddTransient<IDeploymentSource, LuceneIndexResetDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<LuceneIndexResetDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, LuceneIndexResetDeploymentStepDriver>();
+            services.AddDeployment<LuceneIndexDeploymentSource, LuceneIndexDeploymentStep, LuceneIndexDeploymentStepDriver>();
+            services.AddDeployment<LuceneSettingsDeploymentSource, LuceneSettingsDeploymentStep, LuceneSettingsDeploymentStepDriver>();
+            services.AddDeployment<LuceneIndexRebuildDeploymentSource, LuceneIndexRebuildDeploymentStep, LuceneIndexRebuildDeploymentStepDriver>();
+            services.AddDeployment<LuceneIndexResetDeploymentSource, LuceneIndexResetDeploymentStep, LuceneIndexResetDeploymentStepDriver>();
         }
     }
 

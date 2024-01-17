@@ -1,8 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OrchardCore.BackgroundJobs;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
+using OrchardCore.Search.AzureAI.Deployment;
 using OrchardCore.Search.AzureAI.Models;
 using OrchardCore.Search.AzureAI.Services;
 
@@ -10,15 +14,21 @@ namespace OrchardCore.Search.AzureAI.Recipes;
 
 public class AzureAISearchIndexSettingsStep(
     AzureAISearchIndexManager indexManager,
+    AzureAIIndexDocumentManager azureAIIndexDocumentManager,
+    AzureAISearchIndexSettingsService azureAISearchIndexSettingsService,
     ILogger<AzureAISearchIndexSettingsStep> logger
         ) : IRecipeStepHandler
 {
+    public const string Name = "azureai-index-create";
+
     private readonly AzureAISearchIndexManager _indexManager = indexManager;
-    private readonly ILogger<AzureAISearchIndexSettingsStep> _logger = logger;
+    private readonly AzureAIIndexDocumentManager _azureAIIndexDocumentManager = azureAIIndexDocumentManager;
+    private readonly AzureAISearchIndexSettingsService _azureAISearchIndexSettingsService = azureAISearchIndexSettingsService;
+    private readonly ILogger _logger = logger;
 
     public async Task ExecuteAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, nameof(AzureAISearchIndexSettings), StringComparison.OrdinalIgnoreCase))
+        if (!string.Equals(context.Name, Name, StringComparison.OrdinalIgnoreCase))
         {
             return;
         }
@@ -27,6 +37,8 @@ public class AzureAISearchIndexSettingsStep(
         {
             return;
         }
+
+        var indexNames = new List<string>();
 
         foreach (var index in context.Step["Indices"])
         {
@@ -60,8 +72,24 @@ public class AzureAISearchIndexSettingsStep(
                     continue;
                 }
 
-                await _indexManager.CreateAsync(indexSettings);
+                indexSettings.SetLastTaskId(0);
+                indexSettings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(indexSettings.IndexedContentTypes);
+                indexSettings.IndexFullName = _indexManager.GetFullIndexName(indexSettings.IndexName);
+
+                if (await _indexManager.CreateAsync(indexSettings))
+                {
+                    await _azureAISearchIndexSettingsService.UpdateAsync(indexSettings);
+
+                    indexNames.Add(indexSettings.IndexName);
+                }
             }
         }
+
+        await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync(AzureAISearchIndexRebuildDeploymentSource.Name, async scope =>
+        {
+            var searchIndexingService = scope.ServiceProvider.GetService<AzureAISearchIndexingService>();
+
+            await searchIndexingService.ProcessContentItemsAsync(indexNames.ToArray());
+        });
     }
 }
