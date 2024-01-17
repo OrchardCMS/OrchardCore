@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -60,8 +61,9 @@ namespace OrchardCore.Media.Azure
             services.AddTransient<IConfigureOptions<MediaBlobStorageOptions>, MediaBlobStorageOptionsConfiguration>();
 
             // Only replace default implementation if options are valid.
-            var connectionString = _configuration[$"OrchardCore_Media_Azure:{nameof(MediaBlobStorageOptions.ConnectionString)}"];
-            var containerName = _configuration[$"OrchardCore_Media_Azure:{nameof(MediaBlobStorageOptions.ContainerName)}"];
+            var section = _configuration.GetSection("OrchardCore_Media_Azure");
+            var connectionString = section.GetValue<string>(nameof(MediaBlobStorageOptions.ConnectionString));
+            var containerName = section.GetValue<string>(nameof(MediaBlobStorageOptions.ContainerName));
 
             if (CheckOptions(connectionString, containerName, _logger))
             {
@@ -178,8 +180,9 @@ namespace OrchardCore.Media.Azure
             services.AddTransient<IConfigureOptions<AzureBlobStorageCacheOptions>, AzureBlobStorageCacheOptionsConfiguration>();
 
             // Only replace default implementation if options are valid.
-            var connectionString = _configuration[$"OrchardCore_Media_Azure_ImageSharp_Cache:{nameof(ImageSharpImageCacheOptions.ConnectionString)}"];
-            var containerName = _configuration[$"OrchardCore_Media_Azure_ImageSharp_Cache:{nameof(ImageSharpImageCacheOptions.ContainerName)}"];
+            var section = _configuration.GetSection("OrchardCore_Media_Azure_ImageSharp_Cache");
+            var connectionString = section.GetValue<string>(nameof(MediaBlobStorageOptions.ConnectionString));
+            var containerName = section.GetValue<string>(nameof(MediaBlobStorageOptions.ContainerName));
 
             if (!CheckOptions(connectionString, containerName))
             {
