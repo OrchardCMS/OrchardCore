@@ -1,7 +1,5 @@
 name: Monthly Issue and Pull Request Metrics
 on:
-  pull_request:
-    branches: [ main, release/** ]
   workflow_dispatch:
   schedule:
     # Run on the first day of every month at 2:19 AM UTC.
