@@ -13,7 +13,6 @@ internal class ImageSharpImageCacheOptionsConfiguration : IConfigureOptions<Imag
     private readonly IShellConfiguration _shellConfiguration;
     private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
-    private readonly FluidParserHelper<ImageSharpImageCacheOptions> _fluidParserHelper;
 
     public ImageSharpImageCacheOptionsConfiguration(
         IShellConfiguration shellConfiguration,
@@ -23,7 +22,6 @@ internal class ImageSharpImageCacheOptionsConfiguration : IConfigureOptions<Imag
         _shellConfiguration = shellConfiguration;
         _shellSettings = shellSettings;
         _logger = logger;
-        _fluidParserHelper = new(shellSettings);
     }
 
     public void Configure(ImageSharpImageCacheOptions options)
@@ -37,8 +35,10 @@ internal class ImageSharpImageCacheOptionsConfiguration : IConfigureOptions<Imag
 
         try
         {
+            var fluidParserHelper = new FluidParserHelper<ImageSharpImageCacheOptions>(_shellSettings);
+
             // Container name must be lowercase.
-            options.ContainerName = _fluidParserHelper.ParseAndFormat(options.ContainerName).ToLower();
+            options.ContainerName = fluidParserHelper.ParseAndFormat(options.ContainerName).ToLower();
         }
         catch (Exception ex)
         {

@@ -13,7 +13,6 @@ namespace OrchardCore.Media.Azure.Services
         private readonly IShellConfiguration _shellConfiguration;
         private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
-        private readonly FluidParserHelper<MediaBlobStorageOptionsConfiguration> _fluidParserHelper;
 
         public MediaBlobStorageOptionsConfiguration(
             IShellConfiguration shellConfiguration,
@@ -24,7 +23,6 @@ namespace OrchardCore.Media.Azure.Services
             _shellConfiguration = shellConfiguration;
             _shellSettings = shellSettings;
             _logger = logger;
-            _fluidParserHelper = new(shellSettings);
         }
 
         public void Configure(MediaBlobStorageOptions options)
@@ -37,10 +35,12 @@ namespace OrchardCore.Media.Azure.Services
             options.CreateContainer = section.GetValue(nameof(options.CreateContainer), true);
             options.RemoveContainer = section.GetValue(nameof(options.RemoveContainer), false);
 
+            var fluidParserHelper = new FluidParserHelper<MediaBlobStorageOptionsConfiguration>(_shellSettings);
+
             try
             {
                 // Container name must be lowercase.
-                options.ContainerName = _fluidParserHelper.ParseAndFormat(options.ContainerName).ToLower();
+                options.ContainerName = fluidParserHelper.ParseAndFormat(options.ContainerName).ToLower();
             }
             catch (Exception e)
             {
@@ -50,7 +50,7 @@ namespace OrchardCore.Media.Azure.Services
 
             try
             {
-                options.BasePath = _fluidParserHelper.ParseAndFormat(options.BasePath);
+                options.BasePath = fluidParserHelper.ParseAndFormat(options.BasePath);
             }
             catch (Exception e)
             {
