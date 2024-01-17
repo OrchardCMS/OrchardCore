@@ -28,12 +28,7 @@ namespace OrchardCore.Media.Azure.Services
         public void Configure(MediaBlobStorageOptions options)
         {
             var section = _shellConfiguration.GetSection("OrchardCore_Media_Azure");
-
-            options.BasePath = section.GetValue(nameof(options.BasePath), string.Empty);
-            options.ContainerName = section.GetValue(nameof(options.ContainerName), string.Empty);
-            options.ConnectionString = section.GetValue(nameof(options.ConnectionString), string.Empty);
-            options.CreateContainer = section.GetValue(nameof(options.CreateContainer), true);
-            options.RemoveContainer = section.GetValue(nameof(options.RemoveContainer), false);
+            section.Bind(options);
 
             var fluidParserHelper = new FluidParserHelper<MediaBlobStorageOptionsConfiguration>(_shellSettings);
 

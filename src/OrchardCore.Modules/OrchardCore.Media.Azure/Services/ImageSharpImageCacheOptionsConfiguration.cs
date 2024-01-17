@@ -27,11 +27,7 @@ internal class ImageSharpImageCacheOptionsConfiguration : IConfigureOptions<Imag
     public void Configure(ImageSharpImageCacheOptions options)
     {
         var section = _shellConfiguration.GetSection("OrchardCore_Media_Azure_ImageSharp_Cache");
-
-        options.ContainerName = section.GetValue(nameof(options.ContainerName), string.Empty);
-        options.ConnectionString = section.GetValue(nameof(options.ConnectionString), string.Empty);
-        options.CreateContainer = section.GetValue(nameof(options.CreateContainer), true);
-        options.RemoveContainer = section.GetValue(nameof(options.RemoveContainer), false);
+        section.Bind(options);
 
         try
         {

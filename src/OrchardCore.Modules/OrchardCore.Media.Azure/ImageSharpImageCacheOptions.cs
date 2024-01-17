@@ -15,7 +15,7 @@ public class ImageSharpImageCacheOptions
     /// <summary>
     /// Create blob container on startup if it does not exist.
     /// </summary>
-    public bool CreateContainer { get; set; }
+    public bool CreateContainer { get; set; } = true;
 
     /// <summary>
     /// Remove blob container on tenant removal if it exists.
