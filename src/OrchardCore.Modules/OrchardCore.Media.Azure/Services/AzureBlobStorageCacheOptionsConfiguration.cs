@@ -7,16 +7,16 @@ namespace OrchardCore.Media.Azure.Services;
 // configuration.
 internal class AzureBlobStorageCacheOptionsConfiguration : IConfigureOptions<AzureBlobStorageCacheOptions>
 {
-    private readonly IOptions<ImageSharpImageCacheOptions> _options;
+    private readonly ImageSharpImageCacheOptions _options;
 
     public AzureBlobStorageCacheOptionsConfiguration(IOptions<ImageSharpImageCacheOptions> options)
     {
-        _options = options;
+        _options = options.Value;
     }
 
     public void Configure(AzureBlobStorageCacheOptions options)
     {
-        options.ConnectionString = _options.Value.ConnectionString;
-        options.ContainerName = _options.Value.ContainerName;
+        options.ConnectionString = _options.ConnectionString;
+        options.ContainerName = _options.ContainerName;
     }
 }
