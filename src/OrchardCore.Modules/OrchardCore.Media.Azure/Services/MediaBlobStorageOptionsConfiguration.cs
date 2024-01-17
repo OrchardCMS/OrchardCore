@@ -35,7 +35,7 @@ namespace OrchardCore.Media.Azure.Services
             try
             {
                 // Container name must be lowercase.
-                options.ContainerName = fluidParserHelper.ParseAndFormat(options.ContainerName).ToLower();
+                options.ContainerName = fluidParserHelper.ParseAndFormat(options.ContainerName).ToLowerInvariant();
             }
             catch (Exception e)
             {

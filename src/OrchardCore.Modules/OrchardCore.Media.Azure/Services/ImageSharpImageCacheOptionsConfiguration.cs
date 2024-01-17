@@ -34,7 +34,7 @@ internal class ImageSharpImageCacheOptionsConfiguration : IConfigureOptions<Imag
             var fluidParserHelper = new FluidParserHelper<ImageSharpImageCacheOptions>(_shellSettings);
 
             // Container name must be lowercase.
-            options.ContainerName = fluidParserHelper.ParseAndFormat(options.ContainerName).ToLower();
+            options.ContainerName = fluidParserHelper.ParseAndFormat(options.ContainerName).ToLowerInvariant();
         }
         catch (Exception ex)
         {
