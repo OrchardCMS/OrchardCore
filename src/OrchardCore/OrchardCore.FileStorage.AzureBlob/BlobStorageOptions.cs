@@ -16,5 +16,14 @@ namespace OrchardCore.FileStorage.AzureBlob
         /// The base directory path to use inside the container for this stores contents.
         /// </summary>
         public string BasePath { get; set; } = "";
+
+        /// <summary>
+        /// Returns a value indicating whether the basic state of the configuration is valid.
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool IsValid()
+        {
+            return !string.IsNullOrEmpty(ConnectionString) && !string.IsNullOrEmpty(ContainerName);
+        }
     }
 }

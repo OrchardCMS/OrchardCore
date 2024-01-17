@@ -35,8 +35,7 @@ namespace OrchardCore.Media.Azure.Services
         {
             // Only create container if options are valid.
             if (_shellSettings.IsUninitialized() ||
-                string.IsNullOrEmpty(_options.ConnectionString) ||
-                string.IsNullOrEmpty(_options.ContainerName) ||
+                !_options.IsValid() ||
                 !_options.CreateContainer
                 )
             {
@@ -62,8 +61,7 @@ namespace OrchardCore.Media.Azure.Services
         {
             // Only remove container if options are valid.
             if (!_options.RemoveContainer ||
-                string.IsNullOrEmpty(_options.ConnectionString) ||
-                string.IsNullOrEmpty(_options.ContainerName))
+                !_options.IsValid())
             {
                 return;
             }

@@ -21,4 +21,13 @@ public class ImageSharpImageCacheOptions
     /// Remove blob container on tenant removal if it exists.
     /// </summary>
     public bool RemoveContainer { get; set; }
+
+    /// <summary>
+    /// Returns a value indicating whether the basic state of the configuration is valid.
+    /// </summary>
+    /// <returns></returns>
+    public bool IsValid()
+    {
+        return !string.IsNullOrEmpty(ConnectionString) && !string.IsNullOrEmpty(ContainerName);
+    }
 }

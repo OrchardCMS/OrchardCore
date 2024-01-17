@@ -35,8 +35,7 @@ internal class ImageSharpImageCacheTenantEvents : ModularTenantEvents
     {
         // Only create container if options are valid.
         if (_shellSettings.IsUninitialized() ||
-            string.IsNullOrEmpty(_options.ConnectionString) ||
-            string.IsNullOrEmpty(_options.ContainerName) ||
+            !_options.IsValid() ||
             !_options.CreateContainer)
         {
             return;
@@ -61,8 +60,7 @@ internal class ImageSharpImageCacheTenantEvents : ModularTenantEvents
     {
         // Only remove container if options are valid.
         if (!_options.RemoveContainer ||
-            string.IsNullOrEmpty(_options.ConnectionString) ||
-            string.IsNullOrEmpty(_options.ContainerName))
+            !_options.IsValid())
         {
             return;
         }
