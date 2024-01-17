@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,14 +8,15 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
-using OrchardCore.Settings;
 using OrchardCore.Shortcodes.Models;
 using OrchardCore.Shortcodes.Services;
 using OrchardCore.Shortcodes.ViewModels;
@@ -27,34 +27,40 @@ namespace OrchardCore.Shortcodes.Controllers
     [Feature("OrchardCore.Shortcodes.Templates")]
     public class AdminController : Controller
     {
+        private const string _optionsSearch = "Options.Search";
+
         private readonly IAuthorizationService _authorizationService;
         private readonly ShortcodeTemplatesManager _shortcodeTemplatesManager;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
-        private readonly ISiteService _siteService;
+        private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
-        private readonly dynamic New;
+        private readonly IShapeFactory _shapeFactory;
+        private readonly IHtmlSanitizerService _htmlSanitizerService;
+
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
 
         public AdminController(
             IAuthorizationService authorizationService,
             ShortcodeTemplatesManager shortcodeTemplatesManager,
             ILiquidTemplateManager liquidTemplateManager,
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             INotifier notifier,
             IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
-            IHtmlLocalizer<AdminController> htmlLocalizer
+            IHtmlLocalizer<AdminController> htmlLocalizer,
+            IHtmlSanitizerService htmlSanitizerService
             )
         {
             _authorizationService = authorizationService;
             _shortcodeTemplatesManager = shortcodeTemplatesManager;
             _liquidTemplateManager = liquidTemplateManager;
-            _siteService = siteService;
+            _pagerOptions = pagerOptions.Value;
             _notifier = notifier;
-            New = shapeFactory;
+            _shapeFactory = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
+            _htmlSanitizerService = htmlSanitizerService;
         }
 
         public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
@@ -64,13 +70,12 @@ namespace OrchardCore.Shortcodes.Controllers
                 return Forbid();
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
             var shortcodeTemplatesDocument = await _shortcodeTemplatesManager.GetShortcodeTemplatesDocumentAsync();
 
             var shortcodeTemplates = shortcodeTemplatesDocument.ShortcodeTemplates.ToList();
 
-            if (!String.IsNullOrWhiteSpace(options.Search))
+            if (!string.IsNullOrWhiteSpace(options.Search))
             {
                 shortcodeTemplates = shortcodeTemplates.Where(x => x.Key.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
@@ -81,7 +86,15 @@ namespace OrchardCore.Shortcodes.Controllers
                 .Skip(pager.GetStartIndex())
                 .Take(pager.PageSize).ToList();
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
+            // Maintain previous route data when generating page links.
+            var routeData = new RouteData();
+
+            if (!string.IsNullOrEmpty(options.Search))
+            {
+                routeData.Values.TryAdd(_optionsSearch, options.Search);
+            }
+
+            var pagerShape = await _shapeFactory.PagerAsync(pager, count, routeData);
 
             var model = new ShortcodeTemplateIndexViewModel
             {
@@ -90,23 +103,23 @@ namespace OrchardCore.Shortcodes.Controllers
                 Pager = pagerShape
             };
 
-            model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
-            };
+            model.Options.ContentsBulkAction =
+            [
+                new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
+            ];
 
-            return View("Index", model);
+            return View(model);
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(ShortcodeTemplateIndexViewModel model)
-        {
-            return RedirectToAction(nameof(Index), new RouteValueDictionary {
-                { "Options.Search", model.Options.Search }
+            => RedirectToAction(nameof(Index), new RouteValueDictionary
+            {
+                { _optionsSearch, model.Options.Search }
             });
-        }
 
-        public async Task<IActionResult> Create(ShortcodeTemplateViewModel model)
+        public async Task<IActionResult> Create()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
             {
@@ -116,7 +129,7 @@ namespace OrchardCore.Shortcodes.Controllers
             return View(new ShortcodeTemplateViewModel());
         }
 
-        [HttpPost, ActionName("Create")]
+        [HttpPost, ActionName(nameof(Create))]
         public async Task<IActionResult> CreatePost(ShortcodeTemplateViewModel model, string submit)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
@@ -126,7 +139,7 @@ namespace OrchardCore.Shortcodes.Controllers
 
             if (ModelState.IsValid)
             {
-                if (String.IsNullOrWhiteSpace(model.Name))
+                if (string.IsNullOrWhiteSpace(model.Name))
                 {
                     ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name is mandatory."]);
                 }
@@ -144,13 +157,13 @@ namespace OrchardCore.Shortcodes.Controllers
                     }
                 }
 
-                if (String.IsNullOrEmpty(model.Content))
+                if (string.IsNullOrEmpty(model.Content))
                 {
                     ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template content is mandatory."]);
                 }
                 else if (!_liquidTemplateManager.Validate(model.Content, out var errors))
                 {
-                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", String.Join(" ", errors)]);
+                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
                 }
             }
 
@@ -160,7 +173,7 @@ namespace OrchardCore.Shortcodes.Controllers
                 {
                     Content = model.Content,
                     Hint = model.Hint,
-                    Usage = model.Usage,
+                    Usage = _htmlSanitizerService.Sanitize(model.Usage),
                     DefaultValue = model.DefaultValue,
                     Categories = JsonConvert.DeserializeObject<string[]>(model.SelectedCategories)
                 };
@@ -171,10 +184,8 @@ namespace OrchardCore.Shortcodes.Controllers
                 {
                     return RedirectToAction(nameof(Edit), new { name = model.Name });
                 }
-                else
-                {
-                    return RedirectToAction(nameof(Index));
-                }
+
+                return RedirectToAction(nameof(Index));
             }
 
             // If we got this far, something failed, redisplay form
@@ -190,12 +201,10 @@ namespace OrchardCore.Shortcodes.Controllers
 
             var shortcodeTemplatesDocument = await _shortcodeTemplatesManager.GetShortcodeTemplatesDocumentAsync();
 
-            if (!shortcodeTemplatesDocument.ShortcodeTemplates.ContainsKey(name))
+            if (!shortcodeTemplatesDocument.ShortcodeTemplates.TryGetValue(name, out var template))
             {
                 return RedirectToAction(nameof(Create), new { name });
             }
-
-            var template = shortcodeTemplatesDocument.ShortcodeTemplates[name];
 
             var model = new ShortcodeTemplateViewModel
             {
@@ -227,7 +236,7 @@ namespace OrchardCore.Shortcodes.Controllers
 
             if (ModelState.IsValid)
             {
-                if (String.IsNullOrWhiteSpace(model.Name))
+                if (string.IsNullOrWhiteSpace(model.Name))
                 {
                     ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name is mandatory."]);
                 }
@@ -235,19 +244,19 @@ namespace OrchardCore.Shortcodes.Controllers
                 {
                     ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name contains invalid characters."]);
                 }
-                else if (!String.Equals(model.Name, sourceName, StringComparison.OrdinalIgnoreCase)
+                else if (!string.Equals(model.Name, sourceName, StringComparison.OrdinalIgnoreCase)
                     && shortcodeTemplatesDocument.ShortcodeTemplates.ContainsKey(model.Name))
                 {
                     ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["A template with the same name already exists."]);
                 }
 
-                if (String.IsNullOrEmpty(model.Content))
+                if (string.IsNullOrEmpty(model.Content))
                 {
                     ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template content is mandatory."]);
                 }
                 else if (!_liquidTemplateManager.Validate(model.Content, out var errors))
                 {
-                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", String.Join(" ", errors)]);
+                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
                 }
             }
 
@@ -257,7 +266,7 @@ namespace OrchardCore.Shortcodes.Controllers
                 {
                     Content = model.Content,
                     Hint = model.Hint,
-                    Usage = model.Usage,
+                    Usage = _htmlSanitizerService.Sanitize(model.Usage),
                     DefaultValue = model.DefaultValue,
                     Categories = JsonConvert.DeserializeObject<string[]>(model.SelectedCategories)
                 };
@@ -270,13 +279,15 @@ namespace OrchardCore.Shortcodes.Controllers
                 {
                     return RedirectToAction(nameof(Edit), new { name = model.Name });
                 }
-                else
-                {
-                    return RedirectToAction(nameof(Index));
-                }
+
+                return RedirectToAction(nameof(Index));
             }
 
             // If we got this far, something failed, redisplay form
+
+            // If the name was changed or removed, prevent a 404 or a failure on the next post.
+            model.Name = sourceName;
+
             return View(model);
         }
 
@@ -297,14 +308,14 @@ namespace OrchardCore.Shortcodes.Controllers
 
             await _shortcodeTemplatesManager.RemoveShortcodeTemplateAsync(name);
 
-            _notifier.Success(H["Shortcode template deleted successfully."]);
+            await _notifier.SuccessAsync(H["Shortcode template deleted successfully."]);
 
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.BulkAction")]
-        public async Task<ActionResult> IndexPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
+        public async Task<ActionResult> IndexPost(ContentOptions options, IEnumerable<string> itemIds)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
             {
@@ -324,10 +335,10 @@ namespace OrchardCore.Shortcodes.Controllers
                         {
                             await _shortcodeTemplatesManager.RemoveShortcodeTemplateAsync(item.Key);
                         }
-                        _notifier.Success(H["Shortcode templates successfully removed."]);
+                        await _notifier.SuccessAsync(H["Shortcode templates successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(options.BulkAction.ToString(), "Invalid bulk action.");
                 }
             }
 

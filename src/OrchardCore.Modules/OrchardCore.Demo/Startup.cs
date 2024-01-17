@@ -1,4 +1,5 @@
 using System;
+using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -92,7 +93,7 @@ namespace OrchardCore.Demo
             services.AddShapeAttributes<DemoShapeProvider>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IContentDisplayDriver, TestContentElementDisplayDriver>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddContentPart<TestContentPartA>();
             services.AddScoped<IUserClaimsProvider, UserProfileClaimsProvider>();
@@ -121,6 +122,11 @@ namespace OrchardCore.Demo
             });
 
             services.AddTagHelpers(typeof(BazTagHelper).Assembly);
+
+            services.Configure<TemplateOptions>(o =>
+            {
+                o.MemberAccessStrategy.Register<OrchardCore.Demo.ViewModels.TodoViewModel>();
+            });
         }
     }
 }

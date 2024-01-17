@@ -15,7 +15,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
     public class FluidTagHelper
     {
-        public static Dictionary<string, string> DefaultArgumentsMapping = new Dictionary<string, string>();
+        public static readonly Dictionary<string, string> DefaultArgumentsMapping = new();
         private static long _uniqueId;
 
         public static ValueTask<Completion> WriteArgumentsTagHelperAsync(List<FilterArgument> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
@@ -92,6 +92,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                     identifier,
                     outputAttributes, (_, e) => Task.FromResult(new DefaultTagHelperContent().AppendHtml(content))
                 );
+                tagHelperOutput.Content.AppendHtml(content);
             }
             else
             {
@@ -102,6 +103,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             }
 
             await tagHelper.ProcessAsync(tagHelperContext, tagHelperOutput);
+            tagHelperOutput.WriteTo(writer, (HtmlEncoder)encoder);
 
             return Completion.Normal;
         }

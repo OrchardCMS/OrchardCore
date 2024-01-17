@@ -17,6 +17,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.ConfigureHtmlSanitizer((sanitizer) =>
                 {
                     sanitizer.AllowedAttributes.Add("class");
+                    sanitizer.AllowedTags.Remove("form");
                 });
 
                 services.AddSingleton<IHtmlSanitizerService, HtmlSanitizerService>();

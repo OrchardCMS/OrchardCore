@@ -11,6 +11,11 @@
     transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
 }
 
+[dir=rtl] .left-sidebar-compact #graphiql {
+    right: 48px;
+    transition: right 0.2s ease-in-out, width 0.2s ease-in-out;
+}
+
 .graphiql-container .docExplorerShow {
     white-space: nowrap;
 }

@@ -27,7 +27,7 @@ namespace OrchardCore.Contents.Liquid
             if (input.Type == FluidValues.Array)
             {
                 var contentItems = new List<ContentItem>();
-                foreach (var objValue in input.Enumerate())
+                foreach (var objValue in input.Enumerate(ctx))
                 {
                     var contentItem = GetContentItem(objValue);
                     if (contentItem != null)
@@ -51,8 +51,8 @@ namespace OrchardCore.Contents.Liquid
                     aspects.Add(await _contentManager.PopulateAspectAsync<FullTextAspect>(contentItem));
                 }
 
-                // When returning segments seperate them so multiple segments are indexed individually.
-                return new ArrayValue(aspects.SelectMany(x => x.Segments).Where(x => !String.IsNullOrEmpty(x)).Select(x => new StringValue(x + ' ')));
+                // When returning segments separate them so multiple segments are indexed individually.
+                return new ArrayValue(aspects.SelectMany(x => x.Segments).Where(x => !string.IsNullOrEmpty(x)).Select(x => new StringValue(x + ' ')));
             }
             else
             {
@@ -66,7 +66,7 @@ namespace OrchardCore.Contents.Liquid
                 var fullTextAspect = await _contentManager.PopulateAspectAsync<FullTextAspect>(contentItem);
 
                 // Remove empty strings as display text is often unused in contained content items.
-                return new ArrayValue(fullTextAspect.Segments.Where(x => !String.IsNullOrEmpty(x)).Select(x => new StringValue(x)));
+                return new ArrayValue(fullTextAspect.Segments.Where(x => !string.IsNullOrEmpty(x)).Select(x => new StringValue(x)));
             }
         }
 
@@ -74,7 +74,7 @@ namespace OrchardCore.Contents.Liquid
         {
             var obj = input.ToObjectValue();
 
-            if (!(obj is ContentItem contentItem))
+            if (obj is not ContentItem contentItem)
             {
                 contentItem = null;
 

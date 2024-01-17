@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\..\src\OrchardCore.Build\OrchardCore.Commons.props" />
+  <Import Project="..\..\..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.props" />
+
+  <PropertyGroup>
+    <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
+  </ItemGroup>
+
+  <Import Project="..\..\..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.targets" />
+  <Import Project="..\..\..\src\OrchardCore.Build\OrchardCore.Commons.targets" />
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>OrchardCore.Abstractions.Tests</_Parameter1>
+    </AssemblyAttribute>
+
+    <!-- Ctor arguments by position:
+    1: string id
+    , 2: string name
+    , 3: string category
+    , 4: string priString
+    , 5: string description
+    , 6: string author
+    , 7: string semVer
+    , 8: string website
+    , 9: string depString
+    , 10: string tagString
+    , 11: bool defaultTenant
+    , 12: bool alwaysEnabled
+    , 13: bool enabledByDependencyOnly
+    -->
+    <AssemblyAttribute Include="OrchardCore.Modules.Manifest.ModuleAttribute">
+      <_Parameter1>one</_Parameter1>
+      <_Parameter2>two</_Parameter2>
+      <_Parameter3>three</_Parameter3>
+      <_Parameter4>4</_Parameter4>
+      <_Parameter5>five</_Parameter5>
+      <_Parameter6>six</_Parameter6>
+      <_Parameter7>7.8.9</_Parameter7>
+      <_Parameter8>lorem://assyattrib.ipsum</_Parameter8>
+      <_Parameter9>nine;ten;eleven</_Parameter9>
+      <_Parameter10>ten;eleven;twelve</_Parameter10>
+      <_Parameter11>true</_Parameter11>
+      <_Parameter12>true</_Parameter12>
+      <_Parameter13>false</_Parameter13>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+</Project>

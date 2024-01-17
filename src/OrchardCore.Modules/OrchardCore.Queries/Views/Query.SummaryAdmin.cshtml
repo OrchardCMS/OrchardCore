@@ -1,9 +1,9 @@
 @model dynamic
 
-<div class="properties">
+<div class="w-100">
     @if (Model.Actions != null)
     {
-        <div class="related">
+        <div class="float-end">
             @await DisplayAsync(Model.Actions)
         </div>
     }

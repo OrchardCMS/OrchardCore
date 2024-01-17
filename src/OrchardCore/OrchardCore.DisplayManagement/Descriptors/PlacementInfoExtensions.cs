@@ -1,3 +1,4 @@
+using System;
 using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement.Descriptors
@@ -27,14 +28,17 @@ namespace OrchardCore.DisplayManagement.Descriptors
                 {
                     first.ShapeType = second.ShapeType;
                 }
+
                 if (!string.IsNullOrEmpty(second.Location))
                 {
                     first.Location = second.Location;
                 }
+
                 if (!string.IsNullOrEmpty(second.DefaultPosition))
                 {
                     first.DefaultPosition = second.DefaultPosition;
                 }
+
                 if (!string.IsNullOrEmpty(second.Source))
                 {
                     first.Source += "," + second.Source;
@@ -62,6 +66,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
             {
                 first.AddRange(second);
             }
+
             return first;
         }
     }

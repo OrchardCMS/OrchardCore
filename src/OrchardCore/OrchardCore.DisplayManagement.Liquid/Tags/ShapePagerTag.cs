@@ -14,12 +14,12 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
     public class ShapePagerTag
     {
-        private static readonly HashSet<string> _properties = new HashSet<string>
+        private static readonly HashSet<string> _properties = new()
         {
             "Id", "PreviousText", "NextText", "PreviousClass", "NextClass", "TagName", "ItemTagName"
         };
 
-        public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, List<FilterArgument>> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, List<FilterArgument>> arguments, TextWriter _1, TextEncoder _2, TemplateContext context)
         {
             var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue() as dynamic;
 
@@ -57,7 +57,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                         }
                         else if (itemClasses.Type == FluidValues.Array)
                         {
-                            foreach (var value in itemClasses.Enumerate())
+                            foreach (var value in itemClasses.Enumerate(context))
                             {
                                 objectValue.ItemClasses.Add(value.ToStringValue());
                             }
@@ -79,7 +79,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                         }
                         else if (classes.Type == FluidValues.Array)
                         {
-                            foreach (var value in classes.Enumerate())
+                            foreach (var value in classes.Enumerate(context))
                             {
                                 objectValue.Classes.Add(value.ToStringValue());
                             }

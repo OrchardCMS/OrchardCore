@@ -33,5 +33,10 @@ namespace OrchardCore.ContentManagement.Metadata.Settings
         {
             return builder.MergeSettings<ContentTypeSettings>(x => x.Stereotype = stereotype);
         }
+
+        public static ContentTypeDefinitionBuilder WithDescription(this ContentTypeDefinitionBuilder builder, string description)
+        {
+            return builder.MergeSettings<ContentTypeSettings>(x => x.Description = description);
+        }
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace OrchardCore.Environment.Cache
 {
-    // todo: does this belong in dynamic cache?
+    // Todo: does this belong in dynamic cache?
     public class CacheScopeManager : ICacheScopeManager
     {
         private readonly Stack<CacheContext> _scopes;
@@ -93,7 +93,7 @@ namespace OrchardCore.Environment.Cache
             }
         }
 
-        private void MergeCacheContexts(CacheContext into, CacheContext from)
+        private static void MergeCacheContexts(CacheContext into, CacheContext from)
         {
             into.AddContext(from.Contexts.ToArray());
             into.AddTag(from.Tags.ToArray());
@@ -117,7 +117,7 @@ namespace OrchardCore.Environment.Cache
             }
         }
 
-        private DateTimeOffset? GetMostRestrictiveDateTimeOffset(DateTimeOffset? a, DateTimeOffset? b)
+        private static DateTimeOffset? GetMostRestrictiveDateTimeOffset(DateTimeOffset? a, DateTimeOffset? b)
         {
             if (a.HasValue && b.HasValue)
             {
@@ -127,7 +127,7 @@ namespace OrchardCore.Environment.Cache
             return a ?? b;
         }
 
-        private TimeSpan? GetMostRestrictiveTimespan(TimeSpan? a, TimeSpan? b)
+        private static TimeSpan? GetMostRestrictiveTimespan(TimeSpan? a, TimeSpan? b)
         {
             if (a.HasValue && b.HasValue)
             {

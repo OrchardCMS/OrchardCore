@@ -19,22 +19,21 @@ namespace OrchardCore.Environment.Shell.Configuration
 
         public Task AddSourcesAsync(IConfigurationBuilder builder)
         {
-            builder.AddJsonFile(_tenants, optional: true);
+            builder.AddTenantJsonFile(_tenants, optional: true);
             return Task.CompletedTask;
         }
+
+        public Task AddSourcesAsync(string tenant, IConfigurationBuilder builder) => AddSourcesAsync(builder);
 
         public async Task SaveAsync(string tenant, IDictionary<string, string> data)
         {
             JObject tenantsSettings;
             if (File.Exists(_tenants))
             {
-                using (var file = File.OpenText(_tenants))
-                {
-                    using (var reader = new JsonTextReader(file))
-                    {
-                        tenantsSettings = await JObject.LoadAsync(reader);
-                    }
-                }
+                using var streamReader = File.OpenText(_tenants);
+                using var jsonReader = new JsonTextReader(streamReader);
+
+                tenantsSettings = await JObject.LoadAsync(jsonReader);
             }
             else
             {
@@ -45,7 +44,7 @@ namespace OrchardCore.Environment.Shell.Configuration
 
             foreach (var key in data.Keys)
             {
-                if (data[key] != null)
+                if (data[key] is not null)
                 {
                     settings[key] = data[key];
                 }
@@ -57,12 +56,29 @@ namespace OrchardCore.Environment.Shell.Configuration
 
             tenantsSettings[tenant] = settings;
 
-            using (var file = File.CreateText(_tenants))
+            using var streamWriter = File.CreateText(_tenants);
+            using var jsonWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.Indented };
+
+            await tenantsSettings.WriteToAsync(jsonWriter);
+        }
+
+        public async Task RemoveAsync(string tenant)
+        {
+            if (File.Exists(_tenants))
             {
-                using (var writer = new JsonTextWriter(file) { Formatting = Formatting.Indented })
+                JObject tenantsSettings;
+                using (var streamReader = File.OpenText(_tenants))
                 {
-                    await tenantsSettings.WriteToAsync(writer);
+                    using var jsonReader = new JsonTextReader(streamReader);
+                    tenantsSettings = await JObject.LoadAsync(jsonReader);
                 }
+
+                tenantsSettings.Remove(tenant);
+
+                using var streamWriter = File.CreateText(_tenants);
+                using var jsonWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.Indented };
+
+                await tenantsSettings.WriteToAsync(jsonWriter);
             }
         }
     }

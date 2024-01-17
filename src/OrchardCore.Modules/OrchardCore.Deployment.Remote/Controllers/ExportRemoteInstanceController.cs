@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
@@ -20,14 +21,14 @@ namespace OrchardCore.Deployment.Remote.Controllers
     [Admin]
     public class ExportRemoteInstanceController : Controller
     {
-        private static readonly HttpClient _httpClient = new HttpClient();
+        private static readonly HttpClient _httpClient = new();
 
         private readonly IDeploymentManager _deploymentManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
         private readonly RemoteInstanceService _service;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
 
         public ExportRemoteInstanceController(
             IAuthorizationService authorizationService,
@@ -46,7 +47,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Execute(int id, string remoteInstanceId, string returnUrl)
+        public async Task<IActionResult> Execute(long id, string remoteInstanceId, string returnUrl)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.Export))
             {
@@ -104,11 +105,11 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    _notifier.Success(H["Deployment executed successfully."]);
+                    await _notifier.SuccessAsync(H["Deployment executed successfully."]);
                 }
                 else
                 {
-                    _notifier.Error(H["An error occurred while sending the deployment to the remote instance: \"{0} ({1})\"", response.ReasonPhrase, (int)response.StatusCode]);
+                    await _notifier.ErrorAsync(H["An error occurred while sending the deployment to the remote instance: \"{0} ({1})\"", response.ReasonPhrase, (int)response.StatusCode]);
                 }
             }
             finally
@@ -118,7 +119,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             if (!string.IsNullOrEmpty(returnUrl))
             {
-                return LocalRedirect(returnUrl);
+                return this.LocalRedirect(returnUrl, true);
             }
 
             return RedirectToAction("Display", "DeploymentPlan", new { area = "OrchardCore.Deployment", id });

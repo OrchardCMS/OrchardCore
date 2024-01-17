@@ -2,9 +2,9 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;
-using OrchardCore.Users.Indexes;
 using YesSql;
 using YesSql.Filters.Query;
 using YesSql.Services;
@@ -17,7 +17,7 @@ namespace OrchardCore.Users.Services
         {
             builder
                 .WithNamedTerm("status", builder => builder
-                    .OneCondition<User>((val, query) =>
+                    .OneCondition((val, query) =>
                     {
                         if (Enum.TryParse<UsersFilter>(val, true, out var usersStatus))
                         {
@@ -43,24 +43,21 @@ namespace OrchardCore.Users.Services
                     })
                     .MapFrom<UserIndexOptions>((model) =>
                     {
-                        switch (model.Filter)
+                        return model.Filter switch
                         {
-                            case UsersFilter.Enabled:
-                                return (true, model.Filter.ToString());
-                            case UsersFilter.Disabled:
-                                return (true, model.Filter.ToString());
-                        }
-
-                        return (false, String.Empty);
+                            UsersFilter.Enabled => (true, model.Filter.ToString()),
+                            UsersFilter.Disabled => (true, model.Filter.ToString()),
+                            _ => (false, string.Empty)
+                        };
                     })
                 )
                 .WithNamedTerm("sort", builder => builder
-                    .OneCondition<User>((val, query) =>
+                    .OneCondition((val, query) =>
                     {
                         if (Enum.TryParse<UsersOrder>(val, true, out var usersOrder))
                         {
                             switch (usersOrder)
-                            {   
+                            {
                                 case UsersOrder.Name:
                                     query.With<UserIndex>().OrderBy(u => u.NormalizedUserName);
                                     break;
@@ -71,7 +68,7 @@ namespace OrchardCore.Users.Services
                         }
                         else
                         {
-                            query.With<UserIndex>().OrderBy(u => u.NormalizedUserName);                        
+                            query.With<UserIndex>().OrderBy(u => u.NormalizedUserName);
                         }
 
                         return query;
@@ -90,12 +87,12 @@ namespace OrchardCore.Users.Services
                             return (true, model.Order.ToString());
                         }
 
-                        return (false, String.Empty);
+                        return (false, string.Empty);
                     })
                     .AlwaysRun()
                 )
                 .WithNamedTerm("role", builder => builder
-                    .OneCondition<User>((val, query, ctx) =>
+                    .OneCondition((val, query, ctx) =>
                     {
                         var context = (UserQueryContext)ctx;
                         var userManager = context.ServiceProvider.GetRequiredService<UserManager<IUser>>();
@@ -105,11 +102,11 @@ namespace OrchardCore.Users.Services
                         return new ValueTask<IQuery<User>>(query);
                     })
                     .MapTo<UserIndexOptions>((val, model) => model.SelectedRole = val)
-                    .MapFrom<UserIndexOptions>((model) => (!String.IsNullOrEmpty(model.SelectedRole), model.SelectedRole))
+                    .MapFrom<UserIndexOptions>((model) => (!string.IsNullOrEmpty(model.SelectedRole), model.SelectedRole))
                 )
-                .WithDefaultTerm("name", builder => builder
-                    .ManyCondition<User>(
-                        ((val, query, ctx) =>
+                .WithDefaultTerm(UsersAdminListFilterOptions.DefaultTermName, builder => builder
+                    .ManyCondition(
+                        (val, query, ctx) =>
                         {
                             var context = (UserQueryContext)ctx;
                             var userManager = context.ServiceProvider.GetRequiredService<UserManager<IUser>>();
@@ -117,21 +114,21 @@ namespace OrchardCore.Users.Services
                             query.With<UserIndex>(x => x.NormalizedUserName.Contains(normalizedUserName));
 
                             return new ValueTask<IQuery<User>>(query);
-                        }),
-                        ((val, query, ctx) =>
+                        },
+                        (val, query, ctx) =>
                         {
                             var context = (UserQueryContext)ctx;
                             var userManager = context.ServiceProvider.GetRequiredService<UserManager<IUser>>();
                             var normalizedUserName = userManager.NormalizeName(val);
-                            query.With<UserIndex>(x => x.NormalizedUserName.IsNotIn<UserIndex>(s => s.NormalizedUserName, w => w.NormalizedUserName.Contains(normalizedUserName)));
+                            query.With<UserIndex>(x => x.NormalizedUserName.NotContains(normalizedUserName));
 
                             return new ValueTask<IQuery<User>>(query);
-                        })
+                        }
                     )
                 )
                 .WithNamedTerm("email", builder => builder
-                    .ManyCondition<User>(
-                        ((val, query, ctx) =>
+                    .ManyCondition(
+                        (val, query, ctx) =>
                         {
                             var context = (UserQueryContext)ctx;
                             var userManager = context.ServiceProvider.GetRequiredService<UserManager<IUser>>();
@@ -139,16 +136,16 @@ namespace OrchardCore.Users.Services
                             query.With<UserIndex>(x => x.NormalizedEmail.Contains(normalizedEmail));
 
                             return new ValueTask<IQuery<User>>(query);
-                        }),
-                        ((val, query, ctx) =>
+                        },
+                        (val, query, ctx) =>
                         {
                             var context = (UserQueryContext)ctx;
                             var userManager = context.ServiceProvider.GetRequiredService<UserManager<IUser>>();
                             var normalizedEmail = userManager.NormalizeEmail(val);
-                            query.With<UserIndex>(x => x.NormalizedEmail.IsNotIn<UserIndex>(s => s.NormalizedEmail, w => w.NormalizedEmail.Contains(normalizedEmail)));
+                            query.With<UserIndex>(x => x.NormalizedEmail.NotContains(normalizedEmail));
 
                             return new ValueTask<IQuery<User>>(query);
-                        })
+                        }
                     )
                 );
 

@@ -1,9 +1,3 @@
-using System;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using Moq;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.OpenId.Deployment;
 using OrchardCore.OpenId.Recipes;
@@ -11,14 +5,12 @@ using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Tests.Stubs;
-using Xunit;
-using static OrchardCore.OpenId.Settings.OpenIdServerSettings;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
 {
     public class OpenIdServerDeploymentSourceTests
     {
-        private static OpenIdServerSettings CreateSettings(string authority, TokenFormat tokenFormat, bool initializeAllProperties)
+        private static OpenIdServerSettings CreateSettings(string authority, OpenIdServerSettings.TokenFormat tokenFormat, bool initializeAllProperties)
         {
             var result = new OpenIdServerSettings
             {
@@ -32,6 +24,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 result.AuthorizationEndpointPath = "/connect/authorize";
                 result.LogoutEndpointPath = "/connect/logout";
                 result.UserinfoEndpointPath = "/connect/userinfo";
+                result.IntrospectionEndpointPath = "/connect/introspect";
+                result.RevocationEndpointPath = "/connect/revoke";
 
                 result.EncryptionCertificateStoreLocation = StoreLocation.LocalMachine;
                 result.EncryptionCertificateStoreName = StoreName.My;
@@ -51,6 +45,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 result.DisableAccessTokenEncryption = true;
                 result.DisableRollingRefreshTokens = true;
                 result.UseReferenceAccessTokens = true;
+                result.RequireProofKeyForCodeExchange = true;
             }
 
             return result;
@@ -77,10 +72,10 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             // Arrange
             var recipeFile = "Recipe.json";
 
-            var expectedSettings = CreateSettings("https://deploy.localhost", TokenFormat.JsonWebToken, true);
+            var expectedSettings = CreateSettings("https://deploy.localhost", OpenIdServerSettings.TokenFormat.JsonWebToken, true);
             var deployServerServiceMock = CreateServerServiceWithSettingsMock(expectedSettings);
 
-            var actualSettings = CreateSettings("https://recipe.localhost", TokenFormat.DataProtection, false);
+            var actualSettings = CreateSettings("https://recipe.localhost", OpenIdServerSettings.TokenFormat.DataProtection, false);
             var recipeServerServiceMock = CreateServerServiceWithSettingsMock(actualSettings);
 
             var settingsProperties = typeof(OpenIdServerSettings)

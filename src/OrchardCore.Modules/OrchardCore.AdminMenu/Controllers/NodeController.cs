@@ -11,7 +11,6 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
-using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.AdminMenu.Controllers
 {
@@ -23,13 +22,12 @@ namespace OrchardCore.AdminMenu.Controllers
         private readonly IEnumerable<IAdminNodeProviderFactory> _factories;
         private readonly IAdminMenuService _adminMenuService;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
 
         public NodeController(
             IAuthorizationService authorizationService,
-            IEnumerable<IPermissionProvider> permissionProviders,
             IDisplayManager<MenuItem> displayManager,
             IEnumerable<IAdminNodeProviderFactory> factories,
             IAdminMenuService adminMenuService,
@@ -111,7 +109,7 @@ namespace OrchardCore.AdminMenu.Controllers
                 AdminNode = treeNode,
                 AdminNodeId = treeNode.UniqueId,
                 AdminNodeType = type,
-                Editor = await _displayManager.BuildEditorAsync(treeNode, updater: _updateModelAccessor.ModelUpdater, isNew: true)
+                Editor = await _displayManager.BuildEditorAsync(treeNode, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "")
             };
 
             return View(model);
@@ -140,7 +138,7 @@ namespace OrchardCore.AdminMenu.Controllers
                 return NotFound();
             }
 
-            dynamic editor = await _displayManager.UpdateEditorAsync(treeNode, updater: _updateModelAccessor.ModelUpdater, isNew: true);
+            dynamic editor = await _displayManager.UpdateEditorAsync(treeNode, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "");
             editor.TreeNode = treeNode;
 
             if (ModelState.IsValid)
@@ -149,7 +147,7 @@ namespace OrchardCore.AdminMenu.Controllers
                 adminMenu.MenuItems.Add(treeNode);
                 await _adminMenuService.SaveAsync(adminMenu);
 
-                _notifier.Success(H["Admin node added successfully."]);
+                await _notifier.SuccessAsync(H["Admin node added successfully."]);
                 return RedirectToAction(nameof(List), new { id = model.AdminMenuId });
             }
 
@@ -189,7 +187,7 @@ namespace OrchardCore.AdminMenu.Controllers
                 AdminNodeType = treeNode.GetType().Name,
                 Priority = treeNode.Priority,
                 Position = treeNode.Position,
-                Editor = await _displayManager.BuildEditorAsync(treeNode, updater: _updateModelAccessor.ModelUpdater, isNew: false)
+                Editor = await _displayManager.BuildEditorAsync(treeNode, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "")
             };
 
             model.Editor.TreeNode = treeNode;
@@ -220,7 +218,7 @@ namespace OrchardCore.AdminMenu.Controllers
                 return NotFound();
             }
 
-            var editor = await _displayManager.UpdateEditorAsync(treeNode, updater: _updateModelAccessor.ModelUpdater, isNew: false);
+            var editor = await _displayManager.UpdateEditorAsync(treeNode, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "");
 
             if (ModelState.IsValid)
             {
@@ -229,11 +227,11 @@ namespace OrchardCore.AdminMenu.Controllers
 
                 await _adminMenuService.SaveAsync(adminMenu);
 
-                _notifier.Success(H["Admin node updated successfully."]);
+                await _notifier.SuccessAsync(H["Admin node updated successfully."]);
                 return RedirectToAction(nameof(List), new { id = model.AdminMenuId });
             }
 
-            _notifier.Error(H["The admin node has validation errors."]);
+            await _notifier.ErrorAsync(H["The admin node has validation errors."]);
             model.Editor = editor;
 
             // If we got this far, something failed, redisplay form
@@ -265,12 +263,12 @@ namespace OrchardCore.AdminMenu.Controllers
 
             if (adminMenu.RemoveMenuItem(treeNode) == false)
             {
-                return new StatusCodeResult(500);
+                return this.InternalServerError();
             }
 
             await _adminMenuService.SaveAsync(adminMenu);
 
-            _notifier.Success(H["Admin node deleted successfully."]);
+            await _notifier.SuccessAsync(H["Admin node deleted successfully."]);
 
             return RedirectToAction(nameof(List), new { id });
         }
@@ -302,9 +300,9 @@ namespace OrchardCore.AdminMenu.Controllers
 
             await _adminMenuService.SaveAsync(adminMenu);
 
-            _notifier.Success(H["Admin node toggled successfully."]);
+            await _notifier.SuccessAsync(H["Admin node toggled successfully."]);
 
-            return RedirectToAction(nameof(List), new { id = id });
+            return RedirectToAction(nameof(List), new { id });
         }
 
         [HttpPost]

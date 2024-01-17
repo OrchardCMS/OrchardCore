@@ -5,15 +5,15 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Indexes;
+using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.AuditTrail.ViewModels;
 using OrchardCore.Modules;
+using Parlot;
 using YesSql;
 using YesSql.Filters.Query;
 using YesSql.Services;
-using Parlot;
 
 namespace OrchardCore.AuditTrail.Services
 {
@@ -30,9 +30,9 @@ namespace OrchardCore.AuditTrail.Services
         {
             builder
                 .WithNamedTerm("id", builder => builder
-                    .OneCondition<AuditTrailEvent>((val, query) =>
+                    .OneCondition((val, query) =>
                     {
-                        if (!String.IsNullOrEmpty(val))
+                        if (!string.IsNullOrEmpty(val))
                         {
                             query.With<AuditTrailEventIndex>(x => x.CorrelationId == val);
                         }
@@ -45,17 +45,17 @@ namespace OrchardCore.AuditTrail.Services
                     })
                     .MapFrom<AuditTrailIndexOptions>((model) =>
                     {
-                        if (!String.IsNullOrEmpty(model.CorrelationId))
+                        if (!string.IsNullOrEmpty(model.CorrelationId))
                         {
                             return (true, model.CorrelationId);
                         }
-                        return (false, String.Empty);
+                        return (false, string.Empty);
                     })
                 )
                 .WithNamedTerm("category", builder => builder
-                    .OneCondition<AuditTrailEvent>((val, query) =>
+                    .OneCondition((val, query) =>
                     {
-                        if (!String.IsNullOrEmpty(val))
+                        if (!string.IsNullOrEmpty(val))
                         {
                             query.With<AuditTrailEventIndex>(x => x.Category == val);
                         }
@@ -68,17 +68,17 @@ namespace OrchardCore.AuditTrail.Services
                     })
                     .MapFrom<AuditTrailIndexOptions>((model) =>
                     {
-                        if (!String.IsNullOrEmpty(model.Category))
+                        if (!string.IsNullOrEmpty(model.Category))
                         {
                             return (true, model.Category);
                         }
-                        return (false, String.Empty);
+                        return (false, string.Empty);
                     })
                 )
                 .WithNamedTerm("event", builder => builder
-                    .OneCondition<AuditTrailEvent>((val, query) =>
+                    .OneCondition((val, query) =>
                     {
-                        if (!String.IsNullOrEmpty(val))
+                        if (!string.IsNullOrEmpty(val))
                         {
                             query.With<AuditTrailEventIndex>(x => x.Name == val);
                         }
@@ -91,17 +91,17 @@ namespace OrchardCore.AuditTrail.Services
                     })
                     .MapFrom<AuditTrailIndexOptions>((model) =>
                     {
-                        if (!String.IsNullOrEmpty(model.Event))
+                        if (!string.IsNullOrEmpty(model.Event))
                         {
                             return (true, model.Event);
                         }
-                        return (false, String.Empty);
+                        return (false, string.Empty);
                     })
                 )
                 .WithNamedTerm("date", builder => builder
-                    .OneCondition<AuditTrailEvent>(async (val, query, ctx) =>
+                    .OneCondition(async (val, query, ctx) =>
                     {
-                        if (String.IsNullOrEmpty(val))
+                        if (string.IsNullOrEmpty(val))
                         {
                             return query;
                         }
@@ -131,15 +131,15 @@ namespace OrchardCore.AuditTrail.Services
                     })
                     .MapFrom<AuditTrailIndexOptions>((model) =>
                     {
-                        if (!String.IsNullOrEmpty(model.Date))
+                        if (!string.IsNullOrEmpty(model.Date))
                         {
                             return (true, model.Date);
                         }
-                        return (false, String.Empty);
+                        return (false, string.Empty);
                     })
                 )
                 .WithNamedTerm("sort", builder => builder
-                    .OneCondition<AuditTrailEvent>((val, query, ctx) =>
+                    .OneCondition((val, query, ctx) =>
                     {
                         var context = (AuditTrailQueryContext)ctx;
                         var options = context.ServiceProvider.GetRequiredService<IOptions<AuditTrailAdminListOptions>>().Value;
@@ -154,7 +154,7 @@ namespace OrchardCore.AuditTrail.Services
                     .MapTo<AuditTrailIndexOptions>((val, model) =>
                     {
                         // TODO add a context property to the mapping func.
-                        if (!String.IsNullOrEmpty(val) && _options.Value.SortOptions.TryGetValue(val, out var sortOption))
+                        if (!string.IsNullOrEmpty(val) && _options.Value.SortOptions.TryGetValue(val, out var sortOption))
                         {
                             model.Sort = sortOption.Value;
                         }
@@ -167,12 +167,12 @@ namespace OrchardCore.AuditTrail.Services
                             return (true, model.Sort);
                         }
 
-                        return (false, String.Empty);
+                        return (false, string.Empty);
                     })
                     .AlwaysRun()
                 )
                 .WithDefaultTerm("username", builder => builder
-                    .ManyCondition<AuditTrailEvent>(
+                    .ManyCondition(
                         (val, query, ctx) =>
                         {
                             var context = (AuditTrailQueryContext)ctx;
@@ -187,14 +187,14 @@ namespace OrchardCore.AuditTrail.Services
                             var context = (AuditTrailQueryContext)ctx;
                             var lookupNormalizer = context.ServiceProvider.GetRequiredService<ILookupNormalizer>();
                             var normalizedUserName = lookupNormalizer.NormalizeName(val);
-                            query.With<AuditTrailEventIndex>(x => x.NormalizedUserName.IsNotIn<AuditTrailEventIndex>(s => s.NormalizedUserName, w => w.NormalizedUserName.Contains(normalizedUserName)));
+                            query.With<AuditTrailEventIndex>(x => x.NormalizedUserName.NotContains(normalizedUserName));
 
                             return new ValueTask<IQuery<AuditTrailEvent>>(query);
                         }
                     )
                 )
                 .WithNamedTerm("userid", builder => builder
-                    .ManyCondition<AuditTrailEvent>(
+                    .ManyCondition(
                         (val, query) =>
                         {
                             query.With<AuditTrailEventIndex>(x => x.UserId.Contains(val));
@@ -203,7 +203,7 @@ namespace OrchardCore.AuditTrail.Services
                         },
                         (val, query) =>
                         {
-                            query.With<AuditTrailEventIndex>(x => x.UserId.IsNotIn<AuditTrailEventIndex>(s => s.UserId, w => w.UserId.Contains(val)));
+                            query.With<AuditTrailEventIndex>(x => x.UserId.NotContains(val));
 
                             return query;
                         }

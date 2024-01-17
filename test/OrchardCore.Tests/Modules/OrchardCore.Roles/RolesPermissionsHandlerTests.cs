@@ -1,11 +1,7 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Moq;
 using OrchardCore.Roles;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Tests.Security;
-using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Roles
 {
@@ -125,7 +121,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
         {
             var roleManager = RolesMockHelper.MockRoleManager<IRole>();
 
-            foreach(var role in roles)
+            foreach (var role in roles)
             {
                 roleManager.Setup(m => m.FindByNameAsync(role.RoleName)).ReturnsAsync(role);
             }

@@ -9,7 +9,7 @@ namespace OrchardCore.Tenants
     public class AdminMenu : INavigationProvider
     {
         private readonly ShellSettings _shellSettings;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer, ShellSettings shellSettings)
         {
@@ -19,26 +19,27 @@ namespace OrchardCore.Tenants
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }
 
             // Don't add the menu item on non-default tenants
-            if (_shellSettings.Name != ShellHelper.DefaultShellName)
+            if (!_shellSettings.IsDefaultShell())
             {
                 return Task.CompletedTask;
             }
 
             builder
-                .Add(S["Configuration"], configuration => configuration
-                    .AddClass("menu-configuration").Id("configuration")
-                    .Add(S["Tenants"], "am-" + S["Tenants"], deployment => deployment
+                .Add(S["Multi-Tenancy"], "after", tenancy => tenancy
+                    .AddClass("menu-multitenancy")
+                    .Id("multitenancy")
+                    .Add(S["Tenants"], S["Tenants"].PrefixPosition(), tenant => tenant
                         .Action("Index", "Admin", new { area = "OrchardCore.Tenants" })
                         .Permission(Permissions.ManageTenants)
                         .LocalNav()
-                    )
-                );
+                    ),
+                    priority: 1);
 
             return Task.CompletedTask;
         }

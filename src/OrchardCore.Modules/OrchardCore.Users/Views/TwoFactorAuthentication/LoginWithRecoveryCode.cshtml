@@ -1,0 +1,33 @@
+@model LoginWithRecoveryCodeViewModel
+
+@{
+    ViewLayout = "Layout__Login";
+}
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Recovery code verification"])</h1></zone>
+
+<div class="container">
+    <p>
+        @T["You have requested to log in with a recovery code. This login will not be remembered until you provide an authenticator app code at log in or disable 2FA and log in again."]
+    </p>
+    <div class="row">
+
+        @if (!ViewContext.ModelState.IsValid)
+        {
+            <div class="col-12">
+                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            </div>
+        }
+
+        <div class="offset-lg-3 col-lg-6">
+            <form method="post">
+                <div class="form-floating mb-3">
+                    <input asp-for="RecoveryCode" class="form-control" autocomplete="off" placeholder="RecoveryCode" />
+                    <label asp-for="RecoveryCode" class="form-label">@T["Recovery Code"]</label>
+                    <span asp-validation-for="RecoveryCode" class="text-danger"></span>
+                </div>
+                <button type="submit" class="w-100 btn btn-lg btn-primary">@T["Log in"]</button>
+            </form>
+        </div>
+    </div>
+</div>

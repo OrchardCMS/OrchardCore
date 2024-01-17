@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents;
-using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Demo.Controllers
 {

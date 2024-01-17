@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.DisplayManagement.Liquid.Filters;
@@ -57,10 +57,11 @@ namespace Microsoft.Extensions.DependencyInjection
                         {
                             return new ObjectValue(s);
                         }
-                        if (!(o is IShape) && o is IHtmlContent c)
+                        else if (x is IHtmlContent c)
                         {
                             return new HtmlContentValue(c);
                         }
+
                         return null;
                     });
 
@@ -79,6 +80,26 @@ namespace Microsoft.Extensions.DependencyInjection
                         };
                     });
 
+                    o.Scope.SetValue("Environment", new ObjectValue(new LiquidEnvironmentAccessor()));
+                    o.MemberAccessStrategy.Register<LiquidEnvironmentAccessor, FluidValue>((obj, name, ctx) =>
+                    {
+                        var hostEnvironment = ((LiquidTemplateContext)ctx).Services.GetRequiredService<IHostEnvironment>();
+
+                        if (hostEnvironment != null)
+                        {
+                            return name switch
+                            {
+                                "IsDevelopment" => BooleanValue.Create(hostEnvironment.IsDevelopment()),
+                                "IsStaging" => BooleanValue.Create(hostEnvironment.IsStaging()),
+                                "IsProduction" => BooleanValue.Create(hostEnvironment.IsProduction()),
+                                "Name" => StringValue.Create(hostEnvironment.EnvironmentName),
+                                _ => NilValue.Instance
+                            };
+                        }
+
+                        return NilValue.Instance;
+                    });
+
                     o.Scope.SetValue("Request", new ObjectValue(new LiquidRequestAccessor()));
                     o.MemberAccessStrategy.Register<LiquidRequestAccessor, FluidValue>((obj, name, ctx) =>
                     {
@@ -92,7 +113,7 @@ namespace Microsoft.Extensions.DependencyInjection
                                 nameof(HttpRequest.ContentLength) => NumberValue.Create(request.ContentLength ?? 0),
                                 nameof(HttpRequest.Cookies) => new ObjectValue(new CookieCollectionWrapper(request.Cookies)),
                                 nameof(HttpRequest.Headers) => new ObjectValue(new HeaderDictionaryWrapper(request.Headers)),
-                                nameof(HttpRequest.Query) => new ObjectValue(request.Query),
+                                nameof(HttpRequest.Query) => new ObjectValue(new QueryCollection(request.Query.ToDictionary(kv => kv.Key, kv => kv.Value))),
                                 nameof(HttpRequest.Form) => request.HasFormContentType ? (FluidValue)new ObjectValue(request.Form) : NilValue.Instance,
                                 nameof(HttpRequest.Protocol) => new StringValue(request.Protocol),
                                 nameof(HttpRequest.Path) => new StringValue(request.Path.Value),
@@ -102,6 +123,13 @@ namespace Microsoft.Extensions.DependencyInjection
                                 nameof(HttpRequest.Scheme) => new StringValue(request.Scheme),
                                 nameof(HttpRequest.Method) => new StringValue(request.Method),
                                 nameof(HttpRequest.RouteValues) => new ObjectValue(new RouteValueDictionaryWrapper(request.RouteValues)),
+
+                                // Provides correct escaping to reconstruct a request or redirect URI.
+                                "UriHost" => new StringValue(request.Host.ToUriComponent(), encode: false),
+                                "UriPath" => new StringValue(request.Path.ToUriComponent(), encode: false),
+                                "UriPathBase" => new StringValue(request.PathBase.ToUriComponent(), encode: false),
+                                "UriQueryString" => new StringValue(request.QueryString.ToUriComponent(), encode: false),
+
                                 _ => NilValue.Instance
                             };
                         }

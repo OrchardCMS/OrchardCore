@@ -1,6 +1,6 @@
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Users.Services
 {
@@ -27,7 +27,7 @@ namespace OrchardCore.Users.Services
 
             if (valueProviderResult == ValueProviderResult.None)
             {
-                bindingContext.Result = ModelBindingResult.Success(_parser.Parse(String.Empty));
+                bindingContext.Result = ModelBindingResult.Success(_parser.Parse(string.Empty));
 
                 return Task.CompletedTask;
             }

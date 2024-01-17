@@ -4,7 +4,6 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Spatial.Fields;
 using OrchardCore.Spatial.Settings;
-using OrchardCore.Spatial.ViewModels;
 
 namespace OrchardCore.Spatial.Drivers
 {

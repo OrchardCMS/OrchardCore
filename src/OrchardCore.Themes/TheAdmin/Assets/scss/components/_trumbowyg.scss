@@ -1,0 +1,71 @@
+.trumbowyg {
+    font-size: 16px;
+}
+
+[dir] .trumbowyg-box {
+    border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+}
+
+[dir] trumbowyg-editor-box {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+}
+
+[dir] .trumbowyg-button-pane {
+    border-bottom: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
+    background-color: var(--bs-border-color);
+    padding: 0;
+}
+
+.trumbowyg-box svg, .trumbowyg-modal svg {
+    color: var(--bs-body-color);
+    fill: var(--bs-body-color);
+}
+
+[dir] .trumbowyg-button-pane button {
+    margin-bottom: 0 !important;
+}
+
+[dir] .trumbowyg-dropdown {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
+}
+
+[dir] .trumbowyg-dropdown button:hover, [dir] .trumbowyg-dropdown button:focus {
+    background-color: var(--bs-body-color) !important;
+    color: var(--bs-body-bg) !important;
+}
+
+[dir] .trumbowyg-button-pane .trumbowyg-open-dropdown::after {
+    border-top-color: var(--bs-body-color);
+}
+
+[dir] .trumbowyg-dropdown button {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+}
+
+.trumbowyg-fullscreen {
+    z-index: var(--oc-editor-fullscreen);
+}
+
+[dir] .trumbowyg-fullscreen.trumbowyg-box, [dir] .trumbowyg-fullscreen .trumbowyg-editor-box {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+}
+
+.trumbowyg-fullscreen .trumbowyg-button-group .trumbowyg-fullscreen-button svg {
+    color: var(--bs-body-color);
+    fill: var(--bs-body-color);
+}
+
+[dir] .trumbowyg-box .trumbowyg-editor th, [dir] .trumbowyg-box .trumbowyg-editor td {
+    border-width: var(--bs-border-width, 1px);
+    border-style: var(--bs-border-style, solid);
+    border-color: var(--bs-border-color, #dee2e6);
+    padding: 0.5rem;
+}

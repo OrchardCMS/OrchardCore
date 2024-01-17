@@ -3,12 +3,18 @@
   <PropertyGroup>
     <TargetFramework>$(TemplateTargetPackageFramework)</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
-    <PreserveCompilationReferences>true</PreserveCompilationReferences>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
     <Folder Include="wwwroot\" />
     <Folder Include="Localization\" />
+  </ItemGroup>
+
+  <!-- Watcher include and excludes -->
+  <ItemGroup>
+      <Watch Include="**\*.cs" Exclude="Recipes\**;Assets\**;node_modules\**\*;**\*.js.map;obj\**\*;bin\**\*" />
   </ItemGroup>
 
   <ItemGroup>

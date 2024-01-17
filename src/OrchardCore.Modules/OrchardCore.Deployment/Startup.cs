@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment.Controllers;
 using OrchardCore.Deployment.Core;
@@ -11,14 +12,11 @@ using OrchardCore.Deployment.Deployment;
 using OrchardCore.Deployment.Indexes;
 using OrchardCore.Deployment.Recipes;
 using OrchardCore.Deployment.Steps;
-using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
-using YesSql.Indexes;
 
 namespace OrchardCore.Deployment
 {
@@ -38,28 +36,24 @@ namespace OrchardCore.Deployment
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
 
-            services.AddScoped<IDisplayManager<DeploymentStep>, DisplayManager<DeploymentStep>>();
             services.AddSingleton<IDeploymentTargetProvider, FileDownloadDeploymentTargetProvider>();
 
             // Custom File deployment step
-            services.AddTransient<IDeploymentSource, CustomFileDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<CustomFileDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, CustomFileDeploymentStepDriver>();
+            services.AddDeployment<CustomFileDeploymentSource, CustomFileDeploymentStep, CustomFileDeploymentStepDriver>();
 
             // Recipe File deployment step
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<RecipeFileDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, RecipeFileDeploymentStepDriver>();
+            services.AddDeploymentWithoutSource<RecipeFileDeploymentStep, RecipeFileDeploymentStepDriver>();
 
-            services.AddSingleton<IIndexProvider, DeploymentPlanIndexProvider>();
-            services.AddTransient<IDataMigration, Migrations>();
+            services.AddIndexProvider<DeploymentPlanIndexProvider>();
+            services.AddDataMigration<Migrations>();
 
             services.AddScoped<IDeploymentPlanService, DeploymentPlanService>();
 
             services.AddRecipeExecutionStep<DeploymentPlansRecipeStep>();
 
-            services.AddTransient<IDeploymentSource, DeploymentPlanDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<DeploymentPlanDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, DeploymentPlanDeploymentStepDriver>();
+            services.AddDeployment<DeploymentPlanDeploymentSource, DeploymentPlanDeploymentStep, DeploymentPlanDeploymentStepDriver>();
+
+            services.AddDeployment<JsonRecipeDeploymentSource, JsonRecipeDeploymentStep, JsonRecipeDeploymentStepDriver>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

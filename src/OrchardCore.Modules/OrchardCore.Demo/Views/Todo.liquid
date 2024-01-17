@@ -1,7 +1,7 @@
 <td>
-    {% a controller: "Todo", action: "Edit", route_todoid: Model.TodoId , route_returnurl: Request.Path %}
+    {% block name: "a", controller: "Todo", action: "Edit", route_todoid: Model.TodoId , route_returnurl: Request.Path %}
         {{ Model.Text }}
-    {% enda %}
+    {% endblock %}
 </td>
 
 <td>{{ Model.DueDate }}</td>
@@ -9,7 +9,7 @@
 <td>{{ Model.IsCompleted }}</td>
 
 <td>
-    {% a action: "Delete" , class: "btn btn-danger", route_todoid: Model.TodoId %}
+    {% block name:"a", action: "Delete" , class: "btn btn-danger", route_todoid: Model.TodoId %}
         Delete
-    {% enda %}
+    {% endblock %}
 </td>

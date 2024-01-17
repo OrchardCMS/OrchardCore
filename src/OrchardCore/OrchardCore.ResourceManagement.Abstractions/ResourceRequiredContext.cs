@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
@@ -18,7 +17,7 @@ namespace OrchardCore.ResourceManagement
         {
             var tagBuilder = Resource.GetTagBuilder(Settings, appPath, FileVersionProvider);
 
-            if (String.IsNullOrEmpty(Settings.Condition))
+            if (string.IsNullOrEmpty(Settings.Condition))
             {
                 tagBuilder.WriteTo(writer, NullHtmlEncoder.Default);
                 return;

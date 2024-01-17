@@ -3,8 +3,10 @@
   <Import Project="..\OrchardCore.Build\Dependencies.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>$(AspNetCoreTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>

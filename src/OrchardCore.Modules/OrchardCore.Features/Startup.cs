@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Features.Controllers;
 using OrchardCore.Features.Deployment;
 using OrchardCore.Features.Recipes.Executors;
@@ -24,10 +24,12 @@ namespace OrchardCore.Features
     public class Startup : StartupBase
     {
         private readonly AdminOptions _adminOptions;
+        private readonly IShellConfiguration _shellConfiguration;
 
-        public Startup(IOptions<AdminOptions> adminOptions)
+        public Startup(IOptions<AdminOptions> adminOptions, IShellConfiguration shellConfiguration)
         {
             _adminOptions = adminOptions.Value;
+            _shellConfiguration = shellConfiguration;
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -37,9 +39,7 @@ namespace OrchardCore.Features
             services.AddScoped<IModuleService, ModuleService>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
-            services.AddTransient<IDeploymentSource, AllFeaturesDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllFeaturesDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllFeaturesDeploymentStepDriver>();
+            services.AddDeployment<AllFeaturesDeploymentSource, AllFeaturesDeploymentStep, AllFeaturesDeploymentStepDriver>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -48,20 +48,20 @@ namespace OrchardCore.Features
 
             routes.MapAreaControllerRoute(
                 name: "Features",
-                areaName: "OrchardCore.Features",
-                pattern: _adminOptions.AdminUrlPrefix + "/Features",
+                areaName: FeaturesConstants.FeatureId,
+                pattern: _adminOptions.AdminUrlPrefix + "/Features/{tenant?}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Features) }
             );
             routes.MapAreaControllerRoute(
                 name: "FeaturesDisable",
-                areaName: "OrchardCore.Features",
-                pattern: _adminOptions.AdminUrlPrefix + "/Features/{id}/Disable",
+                areaName: FeaturesConstants.FeatureId,
+                pattern: _adminOptions.AdminUrlPrefix + "/Features/{id}/Disable/{tenant?}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Disable) }
             );
             routes.MapAreaControllerRoute(
                 name: "FeaturesEnable",
-                areaName: "OrchardCore.Features",
-                pattern: _adminOptions.AdminUrlPrefix + "/Features/{id}/Enable",
+                areaName: FeaturesConstants.FeatureId,
+                pattern: _adminOptions.AdminUrlPrefix + "/Features/{id}/Enable/{tenant?}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Enable) }
             );
         }

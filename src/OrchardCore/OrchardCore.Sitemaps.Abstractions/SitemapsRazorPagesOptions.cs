@@ -6,7 +6,7 @@ namespace OrchardCore.Sitemaps
     public class SitemapsRazorPagesOptions
     {
 
-        private readonly List<SitemapsRazorPagesContentTypeOption> _contentTypeOptions = new List<SitemapsRazorPagesContentTypeOption>();
+        private readonly List<SitemapsRazorPagesContentTypeOption> _contentTypeOptions = new();
 
         public SitemapsRazorPagesOptions ConfigureContentType(string contentType, Action<SitemapsRazorPagesContentTypeOption> action)
         {

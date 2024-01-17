@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Extensions.Primitives;
@@ -15,7 +16,7 @@ namespace System.IO
         /// </summary>
         public static string Combine(string path, string other = null)
         {
-            if (String.IsNullOrWhiteSpace(other))
+            if (string.IsNullOrWhiteSpace(other))
             {
                 return path;
             }
@@ -37,7 +38,7 @@ namespace System.IO
             }
             else
             {
-                result = path.Substring(0, index + 1) + other;
+                result = string.Concat(path.AsSpan(0, index + 1), other);
             }
 
             return result;

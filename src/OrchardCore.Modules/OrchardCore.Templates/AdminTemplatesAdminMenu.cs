@@ -7,16 +7,16 @@ namespace OrchardCore.Templates
 {
     public class AdminTemplatesAdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
-        public AdminTemplatesAdminMenu(IStringLocalizer<AdminMenu> localizer)
+        public AdminTemplatesAdminMenu(IStringLocalizer<AdminTemplatesAdminMenu> localizer)
         {
             S = localizer;
         }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }

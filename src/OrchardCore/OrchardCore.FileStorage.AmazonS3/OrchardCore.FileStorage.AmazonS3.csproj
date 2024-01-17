@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+
+    <!-- NuGet properties-->
+    <Title>OrchardCore FileStorage Amazon S3</Title>
+    <Description>$(OCFrameworkDescription)
+
+      Implementation for Amazon S3 FileStorage.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework Amazon</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.S3" />
+    <PackageReference Include="AWSSDK.SecurityToken" />
+    <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.FileStorage.Abstractions\OrchardCore.FileStorage.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

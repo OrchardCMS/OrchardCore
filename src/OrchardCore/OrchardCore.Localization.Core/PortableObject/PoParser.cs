@@ -11,10 +11,11 @@ namespace OrchardCore.Localization.PortableObject
     /// </summary>
     public class PoParser
     {
-        private static readonly Dictionary<char, char> _escapeTranslations = new Dictionary<char, char> {
+        private static readonly Dictionary<char, char> _escapeTranslations = new()
+        {
             { 'n', '\n' },
             { 'r', '\r' },
-            { 't', '\t' }
+            { 't', '\t' },
         };
 
         /// <summary>
@@ -22,7 +23,9 @@ namespace OrchardCore.Localization.PortableObject
         /// </summary>
         /// <param name="reader">The <see cref="TextReader"/>.</param>
         /// <returns>A list of culture records.</returns>
+#pragma warning disable CA1822 // Mark members as static
         public IEnumerable<CultureDictionaryRecord> Parse(TextReader reader)
+#pragma warning restore CA1822 // Mark members as static
         {
             var entryBuilder = new DictionaryRecordBuilder();
             string line;
@@ -50,7 +53,7 @@ namespace OrchardCore.Localization.PortableObject
             }
         }
 
-        private string Unescape(string str)
+        private static string Unescape(string str)
         {
             StringBuilder sb = null;
             var escaped = false;
@@ -64,9 +67,10 @@ namespace OrchardCore.Localization.PortableObject
                         sb = new StringBuilder(str.Length);
                         if (i > 1)
                         {
-                            sb.Append(str.Substring(0, i - 1));
+                            sb.Append(str[..(i - 1)]);
                         }
                     }
+
                     char unescaped;
                     if (_escapeTranslations.TryGetValue(c, out unescaped))
                     {
@@ -85,16 +89,17 @@ namespace OrchardCore.Localization.PortableObject
                     {
                         escaped = true;
                     }
-                    else if (sb != null)
+                    else
                     {
-                        sb.Append(c);
+                        sb?.Append(c);
                     }
                 }
             }
-            return sb == null ? str : sb.ToString();
+
+            return sb?.ToString() ?? str;
         }
 
-        private string TrimQuote(string str)
+        private static string TrimQuote(string str)
         {
             if (str.StartsWith('\"') && str.EndsWith('\"'))
             {
@@ -103,13 +108,13 @@ namespace OrchardCore.Localization.PortableObject
                     return "";
                 }
 
-                return str.Substring(1, str.Length - 2);
+                return str[1..^1];
             }
 
             return str;
         }
 
-        private (PoContext context, string content) ParseLine(string line)
+        private static (PoContext context, string content) ParseLine(string line)
         {
             if (line.StartsWith('\"'))
             {
@@ -123,18 +128,19 @@ namespace OrchardCore.Localization.PortableObject
             }
 
             var content = Unescape(TrimQuote(keyAndValue[1].Trim()));
-            switch (keyAndValue[0])
+            return keyAndValue[0] switch
             {
-                case "msgctxt": return (PoContext.MessageContext, content);
-                case "msgid": return (PoContext.MessageId, content);
-                case var key when key.StartsWith("msgstr", StringComparison.Ordinal): return (PoContext.Translation, content);
-                default: return (PoContext.Other, content);
-            }
+                "msgctxt" => (PoContext.MessageContext, content),
+                "msgid" => (PoContext.MessageId, content),
+                "msgid_plural" => (PoContext.MessageIdPlural, content),
+                var key when key.StartsWith("msgstr", StringComparison.Ordinal) => (PoContext.Translation, content),
+                _ => (PoContext.Other, content),
+            };
         }
 
         private class DictionaryRecordBuilder
         {
-            private List<string> _values;
+            private readonly List<string> _values;
             private IEnumerable<string> _validValues => _values.Where(value => !string.IsNullOrEmpty(value));
             private PoContext _context;
 
@@ -169,7 +175,7 @@ namespace OrchardCore.Localization.PortableObject
                         }
                     case PoContext.MessageContext: MessageContext = text; break;
                     case PoContext.Translation: _values.Add(text); break;
-                    case PoContext.Text: AppendText(text); return; // we don't want to set context to Text
+                    case PoContext.Text: AppendText(text); return; // We don't want to set context to Text.
                 }
 
                 _context = context;
@@ -184,7 +190,7 @@ namespace OrchardCore.Localization.PortableObject
                     case PoContext.Translation:
                         if (_values.Count > 0)
                         {
-                            _values[_values.Count - 1] += text;
+                            _values[^1] += text;
                         }
                         break;
                 }
@@ -210,6 +216,7 @@ namespace OrchardCore.Localization.PortableObject
         private enum PoContext
         {
             MessageId,
+            MessageIdPlural,
             MessageContext,
             Translation,
             Text,
