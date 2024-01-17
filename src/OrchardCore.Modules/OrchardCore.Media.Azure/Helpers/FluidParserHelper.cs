@@ -18,26 +18,26 @@ internal class FluidParserHelper<TOptions> where TOptions : class
 
     public string ParseAndFormat(string template)
     {
-        EnsureInitialized();
+        var templateContext = GetTemplateContext();
 
         // Use Fluid directly as this is transient and cannot invoke _liquidTemplateManager.
         var parsedTemplate = _fluidParser.Parse(template);
-        return parsedTemplate.Render(_templateContext, NullEncoder.Default)
+        return parsedTemplate.Render(templateContext, NullEncoder.Default)
             .Replace("\r", string.Empty)
             .Replace("\n", string.Empty);
     }
 
-    private void EnsureInitialized()
+    private TemplateContext GetTemplateContext()
     {
-        if (_templateContext != null)
+        if (_templateContext == null)
         {
-            return;
+            var templateOptions = new TemplateOptions();
+            _templateContext = new TemplateContext(templateOptions);
+            templateOptions.MemberAccessStrategy.Register<ShellSettings>();
+            templateOptions.MemberAccessStrategy.Register<TOptions>();
+            _templateContext.SetValue("ShellSettings", _shellSettings);
         }
 
-        var templateOptions = new TemplateOptions();
-        _templateContext = new TemplateContext(templateOptions);
-        templateOptions.MemberAccessStrategy.Register<ShellSettings>();
-        templateOptions.MemberAccessStrategy.Register<TOptions>();
-        _templateContext.SetValue("ShellSettings", _shellSettings);
+        return _templateContext;
     }
 }
