@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Localization.DataAnnotations;
 
 namespace OrchardCore.Localization.PortableObject
 {
@@ -12,10 +13,13 @@ namespace OrchardCore.Localization.PortableObject
     /// </summary>
     public class PortableObjectStringLocalizer : IPluralStringLocalizer
     {
+        private static readonly string _dataAnnotationsDefaultErrorMessagesContext = typeof(DataAnnotationsDefaultErrorMessages).FullName;
+        private static readonly string _localizedDataAnnotationsMvcOptionsContext = typeof(LocalizedDataAnnotationsMvcOptions).FullName;
+
         private readonly ILocalizationManager _localizationManager;
         private readonly bool _fallBackToParentCulture;
         private readonly ILogger _logger;
-        private string _context;
+        private readonly string _context;
 
         /// <summary>
         /// Creates a new instance of <see cref="PortableObjectStringLocalizer"/>.
@@ -37,7 +41,7 @@ namespace OrchardCore.Localization.PortableObject
         }
 
         /// <inheritdocs />
-        public LocalizedString this[string name]
+        public virtual LocalizedString this[string name]
         {
             get
             {
@@ -53,7 +57,7 @@ namespace OrchardCore.Localization.PortableObject
         }
 
         /// <inheritdocs />
-        public LocalizedString this[string name, params object[] arguments]
+        public virtual LocalizedString this[string name, params object[] arguments]
         {
             get
             {
@@ -65,7 +69,7 @@ namespace OrchardCore.Localization.PortableObject
         }
 
         /// <inheritdocs />
-        public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
+        public virtual IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
         {
             var culture = CultureInfo.CurrentUICulture;
 
@@ -74,18 +78,15 @@ namespace OrchardCore.Localization.PortableObject
                 : GetAllStrings(culture);
         }
 
-        [Obsolete("This method will be removed in the upcoming ASP.NET Core major release.")]
-        public IStringLocalizer WithCulture(CultureInfo culture) => this;
-
         /// <inheritdocs />
-        public (LocalizedString, object[]) GetTranslation(string name, params object[] arguments)
+        public virtual (LocalizedString, object[]) GetTranslation(string name, params object[] arguments)
         {
             if (name == null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
 
-            // Check if a plural form is called, which is when the only argument is of type PluralizationArgument
+            // Check if a plural form is called, which is when the only argument is of type PluralizationArgument.
             if (arguments.Length == 1 && arguments[0] is PluralizationArgument pluralArgument)
             {
                 var translation = GetTranslation(name, _context, CultureInfo.CurrentUICulture, pluralArgument.Count);
@@ -103,7 +104,7 @@ namespace OrchardCore.Localization.PortableObject
                     argumentsWithCount = new object[] { pluralArgument.Count };
                 }
 
-                translation = translation ?? GetTranslation(pluralArgument.Forms, CultureInfo.CurrentUICulture, pluralArgument.Count);
+                translation ??= GetTranslation(pluralArgument.Forms, CultureInfo.CurrentUICulture, pluralArgument.Count);
 
                 return (new LocalizedString(name, translation, translation == null), argumentsWithCount);
             }
@@ -150,7 +151,7 @@ namespace OrchardCore.Localization.PortableObject
             return allLocalizedStrings;
         }
 
-        private string GetTranslation(string[] pluralForms, CultureInfo culture, int? count)
+        protected string GetTranslation(string[] pluralForms, CultureInfo culture, int? count)
         {
             var dictionary = _localizationManager.GetDictionary(culture);
 
@@ -160,17 +161,17 @@ namespace OrchardCore.Localization.PortableObject
             {
                 if (_logger.IsEnabled(LogLevel.Warning))
                 {
-                    _logger.LogWarning("Plural form '{PluralForm}' doesn't exist in values provided by the 'IStringLocalizer.Plural' method. Provided values: {PluralForms}", pluralForm, String.Join(", ", pluralForms));
+                    _logger.LogWarning("Plural form '{PluralForm}' doesn't exist in values provided by the 'IStringLocalizer.Plural' method. Provided values: {PluralForms}", pluralForm, string.Join(", ", pluralForms));
                 }
 
-                // Use the latest available form
-                return pluralForms[pluralForms.Length - 1];
+                // Use the latest available form.
+                return pluralForms[^1];
             }
 
             return pluralForms[pluralForm];
         }
 
-        private string GetTranslation(string name, string context, CultureInfo culture, int? count)
+        protected string GetTranslation(string name, string context, CultureInfo culture, int? count)
         {
             string translation = null;
             try
@@ -199,13 +200,36 @@ namespace OrchardCore.Localization.PortableObject
 
                     if (dictionary != null)
                     {
-                        // Extract translation with context
                         var key = CultureDictionaryRecord.GetKey(name, context);
+
+                        // Extract translation from data annotations attributes.
+                        if (context == _localizedDataAnnotationsMvcOptionsContext)
+                        {
+                            // Extract translation with context.
+                            key = CultureDictionaryRecord.GetKey(name, _dataAnnotationsDefaultErrorMessagesContext);
+                            translation = dictionary[key];
+
+                            if (translation != null)
+                            {
+                                return translation;
+                            }
+
+                            // Extract translation without context.
+                            key = CultureDictionaryRecord.GetKey(name, null);
+                            translation = dictionary[key];
+
+                            if (translation != null)
+                            {
+                                return translation;
+                            }
+                        }
+
+                        // Extract translation with context.
                         translation = dictionary[key, count];
 
                         if (context != null && translation == null)
                         {
-                            // Extract translation without context
+                            // Extract translation without context.
                             key = CultureDictionaryRecord.GetKey(name, null);
                             translation = dictionary[key, count];
                         }
@@ -216,7 +240,7 @@ namespace OrchardCore.Localization.PortableObject
             }
             catch (PluralFormNotFoundException ex)
             {
-                _logger.LogWarning(ex.Message);
+                _logger.LogWarning(ex, "Plural form not found.");
             }
 
             return translation;

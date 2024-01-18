@@ -17,11 +17,13 @@ Once created, open the Setting menu item and each of these sections should appea
 
 ### Liquid
 
-The Custom User Settings are available when loading the user from the database. 
-```liquid 
+The Custom User Settings are available when loading the user from the database.
+
+```liquid
 {% assign user = User | user_id | users_by_id %}
 {{user.Properties}}
 ```
+
 Each section is made available using its name.
 
 For instance for a custom settings section named `UserProfile`, with a `TextField` named `FirstName` would be accessible using `{{ user.Properties.UserProfile.UserProfile.FirstName.Text }}`.
@@ -50,4 +52,4 @@ and `UserProfile` is the property to extend the `User` entity with.
 
 ## Video
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/_ff79hm5PAc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/_ff79hm5PAc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

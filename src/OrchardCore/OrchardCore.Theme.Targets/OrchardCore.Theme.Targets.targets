@@ -1,0 +1,85 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!--
+    This file is packaged with "OrchardCore.Theme.Targets.nupkg" in "./build" such that any
+    Module that references it will embed in its assembly all assets files and mapping infos.
+    Here we use some msbuild properties that would not be evaluated in the `.props` file.
+    It also prevents VS from adding / keeping some unnecessary lines in the project file.
+  -->
+
+  <!-- Identify Themes from the overall set of specified OrchardCore attributes -->
+  <Target Name="OrchardCoreFilterThemes">
+    <ItemGroup Condition="@(OrchardCoreThemes->Count()) == 0">
+      <OrchardCoreThemes Include="@(OrchardCoreAttributes)"
+                         Condition="(%(OrchardCoreAttributes.Type) == 'theme')" />
+    </ItemGroup>
+  </Target>
+
+  <!-- Fail ASAP when one+ THEME declaration has been detected. -->
+  <Target Name="OrchardCoreErrorsThemeAtMostOne"
+          DependsOnTargets="OrchardCoreFilterThemes"
+          BeforeTargets="BeforeBuild">
+    <Error
+      Code="OC3001"
+      Condition="@(OrchardCoreThemes->Count()) > 1"
+      Text="'$(MSBuildProjectName)' cannot declare itself to be more than one 'Theme' (@(OrchardCoreThemes->Count()))." />
+  </Target>
+
+  <!-- Fail ASAP when MODULE+THEME declaration has been detected, which also depends upon Modules having been filtered (see Modules targets). -->
+  <Target Name="OrchardCoreErrorsThemeAndModuleRedundant"
+          DependsOnTargets="OrchardCoreFilterModules;OrchardCoreFilterThemes"
+          BeforeTargets="BeforeBuild">
+    <Error
+      Code="OC3002"
+      Condition="@(OrchardCoreModules->Count()) > 0 And @(OrchardCoreThemes->Count()) > 0"
+      Text="'$(MSBuildProjectName)' cannot declare itself to be both a 'Module' (@(OrchardCoreModules->Count())) and a 'Theme' (@(OrchardCoreThemes->Count()))." />
+  </Target>
+
+  <!-- Keyed on ItemGroup OrchardCoreThemes list item, ctor args by position:
+    1: string id
+    2: , string name
+    3: , string baseTheme
+    4: , string category
+    5: , string priority
+    6: , string description
+    7: , string author
+    8: , string semVer
+    9: , string websiteUrl
+    10: , string featureDependencies
+    11: , string tags
+    12: , object defaultTenant
+    13: , object alwaysEnabled
+    14: , object enabledByDependencyOnly
+    -->
+  <!-- OrchardCoreEmbeddingAfter/BeforeTargets declared in the 'OrchardCore.Modules.Targets.targets' file;
+    may be appended by consuming developer discretionary requirements. -->
+  <Target Name="OrchardCoreEmbedThemes"
+          DependsOnTargets="OrchardCoreErrorsThemeAtMostOne;OrchardCoreErrorsThemeAndModuleRedundant"
+          AfterTargets="$(OrchardCoreEmbeddingAfterTargets)"
+          BeforeTargets="$(OrchardCoreEmbeddingBeforeTargets)"
+          Condition="@(OrchardCoreThemes->Count()) > 0">
+    <Message
+      Importance="high"
+      Condition="'$(OrchardCoreDebugTargets)' == 'true'"
+      Text="Embedding '@(OrchardCoreThemes)' theme: {'id': '%(OrchardCoreThemes.Identity)', 'name': '%(OrchardCoreThemes.Name)', 'base': '%(OrchardCoreThemes.Base)', 'category': '%(OrchardCoreThemes.Category)', 'priority': '%(OrchardCoreThemes.Priority)', 'description': '%(OrchardCoreThemes.Description)', 'author': '%(OrchardCoreThemes.Author)', 'version': '%(OrchardCoreThemes.Version)', 'website': '%(OrchardCoreThemes.Website)', 'dependencies': '%(OrchardCoreThemes.Dependencies)', 'tags': '%(OrchardCoreThemes.Tags)', 'defaultTenant': '%(OrchardCoreThemes.DefaultTenant)', 'alwaysEnabled': '%(OrchardCoreThemes.AlwaysEnabled'), 'enabledByDependencyOnly': '%(OrchardCoreThemes.EnabledByDependencyOnly')}" />
+    <ItemGroup>
+      <AssemblyAttribute Include="OrchardCore.DisplayManagement.Manifest.ThemeAttribute">
+        <_Parameter1>@(OrchardCoreThemes)</_Parameter1>
+        <_Parameter2>%(OrchardCoreThemes.Name)</_Parameter2>
+        <_Parameter3>%(OrchardCoreThemes.Base)</_Parameter3>
+        <_Parameter4>%(OrchardCoreThemes.Category)</_Parameter4>
+        <_Parameter5>%(OrchardCoreThemes.Priority)</_Parameter5>
+        <_Parameter6>%(OrchardCoreThemes.Description)</_Parameter6>
+        <_Parameter7>%(OrchardCoreThemes.Author)</_Parameter7>
+        <_Parameter8>%(OrchardCoreThemes.Version)</_Parameter8>
+        <_Parameter9>%(OrchardCoreThemes.Website)</_Parameter9>
+        <_Parameter10>%(OrchardCoreThemes.Dependencies)</_Parameter10>
+        <_Parameter11>%(OrchardCoreThemes.Tags)</_Parameter11>
+        <_Parameter12>%(OrchardCoreThemes.DefaultTenant)</_Parameter12>
+        <_Parameter13>%(OrchardCoreThemes.AlwaysEnabled)</_Parameter13>
+        <_Parameter14>%(OrchardCoreThemes.EnabledByDependencyOnly)</_Parameter14>
+      </AssemblyAttribute>
+    </ItemGroup>
+  </Target>
+
+</Project>

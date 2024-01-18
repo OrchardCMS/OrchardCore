@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,14 +17,13 @@ namespace OrchardCore.Redis.Services
     {
         private readonly IRedisService _redis;
         private readonly ILogger _logger;
-
         private readonly string _hostName;
         private readonly string _prefix;
 
         public RedisLock(IRedisService redis, ShellSettings shellSettings, ILogger<RedisLock> logger)
         {
             _redis = redis;
-            _hostName = Dns.GetHostName() + ':' + Process.GetCurrentProcess().Id;
+            _hostName = Dns.GetHostName() + ':' + System.Environment.ProcessId;
             _prefix = redis.InstancePrefix + shellSettings.Name + ':';
             _logger = logger;
         }
@@ -81,6 +79,11 @@ namespace OrchardCore.Redis.Services
             if (_redis.Database == null)
             {
                 await _redis.ConnectAsync();
+                if (_redis.Database == null)
+                {
+                    _logger.LogError("Fails to check whether the named lock '{LockName}' is already acquired.", _prefix + key);
+                    return false;
+                }
             }
 
             try
@@ -100,6 +103,11 @@ namespace OrchardCore.Redis.Services
             if (_redis.Database == null)
             {
                 await _redis.ConnectAsync();
+                if (_redis.Database == null)
+                {
+                    _logger.LogError("Fails to acquire the named lock '{LockName}'.", _prefix + key);
+                    return false;
+                }
             }
 
             try
@@ -116,11 +124,6 @@ namespace OrchardCore.Redis.Services
 
         private async ValueTask ReleaseAsync(string key)
         {
-            if (_redis.Database == null)
-            {
-                await _redis.ConnectAsync();
-            }
-
             try
             {
                 await _redis.Database.LockReleaseAsync(_prefix + key, _hostName);

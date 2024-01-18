@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
@@ -13,7 +14,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
     public class ContentItemQuery : ISchemaBuilder
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public ContentItemQuery(IHttpContextAccessor httpContextAccessor,
             IStringLocalizer<ContentItemQuery> localizer)
@@ -23,7 +24,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             S = localizer;
         }
 
-        public Task<string> GetIdentifierAsync() => Task.FromResult(String.Empty);
+        public Task<string> GetIdentifierAsync() => Task.FromResult(string.Empty);
 
         public Task BuildAsync(ISchema schema)
         {
@@ -47,7 +48,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             return Task.CompletedTask;
         }
 
-        private Task<ContentItem> ResolveAsync(ResolveFieldContext context)
+        private Task<ContentItem> ResolveAsync(IResolveFieldContext context)
         {
             var contentItemId = context.GetArgument<string>("contentItemId");
             var contentManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IContentManager>();

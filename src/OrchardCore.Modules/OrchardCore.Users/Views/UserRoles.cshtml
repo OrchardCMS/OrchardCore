@@ -1,0 +1,21 @@
+@using Microsoft.AspNetCore.Identity
+@using OrchardCore.Security.Services
+@model SummaryAdminUserViewModel
+
+@inject IRoleService RoleService
+@{
+    var roles = (await RoleService.GetRolesAsync()).ToDictionary(x => x.RoleName, x => x, StringComparer.OrdinalIgnoreCase);
+}
+
+<h4>@T["Roles"]</h4>
+<ul class="list-unstyled">
+    @foreach (var roleName in Model.User.RoleNames)
+    {
+        if (!roles.TryGetValue(roleName, out var role))
+        {
+            continue;
+        }
+
+        <li>@role.RoleName</li>
+    }
+</ul>

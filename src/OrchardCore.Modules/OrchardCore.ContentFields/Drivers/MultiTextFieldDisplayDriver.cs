@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -17,7 +16,7 @@ namespace OrchardCore.ContentFields.Fields
 {
     public class MultiTextFieldDisplayDriver : ContentFieldDisplayDriver<MultiTextField>
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public MultiTextFieldDisplayDriver(IStringLocalizer<MultiTextFieldDisplayDriver> localizer)
         {

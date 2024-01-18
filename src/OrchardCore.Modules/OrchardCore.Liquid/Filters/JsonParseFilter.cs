@@ -7,7 +7,7 @@ namespace OrchardCore.Liquid.Filters
 {
     public static class JsonParseFilter
     {
-        public static ValueTask<FluidValue> JsonParse(FluidValue input, FilterArguments arguments, TemplateContext context)
+        public static ValueTask<FluidValue> JsonParse(FluidValue input, FilterArguments _, TemplateContext context)
         {
             var parsedValue = JToken.Parse(input.ToStringValue());
             if (parsedValue.Type == JTokenType.Array)

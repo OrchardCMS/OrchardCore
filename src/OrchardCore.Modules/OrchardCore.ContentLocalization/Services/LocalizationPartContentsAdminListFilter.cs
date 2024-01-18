@@ -1,8 +1,6 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentLocalization.Models;
-using OrchardCore.ContentLocalization.Records;
 using OrchardCore.ContentLocalization.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
@@ -33,8 +31,7 @@ namespace OrchardCore.ContentLocalization.Services
                 // This is intended to be used by adding ?Localization.ShowLocalizedContentTypes to an AdminMenu url.
                 if (viewModel.ShowLocalizedContentTypes)
                 {
-                    var localizedTypes = _contentDefinitionManager
-                        .ListTypeDefinitions()
+                    var localizedTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
                         .Where(x =>
                             x.Parts.Any(p =>
                                 p.PartDefinition.Name == nameof(LocalizationPart)))

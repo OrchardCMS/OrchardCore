@@ -355,7 +355,13 @@ The following configuration values are used by default and can be customized:
         ],
 
       // The Content Security Policy to apply to assets served from the media library.
-      "ContentSecurityPolicy" : "default-src 'self'; style-src 'unsafe-inline'"
+      "ContentSecurityPolicy" : "default-src 'self'; style-src 'unsafe-inline'",
+
+      // The maximum chunk size when uploading files in bytes. If 0, no chunked upload is used. This is useful to work around request size limitations of a hosting environment.
+      "MaxUploadChunkSize": 104857600,
+
+      // The lifetime of temporary files created during upload. Defaults to 1 hour.
+      "TemporaryFileLifetime": "01:00:00"
     }
 ```
 
@@ -458,7 +464,7 @@ The `Anchors[]` is kept in sync with the `Paths[]` array and the index for a giv
 
 When resizing images, the query string command values are, by default, signed with an HMAC signature that is unique to the tenant.
 
-This prevents prevent malicious clients from creating too many variations of the same image. 
+This prevents prevent malicious clients from creating too many variations of the same image.
 
 If the `UseTokenizedQueryString` is set to `false` the following features will be removed.
 
@@ -475,8 +481,41 @@ When the query string is signed with a token any width, height value may be used
     Tokens are only available from the [Preview Feed](../../../getting-started/preview-package-source)
     Prior to this the width or height values are limited to `16`, `32`, `50`, `100`, `160`, `240`, `480`, `600`, `1024`, `2048`.
 
+## Media Content Search
+
+Media can be optionally indexed for search as well if files are referenced via Media Fields. The following data can be indexed for each file referenced from a Media Field:
+
+- Media Text
+- Textual content of PDF files
+
+!!! note
+    Standalone files, i.e. files that are just uploaded to the Media Library but never referenced from a content item via a Media Field, can't be indexed.
+
+!!! note
+    You need an indexing implementation enabled for Media Indexing and search to work. The below guide assumes you're using [Lucene](../Lucene/README.md).
+
+To set up indexing for Media do the following:
+
+1. For each Media Field open the field's editor from under the given content type's or content part's editor, and tick "Include this element in the index", and tick both "Stored" and "Analyzed".
+2. When a content item of that type is published next time, Media content will be indexed as well. Check the name of the new Lucene field. You can do this by running a Lucene query for the given content type (can be done from the admin from under Search, Run Lucene Query): You should be able to see two new fields named with the pattern "ContentPart.FieldTechnicalName.MediaText" and "ContentPart.FieldTechnicalName.FileText", e.g. "BlogPost.File.MediaText" and "BlogPost.File.FileText".
+3. Configure the new field to be used for search. You can do this from the admin under Search, Settings, Search, and adding the name of the new field under "Default search fields" (arriving at something like "Content.ContentItem.FullText, BlogPost.File.MediaText, BlogPost.File.FileText").
+4. Try searching for content only available in the Media Text of selected media files, or referenced PDF files. You should see corresponding results.
+
 ## Videos
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/BQHUlvPFRR4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+## Media Indexing
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/K0_i4vj00yM" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+The `Media Indexing` feature extends the media indexing capability to also encompass searching within files with the following extensions `.txt`, `.md`, `.docx`, and `.pptx`.
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/BQHUlvPFRR4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/K0_i4vj00yM" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/bDxL2LPJPzk" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Nb5GUqM7ZzI" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+## Credits
+
+To index PDF files the [PdfPig library](https://github.com/UglyToad/PdfPig/) is used.
+To index Microsoft Office files (i.e., .docx, .ppts) the [Open-XML-SDK](https://github.com/dotnet/Open-XML-SDK) is used.

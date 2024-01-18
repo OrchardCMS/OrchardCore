@@ -16,7 +16,7 @@ namespace OrchardCore.Contents.Recipes
     {
         public Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "Content", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "Content", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }

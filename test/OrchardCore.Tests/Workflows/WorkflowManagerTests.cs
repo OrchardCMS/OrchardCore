@@ -1,18 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using Moq;
-using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement;
-using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Scripting;
@@ -23,7 +9,6 @@ using OrchardCore.Workflows.Evaluators;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.WorkflowContextProviders;
-using Xunit;
 
 namespace OrchardCore.Tests.Workflows
 {
@@ -76,7 +61,7 @@ namespace OrchardCore.Tests.Workflows
             Assert.Equal(expectedSum, (double)workflowExecutionContext.Output["Sum"]);
         }
 
-        private IServiceProvider CreateServiceProvider()
+        private static IServiceProvider CreateServiceProvider()
         {
             var services = new ServiceCollection();
             services.AddScoped(typeof(Resolver<>));
@@ -87,12 +72,12 @@ namespace OrchardCore.Tests.Workflows
             return services.BuildServiceProvider();
         }
 
-        private IWorkflowScriptEvaluator CreateWorkflowScriptEvaluator(IServiceProvider serviceProvider)
+        private static IWorkflowScriptEvaluator CreateWorkflowScriptEvaluator(IServiceProvider serviceProvider)
         {
             var memoryCache = new MemoryCache(new MemoryCacheOptions());
             var javaScriptEngine = new JavaScriptEngine(memoryCache);
             var workflowContextHandlers = new Resolver<IEnumerable<IWorkflowExecutionContextHandler>>(serviceProvider);
-            var globalMethodProviders = new IGlobalMethodProvider[0];
+            var globalMethodProviders = Array.Empty<IGlobalMethodProvider>();
             var scriptingManager = new DefaultScriptingManager(new[] { javaScriptEngine }, globalMethodProviders);
 
             return new JavaScriptWorkflowScriptEvaluator(
@@ -102,7 +87,7 @@ namespace OrchardCore.Tests.Workflows
             );
         }
 
-        private WorkflowManager CreateWorkflowManager(
+        private static WorkflowManager CreateWorkflowManager(
             IServiceProvider serviceProvider,
             IEnumerable<IActivity> activities,
             WorkflowType workflowType
@@ -120,17 +105,20 @@ namespace OrchardCore.Tests.Workflows
             var missingActivityLogger = new Mock<ILogger<MissingActivity>>();
             var missingActivityLocalizer = new Mock<IStringLocalizer<MissingActivity>>();
             var clock = new Mock<IClock>();
+            var workflowFaultHandler = new Mock<IWorkflowFaultHandler>();
             var workflowManager = new WorkflowManager(
                 activityLibrary.Object,
                 workflowTypeStore.Object,
                 workflowStore.Object,
                 workflowIdGenerator.Object,
                 workflowValueSerializers,
+                workflowFaultHandler.Object,
                 distributedLock.Object,
                 workflowManagerLogger.Object,
                 missingActivityLogger.Object,
                 missingActivityLocalizer.Object,
-                clock.Object);
+                clock.Object
+                );
 
             foreach (var activity in activities)
             {

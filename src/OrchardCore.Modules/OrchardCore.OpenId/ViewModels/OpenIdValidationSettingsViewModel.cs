@@ -1,10 +1,12 @@
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace OrchardCore.OpenId.ViewModels
 {
     public class OpenIdValidationSettingsViewModel
     {
+        [Url]
+        public string MetadataAddress { get; set; }
+
         [Url]
         public string Authority { get; set; }
 

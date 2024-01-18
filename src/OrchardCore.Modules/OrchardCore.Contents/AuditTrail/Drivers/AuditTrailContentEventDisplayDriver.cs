@@ -2,15 +2,15 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.AuditTrail.Drivers;
+using OrchardCore.AuditTrail.Indexes;
 using OrchardCore.AuditTrail.Models;
+using OrchardCore.AuditTrail.Services;
+using OrchardCore.AuditTrail.Services.Models;
+using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.Contents.AuditTrail.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.ContentManagement.Records;
-using OrchardCore.AuditTrail.Services;
-using OrchardCore.AuditTrail.Services.Models;
-using OrchardCore.AuditTrail.Indexes;
 using OrchardCore.Entities;
 using YesSql;
 
@@ -18,7 +18,7 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
 {
     public class AuditTrailContentEventDisplayDriver : AuditTrailEventSectionDisplayDriver<AuditTrailContentEvent>
     {
-        private readonly Dictionary<string, string> _latestVersionId = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _latestVersionId = new();
         private readonly IAuditTrailManager _auditTrailManager;
         private readonly ISession _session;
 

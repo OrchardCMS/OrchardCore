@@ -26,37 +26,52 @@ namespace OrchardCore.ContentFields.Settings
                 model.Hint = settings.Hint;
                 model.Required = settings.Required;
                 model.Multiple = settings.Multiple;
-                model.DisplayAllUsers = settings.DisplayAllUsers;
-                model.Roles = (await _roleService.GetRoleNamesAsync())
+                var roles = (await _roleService.GetRoleNamesAsync())
                     .Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase)
-                    .Select(x => new RoleEntry { Role = x, IsSelected = settings.DisplayedRoles.Contains(x, StringComparer.OrdinalIgnoreCase) }).ToArray();
+                    .Select(roleName => new RoleEntry
+                    {
+                        Role = roleName,
+                        IsSelected = settings.DisplayedRoles.Contains(roleName, StringComparer.OrdinalIgnoreCase)
+                    })
+                    .ToArray();
+
+                model.Roles = roles;
+                model.DisplayAllUsers = settings.DisplayAllUsers || !roles.Where(x => x.IsSelected).Any();
+
             }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
         {
             var model = new UserPickerFieldSettingsViewModel();
-            var settings = new UserPickerFieldSettings();
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                settings.Hint= model.Hint;
-                settings.Required = model.Required;
-                settings.Multiple = model.Multiple;
-                settings.DisplayAllUsers = model.DisplayAllUsers;
-                if (settings.DisplayAllUsers)
+                var settings = new UserPickerFieldSettings
                 {
-                    settings.DisplayedRoles = Array.Empty<String>();
+                    Hint = model.Hint,
+                    Required = model.Required,
+                    Multiple = model.Multiple
+                };
+
+                var selectedRoles = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToArray();
+
+                if (model.DisplayAllUsers || selectedRoles.Length == 0)
+                {
+                    // No selected role should have the same effect as display all users
+                    settings.DisplayedRoles = Array.Empty<string>();
+                    settings.DisplayAllUsers = true;
                 }
                 else
                 {
-                    settings.DisplayedRoles = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToArray();
+                    settings.DisplayedRoles = selectedRoles;
+                    settings.DisplayAllUsers = false;
                 }
 
                 context.Builder.WithSettings(settings);
             }
 
-            return Edit(partFieldDefinition);
+            return Edit(partFieldDefinition, context.Updater);
         }
     }
 }

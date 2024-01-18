@@ -8,6 +8,6 @@ namespace OrchardCore.Rules.ViewModels
         public string Script { get; set; }
 
         [BindNever]
-        public JavascriptCondition Condition { get; set; }    
+        public JavascriptCondition Condition { get; set; }
     }
 }

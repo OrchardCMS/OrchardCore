@@ -12,7 +12,7 @@
 
     if (ViewData.ModelState.TryGetValue(fieldName, out var fieldEntry))
     {
-        if (Model.Value.Type == "checkbox" || Model.Value.Type == "radio")
+        if (Model.Value.Type == "checkbox")
         {
             isChecked = fieldEntry.AttemptedValue == fieldValue;
         }
@@ -23,8 +23,9 @@
 
         if (fieldEntry.Errors.Count > 0)
         {
-            fieldClass = "form-control input-validation-error";
+            fieldClass = "form-control input-validation-error is-invalid";
         }
     }
 }
-<input id="@fieldId" name="@fieldName" type="@Model.Value.Type" class="@fieldClass" value="@fieldValue" placeholder="@Model.Value.Placeholder" @(isChecked ? "checked" :  "") />
+
+<input id="@fieldId" name="@fieldName" type="@Model.Value.Type" class="@fieldClass" value="@fieldValue" placeholder="@Model.Value.Placeholder" @(isChecked ? "checked" : "") />

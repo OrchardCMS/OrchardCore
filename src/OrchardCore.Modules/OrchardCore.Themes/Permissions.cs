@@ -7,13 +7,13 @@ namespace OrchardCore.Themes
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ApplyTheme = new Permission("ApplyTheme", "Apply a Theme");
+        public static readonly Permission ApplyTheme = new("ApplyTheme", "Apply a Theme");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
             return Task.FromResult(new[]
             {
-                ApplyTheme
+                ApplyTheme,
             }
             .AsEnumerable());
         }
@@ -25,7 +25,7 @@ namespace OrchardCore.Themes
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ApplyTheme }
+                    Permissions = new[] { ApplyTheme },
                 },
             };
         }

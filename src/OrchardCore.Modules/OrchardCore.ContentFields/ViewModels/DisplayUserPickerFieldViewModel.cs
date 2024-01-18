@@ -3,7 +3,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentFields.ViewModels
-{    
+{
     public class DisplayUserPickerFieldViewModel
     {
         public string[] UserIds => Field.UserIds;

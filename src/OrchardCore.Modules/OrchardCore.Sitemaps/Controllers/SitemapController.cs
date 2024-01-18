@@ -19,7 +19,7 @@ namespace OrchardCore.Sitemaps.Controllers
         private const int WarningLength = 47_185_920;
         private const int ErrorLength = 52_428_800;
 
-        private static readonly ConcurrentDictionary<string, Lazy<Task<Stream>>> Workers = new ConcurrentDictionary<string, Lazy<Task<Stream>>>(StringComparer.OrdinalIgnoreCase);
+        private static readonly ConcurrentDictionary<string, Lazy<Task<Stream>>> _workers = new(StringComparer.OrdinalIgnoreCase);
 
         private readonly ISitemapManager _sitemapManager;
         private readonly ISiteService _siteService;
@@ -45,7 +45,7 @@ namespace OrchardCore.Sitemaps.Controllers
             _logger = logger;
         }
 
-        public async Task<IActionResult> Index(CancellationToken cancellationToken, string sitemapId)
+        public async Task<IActionResult> Index(string sitemapId, CancellationToken cancellationToken)
         {
             var sitemap = await _sitemapManager.GetSitemapAsync(sitemapId);
             if (sitemap == null || !sitemap.Enabled)
@@ -58,7 +58,7 @@ namespace OrchardCore.Sitemaps.Controllers
             {
                 // When multiple requests occur for the same sitemap it 
                 // may still be building, so we wait for it to complete.
-                if (Workers.TryGetValue(_tenantName + sitemap.Path, out var writeTask))
+                if (_workers.TryGetValue(_tenantName + sitemap.Path, out var writeTask))
                 {
                     await writeTask.Value;
                 }
@@ -69,7 +69,7 @@ namespace OrchardCore.Sitemaps.Controllers
             }
             else
             {
-                var work = await Workers.GetOrAdd(_tenantName + sitemap.Path, x => new Lazy<Task<Stream>>(async () =>
+                var work = await _workers.GetOrAdd(_tenantName + sitemap.Path, x => new Lazy<Task<Stream>>(async () =>
                 {
                     try
                     {
@@ -108,7 +108,7 @@ namespace OrchardCore.Sitemaps.Controllers
                     }
                     finally
                     {
-                        Workers.TryRemove(_tenantName + sitemap.Path, out var writeCacheTask);
+                        _workers.TryRemove(_tenantName + sitemap.Path, out var writeCacheTask);
                     }
                 }, LazyThreadSafetyMode.ExecutionAndPublication)).Value;
 

@@ -17,18 +17,7 @@ namespace OrchardCore.DisplayManagement.Shapes
     {
         private IPageTitleBuilder _pageTitleBuilder;
 
-        public IPageTitleBuilder Title
-        {
-            get
-            {
-                if (_pageTitleBuilder == null)
-                {
-                    _pageTitleBuilder = ShellScope.Services.GetRequiredService<IPageTitleBuilder>();
-                }
-
-                return _pageTitleBuilder;
-            }
-        }
+        public IPageTitleBuilder Title => _pageTitleBuilder ??= ShellScope.Services.GetRequiredService<IPageTitleBuilder>();
 
         [Shape]
         public async Task<IHtmlContent> PageTitle()
@@ -36,7 +25,7 @@ namespace OrchardCore.DisplayManagement.Shapes
             var siteSettings = await ShellScope.Services.GetRequiredService<ISiteService>().GetSiteSettingsAsync();
 
             // We must return a page title so if the format setting is blank just use the current title unformatted
-            if (String.IsNullOrWhiteSpace(siteSettings.PageTitleFormat))
+            if (string.IsNullOrWhiteSpace(siteSettings.PageTitleFormat))
             {
                 return Title.GenerateTitle(null);
             }

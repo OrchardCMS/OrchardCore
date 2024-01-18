@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment.Core.Services;
 using OrchardCore.Deployment.Services;
 
