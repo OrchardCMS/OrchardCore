@@ -68,7 +68,7 @@ First, clone the repository using the command `git clone https://github.com/Orch
 1. Install the latest version of the .NET SDK from this page: <https://dotnet.microsoft.com/download>.
 2. Navigate to `./OrchardCore/src/OrchardCore.Cms.Web`.
 3. Run `dotnet run`.
-4. Ppen the `http://localhost:5000` URL in your browser.
+4. Open the `http://localhost:5000` URL in your browser.
 
 ### Visual Studio
 
