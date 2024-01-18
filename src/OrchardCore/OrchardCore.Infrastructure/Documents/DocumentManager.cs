@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data.Documents;
 using OrchardCore.Documents.Options;
@@ -15,23 +16,28 @@ namespace OrchardCore.Documents
     /// </summary>
     public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDocument : class, IDocument, new()
     {
-        private readonly IDistributedCache _distributedCache;
+        public const string FailoverKey = "OrchardCore_Documents_FailoverKey";
+
+        protected readonly IDistributedCache _distributedCache;
         private readonly IMemoryCache _memoryCache;
         protected readonly DocumentOptions _options;
+        private readonly ILogger _logger;
 
-        private readonly bool _isDistributed;
+        protected readonly bool _isDistributed;
         protected bool _isVolatile;
 
         public DocumentManager(
             IDistributedCache distributedCache,
             IMemoryCache memoryCache,
-            IOptionsMonitor<DocumentOptions> options)
+            IOptionsMonitor<DocumentOptions> options,
+            ILogger<DocumentManager<TDocument>> logger)
         {
             _distributedCache = distributedCache;
             _memoryCache = memoryCache;
             _options = options.Get(typeof(TDocument).FullName);
+            _logger = logger;
 
-            if (!(_distributedCache is MemoryDistributedCache))
+            if (_distributedCache is not MemoryDistributedCache)
             {
                 _isDistributed = true;
             }
@@ -46,7 +52,7 @@ namespace OrchardCore.Documents
             get
             {
                 var documentStore = (IDocumentStore)ShellScope.Get(DocumentStoreServiceType);
-                if (documentStore == null)
+                if (documentStore is null)
                 {
                     documentStore = (IDocumentStore)ShellScope.Services.GetRequiredService(DocumentStoreServiceType);
                     ShellScope.Set(DocumentStoreServiceType, documentStore);
@@ -72,7 +78,7 @@ namespace OrchardCore.Documents
             else
             {
                 var volatileCache = ShellScope.Get<TDocument>(typeof(TDocument));
-                if (volatileCache != null)
+                if (volatileCache is not null)
                 {
                     document = volatileCache;
                 }
@@ -87,6 +93,7 @@ namespace OrchardCore.Documents
             }
 
             document.Identifier = IdGenerator.GenerateId();
+            document.IsReadOnly = false;
 
             return document;
         }
@@ -103,10 +110,31 @@ namespace OrchardCore.Documents
                 _ = DocumentStore;
             }
 
-            // May call an async IO if using a distributed cache.
-            var document = await GetInternalAsync();
+            TDocument document = null;
 
-            if (document == null)
+            var failover = _isDistributed && _memoryCache.Get<bool>(FailoverKey);
+            try
+            {
+                // May call an async IO if using a distributed cache.
+                document = await GetInternalAsync(failover);
+            }
+            catch (Exception e)
+            {
+                if (!_isDistributed)
+                {
+                    throw;
+                }
+
+                _logger.LogError(e, "Failed to read the '{DocumentName}' from the distributed cache", typeof(TDocument).Name);
+
+                failover = true;
+                _memoryCache.Set(FailoverKey, failover, new MemoryCacheEntryOptions()
+                {
+                    AbsoluteExpirationRelativeToNow = _options.FailoverRetryLatency
+                });
+            }
+
+            if (document is null)
             {
                 var cacheable = true;
 
@@ -123,15 +151,31 @@ namespace OrchardCore.Documents
 
                 if (cacheable)
                 {
-                    await SetInternalAsync(document);
+                    await SetInternalAsync(document, failover);
                 }
             }
 
             return document;
         }
 
-        public Task UpdateAsync(TDocument document, Func<TDocument, Task> afterUpdateAsync = null)
+        public async Task UpdateAsync(TDocument document, Func<TDocument, Task> afterUpdateAsync = null)
         {
+            if (_isDistributed)
+            {
+                try
+                {
+                    _ = await _distributedCache.GetStringAsync(_options.CacheIdKey);
+                }
+                catch
+                {
+                    await DocumentStore.CancelAsync();
+
+                    _logger.LogError("Can't update the '{DocumentName}' if not able to access the distributed cache", typeof(TDocument).Name);
+
+                    throw;
+                }
+            }
+
             if (_memoryCache.TryGetValue<TDocument>(_options.CacheKey, out var cached) && document == cached)
             {
                 throw new InvalidOperationException("Can't update a cached object");
@@ -141,9 +185,10 @@ namespace OrchardCore.Documents
 
             if (!_isVolatile)
             {
-                return DocumentStore.UpdateAsync(document, async document =>
+                await DocumentStore.UpdateAsync(document, async document =>
                 {
-                    await SetInternalAsync(document);
+                    // A non volatile document can be invalidated.
+                    await InvalidateInternalAsync(document);
 
                     if (afterUpdateAsync != null)
                     {
@@ -151,6 +196,8 @@ namespace OrchardCore.Documents
                     }
                 },
                 _options.CheckConcurrency.Value);
+
+                return;
             }
 
             // Set the scoped cache in case of multiple updates.
@@ -159,18 +206,19 @@ namespace OrchardCore.Documents
             // But still update the shared cache after committing.
             DocumentStore.AfterCommitSuccess<TDocument>(async () =>
             {
+                // A volatile document can't be invalidated.
                 await SetInternalAsync(document);
 
-                if (afterUpdateAsync != null)
+                if (afterUpdateAsync is not null)
                 {
                     await afterUpdateAsync(document);
                 }
             });
 
-            return Task.CompletedTask;
+            return;
         }
 
-        private async Task<TDocument> GetInternalAsync()
+        private async Task<TDocument> GetInternalAsync(bool failover = false)
         {
             string id;
             if (_isDistributed)
@@ -179,6 +227,12 @@ namespace OrchardCore.Documents
                 id = await _memoryCache.GetOrCreateAsync(_options.CacheIdKey, entry =>
                 {
                     entry.AbsoluteExpirationRelativeToNow = _options.SynchronizationLatency;
+
+                    if (failover)
+                    {
+                        return Task.FromResult<string>(null);
+                    }
+
                     return _distributedCache.GetStringAsync(_options.CacheIdKey);
                 });
             }
@@ -188,7 +242,7 @@ namespace OrchardCore.Documents
                 id = _memoryCache.Get<string>(_options.CacheIdKey);
             }
 
-            if (id == null)
+            if (id is null)
             {
                 return null;
             }
@@ -202,6 +256,11 @@ namespace OrchardCore.Documents
             {
                 if (document.Identifier == id)
                 {
+                    if (failover)
+                    {
+                        return document;
+                    }
+
                     if (_isDistributed && (_options?.SlidingExpiration.HasValue ?? false))
                     {
                         await _distributedCache.RefreshAsync(_options.CacheKey);
@@ -216,9 +275,14 @@ namespace OrchardCore.Documents
                 return null;
             }
 
+            if (failover)
+            {
+                return null;
+            }
+
             document = await GetFromDistributedCacheAsync();
 
-            if (document == null)
+            if (document is null)
             {
                 return null;
             }
@@ -241,9 +305,14 @@ namespace OrchardCore.Documents
             return document;
         }
 
-        protected async Task SetInternalAsync(TDocument document)
+        protected async Task SetInternalAsync(TDocument document, bool failover = false)
         {
-            await UpdateDistributedCacheAsync(document);
+            document.IsReadOnly = true;
+
+            if (!failover)
+            {
+                await UpdateDistributedCacheAsync(document);
+            }
 
             _memoryCache.Set(_options.CacheKey, document, new MemoryCacheEntryOptions()
             {
@@ -251,6 +320,17 @@ namespace OrchardCore.Documents
                 AbsoluteExpirationRelativeToNow = _options.AbsoluteExpirationRelativeToNow,
                 SlidingExpiration = _options.SlidingExpiration
             });
+
+            if (failover)
+            {
+                // Cache the id locally so that the memory cache is used during the 'FailoverRetryLatency'.
+                _memoryCache.Set(_options.CacheIdKey, document.Identifier ?? "NULL", new MemoryCacheEntryOptions()
+                {
+                    AbsoluteExpirationRelativeToNow = _options.FailoverRetryLatency
+                });
+
+                return;
+            }
 
             if (_isDistributed)
             {
@@ -265,15 +345,20 @@ namespace OrchardCore.Documents
 
                 if (stored.Identifier != document.Identifier)
                 {
-                    if (_isDistributed)
-                    {
-                        await _distributedCache.RemoveAsync(_options.CacheIdKey);
-                    }
-                    else
-                    {
-                        _memoryCache.Remove(_options.CacheIdKey);
-                    }
+                    await InvalidateInternalAsync(document);
                 }
+            }
+        }
+
+        protected async Task InvalidateInternalAsync(TDocument document, bool failover = false)
+        {
+            if (_isDistributed)
+            {
+                await _distributedCache.RemoveAsync(_options.CacheIdKey);
+            }
+            else
+            {
+                _memoryCache.Remove(_options.CacheIdKey);
             }
         }
 

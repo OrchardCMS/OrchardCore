@@ -6,8 +6,8 @@ namespace OrchardCore.ContentTypes
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ViewContentTypes = new Permission("ViewContentTypes", "View content types.");
-        public static readonly Permission EditContentTypes = new Permission("EditContentTypes", "Edit content types.", isSecurityCritical: true);
+        public static readonly Permission ViewContentTypes = new("ViewContentTypes", "View content types.");
+        public static readonly Permission EditContentTypes = new("EditContentTypes", "Edit content types.", isSecurityCritical: true);
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
@@ -16,20 +16,22 @@ namespace OrchardCore.ContentTypes
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
         {
-            return new[] {
-                new PermissionStereotype {
+            return new[]
+            {
+                new PermissionStereotype
+                {
                     Name = "Administrator",
-                    Permissions = GetPermissions()
-                }
+                    Permissions = GetPermissions(),
+                },
             };
         }
 
-        private IEnumerable<Permission> GetPermissions()
+        private static IEnumerable<Permission> GetPermissions()
         {
             return new[]
             {
                 ViewContentTypes,
-                EditContentTypes
+                EditContentTypes,
             };
         }
     }

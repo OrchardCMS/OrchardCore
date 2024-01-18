@@ -2,6 +2,19 @@
 
 This module provides Content Management services.
 
+## CommonPart
+
+Attach this part to your content items to edit the common properties like `CreatedUtc` and `Owner` of a `ContentItem`.
+
+The following properties are available on `CommonPart`:
+
+| Name | Type | Description |
+| -----| ---- |------------ |
+| `CreatedUtc` | `DateTime` | The HTML content in the body. |
+| `Owner` | `string` | The HTML content in the body. |
+| `Content` | | The raw content of the part. |
+| `ContentItem` | | The content item containing this part. |
+
 ## Liquid
 
 You can access content items from liquid views and templates by using the `Content` property.  
@@ -70,6 +83,7 @@ The `console_log` liquid filter can be used to dump data from well known propert
 ```
 
 Well known properties include
+
 - Strings
 - JTokens
 - Content Items (from the `Model.ContentItem` property)
@@ -104,6 +118,7 @@ The `ConsoleLog` extension method can be used to dump data from well known prope
 `@Orchard.ConsoleLog(Model.ContentItem as object)` noting that we cast to an object, as extension methods do not support dynamic dispatching.
 
 Well known properties include
+
 - Strings
 - JTokens
 - Content Items (from the `Model.ContentItem` property)
@@ -221,7 +236,7 @@ It's also not currently possible to order responses by their parts or custom fie
 
 #### Filtering
 
-When querying all content items of a type you can supply different parameters to the where argument to constrain the data in the response according to your requirements. 
+When querying all content items of a type you can supply different parameters to the where argument to constrain the data in the response according to your requirements.
 The available options depend on the scalar and part fields defined on the type in question.
 
 ##### Single Filters
@@ -407,3 +422,9 @@ query {
   }
 }
 ```
+
+## Videos
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/j6xuupq9FYY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/wbTEUl_N0Lk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

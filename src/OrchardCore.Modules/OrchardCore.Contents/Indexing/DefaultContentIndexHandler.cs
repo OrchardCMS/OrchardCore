@@ -8,54 +8,45 @@ namespace OrchardCore.Contents.Indexing
         public Task BuildIndexAsync(BuildIndexContext context)
         {
             context.DocumentIndex.Set(
-                IndexingConstants.ContentItemIdKey,
-                context.ContentItem.ContentItemId,
-                DocumentIndexOptions.Store);
-
-            context.DocumentIndex.Set(
-                IndexingConstants.ContentItemVersionIdKey,
-                context.ContentItem.ContentItemVersionId,
-                DocumentIndexOptions.Store);
-
-            context.DocumentIndex.Set(
                 IndexingConstants.ContentTypeKey,
                 context.ContentItem.ContentType,
-                DocumentIndexOptions.Store);
+                DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
                 IndexingConstants.CreatedUtcKey,
                 context.ContentItem.CreatedUtc,
-                DocumentIndexOptions.Store);
+                DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
                 IndexingConstants.LatestKey,
                 context.ContentItem.Latest,
-                DocumentIndexOptions.Store);
+                DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
                 IndexingConstants.OwnerKey,
                 context.ContentItem.Owner,
-                DocumentIndexOptions.Store);
+                DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
                 IndexingConstants.AuthorKey,
                 context.ContentItem.Author,
-                DocumentIndexOptions.Store);
+                DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
                 IndexingConstants.ModifiedUtcKey,
                 context.ContentItem.ModifiedUtc,
-                DocumentIndexOptions.Store);
+                DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
+            // We need to store because of ContentPickerResultProvider(s)
             context.DocumentIndex.Set(
                 IndexingConstants.PublishedKey,
                 context.ContentItem.Published,
-                DocumentIndexOptions.Store);
+                DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
                 IndexingConstants.PublishedUtcKey,
                 context.ContentItem.PublishedUtc,
-                DocumentIndexOptions.Store);
+                DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
             return Task.CompletedTask;
         }

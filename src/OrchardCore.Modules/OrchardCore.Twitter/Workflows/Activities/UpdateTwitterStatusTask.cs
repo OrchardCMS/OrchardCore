@@ -9,11 +9,11 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Twitter.Workflows.Activities
 {
-    public class UpdateTwitterStatusTask : TaskActivity
+    public class UpdateTwitterStatusTask : TaskActivity<UpdateTwitterStatusTask>
     {
         private readonly TwitterClient _twitterClient;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public UpdateTwitterStatusTask(
             TwitterClient twitterClient,
@@ -25,9 +25,6 @@ namespace OrchardCore.Twitter.Workflows.Activities
             _expressionEvaluator = expressionEvaluator;
             S = localizer;
         }
-
-        // The technical name of the activity. Activities on a workflow definition reference this name.
-        public override string Name => nameof(UpdateTwitterStatusTask);
 
         public override LocalizedString DisplayText => S["Update Twitter Status Task"];
 

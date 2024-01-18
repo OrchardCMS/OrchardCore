@@ -31,5 +31,10 @@ namespace OrchardCore.ContentManagement.Metadata.Settings
         /// Used to determine if this content type supports custom permissions
         /// </summary>
         public bool Securable { get; set; }
+
+        /// <summary>
+        /// Gets or sets the description name of this content type.
+        /// </summary>
+        public string Description { get; set; }
     }
 }

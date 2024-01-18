@@ -1,4 +1,7 @@
-using Microsoft.Extensions.Hosting;
+using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
@@ -94,6 +97,27 @@ namespace Microsoft.Extensions.DependencyInjection
         public static OrchardCoreBuilder AddBackgroundService(this OrchardCoreBuilder builder)
         {
             builder.ApplicationServices.AddHostedService<ModularBackgroundService>();
+
+            builder.ApplicationServices
+                .AddOptions<BackgroundServiceOptions>()
+                .Configure<IConfiguration>((options, config) => config
+                    .Bind("OrchardCore:OrchardCore_BackgroundService", options));
+
+            builder.Configure(app =>
+            {
+                app.Use((context, next) =>
+                {
+                    // In the background only the endpoints middlewares need to be executed.
+                    if (context.Items.ContainsKey("IsBackground"))
+                    {
+                        // Shortcut the tenant pipeline.
+                        return Task.CompletedTask;
+                    }
+
+                    return next(context);
+                });
+            },
+            order: int.MinValue);
 
             return builder;
         }

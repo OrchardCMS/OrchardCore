@@ -26,7 +26,7 @@ namespace OrchardCore.Security
             // SiteOwner permission grants them all
             grantingNames.Add(StandardPermissions.SiteOwner.Name);
 
-            return claims.Any(claim => String.Equals(claim.Type, Permission.ClaimType, StringComparison.OrdinalIgnoreCase)
+            return claims.Any(claim => string.Equals(claim.Type, Permission.ClaimType, StringComparison.OrdinalIgnoreCase)
                 && grantingNames.Contains(claim.Value));
         }
 
@@ -41,7 +41,7 @@ namespace OrchardCore.Security
                 foreach (var impliedBy in permission.ImpliedBy)
                 {
                     // Avoid potential recursion
-                    if (stack.Contains(impliedBy.Name))
+                    if (impliedBy == null || stack.Contains(impliedBy.Name))
                     {
                         continue;
                     }

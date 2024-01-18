@@ -4,7 +4,7 @@ Enabling the `OrchardCore.Roles` module will allow you to manage the user roles.
 
 ## Predefined Roles
 
-Orchard Core come up with the following predefined roles:
+Orchard Core come up with the following predefined permission stereotypes:
 
 | Name | Description |
 | --- | --- |
@@ -18,7 +18,7 @@ Orchard Core come up with the following predefined roles:
 
 ## Roles Configuration
 
-Roles can be configured through the roles menu in the admin dashboard, but also through a recipe step.
+Roles can be created and configured through the roles menu in the admin dashboard, but also through a recipe step. Note that roles for features are not predefined. They are created out of predefined permission stereotypes.
 
 A sample of a roles configuration step:
 

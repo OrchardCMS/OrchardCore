@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
 
 namespace OrchardCore.ContentManagement.Display.ContentDisplay

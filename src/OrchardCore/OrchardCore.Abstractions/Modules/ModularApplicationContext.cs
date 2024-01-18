@@ -6,17 +6,12 @@ using Microsoft.Extensions.Hosting;
 
 namespace OrchardCore.Modules
 {
-    public interface IApplicationContext
-    {
-        Application Application { get; }
-    }
-
     public class ModularApplicationContext : IApplicationContext
     {
         private readonly IHostEnvironment _environment;
         private readonly IEnumerable<IModuleNamesProvider> _moduleNamesProviders;
         private Application _application;
-        private static readonly object _initLock = new object();
+        private static readonly object _initLock = new();
 
         public ModularApplicationContext(IHostEnvironment environment, IEnumerable<IModuleNamesProvider> moduleNamesProviders)
         {
@@ -39,18 +34,17 @@ namespace OrchardCore.Modules
             {
                 lock (_initLock)
                 {
-                    if (_application == null)
-                    {
-                        _application = new Application(_environment, GetModules());
-                    }
+                    _application ??= new Application(_environment, GetModules());
                 }
             }
         }
 
         private IEnumerable<Module> GetModules()
         {
-            var modules = new ConcurrentBag<Module>();
-            modules.Add(new Module(_environment.ApplicationName, true));
+            var modules = new ConcurrentBag<Module>
+            {
+                new Module(_environment.ApplicationName, true),
+            };
 
             var names = _moduleNamesProviders
                 .SelectMany(p => p.GetModuleNames())

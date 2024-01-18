@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
-using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.ContentManagement;
+using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.Entities;
 
 namespace OrchardCore.Contents.AuditTrail.Services

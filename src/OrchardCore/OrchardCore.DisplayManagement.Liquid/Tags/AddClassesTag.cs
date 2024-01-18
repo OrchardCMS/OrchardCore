@@ -10,7 +10,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
     public class AddClassesTag
     {
-        public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, Expression> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, Expression> arguments, TextWriter _1, TextEncoder _2, TemplateContext context)
         {
             var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
 
@@ -29,7 +29,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 }
                 else if (classes.Type == FluidValues.Array)
                 {
-                    foreach (var value in classes.Enumerate())
+                    foreach (var value in classes.Enumerate(context))
                     {
                         shape.Classes.Add(value.ToStringValue());
                     }

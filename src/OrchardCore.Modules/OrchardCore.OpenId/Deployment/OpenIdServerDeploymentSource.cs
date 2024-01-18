@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
@@ -47,6 +48,8 @@ namespace OrchardCore.OpenId.Deployment
                 EnableLogoutEndpoint = !string.IsNullOrWhiteSpace(settings.LogoutEndpointPath),
                 EnableTokenEndpoint = !string.IsNullOrWhiteSpace(settings.TokenEndpointPath),
                 EnableUserInfoEndpoint = !string.IsNullOrWhiteSpace(settings.UserinfoEndpointPath),
+                EnableIntrospectionEndpoint = !string.IsNullOrWhiteSpace(settings.IntrospectionEndpointPath),
+                EnableRevocationEndpoint = !string.IsNullOrWhiteSpace(settings.RevocationEndpointPath),
 
                 AllowAuthorizationCodeFlow = settings.AllowAuthorizationCodeFlow,
                 AllowClientCredentialsFlow = settings.AllowClientCredentialsFlow,
@@ -58,6 +61,7 @@ namespace OrchardCore.OpenId.Deployment
                 DisableAccessTokenEncryption = settings.DisableAccessTokenEncryption,
                 DisableRollingRefreshTokens = settings.DisableRollingRefreshTokens,
                 UseReferenceAccessTokens = settings.UseReferenceAccessTokens,
+                RequireProofKeyForCodeExchange = settings.RequireProofKeyForCodeExchange,
             };
 
             // Use nameof(OpenIdServerSettings) as name,

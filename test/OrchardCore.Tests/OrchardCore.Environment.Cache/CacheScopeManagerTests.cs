@@ -1,7 +1,4 @@
-using System;
-using System.Linq;
 using OrchardCore.Environment.Cache;
-using Xunit;
 
 namespace OrchardCore.Tests.Environment.Cache
 {

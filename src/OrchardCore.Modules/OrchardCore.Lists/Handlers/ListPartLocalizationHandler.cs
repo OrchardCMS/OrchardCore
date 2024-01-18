@@ -40,7 +40,7 @@ namespace OrchardCore.Lists.Drivers
                     var cp = item.As<ContainedPart>();
                     cp.ListContentItemId = context.ContentItem.ContentItemId;
                     cp.Apply();
-                    _session.Save(item);
+                    await _session.SaveAsync(item);
                 }
             }
         }

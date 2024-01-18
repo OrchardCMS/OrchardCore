@@ -58,7 +58,7 @@ namespace OrchardCore.DisplayManagement.Zones
 
                 if (!xIsInt && !yIsInt)
                 {
-                    return String.Compare(string.Join(".", xParts), string.Join(".", yParts), StringComparison.OrdinalIgnoreCase);
+                    return string.Compare(string.Join(".", xParts), string.Join(".", yParts), StringComparison.OrdinalIgnoreCase);
                 }
 
                 // Non-int after int or greater x pos than y pos (which is an int)

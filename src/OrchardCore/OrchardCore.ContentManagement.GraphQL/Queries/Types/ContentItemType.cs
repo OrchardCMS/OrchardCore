@@ -37,8 +37,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 .Name("render")
                 .ResolveLockedAsync(async context =>
                 {
-                    var userContext = (GraphQLContext)context.UserContext;
-                    var serviceProvider = userContext.ServiceProvider;
+                    var serviceProvider = context.RequestServices;
 
                     // Build shape
                     var displayManager = serviceProvider.GetRequiredService<IContentItemDisplayManager>();
@@ -66,7 +65,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
         public override FieldType AddField(FieldType fieldType)
         {
-            if (!_options.ShouldSkip(this.GetType(), fieldType.Name))
+            if (!_options.ShouldSkip(GetType(), fieldType.Name))
             {
                 return base.AddField(fieldType);
             }

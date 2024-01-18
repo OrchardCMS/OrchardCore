@@ -8,11 +8,11 @@ using YesSql;
 
 namespace OrchardCore.Workflows.Activities
 {
-    public class CommitTransactionTask : TaskActivity
+    public class CommitTransactionTask : TaskActivity<CommitTransactionTask>
     {
         private readonly ISession _session;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public CommitTransactionTask(
             ISession session,
@@ -23,8 +23,6 @@ namespace OrchardCore.Workflows.Activities
             _updateModelAccessor = updateModelAccessor;
             S = localizer;
         }
-
-        public override string Name => nameof(CommitTransactionTask);
 
         public override LocalizedString DisplayText => S["Commit Transaction Task"];
 

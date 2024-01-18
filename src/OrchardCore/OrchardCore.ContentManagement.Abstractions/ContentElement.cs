@@ -22,7 +22,7 @@ namespace OrchardCore.ContentManagement
         }
 
         [JsonIgnore]
-        protected internal Dictionary<string, ContentElement> Elements => _elements = _elements ?? new Dictionary<string, ContentElement>();
+        protected internal Dictionary<string, ContentElement> Elements => _elements ??= new Dictionary<string, ContentElement>();
 
         [JsonIgnore]
         public dynamic Content { get { return Data; } }
