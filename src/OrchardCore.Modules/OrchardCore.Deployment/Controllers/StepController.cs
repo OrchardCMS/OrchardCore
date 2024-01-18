@@ -23,15 +23,14 @@ namespace OrchardCore.Deployment.Controllers
         private readonly ISession _session;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+
         protected readonly IHtmlLocalizer H;
-        protected readonly dynamic New;
 
         public StepController(
             IAuthorizationService authorizationService,
             IDisplayManager<DeploymentStep> displayManager,
             IEnumerable<IDeploymentStepFactory> factories,
             ISession session,
-            IShapeFactory shapeFactory,
             IHtmlLocalizer<StepController> htmlLocalizer,
             INotifier notifier,
             IUpdateModelAccessor updateModelAccessor)
@@ -42,7 +41,6 @@ namespace OrchardCore.Deployment.Controllers
             _session = session;
             _notifier = notifier;
             _updateModelAccessor = updateModelAccessor;
-            New = shapeFactory;
             H = htmlLocalizer;
         }
 
@@ -75,7 +73,7 @@ namespace OrchardCore.Deployment.Controllers
                 DeploymentStep = step,
                 DeploymentStepId = step.Id,
                 DeploymentStepType = type,
-                Editor = await _displayManager.BuildEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "")
+                Editor = await _displayManager.BuildEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: true, string.Empty, string.Empty)
             };
 
             model.Editor.DeploymentStep = step;
