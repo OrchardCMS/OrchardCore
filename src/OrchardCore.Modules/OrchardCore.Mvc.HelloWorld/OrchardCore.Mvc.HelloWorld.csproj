@@ -4,22 +4,13 @@
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <!-- NuGet properties-->
     <Title>OrchardCore Hello World MVC module </Title>
-    <Description>$(OCFrameworkDescription)
+    <Description>
+      $(OCFrameworkDescription)
 
-    Sample Orchard Core Framework module for MVC.</Description>
+      Sample Orchard Core Framework module for MVC.
+    </Description>
     <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
   </PropertyGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Remove="Views\_ViewStart.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Views\_ViewStart.cshtml">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
