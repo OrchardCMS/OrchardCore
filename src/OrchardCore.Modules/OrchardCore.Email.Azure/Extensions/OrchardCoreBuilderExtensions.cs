@@ -2,20 +2,19 @@ using Microsoft.Extensions.Configuration;
 using OrchardCore.Email.Azure;
 using OrchardCore.Environment.Shell.Configuration;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class OrchardCoreBuilderExtensions
 {
-    public static class OrchardCoreBuilderExtensions
+    public static OrchardCoreBuilder ConfigureAzureEmailSettings(this OrchardCoreBuilder builder)
     {
-        public static OrchardCoreBuilder ConfigureAzureEmailSettings(this OrchardCoreBuilder builder)
+        builder.ConfigureServices((tenantServices, serviceProvider) =>
         {
-            builder.ConfigureServices((tenantServices, serviceProvider) =>
-            {
-                var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_Email_Azure");
+            var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_Email_Azure");
 
-                tenantServices.PostConfigure<AzureEmailSettings>(settings => configurationSection.Bind(settings));
-            });
+            tenantServices.PostConfigure<AzureEmailSettings>(settings => configurationSection.Bind(settings));
+        });
 
-            return builder;
-        }
+        return builder;
     }
 }

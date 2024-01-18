@@ -2,20 +2,19 @@ using Microsoft.Extensions.Configuration;
 using OrchardCore.Email;
 using OrchardCore.Environment.Shell.Configuration;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class OrchardCoreBuilderExtensions
 {
-    public static class OrchardCoreBuilderExtensions
+    public static OrchardCoreBuilder ConfigureEmailSettings(this OrchardCoreBuilder builder)
     {
-        public static OrchardCoreBuilder ConfigureEmailSettings(this OrchardCoreBuilder builder)
+        builder.ConfigureServices((tenantServices, serviceProvider) =>
         {
-            builder.ConfigureServices((tenantServices, serviceProvider) =>
-            {
-                var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_Email");
+            var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_Email");
 
-                tenantServices.PostConfigure<EmailSettings>(settings => configurationSection.Bind(settings));
-            });
+            tenantServices.PostConfigure<EmailSettings>(settings => configurationSection.Bind(settings));
+        });
 
-            return builder;
-        }
+        return builder;
     }
 }
