@@ -1,18 +1,16 @@
-using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Email.Services
+namespace OrchardCore.Email.Services;
+
+public class EmailSettingsConfiguration(ISiteService site) : IConfigureOptions<EmailSettings>
 {
-    public class EmailSettingsConfiguration(ISiteService site) : IAsyncConfigureOptions<EmailSettings>
+    private readonly ISiteService _site = site;
+
+    public void Configure(EmailSettings options)
     {
-        private readonly ISiteService _site = site;
+        var settings = _site.GetSiteSettingsAsync().GetAwaiter().GetResult().As<EmailSettings>();
 
-        public async ValueTask ConfigureAsync(EmailSettings options)
-        {
-            var settings = (await _site.GetSiteSettingsAsync()).As<EmailSettings>();
-
-            options.DefaultSender = settings.DefaultSender;
-        }
+        options.DefaultSender = settings.DefaultSender;
     }
 }

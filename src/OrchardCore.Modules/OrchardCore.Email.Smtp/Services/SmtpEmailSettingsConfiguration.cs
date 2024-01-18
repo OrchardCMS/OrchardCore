@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -9,15 +8,15 @@ namespace OrchardCore.Email.Smtp.Services;
 public class SmtpEmailSettingsConfiguration(
     ISiteService site,
     IDataProtectionProvider dataProtectionProvider,
-    ILogger<SmtpEmailSettingsConfiguration> logger) : IAsyncConfigureOptions<SmtpEmailSettings>
+    ILogger<SmtpEmailSettingsConfiguration> logger) : IConfigureOptions<SmtpEmailSettings>
 {
     private readonly ISiteService _site = site;
     private readonly IDataProtectionProvider _dataProtectionProvider = dataProtectionProvider;
     private readonly ILogger _logger = logger;
 
-    public async ValueTask ConfigureAsync(SmtpEmailSettings options)
+    public void Configure(SmtpEmailSettings options)
     {
-        var settings = (await _site.GetSiteSettingsAsync()).As<SmtpEmailSettings>();
+        var settings = _site.GetSiteSettingsAsync().GetAwaiter().GetResult().As<SmtpEmailSettings>();
 
         options.DefaultSender = settings.DefaultSender;
         options.DeliveryMethod = settings.DeliveryMethod;

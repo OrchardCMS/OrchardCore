@@ -21,12 +21,12 @@ namespace OrchardCore.Email.Smtp.Controllers
             IHtmlLocalizer<AdminController> h,
             IAuthorizationService authorizationService,
             INotifier notifier,
-            SmtpEmailService smtpService)
+            SmtpEmailService smtpEmailService)
         {
             H = h;
             _authorizationService = authorizationService;
             _notifier = notifier;
-            _emailService = smtpService;
+            _emailService = smtpEmailService;
         }
 
         [HttpGet]

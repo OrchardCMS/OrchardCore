@@ -1,11 +1,12 @@
 using OrchardCore.Email;
+using OrchardCore.Email.Services;
 using OrchardCore.Email.Smtp;
 using OrchardCore.Email.Smtp.Services;
 using OrchardCore.Email.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
-namespace OrchardCore.Tests.Modules.OrchardCore.Email.Workflows
+namespace OrchardCore.Modules.Email.Workflows.Tests
 {
     public class EmailTaskTests
     {
@@ -15,9 +16,18 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email.Workflows
         public async Task ExecuteTask_WhenToAndCcAndBccAreNotSet_ShouldFails()
         {
             // Arrange
-            var smtpService = CreateSmtpService(new SmtpEmailSettings());
+            var emailSettingsOptions = Options.Create(new SmtpEmailSettings());
+            var emailMessageValidator = new EmailMessageValidator(
+                new EmailAddressValidator(),
+                emailSettingsOptions,
+                Mock.Of<IStringLocalizer<EmailMessageValidator>>());
+            var smtpDeliveryService = new SmtpEmailDeliveryService(
+                emailSettingsOptions,
+                Mock.Of<ILogger<SmtpEmailDeliveryService>>(),
+                Mock.Of<IStringLocalizer<SmtpEmailDeliveryService>>());
+            var emailService = new EmailService(emailMessageValidator, smtpDeliveryService);
             var task = new EmailTask(
-                smtpService,
+                emailService,
                 new SimpleWorkflowExpressionEvaluator(),
                 Mock.Of<IStringLocalizer<EmailTask>>(),
                 HtmlEncoder.Default)
@@ -43,13 +53,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email.Workflows
             // Assert
             Assert.Equal("Failed", result.Outcomes.First());
         }
-
-        private static SmtpEmailService CreateSmtpService(SmtpEmailSettings settings) => new(
-            Options.Create(settings),
-            Mock.Of<ILogger<SmtpEmailService>>(),
-            Mock.Of<IStringLocalizer<SmtpEmailService>>(),
-            new EmailAddressValidator()
-        );
 
         private class SimpleWorkflowExpressionEvaluator : IWorkflowExpressionEvaluator
         {

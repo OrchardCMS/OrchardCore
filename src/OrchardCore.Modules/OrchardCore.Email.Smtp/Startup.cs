@@ -31,10 +31,11 @@ public class Startup : StartupBase
         services.AddScoped<IPermissionProvider, Permissions>();
         services.AddScoped<IDisplayDriver<ISite>, SmtpSettingsDisplayDriver>();
         services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddScoped<SmtpEmailDeliveryService>();
+        services.AddScoped<IEmailDeliveryService>(sp => sp.GetService<SmtpEmailDeliveryService>());
         services.AddScoped<SmtpEmailService>();
-        services.AddScoped<IEmailService>(sp => sp.GetService<SmtpEmailService>());
 
-        services.AddTransient<IAsyncConfigureOptions<SmtpEmailSettings>, SmtpEmailSettingsConfiguration>();
+        services.AddTransient<IConfigureOptions<SmtpEmailSettings>, SmtpEmailSettingsConfiguration>();
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

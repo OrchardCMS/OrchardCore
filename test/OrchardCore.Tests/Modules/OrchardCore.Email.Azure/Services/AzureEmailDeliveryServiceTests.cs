@@ -1,6 +1,6 @@
 namespace OrchardCore.Email.Azure.Services.Tests;
 
-public class AzureEmailServiceTests
+public class AzureEmailDeliveryServiceTests
 {
     [Fact(Skip = "Configure the default sender and connection string for Email Communication Services (ECS) before run this test.")]
     public async Task SendEmailShouldSucceed()
@@ -11,11 +11,10 @@ public class AzureEmailServiceTests
             DefaultSender = "<<Sender>>",
             ConnectionString = "<<ConnectionString>>"
         });
-        var emailService = new AzureEmailService(
+        var emailDeliveryService = new AzureEmailDeliveryService(
             emailOptions,
-            Mock.Of<NullLogger<AzureEmailService>>(),
-            Mock.Of<IStringLocalizer<AzureEmailService>>(),
-            new EmailAddressValidator());
+            Mock.Of<NullLogger<AzureEmailDeliveryService>>(),
+            Mock.Of<IStringLocalizer<AzureEmailDeliveryService>>());
         var message = new MailMessage
         {
             To = "test@orchardcore.net",
@@ -24,7 +23,7 @@ public class AzureEmailServiceTests
         };
 
         // Act
-        var result = await emailService.SendAsync(message);
+        var result = await emailDeliveryService.DeliverAsync(message);
 
         // Assert
         Assert.True(result.Succeeded);

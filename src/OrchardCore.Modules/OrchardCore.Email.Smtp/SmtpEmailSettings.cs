@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Email.Smtp;
 
 /// <summary>
 /// Represents a settings for SMTP.
 /// </summary>
-public class SmtpEmailSettings : EmailSettings, IValidatableObject
+public class SmtpEmailSettings : EmailSettings
 {
     /// <summary>
     /// Gets or sets the mail delivery method.

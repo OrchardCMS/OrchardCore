@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Mail;
 using System.Threading.Tasks;
 using Azure;
 using Azure.Communication.Email;
@@ -13,18 +12,7 @@ using OrchardCore.Email.Services;
 
 namespace OrchardCore.Email.Azure.Services;
 
-/// <summary>
-/// Represents an Azure service that allows to send emails.
-/// </summary>
-/// <param name="options">The <see cref="IOptions{AzureEmailSettings}"/>.</param>
-/// <param name="logger">The <see cref="ILogger{AzureEmailService}"/>.</param>
-/// <param name="stringLocalizer">The <see cref="IStringLocalizer{AzureEmailService}"/>.</param>
-/// <param name="emailAddressValidator">The <see cref="IEmailAddressValidator"/>.</param>
-public class AzureEmailService(
-    IOptions<AzureEmailSettings> options,
-    ILogger<AzureEmailService> logger,
-    IStringLocalizer<AzureEmailService> stringLocalizer,
-    IEmailAddressValidator emailAddressValidator) : EmailServiceBase<AzureEmailSettings>(options, logger, stringLocalizer, emailAddressValidator)
+public class AzureEmailDeliveryService : IEmailDeliveryService
 {
     // https://learn.microsoft.com/en-us/azure/communication-services/concepts/email/email-attachment-allowed-mime-types
     private static readonly Dictionary<string, string> _allowedMimeTypes = new()
@@ -93,35 +81,41 @@ public class AzureEmailService(
         { ".zip", "application/zip" }
     };
 
-    /// <inheritdoc/>
-    public override async Task<EmailResult> SendAsync(MailMessage message)
+    private readonly AzureEmailSettings _emailSettings;
+    private readonly IStringLocalizer S;
+    private readonly ILogger _logger;
+
+    public AzureEmailDeliveryService(
+        IOptions<AzureEmailSettings> options,
+        ILogger<AzureEmailDeliveryService> logger,
+        IStringLocalizer<AzureEmailDeliveryService> stringLocalizer)
+    {
+        _emailSettings = options.Value;
+        _logger = logger;
+        S = stringLocalizer;
+    }
+
+    public async Task<EmailResult> DeliverAsync(MailMessage message)
     {
         ArgumentNullException.ThrowIfNull(message);
 
-        if (Settings == null)
+        if (_emailSettings == null)
         {
             return EmailResult.Failed(S["Azure Email settings must be configured before an email can be sent."]);
         }
 
         EmailResult result;
-        var client = new EmailClient(Settings.ConnectionString);
+        var client = new EmailClient(_emailSettings.ConnectionString);
 
         try
         {
             var senderAddress = string.IsNullOrWhiteSpace(message.From)
-                ? Settings.DefaultSender
+                ? _emailSettings.DefaultSender
                 : message.From;
 
             if (!string.IsNullOrWhiteSpace(senderAddress))
             {
                 message.From = senderAddress;
-            }
-
-            ValidateMailMessage(message, out var errors);
-
-            if (errors.Count > 0)
-            {
-                return EmailResult.Failed([.. errors]);
             }
 
             var emailMessage = FromMailMessage(message, out result);
@@ -133,7 +127,7 @@ public class AzureEmailService(
         catch (Exception ex)
         {
             result = EmailResult.Failed(S["An error occurred while sending an email: '{0}'", ex.Message]);
-            Logger.LogError(ex, message: ex.Message);
+            _logger.LogError(ex, message: ex.Message);
         }
 
         return result;
@@ -200,7 +194,7 @@ public class AzureEmailService(
                 {
                     result = EmailResult.Failed(S["Unable to attach the file named '{0}'.", attachment.Filename]);
 
-                    Logger.LogWarning("The MIME type for the attachment '{attachment}' is not supported.", attachment.Filename);
+                    _logger.LogWarning("The MIME type for the attachment '{attachment}' is not supported.", attachment.Filename);
                 }
             }
         }
