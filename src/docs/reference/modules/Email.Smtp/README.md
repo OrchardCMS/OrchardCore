@@ -8,7 +8,7 @@ Enabling the `OrchardCore.Email.Smtp` feature will allow the user to set the fol
 
 | Setting | Description |
 | --- | --- |
-| `DefaultSender` | The email of the sender. |
+| `DefaultSender` | The email of the sender. This will overrides the `DefaultSender` setting in [OrchardCore.Email](../Email/README.md). |
 | `DeliveryMethod` | The method for sending the email, `SmtpDeliveryMethod.Network` (online) or `SmtpDeliveryMethod.SpecifiedPickupDirectory` (offline). |
 | `PickupDirectoryLocation` | The directory location for the mailbox (`SmtpDeliveryMethod.SpecifiedPickupDirectory`). |
 | `Host` | The SMTP server. |

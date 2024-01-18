@@ -1,6 +1,6 @@
 # Email (`OrchardCore.Email`)
 
-This module provides email settings configuration.
+This module provides email settings configuration. Also, you need to enable at least one email provider to be able to send emails. For more information please check the [Azure Email](../Email.Azure/README.md) and [SMTP Email](../Email.Smtp/README.md) module.
 
 ## Email Settings
 
