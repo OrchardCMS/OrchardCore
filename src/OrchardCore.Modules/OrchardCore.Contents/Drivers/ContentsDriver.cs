@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.ViewModels;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
@@ -28,14 +29,14 @@ namespace OrchardCore.Contents.Drivers
             _authorizationService = authorizationService;
         }
 
-        public override IDisplayResult Display(ContentItem contentItem, IUpdateModel updater)
+        public override async Task<IDisplayResult> DisplayAsync(ContentItem contentItem, IUpdateModel updater)
         {
             // We add custom alternates. This could be done generically to all shapes coming from ContentDisplayDriver but right now it's
             // only necessary on this shape. Otherwise c.f. ContentPartDisplayDriver
 
             var context = _httpContextAccessor.HttpContext;
             var results = new List<IDisplayResult>();
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
             var contentsMetadataShape = Shape("ContentsMetadata",
                 new ContentItemViewModel(contentItem))
                 .Location("Detail", "Content:before");
@@ -44,30 +45,24 @@ namespace OrchardCore.Contents.Drivers
             {
                 contentsMetadataShape.Displaying(ctx =>
                 {
-                    var stereotype = "";
-                    var settings = contentTypeDefinition?.GetSettings<ContentTypeSettings>();
-                    if (settings != null)
-                    {
-                        stereotype = settings.Stereotype;
-                    }
+                    var hasStereotype = contentTypeDefinition.TryGetStereotype(out var stereotype);
 
-                    if (!String.IsNullOrEmpty(stereotype) && !String.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
+                    if (hasStereotype && !string.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
                     {
                         ctx.Shape.Metadata.Alternates.Add($"{stereotype}__ContentsMetadata");
                     }
 
                     var displayType = ctx.Shape.Metadata.DisplayType;
 
-                    if (!String.IsNullOrEmpty(displayType) && displayType != "Detail")
-                    {                        
+                    if (!string.IsNullOrEmpty(displayType) && displayType != "Detail")
+                    {
                         ctx.Shape.Metadata.Alternates.Add($"ContentsMetadata_{ctx.Shape.Metadata.DisplayType}");
 
-                        if (!String.IsNullOrEmpty(stereotype) && !String.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
+                        if (hasStereotype && !string.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
                         {
                             ctx.Shape.Metadata.Alternates.Add($"{stereotype}_{displayType}__ContentsMetadata");
                         }
                     }
-
                 });
 
                 results.Add(contentsMetadataShape);
@@ -96,10 +91,10 @@ namespace OrchardCore.Contents.Drivers
             return Combine(results.ToArray());
         }
 
-        public override IDisplayResult Edit(ContentItem contentItem, IUpdateModel updater)
+        public override async Task<IDisplayResult> EditAsync(ContentItem contentItem, IUpdateModel updater)
         {
             var context = _httpContextAccessor.HttpContext;
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
             var results = new List<IDisplayResult>();
 
             if (contentTypeDefinition == null)
@@ -113,7 +108,7 @@ namespace OrchardCore.Contents.Drivers
             results.Add(Dynamic("Content_SaveDraftButton").Location("Actions:20")
                 .RenderWhen(async () =>
                 {
-                    if (contentTypeDefinition.GetSettings<ContentTypeSettings>().Draftable &&
+                    if (contentTypeDefinition.IsDraftable() &&
                         await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.EditContent, contentItem))
                     {
                         return true;

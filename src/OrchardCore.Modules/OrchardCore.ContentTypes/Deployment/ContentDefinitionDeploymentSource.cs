@@ -17,7 +17,7 @@ namespace OrchardCore.ContentTypes.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            if (!(step is ContentDefinitionDeploymentStep contentDefinitionStep))
+            if (step is not ContentDefinitionDeploymentStep contentDefinitionStep)
             {
                 return;
             }

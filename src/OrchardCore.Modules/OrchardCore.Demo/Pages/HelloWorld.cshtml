@@ -1,0 +1,25 @@
+@page "/helloworld"
+
+@functions
+{
+    public Task<IActionResult> OnGetAsync()
+    {
+        return Task.FromResult<IActionResult>(Page());
+    }
+}
+
+@{
+    var title = "This is a razor 'Page' coming from OrchardCore.Demo that doesn't define any 'PageModel'.";
+    var message = $"Date and time on the server: { DateTime.Now.ToString() }";
+}
+
+@await Html.PartialAsync("Header", new { Title = title })
+
+<h2>Hello World from @ViewContext.RouteData.Values["page"]</h2>
+
+<p>
+    @message
+</p>
+<p>
+    Date using the DateTimeShape: @await DisplayAsync(await New.DateTime(Utc: null, Format: T["MMMM dd, yyyy"].Value))
+</p>

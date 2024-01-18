@@ -13,12 +13,14 @@ namespace OrchardCore.ReCaptcha.Core
     {
         public static IServiceCollection AddReCaptcha(this IServiceCollection services, Action<ReCaptchaSettings> configure = null)
         {
-            services.AddHttpClient<ReCaptchaClient>()
+            // c.f. https://learn.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests
+            services.AddSingleton<ReCaptchaService>()
+                .AddHttpClient(nameof(ReCaptchaService))
                 .AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(3, attempt => TimeSpan.FromSeconds(0.5 * attempt)));
 
-            services.AddTransient<IDetectRobots, IpAddressRobotDetector>();
+            services.AddSingleton<IDetectRobots, IPAddressRobotDetector>();
             services.AddTransient<IConfigureOptions<ReCaptchaSettings>, ReCaptchaSettingsConfiguration>();
-            services.AddTransient<ReCaptchaService>();
+
             services.AddTagHelpers<ReCaptchaTagHelper>();
 
             if (configure != null)

@@ -1,0 +1,11 @@
+@model NotificationViewModel
+@using OrchardCore.Entities
+@{
+    var readInfo = Model.Notification.As<NotificationReadInfo>();
+}
+@if (readInfo.IsRead)
+{
+    <a asp-action="Toggle" asp-controller="Admin" asp-route-area="OrchardCore.Notifications" asp-route-markAsRead="false" asp-route-notificationId="@Model.Notification.NotificationId" asp-route-returnUrl="@FullRequestPath" data-url-af="UnsafeUrl RemoveUrl" data-title=@T["Unread a message"] data-message=@T["Are you sure you want to mark this notification as unread?"] data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary" class="dropdown-item btn-sm">@T["Mark as unread"]</a>
+}
+
+<a asp-action="Delete" asp-controller="Admin" asp-route-area="OrchardCore.Notifications" asp-route-notificationId="@Model.Notification.NotificationId" asp-route-returnUrl="@FullRequestPath" data-url-af="UnsafeUrl RemoveUrl" data-title=@T["Delete a notification"] data-message=@T["Are you sure you want to delete this notification?"] data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary" class="dropdown-item btn-sm">@T["Delete"]</a>

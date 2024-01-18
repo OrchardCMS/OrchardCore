@@ -31,10 +31,27 @@ Available settings are:
 
 - ConsumerKey: API key found in the keys and tokens tab of your twitter app.
 - ConsumerSecret: The API secret key of your twitter app.
-- CallbackPath: The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives.  
+- CallbackPath: The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives.
 If no value is provided, setup Callback URL in Twitter app to use the default path /signin-twitter.
 
 ### Users Registration
 
 - If you want to enable new users to register to the site through their Twitter account, the `OrchardCore.Users.Registration` feature must be enabled and setup accordingly.
 - An existing user can link his account to his Twitter account through the External Logins link from User menu.
+
+## Twitter Settings Configuration
+
+The `OrchardCore.Twitter` module allows the user to use configuration values to override the settings configured from the admin area by calling the `ConfigureTwitterSettings()` extension method on `OrchardCoreBuilder` when initializing the app.
+
+The following configuration values can be customized:
+
+```json
+    "OrchardCore_Twitter": {
+      "ConsumerKey": "",
+      "ConsumerSecret": "",
+      "AccessToken": "",
+      "AccessTokenSecret": ""
+    }
+```
+
+For more information please refer to [Configuration](../../core/Configuration/README.md).

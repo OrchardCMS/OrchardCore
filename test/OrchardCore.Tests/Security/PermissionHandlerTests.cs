@@ -1,8 +1,6 @@
-using System.Threading.Tasks;
 using OrchardCore.Security;
 using OrchardCore.Security.AuthorizationHandlers;
 using OrchardCore.Security.Permissions;
-using Xunit;
 
 namespace OrchardCore.Tests.Security
 {

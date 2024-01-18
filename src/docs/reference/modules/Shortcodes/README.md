@@ -1,6 +1,6 @@
 # Shortcodes (`OrchardCore.Shortcodes`)
 
-Adds Shortcode capabilities. 
+Adds Shortcode capabilities.
 
 Shortcodes are small pieces of code wrapped into \[brackets\] that can add some behavior to content editors, like embedding media files.
 
@@ -29,7 +29,7 @@ Shortcode templates are designed to be able to override a code based Shortcode o
 | `Content` | The inner content provided by the user, if any.
 | `Context` | The context made available to the Shortcode from the caller, e.g. an `HtmlBodyPart`. |
 
-### Example Shortcode Templates :
+### Example Shortcode Templates
 
 #### `[display_text]`
 
@@ -41,7 +41,7 @@ Shortcode templates are designed to be able to override a code based Shortcode o
 | `Content` | `{{ Context.ContentItem.DisplayText }}`<br>`{{ More }}` |
 
 !!! note
-    The `ContentItem` `Context` is only available when the caller, i.e. an `HtmlBodyPart`, has passed the `ContentItem` value to the `Context`. 
+    The `ContentItem` `Context` is only available when the caller, i.e. an `HtmlBodyPart`, has passed the `ContentItem` value to the `Context`.
 
 #### `[site_name]`
 
@@ -52,7 +52,7 @@ Shortcode templates are designed to be able to override a code based Shortcode o
 | `Usage` | [site_name] |
 | `Content` | `{{ Site.SiteName }}` |
 
-####  `[primary]`
+#### `[primary]`
 
 | Parameter | Value |
 | --------- | ----------- |
@@ -132,15 +132,18 @@ services.AddShortcode<ImageShortcodeProvider>("image", describe => {
 The [image] shortcode renders an image from the site's media library.
 
 Example
+
 ```
 [image alt="My lovely image"]my-image.jpg[/image]
 ```
-This will render an image tag for the file ```my-image.jpg``` in the site's media folder.
+
+This will render an image tag for the file `my-image.jpg` in the site's media folder.
 
 The following parameters can be used:
 
 - **alt:** Adds alternative text to your image for the benefit of readers who can't see the image and also good for SEO.
 - **class:** Adds an html class attribute to the image tag for styling.
+- **append_version:** Adds a cache busting query string parameter if set to `true`, i.e. `append_version="true"`.
 - **format:** Change the file format from the original file. Can be jpeg, png, gif or bmp.
 - **quality:** Sets the encoding quality to use for jpeg images. The higher the quality, the larger the file size will be. The value can be from 0 to 100 and defaults to 75.
 - **width, height:** The width and height can be set to resize the image. The possible values are limited to prevent malicious clients from creating too many variations of the same image. The values can be 16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048.
@@ -153,21 +156,46 @@ The following parameters can be used:
   - **stretch:** Stretches the resized image to fit the bounds of its container.
   - **crop:** Resizes the image using the same functionality as max then removes any image area falling outside the bounds of its container.
 
+### `[asset_url]`
 
+The [asset_url] shortcode returns a relative url from the site's media library.
+
+Example
+
+```
+[asset_url]my-image.jpg[/asset_url]
+```
+
+This will return a relative url of `/my-tenant/media/my-image.jpg` for the file `my-image.jpg` in the site's media folder.
+
+The following parameters can be used:
+
+- **format:** Change the file format from the original file. Can be jpeg, png, gif or bmp.
+- **quality:** Sets the encoding quality to use for jpeg images. The higher the quality, the larger the file size will be. The value can be from 0 to 100 and defaults to 75.
+- **width, height:** The width and height can be set to resize the image. The possible values are limited to prevent malicious clients from creating too many variations of the same image. The values can be 16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048.
+- **mode:** The resize mode controls how the image is resized.  
+   The options are:
+  - **pad:** Pads the resized image to fit the bounds of its container. If only one dimension is passed, the original aspect ratio will be maintained.
+  - **boxpad:** Pads the image to fit the bounds of the container without resizing the original source. When downscaling, performs the same functionality as pad.
+  - **max** (Default): Constrains the resized image to fit the bounds of its container maintaining the original aspect ratio.
+  - **min:** Resizes the image until the shortest side reaches the given dimension. Upscaling is disabled in this mode and the original image will be returned if attempted.
+  - **stretch:** Stretches the resized image to fit the bounds of its container.
+  - **crop:** Resizes the image using the same functionality as max then removes any image area falling outside the bounds of its container.
 
 ### `[locale]`
 
 The `locale` shortcode conditionally renders content in the specified language. Output is based on the current thread culture.
-This shortcode is only available when the `OrchardCore.Localization` module is enabled. 
+This shortcode is only available when the `OrchardCore.Localization` module is enabled.
 
 Example
+
 ```
 [locale en]English Text[/locale][locale fr]French Text[/locale]
 ```
 
-By default, the shortcode will render the content if the current locale is a parent of the specified language. 
+By default, the shortcode will render the content if the current locale is a parent of the specified language.
 For example, if the current locale is `en-CA` and you specified this shortcode: `[locale en]English Text[/locale]` The output will be `English Text`.
-You can disable this behavior by passing `false` as the second argument of the shortcode. 
+You can disable this behavior by passing `false` as the second argument of the shortcode.
 `[locale en false]English Text[/locale]` would render nothing if the current culture is not exactly `en`.
 
 ## Rendering Shortcodes
@@ -205,6 +233,8 @@ Shortcodes can also be rendered via a liquid filter or html helper
     @Html.Raw(@await Orchard.ShortcodesToHtmlAsync((string)Model.ContentItem.Content.RawHtml.Content.Html))
     ```
 
-## Video
+## Videos
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/ofPKGsW5Ftg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/hsTJSIxUmZo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/ofPKGsW5Ftg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

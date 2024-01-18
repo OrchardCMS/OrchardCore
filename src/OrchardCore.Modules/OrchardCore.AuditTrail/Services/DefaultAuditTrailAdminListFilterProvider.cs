@@ -32,7 +32,7 @@ namespace OrchardCore.AuditTrail.Services
                 .WithNamedTerm("id", builder => builder
                     .OneCondition((val, query) =>
                     {
-                        if (!String.IsNullOrEmpty(val))
+                        if (!string.IsNullOrEmpty(val))
                         {
                             query.With<AuditTrailEventIndex>(x => x.CorrelationId == val);
                         }
@@ -45,17 +45,17 @@ namespace OrchardCore.AuditTrail.Services
                     })
                     .MapFrom<AuditTrailIndexOptions>((model) =>
                     {
-                        if (!String.IsNullOrEmpty(model.CorrelationId))
+                        if (!string.IsNullOrEmpty(model.CorrelationId))
                         {
                             return (true, model.CorrelationId);
                         }
-                        return (false, String.Empty);
+                        return (false, string.Empty);
                     })
                 )
                 .WithNamedTerm("category", builder => builder
                     .OneCondition((val, query) =>
                     {
-                        if (!String.IsNullOrEmpty(val))
+                        if (!string.IsNullOrEmpty(val))
                         {
                             query.With<AuditTrailEventIndex>(x => x.Category == val);
                         }
@@ -68,17 +68,17 @@ namespace OrchardCore.AuditTrail.Services
                     })
                     .MapFrom<AuditTrailIndexOptions>((model) =>
                     {
-                        if (!String.IsNullOrEmpty(model.Category))
+                        if (!string.IsNullOrEmpty(model.Category))
                         {
                             return (true, model.Category);
                         }
-                        return (false, String.Empty);
+                        return (false, string.Empty);
                     })
                 )
                 .WithNamedTerm("event", builder => builder
                     .OneCondition((val, query) =>
                     {
-                        if (!String.IsNullOrEmpty(val))
+                        if (!string.IsNullOrEmpty(val))
                         {
                             query.With<AuditTrailEventIndex>(x => x.Name == val);
                         }
@@ -91,17 +91,17 @@ namespace OrchardCore.AuditTrail.Services
                     })
                     .MapFrom<AuditTrailIndexOptions>((model) =>
                     {
-                        if (!String.IsNullOrEmpty(model.Event))
+                        if (!string.IsNullOrEmpty(model.Event))
                         {
                             return (true, model.Event);
                         }
-                        return (false, String.Empty);
+                        return (false, string.Empty);
                     })
                 )
                 .WithNamedTerm("date", builder => builder
                     .OneCondition(async (val, query, ctx) =>
                     {
-                        if (String.IsNullOrEmpty(val))
+                        if (string.IsNullOrEmpty(val))
                         {
                             return query;
                         }
@@ -131,11 +131,11 @@ namespace OrchardCore.AuditTrail.Services
                     })
                     .MapFrom<AuditTrailIndexOptions>((model) =>
                     {
-                        if (!String.IsNullOrEmpty(model.Date))
+                        if (!string.IsNullOrEmpty(model.Date))
                         {
                             return (true, model.Date);
                         }
-                        return (false, String.Empty);
+                        return (false, string.Empty);
                     })
                 )
                 .WithNamedTerm("sort", builder => builder
@@ -154,7 +154,7 @@ namespace OrchardCore.AuditTrail.Services
                     .MapTo<AuditTrailIndexOptions>((val, model) =>
                     {
                         // TODO add a context property to the mapping func.
-                        if (!String.IsNullOrEmpty(val) && _options.Value.SortOptions.TryGetValue(val, out var sortOption))
+                        if (!string.IsNullOrEmpty(val) && _options.Value.SortOptions.TryGetValue(val, out var sortOption))
                         {
                             model.Sort = sortOption.Value;
                         }
@@ -167,7 +167,7 @@ namespace OrchardCore.AuditTrail.Services
                             return (true, model.Sort);
                         }
 
-                        return (false, String.Empty);
+                        return (false, string.Empty);
                     })
                     .AlwaysRun()
                 )

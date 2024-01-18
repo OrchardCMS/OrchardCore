@@ -36,7 +36,7 @@ namespace OrchardCore.Deployment.Remote.Services
             if (_remoteClientList == null)
             {
                 _remoteClientList = new RemoteClientList();
-                _session.Save(_remoteClientList);
+                await _session.SaveAsync(_remoteClientList);
             }
 
             return _remoteClientList;
@@ -45,7 +45,7 @@ namespace OrchardCore.Deployment.Remote.Services
         public async Task<RemoteClient> GetRemoteClientAsync(string id)
         {
             var remoteClientList = await GetRemoteClientListAsync();
-            return remoteClientList.RemoteClients.FirstOrDefault(x => String.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase));
+            return remoteClientList.RemoteClients.FirstOrDefault(x => string.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase));
         }
 
         public async Task DeleteRemoteClientAsync(string id)
@@ -56,7 +56,7 @@ namespace OrchardCore.Deployment.Remote.Services
             if (remoteClient != null)
             {
                 remoteClientList.RemoteClients.Remove(remoteClient);
-                _session.Save(remoteClientList);
+                await _session.SaveAsync(remoteClientList);
             }
         }
 
@@ -72,7 +72,7 @@ namespace OrchardCore.Deployment.Remote.Services
             };
 
             remoteClientList.RemoteClients.Add(remoteClient);
-            _session.Save(remoteClientList);
+            await _session.SaveAsync(remoteClientList);
 
             return remoteClient;
         }
@@ -89,7 +89,7 @@ namespace OrchardCore.Deployment.Remote.Services
             remoteClient.ClientName = clientName;
             remoteClient.ProtectedApiKey = _dataProtector.Protect(Encoding.UTF8.GetBytes(apiKey));
 
-            _session.Save(_remoteClientList);
+            await _session.SaveAsync(_remoteClientList);
 
             return true;
         }

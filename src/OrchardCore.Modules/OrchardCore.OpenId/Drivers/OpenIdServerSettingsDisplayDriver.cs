@@ -6,7 +6,6 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.ViewModels;
-using static OpenIddict.Abstractions.OpenIddictConstants;
 using static OrchardCore.OpenId.ViewModels.OpenIdServerSettingsViewModel;
 
 namespace OrchardCore.OpenId.Drivers
@@ -36,6 +35,8 @@ namespace OrchardCore.OpenId.Drivers
                 model.EnableLogoutEndpoint = settings.LogoutEndpointPath.HasValue;
                 model.EnableTokenEndpoint = settings.TokenEndpointPath.HasValue;
                 model.EnableUserInfoEndpoint = settings.UserinfoEndpointPath.HasValue;
+                model.EnableIntrospectionEndpoint = settings.IntrospectionEndpointPath.HasValue;
+                model.EnableRevocationEndpoint = settings.RevocationEndpointPath.HasValue;
 
                 model.AllowAuthorizationCodeFlow = settings.AllowAuthorizationCodeFlow;
                 model.AllowClientCredentialsFlow = settings.AllowClientCredentialsFlow;
@@ -47,6 +48,7 @@ namespace OrchardCore.OpenId.Drivers
                 model.DisableAccessTokenEncryption = settings.DisableAccessTokenEncryption;
                 model.DisableRollingRefreshTokens = settings.DisableRollingRefreshTokens;
                 model.UseReferenceAccessTokens = settings.UseReferenceAccessTokens;
+                model.RequireProofKeyForCodeExchange = settings.RequireProofKeyForCodeExchange;
 
                 foreach (var (certificate, location, name) in await _serverService.GetAvailableCertificatesAsync())
                 {
@@ -90,6 +92,10 @@ namespace OrchardCore.OpenId.Drivers
                 new PathString("/connect/token") : PathString.Empty;
             settings.UserinfoEndpointPath = model.EnableUserInfoEndpoint ?
                 new PathString("/connect/userinfo") : PathString.Empty;
+            settings.IntrospectionEndpointPath = model.EnableIntrospectionEndpoint ?
+                new PathString("/connect/introspect") : PathString.Empty;
+            settings.RevocationEndpointPath = model.EnableRevocationEndpoint ?
+                new PathString("/connect/revoke") : PathString.Empty;
 
             settings.AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow;
             settings.AllowClientCredentialsFlow = model.AllowClientCredentialsFlow;
@@ -101,6 +107,7 @@ namespace OrchardCore.OpenId.Drivers
             settings.DisableAccessTokenEncryption = model.DisableAccessTokenEncryption;
             settings.DisableRollingRefreshTokens = model.DisableRollingRefreshTokens;
             settings.UseReferenceAccessTokens = model.UseReferenceAccessTokens;
+            settings.RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange;
 
             return await EditAsync(settings, context);
         }

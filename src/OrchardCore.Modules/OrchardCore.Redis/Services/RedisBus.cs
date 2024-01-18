@@ -1,11 +1,11 @@
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Caching.Distributed;
 using OrchardCore.Environment.Shell;
+using StackExchange.Redis;
 
 namespace OrchardCore.Redis.Services
 {
@@ -20,7 +20,7 @@ namespace OrchardCore.Redis.Services
         public RedisBus(IRedisService redis, ShellSettings shellSettings, ILogger<RedisBus> logger)
         {
             _redis = redis;
-            _hostName = Dns.GetHostName() + ':' + Process.GetCurrentProcess().Id;
+            _hostName = Dns.GetHostName() + ':' + System.Environment.ProcessId;
             _channelPrefix = redis.InstancePrefix + shellSettings.Name + ':';
             _messagePrefix = _hostName + '/';
             _logger = logger;
@@ -31,13 +31,18 @@ namespace OrchardCore.Redis.Services
             if (_redis.Connection == null)
             {
                 await _redis.ConnectAsync();
+                if (_redis.Connection == null)
+                {
+                    _logger.LogError("Unable to subscribe to the channel '{ChannelName}'.", _channelPrefix + channel);
+                    return;
+                }
             }
 
             try
             {
                 var subscriber = _redis.Connection.GetSubscriber();
 
-                await subscriber.SubscribeAsync(_channelPrefix + channel, (redisChannel, redisValue) =>
+                await subscriber.SubscribeAsync(RedisChannel.Literal(_channelPrefix + channel), (redisChannel, redisValue) =>
                 {
                     var tokens = redisValue.ToString().Split('/').ToArray();
 
@@ -51,7 +56,7 @@ namespace OrchardCore.Redis.Services
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "'Unable to subscribe to the channel {ChannelName}'.", _channelPrefix + channel);
+                _logger.LogError(e, "Unable to subscribe to the channel '{ChannelName}'.", _channelPrefix + channel);
             }
         }
 
@@ -60,15 +65,20 @@ namespace OrchardCore.Redis.Services
             if (_redis.Connection == null)
             {
                 await _redis.ConnectAsync();
+                if (_redis.Connection == null)
+                {
+                    _logger.LogError("Unable to publish to the channel '{ChannelName}'.", _channelPrefix + channel);
+                    return;
+                }
             }
 
             try
             {
-                await _redis.Connection.GetSubscriber().PublishAsync(_channelPrefix + channel, _messagePrefix + message);
+                await _redis.Connection.GetSubscriber().PublishAsync(RedisChannel.Literal(_channelPrefix + channel), _messagePrefix + message);
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "'Unable to publish to the channel {ChannelName}'.", _channelPrefix + channel);
+                _logger.LogError(e, "Unable to publish to the channel '{ChannelName}'.", _channelPrefix + channel);
             }
         }
     }

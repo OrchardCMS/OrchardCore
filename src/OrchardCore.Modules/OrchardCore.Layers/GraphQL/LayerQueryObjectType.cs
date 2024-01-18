@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL;
@@ -21,9 +22,9 @@ namespace OrchardCore.Layers.GraphQL
             Name = "Layer";
 
             Field(layer => layer.Name).Description("The name of the layer.");
-            #pragma warning disable 0618
+#pragma warning disable 0618
             Field(layer => layer.Rule).Description("Deprecated. The rule that activates the layer.");
-            #pragma warning restore 0618
+#pragma warning restore 0618
             Field<ListGraphType<StringGraphType>, IEnumerable<Condition>>()
                 .Name("layerrule")
                 .Description("The rule that activates the layer.")
@@ -35,8 +36,7 @@ namespace OrchardCore.Layers.GraphQL
                 .Argument<PublicationStatusGraphType, PublicationStatusEnum>("status", "publication status of the widgets")
                 .ResolveLockedAsync(async ctx =>
                 {
-                    var context = (GraphQLContext)ctx.UserContext;
-                    var layerService = context.ServiceProvider.GetService<ILayerService>();
+                    var layerService = ctx.RequestServices.GetService<ILayerService>();
 
                     var filter = GetVersionFilter(ctx.GetArgument<PublicationStatusEnum>("status"));
                     var widgets = await layerService.GetLayerWidgetsAsync(filter);
@@ -52,16 +52,14 @@ namespace OrchardCore.Layers.GraphQL
                 });
         }
 
-        private Expression<Func<ContentItemIndex, bool>> GetVersionFilter(PublicationStatusEnum status)
-        {
-            switch (status)
+        private static Expression<Func<ContentItemIndex, bool>> GetVersionFilter(PublicationStatusEnum status) =>
+            status switch
             {
-                case PublicationStatusEnum.Published: return x => x.Published;
-                case PublicationStatusEnum.Draft: return x => x.Latest && !x.Published;
-                case PublicationStatusEnum.Latest: return x => x.Latest;
-                case PublicationStatusEnum.All: return x => true;
-                default: return x => x.Published;
-            }
-        }
+                PublicationStatusEnum.Published => x => x.Published,
+                PublicationStatusEnum.Draft => x => x.Latest && !x.Published,
+                PublicationStatusEnum.Latest => x => x.Latest,
+                PublicationStatusEnum.All => x => true,
+                _ => x => x.Published,
+            };
     }
 }

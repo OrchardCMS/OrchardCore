@@ -6,15 +6,21 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using OrchardCore.Admin;
+using OrchardCore.Deployment;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
+using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Setup;
 using OrchardCore.Tenants.Controllers;
+using OrchardCore.Tenants.Deployment;
+using OrchardCore.Tenants.Recipes;
 using OrchardCore.Tenants.Services;
 
 namespace OrchardCore.Tenants
@@ -22,17 +28,23 @@ namespace OrchardCore.Tenants
     public class Startup : StartupBase
     {
         private readonly AdminOptions _adminOptions;
+        private readonly IShellConfiguration _shellConfiguration;
 
-        public Startup(IOptions<AdminOptions> adminOptions)
+        public Startup(IOptions<AdminOptions> adminOptions, IShellConfiguration shellConfiguration)
         {
             _adminOptions = adminOptions.Value;
+            _shellConfiguration = shellConfiguration;
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
+            services.AddScoped<ITenantValidator, TenantValidator>();
+            services.AddScoped<IShapeTableProvider, TenantShapeTableProvider>();
             services.AddSetup();
+
+            services.Configure<TenantsOptions>(_shellConfiguration.GetSection("OrchardCore_Tenants"));
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -63,6 +75,12 @@ namespace OrchardCore.Tenants
                 pattern: _adminOptions.AdminUrlPrefix + "/Tenants/Reload/{id}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Reload) }
             );
+            routes.MapAreaControllerRoute(
+                name: "TenantsRemove",
+                areaName: "OrchardCore.Tenants",
+                pattern: _adminOptions.AdminUrlPrefix + "/Tenants/Remove/{id}",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Remove) }
+            );
         }
     }
 
@@ -70,11 +88,11 @@ namespace OrchardCore.Tenants
     public class FileProviderStartup : StartupBase
     {
         /// <summary>
-        /// The path in the tenant's App_Data folder containing the files
+        /// The path in the tenant's App_Data folder containing the files.
         /// </summary>
         private const string AssetsPath = "wwwroot";
 
-        // Run after other middlewares
+        // Run after other middlewares.
         public override int Order => 10;
 
         public override void ConfigureServices(IServiceCollection services)
@@ -84,7 +102,7 @@ namespace OrchardCore.Tenants
                 var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
 
-                string contentRoot = GetContentRoot(shellOptions.Value, shellSettings);
+                var contentRoot = GetContentRoot(shellOptions.Value, shellSettings);
 
                 if (!Directory.Exists(contentRoot))
                 {
@@ -109,7 +127,7 @@ namespace OrchardCore.Tenants
                 DefaultContentType = "application/octet-stream",
                 ServeUnknownFileTypes = true,
 
-                // Cache the tenant static files for 30 days
+                // Cache the tenant static files for 30 days.
                 OnPrepareResponse = ctx =>
                 {
                     ctx.Context.Response.Headers[HeaderNames.CacheControl] = $"public, max-age={TimeSpan.FromDays(30).TotalSeconds}, s-max-age={TimeSpan.FromDays(365.25).TotalSeconds}";
@@ -117,10 +135,8 @@ namespace OrchardCore.Tenants
             });
         }
 
-        private string GetContentRoot(ShellOptions shellOptions, ShellSettings shellSettings)
-        {
-            return Path.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, AssetsPath);
-        }
+        private static string GetContentRoot(ShellOptions shellOptions, ShellSettings shellSettings) =>
+            Path.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, AssetsPath);
     }
 
     [Feature("OrchardCore.Tenants.Distributed")]
@@ -148,6 +164,9 @@ namespace OrchardCore.Tenants
             services.AddScoped<FeatureProfilesManager>();
             services.AddScoped<IFeatureProfilesService, FeatureProfilesService>();
             services.AddScoped<IFeatureProfilesSchemaService, FeatureProfilesSchemaService>();
+            services.AddScoped<IShapeTableProvider, TenantFeatureProfileShapeTableProvider>();
+
+            services.AddRecipeExecutionStep<FeatureProfilesStep>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -171,16 +190,34 @@ namespace OrchardCore.Tenants
             routes.MapAreaControllerRoute(
                 name: "TenantFeatureProfilesEdit",
                 areaName: "OrchardCore.Tenants",
-                pattern: _adminOptions.AdminUrlPrefix + "/TenantFeatureProfiles/Edit/{name}",
+                pattern: _adminOptions.AdminUrlPrefix + "/TenantFeatureProfiles/Edit/{id}",
                 defaults: new { controller = featureProfilesControllerName, action = nameof(FeatureProfilesController.Edit) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "TenantFeatureProfilesDelete",
                 areaName: "OrchardCore.Tenants",
-                pattern: _adminOptions.AdminUrlPrefix + "/TenantFeatureProfiles/Delete/{name}",
+                pattern: _adminOptions.AdminUrlPrefix + "/TenantFeatureProfiles/Delete/{id}",
                 defaults: new { controller = featureProfilesControllerName, action = nameof(FeatureProfilesController.Delete) }
             );
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment", "OrchardCore.Tenants.FeatureProfiles")]
+    public class FeatureProfilesDeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddDeployment<AllFeatureProfilesDeploymentSource, AllFeatureProfilesDeploymentStep, AllFeatureProfilesDeploymentStepDriver>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Features")]
+    public class TenantFeatureProfilesStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IShapeTableProvider, TenantFeatureShapeTableProvider>();
         }
     }
 }

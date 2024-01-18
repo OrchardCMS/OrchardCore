@@ -7,18 +7,16 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
-    public class SetPropertyTask : TaskActivity
+    public class SetPropertyTask : TaskActivity<SetPropertyTask>
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public SetPropertyTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<SetPropertyTask> localizer)
         {
             _scriptEvaluator = scriptEvaluator;
             S = localizer;
         }
-
-        public override string Name => nameof(SetPropertyTask);
 
         public override LocalizedString DisplayText => S["Set Property Task"];
 

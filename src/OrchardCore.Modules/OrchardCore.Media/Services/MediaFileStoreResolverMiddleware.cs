@@ -14,7 +14,7 @@ namespace OrchardCore.Media.Services
     /// </summary>
     public class MediaFileStoreResolverMiddleware
     {
-        private readonly ConcurrentDictionary<string, Lazy<Task>> Workers = new ConcurrentDictionary<string, Lazy<Task>>(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, Lazy<Task>> _workers = new(StringComparer.OrdinalIgnoreCase);
 
         private readonly RequestDelegate _next;
         private readonly ILogger _logger;
@@ -60,7 +60,7 @@ namespace OrchardCore.Media.Services
                 return;
             }
 
-            // subpath.Value returns an unescaped path value, subPath returns an escaped path value.
+            // subPath.Value returns an unescaped path value, subPath returns an escaped path value.
             var subPathValue = subPath.Value;
 
             var isFileCached = await _mediaFileStoreCache.IsCachedAsync(subPathValue);
@@ -68,7 +68,7 @@ namespace OrchardCore.Media.Services
             {
                 // When multiple requests occur for the same file the download
                 // may already be in progress so we wait for it to complete.
-                if (Workers.TryGetValue(subPathValue, out var writeTask))
+                if (_workers.TryGetValue(subPathValue, out var writeTask))
                 {
                     await writeTask.Value;
                 }
@@ -79,30 +79,28 @@ namespace OrchardCore.Media.Services
 
             // When multiple requests occur for the same file we use a Lazy<Task>
             // to initialize the file store request once.
-            await Workers.GetOrAdd(subPathValue, x => new Lazy<Task>(async () =>
+            await _workers.GetOrAdd(subPathValue, path => new Lazy<Task>(async () =>
             {
                 try
                 {
-                    var fileStoreEntry = await _mediaFileStore.GetFileInfoAsync(subPathValue);
+                    var fileStoreEntry = await _mediaFileStore.GetFileInfoAsync(path);
 
                     if (fileStoreEntry != null)
                     {
-                        using (var stream = await _mediaFileStore.GetFileStreamAsync(fileStoreEntry))
-                        {
-                            await _mediaFileStoreCache.SetCacheAsync(stream, fileStoreEntry, context.RequestAborted);
-                        }
+                        using var stream = await _mediaFileStore.GetFileStreamAsync(fileStoreEntry);
+                        await _mediaFileStoreCache.SetCacheAsync(stream, fileStoreEntry, context.RequestAborted);
                     }
                 }
                 catch (Exception ex)
                 {
                     // Log the error, and pass to pipeline to handle as 404.
-                    // Multiple requests at the same time will all recieve the same 404
+                    // Multiple requests at the same time will all receive the same 404
                     // as we use LazyThreadSafetyMode.ExecutionAndPublication.
-                    _logger.LogError(ex, "Error retrieving file from media file store for request path {Path}", subPathValue);
+                    _logger.LogError(ex, "Error retrieving file from media file store for request path {Path}", path);
                 }
                 finally
                 {
-                    Workers.TryRemove(subPathValue, out var writeTask);
+                    _workers.TryRemove(path, out var writeTask);
                 }
             }, LazyThreadSafetyMode.ExecutionAndPublication)).Value;
 

@@ -19,14 +19,14 @@ namespace OrchardCore.Roles
         {
             _roleService = roleService;
         }
-        
+
         public async Task<IEnumerable<Permission>> GetPermissionsAsync()
-        {            
+        {
             var list = new List<Permission>
             {
-                ManageRoles, 
+                ManageRoles,
                 AssignRoles,
-                StandardPermissions.SiteOwner
+                StandardPermissions.SiteOwner,
             };
 
             var roles = (await _roleService.GetRoleNamesAsync())
@@ -45,7 +45,7 @@ namespace OrchardCore.Roles
             return new[] {
                 new PermissionStereotype {
                     Name = "Administrator",
-                    Permissions = new[] { ManageRoles, StandardPermissions.SiteOwner }
+                    Permissions = new[] { ManageRoles, StandardPermissions.SiteOwner },
                 },
             };
         }

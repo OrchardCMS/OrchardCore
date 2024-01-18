@@ -1,15 +1,6 @@
-using System;
-using System.IO;
-using System.IO.Compression;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Deployment.Remote.Services;
 using OrchardCore.Deployment.Remote.ViewModels;
-using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Tests.Apis.Context
 {
@@ -17,20 +8,18 @@ namespace OrchardCore.Tests.Apis.Context
     {
         public const string RemoteDeploymentClientName = "testserver";
         public const string RemoteDeploymentApiKey = "testkey";
-        public static IShellHost ShellHost { get; }
-
         public string BlogPostContentItemId { get; private set; }
         public ContentItem OriginalBlogPost { get; private set; }
         public string OriginalBlogPostVersionId { get; private set; }
 
         static BlogPostDeploymentContext()
         {
-            ShellHost = Site.Services.GetRequiredService<IShellHost>();
         }
 
         public override async Task InitializeAsync()
         {
             await base.InitializeAsync();
+            await RunRecipeAsync(BlogContext.luceneRecipeName, BlogContext.luceneRecipePath);
 
             var result = await GraphQLClient
                 .Content
@@ -46,8 +35,7 @@ namespace OrchardCore.Tests.Apis.Context
             OriginalBlogPost = await content.Content.ReadAsAsync<ContentItem>();
             OriginalBlogPostVersionId = OriginalBlogPost.ContentItemVersionId;
 
-            var shellScope = await ShellHost.GetScopeAsync(TenantName);
-            await shellScope.UsingAsync(async scope =>
+            await UsingTenantScopeAsync(async scope =>
             {
                 var remoteClientService = scope.ServiceProvider.GetRequiredService<RemoteClientService>();
 
@@ -55,7 +43,7 @@ namespace OrchardCore.Tests.Apis.Context
             });
         }
 
-        public JObject GetContentStepRecipe(ContentItem contentItem, Action<JObject> mutation)
+        public static JObject GetContentStepRecipe(ContentItem contentItem, Action<JObject> mutation)
         {
             var jContentItem = JObject.FromObject(contentItem);
             mutation.Invoke(jContentItem);
@@ -77,37 +65,32 @@ namespace OrchardCore.Tests.Apis.Context
 
         public async Task<HttpResponseMessage> PostRecipeAsync(JObject recipe, bool ensureSuccess = true)
         {
-            using (var zipStream = new MemoryStream())
+            using var zipStream = new MemoryStream();
+            using (var zip = new ZipArchive(zipStream, ZipArchiveMode.Create, true))
             {
-                using (var zip = new ZipArchive(zipStream, ZipArchiveMode.Create, true))
-                {
-                    var entry = zip.CreateEntry("Recipe.json");
-                    using (var streamWriter = new StreamWriter(entry.Open()))
-                    {
-                        using (var jsonWriter = new JsonTextWriter(streamWriter))
-                        {
-                            await recipe.WriteToAsync(jsonWriter);
-                            await jsonWriter.FlushAsync();
-                        }
-                    }
-                }
-                zipStream.Position = 0;
-
-                using (var requestContent = new MultipartFormDataContent())
-                {
-                    requestContent.Add(new StreamContent(zipStream), nameof(ImportViewModel.Content), "Recipe.zip");
-                    requestContent.Add(new StringContent(RemoteDeploymentClientName), nameof(ImportViewModel.ClientName));
-                    requestContent.Add(new StringContent(RemoteDeploymentApiKey), nameof(ImportViewModel.ApiKey));
-
-                    var response = await Client.PostAsync("OrchardCore.Deployment.Remote/ImportRemoteInstance/Import", requestContent);
-                    if (ensureSuccess)
-                    {
-                        response.EnsureSuccessStatusCode();
-                    }
-
-                    return response;
-                }
+                var entry = zip.CreateEntry("Recipe.json");
+                using var streamWriter = new StreamWriter(entry.Open());
+                using var jsonWriter = new JsonTextWriter(streamWriter);
+                await recipe.WriteToAsync(jsonWriter);
+                await jsonWriter.FlushAsync();
             }
+
+            zipStream.Position = 0;
+
+            using var requestContent = new MultipartFormDataContent
+            {
+                { new StreamContent(zipStream), nameof(ImportViewModel.Content), "Recipe.zip" },
+                { new StringContent(RemoteDeploymentClientName), nameof(ImportViewModel.ClientName) },
+                { new StringContent(RemoteDeploymentApiKey), nameof(ImportViewModel.ApiKey) },
+            };
+
+            var response = await Client.PostAsync("OrchardCore.Deployment.Remote/ImportRemoteInstance/Import", requestContent);
+            if (ensureSuccess)
+            {
+                response.EnsureSuccessStatusCode();
+            }
+
+            return response;
         }
     }
 }

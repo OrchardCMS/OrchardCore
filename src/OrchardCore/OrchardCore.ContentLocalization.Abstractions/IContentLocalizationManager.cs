@@ -35,7 +35,7 @@ namespace OrchardCore.ContentLocalization
         /// </summary>
         /// <returns>Cleaned list of ContentItem</returns>
         Task<IDictionary<string, ContentItem>> DeduplicateContentItemsAsync(IEnumerable<ContentItem> contentItems);
-        
+
         /// <summary>
         /// Gets a list of ContentItemId for the LocalizationSet based on some rules
         /// Order of elements is kept.

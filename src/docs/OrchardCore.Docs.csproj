@@ -3,8 +3,12 @@
   <Import Project="..\OrchardCore.Build\Dependencies.AspNetCore.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>$(AspNetCoreTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="reference\modules\AzureAISearch\images\" />
+  </ItemGroup>
 
 </Project>

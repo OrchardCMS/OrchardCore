@@ -1,14 +1,14 @@
+using System.Linq;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Linq;
 
 namespace OrchardCore.Cors.Services
 {
     public class CorsOptionsConfiguration : IConfigureOptions<CorsOptions>
     {
         private readonly CorsService _corsService;
-        private readonly ILogger<CorsOptionsConfiguration> _logger;
+        private readonly ILogger _logger;
 
         public CorsOptionsConfiguration(CorsService corsService, ILogger<CorsOptionsConfiguration> logger)
         {
@@ -40,7 +40,7 @@ namespace OrchardCore.Cors.Services
                     }
                     else
                     {
-                        configurePolicy.WithHeaders(corsPolicy.AllowedOrigins);
+                        configurePolicy.WithHeaders(corsPolicy.AllowedHeaders);
                     }
 
                     if (corsPolicy.AllowAnyMethod)
@@ -71,16 +71,13 @@ namespace OrchardCore.Cors.Services
                     }
                 });
 
-                if(corsPolicy.IsDefaultPolicy)
+                if (corsPolicy.IsDefaultPolicy)
                 {
                     options.DefaultPolicyName = corsPolicy.Name;
                 }
             }
 
-            if (options.DefaultPolicyName == null)
-            {
-                options.DefaultPolicyName = corsSettings.Policies.FirstOrDefault()?.Name;
-            }
+            options.DefaultPolicyName ??= corsSettings.Policies.FirstOrDefault()?.Name;
         }
     }
 }

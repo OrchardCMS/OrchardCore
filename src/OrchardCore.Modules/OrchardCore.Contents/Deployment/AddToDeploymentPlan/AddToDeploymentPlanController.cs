@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,7 +24,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
         private readonly ISession _session;
         private readonly IEnumerable<IDeploymentStepFactory> _factories;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
 
         public AddToDeploymentPlanController(
             IAuthorizationService authorizationService,
@@ -45,7 +44,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddContentItem(int deploymentPlanId, string returnUrl, string contentItemId)
+        public async Task<IActionResult> AddContentItem(long deploymentPlanId, string returnUrl, string contentItemId)
         {
             if (!(await _authorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.ManageDeploymentPlan) &&
                 await _authorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.Export)
@@ -75,20 +74,28 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
                 return Forbid();
             }
 
-            var step = (ContentItemDeploymentStep)_factories.FirstOrDefault(x => x.Name == nameof(ContentItemDeploymentStep)).Create();
+            var stepFactory = _factories.FirstOrDefault(x => x.Name == nameof(ContentItemDeploymentStep));
+
+            if (stepFactory == null)
+            {
+                return BadRequest();
+            }
+
+            var step = (ContentItemDeploymentStep)stepFactory.Create();
+
             step.ContentItemId = contentItem.ContentItemId;
 
             deploymentPlan.DeploymentSteps.Add(step);
 
             await _notifier.SuccessAsync(H["Content added successfully to the deployment plan."]);
 
-            _session.Save(deploymentPlan);
+            await _session.SaveAsync(deploymentPlan);
 
             return this.LocalRedirect(returnUrl, true);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddContentItems(int deploymentPlanId, string returnUrl, IEnumerable<int> itemIds)
+        public async Task<IActionResult> AddContentItems(long deploymentPlanId, string returnUrl, IEnumerable<long> itemIds)
         {
             if (itemIds?.Count() == 0)
             {
@@ -129,7 +136,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
 
             await _notifier.SuccessAsync(H["Content added successfully to the deployment plan."]);
 
-            _session.Save(deploymentPlan);
+            await _session.SaveAsync(deploymentPlan);
 
             return this.LocalRedirect(returnUrl, true);
         }

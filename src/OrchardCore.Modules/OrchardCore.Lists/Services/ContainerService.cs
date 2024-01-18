@@ -143,7 +143,7 @@ namespace OrchardCore.Lists.Services
                             }
                         }
 
-                        _session.Save(contentItem);
+                        await _session.SaveAsync(contentItem);
                     }
 
                     i++;
@@ -373,7 +373,7 @@ namespace OrchardCore.Lists.Services
 
                     if (currentUserName != null)
                     {
-                        query.With<ContentItemIndex>(i => i.Owner == currentUserName);
+                        query.With<ContentItemIndex>(i => (i.Published || i.Latest) && i.Owner == currentUserName);
                     }
 
                     break;
