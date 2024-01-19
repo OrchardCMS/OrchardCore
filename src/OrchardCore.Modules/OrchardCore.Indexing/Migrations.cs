@@ -9,9 +9,9 @@ namespace OrchardCore.Indexing
         public async Task<int> CreateAsync()
         {
             await SchemaBuilder.CreateTableAsync(nameof(IndexingTask), table => table
-                .Column<int>("Id", col => col.PrimaryKey().Identity())
-                .Column<string>("ContentItemId", c => c.WithLength(26))
-                .Column<DateTime>("CreatedUtc", col => col.NotNull())
+                .Column<int>("Id", column => column.PrimaryKey().Identity())
+                .Column<string>("ContentItemId", column => column.NotNull().WithLength(26))
+                .Column<DateTime>("CreatedUtc", column => column.NotNull())
                 .Column<int>("Type")
             );
 

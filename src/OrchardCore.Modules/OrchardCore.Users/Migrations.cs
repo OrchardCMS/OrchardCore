@@ -20,11 +20,11 @@ namespace OrchardCore.Users
             await SchemaBuilder.CreateMapIndexTableAsync<UserIndex>(table => table
                 .Column<string>("NormalizedUserName") // TODO These should have defaults. on SQL Server they will fall at 255. Exceptions are currently thrown if you go over that.
                 .Column<string>("NormalizedEmail")
-                .Column<bool>("IsEnabled", c => c.NotNull().WithDefault(true))
-                .Column<bool>("IsLockoutEnabled", c => c.NotNull().WithDefault(false))
-                .Column<DateTime?>("LockoutEndUtc", c => c.Nullable())
-                .Column<int>("AccessFailedCount", c => c.NotNull().WithDefault(0))
-                .Column<string>("UserId")
+                .Column<bool>("IsEnabled", column => column.NotNull().WithDefault(true))
+                .Column<bool>("IsLockoutEnabled", column => column.NotNull().WithDefault(false))
+                .Column<DateTime?>("LockoutEndUtc", column => column.Nullable())
+                .Column<int>("AccessFailedCount", column => column.NotNull().WithDefault(0))
+                .Column<string>("UserId", column => column.NotNull())
             );
 
             await SchemaBuilder.AlterIndexTableAsync<UserIndex>(table => table
@@ -108,7 +108,7 @@ namespace OrchardCore.Users
         public async Task<int> UpdateFrom3Async()
         {
             await SchemaBuilder.AlterIndexTableAsync<UserIndex>(table => table
-                .AddColumn<bool>("IsEnabled", c => c.NotNull().WithDefault(true)));
+                .AddColumn<bool>("IsEnabled", column => column.NotNull().WithDefault(true)));
 
             return 4;
         }
@@ -118,7 +118,7 @@ namespace OrchardCore.Users
         public async Task<int> UpdateFrom4Async()
         {
             await SchemaBuilder.AlterIndexTableAsync<UserIndex>(table => table
-                .AddColumn<string>("UserId"));
+                .AddColumn<string>("UserId", column => column.NotNull()));
 
             return 5;
         }
@@ -220,13 +220,13 @@ namespace OrchardCore.Users
         public async Task<int> UpdateFrom10Async()
         {
             await SchemaBuilder.AlterIndexTableAsync<UserIndex>(table => table
-                .AddColumn<bool>("IsLockoutEnabled", c => c.NotNull().WithDefault(false)));
+                .AddColumn<bool>("IsLockoutEnabled", column => column.NotNull().WithDefault(false)));
 
             await SchemaBuilder.AlterIndexTableAsync<UserIndex>(table => table
-                .AddColumn<DateTime?>("LockoutEndUtc", c => c.Nullable()));
+                .AddColumn<DateTime?>("LockoutEndUtc", column => column.Nullable()));
 
             await SchemaBuilder.AlterIndexTableAsync<UserIndex>(table => table
-                .AddColumn<int>("AccessFailedCount", c => c.NotNull().WithDefault(0)));
+                .AddColumn<int>("AccessFailedCount", column => column.NotNull().WithDefault(0)));
 
             return 11;
         }

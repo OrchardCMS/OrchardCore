@@ -11,7 +11,7 @@ public class NotificationMigrations : DataMigration
     public async Task<int> CreateAsync()
     {
         await SchemaBuilder.CreateMapIndexTableAsync<NotificationIndex>(table => table
-            .Column<string>("NotificationId", column => column.WithLength(26))
+            .Column<string>("NotificationId", column => column.NotNull().WithLength(26))
             .Column<string>("UserId", column => column.WithLength(26))
             .Column<bool>("IsRead")
             .Column<DateTime>("ReadAtUtc")

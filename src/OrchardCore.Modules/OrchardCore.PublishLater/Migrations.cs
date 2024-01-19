@@ -25,7 +25,7 @@ public class Migrations : DataMigration
             .WithDescription("Adds the ability to schedule content items to be published at a given future date and time."));
 
         await SchemaBuilder.CreateMapIndexTableAsync<PublishLaterPartIndex>(table => table
-            .Column<string>("ContentItemId")
+            .Column<string>("ContentItemId", column => column.NotNull().WithLength(26))
             .Column<DateTime>("ScheduledPublishDateTimeUtc")
             .Column<bool>("Published")
             .Column<bool>("Latest")
@@ -67,7 +67,7 @@ public class Migrations : DataMigration
     {
         await SchemaBuilder.AlterIndexTableAsync<PublishLaterPartIndex>(table =>
         {
-            table.AddColumn<string>("ContentItemId");
+            table.AddColumn<string>("ContentItemId", column => column.NotNull().WithLength(26));
             table.AddColumn<bool>("Published");
             table.AddColumn<bool>("Latest");
         });

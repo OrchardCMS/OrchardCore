@@ -11,7 +11,7 @@ namespace OrchardCore.Workflows
         public async Task<int> CreateAsync()
         {
             await SchemaBuilder.CreateMapIndexTableAsync<WorkflowTypeIndex>(table => table
-                .Column<string>("WorkflowTypeId", c => c.WithLength(26))
+                .Column<string>("WorkflowTypeId", column => column.NotNull().WithLength(26))
                 .Column<string>("Name")
                 .Column<bool>("IsEnabled")
                 .Column<bool>("HasStart")
@@ -27,10 +27,10 @@ namespace OrchardCore.Workflows
             );
 
             await SchemaBuilder.CreateMapIndexTableAsync<WorkflowTypeStartActivitiesIndex>(table => table
-                .Column<string>("WorkflowTypeId")
+                .Column<string>("WorkflowTypeId", column => column.NotNull().WithLength(26))
                 .Column<string>("Name")
                 .Column<bool>("IsEnabled")
-                .Column<string>("StartActivityId")
+                .Column<string>("StartActivityId", column => column.NotNull().WithLength(26))
                 .Column<string>("StartActivityName")
             );
 
@@ -44,9 +44,9 @@ namespace OrchardCore.Workflows
             );
 
             await SchemaBuilder.CreateMapIndexTableAsync<WorkflowIndex>(table => table
-                .Column<string>("WorkflowTypeId", c => c.WithLength(26))
-                .Column<string>("WorkflowId", c => c.WithLength(26))
-                .Column<string>("WorkflowStatus", c => c.WithLength(26))
+                .Column<string>("WorkflowTypeId", column => column.WithLength(26))
+                .Column<string>("WorkflowId", column => column.WithLength(26))
+                .Column<string>("WorkflowStatus", column => column.WithLength(26))
                 .Column<DateTime>("CreatedUtc")
             );
 
@@ -60,12 +60,12 @@ namespace OrchardCore.Workflows
             );
 
             await SchemaBuilder.CreateMapIndexTableAsync<WorkflowBlockingActivitiesIndex>(table => table
-                .Column<string>("ActivityId")
+                .Column<string>("ActivityId", column => column.NotNull().WithLength(26))
                 .Column<string>("ActivityName")
                 .Column<bool>("ActivityIsStart")
-                .Column<string>("WorkflowTypeId")
-                .Column<string>("WorkflowId")
-                .Column<string>("WorkflowCorrelationId")
+                .Column<string>("WorkflowTypeId", column => column.NotNull().WithLength(26))
+                .Column<string>("WorkflowId", column => column.NotNull().WithLength(26))
+                .Column<string>("WorkflowCorrelationId", column => column.NotNull().WithLength(26))
             );
 
             await SchemaBuilder.AlterIndexTableAsync<WorkflowBlockingActivitiesIndex>(table => table

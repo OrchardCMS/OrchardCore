@@ -26,7 +26,7 @@ namespace OrchardCore.Layers
         public async Task<int> CreateAsync()
         {
             await SchemaBuilder.CreateMapIndexTableAsync<LayerMetadataIndex>(table => table
-               .Column<string>("Zone", c => c.WithLength(64))
+               .Column<string>("Zone", column => column.WithLength(64))
             );
 
             await SchemaBuilder.AlterIndexTableAsync<LayerMetadataIndex>(table => table

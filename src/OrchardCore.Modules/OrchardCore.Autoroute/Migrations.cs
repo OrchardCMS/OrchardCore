@@ -24,10 +24,10 @@ namespace OrchardCore.Autoroute
                 .WithDescription("Provides a custom url for your content item."));
 
             await SchemaBuilder.CreateMapIndexTableAsync<AutoroutePartIndex>(table => table
-                .Column<string>("ContentItemId", c => c.WithLength(26))
-                .Column<string>("ContainedContentItemId", c => c.WithLength(26))
-                .Column<string>("JsonPath", c => c.Unlimited())
-                .Column<string>("Path", col => col.WithLength(AutoroutePart.MaxPathLength))
+                .Column<string>("ContentItemId", column => column.NotNull().WithLength(26))
+                .Column<string>("ContainedContentItemId", column => column.NotNull().WithLength(26))
+                .Column<string>("JsonPath", column => column.Unlimited())
+                .Column<string>("Path", column => column.WithLength(AutoroutePart.MaxPathLength))
                 .Column<bool>("Published")
                 .Column<bool>("Latest")
             );
@@ -57,15 +57,15 @@ namespace OrchardCore.Autoroute
         public async Task<int> UpdateFrom3Async()
         {
             await SchemaBuilder.AlterIndexTableAsync<AutoroutePartIndex>(table => table
-                .AddColumn<string>("ContainedContentItemId", c => c.WithLength(26))
+                .AddColumn<string>("ContainedContentItemId", column => column.NotNull().WithLength(26))
             );
 
             await SchemaBuilder.AlterIndexTableAsync<AutoroutePartIndex>(table => table
-                .AddColumn<string>("JsonPath", c => c.Unlimited())
+                .AddColumn<string>("JsonPath", column => column.Unlimited())
             );
 
             await SchemaBuilder.AlterIndexTableAsync<AutoroutePartIndex>(table => table
-                .AddColumn<bool>("Latest", c => c.WithDefault(false))
+                .AddColumn<bool>("Latest", column => column.WithDefault(false))
             );
 
             return 4;

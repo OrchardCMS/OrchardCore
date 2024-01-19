@@ -25,7 +25,7 @@ public class Migrations : DataMigration
             .WithDescription("Adds the ability to schedule content items to be archived at a given future date and time."));
 
         await SchemaBuilder.CreateMapIndexTableAsync<ArchiveLaterPartIndex>(table => table
-            .Column<string>("ContentItemId")
+            .Column<string>("ContentItemId", column => column.NotNull().WithLength(26))
             .Column<DateTime>("ScheduledArchiveDateTimeUtc")
             .Column<bool>("Published")
             .Column<bool>("Latest")

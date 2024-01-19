@@ -83,8 +83,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 var builder = new SchemaBuilder(store.Configuration, await session.BeginTransactionAsync());
 
                 await builder.CreateMapIndexTableAsync<ContentItemIndex>(table => table
-                    .Column<string>("ContentItemId", c => c.WithLength(26))
-                    .Column<string>("ContentItemVersionId", c => c.WithLength(26))
+                    .Column<string>("ContentItemId", column => column.NotNull().WithLength(26))
+                    .Column<string>("ContentItemVersionId", column => column.NotNull().WithLength(26))
                     .Column<bool>("Latest")
                     .Column<bool>("Published")
                     .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))

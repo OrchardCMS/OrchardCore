@@ -44,14 +44,14 @@ namespace OrchardCore.Taxonomies
             );
 
             await SchemaBuilder.CreateMapIndexTableAsync<TaxonomyIndex>(table => table
-                .Column<string>("TaxonomyContentItemId", c => c.WithLength(26))
-                .Column<string>("ContentItemId", c => c.WithLength(26))
+                .Column<string>("TaxonomyContentItemId", column => column.NotNull().WithLength(26))
+                .Column<string>("ContentItemId", column => column.NotNull().WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
                 .Column<string>("ContentPart", column => column.WithLength(ContentItemIndex.MaxContentPartSize))
                 .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
-                .Column<string>("TermContentItemId", column => column.WithLength(26))
-                .Column<bool>("Published", c => c.WithDefault(true))
-                .Column<bool>("Latest", c => c.WithDefault(false))
+                .Column<string>("TermContentItemId", column => column.NotNull().WithLength(26))
+                .Column<bool>("Published", column => column.WithDefault(true))
+                .Column<bool>("Latest", column => column.WithDefault(false))
             );
 
             await SchemaBuilder.AlterIndexTableAsync<TaxonomyIndex>(table => table
@@ -110,11 +110,11 @@ namespace OrchardCore.Taxonomies
         {
             // This step has been updated to also add these new columns.
             await SchemaBuilder.AlterIndexTableAsync<TaxonomyIndex>(table => table
-                .AddColumn<bool>("Published", c => c.WithDefault(true))
+                .AddColumn<bool>("Published", column => column.WithDefault(true))
             );
 
             await SchemaBuilder.AlterIndexTableAsync<TaxonomyIndex>(table => table
-                .AddColumn<bool>("Latest", c => c.WithDefault(false))
+                .AddColumn<bool>("Latest", column => column.WithDefault(false))
             );
 
             // So that the new indexes can be fully created.
@@ -150,11 +150,11 @@ namespace OrchardCore.Taxonomies
             // This step run only if the previous one was executed before
             // it was updated, so here we also add the following columns.
             await SchemaBuilder.AlterIndexTableAsync<TaxonomyIndex>(table => table
-                .AddColumn<bool>("Published", c => c.WithDefault(true))
+                .AddColumn<bool>("Published", column => column.WithDefault(true))
             );
 
             await SchemaBuilder.AlterIndexTableAsync<TaxonomyIndex>(table => table
-                .AddColumn<bool>("Latest", c => c.WithDefault(false))
+                .AddColumn<bool>("Latest", column => column.WithDefault(false))
             );
 
             // But we create a separate index for these new columns.
