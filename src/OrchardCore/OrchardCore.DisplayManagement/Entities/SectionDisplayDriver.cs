@@ -1,4 +1,3 @@
-using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement.Handlers;
@@ -130,19 +129,14 @@ namespace OrchardCore.DisplayManagement.Entities
 
         protected override void BuildPrefix(TModel model, string htmlFieldPrefix)
         {
-            var builder = new StringBuilder();
-
             if (!string.IsNullOrEmpty(htmlFieldPrefix))
             {
-                builder.Append(htmlFieldPrefix);
-                builder.Append('.');
+                Prefix = $"{htmlFieldPrefix}.{typeof(TModel).Name}.{typeof(TSection).Name}";
             }
-
-            builder.Append(typeof(TModel).Name);
-            builder.Append('.');
-            builder.Append(PropertyName);
-
-            Prefix = builder.ToString();
+            else
+            {
+                Prefix = $"{typeof(TModel).Name}.{typeof(TSection).Name}";
+            }
         }
     }
 }
