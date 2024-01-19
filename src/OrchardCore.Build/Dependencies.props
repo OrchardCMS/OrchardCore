@@ -25,7 +25,7 @@
     <PackageManagement Include="GraphQL.DataLoader" Version="4.8.0" />
     <PackageManagement Include="GraphQL.MicrosoftDI" Version="4.8.0" />
     <PackageManagement Include="GraphQL.SystemTextJson" Version="4.8.0" />
-    <PackageManagement Include="Jint" Version="3.0.0-beta-2060" />
+    <PackageManagement Include="Jint" Version="3.0.0" />
     <PackageManagement Include="HtmlSanitizer" Version="8.1.812-beta" />
     <PackageManagement Include="Irony.Core" Version="1.0.7" />
     <PackageManagement Include="libphonenumber-csharp" Version="8.13.27" />
