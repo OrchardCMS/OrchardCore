@@ -58,29 +58,33 @@ namespace OrchardCore.Modules.Manifest
         /// <see cref="!:https://semver.org">Semantic Versioning</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
+        /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public ModuleAttribute(
-            string id
-            , string description
-            , string author
-            , string semVer
-            , string websiteUrl
-            , string featureDependencies
-            , string tags
-            , object defaultTenant
-            , object alwaysEnabled
+            string id,
+            string description,
+            string author,
+            string semVer,
+            string websiteUrl,
+            string featureDependencies,
+            string tags,
+            object defaultTenant,
+            object alwaysEnabled,
+            object enabledByDependencyOnly
         ) : this(
-            id
-            , default
-            , default
-            , default
-            , description
-            , author
-            , semVer
-            , websiteUrl
-            , featureDependencies
-            , tags
-            , defaultTenant
-            , alwaysEnabled
+            id,
+            default,
+            default,
+            default,
+            description,
+            author,
+            semVer,
+            websiteUrl,
+            featureDependencies,
+            tags,
+            defaultTenant,
+            alwaysEnabled,
+            enabledByDependencyOnly
         )
         {
         }
@@ -107,30 +111,34 @@ namespace OrchardCore.Modules.Manifest
         /// <see cref="!:https://semver.org">Semantic Versioning</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
+        /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public ModuleAttribute(
-            string id
-            , string name
-            , string description
-            , string author
-            , string semVer
-            , string websiteUrl
-            , string featureDependencies
-            , string tags
-            , object defaultTenant
-            , object alwaysEnabled
+            string id,
+            string name,
+            string description,
+            string author,
+            string semVer,
+            string websiteUrl,
+            string featureDependencies,
+            string tags,
+            object defaultTenant,
+            object alwaysEnabled,
+            object enabledByDependencyOnly
         ) : this(
-            id
-            , name
-            , default
-            , default
-            , description
-            , author
-            , semVer
-            , websiteUrl
-            , featureDependencies
-            , tags
-            , defaultTenant
-            , alwaysEnabled
+            id,
+            name,
+            default,
+            default,
+            description,
+            author,
+            semVer,
+            websiteUrl,
+            featureDependencies,
+            tags,
+            defaultTenant,
+            alwaysEnabled,
+            enabledByDependencyOnly
         )
         {
         }
@@ -159,28 +167,32 @@ namespace OrchardCore.Modules.Manifest
         /// <see cref="!:https://semver.org">Semantic Versioning</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
+        /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public ModuleAttribute(
-            string id
-            , string name
-            , string category
-            , string priority
-            , string description
-            , string author
-            , string semVer
-            , string websiteUrl
-            , string featureDependencies
-            , string tags
-            , object defaultTenant
-            , object alwaysEnabled
+            string id,
+            string name,
+            string category,
+            string priority,
+            string description,
+            string author,
+            string semVer,
+            string websiteUrl,
+            string featureDependencies,
+            string tags,
+            object defaultTenant,
+            object alwaysEnabled,
+            object enabledByDependencyOnly
         ) : base(
-            id
-            , name
-            , category
-            , priority
-            , description
-            , featureDependencies
-            , defaultTenant
-            , alwaysEnabled
+            id,
+            name,
+            category,
+            priority,
+            description,
+            featureDependencies,
+            defaultTenant,
+            alwaysEnabled,
+            enabledByDependencyOnly
         )
         {
             Author = author;
@@ -214,33 +226,37 @@ namespace OrchardCore.Modules.Manifest
         /// <see cref="!:https://semver.org">Semantic Versioning</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
+        /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public ModuleAttribute(
-            string id
-            , string name
-            , string type
-            , string category
-            , string priority
-            , string description
-            , string author
-            , string semVer
-            , string websiteUrl
-            , string featureDependencies
-            , string tags
-            , object defaultTenant
-            , object alwaysEnabled
+            string id,
+            string name,
+            string type,
+            string category,
+            string priority,
+            string description,
+            string author,
+            string semVer,
+            string websiteUrl,
+            string featureDependencies,
+            string tags,
+            object defaultTenant,
+            object alwaysEnabled,
+            object enabledByDependencyOnly
         ) : this(
-            id
-            , name
-            , category
-            , priority
-            , description
-            , author
-            , semVer
-            , websiteUrl
-            , featureDependencies
-            , tags
-            , defaultTenant
-            , alwaysEnabled
+            id,
+            name,
+            category,
+            priority,
+            description,
+            author,
+            semVer,
+            websiteUrl,
+            featureDependencies,
+            tags,
+            defaultTenant,
+            alwaysEnabled,
+            enabledByDependencyOnly
         )
         {
             type = (type ?? string.Empty).Trim();
@@ -260,7 +276,7 @@ namespace OrchardCore.Modules.Manifest
             // Drops the 'Attribute' suffix from the conventional abbreviation, or leaves it alone
             static string GetTypeNamePrefix(string typeName) =>
                 typeName.EndsWith(attributeSuffix)
-                ? typeName.Substring(0, typeName.Length - attributeSuffix.Length)
+                ? typeName[..^attributeSuffix.Length]
                 : typeName
                 ;
 

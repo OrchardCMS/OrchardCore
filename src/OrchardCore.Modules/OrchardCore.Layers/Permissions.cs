@@ -7,7 +7,7 @@ namespace OrchardCore.Layers
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageLayers = new Permission("ManageLayers", "Manage layers");
+        public static readonly Permission ManageLayers = new("ManageLayers", "Manage layers");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
@@ -21,8 +21,8 @@ namespace OrchardCore.Layers
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageLayers }
-                }
+                    Permissions = new[] { ManageLayers },
+                },
             };
         }
     }

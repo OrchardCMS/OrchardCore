@@ -1,3 +1,4 @@
+using System;
 using OrchardCore.Workflows.Display;
 using OrchardCore.Workflows.Http.Activities;
 using OrchardCore.Workflows.Http.ViewModels;
@@ -22,7 +23,7 @@ namespace OrchardCore.Workflows.Http.Drivers
             activity.AreaName = NullIfEmpty(model.AreaName);
         }
 
-        private string NullIfEmpty(string s)
+        private static string NullIfEmpty(string s)
         {
             return string.IsNullOrWhiteSpace(s) ? null : s.Trim();
         }

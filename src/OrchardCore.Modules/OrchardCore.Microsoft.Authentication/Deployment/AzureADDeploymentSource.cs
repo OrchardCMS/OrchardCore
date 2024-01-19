@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.Microsoft.Authentication.Services;
+using OrchardCore.Microsoft.Authentication.Settings;
 
 namespace OrchardCore.Microsoft.Authentication.Deployment
 {
@@ -25,10 +26,11 @@ namespace OrchardCore.Microsoft.Authentication.Deployment
 
             var settings = await _azureADService.GetSettingsAsync();
 
-            result.Steps.Add(new JObject(
-                new JProperty("name", "AzureAD"),
-                new JProperty("AzureAD", JObject.FromObject(settings))
-            ));
+            var obj = new JObject(new JProperty("name", nameof(AzureADSettings)));
+
+            obj.Merge(JObject.FromObject(settings));
+
+            result.Steps.Add(obj);
         }
     }
 }

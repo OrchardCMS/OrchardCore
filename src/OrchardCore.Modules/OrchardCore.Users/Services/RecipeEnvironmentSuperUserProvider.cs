@@ -30,7 +30,7 @@ namespace OrchardCore.Users.Services
         public async Task PopulateEnvironmentAsync(IDictionary<string, object> environment)
         {
             var siteSettings = await _siteService.GetSiteSettingsAsync();
-            if (!String.IsNullOrEmpty(siteSettings.SuperUser))
+            if (!string.IsNullOrEmpty(siteSettings.SuperUser))
             {
                 try
                 {

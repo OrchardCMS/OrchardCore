@@ -8,6 +8,6 @@ namespace OrchardCore.Environment.Shell.Models
     /// </summary>
     public class FeatureProfilesRuleOptions
     {
-        public Dictionary<string, Func<string, string, (bool isMatch, bool isAllowed)>> Rules = new Dictionary<string, Func<string, string, (bool, bool)>>(StringComparer.OrdinalIgnoreCase);
+        public Dictionary<string, Func<string, string, (bool isMatch, bool isAllowed)>> Rules = new(StringComparer.OrdinalIgnoreCase);
     }
 }

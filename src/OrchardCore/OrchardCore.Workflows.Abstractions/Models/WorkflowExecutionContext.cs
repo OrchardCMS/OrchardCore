@@ -79,7 +79,7 @@ namespace OrchardCore.Workflows.Models
             return Activities[activityId];
         }
 
-        public void Fault(Exception exception, ActivityContext activityContext)
+        public void Fault(Exception exception, ActivityContext _)
         {
             Workflow.Status = WorkflowStatus.Faulted;
             Workflow.FaultMessage = exception.Message;

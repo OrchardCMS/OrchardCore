@@ -29,8 +29,8 @@
         "OrchardCore.Contents",
         "OrchardCore.Contents.FileContentDefinition",
         "OrchardCore.Html",
-        "OrchardCore.Lucene",
-        "OrchardCore.Lucene.ContentPicker"
+        "OrchardCore.Search.Lucene",
+        "OrchardCore.Search.Lucene.ContentPicker"
       ]
     },
     {
@@ -54,10 +54,10 @@
                   "Position": "1",
                   "Editor": "Wysiwyg"
                 },
-                "ContentIndexSettings": {
+                "LuceneContentIndexSettings": {
                   "Included": true,
-                  "Stored": true,
-                  "Analyzed": true
+                  "Stored": false,
+                  "Keyword": false
                 }
               }
             },

@@ -24,10 +24,7 @@ namespace OrchardCore.Mvc
         {
             get
             {
-                if (_compositeFileProvider == null)
-                {
-                    _compositeFileProvider = GetCompositeFileProvider(_options);
-                }
+                _compositeFileProvider ??= GetCompositeFileProvider(_options);
 
                 return _compositeFileProvider;
             }

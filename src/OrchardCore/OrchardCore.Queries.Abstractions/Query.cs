@@ -29,5 +29,7 @@ namespace OrchardCore.Queries
         /// This is used runtime determination of the results returned when Content Items are not returned.
         /// </summary>
         public string Schema { get; set; }
+
+        public virtual bool ResultsOfType<T>() => typeof(T) == typeof(object);
     }
 }

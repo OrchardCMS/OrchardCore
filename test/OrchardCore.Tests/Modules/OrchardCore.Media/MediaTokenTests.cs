@@ -1,14 +1,7 @@
-using System;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Moq;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Media;
 using OrchardCore.Media.Processing;
 using OrchardCore.Settings;
-using SixLabors.ImageSharp.Web.Processors;
-using Xunit;
+using OrchardCore.Tests.Utilities;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media
 {
@@ -26,8 +19,10 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
 
         public MediaTokenTests()
         {
-            _mediaTokenSettings = new MediaTokenSettings();
-            _mediaTokenSettings.HashKey = _hashKey;
+            _mediaTokenSettings = new MediaTokenSettings
+            {
+                HashKey = _hashKey,
+            };
         }
 
         [Theory]
@@ -38,7 +33,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
             var serviceProvider = CreateServiceProvider();
             var mediaTokenService = serviceProvider.GetRequiredService<IMediaTokenService>();
 
-            // make sure we also hit cache
+            // Make sure we also hit cache.
             for (var i = 0; i < 2; ++i)
             {
                 var tokenizedPath = mediaTokenService.AddTokenToPath(path);
@@ -76,15 +71,13 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
         {
             var services = new ServiceCollection();
 
-            var mockSiteService = Mock.Of<ISiteService>(ss =>
-                ss.GetSiteSettingsAsync() == Task.FromResult(
-                    Mock.Of<ISite>(s => s.Properties == JObject.FromObject(new { MediaTokenSettings = _mediaTokenSettings }))
-                )
-            );
+            var mockSite = SiteMockHelper.GetSite(_mediaTokenSettings);
+
+            var mockSiteService = Mock.Of<ISiteService>(ss => ss.GetSiteSettingsAsync() == Task.FromResult(mockSite.Object));
 
             services.AddMemoryCache();
 
-            services.AddSingleton<ISiteService>(mockSiteService);
+            services.AddSingleton(mockSiteService);
             services.AddSingleton<IImageWebProcessor, TokenCommandProcessor>();
             services.AddSingleton<IImageWebProcessor, TokenCommandProcessor>();
             services.AddSingleton<IImageWebProcessor, ResizeWebProcessor>();

@@ -1,7 +1,11 @@
 using System;
 using System.Linq;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -34,25 +38,39 @@ namespace OrchardCore.Redis
         {
             try
             {
-                var configurationString = _configuration["OrchardCore_Redis:Configuration"];
-                var _ = ConfigurationOptions.Parse(configurationString);
-                var instancePrefix = _configuration["OrchardCore_Redis:InstancePrefix"];
+                var section = _configuration.GetSection("OrchardCore_Redis");
+
+                var configuration = section["Configuration"];
+                var configurationOptions = ConfigurationOptions.Parse(configuration);
+                var instancePrefix = section["InstancePrefix"];
+
+                if (section.GetValue("DisableCertificateVerification", false))
+                {
+                    configurationOptions.CertificateValidation += IgnoreCertificateErrors;
+                }
 
                 services.Configure<RedisOptions>(options =>
                 {
-                    options.Configuration = configurationString;
+                    options.Configuration = configuration;
+                    options.ConfigurationOptions = configurationOptions;
                     options.InstancePrefix = instancePrefix;
                 });
             }
             catch (Exception e)
             {
-                _logger.LogError("'Redis' features are not active on tenant '{TenantName}' as the 'Configuration' string is missing or invalid: " + e.Message, _tenant);
+                _logger.LogError(e, "'Redis' features are not active on tenant '{TenantName}' as the 'Configuration' string is missing or invalid.", _tenant);
                 return;
             }
 
             services.AddSingleton<IRedisService, RedisService>();
             services.AddSingleton<IModularTenantEvents>(sp => sp.GetRequiredService<IRedisService>());
+            services.AddSingleton<IRedisDatabaseFactory, RedisDatabaseFactory>();
         }
+
+        // Callback for accepting any certificate as long as it exists, while ignoring other SSL policy errors.
+        // This allows the use of self-signed certificates on the Redis server.
+        private static bool IgnoreCertificateErrors(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+            => (sslPolicyErrors & SslPolicyErrors.RemoteCertificateNotAvailable) == 0;
     }
 
     [Feature("OrchardCore.Redis.Cache")]
@@ -62,7 +80,7 @@ namespace OrchardCore.Redis
         {
             if (services.Any(d => d.ServiceType == typeof(IRedisService)))
             {
-                services.AddStackExchangeRedisCache(o => { });
+                services.AddSingleton<IDistributedCache, RedisCacheWrapper>();
                 services.AddTransient<IConfigureOptions<RedisCacheOptions>, RedisCacheOptionsSetup>();
                 services.AddScoped<ITagCache, RedisTagCache>();
             }

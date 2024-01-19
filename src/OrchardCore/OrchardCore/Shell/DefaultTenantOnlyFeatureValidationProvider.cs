@@ -26,7 +26,7 @@ namespace OrchardCore.Environment.Shell
                 return new ValueTask<bool>(false);
             }
 
-            if (_shellSettings.Name == ShellHelper.DefaultShellName)
+            if (_shellSettings.IsDefaultShell())
             {
                 return new ValueTask<bool>(true);
             }

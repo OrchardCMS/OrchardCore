@@ -16,7 +16,7 @@ namespace OrchardCore.ContentManagement.Routing
         /// <summary>
         /// The id of the document.
         /// </summary>
-        public int DocumentId;
+        public long DocumentId;
 
         /// <summary>
         /// The id of the content item.

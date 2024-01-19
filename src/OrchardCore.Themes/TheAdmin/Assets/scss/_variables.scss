@@ -1,0 +1,44 @@
+/* 
+    IMPORTANT: Never import Bootstrap directly into the theme. 
+    TheAdmin.css will depend on Bootstrap, but we never want to compile it. 
+*/
+@import '../../node_modules/bootstrap/scss/_functions';
+@import '../../node_modules/bootstrap/scss/_variables';
+
+// Custom variables.
+$top-nav-height: 52px !default;
+$footer-height: 40px !default;
+$left-navigation-width: 260px !default;
+$left-navigation-width-when-compact: 48px !default;
+$link-padding-left: 16px !default;
+$dropdown-max-height: 250px !default;
+
+:root {
+    --oc-border-content: var(--bs-border-width) solid var(--bs-border-color);
+    --oc-admin-menu-bg-color: var(--bs-secondary-bg-subtle);
+    --oc-scrollbar-color: #CDCDCD;
+    --oc-admin-menu-font-color: var(--bs-secondary-color);
+    --oc-admin-menu-font-color-hover: var(--bs-emphasis-color);
+    --oc-admin-menu-item-bg-color: var(--bs-secondary-bg-subtle);
+    --oc-admin-menu-item-font-color: var(--bs-secondary-color);
+    --oc-admin-menu-item-font-color-active: var(--bs-emphasis-color);
+    --oc-li-hover-bg-color: var(--bs-list-group-action-hover-bg);
+    --oc-zindex-dropdown: #{$zindex-dropdown};
+    --oc-height-dropdown: #{$dropdown-max-height};
+    --oc-top-nav-height: #{$top-nav-height};
+    --oc-top-nav-zindex: #{$zindex-fixed + 4};
+    --oc-footer-height: #{$footer-height};
+    --oc-start-navigation-width: #{$left-navigation-width};
+    --oc-start-navigation-width-when-compact: #{$left-navigation-width-when-compact};
+    --oc-start-navigation-zindex: #{$zindex-fixed + 3};
+    --oc-link-padding-left: #{$link-padding-left};
+    --oc-editor-fullscreen: #{$zindex-modal - 1};
+    --oc-selected-indicator-color: var(--bs-primary);
+    /* Action bar should always be less than dropdown menu */
+    --oc-action-bar-zindex: #{$zindex-dropdown - 20};
+    --oc-second-action-bar-zindex: #{$zindex-dropdown - 17};
+    /* Undefined Bootstrap variables */
+    --bs-dropdown-zindex: #{$zindex-dropdown};
+    --bs-zindex-fixed: #{$zindex-fixed};
+    --bs-bg-opacity: 1;
+}

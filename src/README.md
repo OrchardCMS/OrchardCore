@@ -14,11 +14,11 @@ It’s important to note the differences between the framework and the CMS. Some
 [![Documentation](https://readthedocs.org/projects/orchardcore/badge/)](https://docs.orchardcore.net/)
 [![Crowdin](https://badges.crowdin.net/orchard-core/localized.svg)](https://crowdin.com/project/orchard-core)
 
-#### Local communities
+## Local communities
 
 中文资源
 
-[![Orchard Core CN 中文讨论组](https://pub.idqqimg.com/wpa/images/group.png)](//shang.qq.com/wpa/qunwpa?idkey=48721591a71ee7586316604a7a4ee99d26fd977c6120370a06585085a5936f62)
+[![Orchard Core CN 中文讨论组](docs/assets/images/orchard-core-cn-community-logo.png)](https://shang.qq.com/wpa/qunwpa?idkey=48721591a71ee7586316604a7a4ee99d26fd977c6120370a06585085a5936f62)
 
 ## Building Software as a Service (SaaS) solutions with the Orchard Core Framework
 
@@ -64,8 +64,8 @@ Orchard Core CMS supports all major site building strategies:
 
 ## Status
 
-The latest released version of Orchard Core is `1.4.0`.
-The release notes can be found on <https://github.com/OrchardCMS/OrchardCore/releases/tag/v1.4.0>
+The latest released version of Orchard Core is `1.8.2`.
+The release notes can be found on <https://github.com/OrchardCMS/OrchardCore/releases/tag/v1.8.2>
 
 Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki/Roadmap).
 

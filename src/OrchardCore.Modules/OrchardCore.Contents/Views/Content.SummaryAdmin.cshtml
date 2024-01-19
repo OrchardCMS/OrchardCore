@@ -1,12 +1,13 @@
 @using OrchardCore.Contents
 @using OrchardCore.ContentManagement
+@using Microsoft.AspNetCore.Html
 @inject IAuthorizationService AuthorizationService
 @{
     ContentItem contentItem = Model.ContentItem;
 }
 
 <div class="row">
-    <div class="col-lg col-12 title d-flex">
+    <div class="col-lg col-12 title d-flex align-items-center">
         <div class="selectors-container d-flex">
             @if (Model.Selectors != null)
             {
@@ -23,7 +24,7 @@
             <div class="contentitem me-2">
                 @if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
                 {
-                    <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath"/>
+                    <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath" />
                 }
                 else
                 {
@@ -31,7 +32,7 @@
                 }
             </div>
             <div class="contenttype me-1">
-                <span class="badge ta-badge font-weight-normal"><i class="far fa-file-alt text-secondary" aria-hidden="true"></i> <a href="@(FullRequestPath)&Options.SelectedContentType=@contentItem.ContentType" data-bs-toggle="tooltip" title="@T["Content type"]">@contentItem.ContentType</a></span>
+                <span class="badge ta-badge font-weight-normal"><i class="far fa-file-alt text-secondary" aria-hidden="true"></i> <a asp-route-options.selectedcontenttype=@contentItem.ContentType data-bs-toggle="tooltip" title="@T["Content type"]">@contentItem.ContentType</a></span>
             </div>
             @if (Model.Header != null)
             {
@@ -59,7 +60,8 @@
             {
                 @await DisplayAsync(Model.Actions)
             }
-            @if (Model.ActionsMenu != null)
+
+            @if (Model.ActionsMenu != null && Model.ActionsMenu.HasItems)
             {
                 <div class="btn-group" title="@T["Actions"]">
                     <button type="button" class="btn btn-sm btn-secondary dropdown-toggle actions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
