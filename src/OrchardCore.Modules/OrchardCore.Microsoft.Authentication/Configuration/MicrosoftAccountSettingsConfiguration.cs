@@ -9,7 +9,7 @@ using OrchardCore.Microsoft.Authentication.Settings;
 
 namespace OrchardCore.Microsoft.Authentication.Configuration;
 
-public class MicrosoftAccountSettingsConfiguration : IConfigureOptions<MicrosoftAccountSettings>
+public class MicrosoftAccountSettingsConfiguration : IAsyncConfigureOptions<MicrosoftAccountSettings>
 {
     private readonly IMicrosoftAccountService _microsoftAccountService;
     private readonly ShellSettings _shellSettings;
@@ -25,11 +25,9 @@ public class MicrosoftAccountSettingsConfiguration : IConfigureOptions<Microsoft
         _logger = logger;
     }
 
-    public void Configure(MicrosoftAccountSettings options)
+    public async ValueTask ConfigureAsync(MicrosoftAccountSettings options)
     {
-        var settings = GetMicrosoftAccountSettingsAsync()
-            .GetAwaiter()
-            .GetResult();
+        var settings = await GetMicrosoftAccountSettingsAsync();
 
         if (settings != null)
         {

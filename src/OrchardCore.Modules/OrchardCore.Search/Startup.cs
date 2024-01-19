@@ -30,7 +30,7 @@ namespace OrchardCore.Search
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IConfigureOptions<SearchSettings>, SearchSettingsConfiguration>();
+            services.Configure<SearchSettings, SearchSettingsConfiguration>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IDisplayDriver<ISite>, SearchSettingsDisplayDriver>();

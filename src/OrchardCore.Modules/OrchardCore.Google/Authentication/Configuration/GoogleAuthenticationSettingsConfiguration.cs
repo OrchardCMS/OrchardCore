@@ -8,7 +8,7 @@ using OrchardCore.Google.Authentication.Settings;
 
 namespace OrchardCore.Google.Authentication.Services;
 
-public class GoogleAuthenticationSettingsConfiguration : IConfigureOptions<GoogleAuthenticationSettings>
+public class GoogleAuthenticationSettingsConfiguration : IAsyncConfigureOptions<GoogleAuthenticationSettings>
 {
     private readonly GoogleAuthenticationService _googleAuthenticationService;
     private readonly ShellSettings _shellSettings;
@@ -24,11 +24,9 @@ public class GoogleAuthenticationSettingsConfiguration : IConfigureOptions<Googl
         _logger = logger;
     }
 
-    public void Configure(GoogleAuthenticationSettings options)
+    public async ValueTask ConfigureAsync(GoogleAuthenticationSettings options)
     {
-        var settings = GetGoogleAuthenticationSettingsAsync()
-            .GetAwaiter()
-            .GetResult();
+        var settings = await GetGoogleAuthenticationSettingsAsync();
 
         if (settings != null)
         {

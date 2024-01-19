@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Azure;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
@@ -8,7 +9,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.AzureAI.Services;
 
-public class AzureAISearchDefaultOptionsConfigurations : IConfigureOptions<AzureAISearchDefaultOptions>
+public class AzureAISearchDefaultOptionsConfigurations : IAsyncConfigureOptions<AzureAISearchDefaultOptions>
 {
     public const string ProtectorName = "AzureAISearch";
 
@@ -26,7 +27,7 @@ public class AzureAISearchDefaultOptionsConfigurations : IConfigureOptions<Azure
         _siteService = siteService;
     }
 
-    public async void Configure(AzureAISearchDefaultOptions options)
+    public async ValueTask ConfigureAsync(AzureAISearchDefaultOptions options)
     {
         var fileOptions = _shellConfiguration.GetSection("OrchardCore_AzureAISearch").Get<AzureAISearchDefaultOptions>()
             ?? new AzureAISearchDefaultOptions();

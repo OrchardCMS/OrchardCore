@@ -9,7 +9,7 @@ using OrchardCore.Microsoft.Authentication.Settings;
 
 namespace OrchardCore.Microsoft.Authentication.Configuration;
 
-public class AzureADSettingsConfiguration : IConfigureOptions<AzureADSettings>
+public class AzureADSettingsConfiguration : IAsyncConfigureOptions<AzureADSettings>
 {
     private readonly IAzureADService _azureADService;
     private readonly ShellSettings _shellSettings;
@@ -25,11 +25,9 @@ public class AzureADSettingsConfiguration : IConfigureOptions<AzureADSettings>
         _logger = logger;
     }
 
-    public void Configure(AzureADSettings options)
+    public async ValueTask ConfigureAsync(AzureADSettings options)
     {
-        var settings = GetAzureADSettingsAsync()
-            .GetAwaiter()
-            .GetResult();
+        var settings = await GetAzureADSettingsAsync();
 
         if (settings != null)
         {

@@ -1,11 +1,11 @@
+using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
-using OrchardCore.Entities;
 using OrchardCore.Search.Models;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Configuration
 {
-    public class SearchSettingsConfiguration : IConfigureOptions<SearchSettings>
+    public class SearchSettingsConfiguration : IAsyncConfigureOptions<SearchSettings>
     {
         private readonly ISiteService _site;
 
@@ -14,11 +14,9 @@ namespace OrchardCore.Search.Configuration
             _site = site;
         }
 
-        public void Configure(SearchSettings options)
+        public async ValueTask ConfigureAsync(SearchSettings options)
         {
-            var settings = _site.GetSiteSettingsAsync()
-                .GetAwaiter().GetResult()
-                .As<SearchSettings>();
+            var settings = (await _site.GetSiteSettingsAsync()).As<SearchSettings>();
 
             options.ProviderName = settings.ProviderName;
         }

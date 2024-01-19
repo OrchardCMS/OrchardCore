@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Google.Authentication.Settings
 {
-    public class GoogleAuthenticationSettings
+    public class GoogleAuthenticationSettings : IAsyncOptions
     {
         public string ClientID { get; set; }
         public string ClientSecret { get; set; }

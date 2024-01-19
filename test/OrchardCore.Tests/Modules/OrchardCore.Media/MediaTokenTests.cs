@@ -82,7 +82,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
             services.AddSingleton<IImageWebProcessor, TokenCommandProcessor>();
             services.AddSingleton<IImageWebProcessor, ResizeWebProcessor>();
             services.AddScoped<IMediaTokenService, MediaTokenService>();
-            services.AddTransient<IConfigureOptions<MediaTokenOptions>, MediaTokenOptionsConfiguration>();
+            services.Configure<MediaTokenOptions, MediaTokenOptionsConfiguration>();
 
             var serviceProvider = services.BuildServiceProvider();
 

@@ -1,10 +1,10 @@
+using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 
 namespace OrchardCore.ReCaptcha.Configuration
 {
-    public class ReCaptchaSettingsConfiguration : IConfigureOptions<ReCaptchaSettings>
+    public class ReCaptchaSettingsConfiguration : IAsyncConfigureOptions<ReCaptchaSettings>
     {
         private readonly ISiteService _site;
 
@@ -13,11 +13,9 @@ namespace OrchardCore.ReCaptcha.Configuration
             _site = site;
         }
 
-        public void Configure(ReCaptchaSettings options)
+        public async ValueTask ConfigureAsync(ReCaptchaSettings options)
         {
-            var settings = _site.GetSiteSettingsAsync()
-                .GetAwaiter().GetResult()
-                .As<ReCaptchaSettings>();
+            var settings = (await _site.GetSiteSettingsAsync()).As<ReCaptchaSettings>();
 
             options.SiteKey = settings.SiteKey;
             options.SecretKey = settings.SecretKey;

@@ -28,7 +28,7 @@ public static class ServiceCollectionExtensions
             logger.LogError("Azure AI Search module is enabled. However, the connection settings are not provided in configuration file.");
         }
 
-        services.AddTransient<IConfigureOptions<AzureAISearchDefaultOptions>, AzureAISearchDefaultOptionsConfigurations>();
+        services.Configure<AzureAISearchDefaultOptions, AzureAISearchDefaultOptionsConfigurations>();
 
         services.AddAzureClientsCore();
 

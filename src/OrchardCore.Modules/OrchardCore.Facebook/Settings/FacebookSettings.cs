@@ -1,6 +1,8 @@
+using Microsoft.Extensions.Options;
+
 namespace OrchardCore.Facebook.Settings
 {
-    public class FacebookSettings
+    public class FacebookSettings : IAsyncOptions
     {
         public string AppId { get; set; }
         public string AppSecret { get; set; }

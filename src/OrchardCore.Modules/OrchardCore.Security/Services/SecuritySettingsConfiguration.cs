@@ -1,19 +1,19 @@
+using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.Security.Settings;
 
 namespace OrchardCore.Security.Services
 {
-    public class SecuritySettingsConfiguration : IConfigureOptions<SecuritySettings>
+    public class SecuritySettingsConfiguration : IAsyncConfigureOptions<SecuritySettings>
     {
         private readonly ISecurityService _securityService;
 
         public SecuritySettingsConfiguration(ISecurityService securityService)
             => _securityService = securityService;
 
-        public void Configure(SecuritySettings options)
+        public async ValueTask ConfigureAsync(SecuritySettings options)
         {
-            var securitySettings = _securityService.GetSettingsAsync()
-                .GetAwaiter().GetResult();
+            var securitySettings = await _securityService.GetSettingsAsync();
 
             options.ContentSecurityPolicy = securitySettings.ContentSecurityPolicy;
             options.ContentTypeOptions = securitySettings.ContentTypeOptions;

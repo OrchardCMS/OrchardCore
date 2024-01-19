@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Options;
 using OrchardCore.Security.Options;
 
 namespace OrchardCore.Security.Settings
 {
-    public class SecuritySettings
+    public class SecuritySettings : IAsyncOptions
     {
         private Dictionary<string, string> _contentSecurityPolicy = new();
         private Dictionary<string, string> _permissionsPolicy = new();

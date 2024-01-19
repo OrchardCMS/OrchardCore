@@ -9,7 +9,7 @@ using OrchardCore.GitHub.Settings;
 
 namespace OrchardCore.GitHub.Configuration;
 
-public class GitHubAuthenticationSettingsConfiguration : IConfigureOptions<GitHubAuthenticationSettings>
+public class GitHubAuthenticationSettingsConfiguration : IAsyncConfigureOptions<GitHubAuthenticationSettings>
 {
     private readonly IGitHubAuthenticationService _gitHubAuthenticationService;
     private readonly ShellSettings _shellSettings;
@@ -25,11 +25,9 @@ public class GitHubAuthenticationSettingsConfiguration : IConfigureOptions<GitHu
         _logger = logger;
     }
 
-    public void Configure(GitHubAuthenticationSettings options)
+    public async ValueTask ConfigureAsync(GitHubAuthenticationSettings options)
     {
-        var settings = GetGitHubAuthenticationSettingsAsync()
-            .GetAwaiter()
-            .GetResult();
+        var settings = await GetGitHubAuthenticationSettingsAsync();
 
         if (settings != null)
         {

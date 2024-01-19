@@ -1,6 +1,8 @@
+using Microsoft.Extensions.Options;
+
 namespace OrchardCore.Search.Models
 {
-    public class SearchSettings
+    public class SearchSettings : IAsyncOptions
     {
         public string ProviderName { get; set; }
 

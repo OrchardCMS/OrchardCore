@@ -34,7 +34,7 @@ namespace OrchardCore.GitHub
             services.AddScoped<INavigationProvider, AdminMenuGitHubLogin>();
             services.AddRecipeExecutionStep<GitHubAuthenticationSettingsStep>();
 
-            services.AddTransient<IConfigureOptions<GitHubAuthenticationSettings>, GitHubAuthenticationSettingsConfiguration>();
+            services.Configure<GitHubAuthenticationSettings, GitHubAuthenticationSettingsConfiguration>();
 
             // Register the options initializers required by the GitHub Handler.
             services.TryAddEnumerable(new[]

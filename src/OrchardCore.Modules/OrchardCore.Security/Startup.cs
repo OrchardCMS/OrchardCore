@@ -24,7 +24,7 @@ namespace OrchardCore.Security
 
             services.AddSingleton<ISecurityService, SecurityService>();
 
-            services.AddTransient<IConfigureOptions<SecuritySettings>, SecuritySettingsConfiguration>();
+            services.Configure<SecuritySettings, SecuritySettingsConfiguration>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

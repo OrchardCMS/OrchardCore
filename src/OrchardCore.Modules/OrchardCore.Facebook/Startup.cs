@@ -36,7 +36,7 @@ namespace OrchardCore.Facebook
             services.AddRecipeExecutionStep<FacebookSettingsStep>();
 
             services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
-            services.AddTransient<IConfigureOptions<FacebookSettings>, FacebookSettingsConfiguration>();
+            services.Configure<FacebookSettings, FacebookSettingsConfiguration>();
 
             services.Configure<MvcOptions>((options) =>
             {

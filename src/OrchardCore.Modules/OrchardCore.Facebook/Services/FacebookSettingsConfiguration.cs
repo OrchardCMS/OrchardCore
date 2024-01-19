@@ -8,7 +8,7 @@ using OrchardCore.Facebook.Settings;
 
 namespace OrchardCore.Facebook.Services;
 
-public class FacebookSettingsConfiguration : IConfigureOptions<FacebookSettings>
+public class FacebookSettingsConfiguration : IAsyncConfigureOptions<FacebookSettings>
 {
     private readonly IFacebookService _facebookService;
     private readonly ShellSettings _shellSettings;
@@ -24,11 +24,9 @@ public class FacebookSettingsConfiguration : IConfigureOptions<FacebookSettings>
         _logger = logger;
     }
 
-    public void Configure(FacebookSettings options)
+    public async ValueTask ConfigureAsync(FacebookSettings options)
     {
-        var settings = GetFacebookSettingsAsync()
-            .GetAwaiter()
-            .GetResult();
+        var settings = await GetFacebookSettingsAsync();
 
         if (settings != null)
         {

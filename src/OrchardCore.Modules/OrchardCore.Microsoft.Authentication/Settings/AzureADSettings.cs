@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Microsoft.Authentication.Settings
 {
-    public class AzureADSettings
+    public class AzureADSettings : IAsyncOptions
     {
         public string DisplayName { get; set; }
         public string AppId { get; set; }

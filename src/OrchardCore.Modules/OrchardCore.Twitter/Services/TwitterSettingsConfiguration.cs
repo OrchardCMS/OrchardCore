@@ -8,7 +8,7 @@ using OrchardCore.Twitter.Settings;
 
 namespace OrchardCore.Twitter.Services;
 
-public class TwitterSettingsConfiguration : IConfigureOptions<TwitterSettings>
+public class TwitterSettingsConfiguration : IAsyncConfigureOptions<TwitterSettings>
 {
     private readonly ITwitterSettingsService _twitterSettingsService;
     private readonly ShellSettings _shellSettings;
@@ -24,11 +24,9 @@ public class TwitterSettingsConfiguration : IConfigureOptions<TwitterSettings>
         _logger = logger;
     }
 
-    public void Configure(TwitterSettings options)
+    public async ValueTask ConfigureAsync(TwitterSettings options)
     {
-        var settings = GetTwitterSettingsAsync()
-            .GetAwaiter()
-            .GetResult();
+        var settings = await GetTwitterSettingsAsync();
 
         if (settings != null)
         {

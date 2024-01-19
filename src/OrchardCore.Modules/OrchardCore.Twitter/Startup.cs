@@ -43,7 +43,7 @@ namespace OrchardCore.Twitter
             services.AddRecipeExecutionStep<TwitterSettingsStep>();
 
             services.AddTransient<TwitterClientMessageHandler>();
-            services.AddTransient<IConfigureOptions<TwitterSettings>, TwitterSettingsConfiguration>();
+            services.Configure<TwitterSettings, TwitterSettingsConfiguration>();
 
             services.AddHttpClient<TwitterClient>()
                 .AddHttpMessageHandler<TwitterClientMessageHandler>()

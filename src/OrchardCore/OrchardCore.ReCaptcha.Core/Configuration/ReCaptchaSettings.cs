@@ -1,6 +1,8 @@
+using Microsoft.Extensions.Options;
+
 namespace OrchardCore.ReCaptcha.Configuration
 {
-    public class ReCaptchaSettings
+    public class ReCaptchaSettings : IAsyncOptions
     {
         public string SiteKey { get; set; }
 

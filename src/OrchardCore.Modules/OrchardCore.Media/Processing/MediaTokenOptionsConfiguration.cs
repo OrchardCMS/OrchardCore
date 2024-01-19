@@ -1,9 +1,10 @@
+using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Media.Processing
 {
-    public class MediaTokenOptionsConfiguration : IConfigureOptions<MediaTokenOptions>
+    public class MediaTokenOptionsConfiguration : IAsyncConfigureOptions<MediaTokenOptions>
     {
         private readonly ISiteService _siteService;
 
@@ -12,10 +13,9 @@ namespace OrchardCore.Media.Processing
             _siteService = siteService;
         }
 
-        public void Configure(MediaTokenOptions options)
+        public async ValueTask ConfigureAsync(MediaTokenOptions options)
         {
-            options.HashKey = _siteService.GetSiteSettingsAsync()
-                .GetAwaiter().GetResult()
+            options.HashKey = (await _siteService.GetSiteSettingsAsync())
                 .As<MediaTokenSettings>()
                 .HashKey;
         }
