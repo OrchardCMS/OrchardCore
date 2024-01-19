@@ -25,7 +25,7 @@ namespace OrchardCore.Autoroute
 
             await SchemaBuilder.CreateMapIndexTableAsync<AutoroutePartIndex>(table => table
                 .Column<string>("ContentItemId", column => column.NotNull().WithLength(26))
-                .Column<string>("ContainedContentItemId", column => column.NotNull().WithLength(26))
+                .Column<string>("ContainedContentItemId", column => column.WithLength(26)) // Cannot be non-null
                 .Column<string>("JsonPath", column => column.Unlimited())
                 .Column<string>("Path", column => column.WithLength(AutoroutePart.MaxPathLength))
                 .Column<bool>("Published")
@@ -57,7 +57,7 @@ namespace OrchardCore.Autoroute
         public async Task<int> UpdateFrom3Async()
         {
             await SchemaBuilder.AlterIndexTableAsync<AutoroutePartIndex>(table => table
-                .AddColumn<string>("ContainedContentItemId", column => column.NotNull().WithLength(26))
+                .AddColumn<string>("ContainedContentItemId", column => column.WithLength(26))
             );
 
             await SchemaBuilder.AlterIndexTableAsync<AutoroutePartIndex>(table => table
