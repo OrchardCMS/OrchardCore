@@ -277,9 +277,7 @@ namespace OrchardCore.OpenId
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDisplayDriver<DeploymentStep>, OpenIdServerDeploymentStepDriver>();
-            services.AddTransient<IDeploymentSource, OpenIdServerDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<OpenIdServerDeploymentStep>>();
+            services.AddDeployment<OpenIdServerDeploymentSource, OpenIdServerDeploymentStep, OpenIdServerDeploymentStepDriver>();
         }
     }
 
@@ -339,9 +337,7 @@ namespace OrchardCore.OpenId
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDisplayDriver<DeploymentStep>, OpenIdValidationDeploymentStepDriver>();
-            services.AddTransient<IDeploymentSource, OpenIdValidationDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<OpenIdValidationDeploymentStep>>();
+            services.AddDeployment<OpenIdValidationDeploymentSource, OpenIdValidationDeploymentStep, OpenIdValidationDeploymentStepDriver>();
         }
     }
 

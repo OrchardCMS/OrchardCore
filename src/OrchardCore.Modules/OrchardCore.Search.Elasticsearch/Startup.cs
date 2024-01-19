@@ -3,7 +3,6 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Elasticsearch.Net;
-using Fluid;
 using GraphQL;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -33,7 +32,6 @@ using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.Drivers;
 using OrchardCore.Search.Elasticsearch.Services;
 using OrchardCore.Search.Lucene.Handler;
-using OrchardCore.Search.ViewModels;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
@@ -105,18 +103,10 @@ namespace OrchardCore.Search.Elasticsearch
                 }
             });
 
-            services.Configure<TemplateOptions>(o =>
-            {
-                o.MemberAccessStrategy.Register<SearchIndexViewModel>();
-                o.MemberAccessStrategy.Register<SearchFormViewModel>();
-                o.MemberAccessStrategy.Register<SearchResultsViewModel>();
-            });
-
             services.AddElasticServices();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IDisplayDriver<Query>, ElasticQueryDisplayDriver>();
-            services.AddScoped<IAuthorizationHandler, ElasticsearchAuthorizationHandler>();
         }
 
         private static ConnectionSettings GetConnectionSettings(ElasticConnectionOptions elasticConfiguration)
@@ -261,6 +251,7 @@ namespace OrchardCore.Search.Elasticsearch
         {
             services.AddScoped<ISearchService, ElasticsearchService>();
             services.AddScoped<IDisplayDriver<ISite>, ElasticSettingsDisplayDriver>();
+            services.AddScoped<IAuthorizationHandler, ElasticsearchAuthorizationHandler>();
         }
     }
 
@@ -269,21 +260,10 @@ namespace OrchardCore.Search.Elasticsearch
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, ElasticIndexDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ElasticIndexDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, ElasticIndexDeploymentStepDriver>();
-
-            services.AddTransient<IDeploymentSource, ElasticSettingsDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ElasticSettingsDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, ElasticSettingsDeploymentStepDriver>();
-
-            services.AddTransient<IDeploymentSource, ElasticIndexRebuildDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ElasticIndexRebuildDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, ElasticIndexRebuildDeploymentStepDriver>();
-
-            services.AddTransient<IDeploymentSource, ElasticIndexResetDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ElasticIndexResetDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, ElasticIndexResetDeploymentStepDriver>();
+            services.AddDeployment<ElasticIndexDeploymentSource, ElasticIndexDeploymentStep, ElasticIndexDeploymentStepDriver>();
+            services.AddDeployment<ElasticSettingsDeploymentSource, ElasticSettingsDeploymentStep, ElasticSettingsDeploymentStepDriver>();
+            services.AddDeployment<ElasticIndexRebuildDeploymentSource, ElasticIndexRebuildDeploymentStep, ElasticIndexRebuildDeploymentStepDriver>();
+            services.AddDeployment<ElasticIndexResetDeploymentSource, ElasticIndexResetDeploymentStep, ElasticIndexResetDeploymentStepDriver>();
         }
     }
 
