@@ -1,3 +1,5 @@
+using OrchardCore.Logging;
+
 namespace OrchardCore.Tests.Apis.Context
 {
     public class OrchardTestFixture<TStartup> : WebApplicationFactory<TStartup>
@@ -23,6 +25,7 @@ namespace OrchardCore.Tests.Apis.Context
 
         protected override IHostBuilder CreateHostBuilder()
             => Host.CreateDefaultBuilder()
+                .UseNLogHost()
                 .ConfigureWebHostDefaults(webBuilder =>
                     webBuilder.UseStartup<TStartup>());
     }
