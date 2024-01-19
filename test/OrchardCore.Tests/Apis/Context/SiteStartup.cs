@@ -1,6 +1,10 @@
+using NLog.Config;
+using NLog.Web;
+using NLog;
 using OrchardCore.Modules;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Recipes.Services;
+using OrchardCore.Logging;
 
 namespace OrchardCore.Tests.Apis.Context
 {
@@ -17,6 +21,14 @@ namespace OrchardCore.Tests.Apis.Context
         public void ConfigureServices(IServiceCollection services)
 #pragma warning restore CA1822 // Mark members as static
         {
+            LogManager.Setup().SetupExtensions(delegate (ISetupExtensionsBuilder ext)
+            {
+                ext.RegisterLayoutRenderer<TenantLayoutRenderer>("orchard-tenant-name");
+            });
+            services.AddLogging(loggingBuilder =>
+            {
+                loggingBuilder.AddNLogWeb();
+            });
             services.AddOrchardCms(builder =>
                 builder.AddSetupFeatures(
                     "OrchardCore.Tenants"
@@ -39,10 +51,11 @@ namespace OrchardCore.Tests.Apis.Context
         }
 
 #pragma warning disable CA1822 // Mark members as static
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, IHostEnvironment env)
 #pragma warning restore CA1822 // Mark members as static
         {
             app.UseOrchardCore();
+            LogManager.Configuration.Variables["configDir"] = env.ContentRootPath;
         }
 
         private class ModuleNamesProvider : IModuleNamesProvider
