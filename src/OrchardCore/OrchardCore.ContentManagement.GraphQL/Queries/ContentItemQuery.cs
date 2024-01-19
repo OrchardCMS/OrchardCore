@@ -40,7 +40,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                         Description = S["Content item id"]
                     }
                 ),
-                Resolver = new AsyncFieldResolver<ContentItem>(ResolveAsync)
+                Resolver = new FuncFieldResolver<ContentItem>(ResolveAsync)
             };
 
             schema.Query.AddField(field);
@@ -48,11 +48,12 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             return Task.CompletedTask;
         }
 
-        private Task<ContentItem> ResolveAsync(IResolveFieldContext context)
+        private async ValueTask<ContentItem> ResolveAsync(IResolveFieldContext context)
         {
             var contentItemId = context.GetArgument<string>("contentItemId");
             var contentManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IContentManager>();
-            return contentManager.GetAsync(contentItemId);
+
+            return await contentManager.GetAsync(contentItemId);
         }
     }
 }

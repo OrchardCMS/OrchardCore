@@ -62,10 +62,11 @@ namespace OrchardCore.Taxonomies.GraphQL
             Field<ContentItemInterface, ContentItem>()
                 .Name("taxonomyContentItem")
                 .Description("the taxonomy content item")
-                .ResolveLockedAsync(x =>
+                .ResolveLockedAsync(async context =>
                 {
-                    var contentManager = x.RequestServices.GetService<IContentManager>();
-                    return contentManager.GetAsync(x.Source.TaxonomyContentItemId);
+                    var contentManager = context.RequestServices.GetService<IContentManager>();
+
+                    return await contentManager.GetAsync(context.Source.TaxonomyContentItemId);
                 });
         }
     }

@@ -73,7 +73,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                                     var nameToResolve = partName;
                                     var resolvedPart = context.Source.Get(activator.Type, nameToResolve);
 
-                                    return field.Resolver.Resolve(new ResolveFieldContext
+                                    return field.Resolver.ResolveAsync(new ResolveFieldContext
                                     {
                                         Arguments = context.Arguments,
                                         Source = resolvedPart,
@@ -89,17 +89,21 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     }
                     else
                     {
-                        contentItemType.Field(
-                            queryGraphTypeResolved.GetType(),
-                            partName.ToFieldName(),
-                            description: queryGraphTypeResolved.Description,
-                            resolve: context =>
-                            {
-                                var nameToResolve = partName;
-                                var typeToResolve = context.FieldDefinition.ResolvedType.GetType().BaseType.GetGenericArguments().First();
+                        var field = new FieldType
+                        {
+                            Name = partName.ToFieldName(),
+                            Type = queryGraphTypeResolved.GetType(),
+                            Description = queryGraphTypeResolved.Description,
+                        };
+                        contentItemType.Field(partName.ToFieldName(), queryGraphTypeResolved.GetType())
+                                       .Description(queryGraphTypeResolved.Description)
+                                       .Resolve(context =>
+                                       {
+                                           var nameToResolve = partName;
+                                           var typeToResolve = context.FieldDefinition.ResolvedType.GetType().BaseType.GetGenericArguments().First();
 
-                                return context.Source.Get(typeToResolve, nameToResolve);
-                            });
+                                           return context.Source.Get(typeToResolve, nameToResolve);
+                                       }); 
                     }
                 }
 

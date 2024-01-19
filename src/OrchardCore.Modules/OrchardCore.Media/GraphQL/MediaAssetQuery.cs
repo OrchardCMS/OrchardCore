@@ -53,7 +53,7 @@ namespace OrchardCore.Media.GraphQL
                         Description = S["Whether to get the assets from just the top directory or from all sub-directories as well."]
                     }
                 ),
-                Resolver = new LockedAsyncFieldResolver<IEnumerable<IFileStoreEntry>>(ResolveAsync)
+                Resolver = new LockedAsyncFieldResolver(ResolveAsync)
             };
 
             schema.Query.AddField(field);
@@ -61,7 +61,7 @@ namespace OrchardCore.Media.GraphQL
             return Task.CompletedTask;
         }
 
-        private async Task<IEnumerable<IFileStoreEntry>> ResolveAsync(IResolveFieldContext resolveContext)
+        private async Task<object> ResolveAsync(IResolveFieldContext resolveContext)
         {
             var mediaFileStore = resolveContext.RequestServices.GetService<IMediaFileStore>();
 

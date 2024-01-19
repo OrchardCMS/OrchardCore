@@ -11,10 +11,12 @@ using GraphQL.Execution;
 using GraphQL.SystemTextJson;
 using GraphQL.Validation;
 using GraphQL.Validation.Complexity;
+using GraphQL.Validation.Rules.Custom;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Apis.GraphQL.ValidationRules;
@@ -42,7 +44,7 @@ namespace OrchardCore.Apis.GraphQL
             _executer = executer;
         }
 
-        public async Task Invoke(HttpContext context, IAuthorizationService authorizationService, IAuthenticationService authenticationService, ISchemaFactory schemaService, IDocumentWriter documentWriter)
+        public async Task Invoke(HttpContext context, IAuthorizationService authorizationService, IAuthenticationService authenticationService, ISchemaFactory schemaService, IGraphQLSerializer graphQLSerializer)
         {
             if (!IsGraphQLRequest(context))
             {
@@ -61,7 +63,7 @@ namespace OrchardCore.Apis.GraphQL
 
                 if (authorized)
                 {
-                    await ExecuteAsync(context, schemaService, documentWriter);
+                    await ExecuteAsync(context, schemaService, graphQLSerializer);
                 }
                 else
                 {
@@ -75,7 +77,7 @@ namespace OrchardCore.Apis.GraphQL
             return context.Request.Path.StartsWithNormalizedSegments(_settings.Path, StringComparison.OrdinalIgnoreCase);
         }
 
-        private async Task ExecuteAsync(HttpContext context, ISchemaFactory schemaService, IDocumentWriter documentWriter)
+        private async Task ExecuteAsync(HttpContext context, ISchemaFactory schemaService, IGraphQLSerializer graphQLSerializer)
         {
             GraphQLRequest request = null;
 
@@ -121,7 +123,7 @@ namespace OrchardCore.Apis.GraphQL
             }
             catch (Exception e)
             {
-                await documentWriter.WriteErrorAsync(context, "An error occurred while processing the GraphQL query", e);
+                await graphQLSerializer.WriteErrorAsync(context, "An error occurred while processing the GraphQL query", e);
                 return;
             }
 
@@ -140,23 +142,23 @@ namespace OrchardCore.Apis.GraphQL
 
             var schema = await schemaService.GetSchemaAsync();
             var dataLoaderDocumentListener = context.RequestServices.GetRequiredService<IDocumentExecutionListener>();
-            var result = await _executer.ExecuteAsync(_ =>
+            var result = await _executer.ExecuteAsync(options =>
             {
-                _.Schema = schema;
-                _.Query = queryToExecute;
-                _.OperationName = request.OperationName;
-                _.Inputs = request.Variables.ToInputs();
-                _.UserContext = _settings.BuildUserContext?.Invoke(context);
-                _.ValidationRules = DocumentValidator.CoreRules
-                                    .Concat(context.RequestServices.GetServices<IValidationRule>());
-                _.ComplexityConfiguration = new ComplexityConfiguration
-                {
-                    MaxDepth = _settings.MaxDepth,
-                    MaxComplexity = _settings.MaxComplexity,
-                    FieldImpact = _settings.FieldImpact
-                };
-                _.Listeners.Add(dataLoaderDocumentListener);
-                _.RequestServices = context.RequestServices;
+                options.Schema = schema;
+                options.Query = queryToExecute;
+                options.OperationName = request.OperationName;
+                options.Variables = new GraphQLSerializer().Deserialize<Inputs>(request.Variables.GetString());
+                options.UserContext = _settings.BuildUserContext?.Invoke(context);
+                options.ValidationRules = DocumentValidator.CoreRules
+                    .Concat(context.RequestServices.GetServices<IValidationRule>())
+                    .Append(new ComplexityValidationRule(new ComplexityConfiguration
+                    {
+                        MaxDepth = _settings.MaxDepth,
+                        MaxComplexity = _settings.MaxComplexity,
+                        FieldImpact = _settings.FieldImpact
+                    }));
+                options.Listeners.Add(dataLoaderDocumentListener);
+                options.RequestServices = context.RequestServices;
             });
 
             context.Response.StatusCode = (int)(result.Errors == null || result.Errors.Count == 0
@@ -167,7 +169,7 @@ namespace OrchardCore.Apis.GraphQL
 
             context.Response.ContentType = MediaTypeNames.Application.Json;
 
-            await documentWriter.WriteAsync(context.Response.Body, result);
+            await graphQLSerializer.WriteAsync(context.Response.Body, result);
         }
 
         private static GraphQLRequest CreateRequestFromQueryString(HttpContext context, bool validateQueryKey = false)

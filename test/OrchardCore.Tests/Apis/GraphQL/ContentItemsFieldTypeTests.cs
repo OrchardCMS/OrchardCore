@@ -135,8 +135,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             var type = new ContentItemsFieldType("Animal", new Schema(services), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
-            context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ contentItemId: \"1\" }"), ArgumentSource.Variable);
-            var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+                context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ contentItemId: \"1\" }"), ArgumentSource.Variable);
+                var dogs = (await ((LockedAsyncFieldResolver)type.Resolver).ResolveAsync(context)) as IEnumerable<ContentItem>;
 
             Assert.Single(dogs);
             Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
@@ -171,8 +171,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             var type = new ContentItemsFieldType("Animal", new Schema(services), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
-            context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ contentItemId: \"1\" }"), ArgumentSource.Variable);
-            var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+                context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ contentItemId: \"1\" }"), ArgumentSource.Variable);
+                var dogs = (await ((LockedAsyncFieldResolver)type.Resolver).ResolveAsync(context)) as IEnumerable<ContentItem>;
 
             Assert.Single(dogs);
             Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
@@ -207,8 +207,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             var type = new ContentItemsFieldType("Animal", new Schema(services), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
-            context.Arguments["where"] = new ArgumentValue(JObject.Parse(string.Concat("{ ", fieldName, ": { name: \"doug\" } }")), ArgumentSource.Variable);
-            var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+                context.Arguments["where"] = new ArgumentValue(JObject.Parse(string.Concat("{ ", fieldName, ": { name: \"doug\" } }")), ArgumentSource.Variable);
+                var dogs = (await ((LockedAsyncFieldResolver)type.Resolver).ResolveAsync(context)) as IEnumerable<ContentItem>;
 
             Assert.Single(dogs);
             Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
@@ -240,14 +240,14 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
-            context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ cats: { name: \"doug\" } }"), ArgumentSource.Variable);
-            var cats = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+                context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ cats: { name: \"doug\" } }"), ArgumentSource.Variable);
+                var cats = (await ((LockedAsyncFieldResolver)type.Resolver).ResolveAsync(context)) as IEnumerable<ContentItem>;
 
             Assert.Single(cats);
             Assert.Equal("doug", cats.First().As<Animal>().Name);
 
-            context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ dogs: { name: \"doug\" } }"), ArgumentSource.Variable);
-            var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+                context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ dogs: { name: \"doug\" } }"), ArgumentSource.Variable);
+                var dogs = (await ((LockedAsyncFieldResolver)type.Resolver).ResolveAsync(context)) as IEnumerable<ContentItem>;
 
             Assert.Single(dogs);
             Assert.Equal("doug", dogs.First().As<Animal>().Name);
@@ -291,8 +291,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
-            context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ animals: { name: \"doug\", isScary: true } }"), ArgumentSource.Variable);
-            var animals = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+                context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ animals: { name: \"doug\", isScary: true } }"), ArgumentSource.Variable);
+                var animals = (await ((LockedAsyncFieldResolver)type.Resolver).ResolveAsync(context)) as IEnumerable<ContentItem>;
 
             Assert.Single(animals);
             Assert.Equal("doug", animals.First().As<Animal>().Name);
@@ -326,8 +326,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
-            context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ animal: { name: \"doug\" } }"), ArgumentSource.Variable);
-            var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+                context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ animal: { name: \"doug\" } }"), ArgumentSource.Variable);
+                var dogs = (await ((LockedAsyncFieldResolver)type.Resolver).ResolveAsync(context)) as IEnumerable<ContentItem>;
 
             Assert.Single(dogs);
             Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
@@ -359,8 +359,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
-            context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ name: \"doug\" }"), ArgumentSource.Variable);
-            var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+                context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ name: \"doug\" }"), ArgumentSource.Variable);
+                var dogs = (await ((LockedAsyncFieldResolver)type.Resolver).ResolveAsync(context)) as IEnumerable<ContentItem>;
 
             Assert.Single(dogs);
             Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
