@@ -18,7 +18,7 @@ Orchard Core consists of two distinct projects:
 
 ## Build Status
 
-Stable (release/1.8.1): 
+Stable (release/1.8.2): 
 
 [![Build status](https://github.com/OrchardCMS/OrchardCore/actions/workflows/release_ci.yml/badge.svg)](https://github.com/OrchardCMS/OrchardCore/actions?query=workflow%3A%22Release+-+CI%22)
 [![NuGet](https://img.shields.io/nuget/v/OrchardCore.Application.Cms.Targets.svg)](https://www.nuget.org/packages/OrchardCore.Application.Cms.Targets)
@@ -30,7 +30,7 @@ Nightly (main):
 
 ## Status
 
-### v1.8.1
+### 1.8.2
 
 The software is production-ready, and capable of serving large mission-critical applications as well, and we're not aware of any fundamental bugs or missing features we deem crucial. Orchard Core continues to evolve, with each version bringing new improvements, and keeping up with the cutting-edge of .NET.
 
@@ -68,7 +68,7 @@ First, clone the repository using the command `git clone https://github.com/Orch
 1. Install the latest version of the .NET SDK from this page: <https://dotnet.microsoft.com/download>.
 2. Navigate to `./OrchardCore/src/OrchardCore.Cms.Web`.
 3. Run `dotnet run`.
-4. Ppen the `http://localhost:5000` URL in your browser.
+4. Open the `http://localhost:5000` URL in your browser.
 
 ### Visual Studio
 
