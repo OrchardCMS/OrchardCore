@@ -1,10 +1,6 @@
-using NLog.Config;
-using NLog.Web;
-using NLog;
 using OrchardCore.Modules;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Recipes.Services;
-using OrchardCore.Logging;
 
 namespace OrchardCore.Tests.Apis.Context
 {
