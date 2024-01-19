@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Html;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -69,16 +68,6 @@ namespace OrchardCore.DisplayManagement.TagHelpers
                     {
                         properties.Add(normalizedName, pair.Value.ToString());
                     }
-                }
-            }
-
-            if (!properties.ContainsKey("HtmlContent"))
-            {
-                var content = await output.GetChildContentAsync(useCachedResult: false);
-                var html = content.GetContent();
-                if (!string.IsNullOrWhiteSpace(html))
-                {
-                    properties.Add("HtmlContent", new HtmlString(html));
                 }
             }
 
