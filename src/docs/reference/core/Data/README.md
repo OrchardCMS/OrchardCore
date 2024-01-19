@@ -6,6 +6,10 @@ Most database configuration is handled automatically, but there are limited opti
 
 ### Sqlite
 
+#### `DatabaseName` (string)
+
+By default, "OrchardCore.db" is used as the name for the SQLite database. This property allows you to use a database name of your choice. For backward compatibility with Orchard Core 1.8 and earlier, configure `"yessql.db"`.
+
 #### `UseConnectionPooling` (boolean)
 
 By default in `.NET 6`, `Microsoft.Data.Sqlite` pools connections to the database. It achieves this by putting locking the database file and leaving connections open to be reused. If the lock is preventing tasks like backups, this functionality can be disabled.
@@ -19,6 +23,7 @@ See the [`Microsoft.Data.Sqlite` documentation](https://docs.microsoft.com/en-us
 ```json
 {
     "OrchardCore_Data_Sqlite": {
+        "DatabaseName": "yessql.db",
         "UseConnectionPooling": false
     }
 }
