@@ -1,3 +1,4 @@
+using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement.Handlers;
@@ -125,6 +126,23 @@ namespace OrchardCore.DisplayManagement.Entities
             return model.Properties.TryGetValue(PropertyName, out var property)
                 ? property.ToObject<TSection>()
                 : new TSection();
+        }
+
+        protected override void BuildPrefix(TModel model, string htmlFieldPrefix)
+        {
+            var builder = new StringBuilder();
+
+            if (!string.IsNullOrEmpty(htmlFieldPrefix))
+            {
+                builder.Append(htmlFieldPrefix);
+                builder.Append('.');
+            }
+
+            builder.Append(typeof(TModel).Name);
+            builder.Append('.');
+            builder.Append(PropertyName);
+
+            Prefix = builder.ToString();
         }
     }
 }
