@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
@@ -29,6 +30,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
         private readonly ElasticIndexManager _indexManager;
         private readonly IIndexingTaskManager _indexingTaskManager;
+        private readonly ElasticConnectionOptions _elasticConnectionOptions;
         private readonly ISiteService _siteService;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILogger _logger;
@@ -39,6 +41,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             ElasticIndexSettingsService elasticIndexSettingsService,
             ElasticIndexManager indexManager,
             IIndexingTaskManager indexingTaskManager,
+            IOptions<ElasticConnectionOptions> elasticConnectionOptions,
             ISiteService siteService,
             IContentDefinitionManager contentDefinitionManager,
             ILogger<ElasticIndexingService> logger)
@@ -48,6 +51,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             _elasticIndexSettingsService = elasticIndexSettingsService;
             _indexManager = indexManager;
             _indexingTaskManager = indexingTaskManager;
+            _elasticConnectionOptions = elasticConnectionOptions.Value;
             _siteService = siteService;
             _contentDefinitionManager = contentDefinitionManager;
             _logger = logger;
@@ -55,6 +59,11 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
         public async Task ProcessContentItemsAsync(string indexName = default)
         {
+            if (!_elasticConnectionOptions.IsFileConfigurationExists())
+            {
+                return;
+            }
+
             var allIndices = new Dictionary<string, long>();
             var lastTaskId = long.MaxValue;
             IEnumerable<ElasticIndexSettings> indexSettingsList = null;
