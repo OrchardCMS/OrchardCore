@@ -1,3 +1,4 @@
+@using Microsoft.AspNetCore.Html
 @model dynamic
 @addTagHelper "*, OrchardCore.Resources"
 @addTagHelper "*, OrchardCore.Demo"
@@ -30,6 +31,9 @@
         property. The property's name is the string passed into the <code>name</code> attribute.
         <shape type="TestContentPartA" Line="Sample Data" Creating="Now" Processing="Later"/>
         Even other shapes can be included!
+    </html-content>
+    <html-content name="OtherContent">
+        You can have multiple, they are just <code>@nameof(IHtmlContent)</code> type shape properties.
     </html-content>
 </shape>
 
