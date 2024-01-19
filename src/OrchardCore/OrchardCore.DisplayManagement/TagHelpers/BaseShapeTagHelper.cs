@@ -71,6 +71,8 @@ namespace OrchardCore.DisplayManagement.TagHelpers
                 }
             }
 
+            await OnPropertiesAddedAsync(properties, tagHelperContext, output);
+
             if (string.IsNullOrWhiteSpace(Type))
             {
                 Type = output.TagName;
@@ -162,10 +164,36 @@ namespace OrchardCore.DisplayManagement.TagHelpers
 
             await output.GetChildContentAsync();
 
+            await OnDisplayingAsync(shape, tagHelperContext, output);
+
             output.Content.SetHtmlContent(await _displayHelper.ShapeExecuteAsync(shape));
 
             // We don't want any encapsulating tag around the shape
             output.TagName = null;
         }
+
+        /// <summary>
+        /// Extension point that may be invoked in a derived class to alter the <paramref name="properties"/> before the
+        /// shape is created with them.
+        /// </summary>
+        protected virtual Task OnPropertiesAddedAsync(
+            IDictionary<string, object> properties,
+            TagHelperContext tagHelperContext,
+            TagHelperOutput output) =>
+            Task.CompletedTask;
+
+        /// <summary>
+        /// Extension point that may be invoked in a derived class to alter the <paramref name="shape"/> before it's
+        /// executed and rendered into HTML.
+        /// </summary>
+        /// <param name="shape"></param>
+        /// <param name="tagHelperContext"></param>
+        /// <param name="output"></param>
+        /// <returns></returns>
+        protected virtual Task OnDisplayingAsync(
+            IShape shape,
+            TagHelperContext tagHelperContext,
+            TagHelperOutput output) =>
+            Task.CompletedTask;
     }
 }

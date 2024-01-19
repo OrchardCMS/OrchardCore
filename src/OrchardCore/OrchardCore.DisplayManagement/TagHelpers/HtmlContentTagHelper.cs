@@ -17,7 +17,7 @@ public class HtmlContentTagHelper : TagHelper
             shape.Properties[Name.Trim()] = new HtmlString(content.GetContent());
         }
 
-        _ = await output.GetChildContentAsync();
+        await output.GetChildContentAsync();
         output.SuppressOutput();
     }
 }
