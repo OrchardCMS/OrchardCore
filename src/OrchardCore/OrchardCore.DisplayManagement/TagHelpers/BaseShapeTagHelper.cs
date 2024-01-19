@@ -128,9 +128,9 @@ namespace OrchardCore.DisplayManagement.TagHelpers
                 shape.Metadata.Wrappers.Add(Convert.ToString(output.Attributes["wrapper"].Value));
             }
 
-            // This may overwrite an existing item in the context if shape tag helpers are embedded ito each other (e.g.
-            // via the <html-content> tag helper. In this case overwriting doesn't affect the parent tag helper context
-            // so this is safe.
+            // This may overwrite an existing item in the context if shape tag helpers are embedded into each other
+            // (e.g. via the <html-content> tag helper. In this case overwriting doesn't affect the parent tag helper
+            // context so this is safe.
             tagHelperContext.Items[typeof(IShape)] = shape;
 
             if (!string.IsNullOrWhiteSpace(Cache))
