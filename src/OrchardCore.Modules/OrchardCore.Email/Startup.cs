@@ -17,9 +17,8 @@ public class Startup : StartupBase
         services.AddScoped<IPermissionProvider, Permissions>();
         services.AddScoped<IDisplayDriver<ISite>, EmailSettingsDisplayDriver>();
         services.AddScoped<INavigationProvider, AdminMenu>();
-        services.AddScoped<IEmailMessageValidator, EmailMessageValidator>();
-        services.AddScoped<IEmailDeliveryService, NullEmailDeliveryService>();
-        services.AddScoped<IEmailService, EmailService>();
+
+        services.AddEmailServices();
 
         services.AddTransient<IConfigureOptions<EmailSettings>, EmailSettingsConfiguration>();
     }
