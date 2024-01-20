@@ -32,7 +32,7 @@ namespace OrchardCore.Layers.GraphQL
             Field(layer => layer.Description).Description("The description of the layer.");
             Field<ListGraphType<LayerWidgetQueryObjectType>, IEnumerable<ContentItem>>("widgets")
                 .Description("The widgets for this layer.")
-                .Argument<PublicationStatusGraphType, PublicationStatusEnum>("status", "publication status of the widgets")
+                .Argument<PublicationStatusGraphType>("status", "publication status of the widgets")
                 .ResolveLockedAsync(GetWidgetsForLayerAsync);
 
             async ValueTask<IEnumerable<ContentItem>> GetWidgetsForLayerAsync(IResolveFieldContext<Layer> context)

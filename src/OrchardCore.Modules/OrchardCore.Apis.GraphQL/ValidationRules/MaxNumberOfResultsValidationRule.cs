@@ -40,7 +40,7 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
 
                     if (arg.Value is GraphQLIntValue)
                     {
-                        value = Int32.Parse((arg.Value as GraphQLIntValue).Value);
+                        value = int.Parse((arg.Value as GraphQLIntValue).Value);
                     }
                     else
                     {
@@ -66,11 +66,7 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
                         {
                             _logger.LogInformation(errorMessage);
 
-                            arg = new GraphQLArgument
-                            {
-                                Name = arg.Name,
-                                Value = new GraphQLIntValue(_maxNumberOfResults)
-                            }; // if disabled mode we just log info and override the arg to be maxvalue
+                            arg = new GraphQLArgument(arg.Name, new GraphQLIntValue(_maxNumberOfResults)); // if disabled mode we just log info and override the arg to be maxvalue
                         }
                     }
                 }

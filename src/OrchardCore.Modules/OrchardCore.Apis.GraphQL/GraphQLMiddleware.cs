@@ -18,15 +18,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Apis.GraphQL.ValidationRules;
 using OrchardCore.Routing;
 
 namespace OrchardCore.Apis.GraphQL
 {
-    public class GraphQLMiddleware
+    public class GraphQLMiddleware : IMiddleware
     {
-        private readonly RequestDelegate _next;
         private readonly GraphQLSettings _settings;
         private readonly IDocumentExecuter _executer;
         internal static readonly Encoding _utf8Encoding = new UTF8Encoding(false);
@@ -35,35 +35,32 @@ namespace OrchardCore.Apis.GraphQL
         private readonly static JsonSerializerOptions _jsonSerializerOptions = new() { WriteIndented = false, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
         public GraphQLMiddleware(
-            RequestDelegate next,
-            GraphQLSettings settings,
+            IOptions<GraphQLSettings> settingsOption,
             IDocumentExecuter executer)
         {
-            _next = next;
-            _settings = settings;
+            _settings = settingsOption.Value;
             _executer = executer;
         }
-
-        public async Task Invoke(HttpContext context, IAuthorizationService authorizationService, IAuthenticationService authenticationService, ISchemaFactory schemaService, IGraphQLSerializer graphQLSerializer)
+        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             if (!IsGraphQLRequest(context))
             {
-                await _next(context);
+                await next(context);
             }
             else
             {
+                var authenticationService = context.RequestServices.GetService<IAuthenticationService>();
                 var authenticateResult = await authenticationService.AuthenticateAsync(context, "Api");
-
                 if (authenticateResult.Succeeded)
                 {
                     context.User = authenticateResult.Principal;
                 }
                 var authorizationService = context.RequestServices.GetService<IAuthorizationService>();
-                var authorized = await _authorizationService.AuthorizeAsync(context.User, Permissions.ExecuteGraphQL);
+                var authorized = await authorizationService.AuthorizeAsync(context.User, Permissions.ExecuteGraphQL);
 
                 if (authorized)
                 {
-                    await ExecuteAsync(context, schemaService, graphQLSerializer);
+                  await ExecuteAsync(context);
                 }
                 else
                 {
@@ -71,15 +68,15 @@ namespace OrchardCore.Apis.GraphQL
                 }
             }
         }
-
         private bool IsGraphQLRequest(HttpContext context)
         {
             return context.Request.Path.StartsWithNormalizedSegments(_settings.Path, StringComparison.OrdinalIgnoreCase);
         }
 
-        private async Task ExecuteAsync(HttpContext context, ISchemaFactory schemaService, IGraphQLSerializer graphQLSerializer)
+        private async Task ExecuteAsync(HttpContext context)
         {
             GraphQLRequest request = null;
+            var graphQLSerializer = context.RequestServices.GetService<IGraphQLSerializer>();
 
             // c.f. https://graphql.org/learn/serving-over-http/#post-request
 
@@ -140,6 +137,7 @@ namespace OrchardCore.Apis.GraphQL
                 queryToExecute = queries[request.NamedQuery];
             }
 
+            var schemaService = context.RequestServices.GetService<ISchemaFactory>();
             var schema = await schemaService.GetSchemaAsync();
             var dataLoaderDocumentListener = context.RequestServices.GetRequiredService<IDocumentExecutionListener>();
             var result = await _executer.ExecuteAsync(options =>

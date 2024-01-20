@@ -1,3 +1,4 @@
+using System;
 using GraphQL.Types;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries;

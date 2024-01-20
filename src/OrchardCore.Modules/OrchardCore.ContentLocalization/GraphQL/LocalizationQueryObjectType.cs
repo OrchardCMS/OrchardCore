@@ -24,7 +24,7 @@ namespace OrchardCore.ContentLocalization.GraphQL
 
             Field<ListGraphType<ContentItemInterface>, IEnumerable<ContentItem>>("Localizations")
                 .Description(S["The localizations of the content item."])
-                .Argument<StringGraphType, string>("culture", "the culture of the content item")
+                .Argument<StringGraphType>("culture", "the culture of the content item")
                 .ResolveLockedAsync(GetContentItemsByLocalizationSetAsync);
         }
 
