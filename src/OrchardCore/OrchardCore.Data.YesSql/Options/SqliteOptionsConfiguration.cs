@@ -17,8 +17,7 @@ namespace OrchardCore.Data
         {
             var section = _shellConfiguration.GetSection("OrchardCore_Data_Sqlite");
 
-            options.DatabaseName = section.GetValue(nameof(options.DatabaseName), options.DatabaseName);
-            options.UseConnectionPooling = section.GetValue(nameof(options.UseConnectionPooling), options.UseConnectionPooling);
+            section.Bind(options);
         }
     }
 }
