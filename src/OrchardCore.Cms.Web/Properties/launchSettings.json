@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "web": {
+    "Kestrel": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "https://localhost:5001",

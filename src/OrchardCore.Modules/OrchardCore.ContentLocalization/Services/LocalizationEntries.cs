@@ -21,9 +21,9 @@ namespace OrchardCore.ContentLocalization.Services
         private ImmutableDictionary<string, ImmutableList<LocalizationEntry>> _localizationSets =
             ImmutableDictionary<string, ImmutableList<LocalizationEntry>>.Empty;
 
-        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
+        private readonly SemaphoreSlim _semaphore = new(1);
 
-        private int _lastIndexId;
+        private long _lastIndexId;
         private string _stateIdentifier;
         private bool _initialized;
 

@@ -41,7 +41,7 @@ namespace OrchardCore.OpenId.YesSql.Models
         /// <summary>
         /// Gets or sets the physical identifier associated with the current scope.
         /// </summary>
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// Gets or sets the unique name associated with the current scope.
@@ -56,7 +56,6 @@ namespace OrchardCore.OpenId.YesSql.Models
         /// <summary>
         /// Gets or sets the resources associated with the current scope.
         /// </summary>
-        public ImmutableArray<string> Resources { get; set; }
-            = ImmutableArray.Create<string>();
+        public ImmutableArray<string> Resources { get; set; } = [];
     }
 }

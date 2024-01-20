@@ -16,7 +16,7 @@ namespace OrchardCore.Tenants.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            if (!(step is AllFeatureProfilesDeploymentStep))
+            if (step is not AllFeatureProfilesDeploymentStep)
             {
                 return;
             }

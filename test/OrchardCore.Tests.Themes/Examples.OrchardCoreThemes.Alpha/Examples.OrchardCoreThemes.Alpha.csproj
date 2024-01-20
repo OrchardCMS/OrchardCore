@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\..\src\OrchardCore.Build\OrchardCore.Commons.props" />
+  <Import Project="..\..\..\src\OrchardCore\OrchardCore.Theme.Targets\OrchardCore.Theme.Targets.props" />
+  <Import Project="..\..\..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.props" />
+
+  <PropertyGroup>
+    <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
+    <AssemblyVersion>8.9.10</AssemblyVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\OrchardCore\OrchardCore.Theme.Targets\OrchardCore.Theme.Targets.csproj" />
+    <ProjectReference Include="..\..\..\src\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
+  </ItemGroup>
+
+  <!-- TODO: TBD: do we need to import both MODULE+THEME targets? -->
+  <Import Project="..\..\..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.targets" />
+  <Import Project="..\..\..\src\OrchardCore\OrchardCore.Theme.Targets\OrchardCore.Theme.Targets.targets" />
+  <Import Project="..\..\..\src\OrchardCore.Build\OrchardCore.Commons.targets" />
+
+  <ItemGroup>
+    <OrchardCoreAttributes Include="$(MSBuildProjectName)"
+                           Type="theme"
+                           Base="three"
+                           Category="four"
+                           Priority="5"
+                           Description="six"
+                           Author="seven"
+                           Version="$(AssemblyVersion)"
+                           Website="oc://msbuildthemeitemlists.prop"
+                           Dependencies="ten;eleven;twelve"
+                           Tags="eleven;twelve;thirteen"
+                           DefaultTenant="true"
+                           AlwaysEnabled="true"
+                           EnabledByDependencyOnly="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>OrchardCore.Abstractions.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+</Project>

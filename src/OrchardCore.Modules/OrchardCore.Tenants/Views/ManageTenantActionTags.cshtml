@@ -1,0 +1,39 @@
+@using OrchardCore.Environment.Shell.Models
+@using Microsoft.AspNetCore.Http
+@using OrchardCore.Environment.Shell
+
+@model ShapeViewModel<ShellSettingsEntry>
+
+<a class="text-break" href="@ViewContext.HttpContext.GetEncodedUrl(Model.Value)">@Model.Value.Name</a>
+@if (!string.IsNullOrEmpty(Model.Value.Category))
+{
+    <span class="badge ta-badge font-weight-normal"><i class="fa-solid fa-tag text-info" aria-hidden="true"></i> @Model.Value.Category</span>
+}
+@if (!string.IsNullOrEmpty(Model.Value.ShellSettings["DatabaseProvider"]))
+{
+    <span class="badge ta-badge font-weight-normal"><i class="fa-solid fa-database text-info" aria-hidden="true"></i> @Model.Value.ShellSettings["DatabaseProvider"]</span>
+}
+@if (!string.IsNullOrEmpty(Model.Value.ShellSettings["RecipeName"]))
+{
+    <span class="badge ta-badge font-weight-normal"><i class="fa-solid fa-image text-info" aria-hidden="true"></i> @Model.Value.ShellSettings["RecipeName"]</span>
+}
+<a asp-controller="Admin" asp-action="Index" asp-route-Options.Status="@Model.Value.ShellSettings.State">
+    @switch (Model.Value.ShellSettings.State)
+    {
+        case TenantState.Uninitialized:
+            <span class="badge ta-badge font-weight-normal"><i class="fa-solid fa-cog text-secondary" aria-hidden="true"></i> @T["Uninitialized"]</span>
+            break;
+        case TenantState.Initializing:
+            <span class="badge ta-badge font-weight-normal"><i class="fa-solid fa-hourglass-start text-info" aria-hidden="true"></i> @T["Initializing"]</span>
+            break;
+        case TenantState.Running:
+            <span class="badge ta-badge font-weight-normal"><i class="fa-solid fa-check text-success" aria-hidden="true"></i> @T["Running"]</span>
+            break;
+        case TenantState.Disabled:
+            <span class="badge ta-badge font-weight-normal"><i class="fa-solid fa-remove text-danger" aria-hidden="true"></i> @T["Disabled"]</span>
+            break;
+        case TenantState.Invalid:
+            <span class="badge ta-badge font-weight-normal"><i class="fa-solid fa-exclamation-triangle text-warning" aria-hidden="true"></i> @T["Invalid"]</span>
+            break;
+    }
+</a>

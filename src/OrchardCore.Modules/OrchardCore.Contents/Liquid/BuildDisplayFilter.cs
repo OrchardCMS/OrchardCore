@@ -37,7 +37,7 @@ namespace OrchardCore.Contents.Liquid
 
             var obj = input.ToObjectValue();
 
-            if (!(obj is ContentItem contentItem))
+            if (obj is not ContentItem contentItem)
             {
                 contentItem = null;
 

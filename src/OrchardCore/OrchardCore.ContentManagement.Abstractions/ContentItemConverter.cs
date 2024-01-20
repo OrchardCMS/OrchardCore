@@ -6,30 +6,31 @@ namespace OrchardCore.ContentManagement
 {
     public class ContentItemConverter : JsonConverter
     {
-        private readonly JsonLoadSettings _jsonLoadSettings = new JsonLoadSettings
+        private readonly JsonLoadSettings _jsonLoadSettings = new()
         {
-            LineInfoHandling = LineInfoHandling.Ignore // defaults to loading which allocates quite a lot
+            LineInfoHandling = LineInfoHandling.Ignore, // Defaults to loading which allocates quite a lot.
         };
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             var contentItem = (ContentItem)value;
-            var o = new JObject();
+            var o = new JObject
+            {
+                // Write all well-known properties.
+                new JProperty(nameof(ContentItem.ContentItemId), contentItem.ContentItemId),
+                new JProperty(nameof(ContentItem.ContentItemVersionId), contentItem.ContentItemVersionId),
+                new JProperty(nameof(ContentItem.ContentType), contentItem.ContentType),
+                new JProperty(nameof(ContentItem.DisplayText), contentItem.DisplayText),
+                new JProperty(nameof(ContentItem.Latest), contentItem.Latest),
+                new JProperty(nameof(ContentItem.Published), contentItem.Published),
+                new JProperty(nameof(ContentItem.ModifiedUtc), contentItem.ModifiedUtc),
+                new JProperty(nameof(ContentItem.PublishedUtc), contentItem.PublishedUtc),
+                new JProperty(nameof(ContentItem.CreatedUtc), contentItem.CreatedUtc),
+                new JProperty(nameof(ContentItem.Owner), contentItem.Owner),
+                new JProperty(nameof(ContentItem.Author), contentItem.Author),
+            };
 
-            // Write all well-known properties
-            o.Add(new JProperty(nameof(ContentItem.ContentItemId), contentItem.ContentItemId));
-            o.Add(new JProperty(nameof(ContentItem.ContentItemVersionId), contentItem.ContentItemVersionId));
-            o.Add(new JProperty(nameof(ContentItem.ContentType), contentItem.ContentType));
-            o.Add(new JProperty(nameof(ContentItem.DisplayText), contentItem.DisplayText));
-            o.Add(new JProperty(nameof(ContentItem.Latest), contentItem.Latest));
-            o.Add(new JProperty(nameof(ContentItem.Published), contentItem.Published));
-            o.Add(new JProperty(nameof(ContentItem.ModifiedUtc), contentItem.ModifiedUtc));
-            o.Add(new JProperty(nameof(ContentItem.PublishedUtc), contentItem.PublishedUtc));
-            o.Add(new JProperty(nameof(ContentItem.CreatedUtc), contentItem.CreatedUtc));
-            o.Add(new JProperty(nameof(ContentItem.Owner), contentItem.Owner));
-            o.Add(new JProperty(nameof(ContentItem.Author), contentItem.Author));
-
-            // Write all custom content properties
+            // Write all custom content properties.
             o.Merge(contentItem.Data);
 
             o.WriteTo(writer);
@@ -95,7 +96,7 @@ namespace OrchardCore.ContentManagement
                         var customProperty = JProperty.Load(reader, _jsonLoadSettings);
                         contentItem.Data.Add(customProperty);
 
-                        // Skip reading a token as JProperty.Load already did the next one
+                        // Skip reading a token as JProperty.Load already did the next one.
                         skip = true;
                         break;
                 }

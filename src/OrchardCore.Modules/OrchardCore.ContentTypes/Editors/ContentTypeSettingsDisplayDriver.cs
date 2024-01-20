@@ -11,7 +11,7 @@ namespace OrchardCore.ContentTypes.Editors
 {
     public class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public ContentTypeSettingsDisplayDriver(IStringLocalizer<ContentTypeSettingsDisplayDriver> stringLocalizer)
         {
@@ -30,6 +30,7 @@ namespace OrchardCore.ContentTypes.Editors
                 model.Versionable = settings.Versionable;
                 model.Securable = settings.Securable;
                 model.Stereotype = settings.Stereotype;
+                model.Description = settings.Description;
             }).Location("Content:5");
         }
 
@@ -44,6 +45,8 @@ namespace OrchardCore.ContentTypes.Editors
                 context.Builder.Draftable(model.Draftable);
                 context.Builder.Versionable(model.Versionable);
                 context.Builder.Securable(model.Securable);
+                context.Builder.WithDescription(model.Description);
+
                 var stereotype = model.Stereotype?.Trim();
                 context.Builder.Stereotype(stereotype);
 
@@ -58,7 +61,7 @@ namespace OrchardCore.ContentTypes.Editors
 
         private static bool IsAlphaNumericOrEmpty(string value)
         {
-            if (String.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(value))
             {
                 return true;
             }

@@ -37,7 +37,7 @@ namespace OrchardCore.ContentLocalization
                 return new ProviderCultureResult(localization.Culture);
             }
 
-            return null;
+            return default;
         }
     }
 }

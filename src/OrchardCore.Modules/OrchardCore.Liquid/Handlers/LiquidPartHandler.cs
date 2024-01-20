@@ -30,7 +30,7 @@ namespace OrchardCore.Liquid.Handlers
                     var model = new LiquidPartViewModel()
                     {
                         LiquidPart = part,
-                        ContentItem = part.ContentItem
+                        ContentItem = part.ContentItem,
                     };
 
                     var result = await _liquidTemplateManager.RenderHtmlContentAsync(part.Liquid, _htmlEncoder, model,

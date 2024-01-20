@@ -10,11 +10,11 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Users.Workflows.Activities
 {
-    public class ValidateUserTask : TaskActivity
+    public class ValidateUserTask : TaskActivity<ValidateUserTask>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly string _roleClaimType;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public ValidateUserTask(IHttpContextAccessor httpContextAccessor, IOptions<IdentityOptions> optionsAccessor, IStringLocalizer<ValidateUserTask> localizer)
         {
@@ -22,8 +22,6 @@ namespace OrchardCore.Users.Workflows.Activities
             _roleClaimType = optionsAccessor.Value.ClaimsIdentity.RoleClaimType;
             S = localizer;
         }
-
-        public override string Name => nameof(ValidateUserTask);
 
         public override LocalizedString Category => S["User"];
 

@@ -1,0 +1,10 @@
+@import '../_variables';
+
+.action-bar {
+    top: 3.3rem;
+    z-index: var(--oc-action-bar-zindex);
+}
+
+.second-action-bar {
+    z-index: var(--oc-second-action-bar-zindex);
+}

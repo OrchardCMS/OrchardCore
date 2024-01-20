@@ -1,8 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.Entities;
@@ -19,6 +17,8 @@ namespace OrchardCore.ReCaptcha
         private readonly ReCaptchaService _reCaptchaService;
         private readonly IShapeFactory _shapeFactory;
 
+        private ReCaptchaSettings _reCaptchaSettings;
+
         public ReCaptchaLoginFilter(
             ILayoutAccessor layoutAccessor,
             ISiteService siteService,
@@ -33,16 +33,16 @@ namespace OrchardCore.ReCaptcha
 
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
-            if (!(context.Result is ViewResult || context.Result is PageResult)
-                || !String.Equals("OrchardCore.Users", Convert.ToString(context.RouteData.Values["area"]), StringComparison.OrdinalIgnoreCase))
+            if (!context.IsViewOrPageResult()
+                || !string.Equals("OrchardCore.Users", Convert.ToString(context.RouteData.Values["area"]), StringComparison.OrdinalIgnoreCase))
             {
                 await next();
                 return;
             }
 
-            var settings = (await _siteService.GetSiteSettingsAsync()).As<ReCaptchaSettings>();
+            _reCaptchaSettings ??= (await _siteService.GetSiteSettingsAsync()).As<ReCaptchaSettings>();
 
-            if (!settings.IsValid())
+            if (!_reCaptchaSettings.IsValid())
             {
                 await next();
                 return;

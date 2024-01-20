@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.Deployment.Remote.Services;
 using OrchardCore.Deployment.Remote.ViewModels;
@@ -17,27 +18,29 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Deployment.Remote.Controllers
 {
     [Admin]
     public class RemoteClientController : Controller
     {
+        private const string _optionsSearch = "Options.Search";
+
         private readonly IDataProtector _dataProtector;
         private readonly IAuthorizationService _authorizationService;
-        private readonly ISiteService _siteService;
+        private readonly PagerOptions _pagerOptions;
+        private readonly IShapeFactory _shapeFactory;
         private readonly RemoteClientService _remoteClientService;
         private readonly INotifier _notifier;
-        private readonly dynamic New;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
+
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
 
         public RemoteClientController(
             IDataProtectionProvider dataProtectionProvider,
             RemoteClientService remoteClientService,
             IAuthorizationService authorizationService,
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             IShapeFactory shapeFactory,
             IStringLocalizer<RemoteClientController> stringLocalizer,
             IHtmlLocalizer<RemoteClientController> htmlLocalizer,
@@ -45,8 +48,8 @@ namespace OrchardCore.Deployment.Remote.Controllers
             )
         {
             _authorizationService = authorizationService;
-            _siteService = siteService;
-            New = shapeFactory;
+            _pagerOptions = pagerOptions.Value;
+            _shapeFactory = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
             _notifier = notifier;
@@ -61,8 +64,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 return Forbid();
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
             var remoteClients = (await _remoteClientService.GetRemoteClientListAsync()).RemoteClients;
 
@@ -71,16 +73,20 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 remoteClients = remoteClients.Where(x => x.ClientName.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            var count = remoteClients.Count();
+            var count = remoteClients.Count;
 
             var startIndex = pager.GetStartIndex();
             var pageSize = pager.PageSize;
 
-            // Maintain previous route data when generating page links
+            // Maintain previous route data when generating page links.
             var routeData = new RouteData();
-            routeData.Values.Add("Options.Search", options.Search);
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
+            if (!string.IsNullOrEmpty(options.Search))
+            {
+                routeData.Values.TryAdd(_optionsSearch, options.Search);
+            }
+
+            var pagerShape = await _shapeFactory.PagerAsync(pager, count, routeData);
 
             var model = new RemoteClientIndexViewModel
             {
@@ -89,21 +95,21 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 Options = options
             };
 
-            model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
-            };
+            model.Options.ContentsBulkAction =
+            [
+                new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
+            ];
 
             return View(model);
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(RemoteClientIndexViewModel model)
-        {
-            return RedirectToAction("Index", new RouteValueDictionary {
-                { "Options.Search", model.Options.Search }
+            => RedirectToAction(nameof(Index), new RouteValueDictionary
+            {
+                { _optionsSearch, model.Options.Search }
             });
-        }
 
         public async Task<IActionResult> Create()
         {
@@ -247,7 +253,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                         await _notifier.SuccessAsync(H["Remote clients successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
                 }
             }
 
@@ -256,12 +262,12 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
         private void ValidateViewModel(EditRemoteClientViewModel model)
         {
-            if (String.IsNullOrWhiteSpace(model.ClientName))
+            if (string.IsNullOrWhiteSpace(model.ClientName))
             {
                 ModelState.AddModelError(nameof(EditRemoteClientViewModel.ClientName), S["The client name is mandatory."]);
             }
 
-            if (String.IsNullOrWhiteSpace(model.ApiKey))
+            if (string.IsNullOrWhiteSpace(model.ApiKey))
             {
                 ModelState.AddModelError(nameof(EditRemoteClientViewModel.ApiKey), S["The api key is mandatory."]);
             }
