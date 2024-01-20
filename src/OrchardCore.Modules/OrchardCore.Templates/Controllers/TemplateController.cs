@@ -115,7 +115,7 @@ namespace OrchardCore.Templates.Controllers
                 new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
             ];
 
-            return View(model);
+            return View("Index", model);
         }
 
         [HttpPost, ActionName(nameof(Index))]
