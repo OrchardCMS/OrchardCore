@@ -11,7 +11,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Search.Abstractions;
@@ -30,10 +29,11 @@ public class SearchController : Controller
     private readonly ISession _session;
     private readonly IServiceProvider _serviceProvider;
     private readonly INotifier _notifier;
-    protected readonly dynamic New;
-    protected readonly IHtmlLocalizer H;
     private readonly IEnumerable<ISearchHandler> _searchHandlers;
+    private readonly IShapeFactory _shapeFactory;
     private readonly ILogger _logger;
+
+    protected readonly IHtmlLocalizer H;
 
     public SearchController(
         IAuthorizationService authorizationService,
@@ -41,9 +41,9 @@ public class SearchController : Controller
         ISession session,
         IServiceProvider serviceProvider,
         INotifier notifier,
-        IShapeFactory shapeFactory,
         IHtmlLocalizer<SearchController> htmlLocalizer,
         IEnumerable<ISearchHandler> searchHandlers,
+        IShapeFactory shapeFactory,
         ILogger<SearchController> logger
         )
     {
@@ -52,10 +52,9 @@ public class SearchController : Controller
         _session = session;
         _serviceProvider = serviceProvider;
         _notifier = notifier;
-
-        New = shapeFactory;
         H = htmlLocalizer;
         _searchHandlers = searchHandlers;
+        _shapeFactory = shapeFactory;
         _logger = logger;
     }
 
@@ -130,7 +129,7 @@ public class SearchController : Controller
             TotalHits = searchResult.ContentItemIds?.Count ?? 0,
         };
 
-        if (!searchResult.Success || !searchResult.ContentItemIds.Any())
+        if (!searchResult.Success || searchResult.ContentItemIds.Count == 0)
         {
             await _searchHandlers.InvokeAsync((handler, context) => handler.SearchedAsync(context), searchContext, _logger);
 
@@ -207,7 +206,7 @@ public class SearchController : Controller
                 .Take(pager.PageSize)
                 .ToList(),
             },
-            Pager = (await New.PagerSlim(pager)).UrlParams(new Dictionary<string, string>()
+            Pager = await _shapeFactory.PagerSlimAsync(pager, new Dictionary<string, string>()
             {
                 { nameof(viewModel.Terms), viewModel.Terms },
                 { nameof(viewModel.Index), viewModel.Index },

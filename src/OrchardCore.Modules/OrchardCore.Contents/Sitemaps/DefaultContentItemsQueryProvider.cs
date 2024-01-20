@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
@@ -27,7 +26,7 @@ namespace OrchardCore.Contents.Sitemaps
 
         public async Task GetContentItemsAsync(ContentTypesSitemapSource source, ContentItemsQueryContext context)
         {
-            var routeableContentTypeDefinitions = _routeableContentTypeCoordinator.ListRoutableTypeDefinitions();
+            var routeableContentTypeDefinitions = await _routeableContentTypeCoordinator.ListRoutableTypeDefinitionsAsync();
 
             if (source.IndexAll)
             {

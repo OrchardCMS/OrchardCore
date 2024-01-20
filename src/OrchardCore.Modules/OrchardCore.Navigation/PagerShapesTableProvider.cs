@@ -17,9 +17,9 @@ using OrchardCore.DisplayManagement.Utilities;
 
 namespace OrchardCore.Navigation
 {
-    public class PagerShapesTableProvider : IShapeTableProvider
+    public class PagerShapesTableProvider : ShapeTableProvider
     {
-        public void Discover(ShapeTableBuilder builder)
+        public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
         {
             builder.Describe("Pager")
                 .OnCreated(created =>
@@ -127,6 +127,8 @@ namespace OrchardCore.Navigation
                         displaying.Shape.Metadata.Alternates.Add("Pager_Links__" + pagerId.EncodeAlternateElement());
                     }
                 });
+
+            return ValueTask.CompletedTask;
         }
     }
 

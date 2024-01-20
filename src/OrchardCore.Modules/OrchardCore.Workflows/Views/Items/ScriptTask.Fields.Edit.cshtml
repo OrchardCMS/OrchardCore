@@ -2,14 +2,14 @@
 @model ScriptTaskViewModel
 
 <div class="mb-3" asp-validation-class-for="AvailableOutcomes">
-    <label asp-for="AvailableOutcomes">@T["Available Outcomes"]</label>
+    <label asp-for="AvailableOutcomes" class="form-label">@T["Available Outcomes"]</label>
     <input asp-for="AvailableOutcomes" class="form-control" />
     <span asp-validation-for="AvailableOutcomes"></span>
     <span class="hint">@T["A comma-separated list of available outcomes."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="Script">
-    <label asp-for="Script">@T["Script"]</label>
+    <label asp-for="Script" class="form-label">@T["Script"]</label>
     <div id="@Html.IdFor(x => x.Script)_editor" asp-for="Text" style="min-height: 400px;" class="form-control"></div>
     <textarea asp-for="Script" hidden>@Html.Raw(Model.Script)</textarea>
     <span asp-validation-for="Script"></span>
@@ -18,7 +18,7 @@
 
 <script asp-name="monaco" at="Foot"></script>
 <script at="Foot" depends-on="monaco">
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         require(['vs/editor/editor.main'], function () {
             var settings = {
                 "automaticLayout": true,

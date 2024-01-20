@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
+using OrchardCore.Contents.Indexing;
 using OrchardCore.Indexing;
 
 namespace OrchardCore.ContentFields.Indexing
@@ -24,7 +25,7 @@ namespace OrchardCore.ContentFields.Indexing
             {
                 foreach (var key in context.Keys)
                 {
-                    context.DocumentIndex.Set(key, "NULL", options);
+                    context.DocumentIndex.Set(key, IndexingConstants.NullValue, options);
                 }
             }
 

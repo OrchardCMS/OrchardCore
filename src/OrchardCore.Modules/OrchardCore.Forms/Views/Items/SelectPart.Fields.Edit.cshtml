@@ -76,14 +76,14 @@
                         </div>
                         <div class="modal-body">
                             <div class="mb-3">
-                                <label for="select-options-textarea">@T["Options"]</label>
+                                <label for="select-options-textarea" class="form-label">@T["Options"]</label>
                                 <textarea id="select-options-textarea" name="select-options-textarea" rows="8" class="form-control"
                                 :class="{ 'is-invalid': !isValid }"
                                 v-model="optionsFormattedList"></textarea>
                                 <span class="hint">@T["A JSON representation of the allowed values, e.g. {0}", "[ { text: 'First option', value: 'option1' }, { text: 'Second option', value: 'option2' } ]"]</span>
                             </div>
                             <div class="mb-3">
-                                <label for="options-default-value">@T["Default value"]</label>
+                                <label for="options-default-value" class="form-label">@T["Default value"]</label>
                                 <input id="options-default-value" name="options-default-value" class="form-control" type="text" v-model="defaultValue" />
                                 <span class="hint">@T["(Optional) The value to assign to the select field."]</span>
                             </div>
