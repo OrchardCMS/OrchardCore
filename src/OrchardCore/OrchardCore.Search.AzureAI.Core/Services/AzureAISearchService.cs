@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Azure.Search.Documents;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.AzureAI.Models;
@@ -13,7 +14,8 @@ public class AzureAISearchService(
     ISiteService siteService,
     AzureAIIndexDocumentManager indexDocumentManager,
     AzureAISearchIndexSettingsService indexSettingsService,
-    ILogger<AzureAISearchService> logger
+    ILogger<AzureAISearchService> logger,
+    IOptions<AzureAISearchDefaultOptions> azureAIOptions
         ) : ISearchService
 {
     public const string Key = "Azure AI Search";
@@ -22,17 +24,26 @@ public class AzureAISearchService(
     private readonly AzureAIIndexDocumentManager _indexDocumentManager = indexDocumentManager;
     private readonly AzureAISearchIndexSettingsService _indexSettingsService = indexSettingsService;
     private readonly ILogger<AzureAISearchService> _logger = logger;
+    private readonly AzureAISearchDefaultOptions _azureAIOptions = azureAIOptions.Value;
 
     public string Name => Key;
 
     public async Task<SearchResult> SearchAsync(string indexName, string term, int start, int size)
     {
+        var result = new SearchResult();
+
+        if (!_azureAIOptions.IsConfigurationExists())
+        {
+            _logger.LogWarning("Azure AI Search: Couldn't execute search. The Azure AI Search has not been configured.");
+
+            return result;
+        }
+
         var siteSettings = await _siteService.GetSiteSettingsAsync();
         var searchSettings = siteSettings.As<AzureAISearchSettings>();
 
         var index = !string.IsNullOrWhiteSpace(indexName) ? indexName.Trim() : searchSettings.SearchIndex;
 
-        var result = new SearchResult();
         if (string.IsNullOrEmpty(index))
         {
             _logger.LogWarning("Azure AI Search: Couldn't execute search. No search provider settings was defined.");
