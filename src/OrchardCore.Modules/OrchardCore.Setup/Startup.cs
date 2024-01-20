@@ -49,18 +49,20 @@ namespace OrchardCore.Setup
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var localizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
-            var ignoreSystemSettings = serviceProvider.GetService<IOptions<CultureOptions>>().Value.IgnoreSystemSettings;
+            var cultureOptions = serviceProvider.GetService<IOptions<CultureOptions>>().Value;
 
-            var localizationOptionsUpdater = new LocalizationOptionsUpdater(localizationOptions, ignoreSystemSettings);
+            localizationOptions.CultureInfoUseUserOverride = !cultureOptions.IgnoreSystemSettings;
+
             if (!string.IsNullOrEmpty(_defaultCulture))
             {
-                localizationOptionsUpdater.SetDefaultCulture(_defaultCulture);
+                localizationOptions.SetDefaultCulture(_defaultCulture);
+
                 _supportedCultures = _supportedCultures.Union(new[] { _defaultCulture }).ToArray();
             }
 
             if (_supportedCultures?.Length > 0)
             {
-                localizationOptionsUpdater
+                localizationOptions
                     .AddSupportedCultures(_supportedCultures)
                     .AddSupportedUICultures(_supportedCultures);
             }

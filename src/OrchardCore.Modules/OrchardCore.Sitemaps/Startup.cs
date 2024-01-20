@@ -247,13 +247,11 @@ namespace OrchardCore.Sitemaps
     }
 
     [RequireFeatures("OrchardCore.Deployment", "OrchardCore.Sitemaps")]
-    public class SitemapsDeployementStartup : StartupBase
+    public class SitemapsDeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, AllSitemapsDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllSitemapsDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllSitemapsDeploymentStepDriver>();
+            services.AddDeployment<AllSitemapsDeploymentSource, AllSitemapsDeploymentStep, AllSitemapsDeploymentStepDriver>();
         }
     }
 

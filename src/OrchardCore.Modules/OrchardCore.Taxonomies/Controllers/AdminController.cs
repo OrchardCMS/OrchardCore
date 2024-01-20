@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -54,7 +53,7 @@ namespace OrchardCore.Taxonomies.Controllers
                 return NotFound();
             }
 
-            if (_contentDefinitionManager.GetTypeDefinition(id) == null)
+            if (await _contentDefinitionManager.GetTypeDefinitionAsync(id) == null)
             {
                 return NotFound();
             }
@@ -85,7 +84,7 @@ namespace OrchardCore.Taxonomies.Controllers
                 return NotFound();
             }
 
-            if (_contentDefinitionManager.GetTypeDefinition(id) == null)
+            if (await _contentDefinitionManager.GetTypeDefinitionAsync(id) == null)
             {
                 return NotFound();
             }
@@ -97,7 +96,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             ContentItem taxonomy;
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Taxonomy");
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Taxonomy");
 
             if (!contentTypeDefinition.IsDraftable())
             {
@@ -153,7 +152,7 @@ namespace OrchardCore.Taxonomies.Controllers
                 taxonomyItems.Add(JObject.FromObject(contentItem));
             }
 
-            _session.Save(taxonomy);
+            await _session.SaveAsync(taxonomy);
 
             return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = taxonomyContentItemId });
         }
@@ -214,7 +213,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             ContentItem taxonomy;
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Taxonomy");
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Taxonomy");
 
             if (!contentTypeDefinition.IsDraftable())
             {
@@ -268,7 +267,7 @@ namespace OrchardCore.Taxonomies.Controllers
             // Merge doesn't copy the properties.
             taxonomyItem[nameof(ContentItem.DisplayText)] = contentItem.DisplayText;
 
-            _session.Save(taxonomy);
+            await _session.SaveAsync(taxonomy);
 
             return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = taxonomyContentItemId });
         }
@@ -288,7 +287,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             ContentItem taxonomy;
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Taxonomy");
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Taxonomy");
 
             if (!contentTypeDefinition.IsDraftable())
             {
@@ -314,7 +313,7 @@ namespace OrchardCore.Taxonomies.Controllers
             }
 
             taxonomyItem.Remove();
-            _session.Save(taxonomy);
+            await _session.SaveAsync(taxonomy);
 
             await _notifier.SuccessAsync(H["Taxonomy item deleted successfully."]);
 

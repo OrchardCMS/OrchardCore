@@ -57,7 +57,7 @@ namespace OrchardCore.AdminDashboard.Controllers
             if (model.CanManageDashboard || await _authorizationService.AuthorizeAsync(User, Permissions.AccessAdminDashboard))
             {
                 var wrappers = new List<DashboardWrapper>();
-                var widgetContentTypes = GetDashboardWidgets();
+                var widgetContentTypes = await GetDashboardWidgetsAsync();
 
                 var widgets = await _adminDashboardService.GetWidgetsAsync(x => x.Published);
                 foreach (var widget in widgets)
@@ -99,7 +99,7 @@ namespace OrchardCore.AdminDashboard.Controllers
             });
 
             var dashboardCreatable = new List<SelectListItem>();
-            var widgetContentTypes = GetDashboardWidgets();
+            var widgetContentTypes = await GetDashboardWidgetsAsync();
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -177,7 +177,7 @@ namespace OrchardCore.AdminDashboard.Controllers
 
                 contentItem.Apply(dashboardPart);
 
-                _session.Save(contentItem);
+                await _session.SaveAsync(contentItem);
 
                 if (contentItem.IsPublished() == false)
                 {
@@ -189,7 +189,7 @@ namespace OrchardCore.AdminDashboard.Controllers
                         publishedMetaData.Width = partViewModel.Width;
                         publishedMetaData.Height = partViewModel.Height;
                         publishedVersion.Apply(publishedMetaData);
-                        _session.Save(publishedVersion);
+                        await _session.SaveAsync(publishedVersion);
                     }
                 }
             }
@@ -202,8 +202,8 @@ namespace OrchardCore.AdminDashboard.Controllers
             return RedirectToAction(nameof(Manage));
         }
 
-        private Dictionary<string, ContentTypeDefinition> GetDashboardWidgets()
-            => _contentDefinitionManager.ListTypeDefinitions()
+        private async Task<Dictionary<string, ContentTypeDefinition>> GetDashboardWidgetsAsync()
+            => (await _contentDefinitionManager.ListTypeDefinitionsAsync())
             .Where(t => t.StereotypeEquals("DashboardWidget"))
             .ToDictionary(ctd => ctd.Name, ctd => ctd);
     }

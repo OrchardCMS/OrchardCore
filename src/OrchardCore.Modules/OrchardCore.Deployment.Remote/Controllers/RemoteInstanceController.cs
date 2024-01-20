@@ -22,12 +22,14 @@ namespace OrchardCore.Deployment.Remote.Controllers
     [Admin]
     public class RemoteInstanceController : Controller
     {
+        private const string _optionsSearch = "Options.Search";
+
         private readonly IAuthorizationService _authorizationService;
         private readonly PagerOptions _pagerOptions;
+        private readonly IShapeFactory _shapeFactory;
         private readonly INotifier _notifier;
         private readonly RemoteInstanceService _service;
 
-        protected readonly dynamic New;
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
 
@@ -43,7 +45,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         {
             _authorizationService = authorizationService;
             _pagerOptions = pagerOptions.Value;
-            New = shapeFactory;
+            _shapeFactory = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
             _notifier = notifier;
@@ -69,11 +71,15 @@ namespace OrchardCore.Deployment.Remote.Controllers
             var startIndex = pager.GetStartIndex();
             var pageSize = pager.PageSize;
 
-            // Maintain previous route data when generating page links
+            // Maintain previous route data when generating page links.
             var routeData = new RouteData();
-            routeData.Values.Add("Options.Search", options.Search);
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(remoteInstances.Count).RouteData(routeData);
+            if (!string.IsNullOrEmpty(options.Search))
+            {
+                routeData.Values.TryAdd(_optionsSearch, options.Search);
+            }
+
+            var pagerShape = await _shapeFactory.PagerAsync(pager, remoteInstances.Count, routeData);
 
             var model = new RemoteInstanceIndexViewModel
             {
@@ -82,21 +88,21 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 Options = options
             };
 
-            model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
-            };
+            model.Options.ContentsBulkAction =
+            [
+                new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
+            ];
 
             return View(model);
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(RemoteInstanceIndexViewModel model)
-        {
-            return RedirectToAction(nameof(Index), new RouteValueDictionary {
-                { "Options.Search", model.Options.Search }
+            => RedirectToAction(nameof(Index), new RouteValueDictionary
+            {
+                { _optionsSearch, model.Options.Search }
             });
-        }
 
         public async Task<IActionResult> Create()
         {

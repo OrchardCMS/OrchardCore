@@ -44,6 +44,38 @@ namespace OrchardCore.Tests.ResourceManagement
         }
 
         [Fact]
+        public void FindHighestVersionedResourceFromManifest()
+        {
+            var options = new ResourceManagementOptions();
+            var manifest = new ResourceManifest();
+
+            manifest.DefineResource("foo", "bar")
+                .SetUrl("~/bar1.js");
+            manifest.DefineResource("foo", "bar")
+                .SetUrl("~/bar2.js")
+                .SetVersion("1.0.0");
+            manifest.DefineResource("foo", "bar")
+                .SetUrl("~/bar3.js")
+                .SetVersion("2.0.0");
+            manifest.DefineResource("foo", "bar")
+                .SetUrl("~/bar4.js");
+
+            options.ResourceManifests.Add(manifest);
+
+            var resourceManager = new ResourceManager(
+                new OptionsWrapper<ResourceManagementOptions>(options),
+                StubFileVersionProvider.Instance
+            );
+
+            var resourceDefinition = resourceManager.FindResource(new RequireSettings { Type = "foo", Name = "bar" });
+            Assert.NotNull(resourceDefinition);
+            Assert.Equal("foo", resourceDefinition.Type);
+            Assert.Equal("bar", resourceDefinition.Name);
+            Assert.Contains("~/bar3.js", resourceDefinition.Url);
+            Assert.Contains("2.0.0", resourceDefinition.Version);
+        }
+
+        [Fact]
         public void RegisterResouceUrl()
         {
             var resourceManager = new ResourceManager(

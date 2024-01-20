@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
@@ -32,42 +32,43 @@ public class AdminController : Controller, IUpdateModel
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly ISession _session;
-    protected readonly dynamic New;
-    private readonly IDisplayManager<Notification> _webNoticiationDisplayManager;
+    private readonly IDisplayManager<Notification> _notificationDisplayManager;
     private readonly INotificationsAdminListQueryService _notificationsAdminListQueryService;
     private readonly IDisplayManager<ListNotificationOptions> _notificationOptionsDisplayManager;
     private readonly INotifier _notifier;
-    protected readonly IStringLocalizer S;
-    protected readonly IHtmlLocalizer H;
     private readonly IShapeFactory _shapeFactory;
     private readonly PagerOptions _pagerOptions;
     private readonly IClock _clock;
 
+    protected readonly IStringLocalizer S;
+    protected readonly IHtmlLocalizer H;
+
     public AdminController(
         IAuthorizationService authorizationService,
         ISession session,
-        IShapeFactory shapeFactory,
+
         IOptions<PagerOptions> pagerOptions,
-        IDisplayManager<Notification> webNoticiationDisplayManager,
+        IDisplayManager<Notification> notificationDisplayManager,
         INotificationsAdminListQueryService notificationsAdminListQueryService,
         IDisplayManager<ListNotificationOptions> notificationOptionsDisplayManager,
         INotifier notifier,
+        IClock clock,
+        IShapeFactory shapeFactory,
         IStringLocalizer<AdminController> stringLocalizer,
-        IHtmlLocalizer<AdminController> htmlLocalizer,
-        IClock clock)
+        IHtmlLocalizer<AdminController> htmlLocalizer)
     {
         _authorizationService = authorizationService;
         _session = session;
-        New = shapeFactory;
-        _webNoticiationDisplayManager = webNoticiationDisplayManager;
+        _notificationDisplayManager = notificationDisplayManager;
         _notificationsAdminListQueryService = notificationsAdminListQueryService;
         _notificationOptionsDisplayManager = notificationOptionsDisplayManager;
         _notifier = notifier;
-        S = stringLocalizer;
-        H = htmlLocalizer;
         _shapeFactory = shapeFactory;
         _pagerOptions = pagerOptions.Value;
         _clock = clock;
+
+        S = stringLocalizer;
+        H = htmlLocalizer;
     }
 
     public async Task<IActionResult> List(
@@ -89,36 +90,35 @@ public class AdminController : Controller, IUpdateModel
         // Populate route values to maintain previous route data when generating page links.
         options.RouteValues.TryAdd("q", options.FilterResult.ToString());
 
-        options.Statuses = new List<SelectListItem>()
-        {
-            new SelectListItem(S["Read"], NotificationStatus.Read.ToString()),
-            new SelectListItem(S["Unread"], NotificationStatus.Unread.ToString()),
-        };
-        options.Sorts = new List<SelectListItem>()
-        {
-            new SelectListItem(S["Recently created"], NotificationOrder.Latest.ToString()),
-            new SelectListItem(S["Previously created"], NotificationOrder.Oldest.ToString()),
-        };
-        options.BulkActions = new List<SelectListItem>()
-        {
-            new SelectListItem(S["Mark as read"], NotificationBulkAction.Read.ToString()),
-            new SelectListItem(S["Mark as unread"], NotificationBulkAction.Unread.ToString()),
-            new SelectListItem(S["Remove"], NotificationBulkAction.Remove.ToString()),
-        };
+        options.Statuses =
+        [
+            new(S["Read"], nameof(NotificationStatus.Read)),
+            new(S["Unread"], nameof(NotificationStatus.Unread)),
+        ];
+        options.Sorts =
+        [
+            new(S["Recently created"], nameof(NotificationOrder.Latest)),
+            new(S["Previously created"], nameof(NotificationOrder.Oldest)),
+        ];
+        options.BulkActions =
+        [
+            new(S["Mark as read"], nameof(NotificationBulkAction.Read)),
+            new(S["Mark as unread"], nameof(NotificationBulkAction.Unread)),
+            new(S["Remove"], nameof(NotificationBulkAction.Remove)),
+        ];
 
-        var routeData = new RouteData(options.RouteValues);
         var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
         var queryResult = await _notificationsAdminListQueryService.QueryAsync(pager.Page, pager.PageSize, options, this);
 
-        var pagerShape = (await New.Pager(pager)).TotalItemCount(queryResult.TotalCount).RouteData(routeData);
+        dynamic pagerShape = await _shapeFactory.PagerAsync(pager, queryResult.TotalCount, options.RouteValues);
 
         var notificationSummaries = new List<dynamic>();
 
-        foreach (var notificaiton in queryResult.Notifications)
+        foreach (var notification in queryResult.Notifications)
         {
-            dynamic shape = await _webNoticiationDisplayManager.BuildDisplayAsync(notificaiton, this, "SummaryAdmin");
-            shape.Notification = notificaiton;
+            dynamic shape = await _notificationDisplayManager.BuildDisplayAsync(notification, this, "SummaryAdmin");
+            shape.Notification = notification;
 
             notificationSummaries.Add(shape);
         }
@@ -126,7 +126,7 @@ public class AdminController : Controller, IUpdateModel
         var startIndex = (pagerShape.Page - 1) * pagerShape.PageSize + 1;
         options.StartIndex = startIndex;
         options.EndIndex = startIndex + notificationSummaries.Count - 1;
-        options.NotficationsItemsCount = notificationSummaries.Count;
+        options.NotificationsCount = notificationSummaries.Count;
         options.TotalItemCount = pagerShape.TotalItemCount;
 
         var header = await _notificationOptionsDisplayManager.BuildEditorAsync(options, this, false, string.Empty, string.Empty);
@@ -165,6 +165,11 @@ public class AdminController : Controller, IUpdateModel
     [FormValueRequired("submit.BulkAction")]
     public async Task<ActionResult> ListPOST(ListNotificationOptions options, IEnumerable<string> itemIds)
     {
+        if (!await _authorizationService.AuthorizeAsync(HttpContext.User, NotificationPermissions.ManageNotifications))
+        {
+            return Forbid();
+        }
+
         if (itemIds?.Count() > 0)
         {
             var notifications = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId.IsIn(itemIds), collection: NotificationConstants.NotificationCollection).ListAsync();
@@ -184,7 +189,7 @@ public class AdminController : Controller, IUpdateModel
 
                             notification.Put(readPart);
 
-                            _session.Save(notification, collection: NotificationConstants.NotificationCollection);
+                            await _session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection);
                             counter++;
                         }
                     }
@@ -205,7 +210,7 @@ public class AdminController : Controller, IUpdateModel
 
                             notification.Put(readPart);
 
-                            _session.Save(notification, collection: NotificationConstants.NotificationCollection);
+                            await _session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection);
                             counter++;
                         }
                     }
@@ -252,7 +257,7 @@ public class AdminController : Controller, IUpdateModel
             readPart.ReadAtUtc = utcNow;
 
             notification.Put(readPart);
-            _session.Save(notification, collection: NotificationConstants.NotificationCollection);
+            await _session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection);
             counter++;
         }
 
@@ -292,7 +297,7 @@ public class AdminController : Controller, IUpdateModel
 
                 notification.Put(readPart);
 
-                _session.Save(notification, collection: NotificationConstants.NotificationCollection);
+                await _session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection);
             }
         }
 
@@ -320,12 +325,10 @@ public class AdminController : Controller, IUpdateModel
     }
 
     private IActionResult RedirectTo(string returnUrl)
-    {
-        return !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl) ? (IActionResult)this.LocalRedirect(returnUrl, true) : RedirectToAction(nameof(List));
-    }
+        => !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)
+        ? (IActionResult)this.LocalRedirect(returnUrl, true)
+        : RedirectToAction(nameof(List));
 
     private string CurrentUserId()
-    {
-        return User.FindFirstValue(ClaimTypes.NameIdentifier);
-    }
+        => User.FindFirstValue(ClaimTypes.NameIdentifier);
 }

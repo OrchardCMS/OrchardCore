@@ -45,9 +45,7 @@ namespace OrchardCore.Themes
             services.AddScoped<DarkModeService>();
 #pragma warning restore CS0618 // Type or member is obsolete
             services.AddScoped<ThemeTogglerService>();
-            services.AddTransient<IDeploymentSource, ThemesDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ThemesDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, ThemesDeploymentStepDriver>();
+            services.AddDeployment<ThemesDeploymentSource, ThemesDeploymentStep, ThemesDeploymentStepDriver>();
             services.AddScoped<IDisplayDriver<Navbar>, ToggleThemeNavbarDisplayDriver>();
         }
 

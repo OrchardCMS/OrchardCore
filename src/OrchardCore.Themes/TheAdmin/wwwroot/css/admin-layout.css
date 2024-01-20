@@ -25,8 +25,8 @@
   --oc-editor-fullscreen: 1054;
   --oc-selected-indicator-color: var(--bs-primary);
   /* Action bar should always be less than dropdown menu */
-  --oc-action-bar-zindex: 983;
-  --oc-second-action-bar-zindex: 980;
+  --oc-action-bar-zindex: 980;
+  --oc-second-action-bar-zindex: 983;
   /* Undefined Bootstrap variables */
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
@@ -123,8 +123,8 @@ body {
   --oc-editor-fullscreen: 1054;
   --oc-selected-indicator-color: var(--bs-primary);
   /* Action bar should always be less than dropdown menu */
-  --oc-action-bar-zindex: 983;
-  --oc-second-action-bar-zindex: 980;
+  --oc-action-bar-zindex: 980;
+  --oc-second-action-bar-zindex: 983;
   /* Undefined Bootstrap variables */
   --bs-dropdown-zindex: 1000;
   --bs-zindex-fixed: 1030;
