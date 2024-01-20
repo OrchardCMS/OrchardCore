@@ -61,7 +61,7 @@ public class ElasticsearchService : ISearchService
 
         if (!_elasticConnectionOptions.IsFileConfigurationExists())
         {
-            _logger.LogWarning("Elasticsearch: Couldn't execute search. The Elasticsearch has not yet been configured.");
+            _logger.LogWarning("Elasticsearch: Couldn't execute search. The Elasticsearch has yet been configured.");
 
             return result;
         }
