@@ -50,7 +50,7 @@ namespace OrchardCore.Localization.GraphQL
                 Name = "SiteCultures",
                 Description = S["The active cultures configured for the site."],
                 Type = typeof(ListGraphType<CultureQueryObjectType>),
-                Resolver = new LockedAsyncFieldResolver(ResolveAsync)
+                Resolver = new LockedAsyncFieldResolver<IEnumerable<SiteCulture>>(ResolveAsync)
             };
 
             schema.Query.AddField(field);
@@ -58,7 +58,7 @@ namespace OrchardCore.Localization.GraphQL
             return Task.CompletedTask;
         }
 
-        private async Task<object> ResolveAsync(IResolveFieldContext resolveContext)
+        private async ValueTask<IEnumerable<SiteCulture>> ResolveAsync(IResolveFieldContext resolveContext)
         {
             var localizationService = resolveContext.RequestServices.GetService<ILocalizationService>();
 

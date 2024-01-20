@@ -5,24 +5,21 @@ using GraphQL.Resolvers;
 
 namespace OrchardCore.Apis.GraphQL.Resolvers
 {
-    public class LockedAsyncFieldResolver : IFieldResolver
+    public class LockedAsyncFieldResolver<TReturnType> : FuncFieldResolver<TReturnType>
     {
-        private readonly Func<IResolveFieldContext, Task<object>> _resolver;
-
-        public LockedAsyncFieldResolver(Func<IResolveFieldContext, Task<object>> resolver)
+        public LockedAsyncFieldResolver(Func<IResolveFieldContext, ValueTask<TReturnType>> resolver) : base(resolver)
         {
-            _resolver = resolver;
+
         }
 
-        public async ValueTask<object> ResolveAsync(IResolveFieldContext context)
+        public new async ValueTask<object> ResolveAsync(IResolveFieldContext context)
         {
             var graphContext = (GraphQLUserContext)context.UserContext;
-
             await graphContext.ExecutionContextLock.WaitAsync();
 
             try
             {
-                return _resolver(context);
+                return await base.ResolveAsync(context);
             }
             finally
             {
