@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace OrchardCore.Email
@@ -47,37 +46,13 @@ namespace OrchardCore.Email
         public string Subject { get; set; }
 
         /// <summary>
-        /// Gets or sets the message content as plain text.
-        /// </summary>
-        [Obsolete("This property is deprecated, please use Body instead.", true)]
-        public string BodyText { get; set; }
-
-        /// <summary>
         /// Gets or sets the message content aka body.
         /// </summary>
         public MailMessageBody Body { get; set; }
 
         /// <summary>
-        /// Gets or sets whether the message body is an HTML.
-        /// </summary>
-        [Obsolete("This property is deprecated, please use IsHtmlBody instead.", true)]
-        public bool IsBodyHtml { get; set; }
-
-        /// <summary>
-        /// Gets or sets whether the message body is plain text.
-        /// </summary>
-        [Obsolete("This property is deprecated, please use IsHtmlBody instead.", true)]
-        public bool IsBodyText { get; set; }
-
-        /// <summary>
-        /// Gets or sets whether the message body is an HTML or not. Default is <c>false</c> which is plain text.
-        /// </summary>
-        [Obsolete("This property is deprecated, please use Content instead.", true)]
-        public bool IsHtmlBody { get; set; }
-
-        /// <summary>
         /// The collection of message attachments.
         /// </summary>
-        public List<MailMessageAttachment> Attachments { get; } = new List<MailMessageAttachment>();
+        public List<MailMessageAttachment> Attachments { get; } = [];
     }
 }
