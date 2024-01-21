@@ -115,7 +115,8 @@ namespace OrchardCore.Templates.Controllers
                 new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
             ];
 
-            return View("Index", model);
+            // Both the Templates and Admin Templates use the same view (Index.cshtml) but with a different route.
+            return View(nameof(Index), model);
         }
 
         [HttpPost, ActionName(nameof(Index))]
