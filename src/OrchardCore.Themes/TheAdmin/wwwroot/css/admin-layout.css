@@ -33,12 +33,8 @@
   --bs-bg-opacity: 1;
 }
 
-body {
+body, html {
   height: 100%;
-}
-
-[dir] body {
-  margin-bottom: var(--oc-footer-height);
 }
 
 [dir] .cursor-move {
@@ -49,10 +45,17 @@ body {
   cursor: pointer;
 }
 
+.ta-wrapper {
+  height: 100%;
+}
+
+.ta-content {
+  height: 100%;
+}
+
 [dir] .ta-content {
-  padding: 15px;
-  margin-top: var(--oc-top-nav-height);
-  margin-bottom: var(--oc-footer-height);
+  padding: 1rem;
+  padding-top: calc(var(--oc-top-nav-height, 0) + 1rem);
 }
 
 [dir=ltr] .ta-content {
