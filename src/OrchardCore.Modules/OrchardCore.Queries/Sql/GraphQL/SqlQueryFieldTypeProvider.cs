@@ -122,7 +122,6 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                 }
                 else if (type == "integer")
                 {
-
                     var field = new FieldType()
                     {
                         Name = nameLower,
@@ -134,7 +133,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                             return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<int>();
                         }),
                     };
-                   
+              
                     field.Metadata.Add("Name", name);
                     typetype.AddField(field);
                 }
