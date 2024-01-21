@@ -6,6 +6,10 @@ Most database configuration is handled automatically, but there are limited opti
 
 ### Sqlite
 
+#### `DatabaseName` (string)
+
+By default, "OrchardCore.db" is used as the name for the SQLite database. This property allows you to use a database name of your choice. For backward compatibility with Orchard Core 1.8 and earlier, configure `"yessql.db"`.
+
 #### `UseConnectionPooling` (boolean)
 
 By default in `.NET 6`, `Microsoft.Data.Sqlite` pools connections to the database. It achieves this by putting locking the database file and leaving connections open to be reused. If the lock is preventing tasks like backups, this functionality can be disabled.
@@ -19,6 +23,7 @@ See the [`Microsoft.Data.Sqlite` documentation](https://docs.microsoft.com/en-us
 ```json
 {
     "OrchardCore_Data_Sqlite": {
+        "DatabaseName": "yessql.db",
         "UseConnectionPooling": false
     }
 }
@@ -79,7 +84,7 @@ This service provides methods to build SQL queries that can will be use the synt
 
 ### Handling prefixed tables
 
-Each tenant in an Orchard Core application can have a table prefix. When building custom queries it 
+Each tenant in an Orchard Core application can have a table prefix. When building custom queries it
 is necessary to take it into account. It is available by resolving `ShellSettings` and accessing the `TablePrefix` setting.
 It is available from the `OrchardCore.Environment.Shell` namespace in the `OrchardCore.Abstractions` package.
 
@@ -105,24 +110,63 @@ public class AdminController : Controller
         _tablePrefix = settings["TablePrefix"];
     }
 
-    public async Task<ActionResult> Index()
+    public async Task<ActionResult> Query()
     {
-       using (var connection = _dbAccessor.CreateConnection())
+       await using (var connection = _dbAccessor.CreateConnection())
        {
-           using(var transaction = connection.BeginTransaction())
+            var dialect = _store.Configuration.SqlDialect;
+            var customTable = dialect.QuoteForTableName($"{_tablePrefix}CustomTable");
+
+            var model = await connection.QueryAsync<CustomTable>($"SELECT * FROM {customTable};");
+
+            return View(model);
+        }
+    }
+
+    public async Task<ActionResult> DeleteUsingTransaction()
+    {
+       await using (var connection = _dbAccessor.CreateConnection())
+       {
+           using (var transaction = await connection.BeginTransactionAsync())
            {
-                var dialect = _store.Configuration.SqlDialect;
-                var customTable = dialect.QuoteForTableName($"{_tablePrefix}CustomTable");
+               try 
+               {
+                    var dialect = _store.Configuration.SqlDialect;
+                    var customTable1 = dialect.QuoteForTableName($"{_tablePrefix}CustomTable1");
+                    var customTable2 = dialect.QuoteForTableName($"{_tablePrefix}CustomTable2");
 
-                var selectCommand = $"SELECT * FROM {customTable}";
+                    var command1 = $"DELETE FROM {customTable1};";
+                    var command2 = $"DELETE FROM {customTable2};";
 
-                var model = connection.QueryAsync<CustomTable>(selectCommand);
+                    await connection.ExecuteAsync(command1);
+                    await connection.ExecuteAsync(command2);
+                    
+                    await transaction.CommitAsync();
+                } 
+                catch 
+                {
+                    // If an exception occurs the transaction is rollbacked
+                    await transaction.RollbackAsync();
+                }
 
-                // If an exception occurs the transaction is disposed and rollbacked
-                transaction.Commit();
-
-                return View(model);
+                return Content("Done!");
             }
+        }
+    }
+
+    public async Task<ActionResult> DeleteNoTransaction()
+    {
+       await using (var connection = _dbAccessor.CreateConnection())
+       {
+            var dialect = _store.Configuration.SqlDialect;
+            var customTable1 = dialect.QuoteForTableName($"{_tablePrefix}CustomTable1");
+            var customTable2 = dialect.QuoteForTableName($"{_tablePrefix}CustomTable2");
+
+            var command = $"DELETE FROM {customTable1}; DELETE FROM {customTable2};";
+
+            await connection.ExecuteAsync(command);
+
+            return Content("Done!");
         }
     }
 }

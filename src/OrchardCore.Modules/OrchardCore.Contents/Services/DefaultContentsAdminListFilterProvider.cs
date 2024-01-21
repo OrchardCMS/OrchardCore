@@ -135,7 +135,7 @@ namespace OrchardCore.Contents.Services
                         // Filter for a specific type.
                         if (!string.IsNullOrEmpty(contentType))
                         {
-                            var contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(contentType);
+                            var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentType);
                             if (contentTypeDefinition != null)
                             {
                                 // We display a specific type even if it's not listable so that admin pages
@@ -156,7 +156,7 @@ namespace OrchardCore.Contents.Services
                         var listAnyContentTypes = new List<string>();
                         var listOwnContentTypes = new List<string>();
 
-                        foreach (var ctd in contentDefinitionManager.ListTypeDefinitions())
+                        foreach (var ctd in await contentDefinitionManager.ListTypeDefinitionsAsync())
                         {
                             if (!ctd.IsListable())
                             {
@@ -211,7 +211,7 @@ namespace OrchardCore.Contents.Services
                         // Filter for a specific stereotype.
                         if (!string.IsNullOrEmpty(stereotype))
                         {
-                            var contentTypeDefinitionNames = contentDefinitionManager.ListTypeDefinitions()
+                            var contentTypeDefinitionNames = (await contentDefinitionManager.ListTypeDefinitionsAsync())
                                 .Where(definition => definition.StereotypeEquals(stereotype, StringComparison.OrdinalIgnoreCase))
                                 .Select(definition => definition.Name)
                                 .ToList();

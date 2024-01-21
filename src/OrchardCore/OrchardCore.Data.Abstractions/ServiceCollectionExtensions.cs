@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Environment.Shell.Builders;
 
 namespace OrchardCore.Data
 {
@@ -24,10 +25,11 @@ namespace OrchardCore.Data
             for (var i = services.Count - 1; i >= 0; i--)
             {
                 var entry = services[i];
-                if (entry.ImplementationInstance != null)
+                var implementationInstance = entry.GetImplementationInstance();
+                if (implementationInstance is not null)
                 {
-                    var databaseProvider = entry.ImplementationInstance as DatabaseProvider;
-                    if (databaseProvider != null && string.Equals(databaseProvider.Name, name, StringComparison.OrdinalIgnoreCase))
+                    var databaseProvider = implementationInstance as DatabaseProvider;
+                    if (databaseProvider is not null && string.Equals(databaseProvider.Name, name, StringComparison.OrdinalIgnoreCase))
                     {
                         services.RemoveAt(i);
                     }

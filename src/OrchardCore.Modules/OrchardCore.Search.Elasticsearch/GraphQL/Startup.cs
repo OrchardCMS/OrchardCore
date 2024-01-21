@@ -8,7 +8,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL
     /// <summary>
     /// These services are registered on the tenant service collection
     /// </summary>
-    [RequireFeatures("OrchardCore.Apis.GraphQL")]
+    [RequireFeatures("OrchardCore.Apis.GraphQL", "OrchardCore.Queries")]
     public class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
