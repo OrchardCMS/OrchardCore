@@ -22,7 +22,7 @@ public class SmsService : ISmsService
     {
         _provider ??= await _smsProviderResolver.GetAsync();
 
-        if (_provider == null)
+        if (_provider is null)
         {
             return SmsResult.Failed(S["SMS settings must be configured before an SMS message can be sent."]);
         }
