@@ -2,10 +2,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email.Services;
 using OrchardCore.Email.Smtp.Drivers;
-using OrchardCore.Email.Smtp.Services;
 using OrchardCore.Email.Smtp.ViewModels;
 
 namespace OrchardCore.Email.Smtp.Controllers
@@ -21,12 +21,13 @@ namespace OrchardCore.Email.Smtp.Controllers
             IHtmlLocalizer<AdminController> h,
             IAuthorizationService authorizationService,
             INotifier notifier,
-            SmtpEmailService smtpEmailService)
+            IEmailMessageValidator emailMessageValidator,
+            [FromKeyedServices(EmailDeliveryServiceName.Smtp)] IEmailDeliveryService emailDeliveryService)
         {
             H = h;
             _authorizationService = authorizationService;
             _notifier = notifier;
-            _emailService = smtpEmailService;
+            _emailService = new EmailService(emailMessageValidator, emailDeliveryService);
         }
 
         [HttpGet]

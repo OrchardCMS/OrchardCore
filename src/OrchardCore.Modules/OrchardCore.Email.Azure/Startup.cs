@@ -38,7 +38,7 @@ public class Startup : StartupBase
     {
         services.AddScoped<IPermissionProvider, Permissions>();
         services.AddScoped<INavigationProvider, AdminMenu>();
-        services.AddScoped<IEmailDeliveryService, AzureEmailDeliveryService>();
+        services.AddKeyedScoped<IEmailDeliveryService, AzureEmailDeliveryService>(EmailDeliveryServiceName.Azure);
 
         services.AddTransient<IConfigureOptions<AzureEmailSettings>, AzureEmailSettingsConfiguration>();
 

@@ -31,9 +31,7 @@ public class Startup : StartupBase
         services.AddScoped<IPermissionProvider, Permissions>();
         services.AddScoped<IDisplayDriver<ISite>, SmtpSettingsDisplayDriver>();
         services.AddScoped<INavigationProvider, AdminMenu>();
-        services.AddScoped<SmtpEmailDeliveryService>();
-        services.AddScoped<IEmailDeliveryService>(sp => sp.GetService<SmtpEmailDeliveryService>());
-        services.AddScoped<SmtpEmailService>();
+        services.AddKeyedScoped<IEmailDeliveryService, SmtpEmailDeliveryService>(EmailDeliveryServiceName.Smtp);
 
         services.AddTransient<IConfigureOptions<SmtpEmailSettings>, SmtpEmailSettingsConfiguration>();
     }
