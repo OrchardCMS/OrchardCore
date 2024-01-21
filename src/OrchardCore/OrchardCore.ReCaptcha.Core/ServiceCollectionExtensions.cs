@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Options;
@@ -23,13 +24,15 @@ namespace OrchardCore.ReCaptcha.Core
                     .AddRetry(new HttpRetryStrategyOptions
                     {
                         Name = "oc-retry",
-                        MaxRetryAttempts = 3
+                        MaxRetryAttempts = 3,
+                        OnRetry = attempt =>
+                        {
+                            attempt.RetryDelay.Add(TimeSpan.FromSeconds(0.5 * attempt.AttemptNumber));
+
+                            return ValueTask.CompletedTask;
+                        }
                     })
-                    .AddTimeout(new HttpTimeoutStrategyOptions
-                    {
-                        Name = "oc-timeout",
-                        Timeout = TimeSpan.FromSeconds(4),
-                    }));
+                );
 
             services.AddSingleton<IDetectRobots, IPAddressRobotDetector>();
             services.AddTransient<IConfigureOptions<ReCaptchaSettings>, ReCaptchaSettingsConfiguration>();

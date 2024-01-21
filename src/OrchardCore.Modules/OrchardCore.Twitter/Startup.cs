@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Twitter;
 using Microsoft.AspNetCore.Builder;
@@ -52,13 +53,15 @@ namespace OrchardCore.Twitter
                     .AddRetry(new HttpRetryStrategyOptions
                     {
                         Name = "oc-retry",
-                        MaxRetryAttempts = 3
+                        MaxRetryAttempts = 3,
+                        OnRetry = attempt =>
+                        {
+                            attempt.RetryDelay.Add(TimeSpan.FromSeconds(0.5 * attempt.AttemptNumber));
+
+                            return ValueTask.CompletedTask;
+                        }
                     })
-                    .AddTimeout(new HttpTimeoutStrategyOptions
-                    {
-                        Name = "oc-timeout",
-                        Timeout = TimeSpan.FromSeconds(4),
-                    }));
+                );
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
