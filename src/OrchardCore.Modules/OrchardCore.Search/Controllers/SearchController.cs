@@ -11,7 +11,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Search.Abstractions;
@@ -29,11 +28,12 @@ public class SearchController : Controller
     private readonly ISiteService _siteService;
     private readonly ISession _session;
     private readonly IServiceProvider _serviceProvider;
-    private readonly dynamic New;
     private readonly INotifier _notifier;
-    private readonly IHtmlLocalizer H;
     private readonly IEnumerable<ISearchHandler> _searchHandlers;
+    private readonly IShapeFactory _shapeFactory;
     private readonly ILogger _logger;
+
+    protected readonly IHtmlLocalizer H;
 
     public SearchController(
         IAuthorizationService authorizationService,
@@ -41,9 +41,9 @@ public class SearchController : Controller
         ISession session,
         IServiceProvider serviceProvider,
         INotifier notifier,
-        IShapeFactory shapeFactory,
         IHtmlLocalizer<SearchController> htmlLocalizer,
         IEnumerable<ISearchHandler> searchHandlers,
+        IShapeFactory shapeFactory,
         ILogger<SearchController> logger
         )
     {
@@ -52,10 +52,9 @@ public class SearchController : Controller
         _session = session;
         _serviceProvider = serviceProvider;
         _notifier = notifier;
-
-        New = shapeFactory;
         H = htmlLocalizer;
         _searchHandlers = searchHandlers;
+        _shapeFactory = shapeFactory;
         _logger = logger;
     }
 
@@ -75,7 +74,7 @@ public class SearchController : Controller
         var searchSettings = siteSettings.As<SearchSettings>();
         ISearchService searchService = null;
 
-        if (!String.IsNullOrEmpty(searchSettings.ProviderName))
+        if (!string.IsNullOrEmpty(searchSettings.ProviderName))
         {
             searchService = searchServices.FirstOrDefault(service => service.Name == searchSettings.ProviderName);
         }
@@ -87,7 +86,7 @@ public class SearchController : Controller
             return this.ChallengeOrForbid();
         }
 
-        if (String.IsNullOrWhiteSpace(viewModel.Terms))
+        if (string.IsNullOrWhiteSpace(viewModel.Terms))
         {
             return View(new SearchIndexViewModel()
             {
@@ -121,8 +120,19 @@ public class SearchController : Controller
 
         var searchResult = await searchService.SearchAsync(viewModel.Index, viewModel.Terms, from, size);
 
-        if (!searchResult.Success || !searchResult.ContentItemIds.Any())
+        var searchContext = new SearchContext
         {
+            Index = viewModel.Index,
+            Terms = viewModel.Terms,
+            ContentItemIds = searchResult.ContentItemIds ?? Enumerable.Empty<string>(),
+            SearchService = searchService,
+            TotalHits = searchResult.ContentItemIds?.Count ?? 0,
+        };
+
+        if (!searchResult.Success || searchResult.ContentItemIds.Count == 0)
+        {
+            await _searchHandlers.InvokeAsync((handler, context) => handler.SearchedAsync(context), searchContext, _logger);
+
             return View(new SearchIndexViewModel()
             {
                 Index = viewModel.Index,
@@ -132,7 +142,12 @@ public class SearchController : Controller
                     Terms = viewModel.Terms,
                     Placeholder = searchSettings.Placeholder,
                     Index = viewModel.Index,
-                }
+                },
+                SearchResults = new SearchResultsViewModel()
+                {
+                    Index = viewModel.Index,
+                    ContentItems = Enumerable.Empty<ContentItem>(),
+                },
             });
         }
 
@@ -149,15 +164,6 @@ public class SearchController : Controller
             query = _session.Query<ContentItem, ContentItemIndex>()
                 .Where(x => x.ContentItemId.IsIn(searchResult.ContentItemIds) && x.Published);
         }
-
-        var searchContext = new SearchContext
-        {
-            Index = viewModel.Index,
-            Terms = viewModel.Terms,
-            ContentItemIds = searchResult.ContentItemIds,
-            SearchService = searchService,
-            TotalHits = searchResult.ContentItemIds.Count,
-        };
 
         await _searchHandlers.InvokeAsync((handler, context) => handler.SearchedAsync(context), searchContext, _logger);
 
@@ -200,7 +206,7 @@ public class SearchController : Controller
                 .Take(pager.PageSize)
                 .ToList(),
             },
-            Pager = (await New.PagerSlim(pager)).UrlParams(new Dictionary<string, string>()
+            Pager = await _shapeFactory.PagerSlimAsync(pager, new Dictionary<string, string>()
             {
                 { nameof(viewModel.Terms), viewModel.Terms },
                 { nameof(viewModel.Index), viewModel.Index },

@@ -6,7 +6,7 @@ namespace OrchardCore.Admin
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission AccessAdminPanel = new Permission("AccessAdminPanel", "Access admin panel");
+        public static readonly Permission AccessAdminPanel = new("AccessAdminPanel", "Access admin panel");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
@@ -20,32 +20,36 @@ namespace OrchardCore.Admin
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = GetPermissions()
+                    Permissions = GetPermissions(),
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Editor",
-                    Permissions = GetPermissions()
+                    Permissions = GetPermissions(),
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Moderator",
-                    Permissions = GetPermissions()
+                    Permissions = GetPermissions(),
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Author",
-                    Permissions = GetPermissions()
+                    Permissions = GetPermissions(),
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Contributor",
-                    Permissions = GetPermissions()
+                    Permissions = GetPermissions(),
                 }
             };
         }
 
-        private IEnumerable<Permission> GetPermissions()
+        private static IEnumerable<Permission> GetPermissions()
         {
             return new[]
             {
-                AccessAdminPanel
+                AccessAdminPanel,
             };
         }
     }

@@ -77,7 +77,7 @@ namespace OrchardCore.Demo.Pages
             }
 
             var updater = _updateModelAccessor.ModelUpdater;
-            var shape = await _contentDisplay.UpdateEditorAsync(contentItem, updater, false);
+            _ = await _contentDisplay.UpdateEditorAsync(contentItem, updater, false);
 
             if (!ModelState.IsValid)
             {
@@ -86,7 +86,7 @@ namespace OrchardCore.Demo.Pages
             }
 
             contentItem.Content.TestContentPartA.Line = Text;
-            _session.Save(contentItem);
+            await _session.SaveAsync(contentItem);
 
             return RedirectToPage("/Foo/List");
         }

@@ -15,7 +15,7 @@ namespace OrchardCore.Modules
     public class ModuleProjectStaticFileProvider : IModuleStaticFileProvider
     {
         private static Dictionary<string, string> _roots;
-        private static readonly object _synLock = new object();
+        private static readonly object _synLock = new();
 
         public ModuleProjectStaticFileProvider(IApplicationContext applicationContext)
         {
@@ -53,7 +53,7 @@ namespace OrchardCore.Modules
                             var index = asset.ProjectAssetPath.IndexOf('/' + Module.WebRoot, StringComparison.Ordinal);
 
                             // Add the module project "wwwroot" folder.
-                            roots[module.Name] = asset.ProjectAssetPath.Substring(0, index + Module.WebRoot.Length + 1);
+                            roots[module.Name] = asset.ProjectAssetPath[..(index + Module.WebRoot.Length + 1)];
                         }
                     }
 
@@ -81,13 +81,13 @@ namespace OrchardCore.Modules
             if (index != -1)
             {
                 // Resolve the module id.
-                var module = path.Substring(0, index);
+                var module = path[..index];
 
                 // Get the module project "wwwroot" folder.
                 if (_roots.TryGetValue(module, out var root))
                 {
                     // Resolve "{ModuleProjectDirectory}wwwroot/**/*.*"
-                    var filePath = root + path.Substring(module.Length + 1);
+                    var filePath = root + path[(module.Length + 1)..];
 
                     if (File.Exists(filePath))
                     {
@@ -114,13 +114,13 @@ namespace OrchardCore.Modules
             if (index != -1)
             {
                 // Resolve the module id.
-                var module = path.Substring(0, index);
+                var module = path[..index];
 
                 // Get the module project "wwwroot" folder.
                 if (_roots.TryGetValue(module, out var root))
                 {
                     // Resolve "{ModuleProjectDirectory}wwwroot/**/*.*"
-                    var filePath = root + path.Substring(module.Length + 1);
+                    var filePath = root + path[(module.Length + 1)..];
 
                     if (File.Exists(filePath))
                     {
@@ -133,9 +133,6 @@ namespace OrchardCore.Modules
             return NullChangeToken.Singleton;
         }
 
-        private string NormalizePath(string path)
-        {
-            return path.Replace('\\', '/').Trim('/').Replace("//", "/");
-        }
+        private static string NormalizePath(string path) => path.Replace('\\', '/').Trim('/').Replace("//", "/");
     }
 }

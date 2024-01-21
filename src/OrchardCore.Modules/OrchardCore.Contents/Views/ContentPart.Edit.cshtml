@@ -7,37 +7,34 @@
     ContentPart contentPart = Model.ContentPart;
     ContentTypePartDefinition typePartDefinition = Model.ContentTypePartDefinition;
     var description = typePartDefinition.Description();
-    var namedPart = typePartDefinition.PartDefinition.IsReusable() && typePartDefinition.Name != typePartDefinition.PartDefinition.Name;
-    var name = typePartDefinition.PartDefinition.Name.HtmlClassify();
 }
 
-@if (namedPart)
-{
-    <div class="@Orchard.GetWrapperCssClasses("content-part-wrapper", $"content-part-wrapper-{name}")">
-        <div class="@Orchard.GetLabelCssClasses()">
+<div class="@Orchard.GetPartWrapperClasses(typePartDefinition)">
+
+    @if (typePartDefinition.IsNamedPart())
+    {
+        <div class="@Orchard.GetLabelClasses()">
             @typePartDefinition.DisplayName()
 
-            @if (!String.IsNullOrEmpty(description))
+            @if (!string.IsNullOrEmpty(description))
             {
                 <small class="form-text text-muted">@description</small>
             }
         </div>
 
-        <div class="@Orchard.GetEndCssClasses()">
+        <div class="@Orchard.GetEndClasses()">
             @foreach (var shape in Model)
             {
                 @await DisplayAsync(shape)
             }
         </div>
-    </div>
-}
-else
-{
-    <div class="content-part-wrapper content-part-wrapper-@name">
-        @foreach (var shape in Model)
+    }
+    else
+    {   
+        foreach (var shape in Model)
         {
             @await DisplayAsync(shape)
-
         }
-    </div>
-}
+    }
+
+</div>

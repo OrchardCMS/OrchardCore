@@ -7,13 +7,13 @@ namespace OrchardCore.Features
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageFeatures = new Permission("ManageFeatures", "Manage Features");
+        public static readonly Permission ManageFeatures = new("ManageFeatures", "Manage Features");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
             return Task.FromResult(new[]
             {
-                ManageFeatures
+                ManageFeatures,
             }
             .AsEnumerable());
         }
@@ -25,7 +25,7 @@ namespace OrchardCore.Features
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageFeatures }
+                    Permissions = new[] { ManageFeatures },
                 }
             };
         }

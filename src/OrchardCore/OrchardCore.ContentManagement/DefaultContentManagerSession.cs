@@ -4,8 +4,8 @@ namespace OrchardCore.ContentManagement
 {
     public class DefaultContentManagerSession : IContentManagerSession
     {
-        private readonly Dictionary<int, ContentItem> _itemByVersionId = new Dictionary<int, ContentItem>();
-        private readonly Dictionary<string, ContentItem> _publishedItemsById = new Dictionary<string, ContentItem>();
+        private readonly Dictionary<long, ContentItem> _itemByVersionId = new();
+        private readonly Dictionary<string, ContentItem> _publishedItemsById = new();
 
         private bool _hasItems;
 
@@ -26,7 +26,7 @@ namespace OrchardCore.ContentManagement
             }
         }
 
-        public bool RecallVersionId(int id, out ContentItem item)
+        public bool RecallVersionId(long id, out ContentItem item)
         {
             if (!_hasItems)
             {

@@ -1,5 +1,4 @@
 @using OrchardCore.Environment.Shell
-@using OrchardCore.Environment.Shell.Models
 @model ShapeViewModel<ShellSettingsEntry>
 
 @inject IFeatureProfilesService FeatureProfilesService
@@ -22,5 +21,5 @@
 
 @foreach (var featureProfile in featureProfiles)
 {
-    <span class="badge ta-badge font-weight-normal" title="@T["Feature Profile"]"><i class="fa fa-layer-group text-info" aria-hidden="true"></i> @featureProfile.Name</span>
+    <span class="badge ta-badge font-weight-normal" title="@T["Feature Profile"]"><i class="fa-solid fa-layer-group text-info" aria-hidden="true"></i> @featureProfile.Name</span>
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -29,6 +30,16 @@ namespace OrchardCore.Media
         /// The maximum number of days a cached resized media item will be valid for, before being rebuilt on request.
         /// </summary>
         public int MaxCacheDays { get; set; }
+
+        /// <summary>
+        /// The time before a stale item is removed from the resized media cache, if not provided there is no cleanup.
+        /// </summary>
+        public TimeSpan? ResizedCacheMaxStale { get; set; }
+
+        /// <summary>
+        /// The time before a stale remote media item is removed from the cache, if not provided there is no cleanup.
+        /// </summary>
+        public TimeSpan? RemoteCacheMaxStale { get; set; }
 
         /// <summary>
         /// The maximum size of an uploaded file in bytes.
@@ -66,6 +77,16 @@ namespace OrchardCore.Media
         /// The static file options used to serve non resized media.
         /// </summary>
         public StaticFileOptions StaticFileOptions { get; set; }
+
+        /// <summary>
+        /// The maximum chunk size when uploading files in bytes. If 0, no chunked upload is used. Defaults to 100 MB.
+        /// </summary>
+        public int MaxUploadChunkSize { get; set; }
+
+        /// <summary>
+        /// The lifetime of temporary files created during upload. Defaults to 1 hour.
+        /// </summary>
+        public TimeSpan TemporaryFileLifetime { get; set; }
 
         public const string EncryptedCommandCacheKeyPrefix = "MediaCommands:";
     }

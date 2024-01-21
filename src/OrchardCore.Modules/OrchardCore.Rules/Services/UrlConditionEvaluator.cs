@@ -20,7 +20,7 @@ namespace OrchardCore.Rules.Services
         {
             if (condition.Value.StartsWith("~/", StringComparison.Ordinal))
             {
-                condition.Value = condition.Value.Substring(1);
+                condition.Value = condition.Value[1..];
             }
 
             var requestPath = _httpContextAccessor.HttpContext.Request.Path.Value;

@@ -26,7 +26,7 @@ namespace OrchardCore.Roles
             {
                 ManageRoles,
                 AssignRoles,
-                StandardPermissions.SiteOwner
+                StandardPermissions.SiteOwner,
             };
 
             var roles = (await _roleService.GetRoleNamesAsync())
@@ -45,7 +45,7 @@ namespace OrchardCore.Roles
             return new[] {
                 new PermissionStereotype {
                     Name = "Administrator",
-                    Permissions = new[] { ManageRoles, StandardPermissions.SiteOwner }
+                    Permissions = new[] { ManageRoles, StandardPermissions.SiteOwner },
                 },
             };
         }

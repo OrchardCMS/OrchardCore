@@ -23,7 +23,7 @@ namespace OrchardCore.Deployment
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { Import, Export }
+                    Permissions = new[] { Import, Export },
                 }
             };
         }

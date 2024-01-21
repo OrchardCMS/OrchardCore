@@ -21,7 +21,7 @@ namespace OrchardCore.HealthChecks
         {
             var healthCheckOptions = serviceProvider.GetService<IOptions<HealthChecksOptions>>().Value;
 
-            app.UseHealthChecks(healthCheckOptions.Url);
+            routes.MapHealthChecks(healthCheckOptions.Url);
         }
 
         public override void ConfigureServices(IServiceCollection services)
