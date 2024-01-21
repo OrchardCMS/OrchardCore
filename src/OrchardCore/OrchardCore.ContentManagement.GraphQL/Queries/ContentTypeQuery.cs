@@ -83,7 +83,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 else
                 {
                     // Register the content item type explicitly since it won't be discovered from the root 'query' type.
-                    schema.RegisterType(typeType);
+                    //schema.RegisterType(typeType);
                 }
             }
 

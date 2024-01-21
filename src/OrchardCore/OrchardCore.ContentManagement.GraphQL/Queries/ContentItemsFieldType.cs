@@ -57,9 +57,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             Resolver = new LockedAsyncFieldResolver<IEnumerable<ContentItem>>(Resolve);
 
-            schema.RegisterType(whereInput);
-            schema.RegisterType(orderByInput);
-            schema.RegisterType<PublicationStatusGraphType>();
+            //schema.RegisterType(whereInput);
+            //schema.RegisterType(orderByInput);
+            //schema.RegisterType<PublicationStatusGraphType>();
 
             _defaultNumberOfItems = settingsAccessor.Value.DefaultNumberOfResults;
         }

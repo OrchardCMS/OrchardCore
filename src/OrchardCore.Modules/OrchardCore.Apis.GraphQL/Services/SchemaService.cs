@@ -82,7 +82,7 @@ namespace OrchardCore.Apis.GraphQL.Services
 
                 //foreach (var type in serviceProvider.GetServices<IObjectGraphType>())
                 //{
-                //    if (!schema.AdditionalTypeInstances.Any(t => t == type))
+                //    if (type != null && !schema.AdditionalTypeInstances.Any(t => t == type))
                 //    {
                 //        schema.RegisterType(type);
                 //    }
