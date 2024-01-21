@@ -13,7 +13,7 @@ namespace OrchardCore.Menu.GraphQL
             AddField(new FieldType()
             {
                 Name = "menuItemsList",
-                ResolvedType = new MenuItemsListQueryObjectType(),
+                Type = typeof(MenuItemsListQueryObjectType),
                 Resolver = new FuncFieldResolver<ContentItem, MenuItemsListPart>(context =>
                 {
                     return context.Source.As<MenuItemsListPart>();
