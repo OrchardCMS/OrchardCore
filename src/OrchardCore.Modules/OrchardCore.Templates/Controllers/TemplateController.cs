@@ -115,7 +115,9 @@ namespace OrchardCore.Templates.Controllers
                 new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
             ];
 
-            return View(model);
+            // The 'Admin' action redirect the user to the 'Index' action.
+            // To ensure we render the same 'Index' view in both cases, we have to explicitly specify the name of the view that should be rendered.
+            return View(nameof(Index), model);
         }
 
         [HttpPost, ActionName(nameof(Index))]
