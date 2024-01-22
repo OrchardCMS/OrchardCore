@@ -95,7 +95,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
             }
 
             var fieldDescriptor = _contentFieldTypeMappings[field.FieldDefinition.Name];
-            return new FieldType
+            var fieldType = new FieldType
             {
                 Name = field.Name,
                 Description = fieldDescriptor.Description,
@@ -115,6 +115,8 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     return contentField == null ? null : fieldDescriptor.FieldAccessor(contentField);
                 }),
             };
+
+            return fieldType;
         }
 
         private class FieldTypeDescriptor

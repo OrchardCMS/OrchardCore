@@ -28,6 +28,7 @@ namespace OrchardCore.Apis.GraphQL
     public class GraphQLMiddleware : IMiddleware
     {
         private readonly GraphQLSettings _settings;
+        private readonly IGraphQLSerializer _serializer;
         private readonly IDocumentExecuter _executer;
         internal static readonly Encoding _utf8Encoding = new UTF8Encoding(false);
         private readonly static MediaType _jsonMediaType = new("application/json");
@@ -36,10 +37,12 @@ namespace OrchardCore.Apis.GraphQL
 
         public GraphQLMiddleware(
             IOptions<GraphQLSettings> settingsOption,
-            IDocumentExecuter executer)
+            IDocumentExecuter executer,
+            IGraphQLSerializer serializer)
         {
             _settings = settingsOption.Value;
             _executer = executer;
+            _serializer = serializer;
         }
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
@@ -60,7 +63,7 @@ namespace OrchardCore.Apis.GraphQL
 
                 if (authorized)
                 {
-                  await ExecuteAsync(context);
+                    await ExecuteAsync(context);
                 }
                 else
                 {
@@ -76,7 +79,6 @@ namespace OrchardCore.Apis.GraphQL
         private async Task ExecuteAsync(HttpContext context)
         {
             GraphQLRequest request = null;
-            var graphQLSerializer = context.RequestServices.GetService<IGraphQLSerializer>();
 
             // c.f. https://graphql.org/learn/serving-over-http/#post-request
 
@@ -120,7 +122,7 @@ namespace OrchardCore.Apis.GraphQL
             }
             catch (Exception e)
             {
-                await graphQLSerializer.WriteErrorAsync(context, "An error occurred while processing the GraphQL query", e);
+                await _serializer.WriteErrorAsync(context, "An error occurred while processing the GraphQL query", e);
                 return;
             }
 
@@ -167,7 +169,7 @@ namespace OrchardCore.Apis.GraphQL
 
             context.Response.ContentType = MediaTypeNames.Application.Json;
 
-            await graphQLSerializer.WriteAsync(context.Response.Body, result);
+            await _serializer.WriteAsync(context.Response.Body, result);
         }
 
         private static GraphQLRequest CreateRequestFromQueryString(HttpContext context, bool validateQueryKey = false)

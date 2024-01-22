@@ -18,8 +18,8 @@ namespace OrchardCore.Apis
             // Instances are registered as singletons as their constructor holds the logic to configure the type
             // and doesn't need to run every time
             services.AddSingleton<TObjectType>();
-            //services.AddSingleton<InputObjectGraphType<TObject>, TObjectType>(s => s.GetRequiredService<TObjectType>());
-            //services.AddSingleton<IInputObjectGraphType, TObjectType>(s => s.GetRequiredService<TObjectType>());
+            services.AddSingleton<InputObjectGraphType<TObject>, TObjectType>(s => s.GetRequiredService<TObjectType>());
+            services.AddSingleton<IInputObjectGraphType, TObjectType>(s => s.GetRequiredService<TObjectType>());
         }
 
         /// <summary>
@@ -35,8 +35,8 @@ namespace OrchardCore.Apis
             // Instances are registered as singletons as their constructor holds the logic to configure the type
             // and doesn't need to run every time
             services.AddSingleton<TInputType>();
-            //services.AddSingleton<ObjectGraphType<TInput>, TInputType>(s => s.GetRequiredService<TInputType>());
-            //services.AddSingleton<IObjectGraphType, TInputType>(s => s.GetRequiredService<TInputType>());
+            services.AddSingleton<ObjectGraphType<TInput>, TInputType>(s => s.GetRequiredService<TInputType>());
+            services.AddSingleton<IObjectGraphType, TInputType>(s => s.GetRequiredService<TInputType>());
         }
     }
 }

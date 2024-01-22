@@ -1,5 +1,6 @@
-using System.Collections.Concurrent;
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using GraphQL.Resolvers;
 using GraphQL.Types;
@@ -25,18 +26,14 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
         public FieldType GetField(ContentPartFieldDefinition field)
         {
             var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
-            var typeActivator = serviceProvider.GetService<ITypeActivatorFactory<ContentField>>();
-            var contentTypeType = ContentTypeTypes.GetOrAdd(field.FieldDefinition.Name, key => typeActivator.GetTypeActivator(key).Type);
-
-            var queryGraphType = ObjectGraphTypePartTypes.GetOrAdd(contentTypeType, key => typeof(ObjectGraphType<>).MakeGenericType(key));
-
-            if (serviceProvider.GetService(queryGraphType) is IObjectGraphType)
+              var queryGraphType = serviceProvider.GetService<IEnumerable<IObjectGraphType>>()?.FirstOrDefault(x => x.Name == field.FieldDefinition.Name);
+            if (queryGraphType != null)
             {
                 return new FieldType
                 {
                     Name = field.Name,
                     Description = field.FieldDefinition.Name,
-                    Type = queryGraphType,
+                    Type = queryGraphType.GetType(),
                     Resolver = new FuncFieldResolver<ContentElement, ContentElement>(context =>
                     {
                         var typeToResolve = context.FieldDefinition.ResolvedType.GetType().BaseType.GetGenericArguments().First();

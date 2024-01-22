@@ -72,21 +72,21 @@ namespace OrchardCore.Apis.GraphQL.Services
                     NameConverter = new OrchardFieldNameConverter(),
                 };
 
-                //foreach (var type in serviceProvider.GetServices<IInputObjectGraphType>())
-                //{
-                //    if (!schema.AdditionalTypeInstances.Any(t => t == type))
-                //    {
-                //        schema.RegisterType(type);
-                //    }
-                //}
+                foreach (var type in serviceProvider.GetServices<IInputObjectGraphType>())
+                {
+                    if (!schema.AdditionalTypeInstances.Any(t => t == type))
+                    {
+                        schema.RegisterType(type);
+                    }
+                }
 
-                //foreach (var type in serviceProvider.GetServices<IObjectGraphType>())
-                //{
-                //    if (type != null && !schema.AdditionalTypeInstances.Any(t => t == type))
-                //    {
-                //        schema.RegisterType(type);
-                //    }
-                //}
+                foreach (var type in serviceProvider.GetServices<IObjectGraphType>())
+                {
+                    if (type != null && !schema.AdditionalTypeInstances.Any(t => t == type))
+                    {
+                        schema.RegisterType(type);
+                    }
+                }
 
                 foreach (var builder in _schemaBuilders)
                 {
