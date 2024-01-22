@@ -18,8 +18,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Resources
             var configurationOptions = new ResourceManagementOptionsConfiguration(
                 resourceOptions,
                 Mock.Of<IHostEnvironment>(),
-                httpContextAccessorMock.Object
-            );
+                httpContextAccessorMock.Object);
             var resourceManagementOptions = new ResourceManagementOptions();
 
             // Act & Assert
