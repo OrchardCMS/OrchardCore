@@ -7,7 +7,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Resources
     public class SubResourceIntegrityTests
     {
         [Fact]
-        public void CheckSubResourceIntegrity()
+        public void SavedSubResourceIntegritiesShouldMatchCurrentResources()
         {
             // Arrange
             var resourceOptions = Options.Create(new ResourceOptions());
