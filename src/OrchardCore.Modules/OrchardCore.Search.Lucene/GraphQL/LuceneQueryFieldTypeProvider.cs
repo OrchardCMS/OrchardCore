@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
+using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -105,29 +106,36 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
                 if (type == "string")
                 {
-                    var field = typetype.Field(
-                        typeof(StringGraphType),
-                        nameLower,
-                        description: description,
-                        resolve: context =>
+                    var field = new FieldType()
+                    {
+                        Name = nameLower,
+                        Description = description,
+                        Type = typeof(StringGraphType),
+                        Resolver = new FuncFieldResolver<JObject, string>(context =>
                         {
                             var source = context.Source;
                             return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<string>();
-                        });
+                        }),
+                    };
                     field.Metadata.Add("Name", name);
+                    typetype.AddField(field);
                 }
                 else if (type == "integer")
                 {
-                    var field = typetype.Field(
-                        typeof(IntGraphType),
-                        nameLower,
-                        description: description,
-                        resolve: context =>
+                    var field = new FieldType()
+                    {
+                        Name = nameLower,
+                        Description = description,
+                        Type = typeof(IntGraphType),
+                        Resolver = new FuncFieldResolver<JObject, int?>(context =>
                         {
                             var source = context.Source;
                             return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<int>();
-                        });
+                        }),
+                    };
+
                     field.Metadata.Add("Name", name);
+                    typetype.AddField(field);
                 }
             }
 
