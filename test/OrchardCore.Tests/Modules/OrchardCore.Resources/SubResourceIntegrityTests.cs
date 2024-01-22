@@ -6,8 +6,10 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Resources
 {
     public class SubResourceIntegrityTests
     {
+        private static readonly HttpClient _httpClient = new();
+
         [Fact]
-        public void SavedSubResourceIntegritiesShouldMatchCurrentResources()
+        public async Task SavedSubResourceIntegritiesShouldMatchCurrentResources()
         {
             // Arrange
             var resourceOptions = Options.Create(new ResourceOptions());
@@ -27,10 +29,10 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Resources
             // Assert
             var resourceManifest = resourceManagementOptions.ResourceManifests.First();
 
-            ValidateSubResourceIntegrity("script");
-            ValidateSubResourceIntegrity("style");
+            await ValidateSubResourceIntegrityAsync("script");
+            await ValidateSubResourceIntegrityAsync("style");
 
-            void ValidateSubResourceIntegrity(string resourceType)
+            async Task ValidateSubResourceIntegrityAsync(string resourceType)
             {
                 foreach (var resource in resourceManifest.GetResources(resourceType))
                 {
@@ -38,16 +40,18 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Resources
                     {
                         if (!string.IsNullOrEmpty(resourceDefinition.CdnIntegrity) && !string.IsNullOrEmpty(resourceDefinition.UrlCdnDebug))
                         {
-                            var resourceIntegrity = GetSubResourceIntegrityAsync(resourceDefinition.UrlCdnDebug).Result;
+                            var resourceIntegrity = await GetSubResourceIntegrityAsync(resourceDefinition.UrlCdnDebug);
 
-                            Assert.True(resourceIntegrity.Equals(resourceDefinition.CdnDebugIntegrity), $"The {resourceType} {resourceDefinition.UrlCdnDebug} has invalid SRI hash, please use '{resourceIntegrity}' instead.");
+                            Assert.True(resourceIntegrity.Equals(resourceDefinition.CdnDebugIntegrity),
+                                $"The {resourceType} {resourceDefinition.UrlCdnDebug} has invalid SRI hash, please use '{resourceIntegrity}' instead.");
                         }
 
                         if (!string.IsNullOrEmpty(resourceDefinition.CdnIntegrity) && !string.IsNullOrEmpty(resourceDefinition.UrlCdn))
                         {
-                            var resourceIntegrity = GetSubResourceIntegrityAsync(resourceDefinition.UrlCdn).Result;
+                            var resourceIntegrity = await GetSubResourceIntegrityAsync(resourceDefinition.UrlCdn);
 
-                            Assert.True(resourceIntegrity.Equals(resourceDefinition.CdnIntegrity), $"The {resourceType} {resourceDefinition.UrlCdn} has invalid SRI hash, please use '{resourceIntegrity}' instead.");
+                            Assert.True(resourceIntegrity.Equals(resourceDefinition.CdnIntegrity),
+                                $"The {resourceType} {resourceDefinition.UrlCdn} has invalid SRI hash, please use '{resourceIntegrity}' instead.");
                         }
                     }
                 }
@@ -56,12 +60,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Resources
 
         private static async Task<string> GetSubResourceIntegrityAsync(string url)
         {
-            var client = new HttpClient
-            {
-                BaseAddress = new Uri(url)
-            };
+            _httpClient.BaseAddress = new Uri(url);
 
-            var data = await client.GetByteArrayAsync(url);
+            var data = await _httpClient.GetByteArrayAsync(url);
 
             using var memoryStream = new MemoryStream(data);
             using var sha384Hash = SHA384.Create();
