@@ -24,20 +24,17 @@ namespace OrchardCore.Facebook.Login.Configuration
         private readonly FacebookSettings _facebookSettings;
         private readonly IFacebookLoginService _loginService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
         public FacebookLoginConfiguration(
             IOptions<FacebookSettings> facebookSettings,
             IFacebookLoginService loginService,
             IDataProtectionProvider dataProtectionProvider,
-            ShellSettings shellSettings,
             ILogger<FacebookLoginConfiguration> logger)
         {
             _facebookSettings = facebookSettings.Value;
             _loginService = loginService;
             _dataProtectionProvider = dataProtectionProvider;
-            _shellSettings = shellSettings;
             _logger = logger;
         }
 
@@ -65,7 +62,7 @@ namespace OrchardCore.Facebook.Login.Configuration
         public void Configure(string name, FacebookOptions options)
         {
             // Ignore OpenID Connect client handler instances that don't correspond to the instance managed by the OpenID module.
-            if (!String.Equals(name, FacebookDefaults.AuthenticationScheme))
+            if (!string.Equals(name, FacebookDefaults.AuthenticationScheme))
             {
                 return;
             }

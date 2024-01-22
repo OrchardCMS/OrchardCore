@@ -8,7 +8,7 @@
 <h5>@T["Content"]</h5>
 @if (contentTypes != null && contentTypes.Length > 0)
 {
-    @foreach (var contentTypeDefinition in ContentDefinitionManager.ListTypeDefinitions())
+    @foreach (var contentTypeDefinition in await ContentDefinitionManager.ListTypeDefinitionsAsync())
     {
         if (contentTypes.Contains(contentTypeDefinition.Name))
         {
@@ -18,5 +18,5 @@
 }
 else
 {
-    <span class="badge bg-warning">@T["Nothing here!"]</span>
+    <span class="badge text-bg-warning">@T["Nothing here!"]</span>
 }

@@ -16,7 +16,7 @@ namespace OrchardCore.ContentLocalization.Drivers
     public class LocalizationContentsAdminListDisplayDriver : DisplayDriver<ContentOptionsViewModel>
     {
         private readonly ILocalizationService _localizationService;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public LocalizationContentsAdminListDisplayDriver(
             ILocalizationService localizationService,
@@ -42,7 +42,7 @@ namespace OrchardCore.ContentLocalization.Drivers
                     var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
                     var cultures = new List<SelectListItem>
                     {
-                        new SelectListItem() { Text = S["All cultures"], Value = "", Selected = String.IsNullOrEmpty(m.SelectedCulture) }
+                        new SelectListItem() { Text = S["All cultures"], Value = "", Selected = string.IsNullOrEmpty(m.SelectedCulture) }
                     };
                     cultures.AddRange(supportedCultures.Select(culture => new SelectListItem() { Text = culture, Value = culture, Selected = culture == m.SelectedCulture }));
 

@@ -3,11 +3,11 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-/*! js-cookie v3.0.1 | MIT */
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+/*! js-cookie v3.0.5 | MIT */
 ;
 (function (global, factory) {
-  (typeof exports === "undefined" ? "undefined" : _typeof(exports)) === 'object' && typeof module !== 'undefined' ? module.exports = factory() : typeof define === 'function' && define.amd ? define(factory) : (global = global || self, function () {
+  (typeof exports === "undefined" ? "undefined" : _typeof(exports)) === 'object' && typeof module !== 'undefined' ? module.exports = factory() : typeof define === 'function' && define.amd ? define(factory) : (global = typeof globalThis !== 'undefined' ? globalThis : global || self, function () {
     var current = global.Cookies;
     var exports = global.Cookies = factory();
     exports.noConflict = function () {
@@ -47,7 +47,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
   /* eslint-disable no-var */
 
   function init(converter, defaultAttributes) {
-    function set(key, value, attributes) {
+    function set(name, value, attributes) {
       if (typeof document === 'undefined') {
         return;
       }
@@ -58,7 +58,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       if (attributes.expires) {
         attributes.expires = attributes.expires.toUTCString();
       }
-      key = encodeURIComponent(key).replace(/%(2[346B]|5E|60|7C)/g, decodeURIComponent).replace(/[()]/g, escape);
+      name = encodeURIComponent(name).replace(/%(2[346B]|5E|60|7C)/g, decodeURIComponent).replace(/[()]/g, escape);
       var stringifiedAttributes = '';
       for (var attributeName in attributes) {
         if (!attributes[attributeName]) {
@@ -78,10 +78,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         // ...
         stringifiedAttributes += '=' + attributes[attributeName].split(';')[0];
       }
-      return document.cookie = key + '=' + converter.write(value, key) + stringifiedAttributes;
+      return document.cookie = name + '=' + converter.write(value, name) + stringifiedAttributes;
     }
-    function get(key) {
-      if (typeof document === 'undefined' || arguments.length && !key) {
+    function get(name) {
+      if (typeof document === 'undefined' || arguments.length && !name) {
         return;
       }
 
@@ -93,20 +93,20 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         var parts = cookies[i].split('=');
         var value = parts.slice(1).join('=');
         try {
-          var foundKey = decodeURIComponent(parts[0]);
-          jar[foundKey] = converter.read(value, foundKey);
-          if (key === foundKey) {
+          var found = decodeURIComponent(parts[0]);
+          jar[found] = converter.read(value, found);
+          if (name === found) {
             break;
           }
         } catch (e) {}
       }
-      return key ? jar[key] : jar;
+      return name ? jar[name] : jar;
     }
     return Object.create({
       set: set,
       get: get,
-      remove: function remove(key, attributes) {
-        set(key, '', assign({}, attributes, {
+      remove: function remove(name, attributes) {
+        set(name, '', assign({}, attributes, {
           expires: -1
         }));
       },

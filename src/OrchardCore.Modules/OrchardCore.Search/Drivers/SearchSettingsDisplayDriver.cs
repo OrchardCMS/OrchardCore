@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Modules;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Models;
 using OrchardCore.Search.ViewModels;
@@ -17,7 +18,9 @@ namespace OrchardCore.Search.Drivers
 {
     public class SearchSettingsDisplayDriver : SectionDisplayDriver<ISite, SearchSettings>
     {
-        public const string GroupId = "search";
+        [Obsolete("This property should not be used. Instead use  SearchConstants.SearchSettingsGroupId.")]
+        public const string GroupId = SearchConstants.SearchSettingsGroupId;
+
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
         private readonly IServiceProvider _serviceProvider;
@@ -50,14 +53,19 @@ namespace OrchardCore.Search.Drivers
                 model.Placeholder = settings.Placeholder;
                 model.PageTitle = settings.PageTitle;
                 model.ProviderName = settings.ProviderName;
-            }).Location("Content:2").OnGroup(GroupId);
+            }).Location("Content:2").OnGroup(SearchConstants.SearchSettingsGroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(SearchSettings section, BuildEditorContext context)
         {
+            if (!SearchConstants.SearchSettingsGroupId.EqualsOrdinalIgnoreCase(context.GroupId))
+            {
+                return null;
+            }
+
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (context.GroupId != GroupId || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageSearchSettings))
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageSearchSettings))
             {
                 return null;
             }
@@ -73,5 +81,16 @@ namespace OrchardCore.Search.Drivers
 
             return await EditAsync(section, context);
         }
+
+        protected override void BuildPrefix(ISite model, string htmlFieldPrefix)
+        {
+            Prefix = typeof(SearchSettings).Name;
+
+            if (!string.IsNullOrEmpty(htmlFieldPrefix))
+            {
+                Prefix = htmlFieldPrefix + "." + Prefix;
+            }
+        }
+
     }
 }

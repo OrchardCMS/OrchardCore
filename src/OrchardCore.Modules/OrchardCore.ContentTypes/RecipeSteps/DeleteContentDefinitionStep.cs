@@ -18,11 +18,11 @@ namespace OrchardCore.ContentTypes.RecipeSteps
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public Task ExecuteAsync(RecipeExecutionContext context)
+        public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "DeleteContentDefinition", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "DeleteContentDefinition", StringComparison.OrdinalIgnoreCase))
             {
-                return Task.CompletedTask;
+                return;
             }
 
             var step = context.Step.ToObject<DeleteContentDefinitionStepModel>();
@@ -30,16 +30,14 @@ namespace OrchardCore.ContentTypes.RecipeSteps
             foreach (var contentType in step.ContentTypes)
             {
                 // The content definition manager tests existence before trying to delete.
-                _contentDefinitionManager.DeleteTypeDefinition(contentType);
+                await _contentDefinitionManager.DeleteTypeDefinitionAsync(contentType);
             }
 
             foreach (var contentPart in step.ContentParts)
             {
                 // The content definition manager tests existence before trying to delete.
-                _contentDefinitionManager.DeletePartDefinition(contentPart);
+                await _contentDefinitionManager.DeletePartDefinitionAsync(contentPart);
             }
-
-            return Task.CompletedTask;
         }
 
         private class DeleteContentDefinitionStepModel

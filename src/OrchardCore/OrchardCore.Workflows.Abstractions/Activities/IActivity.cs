@@ -46,7 +46,7 @@ namespace OrchardCore.Workflows.Activities
         /// <summary>
         /// Called on each activity when a workflow is about to start.
         /// </summary>
-        Task OnWorkflowStartingAsync(WorkflowExecutionContext context, CancellationToken cancellationToken = default(CancellationToken));
+        Task OnWorkflowStartingAsync(WorkflowExecutionContext context, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Called on each activity when a workflow has started.
@@ -56,7 +56,7 @@ namespace OrchardCore.Workflows.Activities
         /// <summary>
         /// Called on each activity when a workflow is about to be resumed.
         /// </summary>
-        Task OnWorkflowResumingAsync(WorkflowExecutionContext context, CancellationToken cancellationToken = default(CancellationToken));
+        Task OnWorkflowResumingAsync(WorkflowExecutionContext context, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Called on each activity when a workflow is resumed.
@@ -64,9 +64,19 @@ namespace OrchardCore.Workflows.Activities
         Task OnWorkflowResumedAsync(WorkflowExecutionContext context);
 
         /// <summary>
+        /// Called on each activity when a workflow is about to be restarted.
+        /// </summary>
+        Task OnWorkflowRestartingAsync(WorkflowExecutionContext context, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Called on each activity when a workflow is restarted.
+        /// </summary>
+        Task OnWorkflowRestartedAsync(WorkflowExecutionContext context);
+
+        /// <summary>
         /// Called on each activity when an activity is about to be executed.
         /// </summary>
-        Task OnActivityExecutingAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext, CancellationToken cancellationToken = default(CancellationToken));
+        Task OnActivityExecutingAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Called on each activity when an activity has been executed.

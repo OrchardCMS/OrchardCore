@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace OrchardCore.Deployment
 {
@@ -7,7 +7,7 @@ namespace OrchardCore.Deployment
     /// </summary>
     public class DeploymentPlan
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public string Name { get; set; }
         public List<DeploymentStep> DeploymentSteps { get; } = new List<DeploymentStep>();
     }

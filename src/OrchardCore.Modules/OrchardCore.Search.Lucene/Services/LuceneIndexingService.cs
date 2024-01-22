@@ -55,11 +55,11 @@ namespace OrchardCore.Search.Lucene
         public async Task ProcessContentItemsAsync(string indexName = default)
         {
             // TODO: Lock over the filesystem in case two instances get a command to rebuild the index concurrently.
-            var allIndices = new Dictionary<string, int>();
-            var lastTaskId = Int32.MaxValue;
+            var allIndices = new Dictionary<string, long>();
+            var lastTaskId = long.MaxValue;
             IEnumerable<LuceneIndexSettings> indexSettingsList = null;
 
-            if (String.IsNullOrEmpty(indexName))
+            if (string.IsNullOrEmpty(indexName))
             {
                 indexSettingsList = await _luceneIndexSettingsService.GetSettingsAsync();
 
@@ -68,7 +68,7 @@ namespace OrchardCore.Search.Lucene
                     return;
                 }
 
-                // Find the lowest task id to process
+                // Find the lowest task id to process.
                 foreach (var indexSetting in indexSettingsList)
                 {
                     var taskId = _indexingState.GetLastTaskId(indexSetting.IndexName);
@@ -101,12 +101,12 @@ namespace OrchardCore.Search.Lucene
 
             do
             {
-                // Create a scope for the content manager
+                // Create a scope for the content manager.
                 var shellScope = await _shellHost.GetScopeAsync(_shellSettings);
 
                 await shellScope.UsingAsync(async scope =>
                 {
-                    // Load the next batch of tasks
+                    // Load the next batch of tasks.
                     batch = (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, BatchSize)).ToArray();
 
                     if (!batch.Any())
@@ -117,7 +117,7 @@ namespace OrchardCore.Search.Lucene
                     var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
                     var indexHandlers = scope.ServiceProvider.GetServices<IContentItemIndexHandler>();
 
-                    // Pre-load all content items to prevent SELECT N+1
+                    // Pre-load all content items to prevent SELECT N+1.
                     var updatedContentItemIds = batch
                         .Where(x => x.Type == IndexingTaskTypes.Update)
                         .Select(x => x.ContentItemId)
@@ -131,7 +131,7 @@ namespace OrchardCore.Search.Lucene
                     var allLatestContentItems = await contentManager.GetAsync(updatedContentItemIds, latest: true);
                     allLatest = allLatestContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId, v => v);
 
-                    // Group all DocumentIndex by index to batch update them
+                    // Group all DocumentIndex by index to batch update them.
                     var updatedDocumentsByIndex = new Dictionary<string, List<DocumentIndex>>();
 
                     foreach (var index in allIndices)
@@ -187,18 +187,18 @@ namespace OrchardCore.Search.Lucene
 
                                 var context = !settings.IndexLatest ? publishedIndexContext : latestIndexContext;
 
-                                //We index only if we actually found a content item in the database
+                                // We index only if we actually found a content item in the database.
                                 if (context == null)
                                 {
-                                    //TODO purge these content items from IndexingTask table
+                                    // TODO purge these content items from IndexingTask table.
                                     continue;
                                 }
 
                                 var cultureAspect = await contentManager.PopulateAspectAsync<CultureAspect>(context.ContentItem);
                                 var culture = cultureAspect.HasCulture ? cultureAspect.Culture.Name : null;
-                                var ignoreIndexedCulture = settings.Culture == "any" ? false : culture != settings.Culture;
+                                var ignoreIndexedCulture = settings.Culture != "any" && culture != settings.Culture;
 
-                                // Ignore if the content item content type or culture is not indexed in this index
+                                // Ignore if the content item content type or culture is not indexed in this index.
                                 if (!settings.IndexedContentTypes.Contains(context.ContentItem.ContentType) || ignoreIndexedCulture)
                                 {
                                     continue;
@@ -209,7 +209,7 @@ namespace OrchardCore.Search.Lucene
                         }
                     }
 
-                    // Delete all the existing documents
+                    // Delete all the existing documents.
                     foreach (var index in updatedDocumentsByIndex)
                     {
                         var deletedDocuments = updatedDocumentsByIndex[index.Key].Select(x => x.ContentItemId);
@@ -217,13 +217,13 @@ namespace OrchardCore.Search.Lucene
                         await _indexManager.DeleteDocumentsAsync(index.Key, deletedDocuments);
                     }
 
-                    // Submits all the new documents to the index
+                    // Submits all the new documents to the index.
                     foreach (var index in updatedDocumentsByIndex)
                     {
                         await _indexManager.StoreDocumentsAsync(index.Key, updatedDocumentsByIndex[index.Key]);
                     }
 
-                    // Update task ids
+                    // Update task ids.
                     lastTaskId = batch.Last().Id;
 
                     foreach (var indexStatus in allIndices)
@@ -240,7 +240,7 @@ namespace OrchardCore.Search.Lucene
         }
 
         /// <summary>
-        /// Creates a new index
+        /// Creates a new index.
         /// </summary>
         /// <returns></returns>
         public async Task CreateIndexAsync(LuceneIndexSettings indexSettings)
@@ -250,7 +250,7 @@ namespace OrchardCore.Search.Lucene
         }
 
         /// <summary>
-        /// Update an existing index
+        /// Update an existing index.
         /// </summary>
         /// <returns></returns>
         public Task UpdateIndexAsync(LuceneIndexSettings indexSettings)
@@ -259,7 +259,7 @@ namespace OrchardCore.Search.Lucene
         }
 
         /// <summary>
-        /// Deletes permanently an index
+        /// Deletes permanently an index.
         /// </summary>
         /// <returns></returns>
         public Task DeleteIndexAsync(string indexName)

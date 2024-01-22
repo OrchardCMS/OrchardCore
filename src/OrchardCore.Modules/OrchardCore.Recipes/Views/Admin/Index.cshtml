@@ -6,12 +6,12 @@
 <p class="alert alert-warning">@T["The current tenant will be reloaded when the recipe is executed."]</p>
 
 <form autocomplete="off" class="position-sticky action-bar">
-    <div class="card bg-primary mb-3">
+    <div class="card text-bg-theme mb-3">
         <div class="card-body">
             <div class="row gx-3">
                 <div class="col">
                     <div class="has-search">
-                        <i class="fa fa-search form-control-feedback" aria-hidden="true"></i>
+                        <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
                         <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus>
                     </div>
                 </div>
@@ -31,7 +31,7 @@
 
                 <div class="recipe-group">
                     @{
-                        var groupRecipeNames = String.Join(" ", recipeGroup.Select(r => r.DisplayName));
+                        var groupRecipeNames = string.Join(" ", recipeGroup.Select(r => r.DisplayName));
                     }
                     <h4 class="mb-2 mt-2" data-filter-value="@groupName @groupRecipeNames">@groupName</h4>
                     <ul class="list-group" data-filter-value="@groupName @groupRecipeNames">
@@ -45,7 +45,7 @@
                                             @recipe.DisplayName
                                             @if (recipe.IsSetupRecipe)
                                             {
-                                                <span class="badge bg-warning">
+                                                <span class="badge text-bg-warning">
                                                     @T["Setup Recipe"]
                                                 </span>
                                             }

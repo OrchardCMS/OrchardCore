@@ -28,9 +28,9 @@ namespace OrchardCore.Apis.GraphQL
         private readonly GraphQLSettings _settings;
         private readonly IDocumentExecuter _executer;
         internal static readonly Encoding _utf8Encoding = new UTF8Encoding(false);
-        private readonly static MediaType _jsonMediaType = new MediaType("application/json");
-        private readonly static MediaType _graphQlMediaType = new MediaType("application/graphql");
-        private readonly static JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions { WriteIndented = false, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        private readonly static MediaType _jsonMediaType = new("application/json");
+        private readonly static MediaType _graphQlMediaType = new("application/graphql");
+        private readonly static JsonSerializerOptions _jsonSerializerOptions = new() { WriteIndented = false, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
         public GraphQLMiddleware(
             RequestDelegate next,
@@ -127,7 +127,7 @@ namespace OrchardCore.Apis.GraphQL
 
             var queryToExecute = request.Query;
 
-            if (!String.IsNullOrEmpty(request.NamedQuery))
+            if (!string.IsNullOrEmpty(request.NamedQuery))
             {
                 var namedQueries = context.RequestServices.GetServices<INamedQueryProvider>();
 

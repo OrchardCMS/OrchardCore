@@ -10,7 +10,7 @@ namespace OrchardCore.Users
 {
     public class AdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
@@ -19,7 +19,7 @@ namespace OrchardCore.Users
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }
@@ -49,7 +49,7 @@ namespace OrchardCore.Users
     [Feature("OrchardCore.Users.ChangeEmail")]
     public class ChangeEmailAdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public ChangeEmailAdminMenu(IStringLocalizer<ChangeEmailAdminMenu> localizer)
         {
@@ -58,7 +58,7 @@ namespace OrchardCore.Users
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }
@@ -79,7 +79,7 @@ namespace OrchardCore.Users
     [Feature("OrchardCore.Users.Registration")]
     public class RegistrationAdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public RegistrationAdminMenu(IStringLocalizer<RegistrationAdminMenu> localizer)
         {
@@ -88,7 +88,7 @@ namespace OrchardCore.Users
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }
@@ -109,7 +109,7 @@ namespace OrchardCore.Users
     [Feature("OrchardCore.Users.ResetPassword")]
     public class ResetPasswordAdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public ResetPasswordAdminMenu(IStringLocalizer<ResetPasswordAdminMenu> localizer)
         {
@@ -118,7 +118,7 @@ namespace OrchardCore.Users
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }

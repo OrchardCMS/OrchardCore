@@ -1,8 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
@@ -38,18 +38,27 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
             var tenantName = (await ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext, null))?.Trim();
 
+            if (string.IsNullOrEmpty(tenantName))
+            {
+                return Outcomes("Failed");
+            }
+
             if (!ShellHost.TryGetSettings(tenantName, out var shellSettings))
             {
                 return Outcomes("Failed");
             }
 
-            if (shellSettings.State != TenantState.Disabled)
+            if (shellSettings.IsDefaultShell())
             {
                 return Outcomes("Failed");
             }
 
-            shellSettings.State = TenantState.Running;
-            await ShellHost.UpdateShellSettingsAsync(shellSettings);
+            if (!shellSettings.IsDisabled())
+            {
+                return Outcomes("Failed");
+            }
+
+            await ShellHost.UpdateShellSettingsAsync(shellSettings.AsRunning());
 
             return Outcomes("Enabled");
         }

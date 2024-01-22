@@ -25,8 +25,10 @@ namespace OrchardCore.Users.Workflows.Drivers
                 Shape("UserDisabledEvent_Fields_Thumbnail", new UserDisabledEventViewModel(activity)).Location("Thumbnail", "Content"),
                 Factory("UserDisabledEvent_Fields_Design", ctx =>
                 {
-                    var shape = new UserDisabledEventViewModel();
-                    shape.Activity = activity;
+                    var shape = new UserDisabledEventViewModel
+                    {
+                        Activity = activity,
+                    };
 
                     return shape;
                 }).Location("Design", "Content")

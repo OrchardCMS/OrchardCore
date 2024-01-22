@@ -5,7 +5,7 @@ namespace OrchardCore.Tests.Apis.Context
     /// </summary>
     internal static class HttpRequestExtensions
     {
-        private readonly static JsonSerializerSettings JsonSettings = new JsonSerializerSettings()
+        private readonly static JsonSerializerSettings _jsonSettings = new()
         {
             NullValueHandling = NullValueHandling.Ignore
         };
@@ -22,8 +22,8 @@ namespace OrchardCore.Tests.Apis.Context
         /// <param name="value">
         /// The value.
         /// </param>
-        /// <param name="formatter">
-        /// The formatter.
+        /// <param name="settings">
+        /// The serializer settings.
         /// </param>
         /// <typeparam name="T">
         /// </typeparam>
@@ -37,11 +37,11 @@ namespace OrchardCore.Tests.Apis.Context
             JsonSerializerSettings settings = null)
         {
             var content = new StringContent(
-                JsonConvert.SerializeObject(value, settings ?? JsonSettings),
+                JsonConvert.SerializeObject(value, settings ?? _jsonSettings),
                 Encoding.UTF8,
                 "application/json");
 
-            return HttpRequestExtensions.PatchAsync(client, requestUri, content);
+            return PatchAsync(client, requestUri, content);
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace OrchardCore.Tests.Apis.Context
             {
                 Method = new HttpMethod("PATCH"),
                 RequestUri = new Uri(client.BaseAddress + requestUri),
-                Content = content
+                Content = content,
             };
 
             request.Headers.ExpectContinue = false;
@@ -87,8 +87,8 @@ namespace OrchardCore.Tests.Apis.Context
         /// <param name="value">
         /// The value.
         /// </param>
-        /// <param name="formatter">
-        /// The formatter.
+        /// <param name="settings">
+        /// The serializer settings.
         /// </param>
         /// <typeparam name="T">
         /// </typeparam>
@@ -102,7 +102,7 @@ namespace OrchardCore.Tests.Apis.Context
             JsonSerializerSettings settings = null)
         {
             var content = new StringContent(
-                JsonConvert.SerializeObject(value, settings ?? JsonSettings),
+                JsonConvert.SerializeObject(value, settings ?? _jsonSettings),
                 Encoding.UTF8,
                 "application/json");
 
@@ -121,8 +121,8 @@ namespace OrchardCore.Tests.Apis.Context
         /// <param name="value">
         /// The value.
         /// </param>
-        /// <param name="formatter">
-        /// The formatter.
+        /// <param name="settings">
+        /// The serializer settings.
         /// </param>
         /// <typeparam name="T">
         /// </typeparam>
@@ -136,12 +136,14 @@ namespace OrchardCore.Tests.Apis.Context
             JsonSerializerSettings settings = null)
         {
             var content = new StringContent(
-                JsonConvert.SerializeObject(value, settings ?? JsonSettings),
+                JsonConvert.SerializeObject(value, settings ?? _jsonSettings),
                 Encoding.UTF8,
                 "application/json");
 
-            var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
-            request.Content = content;
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUri)
+            {
+                Content = content,
+            };
 
             request.Headers
                 .Accept
@@ -160,8 +162,10 @@ namespace OrchardCore.Tests.Apis.Context
                 Encoding.UTF8,
                 "application/json");
 
-            var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
-            request.Content = content;
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUri)
+            {
+                Content = content,
+            };
 
             request.Headers
                 .Accept
@@ -180,8 +184,10 @@ namespace OrchardCore.Tests.Apis.Context
                 Encoding.UTF8,
                 "application/vnd.api+json");
 
-            var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
-            request.Content = content;
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUri)
+            {
+                Content = content,
+            };
 
             request.Headers
                 .Accept

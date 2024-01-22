@@ -6,14 +6,14 @@
     @Html.ValidationSummary()
 
     <div class="mb-3">
-        <label asp-for="DisplayName">@T["Display Name"]</label>
-        <input asp-for="DisplayName" class="form-control w-md-25" autofocus />
+        <label asp-for="DisplayName" class="form-label">@T["Display Name"]</label>
+        <input asp-for="DisplayName" class="form-control w-md-75 w-xl-50" autofocus />
         <span class="hint">@T["Name of the type as it will be displayed on screens."]</span>
     </div>
 
     <div class="mb-3">
-        <label asp-for="Name">@T["Technical Name"]</label>
-        <input asp-for="Name" class="form-control w-md-25" />
+        <label asp-for="Name" class="form-label">@T["Technical Name"]</label>
+        <input asp-for="Name" class="form-control w-md-75 w-xl-50" />
         <span class="hint">@T["Technical name of the type."]</span>
     </div>
 
@@ -23,17 +23,17 @@
 </form>
 
 <script at="Foot">
-//<![CDATA[
-    $(function(){
+    //<![CDATA[
+    $(function () {
         var $name = $("#@Html.IdFor(m => m.Name)");
         var $displayName = $("#@Html.IdFor(m => m.DisplayName)");
 
         var nameAltered;
-        $name.keypress(function() {
+        $name.keypress(function () {
             nameAltered = true;
         });
 
-        var compute = function() {
+        var compute = function () {
             // stop processing automatically if altered by the user
             if (nameAltered) {
                 return true;
@@ -45,5 +45,5 @@
         $displayName.keyup(compute);
         $displayName.blur(compute);
     })
-//]]>
+    //]]>
 </script>

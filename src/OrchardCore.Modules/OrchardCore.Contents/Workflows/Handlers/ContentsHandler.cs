@@ -58,7 +58,8 @@ namespace OrchardCore.Contents.Workflows.Handlers
             {
                 Name = name,
                 ContentType = contentItem.ContentType,
-                ContentItemId = contentItem.ContentItemId
+                ContentItemId = contentItem.ContentItemId,
+                ContentItemVersionId = contentItem.ContentItemVersionId,
             };
 
             var input = new Dictionary<string, object>

@@ -4,12 +4,10 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Liquid;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Seo.Models;
@@ -19,27 +17,16 @@ namespace OrchardCore.Seo.Drivers
 {
     public class SeoMetaPartDisplayDriver : ContentPartDisplayDriver<SeoMetaPart>
     {
-        private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
+        private static readonly JsonSerializerSettings _serializerSettings = new()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            Formatting = Formatting.Indented
+            Formatting = Formatting.Indented,
         };
 
-        private readonly IContentManager _contentManager;
-        private readonly IServiceProvider _serviceProvider;
-        private readonly ILiquidTemplateManager _liquidTemplatemanager;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
-        public SeoMetaPartDisplayDriver(
-            IContentManager contentManager,
-            IServiceProvider serviceProvider,
-            ILiquidTemplateManager liquidTemplateManager,
-            IStringLocalizer<SeoMetaPartDisplayDriver> stringLocalizer
-            )
+        public SeoMetaPartDisplayDriver(IStringLocalizer<SeoMetaPartDisplayDriver> stringLocalizer)
         {
-            _contentManager = contentManager;
-            _serviceProvider = serviceProvider;
-            _liquidTemplatemanager = liquidTemplateManager;
             S = stringLocalizer;
         }
 
@@ -47,9 +34,9 @@ namespace OrchardCore.Seo.Drivers
         {
             var settings = context.TypePartDefinition.GetSettings<SeoMetaPartSettings>();
 
-            var results = new List<IDisplayResult>();
-
-            results.Add(Initialize<SeoMetaPartViewModel>("SeoMetaPart_Edit", model =>
+            var results = new List<IDisplayResult>
+            {
+                Initialize<SeoMetaPartViewModel>("SeoMetaPart_Edit", model =>
                 {
                     model.PageTitle = part.PageTitle;
                     model.Render = part.Render;
@@ -57,10 +44,11 @@ namespace OrchardCore.Seo.Drivers
                     model.MetaKeywords = part.MetaKeywords;
                     model.Canonical = part.Canonical;
                     model.MetaRobots = part.MetaRobots;
-                    model.CustomMetaTags = JsonConvert.SerializeObject(part.CustomMetaTags, SerializerSettings);
+                    model.CustomMetaTags = JsonConvert.SerializeObject(part.CustomMetaTags, _serializerSettings);
                     model.SeoMetaPart = part;
                     model.Settings = settings;
-                }).Location("Parts#SEO;50"));
+                }).Location("Parts#SEO;50"),
+            };
 
             if (settings.DisplayOpenGraph)
             {
@@ -112,7 +100,7 @@ namespace OrchardCore.Seo.Drivers
                     part.Canonical = partViewModel.Canonical;
                     part.MetaRobots = partViewModel.MetaRobots;
 
-                    part.CustomMetaTags = String.IsNullOrWhiteSpace(partViewModel.CustomMetaTags)
+                    part.CustomMetaTags = string.IsNullOrWhiteSpace(partViewModel.CustomMetaTags)
                         ? Array.Empty<MetaEntry>()
                         : JsonConvert.DeserializeObject<MetaEntry[]>(partViewModel.CustomMetaTags);
 
@@ -149,7 +137,7 @@ namespace OrchardCore.Seo.Drivers
             if (await updater.TryUpdateModelAsync(googleSchemaModel, Prefix))
             {
                 part.GoogleSchema = googleSchemaModel.GoogleSchema;
-                if (!String.IsNullOrWhiteSpace(googleSchemaModel.GoogleSchema) && !googleSchemaModel.GoogleSchema.IsJson())
+                if (!string.IsNullOrWhiteSpace(googleSchemaModel.GoogleSchema) && !googleSchemaModel.GoogleSchema.IsJson())
                 {
                     updater.ModelState.AddModelError(Prefix, S["The google schema is written in an incorrect format."]);
                 }

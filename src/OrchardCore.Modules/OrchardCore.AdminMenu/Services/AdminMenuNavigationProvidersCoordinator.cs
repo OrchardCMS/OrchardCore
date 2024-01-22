@@ -9,17 +9,17 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.AdminMenu.Services
 {
-    // Retrieves all instances of "IAdminNodeNavigationBuilder"
-    // Those are classes that add new "AdminNodes" to a "NavigationBuilder" using custom logic specific to the module that register them.
+    // Retrieves all instances of 'IAdminNodeNavigationBuilder'.
+    // Those are classes that add new 'AdminNodes' to a 'NavigationBuilder' using custom logic specific to the module that register them.
     // This class handles their inclusion on the admin menu.
-    // This class is itself one more INavigationProvider so it can be called from this module's AdminMenu.cs
+    // This class is itself one more 'INavigationProvider' so it can be called from this module's AdminMenu.cs.
     public class AdminMenuNavigationProvidersCoordinator : INavigationProvider
     {
         private readonly IAdminMenuService _adminMenuService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IEnumerable<IAdminNodeNavigationBuilder> _nodeBuilders;
-        private readonly ILogger Logger;
+        private readonly ILogger _logger;
 
         public AdminMenuNavigationProvidersCoordinator(
             IAdminMenuService adminMenuService,
@@ -32,14 +32,14 @@ namespace OrchardCore.AdminMenu.Services
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
             _nodeBuilders = nodeBuilders;
-            Logger = logger;
+            _logger = logger;
         }
 
         // We only add them if the caller uses the string "adminMenu").
         // todo: use a public constant for the string
         public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!String.Equals(name, "adminMenu", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(name, "adminMenu", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
@@ -69,7 +69,7 @@ namespace OrchardCore.AdminMenu.Services
                 }
                 else
                 {
-                    Logger.LogError("No Builder registered for admin node of type '{TreeNodeName}'", node.GetType().Name);
+                    _logger.LogError("No Builder registered for admin node of type '{TreeNodeName}'", node.GetType().Name);
                 }
             }
         }

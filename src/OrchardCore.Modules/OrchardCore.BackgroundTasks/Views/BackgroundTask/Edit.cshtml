@@ -1,4 +1,4 @@
-@using OrchardCore;
+@using OrchardCore
 @model BackgroundTaskViewModel
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Task Settings"])</h1></zone>
@@ -19,23 +19,23 @@
     <div class="tab-content" id="tabs">
         <div class="tab-pane fade show active" id="properties" role="tabpanel" aria-labelledby="properties-tab">
 
-            <div class="@Orchard.GetWrapperCssClasses()" asp-validation-class-for="Title">
-                <label asp-for="Title" class="@Orchard.GetLabelCssClasses()">@T["Title"]</label>
-                <div class="@Orchard.GetEndCssClasses()">
+            <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Title">
+                <label asp-for="Title" class="@Orchard.GetLabelClasses()">@T["Title"]</label>
+                <div class="@Orchard.GetEndClasses()">
                     <input asp-for="Title" class="form-control-plaintext" readonly />
                 </div>
             </div>
 
-            <div class="@Orchard.GetWrapperCssClasses()" asp-validation-class-for="Description">
-                <label asp-for="Description" class="@Orchard.GetLabelCssClasses()">@T["Description"]</label>
-                <div class="@Orchard.GetEndCssClasses()">
-                    <input asp-for="Description" class="form-control-plaintext" readonly />
+            <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Description">
+                <label asp-for="Description" class="@Orchard.GetLabelClasses()">@T["Description"]</label>
+                <div class="@Orchard.GetEndClasses()">
+                    <input asp-for="Description" class="form-control-plaintext" />
                 </div>
             </div>
 
-            <div class="@Orchard.GetWrapperCssClasses()" asp-validation-class-for="Schedule">
-                <label asp-for="Schedule" class="@Orchard.GetLabelCssClasses()">@T["Schedule"]</label>
-                <div class="@Orchard.GetEndCssClasses()">
+            <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Schedule">
+                <label asp-for="Schedule" class="@Orchard.GetLabelClasses()">@T["Schedule"]</label>
+                <div class="@Orchard.GetEndClasses()">
                     <div class="input-group mb-3">
                         <input asp-for="Schedule" class="form-control" />
                         <button id="use-default-schedule" class="btn btn-outline-success">@T["Reset Schedule"]</button>
@@ -44,23 +44,33 @@
                 </div>
             </div>
 
+            <div class="@Orchard.GetWrapperClasses()">
+                <div class="@Orchard.GetEndClasses(true)">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" asp-for="UsePipeline" checked="@Model.UsePipeline" />
+                        <label class="form-check-label" asp-for="UsePipeline">@T["Use Tenant Pipeline"]</label>
+                    </div>
+                    <span class="hint">@T["Whether or not the tenant pipeline should be built to configure endpoints and then executed to allow route urls generation in the background."]</span>
+                </div>
+            </div>
+
             <div><span asp-validation-for="LockTimeout" class="text-danger">@T["Invalid lock timeout value in the advanced tab"]</span></div>
             <div><span asp-validation-for="LockExpiration" class="text-danger">@T["Invalid lock expiration value in the advanced tab"]</span></div>
         </div>
 
         <div class="tab-pane fade" id="advanced" role="tabpanel" aria-labelledby="advanced-tab">
-            <div class="@Orchard.GetWrapperCssClasses()" asp-validation-class-for="LockTimeout">
-                <label asp-for="LockTimeout" class="@Orchard.GetLabelCssClasses()">@T["Lock timeout (ms)"]</label>
-                <div class="@Orchard.GetEndCssClasses()">
+            <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="LockTimeout">
+                <label asp-for="LockTimeout" class="@Orchard.GetLabelClasses()">@T["Lock timeout (ms)"]</label>
+                <div class="@Orchard.GetEndClasses()">
                     <input asp-for="LockTimeout" type="number" min="0" max="30000" class="form-control">
                     <span class="hint">@T["The timeout in milliseconds to acquire a lock before executing the task atomically. Leave it to zero to not use any locking."]</span>
                     <span class="hint">@T["Ignored if there is no distributed lock feature enabled."]</span>
                 </div>
             </div>
 
-            <div class="@Orchard.GetWrapperCssClasses()" asp-validation-class-for="LockExpiration">
-                <label asp-for="LockExpiration" class="@Orchard.GetLabelCssClasses()">@T["Lock expiration (ms)"]</label>
-                <div class="@Orchard.GetEndCssClasses()">
+            <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="LockExpiration">
+                <label asp-for="LockExpiration" class="@Orchard.GetLabelClasses()">@T["Lock expiration (ms)"]</label>
+                <div class="@Orchard.GetEndClasses()">
                     <input asp-for="LockExpiration" type="number" min="0" max="30000" class="form-control">
                     <span class="hint">@T["The expiration in milliseconds of the lock acquired before executing the task atomically. Leave it to zero to not use any locking."]</span>
                     <span class="hint">@T["Ignored if there is no distributed lock feature enabled."]</span>

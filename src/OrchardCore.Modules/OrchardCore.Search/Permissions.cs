@@ -23,8 +23,8 @@ namespace OrchardCore.Search
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageSearchSettings }
-                }
+                    Permissions = new[] { ManageSearchSettings },
+                },
             };
         }
     }

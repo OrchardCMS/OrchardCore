@@ -1,0 +1,46 @@
+@import '../variables';
+
+:root {
+    --oc-mde-zindex: var(--oc-editor-fullscreen) !important;
+}
+
+.CodeMirror {
+    height: auto;
+    border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+}
+
+.CodeMirror-gutters {
+    background-color: var(--bs-secondary-bg);
+    color: var(--bs-secondary-color);
+}
+
+.CodeMirror-fullscreen {
+    background: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    position: fixed !important;
+    top: var(--oc-top-nav-height) !important;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: auto;
+    z-index: var(--bs-modal-zindex);
+    border-right: none !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+.CodeMirror pre {
+    padding-left: 7px;
+    line-height: 1.25;
+    margin-bottom: 0;
+    overflow: unset;
+}
+
+.CodeMirror-activeline-background {
+    background: transparent !important;
+}
+
+.CodeMirror-focused .CodeMirror-activeline-background {
+    background: rgba(var(--bs-secondary-bg-rgb), 0.1) !important;
+}

@@ -14,7 +14,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
     public class ValidationMessageTagHelper : TagHelper
     {
         private const string ValidationForAttributeName = "asp-validation-class-for";
-        private const string HasValidationErrorClassName = "has-validation-error";
+        private const string HasValidationErrorClassName = "has-validation-error is-invalid";
         private readonly IHtmlHelper _htmlHelper;
 
         public ValidationMessageTagHelper(IHtmlHelper htmlHelper)

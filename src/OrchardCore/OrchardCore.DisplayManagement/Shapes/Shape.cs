@@ -59,10 +59,7 @@ namespace OrchardCore.DisplayManagement.Shapes
                 return new ValueTask<IShape>(this);
             }
 
-            if (position == null)
-            {
-                position = "";
-            }
+            position ??= "";
 
             _sorted = false;
 
@@ -192,10 +189,13 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
         {
-            // In case AddAsync() is called on a dynamic object, to prevent Copmosite from seing it as a property assignment
+            // In case AddAsync() is called on a dynamic object, to prevent Composite from seing it as a property assignment.
             if (binder.Name == "AddAsync")
             {
-                result = AddAsync(args.Length > 0 ? args[0] : null, args.Length > 1 ? args[1].ToString() : "");
+                result =
+                    AddAsync(args.Length > 0 ? args[0] : null, args.Length > 1 ? args[1].ToString() : "")
+                    .AsTask();
+
                 return true;
             }
 
@@ -211,13 +211,10 @@ namespace OrchardCore.DisplayManagement.Shapes
         {
             if (!base.TryGetMemberImpl(name, out result) || (null == result))
             {
-                // Try to get a Named shape
+                // Try to get a Named shape.
                 result = Named(name);
 
-                if (result == null)
-                {
-                    result = NormalizedNamed(name.Replace("__", "-"));
-                }
+                result ??= NormalizedNamed(name.Replace("__", "-"));
             }
 
             return true;
@@ -225,7 +222,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         protected override bool TrySetMemberImpl(string name, object value)
         {
-            // We set the Shape real properties for Razor
+            // We set the Shape real properties for Razor.
 
             if (name == "Id")
             {

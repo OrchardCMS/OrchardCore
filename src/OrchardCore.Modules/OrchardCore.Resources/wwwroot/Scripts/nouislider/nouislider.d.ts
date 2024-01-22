@@ -61,7 +61,7 @@ declare type SubRange = number | WrappedSubRange;
 interface Range {
     min: SubRange;
     max: SubRange;
-    [key: string]: SubRange;
+    [key: `${number}%`]: SubRange;
 }
 interface BasePips {
     mode: PipsMode;
@@ -134,6 +134,8 @@ export interface API {
     set: (input: number | string | (number | string)[], fireSetEvent?: boolean, exactInput?: boolean) => void;
     setHandle: (handleNumber: number, value: number | string, fireSetEvent?: boolean, exactInput?: boolean) => void;
     reset: (fireSetEvent?: boolean) => void;
+    disable: (handleNumber?: number) => void;
+    enable: (handleNumber?: number) => void;
     options: Options;
     updateOptions: (optionsToUpdate: UpdatableOptions, fireSetEvent: boolean) => void;
     target: HTMLElement;

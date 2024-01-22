@@ -158,7 +158,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
         public bool IsHiddenByDefault(string contentType)
         {
-            if (String.IsNullOrEmpty(contentType))
+            if (string.IsNullOrEmpty(contentType))
             {
                 throw new ArgumentNullException(nameof(contentType));
             }

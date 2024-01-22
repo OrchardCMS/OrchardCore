@@ -7,17 +7,16 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Activities
 {
-    public class IfElseTask : TaskActivity
+    public class IfElseTask : TaskActivity<IfElseTask>
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public IfElseTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<IfElseTask> localizer)
         {
             _scriptEvaluator = scriptEvaluator;
             S = localizer;
         }
-        public override string Name => nameof(IfElseTask);
 
         public override LocalizedString DisplayText => S["If Else Task"];
 

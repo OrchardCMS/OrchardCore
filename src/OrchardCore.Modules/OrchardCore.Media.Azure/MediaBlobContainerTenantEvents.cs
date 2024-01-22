@@ -16,7 +16,7 @@ namespace OrchardCore.Media.Azure
     {
         private readonly MediaBlobStorageOptions _options;
         private readonly ShellSettings _shellSettings;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
         private readonly ILogger _logger;
 
         public MediaBlobContainerTenantEvents(
@@ -35,9 +35,9 @@ namespace OrchardCore.Media.Azure
         public override async Task ActivatingAsync()
         {
             // Only create container if options are valid.
-            if (_shellSettings.State == Environment.Shell.Models.TenantState.Uninitialized ||
-                String.IsNullOrEmpty(_options.ConnectionString) ||
-                String.IsNullOrEmpty(_options.ContainerName) ||
+            if (_shellSettings.IsUninitialized() ||
+                string.IsNullOrEmpty(_options.ConnectionString) ||
+                string.IsNullOrEmpty(_options.ContainerName) ||
                 !_options.CreateContainer
                 )
             {
@@ -63,8 +63,8 @@ namespace OrchardCore.Media.Azure
         {
             // Only remove container if options are valid.
             if (!_options.RemoveContainer ||
-                String.IsNullOrEmpty(_options.ConnectionString) ||
-                String.IsNullOrEmpty(_options.ContainerName))
+                string.IsNullOrEmpty(_options.ConnectionString) ||
+                string.IsNullOrEmpty(_options.ContainerName))
             {
                 return;
             }
