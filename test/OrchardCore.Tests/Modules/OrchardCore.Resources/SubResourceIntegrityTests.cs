@@ -36,14 +36,14 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Resources
                 {
                     foreach (var resourceDefinition in resource.Value)
                     {
-                        if (!String.IsNullOrEmpty(resourceDefinition.CdnIntegrity) && !String.IsNullOrEmpty(resourceDefinition.UrlCdnDebug))
+                        if (!string.IsNullOrEmpty(resourceDefinition.CdnIntegrity) && !string.IsNullOrEmpty(resourceDefinition.UrlCdnDebug))
                         {
                             var resourceIntegrity = GetSubResourceIntegrityAsync(resourceDefinition.UrlCdnDebug).Result;
 
                             Assert.True(resourceIntegrity.Equals(resourceDefinition.CdnDebugIntegrity), $"The {resourceType} {resourceDefinition.UrlCdnDebug} has invalid SRI hash, please use '{resourceIntegrity}' instead.");
                         }
 
-                        if (!String.IsNullOrEmpty(resourceDefinition.CdnIntegrity) && !String.IsNullOrEmpty(resourceDefinition.UrlCdn))
+                        if (!string.IsNullOrEmpty(resourceDefinition.CdnIntegrity) && !string.IsNullOrEmpty(resourceDefinition.UrlCdn))
                         {
                             var resourceIntegrity = GetSubResourceIntegrityAsync(resourceDefinition.UrlCdn).Result;
 
