@@ -63,7 +63,6 @@ public class ElasticSettingsDisplayDriver : SectionDisplayDriver<ISite, ElasticS
             ];
         }).Location("Content:2#Elasticsearch;10")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageElasticIndexes))
-        .Prefix(Prefix)
         .OnGroup(SearchConstants.SearchSettingsGroupId);
 
     public override async Task<IDisplayResult> UpdateAsync(ElasticSettings section, BuildEditorContext context)
@@ -115,15 +114,5 @@ public class ElasticSettingsDisplayDriver : SectionDisplayDriver<ISite, ElasticS
         }
 
         return await EditAsync(section, context);
-    }
-
-    protected override void BuildPrefix(ISite model, string htmlFieldPrefix)
-    {
-        Prefix = typeof(ElasticSettings).Name;
-
-        if (!string.IsNullOrEmpty(htmlFieldPrefix))
-        {
-            Prefix = htmlFieldPrefix + "." + Prefix;
-        }
     }
 }
