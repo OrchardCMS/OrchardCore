@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Concurrent;
 using System.Linq;
 using GraphQL;
 using GraphQL.Resolvers;
@@ -14,7 +16,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly GraphQLContentOptions _contentOptions;
-
+        private readonly ConcurrentDictionary<string, Type> PartTypes = new();
+        private readonly ConcurrentDictionary<Type, Type> ObjectGraphTypePartTypes = new();
+        private readonly ConcurrentDictionary<Type, Type> InputObjectGraphTypePartTypes = new();
         public TypedContentTypeBuilder(IHttpContextAccessor httpContextAccessor,
             IOptions<GraphQLContentOptions> contentOptionsAccessor)
         {
@@ -47,9 +51,12 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     continue;
                 }
 
-                var activator = typeActivator.GetTypeActivator(part.PartDefinition.Name);
+                var partType = PartTypes.GetOrAdd(part.PartDefinition.Name, key => typeActivator.GetTypeActivator(key).Type);
 
-                var queryGraphType = typeof(ObjectGraphType<>).MakeGenericType(activator.Type);
+                var queryGraphType = ObjectGraphTypePartTypes.GetOrAdd(partType, key =>
+                {
+                    return typeof(ObjectGraphType<>).MakeGenericType(key);
+                });
 
                 var collapsePart = _contentOptions.ShouldCollapse(part);
 
@@ -71,7 +78,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                                 Resolver = new FuncFieldResolver<ContentItem, object>(context =>
                                 {
                                     var nameToResolve = partName;
-                                    var resolvedPart = context.Source.Get(activator.Type, nameToResolve);
+                                    var resolvedPart = context.Source.Get(partType, nameToResolve);
 
                                     return field.Resolver.ResolveAsync(new ResolveFieldContext
                                     {
@@ -103,12 +110,14 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                                            var typeToResolve = context.FieldDefinition.ResolvedType.GetType().BaseType.GetGenericArguments().First();
 
                                            return context.Source.Get(typeToResolve, nameToResolve);
-                                       }); 
+                                       });
                     }
                 }
 
-                var inputGraphType = typeof(InputObjectGraphType<>).MakeGenericType(activator.Type);
-
+                var inputGraphType = InputObjectGraphTypePartTypes.GetOrAdd(partType, key =>
+                {
+                    return typeof(InputObjectGraphType<>).MakeGenericType(key);
+                });
                 if (serviceProvider.GetService(inputGraphType) is IInputObjectGraphType inputGraphTypeResolved)
                 {
                     var whereArgument = contentQuery.Arguments.FirstOrDefault(x => x.Name == "where");
