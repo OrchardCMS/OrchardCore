@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+using System;
 using System.Linq;
 using GraphQL.Resolvers;
 using GraphQL.Types;
@@ -13,6 +15,8 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
+        private readonly ConcurrentDictionary<string, Type> ContentTypeTypes = new();
+        private readonly ConcurrentDictionary<Type, Type> ObjectGraphTypePartTypes = new();
         public ObjectGraphTypeFieldProvider(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
@@ -22,9 +26,9 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
         {
             var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
             var typeActivator = serviceProvider.GetService<ITypeActivatorFactory<ContentField>>();
-            var activator = typeActivator.GetTypeActivator(field.FieldDefinition.Name);
+            var contentTypeType = ContentTypeTypes.GetOrAdd(field.FieldDefinition.Name, key => typeActivator.GetTypeActivator(key).Type);
 
-            var queryGraphType = typeof(ObjectGraphType<>).MakeGenericType(activator.Type);
+            var queryGraphType = ObjectGraphTypePartTypes.GetOrAdd(contentTypeType, key => typeof(ObjectGraphType<>).MakeGenericType(key));
 
             if (serviceProvider.GetService(queryGraphType) is IObjectGraphType)
             {
