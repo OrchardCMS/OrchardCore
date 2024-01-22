@@ -389,7 +389,7 @@
                 "Author": "admin",
                 "SocialIcon": {
                   "IconClass": {
-                    "Text": "fab fa-twitter"
+                    "Text": "fab fa-x-twitter"
                   },
                   "Url": {
                     "Text": "https://twitter.com"

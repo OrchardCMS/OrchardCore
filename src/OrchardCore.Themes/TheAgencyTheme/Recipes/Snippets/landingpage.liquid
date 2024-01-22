@@ -118,8 +118,8 @@
                     <h4>{{ member.DisplayText }}</h4>
                     <p class="text-muted">{{ member.TeamMember.Occupation.Text }}</p>
                     {% if member.TeamMember.Twitter.Text.size > 0 %}
-                    <a class="btn btn-dark btn-social mx-2" href="https://www.twitter.com/{{ member.TeamMember.Twitter.Text }}" aria-label="{{ member.DisplayText }} Twitter Profile">
-                        <i class="fab fa-twitter"></i>
+                    <a class="btn btn-dark btn-social mx-2" href="https://www.twitter.com/{{ member.TeamMember.Twitter.Text }}" aria-label="{{ member.DisplayText }} X (Twitter) Profile">
+                        <i class="fab fa-x-twitter"></i>
                     </a>
                     {% endif %}
                     {% if member.TeamMember.Facebook.Text.size > 0 %}
