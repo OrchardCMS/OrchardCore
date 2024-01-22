@@ -21,9 +21,10 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Resources
                 httpContextAccessorMock.Object);
             var resourceManagementOptions = new ResourceManagementOptions();
 
-            // Act & Assert
+            // Act
             configurationOptions.Configure(resourceManagementOptions);
-
+            
+            // Assert
             var resourceManifest = resourceManagementOptions.ResourceManifests.First();
 
             ValidateSubResourceIntegrity("script");
