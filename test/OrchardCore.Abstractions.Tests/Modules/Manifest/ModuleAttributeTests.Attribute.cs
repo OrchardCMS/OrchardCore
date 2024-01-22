@@ -18,12 +18,12 @@ namespace OrchardCore.Modules.Manifest
         /// <summary>
         /// Gets the <see cref="ModuleAttribute.DefaultVersionZero"/>.
         /// </summary>
-        protected static string DefaultVersionZero = ModuleAttribute.DefaultVersionZero;
+        protected static string DefaultVersionZero => ModuleAttribute.DefaultVersionZero;
 
         /// <summary>
         /// Gets the <see cref="ModuleAttribute.DefaultWebsiteUrl"/>.
         /// </summary>
-        protected static string DefaultWebsiteUrl = ModuleAttribute.DefaultWebsiteUrl;
+        protected static string DefaultWebsiteUrl => ModuleAttribute.DefaultWebsiteUrl;
 
         /// <summary>
         /// &quot;lorem://assyattrib.ipsum&quot;

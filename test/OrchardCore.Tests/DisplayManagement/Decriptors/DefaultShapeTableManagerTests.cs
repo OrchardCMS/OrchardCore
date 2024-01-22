@@ -1,12 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Memory;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Hosting;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Implementation;
@@ -17,7 +8,6 @@ using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Tests.Stubs;
-using Xunit;
 
 namespace OrchardCore.Tests.DisplayManagement.Decriptors
 {
@@ -45,7 +35,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, Array.Empty<string>(), false, false, false) }
+                        { new FeatureInfo(name, name, 0, string.Empty, string.Empty, this, Array.Empty<string>(), false, false, false) }
                     };
 
                 Features = features;
@@ -79,7 +69,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, Array.Empty<string>(), false, false, false) }
+                        { new FeatureInfo(name, name, 0, string.Empty, string.Empty, this, Array.Empty<string>(), false, false, false) }
                     };
 
                 Features = features;
@@ -106,7 +96,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 Features =
                     new List<IFeatureInfo>()
                     {
-                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, new string[] { baseTheme.Id }, false, false, false) }
+                        { new FeatureInfo(name, name, 0, string.Empty, string.Empty, this, new string[] { baseTheme.Id }, false, false, false) }
                     };
 
                 Id = name;
@@ -145,12 +135,13 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
 
             serviceCollection.AddSingleton<IExtensionManager>(new TestExtensionManager(features));
 
-            TestShapeProvider.FeatureShapes = new Dictionary<IFeatureInfo, IEnumerable<string>> {
+            TestShapeProvider.InitFeatureShapes(new Dictionary<IFeatureInfo, IEnumerable<string>>
+            {
                 { TestFeature(), new [] {"Hello"} },
                 { features[1], new [] {"Theme1Shape"} },
                 { features[2], new [] {"DerivedShape", "OverriddenShape"} },
-                { features[3], new [] {"BaseShape", "OverriddenShape"} }
-            };
+                { features[3], new [] {"BaseShape", "OverriddenShape"} },
+            });
 
             serviceCollection.AddScoped<IShapeTableProvider, TestShapeProvider>();
             serviceCollection.AddScoped(sp => (TestShapeProvider)sp.GetService<IShapeTableProvider>());
@@ -246,6 +237,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 throw new NotImplementedException();
             }
 
+#pragma warning disable CA1822 // Mark members as static
             public Task<FeatureEntry> LoadFeatureAsync(IFeatureInfo feature)
             {
                 return Task.FromResult(new FeatureEntry(feature));
@@ -255,6 +247,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             {
                 return Task.FromResult(features.Select(x => new FeatureEntry(x)));
             }
+#pragma warning restore CA1822 // Mark members as static
 
             public IEnumerable<IFeatureInfo> GetFeatures()
             {
@@ -284,9 +277,14 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
 
         public class TestShapeProvider : IShapeTableProvider
         {
-            public static IDictionary<IFeatureInfo, IEnumerable<string>> FeatureShapes;
+            private static IDictionary<IFeatureInfo, IEnumerable<string>> _featureShapes;
+
+            public static IDictionary<IFeatureInfo, IEnumerable<string>> FeatureShapes => _featureShapes;
 
             public Action<ShapeTableBuilder> Discover = x => { };
+
+            public static void InitFeatureShapes(IDictionary<IFeatureInfo, IEnumerable<string>> featureShapes)
+                => _featureShapes = featureShapes;
 
             void IShapeTableProvider.Discover(ShapeTableBuilder builder)
             {
@@ -310,17 +308,17 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
         }
 
         [Fact]
-        public void DefaultShapeTableIsReturnedForNullOrEmpty()
+        public async Task DefaultShapeTableIsReturnedForNullOrEmpty()
         {
             var manager = _serviceProvider.GetService<IShapeTableManager>();
-            var shapeTable1 = manager.GetShapeTable(null);
-            var shapeTable2 = manager.GetShapeTable(String.Empty);
+            var shapeTable1 = await manager.GetShapeTableAsync(null);
+            var shapeTable2 = await manager.GetShapeTableAsync(string.Empty);
             Assert.NotNull(shapeTable1.Descriptors["Hello"]);
             Assert.NotNull(shapeTable2.Descriptors["Hello"]);
         }
 
         [Fact]
-        public void CallbackAlterationsContributeToDescriptor()
+        public async Task CallbackAlterationsContributeToDescriptor()
         {
             Func<ShapeCreatingContext, Task> cb1 = x => { return Task.CompletedTask; };
             Func<ShapeCreatedContext, Task> cb2 = x => { return Task.CompletedTask; };
@@ -336,38 +334,39 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
 
             var manager = _serviceProvider.GetService<IShapeTableManager>();
 
-            var foo = manager.GetShapeTable(null).Descriptors["Foo"];
+            var foo = (await manager.GetShapeTableAsync(null)).Descriptors["Foo"];
 
             Assert.Same(cb1, foo.CreatingAsync.Single());
             Assert.Same(cb2, foo.CreatedAsync.Single());
             Assert.Same(cb3, foo.DisplayingAsync.Single());
             Assert.Same(cb4, foo.DisplayedAsync.Single());
         }
+
         [Fact]
-        public void DefaultPlacementIsReturnedByDefault()
+        public async Task DefaultPlacementIsReturnedByDefault()
         {
             var manager = _serviceProvider.GetService<IShapeTableManager>();
 
-            var hello = manager.GetShapeTable(null).Descriptors["Hello"];
+            var hello = (await manager.GetShapeTableAsync(null)).Descriptors["Hello"];
             hello.DefaultPlacement = "Header:5";
             var result = hello.Placement(null);
             Assert.Equal("Header:5", result.Location);
         }
 
         [Fact]
-        public void DescribedPlacementIsReturnedIfNotNull()
+        public async Task DescribedPlacementIsReturnedIfNotNull()
         {
-            var shapeDetail = new ShapePlacementContext("Foo", "Detail", String.Empty, null);
-            var shapeSummary = new ShapePlacementContext("Foo", "Summary", String.Empty, null);
-            var shapeTitle = new ShapePlacementContext("Foo", "Title", String.Empty, null);
+            var shapeDetail = new ShapePlacementContext("Foo", "Detail", string.Empty, null);
+            var shapeSummary = new ShapePlacementContext("Foo", "Summary", string.Empty, null);
+            var shapeTitle = new ShapePlacementContext("Foo", "Title", string.Empty, null);
 
             _serviceProvider.GetService<TestShapeProvider>().Discover =
                 builder => builder.Describe("Hello1").From(TestFeature())
                     .Placement(ctx => ctx.DisplayType == "Detail" ? new PlacementInfo { Location = "Main" } : null)
-                    .Placement(ctx => ctx.DisplayType == "Summary" ? new PlacementInfo { Location = String.Empty } : null);
+                    .Placement(ctx => ctx.DisplayType == "Summary" ? new PlacementInfo { Location = string.Empty } : null);
 
             var manager = _serviceProvider.GetService<IShapeTableManager>();
-            var hello = manager.GetShapeTable(null).Descriptors["Hello1"];
+            var hello = (await manager.GetShapeTableAsync(null)).Descriptors["Hello1"];
             var result1 = hello.Placement(shapeDetail);
             var result2 = hello.Placement(shapeSummary);
             var result3 = hello.Placement(shapeTitle);
@@ -385,19 +384,19 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
         }
 
         [Fact]
-        public void TwoArgumentVariationDoesSameThing()
+        public async Task TwoArgumentVariationDoesSameThing()
         {
-            var shapeDetail = new ShapePlacementContext("Foo", "Detail", String.Empty, null);
-            var shapeSummary = new ShapePlacementContext("Foo", "Summary", String.Empty, null);
-            var shapeTitle = new ShapePlacementContext("Foo", "Title", String.Empty, null);
+            var shapeDetail = new ShapePlacementContext("Foo", "Detail", string.Empty, null);
+            var shapeSummary = new ShapePlacementContext("Foo", "Summary", string.Empty, null);
+            var shapeTitle = new ShapePlacementContext("Foo", "Title", string.Empty, null);
 
             _serviceProvider.GetService<TestShapeProvider>().Discover =
                 builder => builder.Describe("Hello2").From(TestFeature())
                     .Placement(ctx => ctx.DisplayType == "Detail", new PlacementInfo { Location = "Main" })
-                    .Placement(ctx => ctx.DisplayType == "Summary", new PlacementInfo { Location = String.Empty });
+                    .Placement(ctx => ctx.DisplayType == "Summary", new PlacementInfo { Location = string.Empty });
 
             var manager = _serviceProvider.GetService<IShapeTableManager>();
-            var hello = manager.GetShapeTable(null).Descriptors["Hello2"];
+            var hello = (await manager.GetShapeTableAsync(null)).Descriptors["Hello2"];
             var result1 = hello.Placement(shapeDetail);
             var result2 = hello.Placement(shapeSummary);
             var result3 = hello.Placement(shapeTitle);
@@ -416,7 +415,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
 
         // "Path not supported yet"
         [Fact]
-        internal void PathConstraintShouldMatch()
+        internal async Task PathConstraintShouldMatch()
         {
             // all path have a trailing / as per the current implementation
             // todo: (sebros) find a way to 'use' the current implementation in DefaultContentDisplay.BindPlacement instead of emulating it
@@ -444,7 +443,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                                    .Placement(ctx => true, new PlacementInfo { Location = "Match" });
 
                 var manager = _serviceProvider.GetService<IShapeTableManager>();
-                var hello = manager.GetShapeTable(null).Descriptors["Hello"];
+                var hello = (await manager.GetShapeTableAsync(null)).Descriptors["Hello"];
                 //var result = hello.Placement(new ShapePlacementContext { Path = context });
 
                 //if (match)
@@ -459,38 +458,40 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
         }
 
         [Fact]
-        public void OnlyShapesFromTheGivenThemeAreProvided()
+        public async Task OnlyShapesFromTheGivenThemeAreProvided()
         {
             _serviceProvider.GetService<TestShapeProvider>();
             var manager = _serviceProvider.GetService<IShapeTableManager>();
-            var table = manager.GetShapeTable("Theme1");
+            var table = await manager.GetShapeTableAsync("Theme1");
             Assert.True(table.Descriptors.ContainsKey("Theme1Shape"));
             Assert.False(table.Descriptors.ContainsKey("DerivedShape"));
             Assert.False(table.Descriptors.ContainsKey("BaseShape"));
         }
 
         [Fact]
-        public void ShapesFromTheBaseThemeAreProvided()
+        public async Task ShapesFromTheBaseThemeAreProvided()
         {
             _serviceProvider.GetService<TestShapeProvider>();
             var manager = _serviceProvider.GetService<IShapeTableManager>();
-            var table = manager.GetShapeTable("DerivedTheme");
+            var table = await manager.GetShapeTableAsync("DerivedTheme");
             Assert.False(table.Descriptors.ContainsKey("Theme1Shape"));
             Assert.True(table.Descriptors.ContainsKey("DerivedShape"));
             Assert.True(table.Descriptors.ContainsKey("BaseShape"));
         }
 
         [Fact]
-        public void DerivedThemesCanOverrideBaseThemeShapeBindings()
+        public async Task DerivedThemesCanOverrideBaseThemeShapeBindings()
         {
             _serviceProvider.GetService<TestShapeProvider>();
             var manager = _serviceProvider.GetService<IShapeTableManager>();
-            var table = manager.GetShapeTable("DerivedTheme");
+            var table = await manager.GetShapeTableAsync("DerivedTheme");
             Assert.True(table.Bindings.TryGetValue("OverriddenShape", out _));
             Assert.Equal("DerivedTheme", table.Descriptors["OverriddenShape"].BindingSource);
         }
 
+#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
         public void Dispose()
+#pragma warning restore CA1816 // Dispose methods should call SuppressFinalize
         {
             (_serviceProvider as IDisposable)?.Dispose();
         }

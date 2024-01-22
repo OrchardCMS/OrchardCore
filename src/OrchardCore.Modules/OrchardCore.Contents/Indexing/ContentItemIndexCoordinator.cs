@@ -35,7 +35,7 @@ namespace OrchardCore.Contents.Indexing
 
         public async Task BuildIndexAsync(BuildIndexContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
 
             if (contentTypeDefinition == null)
             {

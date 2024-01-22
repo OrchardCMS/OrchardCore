@@ -1,16 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL.Client;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Search.Lucene;
@@ -19,9 +10,10 @@ namespace OrchardCore.Tests.Apis.Context
 {
     public class SiteContext : IDisposable
     {
-        private static readonly TablePrefixGenerator TablePrefixGenerator = new TablePrefixGenerator();
+        private static readonly TablePrefixGenerator _tablePrefixGenerator = new();
         public static OrchardTestFixture<SiteStartup> Site { get; }
         public static IShellHost ShellHost { get; private set; }
+        public static IShellSettingsManager ShellSettingsManager { get; private set; }
         public static IHttpContextAccessor HttpContextAccessor { get; }
         public static HttpClient DefaultTenantClient { get; }
 
@@ -38,6 +30,7 @@ namespace OrchardCore.Tests.Apis.Context
         {
             Site = new OrchardTestFixture<SiteStartup>();
             ShellHost = Site.Services.GetRequiredService<IShellHost>();
+            ShellSettingsManager = Site.Services.GetRequiredService<IShellSettingsManager>();
             HttpContextAccessor = Site.Services.GetRequiredService<IHttpContextAccessor>();
             DefaultTenantClient = Site.CreateDefaultClient();
         }
@@ -45,16 +38,17 @@ namespace OrchardCore.Tests.Apis.Context
         public virtual async Task InitializeAsync()
         {
             var tenantName = Guid.NewGuid().ToString("n");
-            var tablePrefix = await TablePrefixGenerator.GeneratePrefixAsync();
+            var tablePrefix = await _tablePrefixGenerator.GeneratePrefixAsync();
 
-            var createModel = new Tenants.ViewModels.CreateApiViewModel
+            var createModel = new Tenants.Models.TenantApiModel
             {
                 DatabaseProvider = DatabaseProvider,
                 TablePrefix = tablePrefix,
                 ConnectionString = ConnectionString,
                 RecipeName = RecipeName,
                 Name = tenantName,
-                RequestUrlPrefix = tenantName
+                RequestUrlPrefix = tenantName,
+                Schema = null,
             };
 
             var createResult = await DefaultTenantClient.PostAsJsonAsync("api/tenants/create", createModel);
@@ -75,7 +69,7 @@ namespace OrchardCore.Tests.Apis.Context
                 UserName = "admin",
                 Password = "Password01_",
                 Name = tenantName,
-                Email = "Nick@Orchard"
+                Email = "Nick@Orchard",
             };
 
             var setupResult = await DefaultTenantClient.PostAsJsonAsync("api/tenants/setup", setupModel);
@@ -167,7 +161,9 @@ namespace OrchardCore.Tests.Apis.Context
             return Client.DeleteAsync("api/content/" + contentItemId);
         }
 
+#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
         public void Dispose()
+#pragma warning restore CA1816 // Dispose methods should call SuppressFinalize
         {
             Client?.Dispose();
         }

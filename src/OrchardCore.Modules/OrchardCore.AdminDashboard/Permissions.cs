@@ -7,8 +7,8 @@ namespace OrchardCore.AdminDashboard
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageAdminDashboard = new Permission("ManageAdminDashboard", "Manage the Admin Dashboard");
-        public static readonly Permission AccessAdminDashboard = new Permission("AccessAdminDashboard", "Access the Admin Dashboard", new[] { ManageAdminDashboard });
+        public static readonly Permission ManageAdminDashboard = new("ManageAdminDashboard", "Manage the Admin Dashboard");
+        public static readonly Permission AccessAdminDashboard = new("AccessAdminDashboard", "Access the Admin Dashboard", new[] { ManageAdminDashboard });
 
         public Permissions()
         {
@@ -19,7 +19,7 @@ namespace OrchardCore.AdminDashboard
             return Task.FromResult(new[]
             {
                 AccessAdminDashboard,
-                ManageAdminDashboard
+                ManageAdminDashboard,
             }
             .AsEnumerable());
         }
@@ -31,23 +31,27 @@ namespace OrchardCore.AdminDashboard
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { AccessAdminDashboard, ManageAdminDashboard }
+                    Permissions = new[] { AccessAdminDashboard, ManageAdminDashboard },
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Editor",
-                    Permissions = new[] { AccessAdminDashboard }
+                    Permissions = new[] { AccessAdminDashboard },
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Moderator",
-                    Permissions = new[] { AccessAdminDashboard }
+                    Permissions = new[] { AccessAdminDashboard },
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Author",
-                    Permissions = new[] { AccessAdminDashboard }
+                    Permissions = new[] { AccessAdminDashboard },
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Contributor",
-                    Permissions = new[] { AccessAdminDashboard }
+                    Permissions = new[] { AccessAdminDashboard },
                 }
             };
         }

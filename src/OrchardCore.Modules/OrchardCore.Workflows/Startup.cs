@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
@@ -20,14 +21,15 @@ using OrchardCore.Workflows.Controllers;
 using OrchardCore.Workflows.Deployment;
 using OrchardCore.Workflows.Drivers;
 using OrchardCore.Workflows.Evaluators;
+using OrchardCore.Workflows.Events;
 using OrchardCore.Workflows.Expressions;
+using OrchardCore.Workflows.Handlers;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Recipes;
 using OrchardCore.Workflows.Services;
 using OrchardCore.Workflows.WorkflowContextProviders;
-using YesSql.Indexes;
 
 namespace OrchardCore.Workflows
 {
@@ -65,12 +67,14 @@ namespace OrchardCore.Workflows
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IDisplayDriver<IActivity>, MissingActivityDisplayDriver>();
-            services.AddSingleton<IIndexProvider, WorkflowTypeIndexProvider>();
-            services.AddSingleton<IIndexProvider, WorkflowIndexProvider>();
+            services.AddIndexProvider<WorkflowTypeIndexProvider>();
+            services.AddIndexProvider<WorkflowIndexProvider>();
             services.AddScoped<IWorkflowExecutionContextHandler, DefaultWorkflowExecutionContextHandler>();
             services.AddScoped<IWorkflowExpressionEvaluator, LiquidWorkflowExpressionEvaluator>();
             services.AddScoped<IWorkflowScriptEvaluator, JavaScriptWorkflowScriptEvaluator>();
 
+            services.AddScoped<IWorkflowFaultHandler, DefaultWorkflowFaultHandler>();
+            services.AddActivity<WorkflowFaultEvent, WorkflowFaultEventDisplayDriver>();
             services.AddActivity<Activity, ActivityMetadataDisplayDriver>();
             services.AddActivity<NotifyTask, NotifyTaskDisplayDriver>();
             services.AddActivity<SetPropertyTask, SetVariableTaskDisplayDriver>();
@@ -129,9 +133,7 @@ namespace OrchardCore.Workflows
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, AllWorkflowTypeDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllWorkflowTypeDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllWorkflowTypeDeploymentStepDriver>();
+            services.AddDeployment<AllWorkflowTypeDeploymentSource, AllWorkflowTypeDeploymentStep, AllWorkflowTypeDeploymentStepDriver>();
         }
     }
 

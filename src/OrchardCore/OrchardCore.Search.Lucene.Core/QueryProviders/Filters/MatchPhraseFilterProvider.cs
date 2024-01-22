@@ -15,7 +15,7 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
                 return null;
             }
 
-            if (!(toFilter is BooleanQuery booleanQuery))
+            if (toFilter is not BooleanQuery booleanQuery)
             {
                 return null;
             }

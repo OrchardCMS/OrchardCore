@@ -108,17 +108,13 @@ namespace OrchardCore.Modules.Manifest
             // Identify the Ctor with the Parameters aligned to the Classified Arguments.
             var allAttributeCtorWithParameterTypes = allAttributeCtors.Select(ctor => new
             {
-                Callback = ctor
-                ,
-                Types = ctor.GetParameters().Select(_ => _.ParameterType).ToArray()
+                Callback = ctor,
+                Types = ctor.GetParameters().Select(_ => _.ParameterType).ToArray(),
             }).ToArray();
 
-            var attributeCtor = allAttributeCtorWithParameterTypes.SingleOrDefault(_ => _.Types.SequenceEqual(types))?.Callback;
-
-            if (attributeCtor == null)
-            {
-                throw new ArgumentException($"Unable to align ctor to args({args.Length}).", nameof(args));
-            }
+            var attributeCtor = allAttributeCtorWithParameterTypes.SingleOrDefault(_ => _.Types.SequenceEqual(types))
+                ?.Callback
+                ?? throw new ArgumentException($"Unable to align ctor to args({args.Length}).", nameof(args));
 
             var feature = attributeCtor.Invoke(args);
 
@@ -227,7 +223,7 @@ namespace OrchardCore.Modules.Manifest
         /// <summary>
         /// Provides a Pair that may be rendered to <see cref="string"/>.
         /// </summary>
-        protected struct RenderKeyValuePair
+        protected readonly struct RenderKeyValuePair
         {
             /// <summary>
             /// Pair instance supporting the Render.
@@ -249,7 +245,7 @@ namespace OrchardCore.Modules.Manifest
             /// </summary>
             /// <param name="_"></param>
             /// <returns></returns>
-            /// <remarks>Given value may be Null, Nullable, Sring, or Boolean. Otherwise,
+            /// <remarks>Given value may be Null, Nullable, String, or Boolean. Otherwise,
             /// makes a best effort to convert directly to string.</remarks>
             private static string DefaultRender(object _)
             {
@@ -319,7 +315,7 @@ namespace OrchardCore.Modules.Manifest
             }
 
             /// <inheritdoc/>
-            public override string ToString() => String.Join(": ", $"\"{Key}\"", Render.Invoke(Value));
+            public override string ToString() => string.Join(": ", $"\"{Key}\"", Render.Invoke(Value));
         }
 
         /// <summary>
@@ -328,8 +324,8 @@ namespace OrchardCore.Modules.Manifest
         /// <param name="pairs"></param>
         /// <returns></returns>
         protected virtual string RenderKeyValuePairs(params RenderKeyValuePair[] pairs) =>
-            String.Join(
-                String.Join(", ", pairs.Select(_ => $"{_}")), "{}".ToCharArray().Select(_ => $"{_}")
+            string.Join(
+                string.Join(", ", pairs.Select(_ => $"{_}")), "{}".ToCharArray().Select(_ => $"{_}")
             );
 
         /// <summary>

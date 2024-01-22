@@ -21,49 +21,49 @@ namespace OrchardCore.Workflows.Scripting
             _workflowMethod = new GlobalMethod
             {
                 Name = "workflow",
-                Method = serviceProvider => (Func<object>)(() => workflowContext)
+                Method = serviceProvider => (Func<object>)(() => workflowContext),
             };
 
             _workflowIdMethod = new GlobalMethod
             {
                 Name = "workflowId",
-                Method = serviceProvider => (Func<string>)(() => workflowContext.Workflow.WorkflowId)
+                Method = serviceProvider => (Func<string>)(() => workflowContext.Workflow.WorkflowId),
             };
 
             _inputMethod = new GlobalMethod
             {
                 Name = "input",
-                Method = serviceProvider => (Func<string, object>)((name) => workflowContext.Input.ContainsKey(name) ? workflowContext.Input[name] : null)
+                Method = serviceProvider => (Func<string, object>)((name) => workflowContext.Input.TryGetValue(name, out var value) ? value : null),
             };
 
             _outputMethod = new GlobalMethod
             {
                 Name = "output",
-                Method = serviceProvider => (Action<string, object>)((name, value) => workflowContext.Output[name] = value)
+                Method = serviceProvider => (Action<string, object>)((name, value) => workflowContext.Output[name] = value),
             };
 
             _propertyMethod = new GlobalMethod
             {
                 Name = "property",
-                Method = serviceProvider => (Func<string, object>)((name) => workflowContext.Properties.ContainsKey(name) ? workflowContext.Properties[name] : null)
+                Method = serviceProvider => (Func<string, object>)((name) => workflowContext.Properties.TryGetValue(name, out var prop) ? prop : null),
             };
 
             _setPropertyMethod = new GlobalMethod
             {
                 Name = "setProperty",
-                Method = serviceProvider => (Action<string, object>)((name, value) => workflowContext.Properties[name] = value)
+                Method = serviceProvider => (Action<string, object>)((name, value) => workflowContext.Properties[name] = value),
             };
 
             _resultMethod = new GlobalMethod
             {
                 Name = "lastResult",
-                Method = serviceProvider => (Func<object>)(() => workflowContext.LastResult)
+                Method = serviceProvider => (Func<object>)(() => workflowContext.LastResult),
             };
 
             _correlationIdMethod = new GlobalMethod
             {
                 Name = "correlationId",
-                Method = serviceProvider => (Func<string>)(() => workflowContext.Workflow.CorrelationId)
+                Method = serviceProvider => (Func<string>)(() => workflowContext.Workflow.CorrelationId),
             };
         }
 

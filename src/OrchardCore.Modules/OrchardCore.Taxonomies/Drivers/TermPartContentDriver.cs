@@ -66,14 +66,14 @@ namespace OrchardCore.Taxonomies.Drivers
 
                 var containedItems = await query.ListAsync();
 
-                if (containedItems.Count() == 0)
+                if (!containedItems.Any())
                 {
                     return containedItems;
                 }
 
                 containedItems = containedItems.Reverse();
 
-                // There is always an After as we clicked on Before
+                // There is always an After as we clicked on Before.
                 pager.Before = null;
                 pager.After = containedItems.Last().CreatedUtc.Value.Ticks.ToString();
 
@@ -96,12 +96,12 @@ namespace OrchardCore.Taxonomies.Drivers
 
                 var containedItems = await query.ListAsync();
 
-                if (containedItems.Count() == 0)
+                if (!containedItems.Any())
                 {
                     return containedItems;
                 }
 
-                // There is always a Before page as we clicked on After
+                // There is always a Before page as we clicked on After.
                 pager.Before = containedItems.First().CreatedUtc.Value.Ticks.ToString();
                 pager.After = null;
 
@@ -123,7 +123,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
                 var containedItems = await query.ListAsync();
 
-                if (containedItems.Count() == 0)
+                if (!containedItems.Any())
                 {
                     return containedItems;
                 }

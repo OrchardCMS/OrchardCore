@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
@@ -13,7 +14,7 @@ namespace OrchardCore.ContentFields.Settings
 {
     public class HtmlFieldMonacoEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<HtmlField>
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public HtmlFieldMonacoEditorSettingsDriver(IStringLocalizer<HtmlFieldMonacoEditorSettingsDriver> localizer)
         {
@@ -29,6 +30,7 @@ namespace OrchardCore.ContentFields.Settings
                 {
                     settings.Options = JsonConvert.SerializeObject(new { automaticLayout = true, language = "html" }, Formatting.Indented);
                 }
+
                 model.Options = settings.Options;
             })
             .Location("Editor");

@@ -1,12 +1,12 @@
 @model ContentTypeViewModel
 
 <div class="mb-3">
-    <label asp-for="Name">@T["Technical Name"]</label>
-    <input asp-for="Name" class="form-control w-md-25" readonly />
+    <label asp-for="Name" class="form-label">@T["Technical Name"]</label>
+    <input asp-for="Name" class="form-control w-md-75 w-xl-50" readonly />
     <span class="hint w-100">@T["Technical name of the type."]</span>
 </div>
 <div class="mb-3">
-    <label asp-for="DisplayName">@T["Display Name"]</label>
-    <input asp-for="DisplayName" class="form-control w-md-25" />
+    <label asp-for="DisplayName" class="form-label">@T["Display Name"]</label>
+    <input asp-for="DisplayName" class="form-control w-md-75 w-xl-50" />
     <span class="hint w-100">@T["Name of the type as it will be displayed on screens."]</span>
 </div>

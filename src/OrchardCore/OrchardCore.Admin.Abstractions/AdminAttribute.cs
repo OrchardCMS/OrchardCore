@@ -12,10 +12,6 @@ namespace OrchardCore.Admin
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class AdminAttribute : Attribute, IAsyncResourceFilter
     {
-        public AdminAttribute()
-        {
-        }
-
         public Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
         {
             Apply(context.HttpContext);
@@ -29,9 +25,6 @@ namespace OrchardCore.Admin
             context.Items[typeof(AdminAttribute)] = null;
         }
 
-        public static bool IsApplied(HttpContext context)
-        {
-            return context.Items.TryGetValue(typeof(AdminAttribute), out var value);
-        }
+        public static bool IsApplied(HttpContext context) => context.Items.TryGetValue(typeof(AdminAttribute), out _);
     }
 }

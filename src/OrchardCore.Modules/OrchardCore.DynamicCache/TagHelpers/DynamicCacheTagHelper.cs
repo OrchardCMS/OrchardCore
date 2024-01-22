@@ -21,7 +21,7 @@ namespace OrchardCore.DynamicCache.TagHelpers
         private const string ExpiresSlidingAttributeName = "expires-sliding";
         private const string EnabledAttributeName = "enabled";
 
-        private static readonly char[] SplitChars = new[] { ',', ' ' };
+        private static readonly char[] _splitChars = new[] { ',', ' ' };
 
         /// <summary>
         /// The default duration, from the time the cache entry was added, when it should be evicted.
@@ -120,14 +120,14 @@ namespace OrchardCore.DynamicCache.TagHelpers
             {
                 var cacheContext = new CacheContext(CacheId);
 
-                if (!String.IsNullOrEmpty(VaryBy))
+                if (!string.IsNullOrEmpty(VaryBy))
                 {
-                    cacheContext.AddContext(VaryBy.Split(SplitChars, StringSplitOptions.RemoveEmptyEntries));
+                    cacheContext.AddContext(VaryBy.Split(_splitChars, StringSplitOptions.RemoveEmptyEntries));
                 }
 
-                if (!String.IsNullOrEmpty(Dependencies))
+                if (!string.IsNullOrEmpty(Dependencies))
                 {
-                    cacheContext.AddTag(Dependencies.Split(SplitChars, StringSplitOptions.RemoveEmptyEntries));
+                    cacheContext.AddTag(Dependencies.Split(_splitChars, StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 var hasEvictionCriteria = false;
@@ -211,8 +211,8 @@ namespace OrchardCore.DynamicCache.TagHelpers
                                 // No need to optimize this code as it will be used for debugging purpose.
                                 writer.WriteLine();
                                 writer.WriteLine($"<!-- CACHE BLOCK: {cacheContext.CacheId} ({Guid.NewGuid()})");
-                                writer.WriteLine($"         VARY BY: {String.Join(", ", cacheContext.Contexts)}");
-                                writer.WriteLine($"    DEPENDENCIES: {String.Join(", ", cacheContext.Tags)}");
+                                writer.WriteLine($"         VARY BY: {string.Join(", ", cacheContext.Contexts)}");
+                                writer.WriteLine($"    DEPENDENCIES: {string.Join(", ", cacheContext.Tags)}");
                                 writer.WriteLine($"      EXPIRES ON: {cacheContext.ExpiresOn}");
                                 writer.WriteLine($"   EXPIRES AFTER: {cacheContext.ExpiresAfter}");
                                 writer.WriteLine($" EXPIRES SLIDING: {cacheContext.ExpiresSliding}");
@@ -257,7 +257,7 @@ namespace OrchardCore.DynamicCache.TagHelpers
                         // Remove the worker task before setting the result.
                         // If the result is null, other threads would potentially
                         // acquire it otherwise.
-                        _dynamicCacheTagHelperService.Workers.TryRemove(CacheId, out result);
+                        _dynamicCacheTagHelperService.Workers.TryRemove(CacheId, out _);
 
                         // Notify all other awaiters to render the content
                         tcs.TrySetResult(content);

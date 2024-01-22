@@ -51,7 +51,7 @@ namespace OrchardCore.Contents.Liquid
             ContentItem createFor = null;
 
             Dictionary<string, string> routeValues = null;
-            Dictionary<string, string> customAttributes = new Dictionary<string, string>();
+            Dictionary<string, string> customAttributes = new();
 
             foreach (var argument in argumentsList)
             {
@@ -88,7 +88,7 @@ namespace OrchardCore.Contents.Liquid
                 contentItem = displayFor;
                 var previewAspect = await contentManager.PopulateAspectAsync<PreviewAspect>(contentItem);
 
-                if (!String.IsNullOrEmpty(previewAspect.PreviewUrl))
+                if (!string.IsNullOrEmpty(previewAspect.PreviewUrl))
                 {
                     var previewUrl = previewAspect.PreviewUrl;
                     if (!previewUrl.StartsWith("~/", StringComparison.OrdinalIgnoreCase))
@@ -215,14 +215,14 @@ namespace OrchardCore.Contents.Liquid
                     return completion;
                 }
             }
-            else if (!String.IsNullOrEmpty(contentItem.DisplayText))
+            else if (!string.IsNullOrEmpty(contentItem.DisplayText))
             {
                 writer.Write(encoder.Encode(contentItem.DisplayText));
             }
             else
             {
                 var contentDefinitionManager = services.GetRequiredService<IContentDefinitionManager>();
-                var typeDefinition = contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+                var typeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
                 writer.Write(encoder.Encode(typeDefinition.ToString()));
             }
 

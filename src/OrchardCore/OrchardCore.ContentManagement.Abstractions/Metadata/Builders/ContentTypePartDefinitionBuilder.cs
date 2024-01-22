@@ -18,7 +18,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             Current = part;
             Name = part.Name;
             PartName = part.PartDefinition.Name;
-            TypeName = part.ContentTypeDefinition != null ? part.ContentTypeDefinition.Name : default(string);
+            TypeName = part.ContentTypeDefinition != null ? part.ContentTypeDefinition.Name : default;
             _settings = new JObject(part.Settings);
         }
 

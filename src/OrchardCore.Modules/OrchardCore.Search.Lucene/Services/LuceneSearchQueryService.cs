@@ -8,7 +8,7 @@ namespace OrchardCore.Search.Lucene.Services
     {
         private readonly LuceneIndexManager _luceneIndexManager;
 
-        private static HashSet<string> IdSet = new HashSet<string>(new string[] { "ContentItemId" });
+        private static readonly HashSet<string> _idSet = new(new string[] { "ContentItemId" });
 
         public LuceneSearchQueryService(LuceneIndexManager luceneIndexManager)
         {
@@ -30,7 +30,7 @@ namespace OrchardCore.Search.Lucene.Services
 
                     foreach (var hit in hits.ScoreDocs)
                     {
-                        var d = searcher.Doc(hit.Doc, IdSet);
+                        var d = searcher.Doc(hit.Doc, _idSet);
                         contentItemIds.Add(d.GetField("ContentItemId").GetStringValue());
                     }
                 }

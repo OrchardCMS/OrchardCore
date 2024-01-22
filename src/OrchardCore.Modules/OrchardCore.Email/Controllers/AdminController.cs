@@ -14,7 +14,7 @@ namespace OrchardCore.Email.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
         private readonly ISmtpService _smtpService;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
 
         public AdminController(
             IHtmlLocalizer<AdminController> h,
@@ -71,7 +71,7 @@ namespace OrchardCore.Email.Controllers
             return View(model);
         }
 
-        private MailMessage CreateMessageFromViewModel(SmtpSettingsViewModel testSettings)
+        private static MailMessage CreateMessageFromViewModel(SmtpSettingsViewModel testSettings)
         {
             var message = new MailMessage
             {
@@ -81,17 +81,17 @@ namespace OrchardCore.Email.Controllers
                 ReplyTo = testSettings.ReplyTo
             };
 
-            if (!String.IsNullOrWhiteSpace(testSettings.Sender))
+            if (!string.IsNullOrWhiteSpace(testSettings.Sender))
             {
                 message.Sender = testSettings.Sender;
             }
 
-            if (!String.IsNullOrWhiteSpace(testSettings.Subject))
+            if (!string.IsNullOrWhiteSpace(testSettings.Subject))
             {
                 message.Subject = testSettings.Subject;
             }
 
-            if (!String.IsNullOrWhiteSpace(testSettings.Body))
+            if (!string.IsNullOrWhiteSpace(testSettings.Body))
             {
                 message.Body = testSettings.Body;
             }

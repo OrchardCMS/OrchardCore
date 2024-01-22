@@ -18,7 +18,9 @@ namespace OrchardCore.DisplayManagement.Zones
         private const string ContentKey = "Content";
 
         [Shape]
+#pragma warning disable CA1822 // Mark members as static
         public async Task<IHtmlContent> Zone(IDisplayHelper DisplayAsync, IEnumerable<object> Shape)
+#pragma warning restore CA1822 // Mark members as static
         {
             var htmlContentBuilder = new HtmlContentBuilder();
             foreach (var item in Shape)
@@ -30,7 +32,9 @@ namespace OrchardCore.DisplayManagement.Zones
         }
 
         [Shape]
+#pragma warning disable CA1822 // Mark members as static
         public async Task<IHtmlContent> ContentZone(IDisplayHelper DisplayAsync, dynamic Shape, IShapeFactory ShapeFactory)
+#pragma warning restore CA1822 // Mark members as static
         {
             var htmlContentBuilder = new HtmlContentBuilder();
 
@@ -39,9 +43,9 @@ namespace OrchardCore.DisplayManagement.Zones
 
             // Evaluate shapes for grouping metadata, when it is not an IShape it cannot be grouped.
             var isGrouped = shapes.Any(x => x is IShape s &&
-                (!String.IsNullOrEmpty(s.Metadata.Tab) ||
-                !String.IsNullOrEmpty(s.Metadata.Card) ||
-                !String.IsNullOrEmpty(s.Metadata.Column)));
+                (!string.IsNullOrEmpty(s.Metadata.Tab) ||
+                !string.IsNullOrEmpty(s.Metadata.Card) ||
+                !string.IsNullOrEmpty(s.Metadata.Column)));
 
             // When there is no grouping metadata on any shapes just render the Zone.
             if (!isGrouped)
@@ -54,14 +58,14 @@ namespace OrchardCore.DisplayManagement.Zones
                 return htmlContentBuilder;
             }
 
-            string identifier = Shape.Identifier ?? String.Empty;
+            string identifier = Shape.Identifier ?? string.Empty;
 
             var groupings = shapes.ToLookup(x =>
             {
                 if (x is IShape s)
                 {
                     var key = s.Metadata.Tab;
-                    if (String.IsNullOrEmpty(key))
+                    if (string.IsNullOrEmpty(key))
                     {
                         return ContentKey;
                     }
@@ -70,7 +74,7 @@ namespace OrchardCore.DisplayManagement.Zones
                     var modifierIndex = key.IndexOf(';');
                     if (modifierIndex != -1)
                     {
-                        key = key.Substring(0, modifierIndex);
+                        key = key[..modifierIndex];
                     }
 
                     return key;
@@ -86,7 +90,7 @@ namespace OrchardCore.DisplayManagement.Zones
                 {
                     var firstGroupWithModifier = grouping.FirstOrDefault(group =>
                     {
-                        if (group is IShape s && !String.IsNullOrEmpty(s.Metadata.Tab) && s.Metadata.Tab.IndexOf(';') != -1)
+                        if (group is IShape s && !string.IsNullOrEmpty(s.Metadata.Tab) && s.Metadata.Tab.IndexOf(';') != -1)
                         {
                             return true;
                         }
@@ -99,7 +103,7 @@ namespace OrchardCore.DisplayManagement.Zones
                         var key = shape.Metadata.Tab;
                         var modifierIndex = key.IndexOf(';');
 
-                        return new PositionalGrouping(key.Substring(modifierIndex));
+                        return new PositionalGrouping(key[modifierIndex..]);
                     }
 
                     return new PositionalGrouping(null);
@@ -147,7 +151,9 @@ namespace OrchardCore.DisplayManagement.Zones
         }
 
         [Shape]
+#pragma warning disable CA1822 // Mark members as static
         public async Task<IHtmlContent> CardGrouping(IDisplayHelper DisplayAsync, GroupingViewModel Shape, IShapeFactory ShapeFactory)
+#pragma warning restore CA1822 // Mark members as static
         {
             var htmlContentBuilder = new HtmlContentBuilder();
 
@@ -156,7 +162,7 @@ namespace OrchardCore.DisplayManagement.Zones
                 if (x is IShape s)
                 {
                     var key = s.Metadata.Card;
-                    if (String.IsNullOrEmpty(key))
+                    if (string.IsNullOrEmpty(key))
                     {
                         return ContentKey;
                     }
@@ -165,7 +171,7 @@ namespace OrchardCore.DisplayManagement.Zones
                     var modifierIndex = key.IndexOf(';');
                     if (modifierIndex != -1)
                     {
-                        key = key.Substring(0, modifierIndex);
+                        key = key[..modifierIndex];
                     }
 
                     return key;
@@ -181,7 +187,7 @@ namespace OrchardCore.DisplayManagement.Zones
                 {
                     var firstGroupWithModifier = grouping.FirstOrDefault(group =>
                     {
-                        if (group is IShape s && !String.IsNullOrEmpty(s.Metadata.Card) && s.Metadata.Card.IndexOf(';') != -1)
+                        if (group is IShape s && !string.IsNullOrEmpty(s.Metadata.Card) && s.Metadata.Card.IndexOf(';') != -1)
                         {
                             return true;
                         }
@@ -193,7 +199,7 @@ namespace OrchardCore.DisplayManagement.Zones
                     {
                         var key = shape.Metadata.Card;
                         var modifierIndex = key.IndexOf(';');
-                        return new PositionalGrouping(key.Substring(modifierIndex));
+                        return new PositionalGrouping(key[modifierIndex..]);
                     }
 
                     return new PositionalGrouping();
@@ -240,7 +246,9 @@ namespace OrchardCore.DisplayManagement.Zones
         }
 
         [Shape]
+#pragma warning disable CA1822 // Mark members as static
         public async Task<IHtmlContent> ColumnGrouping(IDisplayHelper DisplayAsync, GroupingViewModel Shape, IShapeFactory ShapeFactory)
+#pragma warning restore CA1822 // Mark members as static
         {
             var htmlContentBuilder = new HtmlContentBuilder();
 
@@ -249,7 +257,7 @@ namespace OrchardCore.DisplayManagement.Zones
                 if (x is IShape s)
                 {
                     var key = s.Metadata.Column;
-                    if (String.IsNullOrEmpty(key))
+                    if (string.IsNullOrEmpty(key))
                     {
                         return ContentKey;
                     }
@@ -258,14 +266,14 @@ namespace OrchardCore.DisplayManagement.Zones
                     var modifierIndex = key.IndexOf('_');
                     if (modifierIndex != -1)
                     {
-                        key = key.Substring(0, modifierIndex);
+                        key = key[..modifierIndex];
                     }
 
                     // Remove positional modifier.
                     modifierIndex = key.IndexOf(';');
                     if (modifierIndex != -1)
                     {
-                        key = key.Substring(0, modifierIndex);
+                        key = key[..modifierIndex];
                     }
 
                     return key;
@@ -361,18 +369,18 @@ namespace OrchardCore.DisplayManagement.Zones
                         // Column-9;56
                         if (positionModifierIndex > columnModifierIndex)
                         {
-                            positionModifiers.Add(key.Substring(0, columnModifierIndex), key.Substring(positionModifierIndex + 1));
+                            positionModifiers.Add(key[..columnModifierIndex], key[(positionModifierIndex + 1)..]);
                         }
                         else // Column;56-9
                         {
                             var length = columnModifierIndex - positionModifierIndex;
-                            positionModifiers.Add(key.Substring(0, positionModifierIndex), key.Substring(positionModifierIndex + 1, length - 1));
+                            positionModifiers.Add(key[..positionModifierIndex], key.Substring(positionModifierIndex + 1, length - 1));
                         }
                     }
                     else
                     {
                         var positionModifierIndex = key.IndexOf(';');
-                        positionModifiers.Add(key.Substring(0, positionModifierIndex), key.Substring(positionModifierIndex + 1));
+                        positionModifiers.Add(key[..positionModifierIndex], key[(positionModifierIndex + 1)..]);
                     }
                 }
             }
@@ -396,18 +404,18 @@ namespace OrchardCore.DisplayManagement.Zones
                         // Column;5.1_9
                         if (colModifierIndex > posModifierIndex)
                         {
-                            columnModifiers.Add(key.Substring(0, posModifierIndex), key.Substring(colModifierIndex + 1));
+                            columnModifiers.Add(key[..posModifierIndex], key[(colModifierIndex + 1)..]);
                         }
                         else // Column_9;5.1
                         {
                             var length = posModifierIndex - colModifierIndex;
-                            columnModifiers.Add(key.Substring(0, colModifierIndex), key.Substring(colModifierIndex + 1, length - 1));
+                            columnModifiers.Add(key[..colModifierIndex], key.Substring(colModifierIndex + 1, length - 1));
                         }
                     }
                     else
                     {
                         var columnModifierIndex = key.IndexOf('_');
-                        columnModifiers.Add(key.Substring(0, columnModifierIndex), key.Substring(columnModifierIndex + 1));
+                        columnModifiers.Add(key[..columnModifierIndex], key[(columnModifierIndex + 1)..]);
                     }
                 }
             }
@@ -419,7 +427,7 @@ namespace OrchardCore.DisplayManagement.Zones
         {
             var firstGroupWithModifier = grouping.FirstOrDefault(group =>
             {
-                if (group is IShape s && !String.IsNullOrEmpty(s.Metadata.Column) && s.Metadata.Column.IndexOf(modifier) != -1)
+                if (group is IShape s && !string.IsNullOrEmpty(s.Metadata.Column) && s.Metadata.Column.IndexOf(modifier) != -1)
                 {
                     return true;
                 }
@@ -439,12 +447,12 @@ namespace OrchardCore.DisplayManagement.Zones
 
         public PositionalGrouping(string key)
         {
-            if (!String.IsNullOrEmpty(key))
+            if (!string.IsNullOrEmpty(key))
             {
                 var modifierIndex = key.IndexOf(';');
                 if (modifierIndex != -1)
                 {
-                    Position = key.Substring(modifierIndex + 1);
+                    Position = key[(modifierIndex + 1)..];
                 }
             }
         }

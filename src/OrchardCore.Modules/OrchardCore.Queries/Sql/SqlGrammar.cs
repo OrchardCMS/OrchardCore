@@ -15,14 +15,18 @@ namespace OrchardCore.Queries.Sql
             var Id_simple = TerminalFactory.CreateSqlExtIdentifier(this, "id_simple"); //covers normal identifiers (abc) and quoted id's ([abc d], "abc d")
             var comma = ToTerm(",");
             var dot = ToTerm(".");
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
             var CREATE = ToTerm("CREATE");
             var NULL = ToTerm("NULL");
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
             var NOT = ToTerm("NOT");
             var ON = ToTerm("ON");
             var SELECT = ToTerm("SELECT");
             var FROM = ToTerm("FROM");
             var AS = ToTerm("AS");
+#pragma warning disable IDE0059 // Unnecessary assignment of a value
             var COUNT = ToTerm("COUNT");
+#pragma warning restore IDE0059 // Unnecessary assignment of a value
             var JOIN = ToTerm("JOIN");
             var BY = ToTerm("BY");
             var TRUE = ToTerm("TRUE");
@@ -36,7 +40,7 @@ namespace OrchardCore.Queries.Sql
             var ColumnAlias = TerminalFactory.CreateSqlExtIdentifier(this, "ColumnAlias");
             var TableAlias = TerminalFactory.CreateSqlExtIdentifier(this, "TableAlias");
 
-            //Non-terminals
+            // Non-terminals.
             var Id = new NonTerminal("Id");
             var statement = new NonTerminal("stmt");
             var selectStatement = new NonTerminal("selectStatement");
@@ -104,8 +108,8 @@ namespace OrchardCore.Queries.Sql
             var tableAliasItemOrSubQuery = new NonTerminal("tableAliasItemOrSubQuery");
             var tableAliasOrSubQueryList = new NonTerminal("tableAliasOrSubQueryList");
 
-            //BNF Rules
-            this.Root = statementList;
+            // BNF Rules.
+            Root = statementList;
             unionClauseOpt.Rule = Empty | UNION | UNION + ALL;
             unionStatement.Rule = statement + unionClauseOpt;
             unionStatementList.Rule = MakePlusRule(unionStatementList, unionStatement);
@@ -140,12 +144,12 @@ namespace OrchardCore.Queries.Sql
             tableAliasOrSubQueryList.Rule = MakePlusRule(tableAliasOrSubQueryList, comma, tableAliasItemOrSubQuery);
             tableAliasItemOrSubQuery.Rule = tableAliasItem | subQuery;
 
-            //Create Index
+            // Create Index.
             orderList.Rule = MakePlusRule(orderList, comma, orderMember);
             orderMember.Rule = Id + orderDirOptional;
             orderDirOptional.Rule = Empty | "ASC" | "DESC";
 
-            //Select stmt
+            // Select stmt.
             selectStatement.Rule = SELECT + optionalSelectRestriction + selectorList + fromClauseOpt + whereClauseOptional +
                               groupClauseOpt + havingClauseOpt + orderClauseOpt + limitClauseOpt + offsetClauseOpt;
             optionalSelectRestriction.Rule = Empty | "ALL" | "DISTINCT";
@@ -175,7 +179,7 @@ namespace OrchardCore.Queries.Sql
             overArgumentsOpt.Rule = Empty | overPartitionByClauseOpt + overOrderByClauseOpt;
             overClauseOpt.Rule = Empty | OVER + "(" + overArgumentsOpt + ")";
 
-            //Expression
+            // Expression.
             expressionList.Rule = MakePlusRule(expressionList, comma, expression);
             expression.Rule = term | unExpr | binExpr | betweenExpr | inExpr | parameter;
             term.Rule = Id | boolean | string_literal | number | funCall | tuple | parSelectStatement;
@@ -185,19 +189,20 @@ namespace OrchardCore.Queries.Sql
             unExpr.Rule = unOp + term;
             unOp.Rule = NOT | "+" | "-" | "~";
             binExpr.Rule = expression + binOp + expression;
-            binOp.Rule = ToTerm("+") | "-" | "*" | "/" | "%" //arithmetic
-                       | "&" | "|" | "^"                     //bit
+            binOp.Rule = ToTerm("+") | "-" | "*" | "/" | "%" // Arithmetic.
+                       | "&" | "|" | "^"                     // Bit.
                        | "=" | ">" | "<" | ">=" | "<=" | "<>" | "!=" | "!<" | "!>"
                        | "AND" | "OR" | "LIKE" | "NOT LIKE";
             betweenExpr.Rule = expression + notOpt + "BETWEEN" + expression + "AND" + expression;
             inExpr.Rule = expression + notOpt + "IN" + "(" + functionArguments + ")";
             notOpt.Rule = Empty | NOT;
-            //funCall covers some pseudo-operators and special forms like ANY(...), SOME(...), ALL(...), EXISTS(...), IN(...)
+
+            // 'funCall' covers some pseudo-operators and special forms like ANY(...), SOME(...), ALL(...), EXISTS(...), IN(...).
             funCall.Rule = Id + "(" + functionArguments + ")";
             functionArguments.Rule = Empty | selectStatement | expressionList | "*";
             parameter.Rule = "@" + Id | "@" + Id + ":" + term;
 
-            //Operators
+            // Operators.
             RegisterOperators(10, "*", "/", "%");
             RegisterOperators(9, "+", "-");
             RegisterOperators(8, "=", ">", "<", ">=", "<=", "<>", "!=", "!<", "!>", "LIKE", "IN");
@@ -208,11 +213,12 @@ namespace OrchardCore.Queries.Sql
 
             MarkPunctuation(",", "(", ")");
             MarkPunctuation(asOpt, optionalSemicolon);
-            //Note: we cannot declare binOp as transient because it includes operators "NOT LIKE", "NOT IN" consisting of two tokens.
+
+            // Note: we cannot declare binOp as transient because it includes operators "NOT LIKE", "NOT IN" consisting of two tokens.
             // Transient non-terminals cannot have more than one non-punctuation child nodes.
             // Instead, we set flag InheritPrecedence on binOp , so that it inherits precedence value from it's children, and this precedence is used
-            // in conflict resolution when binOp node is sitting on the stack
-            base.MarkTransient(tableAliasItemOrSubQuery, term, asOpt, tableAliasOpt, columnAliasOpt, statementLine, expression, unOp, tuple);
+            // in conflict resolution when binOp node is sitting on the stack.
+            MarkTransient(tableAliasItemOrSubQuery, term, asOpt, tableAliasOpt, columnAliasOpt, statementLine, expression, unOp, tuple);
             binOp.SetFlag(TermFlags.InheritPrecedence);
         }
     }

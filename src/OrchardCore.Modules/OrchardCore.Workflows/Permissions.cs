@@ -7,8 +7,8 @@ namespace OrchardCore.Workflows
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageWorkflows = new Permission("ManageWorkflows", "Manage workflows", isSecurityCritical: true);
-        public static readonly Permission ExecuteWorkflows = new Permission("ExecuteWorkflows", "Execute workflows", isSecurityCritical: true);
+        public static readonly Permission ManageWorkflows = new("ManageWorkflows", "Manage workflows", isSecurityCritical: true);
+        public static readonly Permission ExecuteWorkflows = new("ExecuteWorkflows", "Execute workflows", isSecurityCritical: true);
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
@@ -18,13 +18,15 @@ namespace OrchardCore.Workflows
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
         {
             return new[] {
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Administrator",
-                    Permissions = new[] { ManageWorkflows, ExecuteWorkflows }
+                    Permissions = new[] { ManageWorkflows, ExecuteWorkflows },
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Editor",
-                    Permissions = new[] { ManageWorkflows, ExecuteWorkflows }
+                    Permissions = new[] { ManageWorkflows, ExecuteWorkflows },
                 }
             };
         }
