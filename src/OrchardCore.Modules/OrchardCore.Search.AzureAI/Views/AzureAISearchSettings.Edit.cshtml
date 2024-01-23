@@ -7,7 +7,7 @@
 @inject IOptions<AzureAISearchDefaultOptions> AzureAIOptions
 @inject IAuthorizationService AuthorizationService
 
-@if (!AzureAIOptions.Value.IsConfigurationExists() && !AzureAIOptions.Value.IsFileConfigurationExists())
+@if (!AzureAIOptions.Value.DoesConfigurationExist() && !AzureAIOptions.Value.DoesFileConfigurationExist())
 {
     <div class="alert alert-danger" role="alert">
         @if (!AzureAIOptions.Value.DisableUIConfiguration)
