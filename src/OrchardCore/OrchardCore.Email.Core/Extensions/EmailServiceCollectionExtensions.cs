@@ -19,7 +19,7 @@ public static class EmailServiceCollectionExtensions
         return services;
     }
 
-    internal static IServiceCollection AddEmailDeliveryService<TEmailDeliveryService>(this IServiceCollection services, string key)
+    public static IServiceCollection AddEmailDeliveryService<TEmailDeliveryService>(this IServiceCollection services, string key)
         where TEmailDeliveryService : class, IEmailDeliveryService
     {
         services.AddKeyedScoped<IEmailDeliveryService, TEmailDeliveryService>(key);

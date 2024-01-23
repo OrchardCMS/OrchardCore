@@ -142,7 +142,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
             var mockSite = SiteMockHelper.GetSite(registrationSettings);
 
             var mockSiteService = Mock.Of<ISiteService>(ss => ss.GetSiteSettingsAsync() == Task.FromResult(mockSite.Object));
-            var mockEmailService = Mock.Of<IEmailService>(x => x.SendAsync(It.IsAny<MailMessage>()) == Task.FromResult(SmtpEmailResult.Success));
+            var mockEmailService = Mock.Of<IEmailService>(x => x.SendAsync(It.IsAny<MailMessage>(), It.IsAny<string>()) == Task.FromResult(SmtpEmailResult.Success));
             var mockStringLocalizer = new Mock<IStringLocalizer<RegistrationController>>();
             mockStringLocalizer.Setup(l => l[It.IsAny<string>()])
                 .Returns<string>(s => new LocalizedString(s, s));

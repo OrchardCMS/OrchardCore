@@ -1,7 +1,6 @@
 using OrchardCore.Email;
 using OrchardCore.Email.Services;
 using OrchardCore.Email.Smtp;
-using OrchardCore.Email.Smtp.Services;
 using OrchardCore.Email.Workflows.Activities;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
@@ -21,11 +20,8 @@ namespace OrchardCore.Modules.Email.Workflows.Tests
                 new EmailAddressValidator(),
                 emailSettingsOptions,
                 Mock.Of<IStringLocalizer<EmailMessageValidator>>());
-            var smtpDeliveryService = new SmtpEmailDeliveryService(
-                emailSettingsOptions,
-                Mock.Of<ILogger<SmtpEmailDeliveryService>>(),
-                Mock.Of<IStringLocalizer<SmtpEmailDeliveryService>>());
-            var emailService = new EmailService(emailMessageValidator, smtpDeliveryService);
+            var emailDeliveryServiceResolver = new EmailDeliveryServiceResolver(Mock.Of<IServiceProvider>());
+            var emailService = new EmailService(emailMessageValidator, emailDeliveryServiceResolver);
             var task = new EmailTask(
                 emailService,
                 new SimpleWorkflowExpressionEvaluator(),
