@@ -79,6 +79,17 @@ namespace Microsoft.Extensions.DependencyInjection
                             var databaseFolder = SqliteHelper.GetDatabaseFolder(shellOptions, shellSettings.Name);
                             Directory.CreateDirectory(databaseFolder);
 
+                            // For backward compatibility, we assume that the database name is 'yessql.db'.
+                            // If shellSettings["DatabaseName"] has a value, we use the name provided in the shell settings.
+                            var databaseName = "yessql.db";
+
+                            if (!string.IsNullOrWhiteSpace(shellSettings["DatabaseName"]))
+                            {
+                                databaseName = shellSettings["DatabaseName"];
+                            }
+
+                            sqliteOptions.SetDatabaseName(databaseName);
+
                             var connectionString = SqliteHelper.GetConnectionString(sqliteOptions, databaseFolder);
                             storeConfiguration
                                 .UseSqLite(connectionString, IsolationLevel.ReadUncommitted)

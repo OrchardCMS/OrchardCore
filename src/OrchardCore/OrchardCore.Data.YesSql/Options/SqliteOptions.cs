@@ -17,8 +17,13 @@ namespace OrchardCore.Data
         public bool UseConnectionPooling { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets the database name. Defaults to <c>OrchardCore.db</c>.
+        /// Gets the database name.
         /// </summary>
-        public string DatabaseName { get; set; } = "OrchardCore.db";
+        public string DatabaseName { get; private set; }
+
+        public void SetDatabaseName(string databaseName)
+        {
+            DatabaseName = databaseName;
+        }
     }
 }
