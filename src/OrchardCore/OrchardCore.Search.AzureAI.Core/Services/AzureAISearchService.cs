@@ -32,7 +32,7 @@ public class AzureAISearchService(
     {
         var result = new SearchResult();
 
-        if (!_azureAIOptions.DoesConfigurationExist())
+        if (!_azureAIOptions.HasConfiguration())
         {
             _logger.LogWarning("Azure AI Search: Couldn't execute search. Azure AI Search has not been configured yet.");
 

@@ -54,7 +54,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Models
         public void SetFileConfigurationExists(bool fileConfigurationExists)
             => _fileConfigurationExists = fileConfigurationExists;
 
-        public bool DoesFileConfigurationExist()
+        public bool HasFileConfiguration()
             => _fileConfigurationExists;
 
         public void SetConnectionSettings(IConnectionSettingsValues settings)

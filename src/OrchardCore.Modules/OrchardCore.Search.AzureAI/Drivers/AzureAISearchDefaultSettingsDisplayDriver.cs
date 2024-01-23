@@ -72,7 +72,7 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
                 new SelectListItem(S["API Key"], nameof(AzureAIAuthenticationType.ApiKey)),
             };
 
-            model.ConfigurationsAreOptional = _searchOptions.DoesFileConfigurationExist();
+            model.ConfigurationsAreOptional = _searchOptions.HasFileConfiguration();
             model.AuthenticationType = settings.AuthenticationType;
             model.UseCustomConfiguration = settings.UseCustomConfiguration;
             model.Endpoint = settings.Endpoint;
@@ -99,7 +99,7 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
 
         if (await context.Updater.TryUpdateModelAsync(model, Prefix))
         {
-            if (!_searchOptions.DoesFileConfigurationExist())
+            if (!_searchOptions.HasFileConfiguration())
             {
                 model.UseCustomConfiguration = true;
             }

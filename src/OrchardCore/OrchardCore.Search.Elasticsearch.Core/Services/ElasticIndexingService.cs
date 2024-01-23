@@ -59,7 +59,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
         public async Task ProcessContentItemsAsync(string indexName = default)
         {
-            if (!_elasticConnectionOptions.DoesFileConfigurationExist())
+            if (!_elasticConnectionOptions.HasFileConfiguration())
             {
                 return;
             }

@@ -21,7 +21,7 @@ public class AzureAIClientFactory(IOptions<AzureAISearchDefaultOptions> defaultO
 
         if (!_clients.TryGetValue(indexFullName, out var client))
         {
-            if (!_defaultOptions.DoesConfigurationExist())
+            if (!_defaultOptions.HasConfiguration())
             {
                 throw new Exception("Azure AI was not configured.");
             }
@@ -54,7 +54,7 @@ public class AzureAIClientFactory(IOptions<AzureAISearchDefaultOptions> defaultO
     {
         if (_searchIndexClient == null)
         {
-            if (!_defaultOptions.DoesConfigurationExist())
+            if (!_defaultOptions.HasConfiguration())
             {
                 throw new Exception("Azure AI was not configured.");
             }

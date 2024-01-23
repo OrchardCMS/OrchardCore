@@ -59,7 +59,7 @@ public class ElasticsearchService : ISearchService
     {
         var result = new SearchResult();
 
-        if (!_elasticConnectionOptions.DoesFileConfigurationExist())
+        if (!_elasticConnectionOptions.HasFileConfiguration())
         {
             _logger.LogWarning("Elasticsearch: Couldn't execute search. Elasticsearch has not been configured yet.");
 

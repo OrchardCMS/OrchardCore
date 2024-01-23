@@ -123,7 +123,7 @@ public class AzureAISearchDefaultOptions
     public void SetConfigurationExists(bool configurationExists)
         => _configurationExists = configurationExists;
 
-    public bool DoesConfigurationExist()
+    public bool HasConfiguration()
         => _configurationExists;
 
     private bool _fileConfigurationExists;
@@ -131,6 +131,6 @@ public class AzureAISearchDefaultOptions
     public void SetFileConfigurationExists(bool fileConfigurationExists)
         => _fileConfigurationExists = fileConfigurationExists;
 
-    public bool DoesFileConfigurationExist()
+    public bool HasFileConfiguration()
         => _fileConfigurationExists;
 }
