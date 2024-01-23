@@ -50,6 +50,7 @@ namespace OrchardCore.Search.Elasticsearch
         private readonly INotifier _notifier;
         private readonly ILogger _logger;
         private readonly IOptions<TemplateOptions> _templateOptions;
+        private readonly ElasticConnectionOptions _elasticConnectionOptions;
         private readonly IShapeFactory _shapeFactory;
         private readonly ILocalizationService _localizationService;
 
@@ -71,6 +72,7 @@ namespace OrchardCore.Search.Elasticsearch
             INotifier notifier,
             ILogger<AdminController> logger,
             IOptions<TemplateOptions> templateOptions,
+            IOptions<ElasticConnectionOptions> elasticConnectionOptions,
             IShapeFactory shapeFactory,
             ILocalizationService localizationService,
             IStringLocalizer<AdminController> stringLocalizer,
@@ -90,6 +92,7 @@ namespace OrchardCore.Search.Elasticsearch
             _notifier = notifier;
             _logger = logger;
             _templateOptions = templateOptions;
+            _elasticConnectionOptions = elasticConnectionOptions.Value;
             _shapeFactory = shapeFactory;
             _localizationService = localizationService;
             S = stringLocalizer;
@@ -101,6 +104,11 @@ namespace OrchardCore.Search.Elasticsearch
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
             {
                 return Forbid();
+            }
+
+            if (!_elasticConnectionOptions.IsFileConfigurationExists())
+            {
+                return NotConfigured();
             }
 
             var indexes = (await _elasticIndexSettingsService.GetSettingsAsync())
@@ -150,13 +158,13 @@ namespace OrchardCore.Search.Elasticsearch
 
         [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
-        public ActionResult IndexFilterPOST(AdminIndexViewModel model)
+        public IActionResult IndexFilterPOST(AdminIndexViewModel model)
             => RedirectToAction(nameof(Index), new RouteValueDictionary
             {
                 { _optionsSearch, model.Options.Search }
             });
 
-        public async Task<ActionResult> Edit(string indexName = null)
+        public async Task<IActionResult> Edit(string indexName = null)
         {
             var IsCreate = string.IsNullOrWhiteSpace(indexName);
             var settings = new ElasticIndexSettings();
@@ -164,6 +172,11 @@ namespace OrchardCore.Search.Elasticsearch
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
             {
                 return Forbid();
+            }
+
+            if (!_elasticConnectionOptions.IsFileConfigurationExists())
+            {
+                return NotConfigured();
             }
 
             if (!IsCreate)
@@ -198,6 +211,11 @@ namespace OrchardCore.Search.Elasticsearch
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
             {
                 return Forbid();
+            }
+
+            if (!_elasticConnectionOptions.IsFileConfigurationExists())
+            {
+                return BadRequest();
             }
 
             ValidateModel(model);
@@ -295,6 +313,11 @@ namespace OrchardCore.Search.Elasticsearch
                 return Forbid();
             }
 
+            if (!_elasticConnectionOptions.IsFileConfigurationExists())
+            {
+                return BadRequest();
+            }
+
             if (!await _elasticIndexManager.ExistsAsync(id))
             {
                 return NotFound();
@@ -314,6 +337,11 @@ namespace OrchardCore.Search.Elasticsearch
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
             {
                 return Forbid();
+            }
+
+            if (!_elasticConnectionOptions.IsFileConfigurationExists())
+            {
+                return BadRequest();
             }
 
             if (!await _elasticIndexManager.ExistsAsync(id))
@@ -349,6 +377,11 @@ namespace OrchardCore.Search.Elasticsearch
                 return Forbid();
             }
 
+            if (!_elasticConnectionOptions.IsFileConfigurationExists())
+            {
+                return BadRequest();
+            }
+
             if (!await _elasticIndexManager.ExistsAsync(model.IndexName))
             {
                 await _notifier.SuccessAsync(H["Index not found on Elasticsearch server.", model.IndexName]);
@@ -376,6 +409,11 @@ namespace OrchardCore.Search.Elasticsearch
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
             {
                 return Forbid();
+            }
+
+            if (!_elasticConnectionOptions.IsFileConfigurationExists())
+            {
+                return BadRequest();
             }
 
             try
@@ -416,12 +454,19 @@ namespace OrchardCore.Search.Elasticsearch
             return RedirectToAction(nameof(Index));
         }
 
-        public Task<IActionResult> Query(string indexName, string query)
-            => Query(new AdminQueryViewModel
+        public async Task<IActionResult> Query(string indexName, string query)
+        {
+            if (!_elasticConnectionOptions.IsFileConfigurationExists())
+            {
+                return NotConfigured();
+            }
+
+            return await Query(new AdminQueryViewModel
             {
                 IndexName = indexName,
                 DecodedQuery = string.IsNullOrWhiteSpace(query) ? string.Empty : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query))
             });
+        }
 
         [HttpPost]
         public async Task<IActionResult> Query(AdminQueryViewModel model)
@@ -429,6 +474,11 @@ namespace OrchardCore.Search.Elasticsearch
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
             {
                 return Forbid();
+            }
+
+            if (!_elasticConnectionOptions.IsFileConfigurationExists())
+            {
+                return BadRequest();
             }
 
             model.Indices = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
@@ -496,6 +546,11 @@ namespace OrchardCore.Search.Elasticsearch
                 return Forbid();
             }
 
+            if (!_elasticConnectionOptions.IsFileConfigurationExists())
+            {
+                return BadRequest();
+            }
+
             if (itemIds?.Count() > 0)
             {
                 var elasticIndexSettings = await _elasticIndexSettingsService.GetSettingsAsync();
@@ -540,7 +595,7 @@ namespace OrchardCore.Search.Elasticsearch
                         }
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Unknown bulk action");
+                        return BadRequest();
                 }
             }
 
@@ -577,5 +632,8 @@ namespace OrchardCore.Search.Elasticsearch
             model.Analyzers = _elasticSearchOptions.Analyzers
                 .Select(x => new SelectListItem { Text = x.Key, Value = x.Key });
         }
+
+        private IActionResult NotConfigured()
+            => View("NotConfigured");
     }
 }
