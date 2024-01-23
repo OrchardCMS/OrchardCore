@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email.Services;
 using OrchardCore.Email.Smtp.Drivers;
@@ -22,12 +21,12 @@ namespace OrchardCore.Email.Smtp.Controllers
             IAuthorizationService authorizationService,
             INotifier notifier,
             IEmailMessageValidator emailMessageValidator,
-            [FromKeyedServices(EmailDeliveryServiceName.Smtp)] IEmailDeliveryService emailDeliveryService)
+            IEmailService emailService)
         {
             H = h;
             _authorizationService = authorizationService;
             _notifier = notifier;
-            _emailService = new EmailService(emailMessageValidator, emailDeliveryService);
+            _emailService = emailService;
         }
 
         [HttpGet]
@@ -53,7 +52,7 @@ namespace OrchardCore.Email.Smtp.Controllers
             {
                 var message = CreateMessageFromViewModel(model);
 
-                var result = await _emailService.SendAsync(message);
+                var result = await _emailService.SendAsync(message, EmailDeliveryServiceName.Smtp);
 
                 if (!result.Succeeded)
                 {

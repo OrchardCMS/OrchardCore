@@ -5,17 +5,17 @@ namespace OrchardCore.Email.Services;
 public class EmailService : IEmailService
 {
     private readonly IEmailMessageValidator _emailMessageValidator;
-    private readonly IEmailDeliveryService _emailDeliveryService;
+    private readonly IEmailDeliveryServiceResolver _emailDeliveryServiceResolver;
 
     public EmailService(
         IEmailMessageValidator emailMessageValidator,
-        IEmailDeliveryService emailDeliveryService)
+        IEmailDeliveryServiceResolver emailDeliveryServiceResolver)
     {
         _emailMessageValidator = emailMessageValidator;
-        _emailDeliveryService = emailDeliveryService;
+        _emailDeliveryServiceResolver = emailDeliveryServiceResolver;
     }
 
-    public async Task<EmailResult> SendAsync(MailMessage message)
+    public async Task<EmailResult> SendAsync(MailMessage message, string deliveryMethodName = null)
     {
         _emailMessageValidator.Validate(message, out var errors);
 
@@ -24,8 +24,8 @@ public class EmailService : IEmailService
             return EmailResult.Failed([.. errors]);
         }
 
-        await _emailDeliveryService.DeliverAsync(message);
+        var emailDeliveryService = _emailDeliveryServiceResolver.Resolve(deliveryMethodName);
 
-        return EmailResult.Success;
+        return await emailDeliveryService.DeliverAsync(message);
     }
 }
