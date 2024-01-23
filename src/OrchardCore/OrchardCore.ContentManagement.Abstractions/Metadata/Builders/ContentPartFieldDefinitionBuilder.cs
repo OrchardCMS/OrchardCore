@@ -40,13 +40,6 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
-        [Obsolete("Use MergeSettings<T>. This will be removed in a future version.")]
-        public ContentPartFieldDefinitionBuilder MergeSettings(object model)
-        {
-            _settings.Merge(JObject.FromObject(model), ContentBuilderSettings.JsonMergeSettings);
-            return this;
-        }
-
         public ContentPartFieldDefinitionBuilder MergeSettings<T>(Action<T> setting) where T : class, new()
         {
             var existingJObject = _settings[typeof(T).Name] as JsonObject;

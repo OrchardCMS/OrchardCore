@@ -122,9 +122,21 @@ namespace OrchardCore.DisplayManagement.Entities
             return Task.FromResult<IDisplayResult>(null);
         }
 
-        private TSection GetSection(TModel model) =>
-            model.Properties.TryGetPropertyValue(PropertyName, out var property)
+        private TSection GetSection(TModel model) 
+            => model.Properties.TryGetPropertyValue(PropertyName, out var property)
                 ? property.ToObject<TSection>()
                 : new TSection();
+
+        protected override void BuildPrefix(TModel model, string htmlFieldPrefix)
+        {
+            if (!string.IsNullOrEmpty(htmlFieldPrefix))
+            {
+                Prefix = $"{htmlFieldPrefix}.{typeof(TModel).Name}.{typeof(TSection).Name}";
+            }
+            else
+            {
+                Prefix = $"{typeof(TModel).Name}.{typeof(TSection).Name}";
+            }
+        }
     }
 }
