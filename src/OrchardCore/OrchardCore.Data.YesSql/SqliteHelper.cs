@@ -9,14 +9,23 @@ public static class SqliteHelper
     public static string GetConnectionString(SqliteOptions sqliteOptions, ShellOptions shellOptions, string shellName) =>
         GetConnectionString(sqliteOptions, GetDatabaseFolder(shellOptions, shellName));
 
-    public static string GetConnectionString(SqliteOptions sqliteOptions, string databaseFolder) =>
-        new SqliteConnectionStringBuilder
+    public static string GetConnectionString(SqliteOptions sqliteOptions, string databaseFolder)
+    {
+        var connectionStringBuilder = new SqliteConnectionStringBuilder
         {
-            DataSource = Path.Combine(databaseFolder, sqliteOptions.DatabaseName),
             Cache = SqliteCacheMode.Shared,
             Pooling = sqliteOptions.UseConnectionPooling
+        };
+        var dataSource = Path.Combine(databaseFolder, sqliteOptions.DatabaseName);
+        if (!File.Exists(dataSource))
+        {
+            dataSource = Path.Combine(databaseFolder, SqliteOptions.OldDatabaseName);
         }
-        .ToString();
+
+        connectionStringBuilder.DataSource = dataSource;
+
+        return connectionStringBuilder.ToString();
+    }
 
     public static string GetDatabaseFolder(ShellOptions shellOptions, string shellName) =>
         Path.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellName);

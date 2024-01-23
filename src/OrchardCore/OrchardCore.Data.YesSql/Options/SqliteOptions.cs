@@ -6,6 +6,9 @@ namespace OrchardCore.Data
     /// </summary>
     public class SqliteOptions
     {
+        internal static readonly string OldDatabaseName = "yessql.db";
+        internal static readonly string NewDatabaseName = "OrchardCore.db";
+
         /// <summary>
         /// <para>By default in .Net 6, <c>Microsoft.Data.Sqlite</c> pools connections to the database. 
         /// It achieves this by putting a lock on the database file and leaving connections open to be reused.
@@ -19,6 +22,6 @@ namespace OrchardCore.Data
         /// <summary>
         /// Gets or sets the database name. Defaults to <c>OrchardCore.db</c>.
         /// </summary>
-        public string DatabaseName { get; set; } = "OrchardCore.db";
+        public string DatabaseName { get; set; } = NewDatabaseName;
     }
 }
