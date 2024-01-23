@@ -42,13 +42,13 @@ namespace OrchardCore.Search.Lucene
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageLuceneIndexes }
+                    Permissions = new[] { ManageLuceneIndexes },
                 },
                 new PermissionStereotype
                 {
                     Name = "Editor",
-                    Permissions = new[] { QueryLuceneApi }
-                }
+                    Permissions = new[] { QueryLuceneApi },
+                },
             };
         }
     }

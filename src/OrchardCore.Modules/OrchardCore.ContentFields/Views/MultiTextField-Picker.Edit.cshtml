@@ -18,7 +18,6 @@
 
     var partName = Model.PartFieldDefinition.PartDefinition.Name;
     var fieldName = Model.PartFieldDefinition.Name;
-    var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 
     var vueElementId = $"MultiTextField-Picker_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
 
@@ -26,11 +25,11 @@
 }
 
 <script asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-multitextfieldpicker.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-multitextfieldpicker.js" asp-name="multitextfieldpicker" at="Foot" depends-on="vuejs, vue-multiselect"></script>
-<style asp-src="~/OrchardCore.ContentFields/Styles/vue-multiselect-multitextfieldpicker.min.css" debug-src="~/OrchardCore.ContentFields/Styles/vue-multiselect-multitextfieldpicker.css" asp-name="multitextfieldpicker" depends-on="vue-multiselect"></style>
+<style asp-name="vue-multiselect" at="Foot"></style>
 
-<div class="@Orchard.GetWrapperCssClasses("field-wrapper", $"field-wrapper-{uniqueName.HtmlClassify()}")" id="@Html.IdFor(x => x.Values)_FieldWrapper">
-    <label class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Values)_FieldWrapper">
+    <label class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
+    <div class="@Orchard.GetEndClasses()">
         <div id="@vueElementId" class="multitextfieldpicker" data-selectedvalues="@jSelectedValues" data-options="@jOptions" data-valueskey="@valuesKey">
             <div class="w-xl-50">
                 <input v-for="v in value" v-bind:name="valuesKey" v-bind:value="v.value" type="hidden" />
@@ -51,7 +50,7 @@
                     </template>
                 </vue-multiselect>
             </div>
-            @if (!String.IsNullOrEmpty(settings.Hint))
+            @if (!string.IsNullOrEmpty(settings.Hint))
             {
                 <span class="hint">@settings.Hint</span>
             }

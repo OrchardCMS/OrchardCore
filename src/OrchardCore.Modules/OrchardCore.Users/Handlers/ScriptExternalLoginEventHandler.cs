@@ -17,9 +17,10 @@ namespace OrchardCore.Users.Handlers
         private readonly ILogger _logger;
         private readonly IScriptingManager _scriptingManager;
         private readonly ISiteService _siteService;
-        private static readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings
+
+        private static readonly JsonSerializerSettings _jsonSettings = new()
         {
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
         };
 
         public ScriptExternalLoginEventHandler(
@@ -39,7 +40,7 @@ namespace OrchardCore.Users.Handlers
 
             if (registrationSettings.UseScriptToGenerateUsername)
             {
-                var context = new { userName = String.Empty, loginProvider = provider, externalClaims = claims };
+                var context = new { userName = string.Empty, loginProvider = provider, externalClaims = claims };
 
                 var script = $"js: function generateUsername(context) {{\n{registrationSettings.GenerateUsernameScript}\n}}\nvar context = {JsonConvert.SerializeObject(context, _jsonSettings)};\ngenerateUsername(context);\nreturn context;";
 
@@ -49,7 +50,7 @@ namespace OrchardCore.Users.Handlers
                     return evaluationResult.userName;
                 }
             }
-            return String.Empty;
+            return string.Empty;
         }
 
         public async Task UpdateRoles(UpdateRolesContext context)

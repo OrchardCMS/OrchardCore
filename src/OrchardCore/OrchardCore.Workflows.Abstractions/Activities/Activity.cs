@@ -56,7 +56,7 @@ namespace OrchardCore.Workflows.Activities
             return Task.CompletedTask;
         }
 
-        public virtual Task OnWorkflowStartingAsync(WorkflowExecutionContext context, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task OnWorkflowStartingAsync(WorkflowExecutionContext context, CancellationToken cancellationToken = default)
         {
             return Task.CompletedTask;
         }
@@ -66,7 +66,17 @@ namespace OrchardCore.Workflows.Activities
             return Task.CompletedTask;
         }
 
-        public virtual Task OnWorkflowResumingAsync(WorkflowExecutionContext context, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task OnWorkflowRestartingAsync(WorkflowExecutionContext context, CancellationToken cancellationToken = default)
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task OnWorkflowRestartedAsync(WorkflowExecutionContext context)
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task OnWorkflowResumingAsync(WorkflowExecutionContext context, CancellationToken cancellationToken = default)
         {
             return Task.CompletedTask;
         }
@@ -76,7 +86,7 @@ namespace OrchardCore.Workflows.Activities
             return Task.CompletedTask;
         }
 
-        public virtual Task OnActivityExecutingAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual Task OnActivityExecutingAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext, CancellationToken cancellationToken = default)
         {
             return Task.CompletedTask;
         }
@@ -86,42 +96,42 @@ namespace OrchardCore.Workflows.Activities
             return Task.CompletedTask;
         }
 
-        protected Outcome Outcome(LocalizedString name)
+        protected static Outcome Outcome(LocalizedString name)
         {
             return new Outcome(name);
         }
 
-        protected IEnumerable<Outcome> Outcomes(params LocalizedString[] names)
+        protected static IEnumerable<Outcome> Outcomes(params LocalizedString[] names)
         {
             return names.Select(x => new Outcome(x));
         }
 
-        protected IEnumerable<Outcome> Outcomes(IEnumerable<LocalizedString> names)
+        protected static IEnumerable<Outcome> Outcomes(IEnumerable<LocalizedString> names)
         {
             return names.Select(x => new Outcome(x));
         }
 
-        protected ActivityExecutionResult Outcomes(string name)
+        protected static ActivityExecutionResult Outcomes(string name)
         {
             return new ActivityExecutionResult(new string[] { name });
         }
 
-        protected ActivityExecutionResult Outcomes(params string[] names)
+        protected static ActivityExecutionResult Outcomes(params string[] names)
         {
             return new ActivityExecutionResult(names);
         }
 
-        protected ActivityExecutionResult Outcomes(IEnumerable<string> names)
+        protected static ActivityExecutionResult Outcomes(IEnumerable<string> names)
         {
             return new ActivityExecutionResult(names);
         }
 
-        protected ActivityExecutionResult Halt()
+        protected static ActivityExecutionResult Halt()
         {
             return ActivityExecutionResult.Halted;
         }
 
-        protected ActivityExecutionResult Noop()
+        protected static ActivityExecutionResult Noop()
         {
             return ActivityExecutionResult.Empty;
         }

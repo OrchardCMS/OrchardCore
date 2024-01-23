@@ -10,8 +10,17 @@
 
 <div class="mb-3">
     <div class="w-md-75 w-xl-50 pe-md-3">
-        <label asp-for="Hint">@T["Hint"]</label>
+        <label asp-for="Hint" class="form-label">@T["Hint"]</label>
         <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
     </div>
     <span class="hint">@T["The hint text to display for this field on the editor."]</span>
 </div>
+
+<div class="mb-3">
+    <div class="w-sm-75 w-xl-50 pe-md-3">
+        <label for="DefaultValue" class="form-label">@T["Default value"]</label>
+        <input asp-for="DefaultValue" class="form-control" type="text" />
+    </div>
+    <span class="hint">@T["The default value. (optional)"]</span>
+</div>
+

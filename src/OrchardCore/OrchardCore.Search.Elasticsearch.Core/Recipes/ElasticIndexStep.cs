@@ -28,7 +28,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "ElasticIndexSettings", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "ElasticIndexSettings", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
@@ -40,7 +40,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
                 {
                     var elasticIndexSettings = index.ToObject<Dictionary<string, ElasticIndexSettings>>().FirstOrDefault();
 
-                    if (!await _elasticIndexManager.Exists(elasticIndexSettings.Key))
+                    if (!await _elasticIndexManager.ExistsAsync(elasticIndexSettings.Key))
                     {
                         elasticIndexSettings.Value.IndexName = elasticIndexSettings.Key;
                         await _elasticIndexingService.CreateIndexAsync(elasticIndexSettings.Value);

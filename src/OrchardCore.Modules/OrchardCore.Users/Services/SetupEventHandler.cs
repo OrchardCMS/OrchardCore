@@ -1,8 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Abstractions.Setup;
 using OrchardCore.Setup.Events;
+using OrchardCore.Setup.Services;
 using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Services
@@ -19,22 +19,22 @@ namespace OrchardCore.Users.Services
             _userService = userService;
         }
 
-        public Task Setup(
-            IDictionary<string, object> properties,
-            Action<string, string> reportError
-            )
+        public Task SetupAsync(SetupContext context)
         {
             var user = new User
             {
-                UserName = properties.TryGetValue(SetupConstants.AdminUsername, out var adminUserName) ? adminUserName?.ToString() : String.Empty,
-                UserId = properties.TryGetValue(SetupConstants.AdminUserId, out var adminUserId) ? adminUserId?.ToString() : String.Empty,
-                Email = properties.TryGetValue(SetupConstants.AdminEmail, out var adminEmail) ? adminEmail?.ToString() : String.Empty,
+                UserName = context.Properties.TryGetValue(SetupConstants.AdminUsername, out var adminUserName) ? adminUserName?.ToString() : string.Empty,
+                UserId = context.Properties.TryGetValue(SetupConstants.AdminUserId, out var adminUserId) ? adminUserId?.ToString() : string.Empty,
+                Email = context.Properties.TryGetValue(SetupConstants.AdminEmail, out var adminEmail) ? adminEmail?.ToString() : string.Empty,
                 EmailConfirmed = true
             };
 
             user.RoleNames.Add("Administrator");
 
-            return _userService.CreateUserAsync(user, properties[SetupConstants.AdminPassword]?.ToString(), reportError);
+            return _userService.CreateUserAsync(user, context.Properties[SetupConstants.AdminPassword]?.ToString(), (key, message) =>
+            {
+                context.Errors[key] = message;
+            });
         }
     }
 }

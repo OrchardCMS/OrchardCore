@@ -10,7 +10,7 @@ namespace OrchardCore.Environment.Commands.Builtin
     public class HelpCommand : DefaultCommandHandler
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly CommandHandlerDescriptorBuilder _builder = new CommandHandlerDescriptorBuilder();
+        private readonly CommandHandlerDescriptorBuilder _builder = new();
 
         public HelpCommand(IServiceProvider serviceProvider,
             IStringLocalizer<HelpCommand> localizer) : base(localizer)
@@ -39,7 +39,7 @@ namespace OrchardCore.Environment.Commands.Builtin
         [CommandHelp("help <command>", "\tDisplay help text for <command>")]
         public async Task SingleCommandAsync(string[] commandNameStrings)
         {
-            string command = string.Join(" ", commandNameStrings);
+            var command = string.Join(" ", commandNameStrings);
             var descriptors = GetCommandDescriptors()
                 .Where(t => t.Names.Any(x => x.StartsWith(command, StringComparison.OrdinalIgnoreCase)))
                 .OrderBy(d => d.Names);

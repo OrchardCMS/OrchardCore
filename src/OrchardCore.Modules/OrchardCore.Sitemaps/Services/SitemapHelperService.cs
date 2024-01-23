@@ -12,14 +12,14 @@ namespace OrchardCore.Sitemaps.Services
     public class SitemapHelperService : ISitemapHelperService
     {
         // Path requirements for sitemaps include . as acceptable character.
-        public static char[] InvalidCharactersForPath = ":?#[]@!$&'()*+,;=<>\\|%".ToCharArray();
+        public static readonly char[] InvalidCharactersForPath = ":?#[]@!$&'()*+,;=<>\\|%".ToCharArray();
         public const int MaxPathLength = 1024;
         public const string Prefix = "";
         public const string Path = "Path";
 
         private readonly ISlugService _slugService;
         private readonly ISitemapManager _sitemapManager;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public SitemapHelperService(
             ISlugService slugService,
@@ -61,12 +61,12 @@ namespace OrchardCore.Sitemaps.Services
             if (string.IsNullOrEmpty(sitemapId))
             {
                 routeExists = (await _sitemapManager.GetSitemapsAsync())
-                    .Any(p => String.Equals(p.Path, path.TrimStart('/'), StringComparison.OrdinalIgnoreCase));
+                    .Any(p => string.Equals(p.Path, path.TrimStart('/'), StringComparison.OrdinalIgnoreCase));
             }
             else
             {
                 routeExists = (await _sitemapManager.GetSitemapsAsync())
-                    .Any(p => p.SitemapId != sitemapId && String.Equals(p.Path, path.TrimStart('/'), StringComparison.OrdinalIgnoreCase));
+                    .Any(p => p.SitemapId != sitemapId && string.Equals(p.Path, path.TrimStart('/'), StringComparison.OrdinalIgnoreCase));
             }
 
             if (routeExists)

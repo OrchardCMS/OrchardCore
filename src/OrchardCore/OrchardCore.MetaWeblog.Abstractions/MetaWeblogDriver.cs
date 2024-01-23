@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using OrchardCore.ContentManagement;
 using OrchardCore.XmlRpc;
 using OrchardCore.XmlRpc.Models;

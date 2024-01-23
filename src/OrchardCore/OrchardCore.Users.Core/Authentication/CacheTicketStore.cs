@@ -13,11 +13,11 @@ namespace OrchardCore.Users.Authentication;
 
 public class CacheTicketStore : ITicketStore
 {
-    private const string _keyPrefix = "ocauth-ticket";
+    private const string KeyPrefix = "ocauth-ticket";
 
     private readonly IHttpContextAccessor _httpContextAccessor;
     private IDataProtector _dataProtector;
-    private ILogger<CacheTicketStore> _logger;
+    private ILogger _logger;
 
     public CacheTicketStore(IHttpContextAccessor httpContextAccessor)
     {
@@ -27,18 +27,18 @@ public class CacheTicketStore : ITicketStore
     public IDataProtector DataProtector => _dataProtector ??= _httpContextAccessor.HttpContext.RequestServices.GetService<IDataProtectionProvider>()
         .CreateProtector($"{nameof(CacheTicketStore)}_{IdentityConstants.ApplicationScheme}");
 
-    public ILogger<CacheTicketStore> Logger => _logger ??= _httpContextAccessor.HttpContext.RequestServices.GetService<ILogger<CacheTicketStore>>();
+    public ILogger Logger => _logger ??= _httpContextAccessor.HttpContext.RequestServices.GetService<ILogger<CacheTicketStore>>();
 
     public async Task RemoveAsync(string key)
     {
-        var cacheKey = $"{_keyPrefix}-{key}";
+        var cacheKey = $"{KeyPrefix}-{key}";
         var cache = _httpContextAccessor.HttpContext.RequestServices.GetService<IDistributedCache>();
         await cache.RemoveAsync(cacheKey);
     }
 
     public async Task RenewAsync(string key, AuthenticationTicket ticket)
     {
-        var cacheKey = $"{_keyPrefix}-{key}";
+        var cacheKey = $"{KeyPrefix}-{key}";
         var cache = _httpContextAccessor.HttpContext.RequestServices.GetService<IDistributedCache>();
 
         try
@@ -55,7 +55,7 @@ public class CacheTicketStore : ITicketStore
 
     public async Task<AuthenticationTicket> RetrieveAsync(string key)
     {
-        var cacheKey = $"{_keyPrefix}-{key}";
+        var cacheKey = $"{KeyPrefix}-{key}";
         var cache = _httpContextAccessor.HttpContext.RequestServices.GetService<IDistributedCache>();
         var bytes = await cache.GetAsync(cacheKey);
         if (bytes == null || bytes.Length == 0)
@@ -79,7 +79,7 @@ public class CacheTicketStore : ITicketStore
     public async Task<string> StoreAsync(AuthenticationTicket ticket)
     {
         var key = Guid.NewGuid().ToString();
-        var cacheKey = $"{_keyPrefix}-{key}";
+        var cacheKey = $"{KeyPrefix}-{key}";
         var cache = _httpContextAccessor.HttpContext.RequestServices.GetService<IDistributedCache>();
 
         try
@@ -95,9 +95,9 @@ public class CacheTicketStore : ITicketStore
         }
     }
 
-    private byte[] SerializeTicket(AuthenticationTicket source)
+    private static byte[] SerializeTicket(AuthenticationTicket source)
         => TicketSerializer.Default.Serialize(source);
 
-    private AuthenticationTicket DeserializeTicket(byte[] source)
+    private static AuthenticationTicket DeserializeTicket(byte[] source)
         => source == null ? null : TicketSerializer.Default.Deserialize(source);
 }
