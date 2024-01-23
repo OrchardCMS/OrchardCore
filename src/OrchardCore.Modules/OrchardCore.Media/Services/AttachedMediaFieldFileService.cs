@@ -20,15 +20,18 @@ namespace OrchardCore.Media.Services
     {
         private readonly IMediaFileStore _fileStore;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IUserAssetFolderNameProvider _userAssetFolderNameProvider;
         private readonly ILogger _logger;
 
         public AttachedMediaFieldFileService(
             IMediaFileStore fileStore,
             IHttpContextAccessor httpContextAccessor,
+            IUserAssetFolderNameProvider userAssetFolderNameProvider,
             ILogger<AttachedMediaFieldFileService> logger)
         {
             _fileStore = fileStore;
             _httpContextAccessor = httpContextAccessor;
+            _userAssetFolderNameProvider = userAssetFolderNameProvider;
             _logger = logger;
 
             MediaFieldsFolder = "mediafields";
@@ -69,6 +72,15 @@ namespace OrchardCore.Media.Services
             await RemoveTemporaryAsync(items);
 
             await MoveNewFilesToContentItemDirAndUpdatePathsAsync(items, contentItem);
+        }
+
+        /// <summary>
+        /// Gets the per-user temporary upload directory.
+        /// </summary>
+        /// <returns></returns>
+        public string GetMediaFieldsTempSubFolder()
+        {
+            return _fileStore.Combine(MediaFieldsTempSubFolder, _userAssetFolderNameProvider.GetUserAssetFolderName(_httpContextAccessor.HttpContext.User));
         }
 
         private async Task EnsureGlobalDirectoriesAsync()

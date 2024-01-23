@@ -83,7 +83,7 @@ namespace OrchardCore.Media.Drivers
                 }
 
                 model.Paths = JsonSerializer.Serialize(itemPaths, _settings);
-                model.TempUploadFolder = _attachedMediaFieldFileService.MediaFieldsTempSubFolder;
+                model.TempUploadFolder = _attachedMediaFieldFileService.GetMediaFieldsTempSubFolder();
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;

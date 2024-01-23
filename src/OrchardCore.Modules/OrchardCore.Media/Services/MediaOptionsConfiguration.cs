@@ -48,6 +48,7 @@ namespace OrchardCore.Media.Services
         };
 
         private const int DefaultMaxBrowserCacheDays = 30;
+        private const int DefaultSecureFilesMaxBrowserCacheDays = 0;
         private const int DefaultMaxCacheDays = 365;
         private const int DefaultMaxFileSize = 30_000_000;
 
@@ -86,6 +87,8 @@ namespace OrchardCore.Media.Services
                 StringComparer.OrdinalIgnoreCase);
 
             options.MaxBrowserCacheDays = section.GetValue("MaxBrowserCacheDays", DefaultMaxBrowserCacheDays);
+            options.MaxSecureFilesBrowserCacheDays = section.GetValue("MaxSecureFilesBrowserCacheDays", DefaultSecureFilesMaxBrowserCacheDays);
+
             options.MaxCacheDays = section.GetValue("MaxCacheDays", DefaultMaxCacheDays);
             options.ResizedCacheMaxStale = section.GetValue<TimeSpan?>(nameof(options.ResizedCacheMaxStale));
             options.RemoteCacheMaxStale = section.GetValue<TimeSpan?>(nameof(options.RemoteCacheMaxStale));
@@ -102,6 +105,10 @@ namespace OrchardCore.Media.Services
 
             // Use the same cache control header as ImageSharp does for resized images.
             var cacheControl = "public, must-revalidate, max-age=" + TimeSpan.FromDays(options.MaxBrowserCacheDays).TotalSeconds.ToString();
+            // Secure files are not cached at all.
+            var secureCacheControl = options.MaxSecureFilesBrowserCacheDays == 0
+                ? "no-store"
+                : "public, must-revalidate, max-age=" + TimeSpan.FromDays(options.MaxSecureFilesBrowserCacheDays).TotalSeconds.ToString();
 
             options.StaticFileOptions = new StaticFileOptions
             {
@@ -109,7 +116,7 @@ namespace OrchardCore.Media.Services
                 ServeUnknownFileTypes = true,
                 OnPrepareResponse = ctx =>
                 {
-                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = cacheControl;
+                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = ctx.Context.Items.ContainsKey("IsSecureMedia") ? secureCacheControl : cacheControl;
                     ctx.Context.Response.Headers[HeaderNames.ContentSecurityPolicy] = contentSecurityPolicy;
                 }
             };
