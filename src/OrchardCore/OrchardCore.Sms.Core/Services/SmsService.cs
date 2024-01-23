@@ -6,6 +6,7 @@ namespace OrchardCore.Sms.Services;
 public class SmsService : ISmsService
 {
     private readonly ISmsProviderResolver _smsProviderResolver;
+    private ISmsProvider _provider;
 
     protected readonly IStringLocalizer S;
 
@@ -17,15 +18,15 @@ public class SmsService : ISmsService
         S = stringLocalizer;
     }
 
-    public async Task<SmsResult> SendAsync(SmsMessage message, ISmsProvider provider = null)
+    public async Task<SmsResult> SendAsync(SmsMessage message)
     {
-        provider ??= await _smsProviderResolver.GetAsync();
+        _provider ??= await _smsProviderResolver.GetAsync();
 
-        if (provider == null)
+        if (_provider is null)
         {
             return SmsResult.Failed(S["SMS settings must be configured before an SMS message can be sent."]);
         }
 
-        return await provider.SendAsync(message);
+        return await _provider.SendAsync(message);
     }
 }
