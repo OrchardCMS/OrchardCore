@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Nest;
 using OrchardCore.ContentManagement;
 using OrchardCore.Environment.Shell;
@@ -13,12 +14,15 @@ namespace OrchardCore.Search.Elasticsearch.Core.Providers
     {
         private readonly ElasticIndexManager _elasticIndexManager;
         private readonly string _indexPrefix;
+        private readonly ElasticConnectionOptions _elasticConnectionOptions;
 
         public ElasticContentPickerResultProvider(
             ShellSettings shellSettings,
+            IOptions<ElasticConnectionOptions> elasticConnectionOptions,
             ElasticIndexManager elasticIndexManager)
         {
             _indexPrefix = shellSettings.Name.ToLowerInvariant() + "_";
+            _elasticConnectionOptions = elasticConnectionOptions.Value;
             _elasticIndexManager = elasticIndexManager;
         }
 
@@ -26,6 +30,11 @@ namespace OrchardCore.Search.Elasticsearch.Core.Providers
 
         public async Task<IEnumerable<ContentPickerResult>> Search(ContentPickerSearchContext searchContext)
         {
+            if (!_elasticConnectionOptions.IsFileConfigurationExists())
+            {
+                return Enumerable.Empty<ContentPickerResult>();
+            }
+
             string indexName = null;
 
             var fieldSettings = searchContext.PartFieldDefinition?.GetSettings<ContentPickerFieldElasticEditorSettings>();
@@ -37,7 +46,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Providers
 
             if (indexName != null && !await _elasticIndexManager.ExistsAsync(indexName))
             {
-                return new List<ContentPickerResult>();
+                return Enumerable.Empty<ContentPickerResult>();
             }
 
             var results = new List<ContentPickerResult>();
