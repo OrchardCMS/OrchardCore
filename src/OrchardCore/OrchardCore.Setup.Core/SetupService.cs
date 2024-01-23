@@ -155,16 +155,15 @@ namespace OrchardCore.Setup.Services
             var shellSettings = new ShellSettings(context.ShellSettings).ConfigureDatabaseTableOptions();
             if (string.IsNullOrWhiteSpace(shellSettings["DatabaseProvider"]))
             {
-                var providerName = context.Properties.TryGetValue(SetupConstants.DatabaseProvider, out var databaseProvider) ? databaseProvider?.ToString() : string.Empty;
-                shellSettings["DatabaseProvider"] = providerName;
+                shellSettings["DatabaseProvider"] = context.Properties.TryGetValue(SetupConstants.DatabaseProvider, out var databaseProvider) ? databaseProvider?.ToString() : string.Empty;
                 shellSettings["ConnectionString"] = context.Properties.TryGetValue(SetupConstants.DatabaseConnectionString, out var databaseConnectionString) ? databaseConnectionString?.ToString() : string.Empty;
                 shellSettings["TablePrefix"] = context.Properties.TryGetValue(SetupConstants.DatabaseTablePrefix, out var databaseTablePrefix) ? databaseTablePrefix?.ToString() : string.Empty;
                 shellSettings["Schema"] = context.Properties.TryGetValue(SetupConstants.DatabaseSchema, out var schema) ? schema?.ToString() : null;
+            }
 
-                if (providerName == DatabaseProviderValue.Sqlite)
-                {
-                    shellSettings["DatabaseName"] = context.Properties.TryGetValue(SetupConstants.DatabaseName, out var dbName) ? dbName?.ToString() : "orchardcore.db";
-                }
+            if (shellSettings["DatabaseProvider"] == DatabaseProviderValue.Sqlite && string.IsNullOrEmpty(shellSettings["DatabaseName"]))
+            {
+                shellSettings["DatabaseName"] = context.Properties.TryGetValue(SetupConstants.DatabaseName, out var dbName) ? dbName?.ToString() : "orchardcore.db";
             }
 
             var validationContext = new DbConnectionValidatorContext(shellSettings);
