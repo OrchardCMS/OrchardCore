@@ -14,7 +14,7 @@ namespace OrchardCore.Data
         /// <para>There may be a performance penalty associated with disabling connection pooling.</para>
         /// <see href="https://docs.microsoft.com/en-us/dotnet/standard/data/sqlite/connection-strings#pooling" />
         /// </summary>
-        public bool UseConnectionPooling { get; set; }
+        public bool UseConnectionPooling { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the database name. Defaults to <c>OrchardCore.db</c>.
