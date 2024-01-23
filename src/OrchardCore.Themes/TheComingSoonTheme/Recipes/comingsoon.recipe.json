@@ -389,7 +389,7 @@
                 "Author": "admin",
                 "SocialIcon": {
                   "IconClass": {
-                    "Text": "fab fa-twitter"
+                    "Text": "fab fa-x-twitter"
                   },
                   "Url": {
                     "Text": "https://twitter.com"
@@ -503,7 +503,7 @@
           },
           "FormPart": {
             "Action": "[js: getUrlPrefix('/workflows/invoke/' + encodeURI(createWorkflowToken(variables('workflowTypeId'), variables('workflowActivityId'))))]",
-            "Method": "POST"
+            "Method": "post"
           }
         }
       ]

@@ -3,6 +3,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Layers.Indexes;
 using OrchardCore.Layers.Services;
 using OrchardCore.Rules;
+using OrchardCore.Rules.Services;
 using YesSql.Sql;
 
 namespace OrchardCore.Layers

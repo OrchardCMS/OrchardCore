@@ -48,7 +48,7 @@
   <!-- 'Microsoft.Extensions' packages that are not included in the ASP.NET Core shared framework -->
   <ItemGroup>
     <PackageManagement Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(MicrosoftExtensionsPackagesVersion)" />
-    <PackageManagement Include="Microsoft.Extensions.Http.Polly" Version="$(MicrosoftExtensionsPackagesVersion)" />
+    <PackageManagement Include="Microsoft.Extensions.Http.Resilience" Version="$(MicrosoftExtensionsPackagesVersion)" />
   </ItemGroup>
 
 </Project>
