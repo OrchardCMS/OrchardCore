@@ -17,7 +17,9 @@ public class AdminMenu : INavigationProvider
     public Task BuildNavigationAsync(string name, NavigationBuilder builder)
     {
         if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+        {
             return Task.CompletedTask;
+        }
 
         builder
             .Add(S["Configuration"], configuration => configuration
