@@ -48,7 +48,7 @@ namespace OrchardCore.OpenId.Configuration
             }
 
             options.AddScheme<OpenIddictServerAspNetCoreHandler>(
-            OpenIddictServerAspNetCoreDefaults.AuthenticationScheme, displayName: null);
+                OpenIddictServerAspNetCoreDefaults.AuthenticationScheme, displayName: null);
         }
 
         public void Configure(OpenIddictServerOptions options)
