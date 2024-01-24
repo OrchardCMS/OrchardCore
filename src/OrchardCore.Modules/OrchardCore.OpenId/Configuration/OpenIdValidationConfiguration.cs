@@ -62,7 +62,7 @@ namespace OrchardCore.OpenId.Configuration
             if (settings.Authority != null)
             {
                 options.AddScheme<OpenIddictValidationAspNetCoreHandler>(
-                OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme, displayName: null);
+                    OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme, displayName: null);
 
                 return;
             }
