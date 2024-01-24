@@ -106,7 +106,7 @@ namespace OrchardCore.Search.Elasticsearch
                 return Forbid();
             }
 
-            if (!_elasticConnectionOptions.IsFileConfigurationExists())
+            if (!_elasticConnectionOptions.FileConfigurationExists())
             {
                 return NotConfigured();
             }
@@ -174,7 +174,7 @@ namespace OrchardCore.Search.Elasticsearch
                 return Forbid();
             }
 
-            if (!_elasticConnectionOptions.IsFileConfigurationExists())
+            if (!_elasticConnectionOptions.FileConfigurationExists())
             {
                 return NotConfigured();
             }
@@ -213,7 +213,7 @@ namespace OrchardCore.Search.Elasticsearch
                 return Forbid();
             }
 
-            if (!_elasticConnectionOptions.IsFileConfigurationExists())
+            if (!_elasticConnectionOptions.FileConfigurationExists())
             {
                 return BadRequest();
             }
@@ -313,7 +313,7 @@ namespace OrchardCore.Search.Elasticsearch
                 return Forbid();
             }
 
-            if (!_elasticConnectionOptions.IsFileConfigurationExists())
+            if (!_elasticConnectionOptions.FileConfigurationExists())
             {
                 return BadRequest();
             }
@@ -339,7 +339,7 @@ namespace OrchardCore.Search.Elasticsearch
                 return Forbid();
             }
 
-            if (!_elasticConnectionOptions.IsFileConfigurationExists())
+            if (!_elasticConnectionOptions.FileConfigurationExists())
             {
                 return BadRequest();
             }
@@ -377,7 +377,7 @@ namespace OrchardCore.Search.Elasticsearch
                 return Forbid();
             }
 
-            if (!_elasticConnectionOptions.IsFileConfigurationExists())
+            if (!_elasticConnectionOptions.FileConfigurationExists())
             {
                 return BadRequest();
             }
@@ -411,7 +411,7 @@ namespace OrchardCore.Search.Elasticsearch
                 return Forbid();
             }
 
-            if (!_elasticConnectionOptions.IsFileConfigurationExists())
+            if (!_elasticConnectionOptions.FileConfigurationExists())
             {
                 return BadRequest();
             }
@@ -456,7 +456,7 @@ namespace OrchardCore.Search.Elasticsearch
 
         public async Task<IActionResult> Query(string indexName, string query)
         {
-            if (!_elasticConnectionOptions.IsFileConfigurationExists())
+            if (!_elasticConnectionOptions.FileConfigurationExists())
             {
                 return NotConfigured();
             }
@@ -476,7 +476,7 @@ namespace OrchardCore.Search.Elasticsearch
                 return Forbid();
             }
 
-            if (!_elasticConnectionOptions.IsFileConfigurationExists())
+            if (!_elasticConnectionOptions.FileConfigurationExists())
             {
                 return BadRequest();
             }
@@ -546,7 +546,7 @@ namespace OrchardCore.Search.Elasticsearch
                 return Forbid();
             }
 
-            if (!_elasticConnectionOptions.IsFileConfigurationExists())
+            if (!_elasticConnectionOptions.FileConfigurationExists())
             {
                 return BadRequest();
             }

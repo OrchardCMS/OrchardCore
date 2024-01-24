@@ -5,7 +5,7 @@
 @model ElasticSettingsViewModel
 @inject IOptions<ElasticConnectionOptions> ElasticConnectionOptions
 
-@if (!ElasticConnectionOptions.Value.IsFileConfigurationExists())
+@if (!ElasticConnectionOptions.Value.FileConfigurationExists())
 {
     <div class="alert alert-danger" role="alert">
         @T["Elasticsearch is not configured. Update the appsettings file with Azure Search AI service information."]
