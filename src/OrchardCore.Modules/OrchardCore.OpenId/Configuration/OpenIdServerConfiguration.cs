@@ -245,7 +245,6 @@ namespace OrchardCore.OpenId.Configuration
                         _logger.LogWarning("The Server Settings of OpenID Connect module is not correctly configured:{Error}", String.Join("\r\n;", errors));
                     }
 
-
                     return null;
                 }
             }
