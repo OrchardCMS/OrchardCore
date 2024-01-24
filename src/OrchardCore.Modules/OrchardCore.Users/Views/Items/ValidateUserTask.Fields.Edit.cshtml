@@ -7,8 +7,8 @@
 </fieldset>
 
 <fieldset class="mb-3" asp-validation-class-for="Roles">
-    <label asp-for="Roles">@T["Roles"]</label>
+    <label asp-for="Roles" class="form-label">@T["Roles"]</label>
     @await Component.InvokeAsync("SelectRoles", new { selectedRoles = Model.Roles, htmlName = Html.NameFor(m => m.Roles), except = new[] { "Anonymous", "Authenticated" } })
     <span asp-validation-for="Roles"></span>
-    <span class="hint">@T["The 'InRole' outcome will be triggerred if the user has at least one of the selected roles."]</span>
+    <span class="hint">@T["The 'InRole' outcome will be triggered if the user has at least one of the selected roles."]</span>
 </fieldset>

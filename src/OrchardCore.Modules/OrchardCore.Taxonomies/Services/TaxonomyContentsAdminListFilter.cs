@@ -34,18 +34,18 @@ namespace OrchardCore.Taxonomies.Services
                 if (await updater.TryUpdateModelAsync(viewModel, "Taxonomy" + contentItemId))
                 {
                     // Show all items categorized by the taxonomy
-                    if (!String.IsNullOrEmpty(viewModel.SelectedContentItemId))
+                    if (!string.IsNullOrEmpty(viewModel.SelectedContentItemId))
                     {
                         if (viewModel.SelectedContentItemId.StartsWith("Taxonomy:", StringComparison.OrdinalIgnoreCase))
                         {
-                            viewModel.SelectedContentItemId = viewModel.SelectedContentItemId.Substring(9);
+                            viewModel.SelectedContentItemId = viewModel.SelectedContentItemId[9..];
                             query.All(
                                 x => query.With<TaxonomyIndex>(x => x.TaxonomyContentItemId == viewModel.SelectedContentItemId)
                             );
                         }
                         else if (viewModel.SelectedContentItemId.StartsWith("Term:", StringComparison.OrdinalIgnoreCase))
                         {
-                            viewModel.SelectedContentItemId = viewModel.SelectedContentItemId.Substring(5);
+                            viewModel.SelectedContentItemId = viewModel.SelectedContentItemId[5..];
                             query.All(
                                 x => query.With<TaxonomyIndex>(x => x.TermContentItemId == viewModel.SelectedContentItemId)
                             );

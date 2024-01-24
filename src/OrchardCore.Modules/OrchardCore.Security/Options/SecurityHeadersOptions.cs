@@ -34,7 +34,7 @@ namespace OrchardCore.Security.Options
                 .Where(kvp => kvp.Value != null ||
                     kvp.Key == ContentSecurityPolicyValue.Sandbox ||
                     kvp.Key == ContentSecurityPolicyValue.UpgradeInsecureRequests)
-                .Select(kvp => kvp.Key + (kvp.Value != null ? " " + kvp.Value : String.Empty))
+                .Select(kvp => kvp.Key + (kvp.Value != null ? " " + kvp.Value : string.Empty))
                 .ToArray();
 
             return this;

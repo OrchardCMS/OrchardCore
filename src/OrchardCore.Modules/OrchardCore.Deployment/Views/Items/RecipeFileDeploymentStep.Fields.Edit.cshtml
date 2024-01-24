@@ -4,7 +4,7 @@
 
 <div class="mb-3">
     <div class="row">
-        <div class="col-small">
+        <div class="col-small col-12 col-sm-9 col-md-6 col-lg-3 col-xl-3">
             <span class="hint">@T["The recipe file to add as part of the plan."]</span>
         </div>
     </div>
@@ -12,13 +12,13 @@
 
 <div class="row">
     <div class="mb-3 col-md-6">
-        <label asp-for="RecipeName">@T["Recipe Name"]</label>
+        <label asp-for="RecipeName" class="form-label">@T["Recipe Name"]</label>
         <input asp-for="RecipeName" class="form-control" />
         <span class="hint">@T["The recipe name."]</span>
     </div>
 
     <div class="mb-3 col-md-6">
-        <label asp-for="DisplayName">@T["Display Name"]</label>
+        <label asp-for="DisplayName" class="form-label">@T["Display Name"]</label>
         <input asp-for="DisplayName" class="form-control" />
         <span class="hint">@T["The recipe display name."]</span>
     </div>
@@ -26,13 +26,13 @@
 
 <div class="row">
     <div class="mb-3 col-md-6">
-        <label asp-for="Description">@T["Description"]</label>
+        <label asp-for="Description" class="form-label">@T["Description"]</label>
         <input asp-for="Description" class="form-control" />
         <span class="hint">@T["The recipe description."]</span>
     </div>
 
     <div class="mb-3 col-md-6">
-        <label asp-for="Author">@T["Author"]</label>
+        <label asp-for="Author" class="form-label">@T["Author"]</label>
         <input asp-for="Author" class="form-control" />
         <span class="hint">@T["The recipe author."]</span>
     </div>
@@ -40,13 +40,13 @@
 
 <div class="row">
     <div class="mb-3 col-md-6">
-        <label asp-for="WebSite">@T["WebSite"]</label>
+        <label asp-for="WebSite" class="form-label">@T["WebSite"]</label>
         <input asp-for="WebSite" class="form-control" type="url" />
         <span class="hint">@T["The recipe web site."]</span>
     </div>
 
     <div class="mb-3 col-md-6">
-        <label asp-for="Version">@T["Version"]</label>
+        <label asp-for="Version" class="form-label">@T["Version"]</label>
         <input asp-for="Version" class="form-control" />
         <span class="hint">@T["The recipe version."]</span>
     </div>
@@ -54,13 +54,13 @@
 
 <div class="row">
     <div class="mb-3 col-md-6">
-        <label asp-for="Categories">@T["Categories"]</label>
+        <label asp-for="Categories" class="form-label">@T["Categories"]</label>
         <input asp-for="Categories" class="form-control" />
         <span class="hint">@T["The recipe categories (comma separated values)."]</span>
     </div>
 
     <div class="mb-3 col-md-6">
-        <label asp-for="Tags">@T["Tags"]</label>
+        <label asp-for="Tags" class="form-label">@T["Tags"]</label>
         <input asp-for="Tags" class="form-control" />
         <span class="hint">@T["The recipe tags (comma separated values)."]</span>
     </div>

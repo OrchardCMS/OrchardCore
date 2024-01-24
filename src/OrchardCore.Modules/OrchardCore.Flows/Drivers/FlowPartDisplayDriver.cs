@@ -23,7 +23,7 @@ namespace OrchardCore.Flows.Drivers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContentManager _contentManager;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
         private readonly INotifier _notifier;
         private readonly ILogger _logger;
 
@@ -46,21 +46,21 @@ namespace OrchardCore.Flows.Drivers
 
         public override IDisplayResult Display(FlowPart flowPart, BuildPartDisplayContext context)
         {
-            var hasItems = flowPart.Widgets.Any();
+            var hasItems = flowPart.Widgets.Count > 0;
 
             return Initialize<FlowPartViewModel>(hasItems ? "FlowPart" : "FlowPart_Empty", m =>
             {
                 m.FlowPart = flowPart;
                 m.BuildPartDisplayContext = context;
             })
-            .Location("Detail", "Content:5");
+            .Location("Detail", "Content");
         }
 
         public override IDisplayResult Edit(FlowPart flowPart, BuildPartEditorContext context)
         {
             return Initialize<FlowPartEditViewModel>(GetEditorShapeType(context), async model =>
             {
-                var containedContentTypes = GetContainedContentTypes(context.TypePartDefinition);
+                var containedContentTypes = await GetContainedContentTypesAsync(context.TypePartDefinition);
                 var notify = false;
 
                 var existingWidgets = new List<ContentItem>();
@@ -105,8 +105,9 @@ namespace OrchardCore.Flows.Drivers
             for (var i = 0; i < model.Prefixes.Length; i++)
             {
                 var contentItem = await _contentManager.NewAsync(model.ContentTypes[i]);
-                var existingContentItem = part.Widgets.FirstOrDefault(x => String.Equals(x.ContentItemId, model.ContentItems[i], StringComparison.OrdinalIgnoreCase));
-                // When the content item already exists merge its elements to preverse nested content item ids.
+                var existingContentItem = part.Widgets.FirstOrDefault(x => string.Equals(x.ContentItemId, model.ContentItems[i], StringComparison.OrdinalIgnoreCase));
+
+                // When the content item already exists merge its elements to reverse nested content item ids.
                 // All of the data for these merged items is then replaced by the model values on update, while a nested content item id is maintained.
                 // This prevents nested items which rely on the content item id, i.e. the media attached field, losing their reference point.
                 if (existingContentItem != null)
@@ -127,18 +128,18 @@ namespace OrchardCore.Flows.Drivers
             return Edit(part, context);
         }
 
-        private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ContentTypePartDefinition typePartDefinition)
+        private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(ContentTypePartDefinition typePartDefinition)
         {
             var settings = typePartDefinition.GetSettings<FlowPartSettings>();
 
-            if (settings.ContainedContentTypes == null || !settings.ContainedContentTypes.Any())
+            if (settings?.ContainedContentTypes?.Length == 0)
             {
-                return _contentDefinitionManager.ListTypeDefinitions().Where(t => t.GetStereotype() == "Widget");
+                return (await _contentDefinitionManager.ListTypeDefinitionsAsync())
+                    .Where(t => t.StereotypeEquals("Widget"));
             }
 
-            return settings.ContainedContentTypes
-                .Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
-                .Where(t => t != null && t.GetStereotype() == "Widget");
+            return (await _contentDefinitionManager.ListTypeDefinitionsAsync())
+                .Where(t => settings.ContainedContentTypes.Contains(t.Name) && t.StereotypeEquals("Widget"));
         }
     }
 }

@@ -59,7 +59,7 @@ namespace OrchardCore.Media.Liquid
                 }
             }
 
-            if (String.IsNullOrEmpty(assetHref))
+            if (string.IsNullOrEmpty(assetHref))
             {
                 return Completion.Normal;
             }

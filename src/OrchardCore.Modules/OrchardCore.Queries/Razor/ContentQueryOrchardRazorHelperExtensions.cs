@@ -5,7 +5,9 @@ using OrchardCore;
 using OrchardCore.ContentManagement;
 using OrchardCore.Queries;
 
+#pragma warning disable CA1050 // Declare types in namespaces
 public static class ContentQueryOrchardRazorHelperExtensions
+#pragma warning restore CA1050 // Declare types in namespaces
 {
     public static Task<IEnumerable<ContentItem>> ContentQueryAsync(this IOrchardHelper orchardHelper, string queryName)
     {
@@ -21,7 +23,7 @@ public static class ContentQueryOrchardRazorHelperExtensions
         {
             foreach (var result in results)
             {
-                if (!(result is ContentItem contentItem))
+                if (result is not ContentItem contentItem)
                 {
                     contentItem = null;
 
@@ -54,7 +56,7 @@ public static class ContentQueryOrchardRazorHelperExtensions
         {
             foreach (var item in queryResult.Items)
             {
-                if (!(item is ContentItem contentItem))
+                if (item is not ContentItem contentItem)
                 {
                     contentItem = null;
 

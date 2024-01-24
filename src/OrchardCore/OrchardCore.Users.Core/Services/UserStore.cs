@@ -24,9 +24,16 @@ namespace OrchardCore.Users.Services
         IUserSecurityStampStore<IUser>,
         IUserLoginStore<IUser>,
         IUserLockoutStore<IUser>,
-        IUserAuthenticationTokenStore<IUser>
+        IUserAuthenticationTokenStore<IUser>,
+        IUserTwoFactorRecoveryCodeStore<IUser>,
+        IUserTwoFactorStore<IUser>,
+        IUserAuthenticatorKeyStore<IUser>,
+        IUserPhoneNumberStore<IUser>
     {
         private const string TokenProtector = "OrchardCore.UserStore.Token";
+        private const string InternalLoginProvider = "[OrchardCoreUserStore]";
+        private const string RecoveryCodeTokenName = "RecoveryCodes";
+        private const string AuthenticatorKeyTokenName = "AuthenticatorKey";
 
         private readonly ISession _session;
         private readonly ILookupNormalizer _keyNormalizer;
@@ -56,6 +63,7 @@ namespace OrchardCore.Users.Services
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
         }
 
         public string NormalizeKey(string key)
@@ -79,7 +87,7 @@ namespace OrchardCore.Users.Services
 
             var newUserId = newUser.UserId;
 
-            if (String.IsNullOrEmpty(newUserId))
+            if (string.IsNullOrEmpty(newUserId))
             {
                 // Due to database collation we normalize the userId to lower invariant.
                 newUserId = _userIdGenerator.GenerateUniqueId(user).ToLowerInvariant();
@@ -110,7 +118,7 @@ namespace OrchardCore.Users.Services
                     return IdentityResult.Failed();
                 }
 
-                _session.Save(user);
+                await _session.SaveAsync(user);
                 await _session.SaveChangesAsync();
                 await Handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
             }
@@ -252,7 +260,7 @@ namespace OrchardCore.Users.Services
                     return IdentityResult.Failed();
                 }
 
-                _session.Save(user);
+                await _session.SaveAsync(user);
                 await _session.SaveChangesAsync();
                 await Handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
             }
@@ -464,7 +472,7 @@ namespace OrchardCore.Users.Services
                 var roleNames = await _roleService.GetRoleNamesAsync();
 
                 var roleName = roleNames.FirstOrDefault(r => NormalizeKey(r) == normalizedRoleName);
-                if (String.IsNullOrEmpty(roleName))
+                if (string.IsNullOrEmpty(roleName))
                 {
                     throw new InvalidOperationException($"Role {normalizedRoleName} does not exist.");
                 }
@@ -485,7 +493,7 @@ namespace OrchardCore.Users.Services
                 var roleNames = await _roleService.GetRoleNamesAsync();
 
                 var roleName = roleNames.FirstOrDefault(r => NormalizeKey(r) == normalizedRoleName);
-                if (String.IsNullOrEmpty(roleName))
+                if (string.IsNullOrEmpty(roleName))
                 {
                     throw new InvalidOperationException($"Role {normalizedRoleName} does not exist.");
                 }
@@ -516,7 +524,7 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            if (String.IsNullOrWhiteSpace(normalizedRoleName))
+            if (string.IsNullOrWhiteSpace(normalizedRoleName))
             {
                 throw new ArgumentException("Value cannot be null or empty.", nameof(normalizedRoleName));
             }
@@ -531,7 +539,7 @@ namespace OrchardCore.Users.Services
 
         public async Task<IList<IUser>> GetUsersInRoleAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
-            if (String.IsNullOrEmpty(normalizedRoleName))
+            if (string.IsNullOrEmpty(normalizedRoleName))
             {
                 throw new ArgumentNullException(nameof(normalizedRoleName));
             }
@@ -727,12 +735,12 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            if (String.IsNullOrEmpty(loginProvider))
+            if (string.IsNullOrEmpty(loginProvider))
             {
                 throw new ArgumentException("The login provider cannot be null or empty.", nameof(loginProvider));
             }
 
-            if (String.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
             {
                 throw new ArgumentException("The name cannot be null or empty.", nameof(name));
             }
@@ -740,7 +748,9 @@ namespace OrchardCore.Users.Services
             var userToken = GetUserToken(user, loginProvider, name);
             if (userToken != null)
             {
-                return Task.FromResult(_dataProtectionProvider.CreateProtector(TokenProtector).Unprotect(userToken.Value));
+                var value = _dataProtectionProvider.CreateProtector(TokenProtector).Unprotect(userToken.Value);
+
+                return Task.FromResult(value);
             }
 
             return Task.FromResult<string>(null);
@@ -753,12 +763,12 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            if (String.IsNullOrEmpty(loginProvider))
+            if (string.IsNullOrEmpty(loginProvider))
             {
                 throw new ArgumentException("The login provider cannot be null or empty.", nameof(loginProvider));
             }
 
-            if (String.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
             {
                 throw new ArgumentException("The name cannot be null or empty.", nameof(name));
             }
@@ -779,17 +789,17 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            if (String.IsNullOrEmpty(loginProvider))
+            if (string.IsNullOrEmpty(loginProvider))
             {
                 throw new ArgumentException("The login provider cannot be null or empty.", nameof(loginProvider));
             }
 
-            if (String.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
             {
                 throw new ArgumentException("The name cannot be null or empty.", nameof(name));
             }
 
-            if (String.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(value))
             {
                 throw new ArgumentException("The value cannot be null or empty.", nameof(value));
             }
@@ -828,7 +838,6 @@ namespace OrchardCore.Users.Services
         #endregion
 
         #region IUserLockoutStore<IUser>
-
         public Task<int> GetAccessFailedCountAsync(IUser user, CancellationToken cancellationToken)
         {
             if (user == null)
@@ -940,7 +949,177 @@ namespace OrchardCore.Users.Services
 
             return Task.CompletedTask;
         }
-
         #endregion IUserLockoutStore<IUser>
+
+        #region IUserTwoFactorStore<IUser>
+        public Task SetTwoFactorEnabledAsync(IUser user, bool enabled, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (user is User u)
+            {
+                u.TwoFactorEnabled = enabled;
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public Task<bool> GetTwoFactorEnabledAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user is User u)
+            {
+                return Task.FromResult(u.TwoFactorEnabled);
+            }
+
+            return Task.FromResult(false);
+        }
+        #endregion
+
+        #region IUserTwoFactorRecoveryCodeStore
+        public Task ReplaceCodesAsync(IUser user, IEnumerable<string> recoveryCodes, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (recoveryCodes == null)
+            {
+                throw new ArgumentNullException(nameof(recoveryCodes));
+            }
+
+            var mergedCodes = string.Join(";", recoveryCodes);
+
+            return SetTokenAsync(user, InternalLoginProvider, RecoveryCodeTokenName, mergedCodes, cancellationToken);
+        }
+
+        public async Task<bool> RedeemCodeAsync(IUser user, string code, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                throw new ArgumentException($"{nameof(code)} cannot be null or empty.");
+            }
+
+            var mergedCodes = (await GetTokenAsync(user, InternalLoginProvider, RecoveryCodeTokenName, cancellationToken)) ?? string.Empty;
+            var splitCodes = mergedCodes.Split(';');
+            if (splitCodes.Contains(code))
+            {
+                var updatedCodes = new List<string>(splitCodes.Where(s => s != code));
+                await ReplaceCodesAsync(user, updatedCodes, cancellationToken);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public async Task<int> CountCodesAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            var mergedCodes = (await GetTokenAsync(user, InternalLoginProvider, RecoveryCodeTokenName, cancellationToken)) ?? "";
+            if (mergedCodes.Length > 0)
+            {
+                // non-allocating version of mergedCodes.Split(';').Length
+                var count = 1;
+                var index = 0;
+                while (index < mergedCodes.Length)
+                {
+                    var semiColonIndex = mergedCodes.IndexOf(';', index);
+                    if (semiColonIndex < 0)
+                    {
+                        break;
+                    }
+                    count++;
+                    index = semiColonIndex + 1;
+                }
+
+                return count;
+            }
+
+            return 0;
+        }
+        #endregion
+
+        #region IUserAuthenticatorKeyStore<IUser>
+        public virtual Task SetAuthenticatorKeyAsync(IUser user, string key, CancellationToken cancellationToken)
+            => SetTokenAsync(user, InternalLoginProvider, AuthenticatorKeyTokenName, key, cancellationToken);
+
+        public virtual Task<string> GetAuthenticatorKeyAsync(IUser user, CancellationToken cancellationToken)
+            => GetTokenAsync(user, InternalLoginProvider, AuthenticatorKeyTokenName, cancellationToken);
+        #endregion
+
+        #region IUserPhoneNumberStore<IUser>
+        public Task SetPhoneNumberAsync(IUser user, string phoneNumber, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (user is User u)
+            {
+                u.PhoneNumber = phoneNumber;
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public Task SetPhoneNumberConfirmedAsync(IUser user, bool confirmed, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (user is User u)
+            {
+                u.PhoneNumberConfirmed = confirmed;
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public Task<string> GetPhoneNumberAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (user is User u)
+            {
+                return Task.FromResult(u.PhoneNumber);
+            }
+
+            return Task.FromResult<string>(null);
+        }
+
+        public Task<bool> GetPhoneNumberConfirmedAsync(IUser user, CancellationToken cancellationToken)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (user is User u)
+            {
+                return Task.FromResult(u.PhoneNumberConfirmed);
+            }
+
+            return Task.FromResult<bool>(false);
+        }
+        #endregion
     }
 }

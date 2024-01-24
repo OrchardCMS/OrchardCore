@@ -28,7 +28,8 @@ namespace OrchardCore.Users
             return new[] {
                 new PermissionStereotype {
                     Name = "Administrator",
-                    Permissions = new[] {
+                    Permissions = new[]
+                    {
                         CommonPermissions.ManageUsers,
                         CommonPermissions.ViewUsers,
                         CommonPermissions.EditOwnUser,
@@ -37,21 +38,25 @@ namespace OrchardCore.Users
                         CommonPermissions.DeleteUsers,
                     }
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Editor",
-                    Permissions = new[] { CommonPermissions.EditOwnUser }
+                    Permissions = new[] { CommonPermissions.EditOwnUser },
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Moderator",
-                    Permissions = new[] { CommonPermissions.EditOwnUser }
+                    Permissions = new[] { CommonPermissions.EditOwnUser },
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Contributor",
-                    Permissions = new[] { CommonPermissions.EditOwnUser }
+                    Permissions = new[] { CommonPermissions.EditOwnUser },
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Author",
-                    Permissions = new[] { CommonPermissions.EditOwnUser }
+                    Permissions = new[] { CommonPermissions.EditOwnUser },
                 }
             };
         }

@@ -12,11 +12,11 @@
                 <label class="form-check-label">
                     @if (hasChildren)
                     {
-                        <input class="form-check-input" data-parent-value="@(entry.Parent?.Path ?? String.Empty)" type="checkbox" name="@Html.NameFor(m => m.DirectoryPaths)" value="@entry.Path" checked="@checkd" />
+                        <input class="form-check-input" data-parent-value="@(entry.Parent?.Path ?? string.Empty)" type="checkbox" name="@Html.NameFor(m => m.DirectoryPaths)" value="@entry.Path" checked="@checkd" />
                     }
                     else
                     {
-                        <input class="form-check-input" data-parent-value="@(entry.Parent?.Path ?? String.Empty)" type="checkbox" name="@Html.NameFor(m => m.FilePaths)" value="@entry.Path" checked="@checkd" />
+                        <input class="form-check-input" data-parent-value="@(entry.Parent?.Path ?? string.Empty)" type="checkbox" name="@Html.NameFor(m => m.FilePaths)" value="@entry.Path" checked="@checkd" />
                     }
                     @entry.Name
                 </label>

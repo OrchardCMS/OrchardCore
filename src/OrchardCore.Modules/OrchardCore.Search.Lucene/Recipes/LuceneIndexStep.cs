@@ -28,7 +28,7 @@ namespace OrchardCore.Search.Lucene.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "lucene-index", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "lucene-index", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }

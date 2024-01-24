@@ -106,11 +106,11 @@ namespace OrchardCore.Deployment
                     existingDeploymentPlan.DeploymentSteps.Clear();
                     existingDeploymentPlan.DeploymentSteps.AddRange(deploymentPlan.DeploymentSteps);
 
-                    _session.Save(existingDeploymentPlan);
+                    await _session.SaveAsync(existingDeploymentPlan);
                 }
                 else
                 {
-                    _session.Save(deploymentPlan);
+                    await _session.SaveAsync(deploymentPlan);
                 }
             }
         }

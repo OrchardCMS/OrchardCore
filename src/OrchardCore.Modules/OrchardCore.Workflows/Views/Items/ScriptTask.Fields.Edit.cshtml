@@ -2,36 +2,36 @@
 @model ScriptTaskViewModel
 
 <div class="mb-3" asp-validation-class-for="AvailableOutcomes">
-    <label asp-for="AvailableOutcomes">@T["Available Outcomes"]</label>
+    <label asp-for="AvailableOutcomes" class="form-label">@T["Available Outcomes"]</label>
     <input asp-for="AvailableOutcomes" class="form-control" />
     <span asp-validation-for="AvailableOutcomes"></span>
     <span class="hint">@T["A comma-separated list of available outcomes."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="Script">
-    <label asp-for="Script">@T["Script"]</label>
+    <label asp-for="Script" class="form-label">@T["Script"]</label>
     <div id="@Html.IdFor(x => x.Script)_editor" asp-for="Text" style="min-height: 400px;" class="form-control"></div>
-     <textarea asp-for="Script" hidden>@Html.Raw(Model.Script)</textarea>
+    <textarea asp-for="Script" hidden>@Html.Raw(Model.Script)</textarea>
     <span asp-validation-for="Script"></span>
     <span class="hint">@T["The script to execute. Make sure to call `setOutcome` with any of the specified available outcomes at least once."]</span>
 </div>
 
-<script asp-name="monaco" depends-on="admin" at="Foot"></script>
+<script asp-name="monaco" at="Foot"></script>
 <script at="Foot" depends-on="monaco">
-    $(document).ready(function () {
+    document.addEventListener('DOMContentLoaded', function () {
         require(['vs/editor/editor.main'], function () {
-            var settings=  {
-                  "automaticLayout": true,
-                  "language": "javascript"
-                };
+            var settings = {
+                "automaticLayout": true,
+                "language": "javascript"
+            };
 
-            var html = document.getElementsByTagName("html")[0];
+            const html = document.documentElement;
             const mutationObserver = new MutationObserver(setTheme);
             mutationObserver.observe(html, { attributes: true });
 
             function setTheme() {
-                var theme = html.dataset.theme;
-                if (theme === "darkmode") {
+                var theme = html.dataset.bsTheme;
+                if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                     monaco.editor.setTheme('vs-dark')
                 } else {
                     monaco.editor.setTheme('vs')

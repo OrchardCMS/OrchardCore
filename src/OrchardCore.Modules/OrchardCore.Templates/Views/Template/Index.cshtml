@@ -21,12 +21,12 @@ else
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
 
-    <div class="card bg-primary mb-3 position-sticky action-bar" style="position: relative; top: 0;">
+    <div class="card text-bg-theme mb-3 position-sticky action-bar" style="position: relative; top: 0;">
         <div class="card-body">
             <div class="row gx-3">
                 <div class="col">
                     <div class="has-search">
-                        <i class="fa fa-search form-control-feedback" aria-hidden="true"></i>
+                        <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
                         <input asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
                     </div>
                 </div>
@@ -39,7 +39,7 @@ else
     <ul class="list-group with-checkbox">
         @if (Model.Templates.Count > 0)
         {
-            <li class="list-group-item bg-primary">
+            <li class="list-group-item text-bg-theme">
                 <div class="row gx-3">
                     <div class="col">
                         <div class="form-check my-1">
@@ -77,7 +77,7 @@ else
                             <a asp-action="Delete" asp-route-name="@entry.Name" asp-route-admintemplates="@Model.Options.AdminTemplates" asp-route-returnUrl="@FullRequestPath" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                         </div>
                         <a asp-action="Edit" asp-route-name="@entry.Name" asp-route-admintemplates="@Model.Options.AdminTemplates" asp-route-returnUrl="@FullRequestPath">@entry.Name</a>
-                        @if (!String.IsNullOrWhiteSpace(entry.Template.Description))
+                        @if (!string.IsNullOrWhiteSpace(entry.Template.Description))
                         {
                             <span class="hint dashed">@entry.Template.Description</span>
                         }

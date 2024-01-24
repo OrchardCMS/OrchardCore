@@ -1,6 +1,6 @@
 # Meeting
 
-Every week, we organize 2 meetings on http://orchardcore.net/meeting.  
+Every week, we organize 2 meetings on <http://orchardcore.net/meeting>.  
 You can join by using the online webclient or install Microsoft Teams.
 
 ## Steering commitee meeting

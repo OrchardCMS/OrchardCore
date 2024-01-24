@@ -38,30 +38,30 @@ namespace OrchardCore.Environment.Commands
 
         private void SetSwitchValue(KeyValuePair<string, string> commandSwitch)
         {
-            // Find the property
-            PropertyInfo propertyInfo = GetType().GetProperty(commandSwitch.Key, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase);
-            if (propertyInfo == null)
-            {
-                throw new InvalidOperationException(S["Switch \"{0}\" was not found", commandSwitch.Key]);
-            }
+            // Find the property.
+            var propertyInfo = GetType()
+                .GetProperty(commandSwitch.Key, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase)
+                ?? throw new InvalidOperationException(S["Switch \"{0}\" was not found", commandSwitch.Key]);
+
             if (!propertyInfo.GetCustomAttributes(typeof(OrchardSwitchAttribute), false).Any())
             {
                 throw new InvalidOperationException(S["A property \"{0}\" exists but is not decorated with \"{1}\"", commandSwitch.Key, typeof(OrchardSwitchAttribute).Name]);
             }
 
-            // Set the value
+            // Set the value.
             try
             {
-                object value = ConvertToType(propertyInfo.PropertyType, commandSwitch.Value);
+                var value = ConvertToType(propertyInfo.PropertyType, commandSwitch.Value);
                 propertyInfo.SetValue(this, value, null /*index*/);
             }
             catch (Exception ex) when (!ex.IsFatal())
             {
-                //TODO: (ngm) fix this message
-                string message = S["Error converting value \"{0}\" to \"{1}\" for switch \"{2}\"",
+                // TODO: (ngm) fix this message.
+                var message = S["Error converting value \"{0}\" to \"{1}\" for switch \"{2}\"",
                     commandSwitch.Value,
                     propertyInfo.PropertyType.FullName,
                     commandSwitch.Key];
+
                 throw new InvalidOperationException(message, ex);
             }
         }
@@ -71,13 +71,10 @@ namespace OrchardCore.Environment.Commands
             CheckMethodForSwitches(context.CommandDescriptor.MethodInfo, context.Switches);
 
             var arguments = (context.Arguments ?? Enumerable.Empty<string>()).ToArray();
-            object[] invokeParameters = GetInvokeParametersForMethod(context.CommandDescriptor.MethodInfo, arguments);
-            if (invokeParameters == null)
-            {
-                throw new InvalidOperationException(S["Command arguments \"{0}\" don't match command definition", string.Join(" ", arguments)]);
-            }
+            var invokeParameters = GetInvokeParametersForMethod(context.CommandDescriptor.MethodInfo, arguments)
+                ?? throw new InvalidOperationException(S["Command arguments \"{0}\" don't match command definition", string.Join(" ", arguments)]);
 
-            this.Context = context;
+            Context = context;
 
             if (context.CommandDescriptor.MethodInfo.ReturnType == typeof(Task<string>))
             {
@@ -103,7 +100,7 @@ namespace OrchardCore.Environment.Commands
             var invokeParameters = new List<object>();
             var args = new List<string>(arguments);
             var methodParameters = methodInfo.GetParameters();
-            bool methodHasParams = false;
+            var methodHasParams = false;
 
             if (methodParameters.Length == 0)
             {
@@ -111,10 +108,11 @@ namespace OrchardCore.Environment.Commands
                 {
                     return invokeParameters.ToArray();
                 }
+
                 return null;
             }
 
-            if (methodParameters[methodParameters.Length - 1].ParameterType.IsAssignableFrom(typeof(string[])))
+            if (methodParameters[^1].ParameterType.IsAssignableFrom(typeof(string[])))
             {
                 methodHasParams = true;
             }
@@ -124,7 +122,7 @@ namespace OrchardCore.Environment.Commands
             if (!methodHasParams && args.Count < requiredMethodParameters.Length) return null;
             if (methodHasParams && (methodParameters.Length - args.Count >= 2)) return null;
 
-            for (int i = 0; i < methodParameters.Length; i++)
+            for (var i = 0; i < methodParameters.Length; i++)
             {
                 if (methodParameters[i].ParameterType.IsAssignableFrom(typeof(string[])))
                 {
@@ -152,7 +150,7 @@ namespace OrchardCore.Environment.Commands
 
             if (methodHasParams && (methodParameters.Length - args.Count == 1) && !lastParameterIsParams)
             {
-                invokeParameters.Add(new string[] { });
+                invokeParameters.Add(Array.Empty<string>());
             }
 
             return invokeParameters.ToArray();
@@ -164,7 +162,7 @@ namespace OrchardCore.Environment.Commands
                 return;
 
             var supportedSwitches = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            foreach (OrchardSwitchesAttribute switchesAttribute in methodInfo.GetCustomAttributes(typeof(OrchardSwitchesAttribute), false))
+            foreach (var switchesAttribute in methodInfo.GetCustomAttributes(typeof(OrchardSwitchesAttribute), false).Cast<OrchardSwitchesAttribute>())
             {
                 supportedSwitches.UnionWith(switchesAttribute.Switches);
             }

@@ -3,8 +3,8 @@
 
 @await DisplayAsync(await New.ShortcodeModal())
 
-<div class="@Orchard.GetWrapperCssClasses()">
-    <div class="@Orchard.GetEndCssClasses(true)">
+<div class="@Orchard.GetWrapperClasses()">
+    <div class="@Orchard.GetEndClasses(true)">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="Render" checked="@Model.Render" />
             <label class="form-check-label" asp-for="Render">@T["Render"]</label>
@@ -13,17 +13,17 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperCssClasses()" asp-validation-class-for="PageTitle">
-    <label asp-for="PageTitle" class="@Orchard.GetLabelCssClasses()">@T["Page Title"] </label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="PageTitle">
+    <label asp-for="PageTitle" class="@Orchard.GetLabelClasses()">@T["Page Title"] </label>
+    <div class="@Orchard.GetEndClasses()">
         <input asp-for="PageTitle" class="form-control content-preview-text shortcode-modal-input" />
         <span class="hint">@T["Override the default generated web browser page title (recommended to keep under 70 characters)."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperCssClasses()" asp-validation-class-for="MetaDescription">
-    <label asp-for="MetaDescription" class="@Orchard.GetLabelCssClasses()">@T["Meta Description"] </label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="MetaDescription">
+    <label asp-for="MetaDescription" class="@Orchard.GetLabelClasses()">@T["Meta Description"] </label>
+    <div class="@Orchard.GetEndClasses()">
         <textarea asp-for="MetaDescription" class="form-control content-preview-text shortcode-modal-input"></textarea>
         <span class="hint">@T["The meta description to render for this page."]</span>
     </div>
@@ -31,26 +31,26 @@
 
 @if (Model.Settings.DisplayKeywords)
 {
-    <div class="@Orchard.GetWrapperCssClasses()" asp-validation-class-for="MetaKeywords">
-        <label asp-for="MetaKeywords" class="@Orchard.GetLabelCssClasses()">@T["Meta Keywords"] </label>
-        <div class="@Orchard.GetEndCssClasses()">
+    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="MetaKeywords">
+        <label asp-for="MetaKeywords" class="@Orchard.GetLabelClasses()">@T["Meta Keywords"] </label>
+        <div class="@Orchard.GetEndClasses()">
             <input asp-for="MetaKeywords" class="form-control content-preview-text shortcode-modal-input" />
             <span class="hint">@T["The meta keywords to render for this page, comma separated."]</span>
         </div>
     </div>
 }
 
-<div class="@Orchard.GetWrapperCssClasses()" asp-validation-class-for="Canonical">
-    <label asp-for="Canonical" class="@Orchard.GetLabelCssClasses()"> @T["Canonical"] </label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Canonical">
+    <label asp-for="Canonical" class="@Orchard.GetLabelClasses()"> @T["Canonical"] </label>
+    <div class="@Orchard.GetEndClasses()">
         <input asp-for="Canonical" class="form-control content-preview-text" />
         <span class="hint">@T["Override the default canonical url."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperCssClasses()" asp-validation-class-for="MetaRobots">
-    <label asp-for="MetaRobots" class="@Orchard.GetLabelCssClasses()">@T["Meta Robots"] </label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="MetaRobots">
+    <label asp-for="MetaRobots" class="@Orchard.GetLabelClasses()">@T["Meta Robots"] </label>
+    <div class="@Orchard.GetEndClasses()">
         <input asp-for="MetaRobots" class="form-control content-preview-text shortcode-modal-input" />
         <span class="hint">@T["The robots meta to render for this page."]</span>
     </div>
@@ -95,16 +95,16 @@
                     </td>
                     <td class="text-center">
                         <a v-on:click="remove(index)" href="javascript:void(0)" title="@T["Remove element from list"]" class="btn">
-                            <i class="fas fa-times" aria-hidden="true"></i>
+                            <i class="fa-solid fa-times" aria-hidden="true"></i>
                         </a>
                     </td>
-                    <td class="text-center"><div class="btn cursor-move"><i class="fas fa-arrows-alt" aria-hidden="true"></i></div></td>
+                    <td class="text-center"><div class="btn cursor-move"><i class="fa-solid fa-arrows-alt" aria-hidden="true"></i></div></td>
                 </tr>
             </draggable>
             <tfoot>
                 <tr>
                     <td class="col-sm-12 text-center" colspan="7">
-                        <a v-on:click="add()" class="btn btn-light w-100 btn-sm"><i class="fas fa-plus small" aria-hidden="true"></i> @T["Add a custom meta tag"]</a>
+                        <a v-on:click="add()" class="btn btn-light w-100 btn-sm"><i class="fa-solid fa-plus small" aria-hidden="true"></i> @T["Add a custom meta tag"]</a>
                         <input class="form-control content-preview-text" id="@Html.IdFor(m => m.CustomMetaTags)" name="@Html.NameFor(m => m.CustomMetaTags)" type="hidden" v-bind:value="getMetaTagsFormattedList()" />
                     </td>
                 </tr>
@@ -122,7 +122,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="meta-tags-textarea">@T["Custom Meta Tags"]</label>
+                            <label for="meta-tags-textarea" class="form-label">@T["Custom Meta Tags"]</label>
                             <textarea id="meta-tags-textarea" name="meta-tags-textarea" rows="8" class="form-control" v-bind:value="JSON.stringify(data.metaTags)" v-on:input="data.metaTags = JSON.parse($event.target.value)"></textarea>
                             <span class="hint">@T["A JSON representation of the allowed values, e.g. {0}", "[ { content: 'First content', name: 'name1', property: 'prop1', httpEquiv: 'http-equiv1', charset: 'charset1' }, { content: 'Second content', name: 'name2', property: 'prop2', httpEquiv: 'http-equiv2', charset: 'charset2' } ]"]</span>
                         </div>
@@ -137,8 +137,8 @@
     </script>
 
     <div id="@Html.IdFor(m => m)" class="mb-3">
-        <label asp-for="CustomMetaTags">@T["Custom Meta Tags"]</label>
-        <a href="javascript:void(0)" v-on:click="showModal" class="float-end" title="@T["Edit Data"]"><i class="fas fa-edit" aria-hidden="true"></i></a>
+        <label asp-for="CustomMetaTags" class="form-label">@T["Custom Meta Tags"]</label>
+        <a href="javascript:void(0)" v-on:click="showModal" class="float-end" title="@T["Edit Data"]"><i class="fa-solid fa-edit" aria-hidden="true"></i></a>
         <meta-tags-table :data="sharedState"></meta-tags-table>
         <meta-tags-modal :data="sharedState" v-on:reload-data="reloadData()"></meta-tags-modal>
     </div>

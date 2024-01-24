@@ -7,7 +7,7 @@ namespace OrchardCore.Sitemaps
 {
     public class AdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
@@ -21,7 +21,7 @@ namespace OrchardCore.Sitemaps
                 return Task.CompletedTask;
             }
 
-            builder.Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, cfg => cfg
+            builder.Add(S["Configuration"], configuration => configuration
                     .Add(S["SEO"], S["SEO"].PrefixPosition(), seo => seo
                         .Permission(Permissions.ManageSitemaps)
                         .Add(S["Sitemaps"], S["Sitemaps"].PrefixPosition("1"), sitemaps => sitemaps

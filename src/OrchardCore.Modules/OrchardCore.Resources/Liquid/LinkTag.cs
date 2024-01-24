@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
@@ -12,7 +13,7 @@ namespace OrchardCore.Resources.Liquid
 {
     public class LinkTag
     {
-        public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter _1, TextEncoder _2, TemplateContext context)
         {
             var services = ((LiquidTemplateContext)context).Services;
             var resourceManager = services.GetRequiredService<IResourceManager>();

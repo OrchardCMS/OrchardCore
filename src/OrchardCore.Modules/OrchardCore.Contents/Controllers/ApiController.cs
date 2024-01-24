@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
@@ -18,12 +17,12 @@ namespace OrchardCore.Contents.Controllers
     [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
     public class ApiController : Controller
     {
-        private static readonly JsonMergeSettings UpdateJsonMergeSettings = new() { MergeArrayHandling = MergeArrayHandling.Replace };
+        private static readonly JsonMergeSettings _updateJsonMergeSettings = new() { MergeArrayHandling = MergeArrayHandling.Replace };
 
         private readonly IContentManager _contentManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public ApiController(
             IContentManager contentManager,
@@ -101,7 +100,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (contentItem == null)
             {
-                if (String.IsNullOrEmpty(model?.ContentType) || _contentDefinitionManager.GetTypeDefinition(model.ContentType) == null)
+                if (string.IsNullOrEmpty(model?.ContentType) || await _contentDefinitionManager.GetTypeDefinitionAsync(model.ContentType) == null)
                 {
                     return BadRequest();
                 }
@@ -131,7 +130,7 @@ namespace OrchardCore.Contents.Controllers
                     return ValidationProblem(new ValidationProblemDetails(ModelState)
                     {
                         Title = S["One or more validation errors occurred."],
-                        Detail = String.Join(", ", ModelState.Values.SelectMany(x => x.Errors.Select(x => x.ErrorMessage))),
+                        Detail = string.Join(", ", ModelState.Values.SelectMany(x => x.Errors.Select(x => x.ErrorMessage))),
                         Status = (int)HttpStatusCode.BadRequest,
                     });
                 }
@@ -143,7 +142,7 @@ namespace OrchardCore.Contents.Controllers
                     return this.ChallengeOrForbid("Api");
                 }
 
-                contentItem.Merge(model, UpdateJsonMergeSettings);
+                contentItem.Merge(model, _updateJsonMergeSettings);
 
                 await _contentManager.UpdateAsync(contentItem);
                 var result = await _contentManager.ValidateAsync(contentItem);
@@ -161,7 +160,7 @@ namespace OrchardCore.Contents.Controllers
                     return ValidationProblem(new ValidationProblemDetails(ModelState)
                     {
                         Title = S["One or more validation errors occurred."],
-                        Detail = String.Join(", ", ModelState.Values.SelectMany(x => x.Errors.Select(x => x.ErrorMessage))),
+                        Detail = string.Join(", ", ModelState.Values.SelectMany(x => x.Errors.Select(x => x.ErrorMessage))),
                         Status = (int)HttpStatusCode.BadRequest,
                     });
                 }
@@ -192,7 +191,7 @@ namespace OrchardCore.Contents.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError(String.Empty, error.ErrorMessage);
+                    ModelState.AddModelError(string.Empty, error.ErrorMessage);
                 }
             }
         }

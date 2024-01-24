@@ -11,7 +11,7 @@ namespace OrchardCore.Security.Services
         {
             if (Options.PermissionsPolicy.Length > 0)
             {
-                _policy = String.Join(SecurityHeaderDefaults.PoliciesSeparator, Options.PermissionsPolicy);
+                _policy = string.Join(SecurityHeaderDefaults.PoliciesSeparator, Options.PermissionsPolicy);
             }
         }
 

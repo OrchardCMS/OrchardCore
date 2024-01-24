@@ -38,7 +38,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
                 if (normalizedPath.EndsWith('*'))
                 {
-                    var prefix = normalizedPath.Substring(0, normalizedPath.Length - 1);
+                    var prefix = normalizedPath[..^1];
                     return requestPath.StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
                 }
 
@@ -48,11 +48,11 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
             });
         }
 
-        private string NormalizePath(string path)
+        private static string NormalizePath(string path)
         {
             if (path.StartsWith("~/", StringComparison.Ordinal))
             {
-                return path.Substring(1);
+                return path[1..];
             }
             else if (!path.StartsWith('/'))
             {
@@ -64,9 +64,6 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
             }
         }
 
-        private string AppendTrailingSlash(string path)
-        {
-            return path.EndsWith('/') ? path : path + "/";
-        }
+        private static string AppendTrailingSlash(string path) => path.EndsWith('/') ? path : path + "/";
     }
 }

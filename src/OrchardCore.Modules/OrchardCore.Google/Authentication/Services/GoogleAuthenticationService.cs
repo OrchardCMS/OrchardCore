@@ -12,7 +12,7 @@ namespace OrchardCore.Google.Authentication.Services
     public class GoogleAuthenticationService : IGoogleAuthenticationService
     {
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public GoogleAuthenticationService(
             ISiteService siteService,
@@ -61,7 +61,7 @@ namespace OrchardCore.Google.Authentication.Services
 
             var results = new List<ValidationResult>();
 
-            if (String.IsNullOrEmpty(settings.ClientID))
+            if (string.IsNullOrEmpty(settings.ClientID))
             {
                 results.Add(new ValidationResult(S["The Client ID is required."], new[]
                 {
@@ -69,7 +69,7 @@ namespace OrchardCore.Google.Authentication.Services
                 }));
             }
 
-            if (String.IsNullOrEmpty(settings.ClientSecret))
+            if (string.IsNullOrEmpty(settings.ClientSecret))
             {
                 results.Add(new ValidationResult(S["The Client Secret is required."], new[]
                 {

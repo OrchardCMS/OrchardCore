@@ -13,7 +13,7 @@ public static class HttpContextExtensions
         var host = shellSettings.RequestUrlHosts.FirstOrDefault();
 
         var hostString = httpContext.Request.Host;
-        if (host != null)
+        if (host is not null)
         {
             hostString = new HostString(host);
             if (httpContext.Request.Host.Port.HasValue)
@@ -22,14 +22,14 @@ public static class HttpContextExtensions
             }
         }
 
-        var pathString = httpContext.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? new PathString();
-        if (!String.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
+        var pathString = httpContext.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? PathString.Empty;
+        if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
         {
             pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
         }
 
         var queryString = QueryString.Empty;
-        if (appendQuery && !String.IsNullOrEmpty(entry.Token))
+        if (appendQuery && !string.IsNullOrEmpty(entry.Token))
         {
             queryString = QueryString.Create("token", entry.Token);
         }
