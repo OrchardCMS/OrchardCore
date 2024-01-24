@@ -67,7 +67,7 @@ namespace OrchardCore.OpenId.Configuration
             foreach (var key in _serverService.GetEncryptionKeysAsync().GetAwaiter().GetResult())
             {
                 options.EncryptionCredentials.Add(new EncryptingCredentials(key,
-                SecurityAlgorithms.RsaOAEP, SecurityAlgorithms.Aes256CbcHmacSha512));
+                    SecurityAlgorithms.RsaOAEP, SecurityAlgorithms.Aes256CbcHmacSha512));
             }
 
             foreach (var key in _serverService.GetSigningKeysAsync().GetAwaiter().GetResult())
