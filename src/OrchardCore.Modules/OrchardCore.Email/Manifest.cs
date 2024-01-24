@@ -7,6 +7,7 @@ using OrchardCore.Modules.Manifest;
     Version = ManifestConstants.OrchardCoreVersion,
     Description = "Provides email settings configuration.",
     Dependencies = ["OrchardCore.Resources"],
-    Category = "Messaging"
+    Category = "Messaging",
+    EnabledByDependencyOnly = true
 )]
 
