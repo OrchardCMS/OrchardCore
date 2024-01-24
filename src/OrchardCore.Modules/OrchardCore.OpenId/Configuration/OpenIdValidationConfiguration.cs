@@ -280,7 +280,9 @@ namespace OrchardCore.OpenId.Configuration
                 {
                     if (_logger.IsEnabled(LogLevel.Warning))
                     {
-                        var errors = result.Where(x => x != ValidationResult.Success).Select(x => x.ErrorMessage);
+                        var errors = result.Where(x => x != ValidationResult.Success)
+                            .Select(x => x.ErrorMessage);
+
                         _logger.LogWarning("The OpenID Connect module is not correctly configured:{Error}", String.Join("\r\n;", errors));
                     }
 
