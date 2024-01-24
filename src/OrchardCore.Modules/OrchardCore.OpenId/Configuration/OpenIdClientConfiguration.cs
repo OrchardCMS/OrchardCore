@@ -129,7 +129,7 @@ namespace OrchardCore.OpenId.Configuration
                         var errors = result.Where(x => x != ValidationResult.Success)
                             .Select(x => x.ErrorMessage);
 
-                        _logger.LogWarning("The Client Settings of OpenID Connect module is not correctly configured:{Error}", String.Join("\r\n;", errors));
+                        _logger.LogWarning("The OpenID client settings are invalid: {Errors}", string.Join("\r\n;", errors));
                     }
 
                     return null;
