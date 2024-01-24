@@ -84,7 +84,7 @@ namespace OrchardCore.OpenId.Configuration
                 }
 
                 options.AddScheme<OpenIddictValidationAspNetCoreHandler>(
-                OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme, displayName: null);
+                    OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme, displayName: null);
             }).GetAwaiter().GetResult();
         }
 
