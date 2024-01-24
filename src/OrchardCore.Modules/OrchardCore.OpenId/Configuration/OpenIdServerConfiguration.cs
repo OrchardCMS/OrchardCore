@@ -229,9 +229,6 @@ namespace OrchardCore.OpenId.Configuration
         private async Task<OpenIdServerSettings> GetServerSettingsAsync()
         {
             var settings = await _serverService.GetSettingsAsync();
-
-
-
             var result = await _serverService.ValidateSettingsAsync(settings);
             if (result.Any(result => result != ValidationResult.Success))
             {
