@@ -230,6 +230,7 @@ namespace OrchardCore.OpenId.Configuration
         {
             var settings = await _serverService.GetSettingsAsync();
             var result = await _serverService.ValidateSettingsAsync(settings);
+
             if (result.Any(result => result != ValidationResult.Success))
             {
                 if (_shellSettings.State == TenantState.Running)
