@@ -155,7 +155,7 @@ namespace OrchardCore.OpenId.Configuration
                 foreach (var key in await service.GetEncryptionKeysAsync())
                 {
                     options.EncryptionCredentials.Add(new EncryptingCredentials(key,
-                    SecurityAlgorithms.RsaOAEP, SecurityAlgorithms.Aes256CbcHmacSha512));
+                        SecurityAlgorithms.RsaOAEP, SecurityAlgorithms.Aes256CbcHmacSha512));
                 }
 
                 // When the server is another tenant, don't allow the current tenant
