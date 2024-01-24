@@ -275,6 +275,7 @@ namespace OrchardCore.OpenId.Configuration
             var settings = await _validationService.GetSettingsAsync();
 
             var result = await _validationService.ValidateSettingsAsync(settings);
+
             if (result.Any(x => x != ValidationResult.Success))
             {
                 if (_shellSettings.State == TenantState.Running)
