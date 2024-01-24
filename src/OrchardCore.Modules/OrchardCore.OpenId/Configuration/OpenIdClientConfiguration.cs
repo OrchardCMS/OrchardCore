@@ -133,7 +133,6 @@ namespace OrchardCore.OpenId.Configuration
                         _logger.LogWarning("The Client Settings of OpenID Connect module is not correctly configured:{Error}", String.Join("\r\n;", errors));
                     }
 
-
                     return null;
                 }
             }
