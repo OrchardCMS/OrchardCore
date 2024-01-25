@@ -35,7 +35,7 @@ public class UserLocalizationDisplayDriver : SectionDisplayDriver<User, UserLoca
             var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
             var currentUserCulture = _httpContextAccessor.HttpContext.User.GetCulture();
 
-            if (currentUserCulture == null)
+            if (currentUserCulture == null || !supportedCultures.Contains(currentUserCulture))
             {
                 currentUserCulture = defaultCulture;
             }
