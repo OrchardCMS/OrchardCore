@@ -1,23 +1,27 @@
 using System.Threading.Tasks;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Users.TimeZone.Services;
-
-/// <summary>
-/// Provides the time zone defined for the currently logged-in user for the current scope (request).
-/// </summary>
-public class UserTimeZoneSelector : ITimeZoneSelector
+namespace OrchardCore.Users.TimeZone.Services
 {
-    private readonly UserTimeZoneService _userTimeZoneService;
-
-    public UserTimeZoneSelector(UserTimeZoneService userTimeZoneService)
+    /// <summary>
+    /// Provides the timezone defined for the currently logged-in user for the current scope (request).
+    /// </summary>
+    public class UserTimeZoneSelector : ITimeZoneSelector
     {
-        _userTimeZoneService = userTimeZoneService;
+        private readonly UserTimeZoneService _userTimeZoneService;
+
+        public UserTimeZoneSelector(UserTimeZoneService userTimeZoneService)
+        {
+            _userTimeZoneService = userTimeZoneService;
+        }
+
+        public Task<TimeZoneSelectorResult> GetTimeZoneAsync()
+        {
+            return Task.FromResult(new TimeZoneSelectorResult
+            {
+                Priority = 100,
+                TimeZoneId = async () => (await _userTimeZoneService.GetUserTimeZoneAsync())?.TimeZoneId
+            });
+        }
     }
-
-    public Task<TimeZoneSelectorResult> GetTimeZoneAsync() => Task.FromResult(new TimeZoneSelectorResult
-    {
-        Priority = 100,
-        TimeZoneId = async () => (await _userTimeZoneService.GetUserTimeZoneAsync())?.TimeZoneId
-    });
 }
