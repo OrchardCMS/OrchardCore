@@ -144,7 +144,8 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             {
                 // If there is no display name, let's use the field name by default.
                 settings.DisplayName = fieldName;
-                fieldDefinition.PopulateSettings(settings);
+                fieldDefinition.Settings.Remove(nameof(ContentPartFieldSettings));
+                fieldDefinition.Settings.Add(nameof(ContentPartFieldSettings), JNode.FromObject(settings));
             }
 
             _fields.Add(fieldDefinition);
@@ -202,7 +203,8 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             {
                 // If there is no display name, let's use the field name by default.
                 settings.DisplayName = fieldName;
-                fieldDefinition.PopulateSettings(settings);
+                fieldDefinition.Settings.Remove(nameof(ContentPartFieldSettings));
+                fieldDefinition.Settings.Add(nameof(ContentPartFieldSettings), JNode.FromObject(settings));
             }
 
             _fields.Add(fieldDefinition);
