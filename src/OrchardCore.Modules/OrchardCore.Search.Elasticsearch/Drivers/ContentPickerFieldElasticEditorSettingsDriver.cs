@@ -25,6 +25,7 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
                 var settings = partFieldDefinition.Settings.ToObject<ContentPickerFieldElasticEditorSettings>();
 
                 model.Index = settings.Index;
+
                 model.Indices = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
             })
                 .Location("Editor");

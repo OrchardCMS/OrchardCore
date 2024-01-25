@@ -83,7 +83,7 @@ public class AdminController : Controller
             return Forbid();
         }
 
-        if (!_azureAIOptions.IsConfigurationExists())
+        if (!_azureAIOptions.ConfigurationExists())
         {
             return NotConfigured();
         }
@@ -148,7 +148,7 @@ public class AdminController : Controller
             return Forbid();
         }
 
-        if (!_azureAIOptions.IsConfigurationExists())
+        if (!_azureAIOptions.ConfigurationExists())
         {
             return BadRequest();
         }
@@ -186,7 +186,7 @@ public class AdminController : Controller
             return Forbid();
         }
 
-        if (!_azureAIOptions.IsConfigurationExists())
+        if (!_azureAIOptions.ConfigurationExists())
         {
             return NotConfigured();
         }
@@ -209,7 +209,7 @@ public class AdminController : Controller
             return Forbid();
         }
 
-        if (!_azureAIOptions.IsConfigurationExists())
+        if (!_azureAIOptions.ConfigurationExists())
         {
             return BadRequest();
         }
@@ -278,7 +278,7 @@ public class AdminController : Controller
             return Forbid();
         }
 
-        if (!_azureAIOptions.IsConfigurationExists())
+        if (!_azureAIOptions.ConfigurationExists())
         {
             return NotConfigured();
         }
@@ -322,7 +322,7 @@ public class AdminController : Controller
             return Forbid();
         }
 
-        if (!_azureAIOptions.IsConfigurationExists())
+        if (!_azureAIOptions.ConfigurationExists())
         {
             return BadRequest();
         }
@@ -397,7 +397,7 @@ public class AdminController : Controller
             return Forbid();
         }
 
-        if (!_azureAIOptions.IsConfigurationExists())
+        if (!_azureAIOptions.ConfigurationExists())
         {
             return BadRequest();
         }
@@ -433,7 +433,7 @@ public class AdminController : Controller
             return Forbid();
         }
 
-        if (!_azureAIOptions.IsConfigurationExists())
+        if (!_azureAIOptions.ConfigurationExists())
         {
             return BadRequest();
         }
@@ -467,7 +467,7 @@ public class AdminController : Controller
             return Forbid();
         }
 
-        if (!_azureAIOptions.IsConfigurationExists())
+        if (!_azureAIOptions.ConfigurationExists())
         {
             return BadRequest();
         }
