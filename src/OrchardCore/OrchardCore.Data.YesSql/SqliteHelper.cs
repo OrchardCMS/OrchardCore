@@ -12,7 +12,7 @@ public static class SqliteHelper
     public static string GetConnectionString(SqliteOptions sqliteOptions, string databaseFolder) =>
         new SqliteConnectionStringBuilder
         {
-            DataSource = Path.Combine(databaseFolder, sqliteOptions.DatabaseName),
+            DataSource = Path.Combine(databaseFolder, "yessql.db"),
             Cache = SqliteCacheMode.Shared,
             Pooling = sqliteOptions.UseConnectionPooling
         }
