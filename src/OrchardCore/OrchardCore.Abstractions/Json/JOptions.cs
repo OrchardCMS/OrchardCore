@@ -16,7 +16,7 @@ public static class JOptions
         ReadCommentHandling = JsonCommentHandling.Skip,
         PropertyNameCaseInsensitive = true,
         AllowTrailingCommas = true,
-        WriteIndented = false,
+        WriteIndented = false
     };
 
     public static readonly JsonSerializerOptions Default;

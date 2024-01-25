@@ -6,7 +6,7 @@ namespace OrchardCore.Shortcodes.Models
 {
     public class ShortcodeTemplatesDocument : Document
     {
-        public Dictionary<string, ShortcodeTemplate> ShortcodeTemplates { get; } = new Dictionary<string, ShortcodeTemplate>(StringComparer.OrdinalIgnoreCase);
+        public Dictionary<string, ShortcodeTemplate> ShortcodeTemplates { get; init; } = new Dictionary<string, ShortcodeTemplate>(StringComparer.OrdinalIgnoreCase);
     }
 
     public class ShortcodeTemplate
