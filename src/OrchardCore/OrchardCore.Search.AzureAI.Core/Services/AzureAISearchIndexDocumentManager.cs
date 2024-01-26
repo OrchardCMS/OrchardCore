@@ -322,7 +322,7 @@ public class AzureAIIndexDocumentManager(
 
     private static bool UseSingleStringValue(DocumentIndexOptions options, AzureAISearchIndexMap map)
     {
-        // Full-test, Display-text-analyzed and keyword fieds support a single string value.
+        // Full-text, Display-text-analyzed and all keyword fields should support a single string value.
         return map.AzureFieldKey == AzureAISearchIndexManager.FullTextKey
             || map.AzureFieldKey == AzureAISearchIndexManager.DisplayTextAnalyzedKey
             || options.HasFlag(DocumentIndexOptions.Keyword);
