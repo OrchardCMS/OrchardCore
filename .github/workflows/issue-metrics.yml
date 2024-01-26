@@ -47,7 +47,7 @@ jobs:
         SEARCH_QUERY: 'repo:OrchardCMS/OrchardCore is:pr created:${{ env.LAST_MONTH }} -label:dontmerge -label:notready -is:draft'
         HIDE_TIME_TO_ANSWER: true
 
-    - name: Concatentate Issue and Pull Request Metrics
+    - name: Concatenate Issue and Pull Request Metrics
       shell: pwsh
       run: |
         $content = (Get-Content -Path ./issue_metrics.md -Raw) -replace '# Issue Metrics', '# Pull Request Metrics'
@@ -60,7 +60,7 @@ jobs:
         SEARCH_QUERY: 'repo:OrchardCMS/OrchardCore type:discussions created:${{ env.LAST_MONTH }} category:Q&A'
         HIDE_TIME_TO_CLOSE: true
 
-    - name: Concatentate Issue/PR and Discussion Metrics
+    - name: Concatenate Issue/PR and Discussion Metrics
       shell: pwsh
       run: |
         $content = (Get-Content -Path ./issue_metrics.md -Raw) -replace '# Issue Metrics', '# Discussion Metrics'
