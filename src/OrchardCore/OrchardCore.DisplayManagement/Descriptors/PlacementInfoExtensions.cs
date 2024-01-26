@@ -22,7 +22,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
             }
             else if (second != null)
             {
-                PlacementInfo combined = new();
+                var combined = new PlacementInfo();
 
                 combined.Alternates = first.Alternates.Combine(second.Alternates);
                 combined.Wrappers = first.Wrappers.Combine(second.Wrappers);
@@ -55,7 +55,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
             }
             else if (second != null)
             {
-                AlternatesCollection combined = new();
+                var combined = new AlternatesCollection();
 
                 combined.AddRange(first);
                 combined.AddRange(second);
