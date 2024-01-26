@@ -112,20 +112,9 @@ public class DeploymentStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddTransient<IDeploymentSource, AzureAISearchIndexDeploymentSource>();
-        services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AzureAISearchIndexDeploymentStep>());
-        services.AddScoped<IDisplayDriver<DeploymentStep>, AzureAISearchIndexDeploymentStepDriver>();
-
-        services.AddTransient<IDeploymentSource, AzureAISearchSettingsDeploymentSource>();
-        services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AzureAISearchSettingsDeploymentStep>());
-        services.AddScoped<IDisplayDriver<DeploymentStep>, AzureAISearchSettingsDeploymentStepDriver>();
-
-        services.AddTransient<IDeploymentSource, AzureAISearchIndexRebuildDeploymentSource>();
-        services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AzureAISearchIndexRebuildDeploymentStep>());
-        services.AddScoped<IDisplayDriver<DeploymentStep>, AzureAISearchIndexRebuildDeploymentStepDriver>();
-
-        services.AddTransient<IDeploymentSource, AzureAISearchIndexResetDeploymentSource>();
-        services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AzureAISearchIndexResetDeploymentStep>());
-        services.AddScoped<IDisplayDriver<DeploymentStep>, AzureAISearchIndexResetDeploymentStepDriver>();
+        services.AddDeployment<AzureAISearchIndexDeploymentSource, AzureAISearchIndexDeploymentStep, AzureAISearchIndexDeploymentStepDriver>();
+        services.AddDeployment<AzureAISearchSettingsDeploymentSource, AzureAISearchSettingsDeploymentStep, AzureAISearchSettingsDeploymentStepDriver>();
+        services.AddDeployment<AzureAISearchIndexRebuildDeploymentSource, AzureAISearchIndexRebuildDeploymentStep, AzureAISearchIndexRebuildDeploymentStepDriver>();
+        services.AddDeployment<AzureAISearchIndexResetDeploymentSource, AzureAISearchIndexResetDeploymentStep, AzureAISearchIndexResetDeploymentStepDriver>();
     }
 }

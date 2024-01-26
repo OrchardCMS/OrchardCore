@@ -69,7 +69,7 @@ This will allow for the Razor Pages to be reloaded without the need to recompile
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="OrchardCore.Application.Cms.Core.Targets" Version="1.8.1" />
+  <PackageReference Include="OrchardCore.Application.Cms.Core.Targets" Version="1.8.2" />
 </ItemGroup>
 ```
 
