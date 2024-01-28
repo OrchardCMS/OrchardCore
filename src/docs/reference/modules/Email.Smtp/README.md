@@ -8,12 +8,12 @@ Enabling the `OrchardCore.Email.Smtp` feature will allow the user to set the fol
 
 | Setting | Description |
 | --- | --- |
-| `DefaultSender` | The email of the sender. This will overrides the `DefaultSender` setting in [OrchardCore.Email](../Email/README.md). |
+| `DefaultSender` | The email of the sender. This will override the `DefaultSender` setting in [OrchardCore.Email](../Email/README.md). |
 | `DeliveryMethod` | The method for sending the email, `SmtpDeliveryMethod.Network` (online) or `SmtpDeliveryMethod.SpecifiedPickupDirectory` (offline). |
 | `PickupDirectoryLocation` | The directory location for the mailbox (`SmtpDeliveryMethod.SpecifiedPickupDirectory`). |
 | `Host` | The SMTP server. |
 | `Port` | The SMTP port number. |
-| `AutoSelectEncryption` | Whether the SMTP select the encryption automatically. |
+| `AutoSelectEncryption` | Whether the SMTP selects the encryption automatically. |
 | `RequireCredentials` | Whether the SMTP requires the user credentials. |
 | `UseDefaultCredentials` | Whether the SMTP will use the default credentials. |
 | `EncryptionMethod` | The SMTP encryption method `SmtpEncryptionMethod.None`, `SmtpEncryptionMethod.SSLTLS` or `SmtpEncryptionMethodSTARTTLS`. |
