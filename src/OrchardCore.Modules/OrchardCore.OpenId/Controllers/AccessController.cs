@@ -656,7 +656,7 @@ namespace OrchardCore.OpenId.Controllers
             // Note: the current tenant name is always added as a valid resource/audience,
             // which allows the end user to use the corresponding tokens with the APIs
             // located in the current tenant without having to explicitly register a scope.
-            var resources = new List<string>(1)
+            var resources = new List<string>()
             {
                 OpenIdConstants.Prefixes.Tenant + _shellSettings.Name
             };

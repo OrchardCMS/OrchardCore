@@ -225,7 +225,7 @@ namespace OrchardCore.Flows.Drivers
         private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(ContentTypePartDefinition typePartDefinition)
         {
             var settings = typePartDefinition.GetSettings<BagPartSettings>();
-            var contentTypes = [];
+            var contentTypes = Enumerable.Empty<ContentTypeDefinition>();
 
             if (settings.ContainedStereotypes != null && settings.ContainedStereotypes.Length > 0)
             {

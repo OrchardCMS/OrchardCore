@@ -35,7 +35,7 @@ public class NullRoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
         => Task.FromResult<IRole>(null);
 
     public Task<IList<Claim>> GetClaimsAsync(IRole role, CancellationToken cancellationToken = default)
-        => Task.FromResult<IList<Claim>>(new List<Claim>());
+        => Task.FromResult<IList<Claim>>([]);
 
     public Task<string> GetNormalizedRoleNameAsync(IRole role, CancellationToken cancellationToken)
         => Task.FromResult<string>(null);
