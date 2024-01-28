@@ -20,7 +20,7 @@ public class AccountBaseController : Controller
             var input = new Dictionary<string, object>
             {
                 ["UserName"] = user.UserName,
-                ["ExternalClaims"] = info?.Principal?.GetSerializableClaims() ?? Enumerable.Empty<SerializableClaim>(),
+                ["ExternalClaims"] = info?.Principal?.GetSerializableClaims() ?? Array.Empty<SerializableClaim>(),
                 ["Roles"] = u.RoleNames,
                 ["Provider"] = info?.LoginProvider
             };

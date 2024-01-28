@@ -247,7 +247,7 @@ namespace OrchardCore.Tenants.Controllers
 
             var allSettings = _shellHost.GetAllSettings();
 
-            foreach (var tenantName in model.TenantNames ?? Enumerable.Empty<string>())
+            foreach (var tenantName in model.TenantNames ?? Array.Empty<string>())
             {
                 if (!_shellHost.TryGetSettings(tenantName, out var shellSettings))
                 {

@@ -24,21 +24,21 @@ namespace OrchardCore.Sitemaps.Routing
         {
             if (address.AmbientValues == null || address.ExplicitValues == null)
             {
-                return Enumerable.Empty<Endpoint>();
+                return Array.Empty<Endpoint>();
             }
 
             string sitemapId = address.ExplicitValues[_options.SitemapIdKey]?.ToString();
 
             if (string.IsNullOrEmpty(sitemapId))
             {
-                return Enumerable.Empty<Endpoint>();
+                return Array.Empty<Endpoint>();
             }
 
             (var found, var path) = _entries.TryGetPathBySitemapIdAsync(sitemapId).GetAwaiter().GetResult();
 
             if (!found)
             {
-                return Enumerable.Empty<Endpoint>();
+                return Array.Empty<Endpoint>();
             }
 
             if (Match(address.ExplicitValues))
@@ -73,7 +73,7 @@ namespace OrchardCore.Sitemaps.Routing
                 return new[] { endpoint };
             }
 
-            return Enumerable.Empty<Endpoint>();
+            return Array.Empty<Endpoint>();
         }
 
         private bool Match(RouteValueDictionary explicitValues)

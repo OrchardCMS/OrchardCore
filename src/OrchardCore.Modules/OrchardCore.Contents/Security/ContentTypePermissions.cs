@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -37,7 +38,7 @@ namespace OrchardCore.Contents.Security
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
         {
-            return Enumerable.Empty<PermissionStereotype>();
+            return Array.Empty<PermissionStereotype>();
         }
     }
 }

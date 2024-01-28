@@ -102,7 +102,7 @@ namespace OrchardCore.Liquid.Services
 
         public LiquidViewTemplate GetCachedTemplate(string source)
         {
-            var errors = Enumerable.Empty<string>();
+            var errors = Array.Empty<string>();
 
             var result = _memoryCache.GetOrCreate(source, (ICacheEntry e) =>
             {

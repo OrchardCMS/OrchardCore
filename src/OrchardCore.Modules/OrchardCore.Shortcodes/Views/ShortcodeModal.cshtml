@@ -11,7 +11,7 @@ and call @await DisplayAsync(await New.ShortcodeModal()) from the fields view
     Context.Items["ShortcodeModal"] = new object();
     var shortcodeDescriptors = await ShortcodeDescriptorManager.GetShortcodeDescriptors();
     var categories = shortcodeDescriptors
-        .SelectMany(shortcodeDescriptor => shortcodeDescriptor.Categories ?? Enumerable.Empty<string>())
+        .SelectMany(shortcodeDescriptor => shortcodeDescriptor.Categories ?? Array.Empty<string>())
         .Distinct(StringComparer.OrdinalIgnoreCase)
         .OrderBy(category => category)
         .ToList();

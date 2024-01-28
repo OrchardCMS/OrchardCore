@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -168,7 +169,7 @@ namespace OrchardCore.Lists.Drivers
         {
             if (settings.ContainedContentTypes == null)
             {
-                return Enumerable.Empty<ContentTypeDefinition>();
+                return Array.Empty<ContentTypeDefinition>();
             }
 
             var definitions = new List<ContentTypeDefinition>();

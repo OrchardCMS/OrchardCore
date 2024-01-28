@@ -25,7 +25,7 @@ namespace OrchardCore.Autoroute.Routing
         {
             if (address.AmbientValues == null || address.ExplicitValues == null)
             {
-                return Enumerable.Empty<Endpoint>();
+                return Array.Empty<Endpoint>();
             }
 
             // Try to get the contained item first, then the container content item
@@ -37,14 +37,14 @@ namespace OrchardCore.Autoroute.Routing
 
             if (string.IsNullOrEmpty(contentItemId))
             {
-                return Enumerable.Empty<Endpoint>();
+                return Array.Empty<Endpoint>();
             }
 
             (var found, var autorouteEntry) = _entries.TryGetEntryByContentItemIdAsync(contentItemId).GetAwaiter().GetResult();
 
             if (!found)
             {
-                return Enumerable.Empty<Endpoint>();
+                return Array.Empty<Endpoint>();
             }
 
             if (Match(address.ExplicitValues))
@@ -82,7 +82,7 @@ namespace OrchardCore.Autoroute.Routing
                 return new[] { endpoint };
             }
 
-            return Enumerable.Empty<Endpoint>();
+            return Array.Empty<Endpoint>();
         }
 
         private bool Match(RouteValueDictionary explicitValues)

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -24,7 +25,7 @@ namespace OrchardCore.ContentManagement.Metadata.Models
         {
             Name = name;
             DisplayName = displayName;
-            Parts = Enumerable.Empty<ContentTypePartDefinition>();
+            Parts = Array.Empty<ContentTypePartDefinition>();
             Settings = new JObject();
         }
 

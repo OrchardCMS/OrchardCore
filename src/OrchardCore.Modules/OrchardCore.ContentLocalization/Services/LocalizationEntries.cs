@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -53,7 +54,7 @@ namespace OrchardCore.ContentLocalization.Services
                 return localizations;
             }
 
-            return Enumerable.Empty<LocalizationEntry>();
+            return Array.Empty<LocalizationEntry>();
         }
 
         public async Task UpdateEntriesAsync()

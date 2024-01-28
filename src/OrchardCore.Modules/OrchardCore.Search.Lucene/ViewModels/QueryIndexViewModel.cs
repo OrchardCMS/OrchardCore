@@ -15,6 +15,6 @@ namespace OrchardCore.Search.Lucene.ViewModels
         public TimeSpan Duration { get; set; }
 
         [BindNever]
-        public IEnumerable<Document> Documents { get; set; } = Enumerable.Empty<Document>();
+        public IEnumerable<Document> Documents { get; set; } = Array.Empty<Document>();
     }
 }

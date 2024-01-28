@@ -37,9 +37,9 @@ namespace OrchardCore.Benchmark
 
             var shapeFactory = new DefaultShapeFactory(
                 serviceProvider: new ServiceCollection().BuildServiceProvider(),
-                events: Enumerable.Empty<IShapeFactoryEvents>(),
+                events: Array.Empty<IShapeFactoryEvents>(),
                 shapeTableManager: new TestShapeTableManager(defaultShapeTable),
-                themeManager: new MockThemeManager(new ExtensionInfo("path", new ManifestInfo(new ModuleAttribute()), (x, y) => Enumerable.Empty<IFeatureInfo>())));
+                themeManager: new MockThemeManager(new ExtensionInfo("path", new ManifestInfo(new ModuleAttribute()), (x, y) => Array.Empty<IFeatureInfo>())));
 
             _templateContext.AmbientValues["DisplayHelper"] = new DisplayHelper(null, shapeFactory, null);
         }

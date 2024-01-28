@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using BenchmarkDotNet.Attributes;
@@ -14,7 +15,7 @@ namespace OrchardCore.Benchmark
     public class ResourceManagerBenchmark
     {
         private static readonly ShellFileVersionProvider _fileVersionProvider = new(
-            Enumerable.Empty<IStaticFileProvider>(),
+            Array.Empty<IStaticFileProvider>(),
             new FakeWebHostEnvironment(),
             new MemoryCache(Options.Create(new MemoryCacheOptions())));
 

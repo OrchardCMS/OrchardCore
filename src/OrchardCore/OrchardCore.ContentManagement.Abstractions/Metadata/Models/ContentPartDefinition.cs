@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
@@ -9,7 +10,7 @@ namespace OrchardCore.ContentManagement.Metadata.Models
         public ContentPartDefinition(string name)
         {
             Name = name;
-            Fields = Enumerable.Empty<ContentPartFieldDefinition>();
+            Fields = Array.Empty<ContentPartFieldDefinition>();
             Settings = new JObject();
         }
 

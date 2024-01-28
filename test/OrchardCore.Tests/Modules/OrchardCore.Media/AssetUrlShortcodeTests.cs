@@ -31,8 +31,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
                 Mock.Of<IFileStore>(),
                 "/media",
                 cdnBaseUrl,
-                Enumerable.Empty<IMediaEventHandler>(),
-                Enumerable.Empty<IMediaCreatingEventHandler>(),
+                Array.Empty<IMediaEventHandler>(),
+                Array.Empty<IMediaCreatingEventHandler>(),
                 Mock.Of<ILogger<DefaultMediaFileStore>>());
 
             var sanitizer = new HtmlSanitizerService(Options.Create(new HtmlSanitizerOptions()));
@@ -45,7 +45,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
 
             var assetUrlProvider = new AssetUrlShortcodeProvider(fileStore, httpContextAccessor, options);
 
-            var processor = new ShortcodeService(new IShortcodeProvider[] { assetUrlProvider }, Enumerable.Empty<IShortcodeContextProvider>());
+            var processor = new ShortcodeService(new IShortcodeProvider[] { assetUrlProvider }, Array.Empty<IShortcodeContextProvider>());
 
             var processed = await processor.ProcessAsync(text);
             // The markdown part sanitizes after processing.
@@ -59,7 +59,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
         [InlineData(@"foo <a href=""[asset_url]bàr.jpeg?width=100 onload=""javascript: alert('XSS')""[/asset_url]"">baz</a>", @"foo <a href=""[asset_url]bàr.jpeg?width=100 onload="">baz</a>")]
         public void ShouldSanitizeUnprocessed(string text, string expected)
         {
-            // The html parts santize on save, so do not process the shortcode first.
+            // The html parts sanitize on save, so do not process the shortcode first.
             var sanitizer = new HtmlSanitizerService(Options.Create(new HtmlSanitizerOptions()));
             var sanitized = sanitizer.Sanitize(text);
             Assert.Equal(expected, sanitized);

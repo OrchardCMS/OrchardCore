@@ -45,8 +45,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
                 Mock.Of<IFileStore>(),
                 "/media",
                 cdnBaseUrl,
-                Enumerable.Empty<IMediaEventHandler>(),
-                Enumerable.Empty<IMediaCreatingEventHandler>(),
+                Array.Empty<IMediaEventHandler>(),
+                Array.Empty<IMediaCreatingEventHandler>(),
                 Mock.Of<ILogger<DefaultMediaFileStore>>());
 
             var fileVersionProvider = Mock.Of<IFileVersionProvider>();
@@ -61,7 +61,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
 
             var imageProvider = new ImageShortcodeProvider(fileStore, sanitizer, httpContextAccessor, options, fileVersionProvider);
 
-            var processor = new ShortcodeService(new IShortcodeProvider[] { imageProvider }, Enumerable.Empty<IShortcodeContextProvider>());
+            var processor = new ShortcodeService(new IShortcodeProvider[] { imageProvider }, Array.Empty<IShortcodeContextProvider>());
 
             var processed = await processor.ProcessAsync(text);
             Assert.Equal(expected, processed);

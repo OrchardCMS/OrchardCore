@@ -22,7 +22,7 @@ namespace OrchardCore.HomeRoute.Routing
         {
             if (address.AmbientValues == null || address.ExplicitValues == null)
             {
-                return Enumerable.Empty<Endpoint>();
+                return Array.Empty<Endpoint>();
             }
 
             var homeRoute = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult().HomeRoute;
@@ -54,7 +54,7 @@ namespace OrchardCore.HomeRoute.Routing
                 return new[] { endpoint };
             }
 
-            return Enumerable.Empty<Endpoint>();
+            return Array.Empty<Endpoint>();
         }
 
         private static bool Match(RouteValueDictionary routeValues, RouteValueDictionary explicitValues)

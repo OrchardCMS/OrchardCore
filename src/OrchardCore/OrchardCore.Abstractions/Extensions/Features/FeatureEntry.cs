@@ -18,6 +18,6 @@ namespace OrchardCore.Environment.Extensions.Features
         }
 
         public IFeatureInfo FeatureInfo { get; }
-        public IEnumerable<Type> ExportedTypes { get; } = Enumerable.Empty<Type>();
+        public IEnumerable<Type> ExportedTypes { get; } = Array.Empty<Type>();
     }
 }

@@ -14,6 +14,6 @@ namespace OrchardCore.Search.Elasticsearch.ViewModels
         public TimeSpan Duration { get; set; }
 
         [BindNever]
-        public IEnumerable<Dictionary<string, object>> Documents { get; set; } = Enumerable.Empty<Dictionary<string, object>>();
+        public IEnumerable<Dictionary<string, object>> Documents { get; set; } = Array.Empty<Dictionary<string, object>>();
     }
 }

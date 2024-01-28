@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -177,7 +178,7 @@ namespace OrchardCore.Environment.Shell
                     _logger.LogWarning(" To enable '{FeatureId}', additional features need to be enabled.", featureInfo.Id);
                 }
 
-                return Enumerable.Empty<IFeatureInfo>();
+                return Array.Empty<IFeatureInfo>();
             }
 
             return featuresToEnable;
@@ -204,7 +205,7 @@ namespace OrchardCore.Environment.Shell
                     _logger.LogWarning(" To disable '{FeatureId}', additional features need to be disabled.", featureInfo.Id);
                 }
 
-                return Enumerable.Empty<IFeatureInfo>();
+                return Array.Empty<IFeatureInfo>();
             }
 
             return featuresToDisable;

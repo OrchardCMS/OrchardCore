@@ -198,7 +198,7 @@ namespace OrchardCore.Workflows.Http.Activities
         private static IEnumerable<KeyValuePair<string, string>> ParseHeaders(string text)
         {
             if (string.IsNullOrWhiteSpace(text))
-                return Enumerable.Empty<KeyValuePair<string, string>>();
+                return Array.Empty<KeyValuePair<string, string>>();
 
             return
                 from header in text.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim())

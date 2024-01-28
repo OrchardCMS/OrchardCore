@@ -99,8 +99,8 @@ namespace OrchardCore.Modules
             else
             {
                 Name = Root = SubPath = string.Empty;
-                Assets = Enumerable.Empty<Asset>();
-                AssetPaths = Enumerable.Empty<string>();
+                Assets = Array.Empty<Asset>();
+                AssetPaths = Array.Empty<string>();
                 ModuleInfo = new ModuleAttribute();
             }
 

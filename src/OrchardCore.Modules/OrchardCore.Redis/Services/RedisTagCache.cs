@@ -61,7 +61,7 @@ namespace OrchardCore.Redis.Services
                 if (_redis.Database == null)
                 {
                     _logger.LogError("Fails to get '{TagName}' items.", _prefix + tag);
-                    return Enumerable.Empty<string>();
+                    return Array.Empty<string>();
                 }
             }
 
@@ -71,7 +71,7 @@ namespace OrchardCore.Redis.Services
 
                 if (values == null || values.Length == 0)
                 {
-                    return Enumerable.Empty<string>();
+                    return Array.Empty<string>();
                 }
 
                 return values.Select(v => (string)v).ToArray();
@@ -81,7 +81,7 @@ namespace OrchardCore.Redis.Services
                 _logger.LogError(e, "Fails to get '{TagName}' items.", _prefix + tag);
             }
 
-            return Enumerable.Empty<string>();
+            return Array.Empty<string>();
         }
 
         public async Task RemoveTagAsync(string tag)

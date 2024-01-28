@@ -127,7 +127,7 @@ namespace OrchardCore.Environment.Extensions
             {
                 if (!_features.TryGetValue(key, out var entry))
                 {
-                    return Enumerable.Empty<IFeatureInfo>();
+                    return Array.Empty<IFeatureInfo>();
                 }
 
                 var feature = entry.FeatureInfo;
@@ -144,7 +144,7 @@ namespace OrchardCore.Environment.Extensions
             {
                 if (!_features.TryGetValue(key, out var entry))
                 {
-                    return Enumerable.Empty<IFeatureInfo>();
+                    return Array.Empty<IFeatureInfo>();
                 }
 
                 var feature = entry.FeatureInfo;

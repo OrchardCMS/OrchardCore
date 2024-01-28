@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.Data;
 using OrchardCore.Recipes.Models;
@@ -42,7 +42,7 @@ namespace OrchardCore.Setup.ViewModels
         public string PasswordConfirmation { get; set; }
 
         [BindNever]
-        public IEnumerable<DatabaseProvider> DatabaseProviders { get; set; } = Enumerable.Empty<DatabaseProvider>();
+        public IEnumerable<DatabaseProvider> DatabaseProviders { get; set; } = Array.Empty<DatabaseProvider>();
 
         [BindNever]
         public IEnumerable<RecipeDescriptor> Recipes { get; set; }

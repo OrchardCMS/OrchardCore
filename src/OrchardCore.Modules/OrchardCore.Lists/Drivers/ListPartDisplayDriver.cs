@@ -172,7 +172,7 @@ namespace OrchardCore.Lists.Drivers
 
         private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(ListPartSettings settings)
         {
-            var contentTypes = settings.ContainedContentTypes ?? Enumerable.Empty<string>();
+            var contentTypes = settings.ContainedContentTypes ?? Array.Empty<string>();
 
             var definitions = new List<ContentTypeDefinition>();
 

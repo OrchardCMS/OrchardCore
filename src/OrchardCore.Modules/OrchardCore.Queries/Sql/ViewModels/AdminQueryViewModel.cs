@@ -17,7 +17,7 @@ namespace OrchardCore.Queries.Sql.ViewModels
         public TimeSpan Elapsed { get; set; } = TimeSpan.Zero;
 
         [BindNever]
-        public IEnumerable<dynamic> Documents { get; set; } = Enumerable.Empty<dynamic>();
+        public IEnumerable<dynamic> Documents { get; set; } = Array.Empty<dynamic>();
 
         [BindNever]
         public string FactoryName { get; set; }

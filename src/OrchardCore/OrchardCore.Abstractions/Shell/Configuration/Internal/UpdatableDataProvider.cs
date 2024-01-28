@@ -15,7 +15,7 @@ namespace OrchardCore.Environment.Shell.Configuration.Internal
 
         public UpdatableDataProvider(IEnumerable<KeyValuePair<string, string>> initialData)
         {
-            initialData ??= Enumerable.Empty<KeyValuePair<string, string>>();
+            initialData ??= Array.Empty<KeyValuePair<string, string>>();
             Data = new(initialData, StringComparer.OrdinalIgnoreCase);
         }
 

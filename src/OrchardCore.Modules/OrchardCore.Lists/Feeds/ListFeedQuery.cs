@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Mvc;
@@ -102,7 +101,7 @@ namespace OrchardCore.Lists.Feeds
             IEnumerable<ContentItem> items;
 
             items = itemsCount == 0
-                ? Enumerable.Empty<ContentItem>()
+                ? Array.Empty<ContentItem>()
                 : await _session.Query<ContentItem>()
                     .With<ContainedPartIndex>(x => x.ListContentItemId == contentItem.ContentItemId)
                     .With<ContentItemIndex>(x => x.Published)

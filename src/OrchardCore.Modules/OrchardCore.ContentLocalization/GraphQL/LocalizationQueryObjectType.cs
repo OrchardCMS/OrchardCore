@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,7 +34,7 @@ namespace OrchardCore.ContentLocalization.GraphQL
                    {
                        var contentItem = await contentLocalizationManager.GetContentItemAsync(ctx.Source.LocalizationSet, culture);
 
-                       return contentItem != null ? new[] { contentItem } : Enumerable.Empty<ContentItem>();
+                       return contentItem != null ? new[] { contentItem } : Array.Empty<ContentItem>();
                    }
 
                    return await contentLocalizationManager.GetItemsForSetAsync(ctx.Source.LocalizationSet);

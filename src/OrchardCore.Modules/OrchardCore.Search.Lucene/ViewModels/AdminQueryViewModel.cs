@@ -22,6 +22,6 @@ namespace OrchardCore.Search.Lucene.ViewModels
         public TimeSpan Elapsed { get; set; } = TimeSpan.Zero;
 
         [BindNever]
-        public IEnumerable<Document> Documents { get; set; } = Enumerable.Empty<Document>();
+        public IEnumerable<Document> Documents { get; set; } = Array.Empty<Document>();
     }
 }

@@ -145,7 +145,7 @@ namespace OrchardCore.DynamicCache.Services
         {
             var cacheEntries = context.Contexts.Count > 0
                 ? await _cacheContextManager.GetDiscriminatorsAsync(context.Contexts)
-                : Enumerable.Empty<CacheContextEntry>();
+                : Array.Empty<CacheContextEntry>();
 
             if (!cacheEntries.Any())
             {

@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using OrchardCore.Modules.Manifest;
 
 namespace OrchardCore.Environment.Extensions.Manifests
@@ -13,7 +13,7 @@ namespace OrchardCore.Environment.Extensions.Manifests
         public string Author => null;
         public string Website => null;
         public string Version => null;
-        public IEnumerable<string> Tags => Enumerable.Empty<string>();
+        public IEnumerable<string> Tags => Array.Empty<string>();
         public ModuleAttribute ModuleInfo => null;
     }
 }

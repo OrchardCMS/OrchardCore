@@ -633,7 +633,7 @@ namespace OrchardCore.OpenId.Controllers
 
                 // Never include the security stamp in the access and identity tokens, as it's a secret value.
                 case "AspNet.Identity.SecurityStamp":
-                    return Enumerable.Empty<string>();
+                    return Array.Empty<string>();
 
                 // Only add the claim to the id_token if the corresponding scope was granted.
                 // The other claims will only be added to the access_token.

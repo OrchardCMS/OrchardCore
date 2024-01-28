@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -32,7 +33,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Providers
         {
             if (!_elasticConnectionOptions.FileConfigurationExists())
             {
-                return Enumerable.Empty<ContentPickerResult>();
+                return Array.Empty<ContentPickerResult>();
             }
 
             string indexName = null;
@@ -46,7 +47,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Providers
 
             if (indexName != null && !await _elasticIndexManager.ExistsAsync(indexName))
             {
-                return Enumerable.Empty<ContentPickerResult>();
+                return Array.Empty<ContentPickerResult>();
             }
 
             var results = new List<ContentPickerResult>();

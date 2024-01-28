@@ -99,7 +99,7 @@ namespace OrchardCore.ContentLocalization.Services
                 }
             }
 
-            return Enumerable.Empty<LocalizationEntry>();
+            return Array.Empty<LocalizationEntry>();
         }
 
         public void SetContentCulturePickerCookie(string targetCulture)
