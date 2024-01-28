@@ -37,7 +37,7 @@ The following configuration values can be customized:
       "PickupDirectoryLocation": "",
       "Host": "localhost",
       "Port": 25,
-      // Uncomment if SMTP server runs through a proxy server
+      // Uncomment if the SMTP server runs through a proxy server
       //"ProxyHost": "proxy.domain.com",
       //"ProxyPort": 5050,
       "EncryptionMethod": "SSLTLS",
