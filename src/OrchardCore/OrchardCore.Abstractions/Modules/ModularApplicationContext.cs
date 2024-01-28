@@ -43,7 +43,7 @@ namespace OrchardCore.Modules
         {
             var modules = new ConcurrentBag<Module>
             {
-                new Module(_environment.ApplicationName, true),
+                new(_environment.ApplicationName, true),
             };
 
             var names = _moduleNamesProviders

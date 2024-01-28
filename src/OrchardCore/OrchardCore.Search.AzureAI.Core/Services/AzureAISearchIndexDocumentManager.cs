@@ -296,11 +296,7 @@ public class AzureAIIndexDocumentManager(
 
                         if (!string.IsNullOrEmpty(stringValue) && stringValue != IndexingConstants.NullValue)
                         {
-                            // Full-text and display-text support multi-value.
-                            // keyword fields contains single string. All others, support a collection of strings.
-                            if (entry.Options.HasFlag(DocumentIndexOptions.Keyword)
-                                && map.AzureFieldKey != AzureAISearchIndexManager.FullTextKey
-                                && map.AzureFieldKey != AzureAISearchIndexManager.DisplayTextAnalyzedKey)
+                            if (UseSingleStringValue(entry.Options, map))
                             {
                                 doc.TryAdd(map.AzureFieldKey, stringValue);
                             }
@@ -322,6 +318,14 @@ public class AzureAIIndexDocumentManager(
         }
 
         return doc;
+    }
+
+    private static bool UseSingleStringValue(DocumentIndexOptions options, AzureAISearchIndexMap map)
+    {
+        // Full-text, Display-text-analyzed and all keyword fields should support a single string value.
+        return map.AzureFieldKey == AzureAISearchIndexManager.FullTextKey
+            || map.AzureFieldKey == AzureAISearchIndexManager.DisplayTextAnalyzedKey
+            || options.HasFlag(DocumentIndexOptions.Keyword);
     }
 
     private SearchClient GetSearchClient(string indexName)

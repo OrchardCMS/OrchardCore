@@ -30,7 +30,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Providers
 
         public async Task<IEnumerable<ContentPickerResult>> Search(ContentPickerSearchContext searchContext)
         {
-            if (!_elasticConnectionOptions.IsFileConfigurationExists())
+            if (!_elasticConnectionOptions.FileConfigurationExists())
             {
                 return Enumerable.Empty<ContentPickerResult>();
             }
