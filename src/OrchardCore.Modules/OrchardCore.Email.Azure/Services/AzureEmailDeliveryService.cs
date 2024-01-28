@@ -126,7 +126,7 @@ public partial class AzureEmailDeliveryService : IEmailDeliveryService
                 }
                 else
                 {
-                    result = EmailResult.Failed(S["Unable to attach the file named '{0}'.", attachment.Filename]);
+                    result = EmailResult.Failed(S["Unable to attach the file named '{0}' since its type is not supported.", attachment.Filename]);
 
                     _logger.LogWarning("The MIME type for the attachment '{attachment}' is not supported.", attachment.Filename);
                 }
