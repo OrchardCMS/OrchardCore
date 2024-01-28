@@ -124,7 +124,7 @@ namespace OrchardCore.Placements.Controllers
                 return Forbid();
             }
 
-            var template = new PlacementNode[] { new PlacementNode() };
+            var template = new PlacementNode[] { new() };
 
             var viewModel = new EditShapePlacementViewModel
             {
@@ -146,7 +146,7 @@ namespace OrchardCore.Placements.Controllers
 
             var placementNodes = (await _placementsManager.GetShapePlacementsAsync(shapeType))?.ToList() ?? new List<PlacementNode>();
 
-            if (!placementNodes.Any() || ShouldCreateNode(placementNodes, displayType, contentType, contentPart, differentiator))
+            if (placementNodes.Count == 0 || ShouldCreateNode(placementNodes, displayType, contentType, contentPart, differentiator))
             {
                 var generatedNode = new PlacementNode
                 {

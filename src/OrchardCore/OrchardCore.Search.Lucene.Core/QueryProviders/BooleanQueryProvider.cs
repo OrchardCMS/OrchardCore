@@ -29,7 +29,7 @@ namespace OrchardCore.Search.Lucene.QueryProviders
             foreach (var property in query)
             {
                 var occur = Occur.MUST;
-                bool isProps = false;
+                var isProps = false;
 
                 switch (property.Key.ToLowerInvariant())
                 {

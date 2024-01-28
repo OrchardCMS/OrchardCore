@@ -35,7 +35,7 @@ namespace OrchardCore.Environment.Commands
                 return;
             }
 
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
 
             foreach (var value in helpText)
             {
