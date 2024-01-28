@@ -27,7 +27,7 @@ namespace OrchardCore.Sitemaps.Routing
                 return Enumerable.Empty<Endpoint>();
             }
 
-            string sitemapId = address.ExplicitValues[_options.SitemapIdKey]?.ToString();
+            var sitemapId = address.ExplicitValues[_options.SitemapIdKey]?.ToString();
 
             if (string.IsNullOrEmpty(sitemapId))
             {
