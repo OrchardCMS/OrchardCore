@@ -114,7 +114,7 @@ namespace OrchardCore.Navigation
         public override List<MenuItem> Build()
         {
             _item.Items = base.Build();
-            return new List<MenuItem> { _item };
+            return [_item];
         }
 
         public NavigationItemBuilder Action(RouteValueDictionary values)
@@ -146,7 +146,7 @@ namespace OrchardCore.Navigation
 
         public NavigationItemBuilder Action(string actionName, string controllerName, string areaName)
         {
-            return Action(actionName, controllerName, areaName, new RouteValueDictionary());
+            return Action(actionName, controllerName, areaName, []);
         }
 
         public NavigationItemBuilder Action(string actionName, string controllerName, string areaName, RouteValueDictionary values)

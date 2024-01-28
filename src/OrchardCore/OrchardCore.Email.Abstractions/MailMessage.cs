@@ -94,6 +94,6 @@ namespace OrchardCore.Email
         /// <summary>
         /// The collection of message attachments.
         /// </summary>
-        public List<MailMessageAttachment> Attachments { get; } = new List<MailMessageAttachment>();
+        public List<MailMessageAttachment> Attachments { get; } = [];
     }
 }

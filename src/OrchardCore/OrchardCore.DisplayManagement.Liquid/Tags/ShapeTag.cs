@@ -58,7 +58,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                     case "type":
                     case "": type = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
 
-                    default: (customAttributes ??= new Dictionary<string, object>())[argument.Name.ToPascalCaseUnderscore()] = (await argument.Expression.EvaluateAsync(context)).ToObjectValue(); break;
+                    default: (customAttributes ??= [])[argument.Name.ToPascalCaseUnderscore()] = (await argument.Expression.EvaluateAsync(context)).ToObjectValue(); break;
                 }
             }
 

@@ -50,7 +50,7 @@ namespace OrchardCore.Data.Migration
             _store = store;
             _extensionManager = extensionManager;
             _logger = logger;
-            _processedFeatures = new List<string>();
+            _processedFeatures = [];
         }
 
         /// <inheritdocs />

@@ -50,7 +50,7 @@ namespace OrchardCore.Environment.Cache
         /// </summary>
         public CacheContext AddContext(params string[] contexts)
         {
-            _contexts ??= new HashSet<string>();
+            _contexts ??= [];
 
             foreach (var context in contexts)
             {
@@ -72,7 +72,7 @@ namespace OrchardCore.Environment.Cache
 
         public CacheContext AddTag(params string[] tags)
         {
-            _tags ??= new HashSet<string>();
+            _tags ??= [];
 
             foreach (var tag in tags)
             {

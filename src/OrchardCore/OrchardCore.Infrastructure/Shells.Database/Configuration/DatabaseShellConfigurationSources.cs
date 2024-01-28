@@ -58,7 +58,7 @@ namespace OrchardCore.Shells.Database.Configuration
                 else
                 {
                     document = new DatabaseShellConfigurations();
-                    configurations = new JObject();
+                    configurations = [];
                 }
 
                 if (!configurations.ContainsKey(tenant))
@@ -99,7 +99,7 @@ namespace OrchardCore.Shells.Database.Configuration
                 else
                 {
                     document = new DatabaseShellConfigurations();
-                    configurations = new JObject();
+                    configurations = [];
                 }
 
                 var configData = await (configurations

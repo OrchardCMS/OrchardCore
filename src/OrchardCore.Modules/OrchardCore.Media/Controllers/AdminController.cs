@@ -20,7 +20,7 @@ namespace OrchardCore.Media.Controllers
     {
         private static readonly char[] InvalidFolderNameCharacters = new char[] { '\\', '/' };
         private static readonly char[] ExtensionSeperator = new char[] { ' ', ',' };
-        private static readonly HashSet<string> EmptySet = new();
+        private static readonly HashSet<string> EmptySet = [];
 
         private readonly IMediaFileStore _mediaFileStore;
         private readonly IMediaNameNormalizerService _mediaNameNormalizerService;

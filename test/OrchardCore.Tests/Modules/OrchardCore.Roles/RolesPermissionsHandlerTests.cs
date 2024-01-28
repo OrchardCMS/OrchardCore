@@ -21,16 +21,16 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
                 new Role
                 {
                     RoleName = "Anonymous",
-                    RoleClaims = new List<RoleClaim> {
+                    RoleClaims = [
                         new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = "AllowAnonymous" }
-                    }
+                    ]
                 },
                 new Role
                 {
                     RoleName = "Authenticated",
-                    RoleClaims = new List<RoleClaim> {
+                    RoleClaims = [
                         new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = "AllowAuthenticated" }
-                    }
+                    ]
                 }
             );
 
@@ -72,9 +72,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
                 new Role
                 {
                     RoleName = "Anonymous",
-                    RoleClaims = new List<RoleClaim> {
+                    RoleClaims = [
                         new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = "Implicit2" }
-                    }
+                    ]
                 }
             );
 
@@ -97,16 +97,16 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
                 new Role
                 {
                     RoleName = "Anonymous",
-                    RoleClaims = new List<RoleClaim> {
+                    RoleClaims = [
                         new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = "aLlOwAnOnYmOuS" }
-                    }
+                    ]
                 },
                 new Role
                 {
                     RoleName = "Authenticated",
-                    RoleClaims = new List<RoleClaim> {
+                    RoleClaims = [
                         new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = "aLlOwAuThEnTiCaTeD" }
-                    }
+                    ]
                 }
             );
 

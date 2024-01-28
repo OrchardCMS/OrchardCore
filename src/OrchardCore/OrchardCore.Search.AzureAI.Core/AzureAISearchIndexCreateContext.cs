@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using OrchardCore.Search.AzureAI.Models;
 
 namespace OrchardCore.Search.AzureAI;

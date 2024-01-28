@@ -11,7 +11,7 @@ namespace OrchardCore.DisplayManagement.Shapes
     /// </summary>
     public class AlternatesCollection : IEnumerable<string>
     {
-        public static readonly AlternatesCollection Empty = new();
+        public static readonly AlternatesCollection Empty = [];
 
         private KeyedAlternateCollection _collection;
 

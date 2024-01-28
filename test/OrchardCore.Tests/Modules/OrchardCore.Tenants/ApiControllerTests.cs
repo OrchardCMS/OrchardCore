@@ -13,7 +13,7 @@ namespace OrchardCore.Modules.OrchardCore.Tenants.Tests;
 
 public class ApiControllerTests
 {
-    private readonly Dictionary<string, ShellSettings> _shellSettings = new();
+    private readonly Dictionary<string, ShellSettings> _shellSettings = [];
     private readonly Mock<IClock> _clockMock = new();
     private readonly Dictionary<string, FeatureProfile> _featureProfiles = new()
     {

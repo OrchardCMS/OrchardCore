@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public class OrchardCoreBuilder
     {
-        private Dictionary<int, StartupActions> _actions { get; } = new Dictionary<int, StartupActions>();
+        private Dictionary<int, StartupActions> _actions { get; } = [];
 
         public OrchardCoreBuilder(IServiceCollection services)
         {

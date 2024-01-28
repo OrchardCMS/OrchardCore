@@ -100,7 +100,7 @@ namespace OrchardCore.Media.Drivers
             {
                 // Deserializing an empty string doesn't return an array
                 var items = string.IsNullOrWhiteSpace(model.Paths)
-                    ? new List<EditMediaFieldItemInfo>()
+                    ? []
                     : JsonSerializer.Deserialize<List<EditMediaFieldItemInfo>>(model.Paths, _settings);
 
                 // If it's an attached media field editor the files are automatically handled by _attachedMediaFieldFileService.

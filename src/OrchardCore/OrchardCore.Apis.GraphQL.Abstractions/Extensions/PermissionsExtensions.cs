@@ -18,7 +18,7 @@ namespace OrchardCore.Apis.GraphQL
 
                 if (permissions == null)
                 {
-                    type.Metadata[MetaDataKey] = permissions = new List<GraphQLPermissionContext>();
+                    type.Metadata[MetaDataKey] = permissions = [];
                 }
 
                 permissions.Add(new GraphQLPermissionContext(permission, resource));

@@ -20,7 +20,7 @@ namespace OrchardCore.DisplayManagement.Shapes
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore
         };
 
-        private readonly HashSet<IShape> _shapes = new();
+        private readonly HashSet<IShape> _shapes = [];
         private readonly IShape _shape;
 
         public ShapeSerializer(IShape shape)
@@ -32,7 +32,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         {
             if (_shape == null)
             {
-                return new JObject();
+                return [];
             }
 
             var jObject = new JObject();

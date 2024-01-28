@@ -545,7 +545,7 @@ namespace OrchardCore.Users.Services
             }
 
             var users = await _session.Query<User, UserByRoleNameIndex>(u => u.RoleName == normalizedRoleName).ListAsync();
-            return users == null ? new List<IUser>() : users.ToList<IUser>();
+            return users == null ? [] : users.ToList<IUser>();
         }
 
         #endregion IUserRoleStore<IUser>

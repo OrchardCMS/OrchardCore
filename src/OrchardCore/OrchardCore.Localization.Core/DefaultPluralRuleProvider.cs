@@ -14,7 +14,7 @@ namespace OrchardCore.Localization
 
         static DefaultPluralRuleProvider()
         {
-            _rules = new Dictionary<string, PluralizationRuleDelegate>();
+            _rules = [];
 
             AddRule(new[] { "ay", "bo", "cgg", "dz", "fa", "id", "ja", "jbo", "ka", "kk", "km", "ko", "ky", "lo", "ms", "my", "sah", "su", "th", "tt", "ug", "vi", "wo", "zh" }, n => 0);
             AddRule(new[] { "ach", "ak", "am", "arn", "br", "fil", "fr", "gun", "ln", "mfe", "mg", "mi", "oc", "pt-BR", "tg", "ti", "tr", "uz", "wa" }, n => (n > 1 ? 1 : 0));

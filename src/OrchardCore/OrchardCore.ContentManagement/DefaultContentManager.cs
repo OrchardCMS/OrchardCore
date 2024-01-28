@@ -116,7 +116,7 @@ namespace OrchardCore.ContentManagement
                     // If the published version is already stored, we can return it.
                     if (_contentManagerSession.RecallPublishedItemId(itemId, out var contentItem))
                     {
-                        storedItems ??= new List<ContentItem>();
+                        storedItems ??= [];
                         storedItems.Add(contentItem);
                     }
                 }

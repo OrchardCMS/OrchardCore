@@ -45,7 +45,7 @@ namespace OrchardCore.Contents.Security
             { CommonPermissions.EditContentOwner.Name, _editContentOwner },
         };
 
-        private static Dictionary<ValueTuple<string, string>, Permission> _permissionsByType = new();
+        private static Dictionary<ValueTuple<string, string>, Permission> _permissionsByType = [];
 
         /// <summary>
         /// Returns a dynamic permission for a content type, based on a global content permission template

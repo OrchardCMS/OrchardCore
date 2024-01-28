@@ -11,10 +11,10 @@ namespace OrchardCore.DisplayManagement.TagHelpers
         protected const string PropertyDictionaryName = "prop-all";
         protected const string PropertyPrefix = "prop-";
 
-        private static readonly HashSet<string> _internalProperties = new()
-        {
+        private static readonly HashSet<string> _internalProperties =
+        [
             "id", "alternate", "wrapper", "cache-id", "cache-context", "cache-tag", "cache-fixed-duration", "cache-sliding-duration"
-        };
+        ];
 
         private static readonly char[] _separators = { ',', ' ' };
 

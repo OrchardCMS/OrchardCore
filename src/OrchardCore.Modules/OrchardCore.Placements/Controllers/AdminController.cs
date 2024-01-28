@@ -144,7 +144,7 @@ namespace OrchardCore.Placements.Controllers
                 return Forbid();
             }
 
-            var placementNodes = (await _placementsManager.GetShapePlacementsAsync(shapeType))?.ToList() ?? new List<PlacementNode>();
+            var placementNodes = (await _placementsManager.GetShapePlacementsAsync(shapeType))?.ToList() ?? [];
 
             if (!placementNodes.Any() || ShouldCreateNode(placementNodes, displayType, contentType, contentPart, differentiator))
             {

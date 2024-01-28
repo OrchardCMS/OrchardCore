@@ -26,14 +26,14 @@ internal class ShellDbTablesInfo : ISchemaBuilder
     public ILogger _logger { get; set; } = NullLogger.Instance;
 
     public HashSet<(string Name, Type Type, string Collection)> MapIndexTables { get; private set; } =
-        new HashSet<(string Name, Type Type, string Collection)>();
+        [];
 
     public HashSet<(string Name, Type Type, string Collection)> ReduceIndexTables { get; private set; } =
-        new HashSet<(string Name, Type Type, string Collection)>();
+        [];
 
-    public HashSet<string> BridgeTables { get; private set; } = new HashSet<string>();
-    public HashSet<string> DocumentTables { get; private set; } = new HashSet<string>();
-    public HashSet<string> Tables { get; private set; } = new HashSet<string>();
+    public HashSet<string> BridgeTables { get; private set; } = [];
+    public HashSet<string> DocumentTables { get; private set; } = [];
+    public HashSet<string> Tables { get; private set; } = [];
 
     public ShellDbTablesInfo Configure(IConfiguration configuration)
     {

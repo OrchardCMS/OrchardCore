@@ -431,7 +431,7 @@ namespace OrchardCore.OpenId.Services
                     }
                     catch (Exception exception)
                     {
-                        exceptions ??= new List<Exception>();
+                        exceptions ??= [];
 
                         exceptions.Add(exception);
                     }

@@ -22,7 +22,7 @@ namespace OrchardCore.Roles.Services
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly ILogger _logger;
 
-        private readonly HashSet<string> _installedFeatures = new();
+        private readonly HashSet<string> _installedFeatures = [];
 
         public RoleUpdater(
             ShellDescriptor shellDescriptor,

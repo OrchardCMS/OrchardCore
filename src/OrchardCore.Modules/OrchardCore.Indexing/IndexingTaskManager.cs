@@ -30,7 +30,7 @@ namespace OrchardCore.Indexing.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
 
-        private readonly List<IndexingTask> _tasksQueue = new();
+        private readonly List<IndexingTask> _tasksQueue = [];
 
         public IndexingTaskManager(
             IClock clock,

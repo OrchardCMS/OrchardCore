@@ -153,7 +153,7 @@ namespace OrchardCore.Workflows.Http.Activities
 
                     return new Outcome(status.ToString(), new LocalizedString(description, description));
                 }).ToList()
-                : new List<Outcome>();
+                : [];
             outcomes.Add(new Outcome("UnhandledHttpStatus", S["Unhandled Http Status"]));
 
             return outcomes;

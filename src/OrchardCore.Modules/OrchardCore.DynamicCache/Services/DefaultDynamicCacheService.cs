@@ -29,7 +29,7 @@ namespace OrchardCore.DynamicCache.Services
         private readonly CacheOptions _cacheOptions;
         private readonly ILogger _logger;
 
-        private readonly Dictionary<string, string> _localCache = new();
+        private readonly Dictionary<string, string> _localCache = [];
         private ITagCache _tagcache;
 
         public DefaultDynamicCacheService(

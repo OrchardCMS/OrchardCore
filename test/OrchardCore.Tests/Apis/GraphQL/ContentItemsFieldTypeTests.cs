@@ -388,13 +388,13 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 {
                     Name = "Inputs",
                     ResolvedType = new ListGraphType(new StringGraphType() { Name = "Animal" }),
-                    Arguments = new QueryArguments {
+                    Arguments = [
                             new QueryArgument<WhereInputObjectGraphType> {
                                 Name = "where",
                                 Description = "filters the animals",
                                 ResolvedType = where
                             }
-                        }
+                        ]
                 },
                 RequestServices = services
             };

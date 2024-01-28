@@ -100,7 +100,7 @@ namespace OrchardCore.Layers.Controllers
             var contentDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
 
             model.Zones = siteSettings.As<LayerSettings>().Zones ?? Array.Empty<string>();
-            model.Widgets = new Dictionary<string, List<dynamic>>();
+            model.Widgets = [];
 
             foreach (var widget in widgets.OrderBy(x => x.Position))
             {
@@ -108,7 +108,7 @@ namespace OrchardCore.Layers.Controllers
                 List<dynamic> list;
                 if (!model.Widgets.TryGetValue(zone, out list))
                 {
-                    model.Widgets.Add(zone, list = new List<dynamic>());
+                    model.Widgets.Add(zone, list = []);
                 }
 
                 if (contentDefinitions.Any(c => c.Name == widget.ContentItem.ContentType))

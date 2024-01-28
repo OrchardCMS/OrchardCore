@@ -32,7 +32,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             {
                 if (_sharedPaths == null)
                 {
-                    _sharedPaths = new List<string>();
+                    _sharedPaths = [];
 
                     var filePaths = templateOptions.Value.FileProvider.GetViewFilePaths(
                         Application.ModulesPath, new[] { LiquidViewTemplate.ViewExtension },

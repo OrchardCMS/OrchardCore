@@ -32,7 +32,7 @@ namespace OrchardCore.Workflows.Services
         private readonly IStringLocalizer<MissingActivity> _missingActivityLocalizer;
         private readonly IClock _clock;
 
-        private readonly Dictionary<string, int> _recursions = new();
+        private readonly Dictionary<string, int> _recursions = [];
         private int _currentRecursionDepth;
 
         public WorkflowManager
@@ -104,7 +104,7 @@ namespace OrchardCore.Workflows.Services
             {
                 if (!state.ActivityStates.TryGetValue(x.ActivityId, out var activityState))
                 {
-                    activityState = new JObject();
+                    activityState = [];
                 }
 
                 return CreateActivityExecutionContextAsync(x, activityState);
