@@ -27,7 +27,7 @@ namespace OrchardCore.Sitemaps.Routing
                 return [];
             }
 
-            string sitemapId = address.ExplicitValues[_options.SitemapIdKey]?.ToString();
+            var sitemapId = address.ExplicitValues[_options.SitemapIdKey]?.ToString();
 
             if (string.IsNullOrEmpty(sitemapId))
             {
