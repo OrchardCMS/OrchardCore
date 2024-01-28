@@ -13,7 +13,14 @@ namespace OrchardCore.DisplayManagement.TagHelpers
 
         private static readonly HashSet<string> _internalProperties =
         [
-            "id", "alternate", "wrapper", "cache-id", "cache-context", "cache-tag", "cache-fixed-duration", "cache-sliding-duration"
+            "id",
+            "alternate",
+            "wrapper",
+            "cache-id",
+            "cache-context",
+            "cache-tag",
+            "cache-fixed-duration",
+            "cache-sliding-duration"
         ];
 
         private static readonly char[] _separators = { ',', ' ' };

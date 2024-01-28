@@ -14,12 +14,12 @@ namespace OrchardCore.Tests.Commands
 
         private static CommandContext CreateCommandContext(string commandName)
         {
-            return CreateCommandContext(commandName, new Dictionary<string, string>(), Array.Empty<string>());
+            return CreateCommandContext(commandName, new Dictionary<string, string>(), []);
         }
 
         private static CommandContext CreateCommandContext(string commandName, IDictionary<string, string> switches)
         {
-            return CreateCommandContext(commandName, switches, Array.Empty<string>());
+            return CreateCommandContext(commandName, switches, []);
         }
 
         private static CommandContext CreateCommandContext(string commandName, IDictionary<string, string> switches, string[] args)

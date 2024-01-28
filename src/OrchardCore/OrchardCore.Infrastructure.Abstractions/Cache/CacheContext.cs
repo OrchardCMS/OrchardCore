@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace OrchardCore.Environment.Cache
 {
@@ -90,8 +89,8 @@ namespace OrchardCore.Environment.Cache
         }
 
         public string CacheId { get; }
-        public ICollection<string> Contexts => (ICollection<string>)_contexts ?? Array.Empty<string>();
-        public IEnumerable<string> Tags => _tags ?? Enumerable.Empty<string>();
+        public ICollection<string> Contexts => (ICollection<string>)_contexts ?? [];
+        public IEnumerable<string> Tags => _tags ?? [];
         public DateTimeOffset? ExpiresOn { get; private set; }
         public TimeSpan? ExpiresAfter { get; private set; }
         public TimeSpan? ExpiresSliding { get; private set; }

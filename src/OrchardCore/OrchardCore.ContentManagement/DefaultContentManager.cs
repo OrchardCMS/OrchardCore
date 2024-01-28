@@ -96,7 +96,7 @@ namespace OrchardCore.ContentManagement
 
             if (itemIds.Length == 0)
             {
-                return Enumerable.Empty<ContentItem>();
+                return [];
             }
 
             List<ContentItem> contentItems = null;
@@ -154,7 +154,7 @@ namespace OrchardCore.ContentManagement
             }
             else
             {
-                return Enumerable.Empty<ContentItem>();
+                return [];
             }
 
             return contentItems.OrderBy(c => Array.IndexOf(itemIds, c.ContentItemId));
@@ -248,7 +248,7 @@ namespace OrchardCore.ContentManagement
         {
             if (contentItemIds == null || !contentItemIds.Any())
             {
-                return Enumerable.Empty<ContentItem>();
+                return [];
             }
 
             var ids = new List<string>(contentItemIds);

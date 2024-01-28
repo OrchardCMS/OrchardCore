@@ -22,7 +22,7 @@ namespace OrchardCore.Environment.Commands
 
         public async Task ExecuteAsync(CommandParameters parameters)
         {
-            var matches = MatchCommands(parameters) ?? Enumerable.Empty<Match>();
+            var matches = MatchCommands(parameters) ?? [];
 
             if (matches.Count() == 1)
             {

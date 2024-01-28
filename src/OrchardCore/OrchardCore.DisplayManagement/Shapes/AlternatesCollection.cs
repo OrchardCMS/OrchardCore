@@ -118,7 +118,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         {
             if (_collection == null)
             {
-                return ((IEnumerable<string>)Array.Empty<string>()).GetEnumerator();
+                return ((IEnumerable<string>)[]).GetEnumerator();
             }
 
             return _collection.GetEnumerator();

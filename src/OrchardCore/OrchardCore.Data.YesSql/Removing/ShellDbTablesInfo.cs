@@ -17,7 +17,7 @@ internal class ShellDbTablesInfo : ISchemaBuilder
 {
     private ICommandInterpreter _commandInterpreter;
     public string TablePrefix { get; set; }
-    public IEnumerable<string> TableNames { get; set; } = Enumerable.Empty<string>();
+    public IEnumerable<string> TableNames { get; set; } = [];
     public ISqlDialect Dialect { get; private set; }
     public ITableNameConvention TableNameConvention { get; private set; }
     public DbConnection Connection { get; set; }

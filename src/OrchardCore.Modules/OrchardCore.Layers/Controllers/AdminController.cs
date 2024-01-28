@@ -99,7 +99,7 @@ namespace OrchardCore.Layers.Controllers
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var contentDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
 
-            model.Zones = siteSettings.As<LayerSettings>().Zones ?? Array.Empty<string>();
+            model.Zones = siteSettings.As<LayerSettings>().Zones ?? [];
             model.Widgets = [];
 
             foreach (var widget in widgets.OrderBy(x => x.Position))

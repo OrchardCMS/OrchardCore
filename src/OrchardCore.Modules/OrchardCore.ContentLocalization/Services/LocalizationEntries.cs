@@ -53,7 +53,7 @@ namespace OrchardCore.ContentLocalization.Services
                 return localizations;
             }
 
-            return Enumerable.Empty<LocalizationEntry>();
+            return [];
         }
 
         public async Task UpdateEntriesAsync()

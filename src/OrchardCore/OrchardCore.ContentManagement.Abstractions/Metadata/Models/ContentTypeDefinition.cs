@@ -24,7 +24,7 @@ namespace OrchardCore.ContentManagement.Metadata.Models
         {
             Name = name;
             DisplayName = displayName;
-            Parts = Enumerable.Empty<ContentTypePartDefinition>();
+            Parts = [];
             Settings = [];
         }
 

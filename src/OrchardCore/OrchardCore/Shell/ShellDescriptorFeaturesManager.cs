@@ -177,7 +177,7 @@ namespace OrchardCore.Environment.Shell
                     _logger.LogWarning(" To enable '{FeatureId}', additional features need to be enabled.", featureInfo.Id);
                 }
 
-                return Enumerable.Empty<IFeatureInfo>();
+                return [];
             }
 
             return featuresToEnable;
@@ -204,7 +204,7 @@ namespace OrchardCore.Environment.Shell
                     _logger.LogWarning(" To disable '{FeatureId}', additional features need to be disabled.", featureInfo.Id);
                 }
 
-                return Enumerable.Empty<IFeatureInfo>();
+                return [];
             }
 
             return featuresToDisable;

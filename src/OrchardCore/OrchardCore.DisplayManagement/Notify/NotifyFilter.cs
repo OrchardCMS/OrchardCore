@@ -22,7 +22,7 @@ namespace OrchardCore.DisplayManagement.Notify
         private readonly ILayoutAccessor _layoutAccessor;
         private readonly IDataProtectionProvider _dataProtectionProvider;
 
-        private NotifyEntry[] _existingEntries = Array.Empty<NotifyEntry>();
+        private NotifyEntry[] _existingEntries = [];
         private bool _shouldDeleteCookie;
         private readonly HtmlEncoder _htmlEncoder;
         private readonly ILogger _logger;

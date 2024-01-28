@@ -73,7 +73,7 @@ namespace OrchardCore.Roles.Services
                         continue;
                     }
 
-                    var permissions = (stereotype.Permissions ?? Enumerable.Empty<Permission>())
+                    var permissions = (stereotype.Permissions ?? [])
                         .Select(stereotype => stereotype.Name);
 
                     if (UpdateRole(role, permissions, _logger))
@@ -159,7 +159,7 @@ namespace OrchardCore.Roles.Services
             }
 
             var permissions = stereotypes
-                .SelectMany(stereotype => stereotype.Permissions ?? Enumerable.Empty<Permission>())
+                .SelectMany(stereotype => stereotype.Permissions ?? [])
                 .Select(stereotype => stereotype.Name);
 
             UpdateRole(role, permissions, _logger);
@@ -187,7 +187,7 @@ namespace OrchardCore.Roles.Services
             }
 
             var permissions = stereotypes
-                .SelectMany(stereotype => stereotype.Permissions ?? Enumerable.Empty<Permission>())
+                .SelectMany(stereotype => stereotype.Permissions ?? [])
                 .Select(stereotype => stereotype.Name);
 
             if (!permissions.Any())

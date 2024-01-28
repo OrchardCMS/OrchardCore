@@ -59,7 +59,7 @@ namespace OrchardCore.ContentFields.Settings
                 if (model.DisplayAllUsers || selectedRoles.Length == 0)
                 {
                     // No selected role should have the same effect as display all users
-                    settings.DisplayedRoles = Array.Empty<string>();
+                    settings.DisplayedRoles = [];
                     settings.DisplayAllUsers = true;
                 }
                 else

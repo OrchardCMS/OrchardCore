@@ -109,7 +109,7 @@ namespace OrchardCore.Environment.Shell
         [JsonIgnore]
         public string[] RequestUrlHosts => _settings["RequestUrlHost"]
             ?.Split(HostSeparators, StringSplitOptions.RemoveEmptyEntries)
-            ?? Array.Empty<string>();
+            ?? [];
 
         /// <summary>
         /// The tenant request url prefix.

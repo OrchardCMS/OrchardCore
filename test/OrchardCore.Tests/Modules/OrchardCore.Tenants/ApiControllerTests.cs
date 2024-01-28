@@ -171,7 +171,7 @@ public class ApiControllerTests
             Mock.Of<IEmailAddressValidator>(),
             Options.Create(new IdentityOptions()),
             Options.Create(new TenantsOptions()),
-            Enumerable.Empty<DatabaseProvider>(),
+            [],
             tenantValidator,
             Mock.Of<IStringLocalizer<ApiController>>(),
             Mock.Of<ILogger<ApiController>>())

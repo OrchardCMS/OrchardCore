@@ -17,6 +17,6 @@ namespace OrchardCore.AdminMenu.AdminNodes
         /// <summary>
         /// The names of the permissions required to view this admin menu node
         /// </summary>
-        public string[] PermissionNames { get; set; } = Array.Empty<string>();
+        public string[] PermissionNames { get; set; } = [];
     }
 }

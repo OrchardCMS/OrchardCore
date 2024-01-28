@@ -18,9 +18,9 @@ namespace OrchardCore.DisplayManagement.Shapes
             Wrappers = [];
             Alternates = [];
             BindingSources = new List<string>();
-            Displaying = Enumerable.Empty<Action<ShapeDisplayContext>>();
-            Displayed = Enumerable.Empty<Action<ShapeDisplayContext>>();
-            ProcessingAsync = Enumerable.Empty<Func<dynamic, Task>>();
+            Displaying = [];
+            Displayed = [];
+            ProcessingAsync = [];
         }
 
         public string Type { get; set; }

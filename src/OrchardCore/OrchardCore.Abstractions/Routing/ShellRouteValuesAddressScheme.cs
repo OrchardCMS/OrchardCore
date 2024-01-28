@@ -57,7 +57,7 @@ namespace OrchardCore.Routing
             }
 
             // Fallback to the default 'RouteValuesAddress' scheme.
-            return _defaultScheme?.FindEndpoints(address) ?? Enumerable.Empty<Endpoint>();
+            return _defaultScheme?.FindEndpoints(address) ?? [];
         }
     }
 }

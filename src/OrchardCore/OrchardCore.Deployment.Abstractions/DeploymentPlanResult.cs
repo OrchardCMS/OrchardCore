@@ -26,8 +26,8 @@ namespace OrchardCore.Deployment
                 ["website"] = recipeDescriptor.WebSite ?? "",
                 ["version"] = recipeDescriptor.Version ?? "",
                 ["issetuprecipe"] = recipeDescriptor.IsSetupRecipe,
-                ["categories"] = new JArray(recipeDescriptor.Categories ?? Array.Empty<string>()),
-                ["tags"] = new JArray(recipeDescriptor.Tags ?? Array.Empty<string>()),
+                ["categories"] = new JArray(recipeDescriptor.Categories ?? []),
+                ["tags"] = new JArray(recipeDescriptor.Tags ?? []),
             };
         }
 

@@ -389,7 +389,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
                     Name = "Inputs",
                     ResolvedType = new ListGraphType(new StringGraphType() { Name = "Animal" }),
                     Arguments = [
-                            new QueryArgument<WhereInputObjectGraphType> {
+                            new QueryArgument<WhereInputObjectGraphType>
+                            {
                                 Name = "where",
                                 Description = "filters the animals",
                                 ResolvedType = where
