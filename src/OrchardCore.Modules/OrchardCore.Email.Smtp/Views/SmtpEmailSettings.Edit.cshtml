@@ -6,7 +6,7 @@
 <div class="mb-3">
     <label asp-for="DefaultSender">@T["Sender email address"]</label>
     <input asp-for="DefaultSender" class="form-control" type="text" disabled />
-    <span class="hint">@T["The email sender is set by Email module. Use the <code>OrchardCore_Email_Smtp.DefaultSender</code> setting inside <code>appsettings.json</code> to override it."]</span>
+    <span class="hint">@T["The email sender is set by Email module. Use the <code>OrchardCore_Email_Smtp.DefaultSender</code> setting inside <code>appsettings.json</code> to override it."] <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Email.Smtp#configuration" target="_blank">@T["See documentation"]</a></span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="DeliveryMethod">
