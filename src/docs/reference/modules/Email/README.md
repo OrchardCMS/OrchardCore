@@ -11,7 +11,7 @@ Enabling the `OrchardCore.Email` module will allow the user to set the following
 | `DefaultSender` | The email of the sender.
 
 !!! note
-    When [OrchardCore.Email.Azure](../Email.Azure/README.md) or [OrchardCore.Email.Smtp](../Email.Smtp/README.md) is enabled you can override the `DefaultSender` setting from the module specific settings, otherwise it will fallback to this setting.
+    When [OrchardCore.Email.Azure](../Email.Azure/README.md) or [OrchardCore.Email.Smtp](../Email.Smtp/README.md) is enabled you can override the `DefaultSender` setting from the module-specific settings, otherwise, it will fall back to this setting.
 
 ## Email Settings Configuration
 
