@@ -95,7 +95,7 @@ namespace OrchardCore.AuditTrail.Services
             var startOfWeek = CultureInfo.CurrentUICulture.DateTimeFormat.FirstDayOfWeek;
             options.AuditTrailDates = new List<SelectListItem>()
             {
-                new SelectListItem(S["Any date"], string.Empty, options.Date == string.Empty),
+                new(S["Any date"], string.Empty, options.Date == string.Empty),
             };
 
             var dateTimeValue = ">@now-1";
