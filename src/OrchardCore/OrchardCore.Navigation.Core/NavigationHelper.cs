@@ -35,7 +35,7 @@ namespace OrchardCore.Navigation
         /// <param name="viewContext">The current <see cref="ViewContext"/>.</param>
         public static async Task PopulateMenuLevelAsync(dynamic shapeFactory, dynamic parentShape, dynamic menu, IEnumerable<MenuItem> menuItems, ViewContext viewContext)
         {
-            foreach (MenuItem menuItem in menuItems)
+            foreach (var menuItem in menuItems)
             {
                 dynamic menuItemShape = await BuildMenuItemShapeAsync(shapeFactory, parentShape, menu, menuItem, viewContext);
 

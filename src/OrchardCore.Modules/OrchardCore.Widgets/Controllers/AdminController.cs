@@ -40,7 +40,7 @@ namespace OrchardCore.Widgets.Controllers
 
             contentItem.Weld(new WidgetMetadata());
 
-            string cardCollectionType = nameof(WidgetsListPart);
+            var cardCollectionType = nameof(WidgetsListPart);
 
             //Create a Card Shape
             dynamic contentCard = await _shapeFactory.New.ContentCard(
