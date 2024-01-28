@@ -20,7 +20,6 @@ public class AdminController : Controller
         IHtmlLocalizer<AdminController> h,
         IAuthorizationService authorizationService,
         INotifier notifier,
-        IEmailMessageValidator emailMessageValidator,
         IEmailService emailService)
     {
         H = h;
