@@ -99,7 +99,7 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpEmailSe
             await context.Updater.TryUpdateModelAsync(section, Prefix);
 
             // Don't check the DefaultSender from within SmtpEmailSettings.
-            context.Updater.ModelState.Remove($"{nameof(ISite)}.{nameof(SmtpEmailSettings.DefaultSender)}");
+            context.Updater.ModelState.Remove($"{nameof(ISite)}.{nameof(SmtpEmailSettings)}.{nameof(SmtpEmailSettings.DefaultSender)}");
 
             var previousPassword = section.Password;
             // Restore password if the input is empty, meaning that it has not been reset.
