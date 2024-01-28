@@ -377,10 +377,10 @@ namespace Microsoft.Extensions.Http
         {
             public static class EventIds
             {
-                public static readonly EventId CleanupCycleStart = new EventId(100, "CleanupCycleStart");
-                public static readonly EventId CleanupCycleEnd = new EventId(101, "CleanupCycleEnd");
-                public static readonly EventId CleanupItemFailed = new EventId(102, "CleanupItemFailed");
-                public static readonly EventId HandlerExpired = new EventId(103, "HandlerExpired");
+                public static readonly EventId CleanupCycleStart = new(100, "CleanupCycleStart");
+                public static readonly EventId CleanupCycleEnd = new(101, "CleanupCycleEnd");
+                public static readonly EventId CleanupItemFailed = new(102, "CleanupItemFailed");
+                public static readonly EventId HandlerExpired = new(103, "HandlerExpired");
             }
 
             private static readonly Action<ILogger, int, Exception?> _cleanupCycleStart = LoggerMessage.Define<int>(

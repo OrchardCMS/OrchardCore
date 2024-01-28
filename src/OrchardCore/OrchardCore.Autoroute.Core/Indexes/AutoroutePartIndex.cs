@@ -134,8 +134,7 @@ namespace OrchardCore.Autoroute.Core.Indexes
                     var results = new List<AutoroutePartIndex>
                     {
                         // If the part is disabled or was removed, a record is still added but with a null path.
-                        new AutoroutePartIndex
-                        {
+                        new() {
                             ContentItemId = contentItem.ContentItemId,
                             Path = !partRemoved && !part.Disabled ? part.Path : null,
                             Published = contentItem.Published,
