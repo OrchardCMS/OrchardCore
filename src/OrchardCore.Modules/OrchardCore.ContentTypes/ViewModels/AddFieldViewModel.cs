@@ -13,29 +13,29 @@ namespace OrchardCore.ContentTypes.ViewModels
         }
 
         /// <summary>
-        /// The technical name of the field
+        /// The technical name of the field.
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// The display name of the field
+        /// The display name of the field.
         /// </summary>
         public string DisplayName { get; set; }
 
         /// <summary>
-        /// The selected field type
+        /// The selected field type.
         /// </summary>
         [Required]
         public string FieldTypeName { get; set; }
 
         /// <summary>
-        /// The part to add the field to
+        /// The part to add the field to.
         /// </summary>
         [BindNever]
         public ContentPartDefinition Part { get; set; }
 
         /// <summary>
-        /// List of the available Field types
+        /// List of the available Field types.
         /// </summary>
         [BindNever]
         public List<string> Fields { get; set; }

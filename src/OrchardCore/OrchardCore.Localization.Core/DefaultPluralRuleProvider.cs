@@ -6,7 +6,7 @@ namespace OrchardCore.Localization
     /// <summary>
     /// Provides pluralization rules based on the Unicode Common Locale Data Repository.
     /// c.f. http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
-    /// c.f. https://github.com/unicode-org/cldr/blob/master/common/supplemental/plurals.xml
+    /// c.f. https://github.com/unicode-org/cldr/blob/master/common/supplemental/plurals.xml.
     /// </summary>
     public class DefaultPluralRuleProvider : IPluralRuleProvider
     {
@@ -58,7 +58,7 @@ namespace OrchardCore.Localization
             }
         }
 
-        /// <example>zh-Hans-CN -> zh-Hans -> zh</example>
+        /// <example>zh-Hans-CN -> zh-Hans -> zh.</example>
         private static CultureInfo GetBaseCulture(CultureInfo culture)
         {
             var returnCulture = culture;

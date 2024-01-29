@@ -10,7 +10,7 @@ namespace OrchardCore.Modules
         private static Instant CurrentInstant => SystemClock.Instance.GetCurrentInstant();
 
         /// <summary>
-        /// Returns a Datetime Kind.Utc that is "Now"
+        /// Returns a Datetime Kind.Utc that is "Now".
         /// </summary>
         /// <inheritdoc />
         public DateTime UtcNow => CurrentInstant.ToDateTimeUtc();

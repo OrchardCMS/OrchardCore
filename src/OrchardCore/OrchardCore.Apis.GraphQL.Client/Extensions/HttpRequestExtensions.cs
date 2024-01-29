@@ -117,7 +117,7 @@ namespace OrchardCore.Apis.GraphQL.Client
         }
 
         /// <summary>
-        /// PostAsJsonAsync
+        /// PostAsJsonAsync.
         /// </summary>
         /// <param name="client">
         /// The client.

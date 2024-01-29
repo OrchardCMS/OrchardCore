@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 namespace OrchardCore.Mvc.ModelBinding
 {
     /// <summary>
-    /// An <see cref="IModelBinderProvider"/> for <see cref="CheckMarkModelBinder"/>
+    /// An <see cref="IModelBinderProvider"/> for <see cref="CheckMarkModelBinder"/>.
     /// </summary>
     public class CheckMarkModelBinderProvider : IModelBinderProvider
     {

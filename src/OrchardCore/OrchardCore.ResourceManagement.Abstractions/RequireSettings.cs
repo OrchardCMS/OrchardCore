@@ -49,7 +49,7 @@ namespace OrchardCore.ResourceManagement
         }
 
         /// <summary>
-        /// The resource will be displayed in the head of the page
+        /// The resource will be displayed in the head of the page.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public RequireSettings AtHead()
@@ -58,7 +58,7 @@ namespace OrchardCore.ResourceManagement
         }
 
         /// <summary>
-        /// The resource will be displayed at the foot of the page
+        /// The resource will be displayed at the foot of the page.
         /// </summary>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -68,9 +68,9 @@ namespace OrchardCore.ResourceManagement
         }
 
         /// <summary>
-        /// The resource will be displayed at the specified location
+        /// The resource will be displayed at the specified location.
         /// </summary>
-        /// <param name="location">The location where the resource should be displayed</param>
+        /// <param name="location">The location where the resource should be displayed.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public RequireSettings AtLocation(ResourceLocation location)
         {

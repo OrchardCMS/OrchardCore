@@ -14,37 +14,37 @@ namespace OrchardCore.Modules.Manifest
     public class FeatureAttribute : Attribute
     {
         /// <summary>
-        /// &quot;&quot;
+        /// &quot;&quot;.
         /// </summary>
         protected internal const string DefaultName = "";
 
         /// <summary>
-        /// &quot;&quot;
+        /// &quot;&quot;.
         /// </summary>
         protected internal const string DefaultDescription = "";
 
         /// <summary>
-        /// &quot;Uncategorized&quot;
+        /// &quot;Uncategorized&quot;.
         /// </summary>
         protected internal const string Uncategorized = nameof(Uncategorized);
 
         /// <summary>
-        /// &quot;&quot;
+        /// &quot;&quot;.
         /// </summary>
         protected internal const string DefaultCategory = "";
 
         /// <summary>
-        /// &quot;&quot;
+        /// &quot;&quot;.
         /// </summary>
         protected internal const string DefaultFeatureDependencies = "";
 
         /// <summary>
-        /// <c>false</c>
+        /// <c>false</c>.
         /// </summary>
         protected internal const bool DefaultDefaultTenantOnly = false;
 
         /// <summary>
-        /// <c>false</c>
+        /// <c>false</c>.
         /// </summary>
         protected internal const bool DefaultAlwaysEnabled = false;
 
@@ -289,7 +289,7 @@ namespace OrchardCore.Modules.Manifest
         }
 
         /// <summary>
-        /// 0
+        /// 0.
         /// </summary>
         protected internal const int DefaultPriority = 0;
 

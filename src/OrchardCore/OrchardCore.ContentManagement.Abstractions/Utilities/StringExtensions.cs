@@ -207,7 +207,7 @@ namespace OrchardCore.ContentManagement.Utilities
         }
 
         /// <summary>
-        /// Whether the char is a letter between A and Z or not
+        /// Whether the char is a letter between A and Z or not.
         /// </summary>
         public static bool IsLetter(this char c)
         {

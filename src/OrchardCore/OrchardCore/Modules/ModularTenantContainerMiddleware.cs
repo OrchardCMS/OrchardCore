@@ -7,7 +7,7 @@ using OrchardCore.Environment.Shell;
 namespace OrchardCore.Modules
 {
     /// <summary>
-    /// This middleware replaces the default service provider by the one for the current tenant
+    /// This middleware replaces the default service provider by the one for the current tenant.
     /// </summary>
     public class ModularTenantContainerMiddleware
     {

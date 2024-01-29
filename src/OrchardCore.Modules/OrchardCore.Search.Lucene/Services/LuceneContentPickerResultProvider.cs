@@ -63,7 +63,7 @@ namespace OrchardCore.Search.Lucene.Services
                     {
                         ContentItemId = doc.GetField("ContentItemId").GetStringValue(),
                         DisplayText = doc.GetField("Content.ContentItem.DisplayText.keyword").GetStringValue(),
-                        HasPublished = doc.GetField("Content.ContentItem.Published").GetStringValue().ToLower() == "true",
+                        HasPublished = doc.GetField("Content.ContentItem.Published").GetStringValue().Equals("true", StringComparison.OrdinalIgnoreCase),
                     });
                 }
 

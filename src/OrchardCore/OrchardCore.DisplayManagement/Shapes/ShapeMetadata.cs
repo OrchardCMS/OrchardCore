@@ -75,7 +75,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         }
 
         /// <summary>
-        /// Marks this shape to be cached
+        /// Marks this shape to be cached.
         /// </summary>
         public CacheContext Cache(string cacheId)
         {
