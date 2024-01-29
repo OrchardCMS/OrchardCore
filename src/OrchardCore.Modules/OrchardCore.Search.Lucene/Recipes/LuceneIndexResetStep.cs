@@ -56,7 +56,7 @@ namespace OrchardCore.Search.Lucene.Recipes
         private class LuceneIndexResetStepModel
         {
             public bool IncludeAll { get; set; } = false;
-            public string[] Indices { get; set; } = Array.Empty<string>();
+            public string[] Indices { get; set; } = [];
         }
     }
 }

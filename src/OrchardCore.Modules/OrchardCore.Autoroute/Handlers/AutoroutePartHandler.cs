@@ -171,7 +171,7 @@ namespace OrchardCore.Autoroute.Handlers
         {
             var site = await _siteService.LoadSiteSettingsAsync();
 
-            site.HomeRoute ??= new RouteValueDictionary();
+            site.HomeRoute ??= [];
 
             var homeRoute = site.HomeRoute;
 

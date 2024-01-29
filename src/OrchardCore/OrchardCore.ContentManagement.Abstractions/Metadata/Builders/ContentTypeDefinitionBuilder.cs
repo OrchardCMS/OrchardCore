@@ -140,7 +140,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
             else
             {
-                existingPart = new ContentTypePartDefinition(name, partDefinition, new JsonObject())
+                existingPart = new ContentTypePartDefinition(name, partDefinition, new [])
                 {
                     ContentTypeDefinition = Current,
                 };

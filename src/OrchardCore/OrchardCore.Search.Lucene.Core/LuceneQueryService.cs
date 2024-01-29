@@ -127,7 +127,7 @@ namespace OrchardCore.Search.Lucene
         {
             if (string.IsNullOrEmpty(text))
             {
-                return new List<string>();
+                return [];
             }
 
             var result = new List<string>();

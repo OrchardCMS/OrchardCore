@@ -136,7 +136,7 @@ namespace OrchardCore.Search.Lucene
 
                     foreach (var index in allIndices)
                     {
-                        updatedDocumentsByIndex[index.Key] = new List<DocumentIndex>();
+                        updatedDocumentsByIndex[index.Key] = [];
                     }
 
                     if (indexName != null)

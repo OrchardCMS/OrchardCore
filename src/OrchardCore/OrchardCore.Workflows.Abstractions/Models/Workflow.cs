@@ -26,7 +26,7 @@ namespace OrchardCore.Workflows.Models
         /// <summary>
         /// Serialized state of the workflow.
         /// </summary>
-        public JsonObject State { get; set; } = new JsonObject();
+        public JsonObject State { get; set; } = [];
 
         public WorkflowStatus Status { get; set; }
         public string FaultMessage { get; set; }

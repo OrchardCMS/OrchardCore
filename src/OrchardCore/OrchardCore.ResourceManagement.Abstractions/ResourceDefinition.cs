@@ -52,7 +52,7 @@ namespace OrchardCore.ResourceManagement
 
         public ResourceDefinition SetAttribute(string name, string value)
         {
-            Attributes ??= new AttributeDictionary();
+            Attributes ??= [];
 
             Attributes[name] = value;
             return this;
@@ -164,7 +164,7 @@ namespace OrchardCore.ResourceManagement
 
         public ResourceDefinition SetDependencies(params string[] dependencies)
         {
-            Dependencies ??= new List<string>();
+            Dependencies ??= [];
 
             Dependencies.AddRange(dependencies);
 

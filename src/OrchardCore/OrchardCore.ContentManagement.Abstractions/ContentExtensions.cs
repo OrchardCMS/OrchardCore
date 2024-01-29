@@ -170,7 +170,7 @@ namespace OrchardCore.ContentManagement
 
             weldedPartSettings[elementName] = settings is not null
                 ? JObject.FromObject(settings)
-                : new JsonObject();
+                : [];
 
             return contentElement;
         }

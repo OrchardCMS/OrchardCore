@@ -227,7 +227,7 @@ namespace OrchardCore.Environment.Shell.Builders
             await _semaphore.WaitAsync();
             try
             {
-                _dependents ??= new List<WeakReference<ShellContext>>();
+                _dependents ??= [];
 
                 // Remove any previous instance that represents the same tenant in case it has been released or reloaded.
                 _dependents.RemoveAll(wref => !wref.TryGetTarget(out var shell) || shell.Settings.Name == shellContext.Settings.Name);

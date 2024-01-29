@@ -37,7 +37,7 @@ public static class ConfigurationExtensions
                     throw new FormatException($"Can't use the numeric key '{child.Key}' inside an object.");
                 }
 
-                jArray ??= new JsonArray();
+                jArray ??= [];
                 if (index > jArray.Count)
                 {
                     // Inserting null values is useful to override arrays items,
@@ -64,7 +64,7 @@ public static class ConfigurationExtensions
                     throw new FormatException($"Can't use the non numeric key '{child.Key}' inside an array.");
                 }
 
-                jObject ??= new JsonObject();
+                jObject ??= [];
                 if (child.GetChildren().Any())
                 {
                     jObject.Add(child.Key, ToJsonNode(child));
@@ -76,7 +76,7 @@ public static class ConfigurationExtensions
             }
         }
 
-        return jArray as JsonNode ?? jObject ?? new JsonObject();
+        return jArray as JsonNode ?? jObject ?? [];
     }
 
     public static JsonObject ToJsonObject(this IDictionary<string, string> configurationData)

@@ -12,7 +12,7 @@ namespace OrchardCore.Media.Fields
         {
             var anchors = (JsonArray)mediaField.Content["Anchors"];
 
-            return anchors is not null ? anchors.ToObject<Anchor[]>() : Array.Empty<Anchor>();
+            return anchors is not null ? anchors.ToObject<Anchor[]>() : [];
         }
 
         /// <summary>

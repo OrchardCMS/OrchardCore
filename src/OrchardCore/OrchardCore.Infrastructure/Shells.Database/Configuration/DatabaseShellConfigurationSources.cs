@@ -57,7 +57,7 @@ namespace OrchardCore.Shells.Database.Configuration
                 else
                 {
                     document = new DatabaseShellConfigurations();
-                    configurations = new JsonObject();
+                    configurations = [];
                 }
 
                 if (!configurations.ContainsKey(tenant))
@@ -98,7 +98,7 @@ namespace OrchardCore.Shells.Database.Configuration
                 else
                 {
                     document = new DatabaseShellConfigurations();
-                    configurations = new JsonObject();
+                    configurations = [];
                 }
 
                 var configData = await (configurations[tenant] as JsonObject).ToConfigurationDataAsync();

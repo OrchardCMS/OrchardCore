@@ -14,7 +14,7 @@ namespace OrchardCore.Media.Fields
 
             return filenames != null
                 ? filenames.ToObject<string[]>()
-                : Array.Empty<string>();
+                : [];
         }
 
         /// <summary>

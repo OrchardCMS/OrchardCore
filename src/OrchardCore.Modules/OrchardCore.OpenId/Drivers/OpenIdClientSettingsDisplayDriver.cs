@@ -163,7 +163,7 @@ namespace OrchardCore.OpenId.Drivers
                 try
                 {
                     settings.Parameters = string.IsNullOrWhiteSpace(model.Parameters)
-                        ? Array.Empty<ParameterSetting>()
+                        ? []
                         : JConvert.DeserializeObject<ParameterSetting[]>(model.Parameters);
                 }
                 catch

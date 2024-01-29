@@ -22,17 +22,17 @@ namespace OrchardCore.DisplayManagement.Shapes
         public string TagName { get; set; }
 
         private List<string> _classes;
-        public IList<string> Classes => _classes ??= new List<string>();
+        public IList<string> Classes => _classes ??= [];
 
         private Dictionary<string, string> _attributes;
-        public IDictionary<string, string> Attributes => _attributes ??= new Dictionary<string, string>();
+        public IDictionary<string, string> Attributes => _attributes ??= [];
 
         private List<IPositioned> _items;
         public IReadOnlyList<IPositioned> Items
         {
             get
             {
-                _items ??= new List<IPositioned>();
+                _items ??= [];
 
                 if (!_sorted)
                 {
@@ -63,7 +63,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
             _sorted = false;
 
-            _items ??= new List<IPositioned>();
+            _items ??= [];
 
             if (item is IHtmlContent)
             {

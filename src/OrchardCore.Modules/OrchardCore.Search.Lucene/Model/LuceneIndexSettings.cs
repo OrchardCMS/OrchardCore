@@ -22,6 +22,6 @@ namespace OrchardCore.Search.Lucene.Model
 
     public class LuceneIndexSettingsDocument : Document
     {
-        public Dictionary<string, LuceneIndexSettings> LuceneIndexSettings { get; set; } = new();
+        public Dictionary<string, LuceneIndexSettings> LuceneIndexSettings { get; set; } = [];
     }
 }

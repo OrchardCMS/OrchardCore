@@ -67,10 +67,10 @@ namespace OrchardCore.Shells.Azure.Configuration
             }
             else
             {
-                tenantsSettings = new JsonObject();
+                tenantsSettings = new [];
             }
 
-            var settings = tenantsSettings[tenant] as JsonObject ?? new JsonObject();
+            var settings = tenantsSettings[tenant] as JsonObject ?? [];
             foreach (var key in data.Keys)
             {
                 if (data[key] != null)

@@ -256,7 +256,7 @@ namespace OrchardCore.Environment.Shell
                 .Where(p => p is EnvironmentVariablesConfigurationProvider ||
                             p is CommandLineConfigurationProvider)
                 .ToArray()
-                ?? Array.Empty<IConfigurationProvider>();
+                ?? [];
 
             var configurationBuilder = await new ConfigurationBuilder()
                 .AddConfiguration(_applicationConfiguration)

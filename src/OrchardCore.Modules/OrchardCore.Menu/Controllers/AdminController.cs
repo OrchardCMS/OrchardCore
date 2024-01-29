@@ -130,7 +130,7 @@ namespace OrchardCore.Menu.Controllers
                 {
                     parentMenuItem["MenuItemsListPart"] = new JsonObject
                     {
-                        ["MenuItems"] = menuItems = new JsonArray(),
+                        ["MenuItems"] = menuItems = [],
                     };
                 }
 

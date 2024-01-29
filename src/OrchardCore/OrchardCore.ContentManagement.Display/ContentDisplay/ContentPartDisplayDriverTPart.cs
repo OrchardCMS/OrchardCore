@@ -66,11 +66,11 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                     if (editorPartType == shapeType)
                     {
-                        displayTypes = new[] { "_" + ctx.Shape.Metadata.DisplayType };
+                        displayTypes = ["_" + ctx.Shape.Metadata.DisplayType];
                     }
                     else
                     {
-                        displayTypes = new[] { "", "_" + ctx.Shape.Metadata.DisplayType };
+                        displayTypes = ["", "_" + ctx.Shape.Metadata.DisplayType];
 
                         if (!isDisplayModeShapeType)
                         {

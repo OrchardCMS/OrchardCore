@@ -18,15 +18,15 @@ namespace OrchardCore.Deployment
 
             Recipe = new JsonObject
             {
-                ["name"] = recipeDescriptor.Name ?? "",
-                ["displayName"] = recipeDescriptor.DisplayName ?? "",
-                ["description"] = recipeDescriptor.Description ?? "",
-                ["author"] = recipeDescriptor.Author ?? "",
-                ["website"] = recipeDescriptor.WebSite ?? "",
-                ["version"] = recipeDescriptor.Version ?? "",
+                ["name"] = recipeDescriptor.Name ?? string.Empty,
+                ["displayName"] = recipeDescriptor.DisplayName ?? string.Empty,
+                ["description"] = recipeDescriptor.Description ?? string.Empty,
+                ["author"] = recipeDescriptor.Author ?? string.Empty,
+                ["website"] = recipeDescriptor.WebSite ?? string.Empty,
+                ["version"] = recipeDescriptor.Version ?? string.Empty,
                 ["issetuprecipe"] = recipeDescriptor.IsSetupRecipe,
-                ["categories"] = JArray.FromObject(recipeDescriptor.Categories ?? Array.Empty<string>()),
-                ["tags"] = JArray.FromObject(recipeDescriptor.Tags ?? Array.Empty<string>()),
+                ["categories"] = JArray.FromObject(recipeDescriptor.Categories ?? []),
+                ["tags"] = JArray.FromObject(recipeDescriptor.Tags ?? []),
             };
         }
 

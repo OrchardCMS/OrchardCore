@@ -70,7 +70,7 @@ namespace OrchardCore.Environment.Commands
         {
             CheckMethodForSwitches(context.CommandDescriptor.MethodInfo, context.Switches);
 
-            var arguments = (context.Arguments ?? Enumerable.Empty<string>()).ToArray();
+            var arguments = (context.Arguments ?? []).ToArray();
             var invokeParameters = GetInvokeParametersForMethod(context.CommandDescriptor.MethodInfo, arguments)
                 ?? throw new InvalidOperationException(S["Command arguments \"{0}\" don't match command definition", string.Join(" ", arguments)]);
 

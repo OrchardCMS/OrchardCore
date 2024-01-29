@@ -96,10 +96,10 @@ namespace OrchardCore.Taxonomies
                             return;
                         }
 
-                        termItems = new List<ContentItem>
-                        {
+                        termItems =
+                        [
                             termContentItem
-                        };
+                        ];
                     }
                     else
                     {

@@ -80,7 +80,7 @@ public class CustomUserSettingsService
         var settingsType = await GetSettingsTypeAsync(settingsTypeName);
         if (settingsType == null)
         {
-            return new Dictionary<string, ContentItem>();
+            return [];
         }
 
         return await GetSettingsAsync(settingsType, factoryAsync);

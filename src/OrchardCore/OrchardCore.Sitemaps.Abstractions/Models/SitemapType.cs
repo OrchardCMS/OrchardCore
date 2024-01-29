@@ -44,6 +44,6 @@ namespace OrchardCore.Sitemaps.Models
         /// <summary>
         /// Sitemap sources contained by this sitemap.
         /// </summary>
-        public List<SitemapSource> SitemapSources { get; set; } = new List<SitemapSource>();
+        public List<SitemapSource> SitemapSources { get; set; } = [];
     }
 }

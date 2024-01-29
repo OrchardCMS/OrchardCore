@@ -13,7 +13,7 @@ namespace OrchardCore.Taxonomies.Fields
         {
             var tagNames = (JsonArray)taxonomyField.Content["TagNames"];
 
-            return tagNames != null ? tagNames.ToObject<string[]>() : Array.Empty<string>();
+            return tagNames != null ? tagNames.ToObject<string[]>() : [];
         }
 
         /// <summary>

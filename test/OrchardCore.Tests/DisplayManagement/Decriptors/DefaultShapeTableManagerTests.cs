@@ -35,7 +35,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        { new FeatureInfo(name, name, 0, string.Empty, string.Empty, this, Array.Empty<string>(), false, false, false) }
+                        { new FeatureInfo(name, name, 0, string.Empty, string.Empty, this, [], false, false, false) }
                     };
 
                 Features = features;
@@ -69,7 +69,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        { new FeatureInfo(name, name, 0, string.Empty, string.Empty, this, Array.Empty<string>(), false, false, false) }
+                        { new FeatureInfo(name, name, 0, string.Empty, string.Empty, this, [], false, false, false) }
                     };
 
                 Features = features;
@@ -96,7 +96,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 Features =
                     new List<IFeatureInfo>()
                     {
-                        { new FeatureInfo(name, name, 0, string.Empty, string.Empty, this, new string[] { baseTheme.Id }, false, false, false) }
+                        { new FeatureInfo(name, name, 0, string.Empty, string.Empty, this, [baseTheme.Id], false, false, false) }
                     };
 
                 Id = name;

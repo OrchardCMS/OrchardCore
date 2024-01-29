@@ -147,7 +147,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
                 if (taxonomyItems == null)
                 {
-                    parentTaxonomyItem["Terms"] = taxonomyItems = new JsonArray();
+                    parentTaxonomyItem["Terms"] = taxonomyItems = [];
                 }
 
                 taxonomyItems.Add(JObject.FromObject(contentItem));

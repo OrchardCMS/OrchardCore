@@ -19,6 +19,6 @@ namespace OrchardCore.ResourceManagement
         /// </summary>
         public string ContentBasePath { get; set; } = string.Empty;
 
-        public HashSet<ResourceManifest> ResourceManifests { get; init; } = new HashSet<ResourceManifest>();
+        public HashSet<ResourceManifest> ResourceManifests { get; init; } = [];
     }
 }

@@ -28,7 +28,7 @@ namespace OrchardCore.Forms.Drivers
         {
             return Initialize<SelectPartEditViewModel>("SelectPart_Fields_Edit", m =>
             {
-                m.Options = JConvert.SerializeObject(part.Options ?? Array.Empty<SelectOption>(), JOptions.CamelCaseIndented);
+                m.Options = JConvert.SerializeObject(part.Options ?? [], JOptions.CamelCaseIndented);
                 m.DefaultValue = part.DefaultValue;
                 m.Editor = part.Editor;
             });
@@ -45,7 +45,7 @@ namespace OrchardCore.Forms.Drivers
                 {
                     part.Editor = viewModel.Editor;
                     part.Options = string.IsNullOrWhiteSpace(viewModel.Options)
-                        ? Array.Empty<SelectOption>()
+                        ? []
                         : JConvert.DeserializeObject<SelectOption[]>(viewModel.Options);
                 }
                 catch

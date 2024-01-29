@@ -8,5 +8,5 @@ namespace OrchardCore.Documents;
 /// </summary>
 public class DocumentEntity : Document, IDocumentEntity
 {
-    public JsonObject Properties { get; set; } = new();
+    public JsonObject Properties { get; set; } = [];
 }

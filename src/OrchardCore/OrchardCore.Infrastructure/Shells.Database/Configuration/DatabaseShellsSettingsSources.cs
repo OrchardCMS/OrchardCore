@@ -77,10 +77,10 @@ namespace OrchardCore.Shells.Database.Configuration
                 else
                 {
                     document = new DatabaseShellsSettings();
-                    tenantsSettings = new JsonObject();
+                    tenantsSettings = [];
                 }
 
-                var settings = tenantsSettings[tenant] as JsonObject ?? new JsonObject();
+                var settings = tenantsSettings[tenant] as JsonObject ?? [];
 
                 foreach (var key in data.Keys)
                 {

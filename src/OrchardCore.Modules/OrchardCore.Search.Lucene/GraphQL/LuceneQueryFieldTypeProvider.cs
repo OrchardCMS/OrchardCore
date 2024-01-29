@@ -148,7 +148,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
                     var queryParameters = parameters != null ?
                         JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                        : new Dictionary<string, object>();
+                        : [];
 
                     var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
                     return result.Items;
@@ -186,7 +186,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
                     var queryParameters = parameters != null ?
                         JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                        : new Dictionary<string, object>();
+                        : [];
 
                     var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
                     return result.Items;

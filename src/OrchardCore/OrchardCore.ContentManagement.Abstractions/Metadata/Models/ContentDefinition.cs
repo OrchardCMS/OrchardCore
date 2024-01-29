@@ -8,7 +8,7 @@ namespace OrchardCore.ContentManagement.Metadata.Models
     {
         public string Name { get; protected set; }
 
-        private Dictionary<Type, object> _namedSettings = new();
+        private Dictionary<Type, object> _namedSettings = [];
 
         /// <summary>
         /// Do not access this property directly. Migrate to use GetSettings and PopulateSettings.

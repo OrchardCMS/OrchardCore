@@ -4,5 +4,5 @@ namespace OrchardCore.Entities;
 
 public class Entity : IEntity
 {
-    public JsonObject Properties { get; set; } = new();
+    public JsonObject Properties { get; set; } = [];
 }

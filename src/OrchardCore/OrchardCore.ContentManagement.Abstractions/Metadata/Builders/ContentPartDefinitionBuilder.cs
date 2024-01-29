@@ -129,7 +129,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
             else
             {
-                existingField = new ContentPartFieldDefinition(null, fieldName, new JsonObject());
+                existingField = new ContentPartFieldDefinition(null, fieldName, []);
             }
 
             var configurer = new FieldConfigurerImpl(existingField, _part);
@@ -188,7 +188,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
             else
             {
-                existingField = new ContentPartFieldDefinition(null, fieldName, new JsonObject());
+                existingField = new ContentPartFieldDefinition(null, fieldName, []);
             }
 
             var configurer = new FieldConfigurerImpl(existingField, _part);
