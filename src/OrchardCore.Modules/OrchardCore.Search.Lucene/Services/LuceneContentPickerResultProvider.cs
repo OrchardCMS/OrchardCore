@@ -33,7 +33,7 @@ namespace OrchardCore.Search.Lucene.Services
 
             if (!_luceneIndexManager.Exists(indexName))
             {
-                return new List<ContentPickerResult>();
+                return [];
             }
 
             var results = new List<ContentPickerResult>();

@@ -37,21 +37,21 @@ namespace OrchardCore.AuditTrail.ViewModels
         public QueryFilterResult<AuditTrailEvent> FilterResult { get; set; }
 
         [BindNever]
-        public RouteValueDictionary RouteValues { get; set; } = new RouteValueDictionary();
+        public RouteValueDictionary RouteValues { get; set; } = [];
 
         [BindNever]
-        public List<SelectListItem> Categories { get; set; } = new List<SelectListItem>();
+        public List<SelectListItem> Categories { get; set; } = [];
 
         /// <summary>
         /// Events for the current category when a <see cref="CorrelationId"/> is set from the route.
         /// </summary>
         [BindNever]
-        public List<SelectListItem> Events { get; set; } = new List<SelectListItem>();
+        public List<SelectListItem> Events { get; set; } = [];
 
         [BindNever]
-        public List<SelectListItem> AuditTrailSorts { get; set; } = new List<SelectListItem>();
+        public List<SelectListItem> AuditTrailSorts { get; set; } = [];
 
         [BindNever]
-        public List<SelectListItem> AuditTrailDates { get; set; } = new List<SelectListItem>();
+        public List<SelectListItem> AuditTrailDates { get; set; } = [];
     }
 }

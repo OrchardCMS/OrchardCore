@@ -46,7 +46,7 @@ namespace OrchardCore.DisplayManagement.LocationExpander
             var currentThemeId = context.Values["Theme"];
 
             var currentThemeAndBaseThemesOrdered = _extensionManager
-                .GetFeatures(new[] { currentThemeId })
+                .GetFeatures([currentThemeId])
                 .Where(f => f.IsTheme())
                 .Reverse()
                 .ToList();

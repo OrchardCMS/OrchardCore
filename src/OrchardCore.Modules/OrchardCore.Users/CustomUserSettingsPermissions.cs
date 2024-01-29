@@ -25,7 +25,7 @@ namespace OrchardCore.Users
                 .Select(type => CreatePermissionForType(type));
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-            => Enumerable.Empty<PermissionStereotype>();
+            => [];
 
         public static Permission CreatePermissionForType(ContentTypeDefinition type) =>
             new(

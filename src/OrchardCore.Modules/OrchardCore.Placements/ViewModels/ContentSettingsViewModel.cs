@@ -5,7 +5,7 @@ namespace OrchardCore.Placements.ViewModels
 {
     public class ContentSettingsViewModel
     {
-        public List<ContentSettingsEntry> ContentSettingsEntries { get; set; } = new List<ContentSettingsEntry>();
+        public List<ContentSettingsEntry> ContentSettingsEntries { get; set; } = [];
     }
 
     public class ContentSettingsEntry

@@ -89,7 +89,7 @@ namespace OrchardCore.ContentFields.Drivers
             }
 
             field.LocalizationSets = viewModel.LocalizationSets == null
-                ? Array.Empty<string>() : viewModel.LocalizationSets.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                ? [] : viewModel.LocalizationSets.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
             var settings = context.PartFieldDefinition.GetSettings<LocalizationSetContentPickerFieldSettings>();
 

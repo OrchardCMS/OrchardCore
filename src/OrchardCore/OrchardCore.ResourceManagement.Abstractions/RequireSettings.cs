@@ -26,7 +26,7 @@ namespace OrchardCore.ResourceManagement
 
         public Dictionary<string, string> Attributes
         {
-            get => _attributes ??= new Dictionary<string, string>();
+            get => _attributes ??= [];
             private set { _attributes = value; }
         }
 
@@ -156,7 +156,7 @@ namespace OrchardCore.ResourceManagement
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public RequireSettings SetDependencies(params string[] dependencies)
         {
-            Dependencies ??= new List<string>();
+            Dependencies ??= [];
 
             Dependencies.AddRange(dependencies);
 
@@ -186,7 +186,7 @@ namespace OrchardCore.ResourceManagement
 
         public RequireSettings SetAttribute(string name, string value)
         {
-            _attributes ??= new Dictionary<string, string>();
+            _attributes ??= [];
             _attributes[name] = value;
             return this;
         }

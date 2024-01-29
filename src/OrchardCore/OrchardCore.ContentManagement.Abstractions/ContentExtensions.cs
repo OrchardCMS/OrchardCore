@@ -164,7 +164,7 @@ namespace OrchardCore.ContentManagement
 
             var weldedPartSettings = (JObject)result;
 
-            weldedPartSettings[elementName] = settings == null ? new JObject() : JObject.FromObject(settings, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
+            weldedPartSettings[elementName] = settings == null ? [] : JObject.FromObject(settings, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
 
             return contentElement;
         }

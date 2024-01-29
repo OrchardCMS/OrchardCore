@@ -18,7 +18,7 @@ namespace OrchardCore.Apis.GraphQL
 
             var errorResult = new ExecutionResult
             {
-                Errors = new ExecutionErrors()
+                Errors = []
             };
 
             if (e == null)

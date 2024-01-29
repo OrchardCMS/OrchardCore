@@ -62,7 +62,7 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
 
         var model = new ShowRecoveryCodesViewModel()
         {
-            RecoveryCodes = codes ?? Array.Empty<string>(),
+            RecoveryCodes = codes ?? [],
         };
 
         var data = JsonSerializer.SerializeToUtf8Bytes(model);
