@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement.Display;
@@ -18,6 +16,7 @@ using OrchardCore.Layers.Models;
 using OrchardCore.Layers.ViewModels;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Rules;
+using OrchardCore.Rules.Services;
 
 namespace OrchardCore.Layers.Services
 {
@@ -62,8 +61,7 @@ namespace OrchardCore.Layers.Services
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
             // Should only run on the front-end for a full view
-            if ((context.Result is ViewResult || context.Result is PageResult) &&
-                !AdminAttribute.IsApplied(context.HttpContext))
+            if (context.IsViewOrPageResult() && !AdminAttribute.IsApplied(context.HttpContext))
             {
                 // Even if the Admin attribute is not applied we might be using the admin theme, for instance in Login views.
                 // In this case don't render Layers.
@@ -96,7 +94,7 @@ namespace OrchardCore.Layers.Services
                 var updater = _modelUpdaterAccessor.ModelUpdater;
 
                 var layersCache = new Dictionary<string, bool>();
-                var contentDefinitions = _contentDefinitionManager.ListTypeDefinitions();
+                var contentDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
 
                 foreach (var widget in widgets)
                 {
@@ -120,9 +118,9 @@ namespace OrchardCore.Layers.Services
                         continue;
                     }
 
-                    if(contentDefinitions.Any(c => c.Name == widget.ContentItem.ContentType))
+                    if (contentDefinitions.Any(c => c.Name == widget.ContentItem.ContentType))
                     {
-                        var widgetContent = await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, updater);           
+                        var widgetContent = await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, updater);
 
                         widgetContent.Classes.Add("widget");
                         widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
@@ -139,7 +137,7 @@ namespace OrchardCore.Layers.Services
                         var contentZone = layout.Zones[widget.Zone];
 
                         await contentZone.AddAsync(wrapper, "");
-                    }                 
+                    }
                 }
             }
 

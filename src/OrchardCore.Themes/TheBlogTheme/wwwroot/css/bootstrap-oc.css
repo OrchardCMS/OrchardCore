@@ -256,7 +256,7 @@ ul.pager {
 .term-badge > a {
   text-decoration: none;
 }
-.term-badge .badge-secondary:hover {
+.term-badge .bg-secondary:hover {
   background-color: #0085A1;
 }
 

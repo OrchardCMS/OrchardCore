@@ -31,7 +31,7 @@ namespace OrchardCore.Widgets.Controllers
 
         public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string contentItemsName, string zonesName, string zone, string targetId, string parentContentType, string partName)
         {
-            if (String.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrWhiteSpace(id))
             {
                 return NotFound();
             }
@@ -40,7 +40,7 @@ namespace OrchardCore.Widgets.Controllers
 
             contentItem.Weld(new WidgetMetadata());
 
-            string cardCollectionType = nameof(WidgetsListPart);
+            var cardCollectionType = nameof(WidgetsListPart);
 
             //Create a Card Shape
             dynamic contentCard = await _shapeFactory.New.ContentCard(

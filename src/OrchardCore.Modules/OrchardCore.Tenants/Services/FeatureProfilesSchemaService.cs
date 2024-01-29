@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using NJsonSchema;
@@ -8,12 +7,12 @@ using OrchardCore.Environment.Shell.Models;
 namespace OrchardCore.Tenants.Services
 {
     /// <summary>
-    /// Generates a json schema for a <see cref="FeatureRule"/>
+    /// Generates a json schema for a <see cref="FeatureRule"/>.
     /// </summary>
     public class FeatureProfilesSchemaService : IFeatureProfilesSchemaService
     {
         private readonly FeatureProfilesRuleOptions _featureProfilesRuleOptions;
-        private IHostEnvironment _hostEnvironment;
+        private readonly IHostEnvironment _hostEnvironment;
 
         public FeatureProfilesSchemaService(
             IOptions<FeatureProfilesRuleOptions> options,
@@ -39,7 +38,7 @@ namespace OrchardCore.Tenants.Services
                     Description = "The rule to apply to this expression"
                 };
 
-                foreach(var ruleOption in _featureProfilesRuleOptions.Rules.Keys)
+                foreach (var ruleOption in _featureProfilesRuleOptions.Rules.Keys)
                 {
                     ruleProperty.Enumeration.Add(ruleOption);
                 }

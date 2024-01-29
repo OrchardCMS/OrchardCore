@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
@@ -29,7 +28,7 @@ namespace OrchardCore.Localization
             public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
                 => Enumerable.Empty<LocalizedString>();
 
-            public LocalizedHtmlString this[string name] => new LocalizedHtmlString(name, name, true);
+            public LocalizedHtmlString this[string name] => new(name, name, true);
 
             public LocalizedHtmlString this[string name, params object[] arguments]
             {
@@ -55,9 +54,6 @@ namespace OrchardCore.Localization
 
             public LocalizedString GetString(string name, params object[] arguments) =>
                 NullStringLocalizerFactory.NullLocalizer.Instance.GetString(name, arguments);
-
-            [Obsolete("This method will be removed in the upcoming ASP.NET Core major release.")]
-            public IHtmlLocalizer WithCulture(CultureInfo culture) => Instance;
         }
     }
 }

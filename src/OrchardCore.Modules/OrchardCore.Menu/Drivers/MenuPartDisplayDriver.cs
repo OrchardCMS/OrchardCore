@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
@@ -20,7 +20,7 @@ namespace OrchardCore.Menu.Drivers
     public class MenuPartDisplayDriver : ContentPartDisplayDriver<MenuPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
         private readonly INotifier _notifier;
         private readonly ILogger _logger;
 
@@ -36,12 +36,12 @@ namespace OrchardCore.Menu.Drivers
             _notifier = notifier;
             _logger = logger;
         }
-        
+
         public override IDisplayResult Edit(MenuPart part)
         {
             return Initialize<MenuPartEditViewModel>("MenuPart_Edit", async model =>
             {
-                var menuItemContentTypes = _contentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "MenuItem");
+                var menuItemContentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync()).Where(t => t.StereotypeEquals("MenuItem"));
                 var notify = false;
 
                 foreach (var menuItem in part.ContentItem.As<MenuItemsListPart>().MenuItems)
@@ -54,7 +54,7 @@ namespace OrchardCore.Menu.Drivers
                     }
                 }
 
-                if(notify)
+                if (notify)
                 {
                     await _notifier.WarningAsync(H["Publishing this content item may erase created content. Fix any content type issues beforehand."]);
                 }
@@ -68,7 +68,7 @@ namespace OrchardCore.Menu.Drivers
         {
             var model = new MenuPartEditViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix, t => t.Hierarchy) && !String.IsNullOrWhiteSpace(model.Hierarchy))
+            if (await updater.TryUpdateModelAsync(model, Prefix, t => t.Hierarchy) && !string.IsNullOrWhiteSpace(model.Hierarchy))
             {
                 var originalMenuItems = part.ContentItem.As<MenuItemsListPart>();
 
@@ -90,7 +90,7 @@ namespace OrchardCore.Menu.Drivers
         /// <summary>
         /// Clone the content items at the specific index.
         /// </summary>
-        private JObject GetMenuItemAt(MenuItemsListPart menuItems, int[] indexes)
+        private static JObject GetMenuItemAt(MenuItemsListPart menuItems, int[] indexes)
         {
             ContentItem menuItem = null;
 

@@ -1,7 +1,7 @@
 {
     "title": "Agency",
     "name": "startbootstrap-agency",
-    "version": "7.0.10",
+    "version": "7.0.11",
     "scripts": {
         "build": "npm run clean && npm run build:pug && npm run build:scss && npm run build:scripts && npm run build:assets",
         "build:assets": "node scripts/build-assets.js",
@@ -39,15 +39,15 @@
         "bootstrap": "5.1.3"
     },
     "devDependencies": {
-        "autoprefixer": "10.3.7",
-        "browser-sync": "2.27.5",
-        "chokidar": "3.5.2",
+        "autoprefixer": "10.4.4",
+        "browser-sync": "2.27.9",
+        "chokidar": "3.5.3",
         "concurrently": "6.3.0",
-        "postcss": "8.3.9",
-        "prettier": "2.4.1",
+        "postcss": "8.4.12",
+        "prettier": "2.6.0",
         "pug": "3.0.2",
-        "sass": "1.43.2",
-        "shelljs": "0.8.4",
+        "sass": "1.49.9",
+        "shelljs": "0.8.5",
         "upath": "2.0.1"
     }
 }

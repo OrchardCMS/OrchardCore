@@ -38,7 +38,7 @@ namespace OrchardCore.DynamicCache.TagHelpers
                 throw new ArgumentNullException(nameof(output));
             }
 
-            if (!String.IsNullOrEmpty(Dependency))
+            if (!string.IsNullOrEmpty(Dependency))
             {
                 _cacheScopeManager.AddDependencies(Dependency);
             }

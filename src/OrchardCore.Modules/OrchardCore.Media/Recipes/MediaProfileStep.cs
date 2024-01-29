@@ -22,7 +22,7 @@ namespace OrchardCore.Media.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "MediaProfiles", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "MediaProfiles", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }

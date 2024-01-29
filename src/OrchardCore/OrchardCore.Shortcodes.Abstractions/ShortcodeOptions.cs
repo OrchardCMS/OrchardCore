@@ -9,11 +9,11 @@ namespace OrchardCore.Shortcodes
     /// </summary>
     public class ShortcodeOptions
     {
-        private readonly Dictionary<string, ShortcodeOption> _shortcodes = new Dictionary<string, ShortcodeOption>();
+        private readonly Dictionary<string, ShortcodeOption> _shortcodes = new();
 
         public IReadOnlyDictionary<string, ShortcodeOption> Shortcodes => _shortcodes;
 
-        private readonly Dictionary<string, ShortcodeDelegate> _shortcodeDelegates = new Dictionary<string, ShortcodeDelegate>();
+        private readonly Dictionary<string, ShortcodeDelegate> _shortcodeDelegates = new();
 
         public IReadOnlyDictionary<string, ShortcodeDelegate> ShortcodeDelegates => _shortcodeDelegates;
 

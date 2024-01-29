@@ -11,12 +11,12 @@ describe('SaaS Recipe test', function () {
 
     it('Displays the home page of the SaaS theme', function(){
         cy.visit(`${tenant.prefix}`);
-        cy.get('h4').should('contain.text', 'Welcome to the Orchard Framework, your site has been successfully set up.');
+        cy.get('h4').should('contain.text', 'Welcome to Orchard Core, your site has been successfully set up.');
     })
 
     it('SaaS admin login should work', function(){
         cy.login(tenant);
         cy.visit(`${tenant.prefix}/Admin`);
-        cy.get('.ta-content').should('contain.text', 'Welcome to Orchard')
+        cy.get('.menu-admin').should('have.id', 'adminMenu')
     })
 });

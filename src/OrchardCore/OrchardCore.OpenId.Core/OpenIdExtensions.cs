@@ -27,7 +27,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 ServiceDescriptor.Scoped<IDataMigration, OpenIdMigrations>());
 
             // Configure support for an OpenId collection.
-            builder.Services.Configure<StoreCollectionOptions>(o => o.Collections.Add("OpenId"));  
+            builder.Services.Configure<StoreCollectionOptions>(o => o.Collections.Add("OpenId"));
 
             return builder;
         }
@@ -46,14 +46,10 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // Register proxy delegates so that the Orchard managers can be directly
             // resolved from the DI using the non-generic, Orchard-specific interfaces.
-            builder.Services.TryAddScoped(provider => (IOpenIdApplicationManager)
-                provider.GetRequiredService<IOpenIddictApplicationManager>());
-            builder.Services.TryAddScoped(provider => (IOpenIdAuthorizationManager)
-                provider.GetRequiredService<IOpenIddictAuthorizationManager>());
-            builder.Services.TryAddScoped(provider => (IOpenIdScopeManager)
-                provider.GetRequiredService<IOpenIddictScopeManager>());
-            builder.Services.TryAddScoped(provider => (IOpenIdTokenManager)
-                provider.GetRequiredService<IOpenIddictTokenManager>());
+            builder.Services.TryAddScoped(provider => (IOpenIdApplicationManager)provider.GetRequiredService<IOpenIddictApplicationManager>());
+            builder.Services.TryAddScoped(provider => (IOpenIdAuthorizationManager)provider.GetRequiredService<IOpenIddictAuthorizationManager>());
+            builder.Services.TryAddScoped(provider => (IOpenIdScopeManager)provider.GetRequiredService<IOpenIddictScopeManager>());
+            builder.Services.TryAddScoped(provider => (IOpenIdTokenManager)provider.GetRequiredService<IOpenIddictTokenManager>());
 
             return builder;
         }

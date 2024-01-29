@@ -35,9 +35,7 @@ namespace OrchardCore.CustomSettings
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, CustomSettingsDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<CustomSettingsDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, CustomSettingsDeploymentStepDriver>();
+            services.AddDeployment<CustomSettingsDeploymentSource, CustomSettingsDeploymentStep, CustomSettingsDeploymentStepDriver>();
         }
     }
 }

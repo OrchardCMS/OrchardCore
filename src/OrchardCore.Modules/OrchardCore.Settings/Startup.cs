@@ -8,13 +8,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Recipes.Services;
+using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings.Deployment;
 using OrchardCore.Settings.Drivers;
@@ -82,18 +82,18 @@ namespace OrchardCore.Settings
             services.AddSingleton<ISiteService, SiteService>();
 
             // Site Settings editor
-            services.AddScoped<IDisplayManager<ISite>, DisplayManager<ISite>>();
             services.AddScoped<IDisplayDriver<ISite>, DefaultSiteSettingsDisplayDriver>();
             services.AddScoped<IDisplayDriver<ISite>, ButtonsSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddScoped<ITimeZoneSelector, DefaultTimeZoneSelector>();
 
-            services.AddTransient<IDeploymentSource, SiteSettingsDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<SiteSettingsDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, SiteSettingsDeploymentStepDriver>();
+            services.AddDeployment<SiteSettingsDeploymentSource, SiteSettingsDeploymentStep, SiteSettingsDeploymentStepDriver>();
 
             services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentSiteNameProvider>();
+
+            services.AddTransient<IPostConfigureOptions<ResourceOptions>, ResourceOptionsConfiguration>();
+            services.AddTransient<IPostConfigureOptions<PagerOptions>, PagerOptionsConfiguration>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

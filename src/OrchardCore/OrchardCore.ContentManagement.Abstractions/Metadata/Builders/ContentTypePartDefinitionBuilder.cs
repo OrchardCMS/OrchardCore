@@ -18,7 +18,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             Current = part;
             Name = part.Name;
             PartName = part.PartDefinition.Name;
-            TypeName = part.ContentTypeDefinition != null ? part.ContentTypeDefinition.Name : default(string);
+            TypeName = part.ContentTypeDefinition != null ? part.ContentTypeDefinition.Name : default;
             _settings = new JObject(part.Settings);
         }
 
@@ -32,20 +32,6 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             var jObject = JObject.FromObject(settings, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
             _settings[typeof(T).Name] = jObject;
 
-            return this;
-        }
-
-        [Obsolete("Use WithSettings<T>. This will be removed in a future version.")]
-        public ContentTypePartDefinitionBuilder WithSetting(string name, string value)
-        {
-            _settings[name] = value;
-            return this;
-        }
-
-        [Obsolete("Use WithSettings<T>. This will be removed in a future version.")]
-        public ContentTypePartDefinitionBuilder WithSetting(string name, string[] values)
-        {
-            _settings[name] = new JArray(values);
             return this;
         }
 

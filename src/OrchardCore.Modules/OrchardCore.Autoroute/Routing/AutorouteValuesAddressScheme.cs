@@ -28,9 +28,8 @@ namespace OrchardCore.Autoroute.Routing
                 return Enumerable.Empty<Endpoint>();
             }
 
-
             // Try to get the contained item first, then the container content item
-            string contentItemId = address.ExplicitValues[_options.ContainedContentItemIdKey]?.ToString();
+            var contentItemId = address.ExplicitValues[_options.ContainedContentItemIdKey]?.ToString();
             if (string.IsNullOrEmpty(contentItemId))
             {
                 contentItemId = address.ExplicitValues[_options.ContentItemIdKey]?.ToString();
@@ -59,7 +58,7 @@ namespace OrchardCore.Autoroute.Routing
                 {
                     foreach (var entry in address.ExplicitValues)
                     {
-                        if (String.Equals(entry.Key, _options.ContentItemIdKey, StringComparison.OrdinalIgnoreCase))
+                        if (string.Equals(entry.Key, _options.ContentItemIdKey, StringComparison.OrdinalIgnoreCase))
                         {
                             continue;
                         }
@@ -90,7 +89,7 @@ namespace OrchardCore.Autoroute.Routing
         {
             foreach (var entry in _options.GlobalRouteValues)
             {
-                if (!String.Equals(explicitValues[entry.Key]?.ToString(), entry.Value?.ToString(), StringComparison.OrdinalIgnoreCase))
+                if (!string.Equals(explicitValues[entry.Key]?.ToString(), entry.Value?.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
                     return false;
                 }

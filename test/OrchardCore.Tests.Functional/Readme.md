@@ -6,7 +6,7 @@ To see use the cypress user interface, run these scripts
 ```bash
 npm run cms:clean // deletes App_Data
 npm run cms:host // starts the app on port 5001
-# run this in a seperate console
+# run this in a separate console
 npm run cms:cypress // Opens the cypress ui
 ```
 

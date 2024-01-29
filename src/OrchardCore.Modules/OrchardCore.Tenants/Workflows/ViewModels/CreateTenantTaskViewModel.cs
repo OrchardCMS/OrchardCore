@@ -16,7 +16,10 @@ namespace OrchardCore.Tenants.Workflows.ViewModels
 
         public string TablePrefixExpression { get; set; }
 
+        public string SchemaExpression { get; set; }
+
         public string RecipeNameExpression { get; set; }
+
         public string FeatureProfileExpression { get; set; }
     }
 }

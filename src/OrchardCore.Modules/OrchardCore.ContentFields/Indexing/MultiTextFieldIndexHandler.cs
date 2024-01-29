@@ -12,7 +12,7 @@ namespace OrchardCore.ContentFields.Indexing
 
             foreach (var key in context.Keys)
             {
-                foreach(var value in field.Values)
+                foreach (var value in field.Values)
                 {
                     context.DocumentIndex.Set(key, value, options);
                 }

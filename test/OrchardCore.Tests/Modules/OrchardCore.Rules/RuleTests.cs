@@ -1,12 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
-using Moq;
-using OrchardCore.Layers;
 using OrchardCore.Layers.Services;
 using OrchardCore.Localization;
 using OrchardCore.Rules;
@@ -14,7 +5,6 @@ using OrchardCore.Rules.Models;
 using OrchardCore.Rules.Services;
 using OrchardCore.Scripting;
 using OrchardCore.Scripting.JavaScript;
-using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Rules
 {
@@ -45,9 +35,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Rules
             {
                 Conditions = new List<Condition>
                 {
-                    new HomepageCondition 
-                    { 
-                        Value = isHomepage 
+                    new HomepageCondition
+                    {
+                        Value = isHomepage
                     }
                 }
             };

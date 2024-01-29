@@ -21,8 +21,7 @@ Allows adding, editing and removing the registered applications.
 ## Authorization Server
 
 Enables authentication of external applications using the OpenID Connect/OAuth 2.0 standards.  
-It is based on the [`OpenIddict`](https://github.com/openiddict/openiddict-core) library allowing.  
-Orchard Core to act as identity provider to support token authentication without the need of an external identity provider.  
+It is based on the [`OpenIddict`](https://github.com/openiddict/openiddict-core) library allowing Orchard Core to act as identity provider to support token authentication without the need of an external identity provider.
 
 - Orchard Core can also be used as an identity provider for centralizing the user access permissions to external applications.
 - Orchard Core services.
@@ -56,6 +55,7 @@ to allow third-party resource servers to use the JWT tokens produced by the Orch
 - Allow Authorization Code Flow: It requires that the Authorization and Token Endpoints are enabled. More info at <http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth>
 - Allow Implicit Flow: It requires that the Authorization Endpoint is enabled. More info at <http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth>
 - Allow Refresh Token Flow: It allows to refresh access token using a refresh token. It can be used in combination with Password Flow, Authorization Code Flow and Hybrid Flow. More info at <http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens>
+- Require Proof Key for Code Exchange: Global setting that applies PKCE to all registered clients whether or not the 'Require PKCE' flag was set in the Application settings page.
 
 A sample of OpenID Connect Settings recipe step:
 
@@ -79,13 +79,14 @@ A sample of OpenID Connect Settings recipe step:
       "AllowClientCredentialsFlow": false,
       "AllowAuthorizationCodeFlow": false,
       "AllowRefreshTokenFlow": false,
-      "AllowImplicitFlow": false
+      "AllowImplicitFlow": false,
+      "RequireProofKeyForCodeExchange" : false
 }
 ```
 
 ### Client OpenID Connect Apps Configuration
 
-OpenID Connect apps can be set through OpenID Connect Apps menu in the admin dashboard (through the Management Interface feature) 
+OpenID Connect apps can be set through OpenID Connect Apps menu in the admin dashboard (through the Management Interface feature)
 and also through a recipe step.
 
 OpenID Connect apps require the following configuration.
@@ -109,6 +110,7 @@ OpenID Connect apps require the following configuration.
 - Redirect Uri: callback URL.
 - Skip Consent: sets whether a consent form has to be completed by the user after log in.
 - Advanced Parameters: Allows setting additional parameters that can be sent with the authorize request. Note: The default parameters are set from the options above.
+- Require PKCE: Applies PKCE for the registered application.  Ensure that the client library being used suppports PKCE.  
 
 A sample of OpenID Connect App recipe step:
 
@@ -127,7 +129,8 @@ A sample of OpenID Connect App recipe step:
       "AllowClientCredentialsFlow": false,
       "AllowAuthorizationCodeFlow": false,
       "AllowRefreshTokenFlow": false,
-      "AllowImplicitFlow": false
+      "AllowImplicitFlow": false,
+      "RequireProofKeyForCodeExchange": false
 }
 ```
 
@@ -260,7 +263,7 @@ A sample of Token Validation Settings recipe step:
 
 ## OIDC Client
 
-Authenticates users from an external OpenID Connect identity provider. 
+Authenticates users from an external OpenID Connect identity provider.
 If the site allows to register new users, a local user is linked and the external login is linked.
 If an "email" claim is received, and a local user is found, then the external login is linked to that account, after authenticating.
 

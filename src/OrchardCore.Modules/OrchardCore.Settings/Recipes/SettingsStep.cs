@@ -21,7 +21,7 @@ namespace OrchardCore.Settings.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "Settings", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "Settings", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
@@ -29,7 +29,7 @@ namespace OrchardCore.Settings.Recipes
             var model = context.Step;
             var site = await _siteService.LoadSiteSettingsAsync();
 
-            foreach (JProperty property in model.Properties())
+            foreach (var property in model.Properties())
             {
                 switch (property.Name)
                 {

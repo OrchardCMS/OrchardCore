@@ -23,7 +23,7 @@ namespace OrchardCore.Roles.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "Roles", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "Roles", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
@@ -32,7 +32,7 @@ namespace OrchardCore.Roles.Recipes
 
             foreach (var importedRole in model.Roles)
             {
-                if (String.IsNullOrWhiteSpace(importedRole.Name))
+                if (string.IsNullOrWhiteSpace(importedRole.Name))
                     continue;
 
                 var role = (Role)await _roleManager.FindByNameAsync(importedRole.Name);

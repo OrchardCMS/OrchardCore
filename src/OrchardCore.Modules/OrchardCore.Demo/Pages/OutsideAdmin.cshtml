@@ -1,7 +1,7 @@
 @page
 @model OutsideAdminDemoModel
 @using Microsoft.AspNetCore.Mvc.RazorPages
-@using OrchardCore.Admin;
+@using OrchardCore.Admin
 
 @functions
 {
@@ -31,7 +31,7 @@
     Being an Admin Page my default path based route is automatically prefixed with the current 'AdminOptions.AdminUrlPrefix'.
 </p>
 <p>
-    @T[Model.Message]
+    @Model.Message
 </p>
 <p>
     Date using the DateTimeShape: @await DisplayAsync(await New.DateTime(Utc: null, Format: T["MMMM dd, yyyy"].Value))

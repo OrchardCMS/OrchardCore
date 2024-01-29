@@ -57,7 +57,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public override bool CanExecute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return !String.IsNullOrEmpty(ContentType);
+            return !string.IsNullOrEmpty(ContentType);
         }
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
@@ -92,7 +92,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             var contentItem = await ContentManager.NewAsync(ContentType);
 
-            if (!String.IsNullOrWhiteSpace(ContentProperties.Expression))
+            if (!string.IsNullOrWhiteSpace(ContentProperties.Expression))
             {
                 var contentProperties = await _expressionEvaluator.EvaluateAsync(ContentProperties, workflowContext, _javaScriptEncoder);
                 contentItem.Merge(JObject.Parse(contentProperties));

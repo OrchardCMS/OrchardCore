@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Mvc.Core.Utilities;
@@ -34,7 +33,7 @@ namespace OrchardCore.Workflows.Http.Scripting
             _httpContextMethod = new GlobalMethod
             {
                 Name = "httpContext",
-                Method = serviceProvider => (Func<HttpContext>)(() => httpContextAccessor.HttpContext)
+                Method = serviceProvider => (Func<HttpContext>)(() => httpContextAccessor.HttpContext),
             };
 
             _queryStringMethod = new GlobalMethod
@@ -67,13 +66,13 @@ namespace OrchardCore.Workflows.Http.Scripting
                         result = null;
                     }
                     return result;
-                })
+                }),
             };
 
             _responseWriteMethod = new GlobalMethod
             {
                 Name = "responseWrite",
-                Method = serviceProvider => (Action<string>)(text => httpContextAccessor.HttpContext.Response.WriteAsync(text).GetAwaiter().GetResult())
+                Method = serviceProvider => (Action<string>)(text => httpContextAccessor.HttpContext.Response.WriteAsync(text).GetAwaiter().GetResult()),
             };
 
             _absoluteUrlMethod = new GlobalMethod
@@ -84,7 +83,7 @@ namespace OrchardCore.Workflows.Http.Scripting
                     var urlHelperFactory = serviceProvider.GetRequiredService<IUrlHelperFactory>();
                     var urlHelper = urlHelperFactory.GetUrlHelper(new ActionContext(httpContextAccessor.HttpContext, new RouteData(), new ActionDescriptor()));
                     return urlHelper.ToAbsoluteUrl(relativePath);
-                })
+                }),
             };
 
             _readBodyMethod = new GlobalMethod
@@ -92,12 +91,11 @@ namespace OrchardCore.Workflows.Http.Scripting
                 Name = "readBody",
                 Method = serviceProvider => (Func<string>)(() =>
                 {
-                    using (var sr = new StreamReader(httpContextAccessor.HttpContext.Request.Body))
-                    {
-                        // Async read of the request body is mandatory.
-                        return sr.ReadToEndAsync().GetAwaiter().GetResult(); ;
-                    }
-                })
+                    using var sr = new StreamReader(httpContextAccessor.HttpContext.Request.Body);
+
+                    // Async read of the request body is mandatory.
+                    return sr.ReadToEndAsync().GetAwaiter().GetResult();
+                }),
             };
 
             _requestFormMethod = new GlobalMethod
@@ -126,21 +124,21 @@ namespace OrchardCore.Workflows.Http.Scripting
                         result = null;
                     }
                     return result;
-                })
+                }),
             };
 
             // This should be deprecated
             _queryStringAsJsonMethod = new GlobalMethod
             {
                 Name = "queryStringAsJson",
-                Method = serviceProvider => _deserializeRequestDataMethod.Method.Invoke(serviceProvider)
+                Method = serviceProvider => _deserializeRequestDataMethod.Method.Invoke(serviceProvider),
             };
 
             // This should be deprecated
             _requestFormAsJsonMethod = new GlobalMethod
             {
                 Name = "requestFormAsJson",
-                Method = serviceProvider => _deserializeRequestDataMethod.Method.Invoke(serviceProvider)
+                Method = serviceProvider => _deserializeRequestDataMethod.Method.Invoke(serviceProvider),
             };
 
             _deserializeRequestDataMethod = new GlobalMethod
@@ -150,7 +148,7 @@ namespace OrchardCore.Workflows.Http.Scripting
                 {
                     Dictionary<string, object> result = null;
 
-                    if(httpContextAccessor.HttpContext != null)
+                    if (httpContextAccessor.HttpContext != null)
                     {
                         var method = httpContextAccessor.HttpContext.Request.Method;
                         if (method.Equals("POST", StringComparison.OrdinalIgnoreCase) || method.Equals("PUT", StringComparison.OrdinalIgnoreCase) || method.Equals("PATCH", StringComparison.OrdinalIgnoreCase))
@@ -160,27 +158,27 @@ namespace OrchardCore.Workflows.Http.Scripting
                                 var formData = httpContextAccessor.HttpContext.Request.Form;
 
                                 // If we can parse first request form element key as JSON then we throw
-                                if(isValidJSON(formData.First().Key.ToString()))
+                                if (isValidJSON(formData.First().Key.ToString()))
                                 {
                                     throw new Exception("Invalid form data passed in the request. The data passed was JSON while it should be form data.");
                                 }
 
                                 try
                                 {
-                                    result = formData.ToDictionary(x => x.Key, x => (object) x.Value);
+                                    result = formData.ToDictionary(x => x.Key, x => (object)x.Value);
                                 }
                                 catch
                                 {
                                     throw new Exception("Invalid form data passed in the request.");
                                 }
                             }
-                            else if (HasJsonContentType(httpContextAccessor.HttpContext.Request))
+                            else if (httpContextAccessor.HttpContext.Request.HasJsonContentType())
                             {
                                 string json;
                                 using (var sr = new StreamReader(httpContextAccessor.HttpContext.Request.Body))
                                 {
                                     // Async read of the request body is mandatory.
-                                    json = sr.ReadToEndAsync().GetAwaiter().GetResult(); ;
+                                    json = sr.ReadToEndAsync().GetAwaiter().GetResult();
                                 }
 
                                 try
@@ -199,7 +197,7 @@ namespace OrchardCore.Workflows.Http.Scripting
 
                             try
                             {
-                                result = queryData.ToDictionary(x => x.Key, x => (object) x.Value);
+                                result = queryData.ToDictionary(x => x.Key, x => (object)x.Value);
 
                                 // We never need to keep the Workflow token
                                 result.Remove("token");
@@ -216,7 +214,7 @@ namespace OrchardCore.Workflows.Http.Scripting
                     }
 
                     return result;
-                })
+                }),
             };
         }
 
@@ -231,41 +229,6 @@ namespace OrchardCore.Workflows.Http.Scripting
             {
                 return false;
             }
-        }
-
-        /// <summary>
-        /// Checks the Content-Type header for JSON types.
-        /// This method needs to be removed after we drop support for netcoreapp3.1
-        /// It is now part of net5.0 see :
-        /// https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.httprequestjsonextensions.hasjsoncontenttype?view=aspnetcore-5.0
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        private static bool HasJsonContentType(HttpRequest request)
-        {
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
-            if (!MediaTypeHeaderValue.TryParse(request.ContentType, out var mt))
-            {
-                return false;
-            }
-
-            // Matches application/json
-            if (mt.MediaType.Equals("application/json", StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-
-            // Matches +json, e.g. application/ld+json
-            if (mt.Suffix.Equals("json", StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-
-            return false;
         }
 
         public IEnumerable<GlobalMethod> GetMethods()

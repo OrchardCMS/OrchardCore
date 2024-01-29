@@ -1,14 +1,6 @@
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using MimeKit;
-using Moq;
 using OrchardCore.Email;
 using OrchardCore.Email.Services;
-using Xunit;
 
 namespace OrchardCore.Tests.Email
 {
@@ -214,7 +206,31 @@ namespace OrchardCore.Tests.Email
             Assert.True(result.Errors.Any());
         }
 
-        private async Task<string> SendEmailAsync(MailMessage message, string defaultSender = null)
+        [Fact]
+        public async Task SendOfflineEmailHasNoResponse()
+        {
+            // Arrange
+            var message = new MailMessage
+            {
+                To = "info@oc.com",
+                Subject = "Test",
+                Body = "Test Message"
+            };
+            var settings = new SmtpSettings
+            {
+                DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory
+            };
+
+            var smtp = CreateSmtpService(settings);
+
+            // Act
+            var result = await smtp.SendAsync(message);
+
+            // Assert
+            Assert.Null(result.Response);
+        }
+
+        private static async Task<string> SendEmailAsync(MailMessage message, string defaultSender = null)
         {
             var pickupDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "Email");
 

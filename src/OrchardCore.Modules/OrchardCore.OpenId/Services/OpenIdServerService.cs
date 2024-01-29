@@ -29,7 +29,7 @@ namespace OrchardCore.OpenId.Services
         private readonly IOptionsMonitor<ShellOptions> _shellOptions;
         private readonly ShellSettings _shellSettings;
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public OpenIdServerService(
             IDataProtectionProvider dataProtectionProvider,
@@ -69,7 +69,7 @@ namespace OrchardCore.OpenId.Services
             }
 
             // If the OpenID server settings haven't been populated yet, the authorization,
-            // logout, token and userinfo endpoints are assumed to be enabled by default.
+            // logout, token, userinfo, introspection and revocation endpoints are assumed to be enabled by default.
             // In this case, only the authorization code and refresh token flows are used.
             return new OpenIdServerSettings
             {
@@ -78,7 +78,9 @@ namespace OrchardCore.OpenId.Services
                 AuthorizationEndpointPath = "/connect/authorize",
                 LogoutEndpointPath = "/connect/logout",
                 TokenEndpointPath = "/connect/token",
-                UserinfoEndpointPath = "/connect/userinfo"
+                UserinfoEndpointPath = "/connect/userinfo",
+                IntrospectionEndpointPath = "/connect/introspect",
+                RevocationEndpointPath = "/connect/revoke"
             };
         }
 
@@ -120,7 +122,7 @@ namespace OrchardCore.OpenId.Services
                     }));
                 }
 
-                if (!String.IsNullOrEmpty(settings.Authority.Query) || !String.IsNullOrEmpty(settings.Authority.Fragment))
+                if (!string.IsNullOrEmpty(settings.Authority.Query) || !string.IsNullOrEmpty(settings.Authority.Fragment))
                 {
                     results.Add(new ValidationResult(S["The authority cannot contain a query string or a fragment."], new[]
                     {
@@ -131,7 +133,7 @@ namespace OrchardCore.OpenId.Services
 
             if (settings.SigningCertificateStoreLocation != null &&
                 settings.SigningCertificateStoreName != null &&
-                !String.IsNullOrEmpty(settings.SigningCertificateThumbprint))
+                !string.IsNullOrEmpty(settings.SigningCertificateThumbprint))
             {
                 var certificate = GetCertificate(
                     settings.SigningCertificateStoreLocation.Value,
@@ -278,7 +280,7 @@ namespace OrchardCore.OpenId.Services
             // instead of using the fallback managed certificates logic.
             if (settings.EncryptionCertificateStoreLocation != null &&
                 settings.EncryptionCertificateStoreName != null &&
-                !String.IsNullOrEmpty(settings.EncryptionCertificateThumbprint))
+                !string.IsNullOrEmpty(settings.EncryptionCertificateThumbprint))
             {
                 var certificate = GetCertificate(
                     settings.EncryptionCertificateStoreLocation.Value,
@@ -347,7 +349,7 @@ namespace OrchardCore.OpenId.Services
             // instead of using the fallback managed certificates logic.
             if (settings.SigningCertificateStoreLocation != null &&
                 settings.SigningCertificateStoreName != null &&
-                !String.IsNullOrEmpty(settings.SigningCertificateThumbprint))
+                !string.IsNullOrEmpty(settings.SigningCertificateThumbprint))
             {
                 var certificate = GetCertificate(
                     settings.SigningCertificateStoreLocation.Value,
@@ -429,10 +431,7 @@ namespace OrchardCore.OpenId.Services
                     }
                     catch (Exception exception)
                     {
-                        if (exceptions == null)
-                        {
-                            exceptions = new List<Exception>();
-                        }
+                        exceptions ??= new List<Exception>();
 
                         exceptions.Add(exception);
                     }
@@ -543,7 +542,7 @@ namespace OrchardCore.OpenId.Services
             }
         }
 
-        private X509Certificate2 GenerateEncryptionCertificate(ShellSettings settings)
+        private static X509Certificate2 GenerateEncryptionCertificate(ShellSettings settings)
         {
             var algorithm = GenerateRsaSecurityKey(size: 2048);
             var certificate = GenerateCertificate(X509KeyUsageFlags.KeyEncipherment, algorithm, settings);
@@ -586,8 +585,15 @@ namespace OrchardCore.OpenId.Services
 
             X500DistinguishedName GetSubjectName()
             {
-                try { return new X500DistinguishedName("CN=" + (settings.RequestUrlHost ?? "localhost")); }
-                catch { return new X500DistinguishedName("CN=localhost"); }
+                var host = settings.RequestUrlHosts.FirstOrDefault(host => host != "localhost");
+                try
+                {
+                    return new X500DistinguishedName("CN=" + (host ?? "localhost"));
+                }
+                catch
+                {
+                    return new X500DistinguishedName("CN=localhost");
+                }
             }
         }
 

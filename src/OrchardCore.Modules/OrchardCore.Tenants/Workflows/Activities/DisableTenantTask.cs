@@ -1,8 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
@@ -30,30 +30,34 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            if (ShellScope.Context.Settings.Name != ShellHelper.DefaultShellName)
+            if (!ShellScope.Context.Settings.IsDefaultShell())
             {
                 return Outcomes("Failed");
             }
 
             var tenantName = (await ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext, null))?.Trim();
 
-            if (tenantName == ShellHelper.DefaultShellName)
+            if (string.IsNullOrEmpty(tenantName))
             {
                 return Outcomes("Failed");
             }
 
-            if (!ShellHost.TryGetSettings(tenantName?.Trim(), out var shellSettings))
+            if (!ShellHost.TryGetSettings(tenantName, out var shellSettings))
             {
                 return Outcomes("Failed");
             }
 
-            if (shellSettings.State != TenantState.Running)
+            if (shellSettings.IsDefaultShell())
             {
                 return Outcomes("Failed");
             }
 
-            shellSettings.State = TenantState.Disabled;
-            await ShellHost.UpdateShellSettingsAsync(shellSettings);
+            if (!shellSettings.IsRunning())
+            {
+                return Outcomes("Failed");
+            }
+
+            await ShellHost.UpdateShellSettingsAsync(shellSettings.AsDisabled());
 
             return Outcomes("Disabled");
         }

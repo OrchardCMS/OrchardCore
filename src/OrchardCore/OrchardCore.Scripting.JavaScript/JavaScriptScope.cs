@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Jint;
 
 namespace OrchardCore.Scripting.JavaScript

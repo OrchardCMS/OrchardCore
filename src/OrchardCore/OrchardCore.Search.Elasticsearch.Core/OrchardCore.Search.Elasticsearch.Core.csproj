@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>OrchardCore.Search.Elasticsearch.Core</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Elasticsearch Search Core</Title>
+    <Description>
+      $(OCCMSDescription)
+
+      Core Implementation for Elasticsearch Search module.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NEST" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrchardCore.ContentLocalization.Abstractions\OrchardCore.ContentLocalization.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.ContentManagement\OrchardCore.ContentManagement.csproj" />
+    <ProjectReference Include="..\OrchardCore.ContentPreview.Abstractions\OrchardCore.ContentPreview.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Contents.Core\OrchardCore.Contents.Core.csproj" />
+    <ProjectReference Include="..\OrchardCore.ContentTypes.Abstractions\OrchardCore.ContentTypes.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Deployment.Abstractions\OrchardCore.Deployment.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Indexing.Abstractions\OrchardCore.Indexing.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Liquid.Abstractions\OrchardCore.Liquid.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Queries.Abstractions\OrchardCore.Queries.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Search.Abstractions\OrchardCore.Search.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Search.Elasticsearch.Abstractions\OrchardCore.Search.Elasticsearch.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>
