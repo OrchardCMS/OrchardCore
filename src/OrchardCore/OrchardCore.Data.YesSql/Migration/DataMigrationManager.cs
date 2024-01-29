@@ -259,7 +259,7 @@ namespace OrchardCore.Data.Migration
         /// <summary>
         /// Returns all the available IDataMigration instances for a specific module, and inject necessary builders
         /// </summary>
-        private IEnumerable<IDataMigration> GetDataMigrations(string featureId)
+        private List<IDataMigration> GetDataMigrations(string featureId)
         {
             var migrations = _dataMigrations
                     .Where(dm => _typeFeatureProvider.GetFeatureForDependency(dm.GetType()).Id == featureId)
