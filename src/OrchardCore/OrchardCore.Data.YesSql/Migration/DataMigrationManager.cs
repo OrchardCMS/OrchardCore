@@ -63,7 +63,7 @@ namespace OrchardCore.Data.Migration
                 if (_dataMigrationRecord == null)
                 {
                     _dataMigrationRecord = new DataMigrationRecord();
-                    _session.Save(_dataMigrationRecord);
+                    await _session.SaveAsync(_dataMigrationRecord);
                 }
             }
 
@@ -107,10 +107,7 @@ namespace OrchardCore.Data.Migration
                 var dataMigrationRecord = await GetDataMigrationRecordAsync(tempMigration);
 
                 var uninstallMethod = GetUninstallMethod(migration);
-                if (uninstallMethod != null)
-                {
-                    uninstallMethod.Invoke(migration, Array.Empty<object>());
-                }
+                uninstallMethod?.Invoke(migration, Array.Empty<object>());
 
                 var uninstallAsyncMethod = GetUninstallAsyncMethod(migration);
                 if (uninstallAsyncMethod != null)
@@ -179,7 +176,7 @@ namespace OrchardCore.Data.Migration
                 if (dataMigrationRecord != null)
                 {
                     // This can be null if a failed create migration has occurred and the data migration record was saved.
-                    current = dataMigrationRecord.Version.HasValue ? dataMigrationRecord.Version.Value : current;
+                    current = dataMigrationRecord.Version ?? current;
                 }
                 else
                 {
@@ -246,7 +243,7 @@ namespace OrchardCore.Data.Migration
                 finally
                 {
                     // Persist data migrations
-                    _session.Save(_dataMigrationRecord);
+                    await _session.SaveAsync(_dataMigrationRecord);
                 }
             }
         }
@@ -262,7 +259,7 @@ namespace OrchardCore.Data.Migration
         /// <summary>
         /// Returns all the available IDataMigration instances for a specific module, and inject necessary builders
         /// </summary>
-        private IEnumerable<IDataMigration> GetDataMigrations(string featureId)
+        private List<IDataMigration> GetDataMigrations(string featureId)
         {
             var migrations = _dataMigrations
                     .Where(dm => _typeFeatureProvider.GetFeatureForDependency(dm.GetType()).Id == featureId)
@@ -293,9 +290,9 @@ namespace OrchardCore.Data.Migration
             {
                 var version = methodInfo.Name.EndsWith(asyncSuffix, StringComparison.Ordinal)
                     ? methodInfo.Name.Substring(updateFromPrefix.Length, methodInfo.Name.Length - updateFromPrefix.Length - asyncSuffix.Length)
-                    : methodInfo.Name.Substring(updateFromPrefix.Length);
+                    : methodInfo.Name[updateFromPrefix.Length..];
 
-                if (Int32.TryParse(version, out var versionValue))
+                if (int.TryParse(version, out var versionValue))
                 {
                     return new Tuple<int, MethodInfo>(versionValue, methodInfo);
                 }

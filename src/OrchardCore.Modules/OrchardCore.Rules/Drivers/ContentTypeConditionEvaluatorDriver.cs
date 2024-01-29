@@ -7,6 +7,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Rules.Models;
+using OrchardCore.Rules.Services;
 
 namespace OrchardCore.Rules.Drivers
 {

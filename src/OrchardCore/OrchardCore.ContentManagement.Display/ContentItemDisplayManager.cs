@@ -56,14 +56,10 @@ namespace OrchardCore.ContentManagement.Display
                 throw new ArgumentNullException(nameof(contentItem));
             }
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType)
+                ?? throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");
 
-            if (contentTypeDefinition == null)
-            {
-                throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");
-            }
-
-            var actualDisplayType = String.IsNullOrEmpty(displayType) ? "Detail" : displayType;
+            var actualDisplayType = string.IsNullOrEmpty(displayType) ? "Detail" : displayType;
             var hasStereotype = contentTypeDefinition.TryGetStereotype(out var stereotype);
 
             var actualShapeType = "Content";
@@ -132,12 +128,8 @@ namespace OrchardCore.ContentManagement.Display
                 throw new ArgumentNullException(nameof(contentItem));
             }
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
-
-            if (contentTypeDefinition == null)
-            {
-                throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");
-            }
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType)
+                ?? throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");
 
             var hasStereotype = contentTypeDefinition.TryGetStereotype(out var stereotype);
             var actualShapeType = "Content_Edit";
@@ -187,12 +179,8 @@ namespace OrchardCore.ContentManagement.Display
                 throw new ArgumentNullException(nameof(contentItem));
             }
 
-            var contentTypeDefinition = _contentDefinitionManager.LoadTypeDefinition(contentItem.ContentType);
-
-            if (contentTypeDefinition == null)
-            {
-                throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");
-            }
+            var contentTypeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(contentItem.ContentType)
+                ?? throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");
 
             var hasStereotype = contentTypeDefinition.TryGetStereotype(out var stereotype);
             var actualShapeType = "Content_Edit";

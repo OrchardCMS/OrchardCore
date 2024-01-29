@@ -88,9 +88,7 @@ namespace OrchardCore.Settings
 
             services.AddScoped<ITimeZoneSelector, DefaultTimeZoneSelector>();
 
-            services.AddTransient<IDeploymentSource, SiteSettingsDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<SiteSettingsDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, SiteSettingsDeploymentStepDriver>();
+            services.AddDeployment<SiteSettingsDeploymentSource, SiteSettingsDeploymentStep, SiteSettingsDeploymentStepDriver>();
 
             services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentSiteNameProvider>();
 

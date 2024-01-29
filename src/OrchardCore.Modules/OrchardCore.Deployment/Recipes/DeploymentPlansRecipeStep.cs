@@ -27,7 +27,7 @@ namespace OrchardCore.Deployment.Recipes
 
         public Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "deployment", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "deployment", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }
@@ -68,7 +68,7 @@ namespace OrchardCore.Deployment.Recipes
                 var prefix = "No changes have been made. The following types of deployment plans cannot be added:";
                 var suffix = "Please ensure that the related features are enabled to add these types of deployment plans.";
 
-                throw new InvalidOperationException($"{prefix} {String.Join(", ", unknownTypes)}. {suffix}");
+                throw new InvalidOperationException($"{prefix} {string.Join(", ", unknownTypes)}. {suffix}");
             }
 
             return _deploymentPlanService.CreateOrUpdateDeploymentPlansAsync(deploymentPlans);

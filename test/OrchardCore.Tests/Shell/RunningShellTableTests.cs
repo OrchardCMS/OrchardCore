@@ -16,7 +16,7 @@ namespace OrchardCore.Tests.Shell
         public void DefaultShellMatchesByDefault()
         {
             var table = new RunningShellTable();
-            var settings = new ShellSettings { Name = ShellHelper.DefaultShellName };
+            var settings = new ShellSettings().AsDefaultShell();
             table.Add(settings);
             var match = table.Match(new HostString("localhost"), "/yadda");
             Assert.Equal(settings, match);
@@ -26,7 +26,7 @@ namespace OrchardCore.Tests.Shell
         public void DefaultShellMatchesAllPortsByDefault()
         {
             var table = new RunningShellTable();
-            var settings = new ShellSettings { Name = ShellHelper.DefaultShellName };
+            var settings = new ShellSettings().AsDefaultShell();
             table.Add(settings);
             var match = table.Match(new HostString("localhost:443"), "/yadda");
             Assert.Equal(settings, match);
@@ -36,7 +36,7 @@ namespace OrchardCore.Tests.Shell
         public void AnotherShellMatchesByHostHeader()
         {
             var table = new RunningShellTable();
-            var settings = new ShellSettings { Name = ShellHelper.DefaultShellName };
+            var settings = new ShellSettings().AsDefaultShell();
             var settingsA = new ShellSettings { Name = "Alpha", RequestUrlHost = "a.example.com" };
             table.Add(settings);
             table.Add(settingsA);
@@ -48,7 +48,7 @@ namespace OrchardCore.Tests.Shell
         public void DefaultStillCatchesWhenOtherShellsMiss()
         {
             var table = new RunningShellTable();
-            var settings = new ShellSettings { Name = ShellHelper.DefaultShellName };
+            var settings = new ShellSettings().AsDefaultShell();
             var settingsA = new ShellSettings { Name = "Alpha", RequestUrlHost = "a.example.com" };
             table.Add(settings);
             table.Add(settingsA);
@@ -60,7 +60,7 @@ namespace OrchardCore.Tests.Shell
         public void DefaultWontFallbackIfItHasCriteria()
         {
             var table = new RunningShellTable();
-            var settings = new ShellSettings { Name = ShellHelper.DefaultShellName, RequestUrlHost = "www.example.com" };
+            var settings = new ShellSettings { RequestUrlHost = "www.example.com" }.AsDefaultShell();
             var settingsA = new ShellSettings { Name = "Alpha", RequestUrlHost = "a.example.com" };
             table.Add(settings);
             table.Add(settingsA);
@@ -72,7 +72,7 @@ namespace OrchardCore.Tests.Shell
         public void DefaultWillCatchRequestsIfItMatchesCriteria()
         {
             var table = new RunningShellTable();
-            var settings = new ShellSettings { Name = ShellHelper.DefaultShellName, RequestUrlHost = "www.example.com" };
+            var settings = new ShellSettings { RequestUrlHost = "www.example.com" }.AsDefaultShell();
             var settingsA = new ShellSettings { Name = "Alpha", RequestUrlHost = "a.example.com" };
             table.Add(settings);
             table.Add(settingsA);
@@ -84,7 +84,7 @@ namespace OrchardCore.Tests.Shell
         public void NonDefaultCatchallWillFallbackIfNothingElseMatches()
         {
             var table = new RunningShellTable();
-            var settings = new ShellSettings { Name = ShellHelper.DefaultShellName, RequestUrlHost = "www.example.com" };
+            var settings = new ShellSettings { RequestUrlHost = "www.example.com" }.AsDefaultShell();
             var settingsA = new ShellSettings { Name = "Alpha" };
             table.Add(settings);
             table.Add(settingsA);
@@ -96,7 +96,7 @@ namespace OrchardCore.Tests.Shell
         public void DefaultCatchallIsFallbackEvenWhenOthersAreUnqualified()
         {
             var table = new RunningShellTable();
-            var settings = new ShellSettings { Name = ShellHelper.DefaultShellName };
+            var settings = new ShellSettings().AsDefaultShell();
             var settingsA = new ShellSettings { Name = "Alpha" };
             var settingsB = new ShellSettings { Name = "Beta", RequestUrlHost = "b.example.com" };
             var settingsG = new ShellSettings { Name = "Gamma" };
@@ -112,7 +112,7 @@ namespace OrchardCore.Tests.Shell
         public void PathAlsoCausesMatch()
         {
             var table = new RunningShellTable();
-            var settings = new ShellSettings { Name = ShellHelper.DefaultShellName };
+            var settings = new ShellSettings().AsDefaultShell();
             var settingsA = new ShellSettings { Name = "Alpha", RequestUrlPrefix = "foo" };
             table.Add(settings);
             table.Add(settingsA);
@@ -124,7 +124,7 @@ namespace OrchardCore.Tests.Shell
         public void PathAndHostMustBothMatch()
         {
             var table = new RunningShellTable();
-            var settings = new ShellSettings { Name = ShellHelper.DefaultShellName, RequestUrlHost = "www.example.com", };
+            var settings = new ShellSettings { RequestUrlHost = "www.example.com" }.AsDefaultShell();
             var settingsA = new ShellSettings { Name = "Alpha", RequestUrlHost = "wiki.example.com", RequestUrlPrefix = "foo" };
             var settingsB = new ShellSettings { Name = "Beta", RequestUrlHost = "wiki.example.com", RequestUrlPrefix = "bar" };
             var settingsG = new ShellSettings { Name = "Gamma", RequestUrlHost = "wiki.example.com" };
@@ -156,7 +156,7 @@ namespace OrchardCore.Tests.Shell
         public void PathAndHostMustMatchOnFullUrl()
         {
             var table = new RunningShellTable();
-            var settings = new ShellSettings { Name = ShellHelper.DefaultShellName, RequestUrlHost = "www.example.com", };
+            var settings = new ShellSettings { RequestUrlHost = "www.example.com" }.AsDefaultShell();
             var settingsB = new ShellSettings { Name = "Beta", RequestUrlHost = "wiki.example.com", RequestUrlPrefix = "bar" };
             var settingsG = new ShellSettings { Name = "Gamma", RequestUrlHost = "wiki.example.com" };
             table.Add(settings);
@@ -183,7 +183,7 @@ namespace OrchardCore.Tests.Shell
         public void HostNameMatchesRightmostIfRequestIsLonger()
         {
             var table = new RunningShellTable();
-            var settings = new ShellSettings { Name = ShellHelper.DefaultShellName };
+            var settings = new ShellSettings().AsDefaultShell();
             var settingsA = new ShellSettings { Name = "Alpha", RequestUrlHost = "example.com" };
             table.Add(settings);
             table.Add(settingsA);
@@ -197,7 +197,7 @@ namespace OrchardCore.Tests.Shell
         public void HostNameMatchesRightmostIfStar()
         {
             var table = new RunningShellTable();
-            var settings = new ShellSettings { Name = ShellHelper.DefaultShellName };
+            var settings = new ShellSettings().AsDefaultShell();
             var settingsA = new ShellSettings { Name = "Alpha", RequestUrlHost = "*.example.com" };
             table.Add(settings);
             table.Add(settingsA);
@@ -211,7 +211,7 @@ namespace OrchardCore.Tests.Shell
         public void LongestMatchingHostHasPriority()
         {
             var table = new RunningShellTable();
-            var settings = new ShellSettings { Name = ShellHelper.DefaultShellName };
+            var settings = new ShellSettings().AsDefaultShell();
             var settingsA = new ShellSettings { Name = "Alpha", RequestUrlHost = "www.example.com" };
             var settingsB = new ShellSettings { Name = "Beta", RequestUrlHost = "*.example.com" };
             var settingsG = new ShellSettings { Name = "Gamma", RequestUrlHost = "wiki.example.com" };
@@ -230,7 +230,7 @@ namespace OrchardCore.Tests.Shell
         public void ShellNameUsedToDistinctThingsAsTheyAreAdded()
         {
             var table = new RunningShellTable();
-            var settings = new ShellSettings { Name = ShellHelper.DefaultShellName };
+            var settings = new ShellSettings().AsDefaultShell();
             var settingsA = new ShellSettings { Name = "Alpha", RequestUrlHost = "removed.example.com" };
             var settingsB = new ShellSettings { Name = "Alpha", RequestUrlHost = "added.example.com" };
             table.Add(settings);
@@ -274,7 +274,7 @@ namespace OrchardCore.Tests.Shell
         public void PortAreIgnoredIfNotSetInSettings()
         {
             var table = new RunningShellTable();
-            var settings = new ShellSettings { Name = ShellHelper.DefaultShellName };
+            var settings = new ShellSettings().AsDefaultShell();
             var settingsA = new ShellSettings { Name = "Alpha", RequestUrlHost = "a.example.com" };
             table.Add(settings);
             table.Add(settingsA);
@@ -286,7 +286,7 @@ namespace OrchardCore.Tests.Shell
         public void ShouldNotFallBackToDefault()
         {
             var table = new RunningShellTable();
-            var settings = new ShellSettings { Name = ShellHelper.DefaultShellName };
+            var settings = new ShellSettings().AsDefaultShell();
             var settingsA = new ShellSettings { Name = "Alpha", RequestUrlHost = "a.example.com" };
             table.Add(settings);
             table.Add(settingsA);
@@ -299,7 +299,7 @@ namespace OrchardCore.Tests.Shell
         public void PortAreNotIgnoredIfSetInSettings()
         {
             var table = new RunningShellTable();
-            var settings = new ShellSettings { Name = ShellHelper.DefaultShellName };
+            var settings = new ShellSettings().AsDefaultShell();
             var settingsA = new ShellSettings { Name = "Alpha", RequestUrlHost = "a.example.com:80" };
             var settingsB = new ShellSettings { Name = "Beta", RequestUrlHost = "a.example.com:8080" };
             table.Add(settings);
@@ -315,7 +315,7 @@ namespace OrchardCore.Tests.Shell
         public void IPv6AddressesAreSupported()
         {
             var table = new RunningShellTable();
-            var settings = new ShellSettings { Name = ShellHelper.DefaultShellName };
+            var settings = new ShellSettings().AsDefaultShell();
             var settingsA = new ShellSettings { Name = "Alpha", RequestUrlHost = "[::abc]" };
             var settingsB = new ShellSettings { Name = "Beta", RequestUrlHost = "[::1]:123" };
 

@@ -13,21 +13,21 @@
     <div asp-validation-summary="ModelOnly"></div>
 
     <div class="mb-3">
-        <label for="UserName" class="col-md-3 control-label">@T["Username"]</label>
+        <label for="UserName" class="col-md-3 form-label">@T["Username"]</label>
         <div class="col-md-9">
             <input id="UserName" value="@ViewData["UserName"]" class="form-control" disabled />
         </div>
     </div>
 
     <div class="mb-3">
-        <label for="Email" class="col-md-3 control-label">@T["Email"]</label>
+        <label for="Email" class="col-md-3 form-label">@T["Email"]</label>
         <div class="col-md-9">
             <input id="Email" value="@ViewData["Email"]" class="form-control" disabled />
         </div>
     </div>
 
     <div class="mb-3">
-        <label asp-for="Password" class="col-md-3 control-label">@T["Password"]</label>
+        <label asp-for="Password" class="col-md-3 form-label">@T["Password"]</label>
         <div class="col-md-9">
             <input asp-for="Password" class="form-control" required autofocus />
             <span asp-validation-for="Password" class="text-danger"></span>

@@ -26,7 +26,7 @@ namespace OrchardCore.Contents
         private readonly LinkGenerator _linkGenerator;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AdminMenu(
             IContentDefinitionManager contentDefinitionManager,
@@ -50,12 +50,12 @@ namespace OrchardCore.Contents
         {
             var context = _httpContextAccessor.HttpContext;
 
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
 
-            var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions().OrderBy(d => d.Name);
+            var contentTypeDefinitions = (await _contentDefinitionManager.ListTypeDefinitionsAsync()).OrderBy(d => d.Name);
             var contentTypes = contentTypeDefinitions.Where(ctd => ctd.IsCreatable()).OrderBy(ctd => ctd.DisplayName);
             await builder.AddAsync(S["Content"], NavigationConstants.AdminMenuContentPosition, async content =>
             {

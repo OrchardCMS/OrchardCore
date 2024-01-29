@@ -27,7 +27,7 @@ namespace OrchardCore.Sitemaps.Routing
                 return Enumerable.Empty<Endpoint>();
             }
 
-            string sitemapId = address.ExplicitValues[_options.SitemapIdKey]?.ToString();
+            var sitemapId = address.ExplicitValues[_options.SitemapIdKey]?.ToString();
 
             if (string.IsNullOrEmpty(sitemapId))
             {
@@ -49,7 +49,7 @@ namespace OrchardCore.Sitemaps.Routing
                 {
                     foreach (var entry in address.ExplicitValues)
                     {
-                        if (String.Equals(entry.Key, _options.SitemapIdKey, StringComparison.OrdinalIgnoreCase))
+                        if (string.Equals(entry.Key, _options.SitemapIdKey, StringComparison.OrdinalIgnoreCase))
                         {
                             continue;
                         }
@@ -80,7 +80,7 @@ namespace OrchardCore.Sitemaps.Routing
         {
             foreach (var entry in _options.GlobalRouteValues)
             {
-                if (!String.Equals(explicitValues[entry.Key]?.ToString(), entry.Value?.ToString(), StringComparison.OrdinalIgnoreCase))
+                if (!string.Equals(explicitValues[entry.Key]?.ToString(), entry.Value?.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
                     return false;
                 }

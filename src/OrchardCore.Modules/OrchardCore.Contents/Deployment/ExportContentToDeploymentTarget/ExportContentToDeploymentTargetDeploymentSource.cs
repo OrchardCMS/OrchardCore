@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -71,7 +72,7 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 
         public class ExportContentToDeploymentTargetModel
         {
-            public IEnumerable<int> ItemIds { get; set; }
+            public IEnumerable<long> ItemIds { get; set; }
             public string ContentItemId { get; set; }
             public bool Latest { get; set; }
         }

@@ -38,10 +38,11 @@ namespace OrchardCore.Demo.Pages
             _session = session;
         }
 
-        public async Task OnGetAsync(string contentItemId)
+        public async Task OnGetAsync(string _)
         {
             var query = _session.Query<ContentItem, ContentItemIndex>()
                 .With<ContentItemIndex>(x => x.ContentType == "Foo" && x.Published);
+
             var contentItems = await query.ListAsync();
             var updater = _updateModelAccessor.ModelUpdater;
 

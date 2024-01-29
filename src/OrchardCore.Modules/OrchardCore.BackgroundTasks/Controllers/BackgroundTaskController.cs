@@ -23,14 +23,18 @@ namespace OrchardCore.BackgroundTasks.Controllers
     [Admin]
     public class BackgroundTaskController : Controller
     {
+        private const string _optionsSearch = $"{nameof(BackgroundTaskIndexViewModel.Options)}.{nameof(AdminIndexOptions.Search)}";
+        private const string _optionsStatus = $"{nameof(BackgroundTaskIndexViewModel.Options)}.{nameof(AdminIndexOptions.Status)}";
+
         private readonly IAuthorizationService _authorizationService;
         private readonly IEnumerable<IBackgroundTask> _backgroundTasks;
         private readonly BackgroundTaskManager _backgroundTaskManager;
         private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
-        private readonly dynamic New;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
+        private readonly IShapeFactory _shapeFactory;
+
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
 
         public BackgroundTaskController(
             IAuthorizationService authorizationService,
@@ -47,8 +51,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
             _backgroundTaskManager = backgroundTaskManager;
             _pagerOptions = pagerOptions.Value;
             _notifier = notifier;
-
-            New = shapeFactory;
+            _shapeFactory = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
@@ -86,36 +89,43 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 };
             });
 
-            if (!String.IsNullOrWhiteSpace(options.Search))
+            if (!string.IsNullOrWhiteSpace(options.Search))
             {
                 items = items.Where(entry => entry.Title != null && entry.Title.Contains(options.Search, StringComparison.OrdinalIgnoreCase)
                     || (entry.Description != null && entry.Description.Contains(options.Search, StringComparison.OrdinalIgnoreCase))
                 );
             }
 
-            if (String.Equals(options.Status, "enabled", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(options.Status, "enabled", StringComparison.OrdinalIgnoreCase))
             {
                 items = items.Where(entry => entry.Enable);
             }
-            else if (String.Equals(options.Status, "disabled", StringComparison.OrdinalIgnoreCase))
+            else if (string.Equals(options.Status, "disabled", StringComparison.OrdinalIgnoreCase))
             {
                 items = items.Where(entry => !entry.Enable);
             }
 
-            options.Statuses = new List<SelectListItem>()
-            {
-                new SelectListItem() { Text = S["Enabled"], Value = "enabled" },
-                new SelectListItem() { Text = S["Disabled"], Value = "disabled" }
-            };
+            options.Statuses =
+            [
+                new SelectListItem(S["Enabled"], "enabled"),
+                new SelectListItem(S["Disabled"], "disabled")
+            ];
 
             var taskItems = items.ToList();
             var routeData = new RouteData();
 
-            routeData.Values.Add($"{nameof(BackgroundTaskIndexViewModel.Options)}.{nameof(options.Search)}", options.Search);
-            routeData.Values.Add($"{nameof(BackgroundTaskIndexViewModel.Options)}.{nameof(options.Status)}", options.Status);
+            if (!string.IsNullOrEmpty(options.Search))
+            {
+                routeData.Values.TryAdd(_optionsSearch, options.Search);
+            }
+
+            if (!string.IsNullOrEmpty(options.Status))
+            {
+                routeData.Values.TryAdd(_optionsStatus, options.Status);
+            }
 
             var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(taskItems.Count).RouteData(routeData);
+            var pagerShape = await _shapeFactory.PagerAsync(pager, taskItems.Count, routeData);
 
             var model = new BackgroundTaskIndexViewModel
             {
@@ -130,12 +140,11 @@ namespace OrchardCore.BackgroundTasks.Controllers
         [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(BackgroundTaskIndexViewModel model)
-        {
-            return RedirectToAction(nameof(Index), new RouteValueDictionary {
-                { $"{nameof(model.Options)}.{nameof(AdminIndexOptions.Search)}", model.Options.Search },
-                { $"{nameof(model.Options)}.{nameof(AdminIndexOptions.Status)}", model.Options.Status },
+            => RedirectToAction(nameof(Index), new RouteValueDictionary
+            {
+                { _optionsSearch, model.Options.Search },
+                { _optionsStatus, model.Options.Status },
             });
-        }
 
         public async Task<IActionResult> Edit(string name)
         {
@@ -167,6 +176,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 Description = settings.Description,
                 LockTimeout = settings.LockTimeout,
                 LockExpiration = settings.LockExpiration,
+                UsePipeline = settings.UsePipeline,
             };
 
             return View(model);
@@ -201,6 +211,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 settings.Description = model.Description;
                 settings.LockTimeout = model.LockTimeout;
                 settings.LockExpiration = model.LockExpiration;
+                settings.UsePipeline = model.UsePipeline;
 
                 await _backgroundTaskManager.UpdateAsync(model.Name, settings);
 

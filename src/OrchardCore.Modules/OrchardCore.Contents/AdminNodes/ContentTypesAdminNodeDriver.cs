@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.Handlers;
@@ -13,11 +16,20 @@ namespace OrchardCore.Contents.AdminNodes
     public class ContentTypesAdminNodeDriver : DisplayDriver<MenuItem, ContentTypesAdminNode>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuthorizationService _authorizationService;
 
-        public ContentTypesAdminNodeDriver(IContentDefinitionManager contentDefinitionManager)
+        public ContentTypesAdminNodeDriver(
+            IContentDefinitionManager contentDefinitionManager,
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationService authorizationService
+            )
         {
             _contentDefinitionManager = contentDefinitionManager;
+            _httpContextAccessor = httpContextAccessor;
+            _authorizationService = authorizationService;
         }
+
         public override IDisplayResult Display(ContentTypesAdminNode treeNode)
         {
             return Combine(
@@ -28,22 +40,18 @@ namespace OrchardCore.Contents.AdminNodes
 
         public override IDisplayResult Edit(ContentTypesAdminNode treeNode)
         {
-            var listable = _contentDefinitionManager.ListTypeDefinitions()
-                .Where(ctd => ctd.IsListable())
-                .OrderBy(ctd => ctd.DisplayName).ToList();
-
-            var entries = listable.Select(x => new ContentTypeEntryViewModel
+            return Initialize<ContentTypesAdminNodeViewModel>("ContentTypesAdminNode_Fields_TreeEdit", async model =>
             {
-                ContentTypeId = x.Name,
-                IsChecked = treeNode.ContentTypes.Any(selected => String.Equals(selected.ContentTypeId, x.Name, StringComparison.OrdinalIgnoreCase)),
-                IconClass = treeNode.ContentTypes.Where(selected => selected.ContentTypeId == x.Name).FirstOrDefault()?.IconClass ?? String.Empty
-            }).ToArray();
+                var listable = await GetListableContentTypeDefinitionsAsync();
 
-            return Initialize<ContentTypesAdminNodeViewModel>("ContentTypesAdminNode_Fields_TreeEdit", model =>
-            {
                 model.ShowAll = treeNode.ShowAll;
                 model.IconClass = treeNode.IconClass;
-                model.ContentTypes = entries;
+                model.ContentTypes = listable.Select(x => new ContentTypeEntryViewModel
+                {
+                    ContentTypeId = x.Name,
+                    IsChecked = treeNode.ContentTypes.Any(selected => string.Equals(selected.ContentTypeId, x.Name, StringComparison.OrdinalIgnoreCase)),
+                    IconClass = treeNode.ContentTypes.FirstOrDefault(selected => selected.ContentTypeId == x.Name)?.IconClass ?? string.Empty
+                }).ToArray();
             }).Location("Content");
         }
 
@@ -60,11 +68,35 @@ namespace OrchardCore.Contents.AdminNodes
                 treeNode.IconClass = model.IconClass;
                 treeNode.ContentTypes = model.ContentTypes
                     .Where(x => x.IsChecked == true)
-                    .Select(x => new ContentTypeEntry { ContentTypeId = x.ContentTypeId, IconClass = x.IconClass })
+                    .Select(x =>
+                    new ContentTypeEntry
+                    {
+                        ContentTypeId = x.ContentTypeId,
+                        IconClass = x.IconClass
+                    })
                     .ToArray();
             };
 
             return Edit(treeNode);
+        }
+
+        private async Task<IEnumerable<ContentTypeDefinition>> GetListableContentTypeDefinitionsAsync()
+        {
+            var contentTypeDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
+
+            var listableContentTypeDefinitions = new List<ContentTypeDefinition>();
+
+            foreach (var contentTypeDefinition in contentTypeDefinitions)
+            {
+                if (!await _authorizationService.AuthorizeContentTypeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.ListContent, contentTypeDefinition))
+                {
+                    continue;
+                }
+
+                listableContentTypeDefinitions.Add(contentTypeDefinition);
+            }
+
+            return listableContentTypeDefinitions.OrderBy(t => t.DisplayName);
         }
     }
 }

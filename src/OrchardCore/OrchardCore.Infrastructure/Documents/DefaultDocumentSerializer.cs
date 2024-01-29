@@ -11,11 +11,11 @@ namespace OrchardCore.Documents
     /// <summary>
     /// Serializes and deserializes an <see cref="IDocument"/> into and from a sequence of bytes.
     /// </summary>
-    public class DefaultDocumentSerializer : IDocumentSerialiser
+    public class DefaultDocumentSerializer : IDocumentSerializer
     {
-        public static DefaultDocumentSerializer Instance = new DefaultDocumentSerializer();
+        public static readonly DefaultDocumentSerializer Instance = new();
 
-        private static readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings
+        private static readonly JsonSerializerSettings _jsonSettings = new()
         {
             TypeNameHandling = TypeNameHandling.Auto,
             DateTimeZoneHandling = DateTimeZoneHandling.Utc
@@ -25,7 +25,7 @@ namespace OrchardCore.Documents
         {
         }
 
-        public Task<byte[]> SerializeAsync<TDocument>(TDocument document, int compressThreshold = Int32.MaxValue) where TDocument : class, IDocument, new()
+        public Task<byte[]> SerializeAsync<TDocument>(TDocument document, int compressThreshold = int.MaxValue) where TDocument : class, IDocument, new()
         {
             var data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(document, _jsonSettings));
 
@@ -49,18 +49,18 @@ namespace OrchardCore.Documents
             return Task.FromResult(document);
         }
 
-        private static readonly byte[] GZipHeaderBytes = { 0x1f, 0x8b };
+        private static readonly byte[] _gZipHeaderBytes = { 0x1f, 0x8b };
 
         internal static bool IsCompressed(byte[] data)
         {
-            if (data.Length < GZipHeaderBytes.Length)
+            if (data.Length < _gZipHeaderBytes.Length)
             {
                 return false;
             }
 
-            for (var i = 0; i < GZipHeaderBytes.Length; i++)
+            for (var i = 0; i < _gZipHeaderBytes.Length; i++)
             {
-                if (data[i] != GZipHeaderBytes[i])
+                if (data[i] != _gZipHeaderBytes[i])
                 {
                     return false;
                 }

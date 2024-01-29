@@ -10,6 +10,7 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Environment.Shell.Configuration.Internal;
 using OrchardCore.Shells.Database.Extensions;
 using OrchardCore.Shells.Database.Models;
 using YesSql;
@@ -42,37 +43,35 @@ namespace OrchardCore.Shells.Database.Configuration
         public async Task AddSourcesAsync(IConfigurationBuilder builder)
         {
             var document = await GetDocumentAsync();
-            if (document.ShellsSettings != null)
+            if (document.ShellsSettings is not null)
             {
-                builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(document.ShellsSettings.ToString(Formatting.None))));
+                var shellsSettingsString = await document.ShellsSettings.ToStringAsync(Formatting.None);
+                builder.AddTenantJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(shellsSettingsString)));
             }
         }
 
         public async Task AddSourcesAsync(string tenant, IConfigurationBuilder builder)
         {
             var document = await GetDocumentAsync();
-            if (document.ShellsSettings != null && document.ShellsSettings.ContainsKey(tenant))
+            if (document.ShellsSettings is not null && document.ShellsSettings.ContainsKey(tenant))
             {
-                var shellSettings = new JObject
-                {
-                    [tenant] = document.ShellsSettings[tenant]
-                };
-
-                builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(shellSettings.ToString(Formatting.None))));
+                var shellSettings = new JObject { [tenant] = document.ShellsSettings[tenant] };
+                var shellSettingsString = await shellSettings.ToStringAsync(Formatting.None);
+                builder.AddTenantJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(shellSettingsString)));
             }
         }
 
         public async Task SaveAsync(string tenant, IDictionary<string, string> data)
         {
-            using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
-            await context.CreateScope().UsingServiceScopeAsync(async scope =>
+            await using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
+            await (await context.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
                 var document = await session.Query<DatabaseShellsSettings>().FirstOrDefaultAsync();
 
                 JObject tenantsSettings;
-                if (document != null)
+                if (document is not null)
                 {
                     tenantsSettings = document.ShellsSettings;
                 }
@@ -86,7 +85,7 @@ namespace OrchardCore.Shells.Database.Configuration
 
                 foreach (var key in data.Keys)
                 {
-                    if (data[key] != null)
+                    if (data[key] is not null)
                     {
                         settings[key] = data[key];
                     }
@@ -100,22 +99,22 @@ namespace OrchardCore.Shells.Database.Configuration
 
                 document.ShellsSettings = tenantsSettings;
 
-                session.Save(document, checkConcurrency: true);
+                await session.SaveAsync(document, checkConcurrency: true);
             });
         }
 
         public async Task RemoveAsync(string tenant)
         {
-            using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
-            await context.CreateScope().UsingServiceScopeAsync(async scope =>
+            await using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
+            await (await context.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
                 var document = await session.Query<DatabaseShellsSettings>().FirstOrDefaultAsync();
-                if (document != null)
+                if (document is not null)
                 {
                     document.ShellsSettings.Remove(tenant);
-                    session.Save(document, checkConcurrency: true);
+                    await session.SaveAsync(document, checkConcurrency: true);
                 }
             });
         }
@@ -124,14 +123,14 @@ namespace OrchardCore.Shells.Database.Configuration
         {
             DatabaseShellsSettings document = null;
 
-            using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
-            await context.CreateScope().UsingServiceScopeAsync(async scope =>
+            await using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
+            await (await context.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
                 document = await session.Query<DatabaseShellsSettings>().FirstOrDefaultAsync();
 
-                if (document == null)
+                if (document is null)
                 {
                     document = new DatabaseShellsSettings();
 
@@ -140,7 +139,7 @@ namespace OrchardCore.Shells.Database.Configuration
                         return;
                     }
 
-                    session.Save(document, checkConcurrency: true);
+                    await session.SaveAsync(document, checkConcurrency: true);
                 }
             });
 
@@ -154,11 +153,10 @@ namespace OrchardCore.Shells.Database.Configuration
                 return false;
             }
 
-            using (var file = File.OpenText(_tenants))
-            {
-                var settings = await file.ReadToEndAsync();
-                document.ShellsSettings = JObject.Parse(settings);
-            }
+            using var file = File.OpenText(_tenants);
+            var settings = await file.ReadToEndAsync();
+
+            document.ShellsSettings = JObject.Parse(settings);
 
             return true;
         }

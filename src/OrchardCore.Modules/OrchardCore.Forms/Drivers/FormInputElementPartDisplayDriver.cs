@@ -12,7 +12,7 @@ namespace OrchardCore.Forms.Drivers
 {
     public class FormInputElementPartDisplayDriver : ContentPartDisplayDriver<FormInputElementPart>
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public FormInputElementPartDisplayDriver(IStringLocalizer<FormInputElementPartDisplayDriver> stringLocalizer)
         {
@@ -33,7 +33,7 @@ namespace OrchardCore.Forms.Drivers
 
             if (await updater.TryUpdateModelAsync(viewModel, Prefix))
             {
-                if (String.IsNullOrWhiteSpace(viewModel.Name))
+                if (string.IsNullOrWhiteSpace(viewModel.Name))
                 {
                     updater.ModelState.AddModelError(Prefix, nameof(viewModel.Name), S["A value is required for Name."]);
                 }

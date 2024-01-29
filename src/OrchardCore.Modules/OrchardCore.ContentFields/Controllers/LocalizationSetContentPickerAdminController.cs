@@ -53,7 +53,7 @@ namespace OrchardCore.ContentFields.Controllers
                 return BadRequest("Part and field are required parameters");
             }
 
-            var partFieldDefinition = _contentDefinitionManager.GetPartDefinition(part)?.Fields
+            var partFieldDefinition = (await _contentDefinitionManager.GetPartDefinitionAsync(part))?.Fields
                 .FirstOrDefault(f => f.Name == field);
 
             var fieldSettings = partFieldDefinition?.GetSettings<LocalizationSetContentPickerFieldSettings>();

@@ -13,12 +13,16 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// <summary>
         /// Loads the index settings document from the store for updating and that should not be cached.
         /// </summary>
+#pragma warning disable CA1822 // Mark members as static
         public Task<ElasticIndexSettingsDocument> LoadDocumentAsync() => DocumentManager.GetOrCreateMutableAsync();
+#pragma warning restore CA1822 // Mark members as static
 
         /// <summary>
         /// Gets the index settings document from the cache for sharing and that should not be updated.
         /// </summary>
+#pragma warning disable CA1822 // Mark members as static
         public async Task<ElasticIndexSettingsDocument> GetDocumentAsync()
+#pragma warning restore CA1822 // Mark members as static
         {
             var document = await DocumentManager.GetOrCreateImmutableAsync();
 
@@ -68,7 +72,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         {
             var document = await GetDocumentAsync();
 
-            if (document.ElasticIndexSettings.TryGetValue(indexName, out var settings) && !String.IsNullOrEmpty(settings.QueryAnalyzerName))
+            if (document.ElasticIndexSettings.TryGetValue(indexName, out var settings) && !string.IsNullOrEmpty(settings.QueryAnalyzerName))
             {
                 return settings.QueryAnalyzerName;
             }

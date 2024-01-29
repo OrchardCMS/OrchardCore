@@ -13,7 +13,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Roles.Services
 {
-    public class RoleUpdater : IFeatureEventHandler, IRoleCreatedEventHandler, IRoleRemovedEventHandler
+    public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleRemovedEventHandler
     {
         private readonly ShellDescriptor _shellDescriptor;
         private readonly IExtensionManager _extensionManager;
@@ -40,21 +40,9 @@ namespace OrchardCore.Roles.Services
             _logger = logger;
         }
 
-        public Task InstallingAsync(IFeatureInfo feature) => Task.CompletedTask;
+        public override Task InstalledAsync(IFeatureInfo feature) => UpdateRolesForInstalledFeatureAsync(feature);
 
-        public Task InstalledAsync(IFeatureInfo feature) => UpdateRolesForInstalledFeatureAsync(feature);
-
-        public Task EnablingAsync(IFeatureInfo feature) => Task.CompletedTask;
-
-        public Task EnabledAsync(IFeatureInfo feature) => UpdateRolesForEnabledFeatureAsync(feature);
-
-        public Task DisablingAsync(IFeatureInfo feature) => Task.CompletedTask;
-
-        public Task DisabledAsync(IFeatureInfo feature) => Task.CompletedTask;
-
-        public Task UninstallingAsync(IFeatureInfo feature) => Task.CompletedTask;
-
-        public Task UninstalledAsync(IFeatureInfo feature) => Task.CompletedTask;
+        public override Task EnabledAsync(IFeatureInfo feature) => UpdateRolesForEnabledFeatureAsync(feature);
 
         public Task RoleCreatedAsync(string roleName) => UpdateRoleForInstalledFeaturesAsync(roleName);
 
@@ -129,7 +117,7 @@ namespace OrchardCore.Roles.Services
                 updated = true;
 
                 missingFeatures.Remove(feature.Id);
-                UpdateRoleAsync(role, providers, _logger);
+                UpdateRolesForEnabledFeature(role, providers, _logger);
             }
 
             if (updated)
@@ -187,7 +175,7 @@ namespace OrchardCore.Roles.Services
             }
         }
 
-        private static bool UpdateRoleAsync(Role role, IEnumerable<IPermissionProvider> providers, ILogger logger)
+        private static bool UpdateRolesForEnabledFeature(Role role, IEnumerable<IPermissionProvider> providers, ILogger logger)
         {
             var stereotypes = providers
                 .SelectMany(provider => provider.GetDefaultStereotypes())

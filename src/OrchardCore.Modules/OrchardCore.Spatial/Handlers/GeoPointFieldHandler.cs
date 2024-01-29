@@ -9,7 +9,7 @@ namespace OrchardCore.Spatial.Handlers;
 
 public class GeoPointFieldHandler : ContentFieldHandler<GeoPointField>
 {
-    private readonly IStringLocalizer S;
+    protected readonly IStringLocalizer S;
 
     public GeoPointFieldHandler(IStringLocalizer<GeoPointFieldHandler> stringLocalizer)
     {

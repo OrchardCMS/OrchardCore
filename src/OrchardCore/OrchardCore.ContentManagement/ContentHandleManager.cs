@@ -20,7 +20,7 @@ namespace OrchardCore.ContentManagement
             {
                 var result = await provider.GetContentItemIdAsync(handle);
 
-                if (!String.IsNullOrEmpty(result))
+                if (!string.IsNullOrEmpty(result))
                 {
                     return result;
                 }

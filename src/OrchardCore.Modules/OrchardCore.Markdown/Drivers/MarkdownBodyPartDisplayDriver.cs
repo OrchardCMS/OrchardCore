@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -27,7 +28,7 @@ namespace OrchardCore.Markdown.Drivers
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly IShortcodeService _shortcodeService;
         private readonly IMarkdownService _markdownService;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public MarkdownBodyPartDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
             HtmlEncoder htmlEncoder,
@@ -47,9 +48,8 @@ namespace OrchardCore.Markdown.Drivers
         public override IDisplayResult Display(MarkdownBodyPart markdownBodyPart, BuildPartDisplayContext context)
         {
             return Initialize<MarkdownBodyPartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, markdownBodyPart, context))
-                .Location("Detail", "Content:10")
-                .Location("Summary", "Content:10")
-                ;
+                .Location("Detail", "Content")
+                .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(MarkdownBodyPart markdownBodyPart, BuildPartEditorContext context)

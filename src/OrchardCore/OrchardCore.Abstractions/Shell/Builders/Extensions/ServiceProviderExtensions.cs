@@ -1,6 +1,8 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 
+#nullable enable
+
 namespace OrchardCore.Environment.Shell.Builders
 {
     public static class ServiceProviderExtensions
@@ -19,6 +21,20 @@ namespace OrchardCore.Environment.Shell.Builders
         public static TResult CreateInstance<TResult>(this IServiceProvider provider, Type type) where TResult : class
         {
             return (TResult)ActivatorUtilities.CreateInstance(provider, type);
+        }
+
+        /// <summary>
+        /// Gets the service object of the specified type with the specified key.
+        /// </summary>
+        public static object? GetKeyedService(this IServiceProvider provider, Type serviceType, object? serviceKey)
+        {
+            ArgumentNullException.ThrowIfNull(provider);
+            if (provider is IKeyedServiceProvider keyedServiceProvider)
+            {
+                return keyedServiceProvider.GetKeyedService(serviceType, serviceKey);
+            }
+
+            throw new InvalidOperationException("This service provider doesn't support keyed services.");
         }
     }
 }
