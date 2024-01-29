@@ -101,8 +101,8 @@ namespace OrchardCore.OpenId.Controllers
                     }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
 
                 case ConsentTypes.Implicit:
-                case ConsentTypes.External when authorizations.Count != 0:
-                case ConsentTypes.Explicit when authorizations.Count != 0 && !request.HasPrompt(Prompts.Consent):
+                case ConsentTypes.External when authorizations.Count > 0:
+                case ConsentTypes.Explicit when authorizations.Count > 0 && !request.HasPrompt(Prompts.Consent):
                     var identity = new ClaimsIdentity(result.Principal.Claims, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
                     identity.AddClaim(new Claim(OpenIdConstants.Claims.EntityType, OpenIdConstants.EntityTypes.User));
 

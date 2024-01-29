@@ -11,24 +11,12 @@ namespace OrchardCore.Modules.Manifest
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]
     public class ModuleAttribute : FeatureAttribute
     {
-        /// <summary>
-        /// &quot;&quot;.
-        /// </summary>
         internal const string DefaultAuthor = "";
 
-        /// <summary>
-        /// &quot;&quot;.
-        /// </summary>
         internal const string DefaultWebsiteUrl = "";
 
-        /// <summary>
-        /// &quot;0.0&quot;.
-        /// </summary>
         internal const string DefaultVersionZero = "0.0";
 
-        /// <summary>
-        /// &quot;&quot;.
-        /// </summary>
         internal const string DefaultTags = "";
 
         /// <summary>
