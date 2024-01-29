@@ -23,7 +23,7 @@ public class EmailMessageValidator : IEmailMessageValidator
     public bool IsValidate(MailMessage message, out List<LocalizedString> errors)
     {
         errors = [];
-        var submitterAddress = string.IsNullOrWhiteSpace(message.Sender)
+        var senderAddress = string.IsNullOrWhiteSpace(message.Sender)
             ? _emailSettings.DefaultSender
             : message.Sender;
 
