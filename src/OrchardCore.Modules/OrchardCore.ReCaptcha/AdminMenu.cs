@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
@@ -17,7 +16,7 @@ namespace OrchardCore.ReCaptcha
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
                 return Task.CompletedTask;
             }
@@ -25,11 +24,13 @@ namespace OrchardCore.ReCaptcha
             builder
                 .Add(S["Security"], security => security
                     .Add(S["Settings"], settings => settings
-                        .Add(S["reCaptcha"], S["reCaptcha"].PrefixPosition(), registration => registration
+                        .Add(S["reCaptcha"], S["reCaptcha"].PrefixPosition(), reCaptcha => reCaptcha
                             .Permission(Permissions.ManageReCaptchaSettings)
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ReCaptchaSettingsDisplayDriver.GroupId })
                             .LocalNav()
-                        )));
+                        )
+                    )
+                );
 
             return Task.CompletedTask;
         }

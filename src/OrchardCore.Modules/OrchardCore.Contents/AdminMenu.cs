@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -11,7 +10,6 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Contents.Controllers;
 using OrchardCore.Contents.Security;
-using OrchardCore.Entities;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
@@ -48,12 +46,12 @@ namespace OrchardCore.Contents
 
         public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            var context = _httpContextAccessor.HttpContext;
-
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
                 return;
             }
+
+            var context = _httpContextAccessor.HttpContext;
 
             var contentTypeDefinitions = (await _contentDefinitionManager.ListTypeDefinitionsAsync()).OrderBy(d => d.Name);
             var contentTypes = contentTypeDefinitions.Where(ctd => ctd.IsCreatable()).OrderBy(ctd => ctd.DisplayName);
@@ -91,7 +89,7 @@ namespace OrchardCore.Contents
                             action = "List"
                         }));
 
-                        if (createRouteValues.Any())
+                        if (createRouteValues.Count > 0)
                         {
                             newMenu.Add(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName), "5", item => item
                                 .Action(cim.CreateRouteValues["Action"] as string, cim.CreateRouteValues["Controller"] as string, cim.CreateRouteValues)

@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Modules;
@@ -18,17 +17,23 @@ namespace OrchardCore.GitHub
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
-                builder.Add(S["Security"], security => security
-                        .Add(S["Authentication"], authentication => authentication
+                return Task.CompletedTask;
+            }
+
+            builder
+                .Add(S["Security"], security => security
+                    .Add(S["Authentication"], authentication => authentication
                         .Add(S["GitHub"], S["GitHub"].PrefixPosition(), settings => settings
-                        .AddClass("github").Id("github")
+                            .AddClass("github").Id("github")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GitHubConstants.Features.GitHubAuthentication })
                             .Permission(Permissions.ManageGitHubAuthentication)
-                            .LocalNav())
-                    ));
-            }
+                            .LocalNav()
+                        )
+                    )
+                );
+
             return Task.CompletedTask;
         }
     }

@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
@@ -16,7 +15,7 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
                 return Task.CompletedTask;
             }
@@ -25,7 +24,7 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
                 .Add(S["Configuration"], configuration => configuration
                     .Add(S["Import/Export"], S["Import/Export"].PrefixPosition(), import => import
                         .Add(S["Settings"], settings => settings
-                            .Add(S["Export Target Settings"], S["Export Target Settings"].PrefixPosition(), deployment => deployment
+                            .Add(S["Export Target Settings"], S["Export Target Settings"].PrefixPosition(), targetSettings => targetSettings
                                 .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "ExportContentToDeploymentTarget" })
                                 .Permission(OrchardCore.Deployment.CommonPermissions.ManageDeploymentPlan)
                                 .LocalNav()

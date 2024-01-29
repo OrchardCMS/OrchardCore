@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail.Settings;
@@ -17,7 +16,7 @@ namespace OrchardCore.AuditTrail.Navigation
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
                 return Task.CompletedTask;
             }
@@ -25,11 +24,14 @@ namespace OrchardCore.AuditTrail.Navigation
             builder
                  .Add(S["Configuration"], configuration => configuration
                      .Add(S["Settings"], settings => settings
-                        .Add(S["Audit Trail"], S["Audit Trail"].PrefixPosition(), settings => settings
+                        .Add(S["Audit Trail"], S["Audit Trail"].PrefixPosition(), auditTrail => auditTrail
                             .AddClass("audittrail").Id("audittrailSettings")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = AuditTrailSettingsGroup.Id })
                             .Permission(AuditTrailPermissions.ManageAuditTrailSettings)
-                            .LocalNav())));
+                            .LocalNav()
+                        )
+                    )
+                );
 
             return Task.CompletedTask;
         }

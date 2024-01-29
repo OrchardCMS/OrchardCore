@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
@@ -16,12 +15,13 @@ namespace OrchardCore.Sitemaps
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
                 return Task.CompletedTask;
             }
 
-            builder.Add(S["Configuration"], configuration => configuration
+            builder
+                .Add(S["Configuration"], configuration => configuration
                     .Add(S["SEO"], S["SEO"].PrefixPosition(), seo => seo
                         .Permission(Permissions.ManageSitemaps)
                         .Add(S["Sitemaps"], S["Sitemaps"].PrefixPosition("1"), sitemaps => sitemaps
@@ -36,7 +36,8 @@ namespace OrchardCore.Sitemaps
                             .Action("List", "SitemapCache", new { area = "OrchardCore.Sitemaps" })
                             .LocalNav()
                         )
-                    ));
+                    )
+                );
 
             return Task.CompletedTask;
         }

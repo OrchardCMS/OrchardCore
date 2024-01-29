@@ -4,6 +4,8 @@ namespace OrchardCore.Admin.Models;
 
 public class AdminSettings
 {
+    public const string AdminMenuId = "adminMenu";
+
     [DefaultValue(true)]
     public bool DisplayThemeToggler { get; set; } = true;
 

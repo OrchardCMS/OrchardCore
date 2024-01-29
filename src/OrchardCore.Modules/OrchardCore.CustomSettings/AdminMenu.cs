@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.CustomSettings.Services;
@@ -22,7 +21,7 @@ namespace OrchardCore.CustomSettings
 
         public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
                 return;
             }
@@ -39,7 +38,9 @@ namespace OrchardCore.CustomSettings
                                 .Permission(Permissions.CreatePermissionForType(type))
                                 .Resource(type.Name)
                                 .LocalNav()
-                            )));
+                            )
+                        )
+                    );
             }
         }
     }

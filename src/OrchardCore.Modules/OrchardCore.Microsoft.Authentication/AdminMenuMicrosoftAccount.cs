@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Modules;
@@ -18,17 +17,23 @@ namespace OrchardCore.Microsoft.Authentication
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
-                builder.Add(S["Security"], security => security
-                        .Add(S["Authentication"], authentication => authentication
-                        .Add(S["Microsoft"], S["Microsoft"].PrefixPosition(), client => client
-                        .AddClass("microsoft").Id("microsoft")
+                return Task.CompletedTask;
+            }
+
+            builder
+                .Add(S["Security"], security => security
+                    .Add(S["Authentication"], authentication => authentication
+                        .Add(S["Microsoft"], S["Microsoft"].PrefixPosition(), microsoft => microsoft
+                            .AddClass("microsoft").Id("microsoft")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = MicrosoftAuthenticationConstants.Features.MicrosoftAccount })
                             .Permission(Permissions.ManageMicrosoftAuthentication)
-                            .LocalNav())
-                    ));
-            }
+                            .LocalNav()
+                        )
+                    )
+               );
+
             return Task.CompletedTask;
         }
     }
@@ -42,17 +47,20 @@ namespace OrchardCore.Microsoft.Authentication
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
-                builder.Add(S["Security"], security => security
-                        .Add(S["Authentication"], authentication => authentication
-                            .Add(S["Microsoft Entra ID"], S["Microsoft Entra ID"].PrefixPosition(), client => client
-                                .AddClass("microsoft-entra-id").Id("microsoft-entra-id")
-                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = MicrosoftAuthenticationConstants.Features.AAD })
-                                .Permission(Permissions.ManageMicrosoftAuthentication)
-                                .LocalNav())
-                    ));
+                return Task.CompletedTask;
             }
+
+            builder
+                .Add(S["Security"], security => security
+                    .Add(S["Authentication"], authentication => authentication
+                        .Add(S["Microsoft Entra ID"], S["Microsoft Entra ID"].PrefixPosition(), client => client
+                            .AddClass("microsoft-entra-id").Id("microsoft-entra-id")
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = MicrosoftAuthenticationConstants.Features.AAD })
+                            .Permission(Permissions.ManageMicrosoftAuthentication)
+                            .LocalNav())
+                ));
 
             return Task.CompletedTask;
         }

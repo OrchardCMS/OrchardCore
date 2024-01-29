@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Layers.Drivers;
@@ -17,7 +16,7 @@ namespace OrchardCore.Layers
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
                 return Task.CompletedTask;
             }
@@ -29,12 +28,14 @@ namespace OrchardCore.Layers
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LayerSiteSettingsDisplayDriver.GroupId })
                             .Permission(Permissions.ManageLayers)
                             .LocalNav()
-                        ))
+                        )
+                    )
                     .Add(S["Widgets"], S["Widgets"].PrefixPosition(), widgets => widgets
                         .Permission(Permissions.ManageLayers)
                         .Action("Index", "Admin", new { area = "OrchardCore.Layers" })
                         .LocalNav()
-                    ));
+                    )
+                );
 
             return Task.CompletedTask;
         }

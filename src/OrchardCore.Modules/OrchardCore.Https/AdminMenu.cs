@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
@@ -16,7 +15,7 @@ namespace OrchardCore.Https
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
                 return Task.CompletedTask;
             }
@@ -24,11 +23,12 @@ namespace OrchardCore.Https
             builder
                 .Add(S["Security"], security => security
                     .Add(S["Settings"], settings => settings
-                        .Add(S["HTTPS"], S["HTTPS"].PrefixPosition(), entry => entry
+                        .Add(S["HTTPS"], S["HTTPS"].PrefixPosition(), https => https
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "Https" })
                             .Permission(Permissions.ManageHttps)
                             .LocalNav()
-                        ))
+                        )
+                    )
                 );
 
             return Task.CompletedTask;

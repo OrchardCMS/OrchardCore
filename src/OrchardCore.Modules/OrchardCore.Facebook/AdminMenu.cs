@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
@@ -17,7 +16,7 @@ public class AdminMenu : INavigationProvider
 
     public Task BuildNavigationAsync(string name, NavigationBuilder builder)
     {
-        if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+        if (!NavigationHelper.IsAdminMenu(name))
         {
             return Task.CompletedTask;
         }
@@ -25,7 +24,7 @@ public class AdminMenu : INavigationProvider
         builder
             .Add(S["Configuration"], configuration => configuration
                 .Add(S["Settings"], settings => settings
-                    .Add(S["Meta App"], S["Meta App"].PrefixPosition(), facebook => facebook
+                    .Add(S["Meta App"], S["Meta App"].PrefixPosition(), metaApp => metaApp
                         .AddClass("facebookApp")
                         .Id("facebookApp")
                         .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = FacebookConstants.Features.Core })
@@ -51,7 +50,7 @@ public class AdminMenuLogin : INavigationProvider
 
     public Task BuildNavigationAsync(string name, NavigationBuilder builder)
     {
-        if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+        if (!NavigationHelper.IsAdminMenu(name))
         {
             return Task.CompletedTask;
         }
@@ -59,7 +58,7 @@ public class AdminMenuLogin : INavigationProvider
         builder
             .Add(S["Security"], security => security
                 .Add(S["Authentication"], authentication => authentication
-                    .Add(S["Meta"], S["Meta"].PrefixPosition(), settings => settings
+                    .Add(S["Meta"], S["Meta"].PrefixPosition(), meta => meta
                         .AddClass("facebook")
                         .Id("facebook")
                         .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = FacebookConstants.Features.Login })
@@ -85,7 +84,7 @@ public class AdminMenuPixel : INavigationProvider
 
     public Task BuildNavigationAsync(string name, NavigationBuilder builder)
     {
-        if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+        if (!NavigationHelper.IsAdminMenu(name))
         {
             return Task.CompletedTask;
         }

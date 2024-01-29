@@ -4,7 +4,7 @@
 @{
     var adminSettings = (await siteService.GetSiteSettingsAsync()).As<AdminSettings>();
     TagBuilder tag = Tag(Model, "ul");
-    tag.Attributes["Id"] = "adminMenu";
+    tag.Attributes["Id"] = AdminSettings.AdminMenuId;
 
     foreach (var item in Model)
     {

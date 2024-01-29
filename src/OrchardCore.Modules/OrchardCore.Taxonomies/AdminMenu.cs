@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
@@ -17,19 +16,23 @@ namespace OrchardCore.Taxonomies
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
                 return Task.CompletedTask;
             }
 
-            builder.Add(S["Configuration"], configuration => configuration
-                       .Add(S["Settings"], "1", settings => settings
-                            .Add(S["Taxonomy Filters"], S["Taxonomy Filters"].PrefixPosition(), admt => admt
-                            .AddClass("taxonomyfilters").Id("taxonomyfilters")
-                                .Permission(Permissions.ManageTaxonomies)
-                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = TaxonomyContentsAdminListSettingsDisplayDriver.GroupId })
-                                .LocalNav()
-                    )));
+            builder
+                .Add(S["Configuration"], configuration => configuration
+                    .Add(S["Settings"], "1", settings => settings
+                        .Add(S["Taxonomy Filters"], S["Taxonomy Filters"].PrefixPosition(), filters => filters
+                            .AddClass("taxonomyfilters")
+                            .Id("taxonomyfilters")
+                            .Permission(Permissions.ManageTaxonomies)
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = TaxonomyContentsAdminListSettingsDisplayDriver.GroupId })
+                            .LocalNav()
+                        )
+                    )
+                );
 
             return Task.CompletedTask;
         }

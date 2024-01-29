@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
@@ -16,14 +15,14 @@ namespace OrchardCore.Apis.GraphQL
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
                 return Task.CompletedTask;
             }
 
             builder
                 .Add(S["Configuration"], configuration => configuration
-                    .Add(S["GraphiQL"], S["GraphiQL"].PrefixPosition(), deployment => deployment
+                    .Add(S["GraphiQL"], S["GraphiQL"].PrefixPosition(), graphiql => graphiql
                         .Action("Index", "Admin", new { area = "OrchardCore.Apis.GraphQL" })
                         .Permission(Permissions.ExecuteGraphQL)
                         .LocalNav()

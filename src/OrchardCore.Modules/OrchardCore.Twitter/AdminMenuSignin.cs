@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Modules;
@@ -18,17 +17,23 @@ namespace OrchardCore.Twitter
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
-                builder.Add(S["Security"], security => security
-                        .Add(S["Authentication"], authentication => authentication
-                        .Add(S["Sign in with Twitter"], S["Sign in with Twitter"].PrefixPosition(), settings => settings
-                        .AddClass("twitter").Id("twitter")
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = TwitterConstants.Features.Signin })
-                            .Permission(Permissions.ManageTwitterSignin)
-                            .LocalNav())
-                    ));
+                return Task.CompletedTask;
             }
+
+            builder
+                .Add(S["Security"], security => security
+                    .Add(S["Authentication"], authentication => authentication
+                    .Add(S["Sign in with Twitter"], S["Sign in with Twitter"].PrefixPosition(), twitter => twitter
+                        .AddClass("twitter")
+                        .Id("twitter")
+                        .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = TwitterConstants.Features.Signin })
+                        .Permission(Permissions.ManageTwitterSignin)
+                        .LocalNav())
+                    )
+                );
+
             return Task.CompletedTask;
         }
     }
@@ -45,17 +50,24 @@ namespace OrchardCore.Twitter
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
-                builder.Add(S["Configuration"], configuration => configuration
-                        .Add(S["Settings"], settings => settings
-                            .Add(S["Twitter"], S["Twitter"].PrefixPosition(), settings => settings
+                return Task.CompletedTask;
+            }
+
+
+            builder
+                .Add(S["Configuration"], configuration => configuration
+                    .Add(S["Settings"], settings => settings
+                        .Add(S["Twitter"], S["Twitter"].PrefixPosition(), twitter => twitter
                             .AddClass("twitter").Id("twitter")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = TwitterConstants.Features.Twitter })
                             .Permission(Permissions.ManageTwitter)
-                            .LocalNav())
-                    ));
-            }
+                            .LocalNav()
+                        )
+                    )
+                );
+
             return Task.CompletedTask;
         }
     }

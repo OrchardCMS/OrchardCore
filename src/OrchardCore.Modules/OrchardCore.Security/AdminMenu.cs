@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
@@ -17,16 +16,23 @@ namespace OrchardCore.Security
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
-                builder.Add(S["Security"], NavigationConstants.AdminMenuSecurityPosition, security => security
-                    .AddClass("security").Id("security")
-                        .Add(S["Settings"], settings => settings
-                            .Add(S["Security Headers"], S["Security Headers"].PrefixPosition(), headers => headers
-                                .Permission(SecurityPermissions.ManageSecurityHeadersSettings)
-                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SecuritySettingsDisplayDriver.SettingsGroupId })
-                                .LocalNav())));
+                return Task.CompletedTask;
             }
+
+            builder
+                .Add(S["Security"], NavigationConstants.AdminMenuSecurityPosition, security => security
+                    .AddClass("security")
+                    .Id("security")
+                    .Add(S["Settings"], settings => settings
+                        .Add(S["Security Headers"], S["Security Headers"].PrefixPosition(), headers => headers
+                            .Permission(SecurityPermissions.ManageSecurityHeadersSettings)
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SecuritySettingsDisplayDriver.SettingsGroupId })
+                            .LocalNav()
+                        )
+                    )
+                );
 
             return Task.CompletedTask;
         }

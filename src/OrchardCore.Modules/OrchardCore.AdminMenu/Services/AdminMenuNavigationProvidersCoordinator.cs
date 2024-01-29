@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Admin.Models;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.AdminMenu.Services
@@ -39,12 +40,13 @@ namespace OrchardCore.AdminMenu.Services
         // todo: use a public constant for the string
         public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!string.Equals(name, "adminMenu", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(name, AdminSettings.AdminMenuId))
             {
                 return;
             }
 
-            var trees = (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu.Where(m => m.Enabled && m.MenuItems.Count > 0);
+            var trees = (await _adminMenuService.GetAdminMenuListAsync())
+                .AdminMenu.Where(m => m.Enabled && m.MenuItems.Count > 0);
 
             foreach (var tree in trees)
             {

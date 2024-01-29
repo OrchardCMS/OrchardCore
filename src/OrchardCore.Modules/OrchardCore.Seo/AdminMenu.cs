@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
@@ -16,7 +15,7 @@ public class AdminMenu : INavigationProvider
 
     public Task BuildNavigationAsync(string name, NavigationBuilder builder)
     {
-        if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+        if (!NavigationHelper.IsAdminMenu(name))
         {
             return Task.CompletedTask;
         }
@@ -30,9 +29,9 @@ public class AdminMenu : INavigationProvider
                        .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SeoConstants.RobotsSettingsGroupId })
                        .Permission(SeoConstants.ManageSeoSettings)
                        .LocalNav()
-                       )
-                   )
-                );
+                    )
+                )
+            );
 
         return Task.CompletedTask;
     }

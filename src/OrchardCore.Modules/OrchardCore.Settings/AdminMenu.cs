@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
@@ -17,24 +16,24 @@ namespace OrchardCore.Settings
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
                 return Task.CompletedTask;
             }
 
             builder
                 .Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, configuration => configuration
-                .AddClass("menu-configuration")
-                .Id("configuration")
+                    .AddClass("menu-configuration")
+                    .Id("configuration")
                     .Add(S["Settings"], "1", settings => settings
-                    .Add(S["General"], "1", entry => entry
-                    .AddClass("general").Id("general")
-                        .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = DefaultSiteSettingsDisplayDriver.GroupId })
-                        .Permission(Permissions.ManageGroupSettings)
-                        .LocalNav()
-                    ),
+                        .Add(S["General"], "1", entry => entry
+                            .AddClass("general").Id("general")
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = DefaultSiteSettingsDisplayDriver.GroupId })
+                            .Permission(Permissions.ManageGroupSettings)
+                            .LocalNav()
+                        ),
                     priority: 1)
-            );
+                );
 
             return Task.CompletedTask;
         }

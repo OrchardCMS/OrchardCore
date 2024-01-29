@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Modules;
@@ -19,28 +18,31 @@ namespace OrchardCore.Users
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
                 return Task.CompletedTask;
             }
 
-            builder.Add(S["Security"], NavigationConstants.AdminMenuSecurityPosition, security => security
-                    .AddClass("security").Id("security")
-                        .Add(S["Users"], S["Users"].PrefixPosition(), users => users
-                            .AddClass("users").Id("users")
-                            .Action("Index", "Admin", "OrchardCore.Users")
-                            .Permission(CommonPermissions.ListUsers)
-                            .Resource(new User())
+            builder
+                .Add(S["Security"], NavigationConstants.AdminMenuSecurityPosition, security => security
+                    .AddClass("security")
+                    .Id("security")
+                    .Add(S["Users"], S["Users"].PrefixPosition(), users => users
+                        .AddClass("users")
+                        .Id("users")
+                        .Action("Index", "Admin", "OrchardCore.Users")
+                        .Permission(CommonPermissions.ListUsers)
+                        .Resource(new User())
+                        .LocalNav()
+                    )
+                    .Add(S["Settings"], settings => settings
+                        .Add(S["User Login"], S["User Login"].PrefixPosition(), login => login
+                            .Permission(CommonPermissions.ManageUsers)
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LoginSettingsDisplayDriver.GroupId })
                             .LocalNav()
-                         )
-                        .Add(S["Settings"], settings => settings
-                            .Add(S["User Login"], S["User Login"].PrefixPosition(), login => login
-                                .Permission(CommonPermissions.ManageUsers)
-                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LoginSettingsDisplayDriver.GroupId })
-                                .LocalNav()
-                                )
-                            )
-                       );
+                        )
+                    )
+                );
 
             return Task.CompletedTask;
         }
@@ -58,7 +60,7 @@ namespace OrchardCore.Users
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
                 return Task.CompletedTask;
             }
@@ -66,11 +68,13 @@ namespace OrchardCore.Users
             builder
                 .Add(S["Security"], security => security
                     .Add(S["Settings"], settings => settings
-                        .Add(S["User Change email"], S["User Change email"].PrefixPosition(), registration => registration
+                        .Add(S["User Change email"], S["User Change email"].PrefixPosition(), email => email
                             .Permission(CommonPermissions.ManageUsers)
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ChangeEmailSettingsDisplayDriver.GroupId })
                             .LocalNav()
-                        )));
+                        )
+                    )
+                );
 
             return Task.CompletedTask;
         }
@@ -88,7 +92,7 @@ namespace OrchardCore.Users
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
                 return Task.CompletedTask;
             }
@@ -100,7 +104,9 @@ namespace OrchardCore.Users
                             .Permission(CommonPermissions.ManageUsers)
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = RegistrationSettingsDisplayDriver.GroupId })
                             .LocalNav()
-                        )));
+                        )
+                    )
+                );
 
             return Task.CompletedTask;
         }
@@ -118,7 +124,7 @@ namespace OrchardCore.Users
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
                 return Task.CompletedTask;
             }
@@ -130,7 +136,9 @@ namespace OrchardCore.Users
                             .Permission(CommonPermissions.ManageUsers)
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ResetPasswordSettingsDisplayDriver.GroupId })
                             .LocalNav()
-                        )));
+                        )
+                    )
+                );
 
             return Task.CompletedTask;
         }
