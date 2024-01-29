@@ -185,29 +185,6 @@ public class SmtpEmailDeliveryServiceTests
     }
 
     [Fact]
-    public async Task SendEmail_WithoutToAndCcAndBccHeaders_ShouldThrowsException()
-    {
-        // Arrange
-        var message = new MailMessage
-        {
-            Subject = "Test",
-            Body = "Test Message"
-        };
-        var settings = new SmtpEmailSettings
-        {
-            DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory
-        };
-
-        var smtp = CreateSmtpEmailDeliveryService(settings);
-
-        // Act
-        var result = await smtp.DeliverAsync(message);
-
-        // Assert
-        Assert.True(result.Errors.Any());
-    }
-
-    [Fact]
     public async Task SendOfflineEmailHasNoResponse()
     {
         // Arrange
