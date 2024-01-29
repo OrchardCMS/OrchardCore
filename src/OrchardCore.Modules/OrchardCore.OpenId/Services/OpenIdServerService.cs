@@ -86,10 +86,7 @@ namespace OrchardCore.OpenId.Services
 
         public async Task UpdateSettingsAsync(OpenIdServerSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
             container.Properties[nameof(OpenIdServerSettings)] = JObject.FromObject(settings);
@@ -98,10 +95,7 @@ namespace OrchardCore.OpenId.Services
 
         public Task<ImmutableArray<ValidationResult>> ValidateSettingsAsync(OpenIdServerSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var results = ImmutableArray.CreateBuilder<ValidationResult>();
 

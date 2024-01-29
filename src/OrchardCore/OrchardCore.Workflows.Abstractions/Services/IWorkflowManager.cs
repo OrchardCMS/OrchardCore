@@ -79,15 +79,9 @@ namespace OrchardCore.Workflows.Services
 
         public static Task<WorkflowExecutionContext> RestartWorkflowAsync(this IWorkflowManager workflowManager, Workflow workflow, WorkflowType workflowType)
         {
-            if (workflow == null)
-            {
-                throw new ArgumentNullException(nameof(workflow));
-            }
+            ArgumentNullException.ThrowIfNull(workflow);
 
-            if (workflowType == null)
-            {
-                throw new ArgumentNullException(nameof(workflowType));
-            }
+            ArgumentNullException.ThrowIfNull(workflowType);
 
             var state = workflow.State.ToObject<WorkflowState>();
 

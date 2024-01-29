@@ -48,10 +48,7 @@ namespace OrchardCore.Indexing.Services
 
         public Task CreateTaskAsync(ContentItem contentItem, IndexingTaskTypes type)
         {
-            if (contentItem == null)
-            {
-                throw new ArgumentNullException(nameof(contentItem));
-            }
+            ArgumentNullException.ThrowIfNull(contentItem);
 
             // Do not index a preview content item.
             if (_httpContextAccessor.HttpContext?.Features.Get<ContentPreviewFeature>()?.Previewing == true)

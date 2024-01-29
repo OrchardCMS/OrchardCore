@@ -15,8 +15,11 @@ public class NotificationContext
     /// <exception cref="ArgumentNullException">Occurs when <paramref name="notificationMessage"/> is <c>null</c>,</exception>
     public NotificationContext(INotificationMessage notificationMessage, object notify)
     {
-        NotificationMessage = notificationMessage ?? throw new ArgumentNullException(nameof(notificationMessage));
-        Notify = notify ?? throw new ArgumentNullException(nameof(notify));
+        ArgumentNullException.ThrowIfNull(notificationMessage);
+        ArgumentNullException.ThrowIfNull(notify);
+
+        NotificationMessage = notificationMessage;
+        Notify = notify;
     }
 
     /// <summary>

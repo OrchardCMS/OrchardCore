@@ -7,7 +7,7 @@ internal sealed class SafeBoolModelBinderProvider : IModelBinderProvider
 {
     public IModelBinder GetBinder(ModelBinderProviderContext context)
     {
-        ArgumentNullException.ThrowIfNull(context, nameof(context));
+        ArgumentNullException.ThrowIfNull(context);
 
         if (context.Metadata.ModelType == typeof(bool))
         {

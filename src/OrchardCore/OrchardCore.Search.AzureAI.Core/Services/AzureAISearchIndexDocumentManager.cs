@@ -71,8 +71,8 @@ public class AzureAIIndexDocumentManager(
 
     public async Task DeleteDocumentsAsync(string indexName, IEnumerable<string> contentItemIds)
     {
-        ArgumentException.ThrowIfNullOrEmpty(indexName, nameof(indexName));
-        ArgumentNullException.ThrowIfNull(contentItemIds, nameof(contentItemIds));
+        ArgumentException.ThrowIfNullOrEmpty(indexName);
+        ArgumentNullException.ThrowIfNull(contentItemIds);
 
         try
         {
@@ -119,9 +119,9 @@ public class AzureAIIndexDocumentManager(
 
     public async Task<bool> MergeOrUploadDocumentsAsync(string indexName, IList<DocumentIndex> indexDocuments, AzureAISearchIndexSettings indexSettings)
     {
-        ArgumentException.ThrowIfNullOrEmpty(indexName, nameof(indexName));
-        ArgumentNullException.ThrowIfNull(indexDocuments, nameof(indexDocuments));
-        ArgumentNullException.ThrowIfNull(indexSettings, nameof(indexSettings));
+        ArgumentException.ThrowIfNullOrEmpty(indexName);
+        ArgumentNullException.ThrowIfNull(indexDocuments);
+        ArgumentNullException.ThrowIfNull(indexSettings);
 
         if (indexDocuments.Count == 0)
         {
@@ -158,9 +158,9 @@ public class AzureAIIndexDocumentManager(
 
     public async Task UploadDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments, AzureAISearchIndexSettings indexSettings)
     {
-        ArgumentException.ThrowIfNullOrEmpty(indexName, nameof(indexName));
-        ArgumentNullException.ThrowIfNull(indexDocuments, nameof(indexDocuments));
-        ArgumentNullException.ThrowIfNull(indexSettings, nameof(indexSettings));
+        ArgumentException.ThrowIfNullOrEmpty(indexName);
+        ArgumentNullException.ThrowIfNull(indexDocuments);
+        ArgumentNullException.ThrowIfNull(indexSettings);
 
         try
         {
@@ -187,7 +187,7 @@ public class AzureAIIndexDocumentManager(
 
     public async Task<IList<AzureAISearchIndexMap>> GetMappingsAsync(string[] indexedContentTypes)
     {
-        ArgumentNullException.ThrowIfNull(indexedContentTypes, nameof(indexedContentTypes));
+        ArgumentNullException.ThrowIfNull(indexedContentTypes);
 
         var mapping = new List<AzureAISearchIndexMap>();
 

@@ -11,10 +11,7 @@ namespace OrchardCore.Apis.GraphQL
     {
         public static async Task WriteErrorAsync(this IDocumentWriter documentWriter, HttpContext context, string message, Exception e = null)
         {
-            if (message == null)
-            {
-                throw new ArgumentNullException(nameof(message));
-            }
+            ArgumentNullException.ThrowIfNull(message);
 
             var errorResult = new ExecutionResult
             {

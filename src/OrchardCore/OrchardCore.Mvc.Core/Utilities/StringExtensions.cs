@@ -360,15 +360,9 @@ namespace OrchardCore.Mvc.Utilities
                 return subject;
             }
 
-            if (from == null)
-            {
-                throw new ArgumentNullException(nameof(from));
-            }
+            ArgumentNullException.ThrowIfNull(from);
 
-            if (to == null)
-            {
-                throw new ArgumentNullException(nameof(to));
-            }
+            ArgumentNullException.ThrowIfNull(to);
 
             if (from.Length != to.Length)
             {

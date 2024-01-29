@@ -31,10 +31,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public void Add(string alternate)
         {
-            if (alternate == null)
-            {
-                throw new ArgumentNullException(nameof(alternate));
-            }
+            ArgumentNullException.ThrowIfNull(alternate);
 
             EnsureCollection();
 
@@ -46,10 +43,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public void Remove(string alternate)
         {
-            if (alternate == null)
-            {
-                throw new ArgumentNullException(nameof(alternate));
-            }
+            ArgumentNullException.ThrowIfNull(alternate);
 
             if (_collection == null)
             {
@@ -71,10 +65,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public bool Contains(string alternate)
         {
-            if (alternate == null)
-            {
-                throw new ArgumentNullException(nameof(alternate));
-            }
+            ArgumentNullException.ThrowIfNull(alternate);
 
             if (_collection == null)
             {
@@ -93,10 +84,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public void AddRange(IEnumerable<string> alternates)
         {
-            if (alternates == null)
-            {
-                throw new ArgumentNullException(nameof(alternates));
-            }
+            ArgumentNullException.ThrowIfNull(alternates);
 
             if (alternates.Any())
             {

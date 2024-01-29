@@ -65,10 +65,7 @@ namespace OrchardCore.Contents.Security
         /// </summary>
         public static Permission CreateDynamicPermission(Permission template, ContentTypeDefinition typeDefinition)
         {
-            if (template == null)
-            {
-                throw new ArgumentNullException(nameof(template));
-            }
+            ArgumentNullException.ThrowIfNull(template);
 
             return new Permission(
                 string.Format(template.Name, typeDefinition.Name),
@@ -85,10 +82,7 @@ namespace OrchardCore.Contents.Security
         /// </summary>
         public static Permission CreateDynamicPermission(Permission template, string contentType)
         {
-            if (template == null)
-            {
-                throw new ArgumentNullException(nameof(template));
-            }
+            ArgumentNullException.ThrowIfNull(template);
 
             var key = new ValueTuple<string, string>(template.Name, contentType);
 

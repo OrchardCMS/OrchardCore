@@ -19,10 +19,7 @@ namespace OrchardCore.Configuration.KeyVault.Extensions
         /// <returns>The host builder.</returns>
         public static IHostBuilder AddOrchardCoreAzureKeyVault(this IHostBuilder builder, TokenCredential tokenCredential = null)
         {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
+            ArgumentNullException.ThrowIfNull(builder);
 
             builder.ConfigureAppConfiguration((context, builder) =>
             {
@@ -40,10 +37,7 @@ namespace OrchardCore.Configuration.KeyVault.Extensions
         /// </summary>
         public static IWebHostBuilder AddOrchardCoreAzureKeyVault(this IWebHostBuilder builder, TokenCredential tokenCredential = null)
         {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
+            ArgumentNullException.ThrowIfNull(builder);
 
             builder.ConfigureAppConfiguration((context, builder) =>
             {
@@ -62,10 +56,7 @@ namespace OrchardCore.Configuration.KeyVault.Extensions
         public static ConfigurationManager AddOrchardCoreAzureKeyVault(
             this ConfigurationManager manager, TokenCredential tokenCredential = null)
         {
-            if (manager == null)
-            {
-                throw new ArgumentNullException(nameof(manager));
-            }
+            ArgumentNullException.ThrowIfNull(manager);
 
             // The 'ConfigurationManager' is a builder and also an 'IConfigurationRoot' allowing to
             // get values from the providers already added without having to build a configuration.

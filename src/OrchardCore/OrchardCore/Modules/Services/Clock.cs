@@ -73,12 +73,9 @@ namespace OrchardCore.Modules
             return DateTimeZoneProviders.Tzdb.GetSystemDefault();
         }
 
-        private ITimeZone CreateTimeZone(DateTimeZone dateTimeZone)
+        private static TimeZone CreateTimeZone(DateTimeZone dateTimeZone)
         {
-            if (dateTimeZone == null)
-            {
-                throw new ArgumentException(nameof(DateTimeZone));
-            }
+            ArgumentNullException.ThrowIfNull(dateTimeZone);
 
             var zoneInterval = dateTimeZone.GetZoneInterval(CurrentInstant);
 
