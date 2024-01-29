@@ -54,7 +54,7 @@ namespace OrchardCore.Taxonomies.Drivers
             var taxonomyContentItemIds = settings.TaxonomyContentItemIds;
             if (!string.IsNullOrEmpty(model.SelectedContentType))
             {
-                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.SelectedContentType);
+                var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(model.SelectedContentType);
                 var fieldDefinitions = contentTypeDefinition
                     .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(TaxonomyField)));
                 var fieldTaxonomyContentItemIds = fieldDefinitions.Select(x => x.GetSettings<TaxonomyFieldSettings>().TaxonomyContentItemId);
@@ -80,8 +80,8 @@ namespace OrchardCore.Taxonomies.Drivers
                         PopulateTermEntries(termEntries, taxonomy.As<TaxonomyPart>().Terms, 0);
                         var terms = new List<SelectListItem>
                             {
-                                new SelectListItem { Text = S["Clear filter"], Value = ""  },
-                                new SelectListItem { Text = S["Show all"], Value = "Taxonomy:" + taxonomy.ContentItemId }
+                                new() { Text = S["Clear filter"], Value = ""  },
+                                new() { Text = S["Show all"], Value = "Taxonomy:" + taxonomy.ContentItemId }
                             };
 
                         foreach (var term in termEntries)

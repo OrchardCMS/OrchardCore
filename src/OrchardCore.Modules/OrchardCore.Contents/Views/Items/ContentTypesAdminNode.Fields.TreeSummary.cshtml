@@ -4,7 +4,7 @@
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 
 @{
-    var allContentTypes = ContentDefinitionManager.ListTypeDefinitions();
+    var allContentTypes = await ContentDefinitionManager.ListTypeDefinitionsAsync();
 
     var selectedContentTypes = Model.Value.ContentTypes;
 

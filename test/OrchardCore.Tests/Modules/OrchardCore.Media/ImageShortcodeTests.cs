@@ -5,7 +5,6 @@ using OrchardCore.Media.Events;
 using OrchardCore.Media.Shortcodes;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Shortcodes.Services;
-using Shortcodes;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media
 {
@@ -50,6 +49,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
                 Enumerable.Empty<IMediaCreatingEventHandler>(),
                 Mock.Of<ILogger<DefaultMediaFileStore>>());
 
+            var fileVersionProvider = Mock.Of<IFileVersionProvider>();
+
             var sanitizer = new HtmlSanitizerService(Options.Create(sanitizerOptions));
 
             var defaultHttpContext = new DefaultHttpContext();
@@ -58,7 +59,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
 
             var options = Options.Create(new ResourceManagementOptions { CdnBaseUrl = cdnBaseUrl });
 
-            var imageProvider = new ImageShortcodeProvider(fileStore, sanitizer, httpContextAccessor, options);
+            var imageProvider = new ImageShortcodeProvider(fileStore, sanitizer, httpContextAccessor, options, fileVersionProvider);
 
             var processor = new ShortcodeService(new IShortcodeProvider[] { imageProvider }, Enumerable.Empty<IShortcodeContextProvider>());
 

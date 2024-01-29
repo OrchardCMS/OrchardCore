@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
@@ -21,6 +22,34 @@ namespace OrchardCore.Users.Liquid
 
         public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
+            if (input.Type == FluidValues.Dictionary)
+            {
+                if (input.ToObjectValue() is IFluidIndexable values)
+                {
+                    var items = new Dictionary<long, string>();
+
+                    foreach (var key in values.Keys)
+                    {
+                        if (long.TryParse(key, out var id) && values.TryGetValue(key, out var value))
+                        {
+                            items.Add(id, value.ToStringValue());
+                        }
+                    }
+
+                    var cachedUsers = await _session.GetAsync<User>(items.Keys.ToArray());
+
+                    var cachedUserIds = cachedUsers.Select(x => x.UserId).ToHashSet();
+
+                    var missingUserIds = items.Values.Where(userId => !cachedUserIds.Contains(userId)).ToList();
+
+                    var missingUsers = await _session.Query<User, UserIndex>(x => x.UserId.IsIn(missingUserIds)).ListAsync();
+
+                    return FluidValue.Create(missingUsers.Concat(cachedUsers).ToList(), ctx.Options);
+                }
+
+                return NilValue.Empty;
+            }
+
             if (input.Type == FluidValues.Array)
             {
                 // List of user ids

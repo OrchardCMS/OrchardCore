@@ -25,7 +25,7 @@ namespace OrchardCore.XmlRpc
                 var bodyTextContent = string.Empty;
                 // For some reasons we can't use XElement.LoadAsync. This method fails on big request body. I tested this with a picture with 2 MB of size.
                 // This code is maybe bad. Because if someone send a very big XML to this endpoint the server will die a out of memory exception.
-                using (StreamReader reader = new StreamReader(bindingContext.HttpContext.Request.Body, Encoding.UTF8, true, 1024, true))
+                using (var reader = new StreamReader(bindingContext.HttpContext.Request.Body, Encoding.UTF8, true, 1024, true))
                 {
                     bodyTextContent = await reader.ReadToEndAsync();
                 }

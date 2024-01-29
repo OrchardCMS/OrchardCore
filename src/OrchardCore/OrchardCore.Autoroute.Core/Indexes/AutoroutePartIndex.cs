@@ -92,8 +92,8 @@ namespace OrchardCore.Autoroute.Core.Indexes
                 _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
                 // Search for this part.
-                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-                if (contentTypeDefinition != null && !contentTypeDefinition.Parts.Any(ctpd => ctpd.Name == nameof(AutoroutePart)))
+                var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
+                if (contentTypeDefinition != null && !contentTypeDefinition.Parts.Any(ctd => ctd.Name == nameof(AutoroutePart)))
                 {
                     context.ContentItem.Remove<AutoroutePart>();
                     _partRemoved.Add(context.ContentItem.ContentItemId);
@@ -134,8 +134,7 @@ namespace OrchardCore.Autoroute.Core.Indexes
                     var results = new List<AutoroutePartIndex>
                     {
                         // If the part is disabled or was removed, a record is still added but with a null path.
-                        new AutoroutePartIndex
-                        {
+                        new() {
                             ContentItemId = contentItem.ContentItemId,
                             Path = !partRemoved && !part.Disabled ? part.Path : null,
                             Published = contentItem.Published,

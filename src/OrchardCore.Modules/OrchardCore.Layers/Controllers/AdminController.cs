@@ -20,6 +20,7 @@ using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Services;
 using OrchardCore.Layers.ViewModels;
 using OrchardCore.Rules;
+using OrchardCore.Rules.Services;
 using OrchardCore.Settings;
 using YesSql;
 
@@ -96,7 +97,7 @@ namespace OrchardCore.Layers.Controllers
             var model = new LayersIndexViewModel { Layers = layers.Layers.ToList() };
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var contentDefinitions = _contentDefinitionManager.ListTypeDefinitions();
+            var contentDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
 
             model.Zones = siteSettings.As<LayerSettings>().Zones ?? Array.Empty<string>();
             model.Widgets = new Dictionary<string, List<dynamic>>();
@@ -311,7 +312,7 @@ namespace OrchardCore.Layers.Controllers
 
             contentItem.Apply(layerMetadata);
 
-            _session.Save(contentItem);
+            await _session.SaveAsync(contentItem);
 
             // In case the moved contentItem is the draft for a published contentItem we update it's position too.
             // We do that because we want the position of published and draft version to be the same.
@@ -332,7 +333,7 @@ namespace OrchardCore.Layers.Controllers
 
                     publishedContentItem.Apply(layerMetadata);
 
-                    _session.Save(publishedContentItem);
+                    await _session.SaveAsync(publishedContentItem);
                 }
             }
 

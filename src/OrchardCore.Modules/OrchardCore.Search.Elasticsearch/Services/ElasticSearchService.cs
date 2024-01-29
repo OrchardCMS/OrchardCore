@@ -1,8 +1,14 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Fluid.Values;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Nest;
-using OrchardCore.Entities;
+using OrchardCore.Liquid;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
@@ -12,10 +18,16 @@ namespace OrchardCore.Search.Elasticsearch.Services;
 
 public class ElasticsearchService : ISearchService
 {
+    public const string Key = "Elasticsearch";
+
     private readonly ISiteService _siteService;
     private readonly ElasticIndexManager _elasticIndexManager;
     private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
     private readonly IElasticSearchQueryService _elasticsearchQueryService;
+    private readonly IElasticClient _elasticClient;
+    private readonly JavaScriptEncoder _javaScriptEncoder;
+    private readonly ElasticConnectionOptions _elasticConnectionOptions;
+    private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly ILogger _logger;
 
     public ElasticsearchService(
@@ -23,6 +35,10 @@ public class ElasticsearchService : ISearchService
         ElasticIndexManager elasticIndexManager,
         ElasticIndexSettingsService elasticIndexSettingsService,
         IElasticSearchQueryService elasticsearchQueryService,
+        IElasticClient elasticClient,
+        JavaScriptEncoder javaScriptEncoder,
+        IOptions<ElasticConnectionOptions> elasticConnectionOptions,
+        ILiquidTemplateManager liquidTemplateManager,
         ILogger<ElasticsearchService> logger
         )
     {
@@ -30,18 +46,32 @@ public class ElasticsearchService : ISearchService
         _elasticIndexManager = elasticIndexManager;
         _elasticIndexSettingsService = elasticIndexSettingsService;
         _elasticsearchQueryService = elasticsearchQueryService;
+        _elasticClient = elasticClient;
+        _javaScriptEncoder = javaScriptEncoder;
+        _elasticConnectionOptions = elasticConnectionOptions.Value;
+        _liquidTemplateManager = liquidTemplateManager;
         _logger = logger;
     }
 
-    public string Name => "Elasticsearch";
+    public string Name => Key;
 
     public async Task<SearchResult> SearchAsync(string indexName, string term, int start, int pageSize)
     {
-        var index = !string.IsNullOrWhiteSpace(indexName) ? indexName.Trim() : await DefaultIndexAsync();
-
         var result = new SearchResult();
 
-        if (index == null || !await _elasticIndexManager.Exists(index))
+        if (!_elasticConnectionOptions.FileConfigurationExists())
+        {
+            _logger.LogWarning("Elasticsearch: Couldn't execute search. Elasticsearch has not been configured yet.");
+
+            return result;
+        }
+
+        var siteSettings = await _siteService.GetSiteSettingsAsync();
+        var searchSettings = siteSettings.As<ElasticSettings>();
+
+        var index = !string.IsNullOrWhiteSpace(indexName) ? indexName.Trim() : searchSettings.SearchIndex;
+
+        if (index == null || !await _elasticIndexManager.ExistsAsync(index))
         {
             _logger.LogWarning("Elasticsearch: Couldn't execute search. The search index doesn't exist.");
 
@@ -51,21 +81,37 @@ public class ElasticsearchService : ISearchService
         var elasticIndexSettings = await _elasticIndexSettingsService.GetSettingsAsync(index);
         result.Latest = elasticIndexSettings.IndexLatest;
 
-        var siteSettings = await _siteService.GetSiteSettingsAsync();
-        var searchSettings = siteSettings.As<ElasticSettings>();
-
         if (searchSettings.DefaultSearchFields == null || searchSettings.DefaultSearchFields.Length == 0)
         {
-            _logger.LogWarning("Elasticsearch: Couldn't execute search. No serach provider settings was defined.");
+            _logger.LogWarning("Elasticsearch: Couldn't execute search. No search provider settings was defined.");
 
             return result;
         }
 
         try
         {
+            var searchType = searchSettings.GetSearchType();
             QueryContainer query = null;
 
-            if (searchSettings.AllowElasticQueryStringQueryInSearch)
+            if (searchType == ElasticSettings.CustomSearchType && !string.IsNullOrWhiteSpace(searchSettings.DefaultQuery))
+            {
+                var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(searchSettings.DefaultQuery, _javaScriptEncoder,
+                    new Dictionary<string, FluidValue>()
+                    {
+                        ["term"] = new StringValue(term)
+                    });
+
+                try
+                {
+                    using var stream = new MemoryStream(Encoding.UTF8.GetBytes(tokenizedContent));
+
+                    var searchRequest = await _elasticClient.RequestResponseSerializer.DeserializeAsync<SearchRequest>(stream);
+
+                    query = searchRequest.Query;
+                }
+                catch { }
+            }
+            else if (searchType == ElasticSettings.QueryStringSearchType)
             {
                 query = new QueryStringQuery
                 {
@@ -74,15 +120,13 @@ public class ElasticsearchService : ISearchService
                     Query = term
                 };
             }
-            else
+
+            query ??= new MultiMatchQuery
             {
-                query = new MultiMatchQuery
-                {
-                    Fields = searchSettings.DefaultSearchFields,
-                    Analyzer = await _elasticIndexSettingsService.GetQueryAnalyzerAsync(index),
-                    Query = term
-                };
-            }
+                Fields = searchSettings.DefaultSearchFields,
+                Analyzer = await _elasticIndexSettingsService.GetQueryAnalyzerAsync(index),
+                Query = term
+            };
 
             result.ContentItemIds = await _elasticsearchQueryService.ExecuteQueryAsync(index, query, null, start, pageSize);
             result.Success = true;
@@ -93,12 +137,5 @@ public class ElasticsearchService : ISearchService
         }
 
         return result;
-    }
-
-    private async Task<string> DefaultIndexAsync()
-    {
-        var siteSettings = await _siteService.GetSiteSettingsAsync();
-
-        return siteSettings.As<ElasticSettings>().SearchIndex;
     }
 }

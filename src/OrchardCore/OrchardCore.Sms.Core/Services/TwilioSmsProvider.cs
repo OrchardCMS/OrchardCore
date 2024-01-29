@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 using OrchardCore.Sms.Models;
 
@@ -32,6 +31,7 @@ public class TwilioSmsProvider : ISmsProvider
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ILogger<TwilioSmsProvider> _logger;
     private readonly IHttpClientFactory _httpClientFactory;
+
     protected readonly IStringLocalizer S;
 
     public TwilioSmsProvider(
@@ -50,10 +50,7 @@ public class TwilioSmsProvider : ISmsProvider
 
     public async Task<SmsResult> SendAsync(SmsMessage message)
     {
-        if (message == null)
-        {
-            throw new ArgumentNullException(nameof(message));
-        }
+        ArgumentNullException.ThrowIfNull(message);
 
         if (string.IsNullOrEmpty(message.To))
         {
@@ -103,10 +100,11 @@ public class TwilioSmsProvider : ISmsProvider
 
     private HttpClient GetHttpClient(TwilioSettings settings)
     {
-        var client = _httpClientFactory.CreateClient(TechnicalName);
-
         var token = $"{settings.AccountSID}:{settings.AuthToken}";
         var base64Token = Convert.ToBase64String(Encoding.ASCII.GetBytes(token));
+
+        var client = _httpClientFactory.CreateClient(TechnicalName);
+
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64Token);
 
         return client;
@@ -127,7 +125,7 @@ public class TwilioSmsProvider : ISmsProvider
             {
                 PhoneNumber = settings.PhoneNumber,
                 AccountSID = settings.AccountSID,
-                AuthToken = protector.Unprotect(settings.AuthToken),
+                AuthToken = settings.AuthToken == null ? null : protector.Unprotect(settings.AuthToken),
             };
         }
 

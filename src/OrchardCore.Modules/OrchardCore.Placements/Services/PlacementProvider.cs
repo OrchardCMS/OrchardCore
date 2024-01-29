@@ -56,7 +56,7 @@ namespace OrchardCore.Placements.Services
 
                         Func<ShapePlacementContext, bool> predicate = ctx => CheckFilter(ctx, placementRule);
 
-                        if (filters.Any())
+                        if (filters.Count > 0)
                         {
                             predicate = filters.Aggregate(predicate, BuildPredicate);
                         }

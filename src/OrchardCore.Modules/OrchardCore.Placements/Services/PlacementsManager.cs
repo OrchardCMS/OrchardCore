@@ -1,5 +1,5 @@
+using System.Collections.Frozen;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy;
@@ -10,13 +10,14 @@ namespace OrchardCore.Placements.Services
     {
         private readonly IPlacementStore _placementStore;
 
-        public PlacementsManager(IPlacementStore placementStore) => _placementStore = placementStore;
+        public PlacementsManager(IPlacementStore placementStore)
+            => _placementStore = placementStore;
 
         public async Task<IReadOnlyDictionary<string, IEnumerable<PlacementNode>>> ListShapePlacementsAsync()
         {
             var document = await _placementStore.GetPlacementsAsync();
 
-            return document.Placements.ToImmutableDictionary(kvp => kvp.Key, kvp => kvp.Value.AsEnumerable());
+            return document.Placements.ToFrozenDictionary(kvp => kvp.Key, kvp => kvp.Value.AsEnumerable());
         }
 
         public async Task<IEnumerable<PlacementNode>> GetShapePlacementsAsync(string shapeType)

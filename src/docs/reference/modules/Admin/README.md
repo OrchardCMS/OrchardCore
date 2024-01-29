@@ -13,6 +13,7 @@ If you want to specify another prefix in the urls to access the admin section, y
       }
     }
 ```
+
 ## Customize Admin branding
 
 By default, OrchardCore logo and site name are displayed in the top navbar.
@@ -51,10 +52,9 @@ Here are samples using logo and favicon from media module.
     </a>
     ```
 
-
 ## Navbar Shape
 
-The navigation bar shape is available in two display types `Detail` for the frontend and `DetailAdmin` for the backend admin. If you wish to add a menu item to the navigation bar, simply create a display driver for `Navbar`. 
+The navigation bar shape is available in two display types `Detail` for the frontend and `DetailAdmin` for the backend admin. If you wish to add a menu item to the navigation bar, simply create a display driver for `Navbar`.
 
 As an illustration, we inject the Visit Site link into `DetailAdmin` display type using a display driver as outlined below:
 

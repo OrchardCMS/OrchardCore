@@ -16,6 +16,7 @@ using OrchardCore.Layers.Models;
 using OrchardCore.Layers.ViewModels;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Rules;
+using OrchardCore.Rules.Services;
 
 namespace OrchardCore.Layers.Services
 {
@@ -93,7 +94,7 @@ namespace OrchardCore.Layers.Services
                 var updater = _modelUpdaterAccessor.ModelUpdater;
 
                 var layersCache = new Dictionary<string, bool>();
-                var contentDefinitions = _contentDefinitionManager.ListTypeDefinitions();
+                var contentDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
 
                 foreach (var widget in widgets)
                 {

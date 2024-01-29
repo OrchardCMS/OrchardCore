@@ -2,14 +2,14 @@
 @model HttpRequestTaskViewModel
 
 <div class="mb-3" asp-validation-class-for="Url">
-    <label asp-for="Url">@T["URL"]</label>
+    <label asp-for="Url" class="form-label">@T["URL"]</label>
     <input type="text" asp-for="Url" class="form-control code" />
     <span asp-validation-for="Url"></span>
     <span class="hint">@T["The URL to send the request to. Supports Liquid syntax."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="HttpMethod">
-    <label asp-for="HttpMethod">@T["HTTP Method"]</label>
+    <label asp-for="HttpMethod" class="form-label">@T["HTTP Method"]</label>
     <select asp-for="HttpMethod" class="form-select">
         <option value="GET">GET</option>
         <option value="POST">POST</option>
@@ -22,7 +22,7 @@
 </div>
 
 <div class="mb-3" asp-validation-class-for="ContentType">
-    <label asp-for="ContentType">@T["Content Type"]</label>
+    <label asp-for="ContentType" class="form-label">@T["Content Type"]</label>
     <select asp-for="ContentType" class="form-select">
         <option>text/plain</option>
         <option>application/x-www-form-urlencoded</option>
@@ -35,28 +35,28 @@
 
 @*TODO: Only display Body field when appropriate for the selected HTTP method.*@
 <div class="mb-3" asp-validation-class-for="Body">
-    <label asp-for="Body">@T["Body"]</label>
+    <label asp-for="Body" class="form-label">@T["Body"]</label>
     <textarea asp-for="Body"></textarea>
     <span asp-validation-for="Body"></span>
     <span class="hint">@T["The body to send with POST, PUT and PATCH requests. With Liquid support."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="Headers">
-    <label asp-for="Headers">@T["Headers"]</label>
+    <label asp-for="Headers" class="form-label">@T["Headers"]</label>
     <textarea asp-for="Headers"></textarea>
     <span asp-validation-for="Headers"></span>
     <span class="hint">@T["Provide additional HTTP headers, one per line. For example: Authorization: Bearer 123ABC. With Liquid support."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="HttpResponseCodes">
-    <label asp-for="HttpResponseCodes">@T["HTTP Response Codes"]</label>
+    <label asp-for="HttpResponseCodes" class="form-label">@T["HTTP Response Codes"]</label>
     <input type="text" class="form-control" asp-for="HttpResponseCodes" />
     <span asp-validation-for="HttpResponseCodes"></span>
     <span class="hint">@T["A comma-separated list of HTTP response status codes to handle as activity outcomes. For example: 200, 404, 500"]</span>
 </div>
 
 <style asp-name="codemirror"></style>
-<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
 <script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
@@ -76,5 +76,5 @@
         };
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Headers)'), codeMirrorOptions);
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Body)'), codeMirrorOptions);
-});
+    });
 </script>

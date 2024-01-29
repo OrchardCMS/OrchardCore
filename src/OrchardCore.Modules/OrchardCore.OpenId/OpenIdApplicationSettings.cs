@@ -44,14 +44,14 @@ namespace OrchardCore.OpenId
             descriptor.ClientId = model.ClientId;
             descriptor.ConsentType = model.ConsentType;
             descriptor.DisplayName = model.DisplayName;
-            descriptor.Type = model.Type;
+            descriptor.ClientType = model.Type;
 
             if (!string.IsNullOrEmpty(model.ClientSecret))
             {
                 descriptor.ClientSecret = model.ClientSecret;
             }
 
-            if (string.Equals(descriptor.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(descriptor.ClientType, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
             {
                 descriptor.ClientSecret = null;
             }
@@ -223,7 +223,7 @@ namespace OrchardCore.OpenId
             }
 
             descriptor.PostLogoutRedirectUris.Clear();
-            foreach (Uri uri in
+            foreach (var uri in
                 (from uri in model.PostLogoutRedirectUris?.Split(new[] { " ", "," }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
                  select new Uri(uri, UriKind.Absolute)))
             {
@@ -231,7 +231,7 @@ namespace OrchardCore.OpenId
             }
 
             descriptor.RedirectUris.Clear();
-            foreach (Uri uri in
+            foreach (var uri in
                (from uri in model.RedirectUris?.Split(new[] { " ", "," }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
                 select new Uri(uri, UriKind.Absolute)))
             {

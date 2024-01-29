@@ -22,14 +22,15 @@ namespace OrchardCore.OpenId.Controllers
     public class ScopeController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
-        protected readonly IStringLocalizer S;
         private readonly IOpenIdScopeManager _scopeManager;
+        private readonly IShapeFactory _shapeFactory;
         private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
         private readonly ShellDescriptor _shellDescriptor;
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _shellHost;
-        protected readonly dynamic New;
+
+        protected readonly IStringLocalizer S;
 
         public ScopeController(
             IOpenIdScopeManager scopeManager,
@@ -43,7 +44,7 @@ namespace OrchardCore.OpenId.Controllers
             IShellHost shellHost)
         {
             _scopeManager = scopeManager;
-            New = shapeFactory;
+            _shapeFactory = shapeFactory;
             _pagerOptions = pagerOptions.Value;
             S = stringLocalizer;
             _authorizationService = authorizationService;
@@ -65,7 +66,7 @@ namespace OrchardCore.OpenId.Controllers
 
             var model = new OpenIdScopeIndexViewModel
             {
-                Pager = (await New.Pager(pager)).TotalItemCount(count)
+                Pager = await _shapeFactory.PagerAsync(pager, (int)count),
             };
 
             await foreach (var scope in _scopeManager.ListAsync(pager.PageSize, pager.GetStartIndex()))

@@ -1,13 +1,15 @@
 @model SelectRolesViewModel
 
-<div class="d-flex flex-wrap">
+<div class="mb-3">
     @for (var i = 0; i < Model.RoleSelections.Count; i++)
     {
         var role = Model.RoleSelections[i];
-        <div class="checkbox pr-2">
-            <label for="@Html.IdFor(m => m.RoleSelections[i])">
-                <input id="@Html.IdFor(m => m.RoleSelections[i])" name="@Model.HtmlName" type="checkbox" checked="@role.IsSelected" value="@role.Item" />
-                @role.Item
+        var htmlId = Html.IdFor(m => m.RoleSelections[i]);
+
+        <div class="checkbox form-check">
+            <input id="@htmlId" class="form-check-input" name="@Model.HtmlName" type="checkbox" checked="@role.IsSelected" value="@role.Item" />
+            <label for="@htmlId" class="form-check-label">
+@role.Item
             </label>
         </div>
     }
