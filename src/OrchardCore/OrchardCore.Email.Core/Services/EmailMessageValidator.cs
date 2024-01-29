@@ -31,31 +31,31 @@ public class EmailMessageValidator : IEmailMessageValidator
         {
             if (!_emailAddressValidator.Validate(submitterAddress))
             {
-                errors.Add(S["Invalid email address: '{0}'", submitterAddress]);
+                errors.Add(S["Invalid email address for the sender: '{0}'.", submitterAddress]);
             }
         }
 
         errors.AddRange(message.GetSender()
             .Where(address => !_emailAddressValidator.Validate(address))
-            .Select(address => S["Invalid email address: '{0}'", address]));
+            .Select(address => S["Invalid email address for the sender: '{0}'.", address]));
 
         var recipients = message.GetRecipients();
 
         errors.AddRange(recipients.To
             .Where(address => !_emailAddressValidator.Validate(address))
-            .Select(address => S["Invalid email address: '{0}'", address]));
+            .Select(address => S["Invalid email address for the sender: '{0}'.", address]));
 
         errors.AddRange(recipients.Cc
             .Where(address => !_emailAddressValidator.Validate(address))
-            .Select(address => S["Invalid email address: '{0}'", address]));
+            .Select(address => S["Invalid email address for the sender: '{0}'.", address]));
 
         errors.AddRange(recipients.Bcc
             .Where(address => !_emailAddressValidator.Validate(address))
-            .Select(address => S["Invalid email address: '{0}'", address]));
+            .Select(address => S["Invalid email address for the sender: '{0}'.", address]));
 
         errors.AddRange(message.GetReplyTo()
             .Where(address => !_emailAddressValidator.Validate(address))
-            .Select(address => S["Invalid email address: '{0}'", address]));
+            .Select(address => S["Invalid email address for the sender: '{0}'.", address]));
 
         if (recipients.To.Count == 0 && recipients.Cc.Count == 0 && recipients.Bcc.Count == 0)
         {
