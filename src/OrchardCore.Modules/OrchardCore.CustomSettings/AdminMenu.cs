@@ -31,24 +31,20 @@ namespace OrchardCore.CustomSettings
 
             foreach (var type in await _customSettingsService.GetAllSettingsTypesAsync())
             {
-                if (!_routeValues.TryGetValue(type.Name, out var routeValues))
+                var routeValues = _routeValues.GetOrAdd(type.Name, static value => new RouteValueDictionary()
                 {
-                    routeValues = new RouteValueDictionary()
-                    {
-                        { "area", "OrchardCore.Settings" },
-                        { "groupId", type.Name },
-                    };
-
-                    _routeValues[type.Name] = routeValues;
-                }
+                     { "area", "OrchardCore.Settings" },
+                     { "groupId", value },
+                });
+                var htmlName = type.Name.HtmlClassify();
 
                 builder
                     .Add(S["Configuration"], configuration => configuration
                         .Add(S["Settings"], settings => settings
                             .Add(new LocalizedString(type.DisplayName, type.DisplayName), type.DisplayName.PrefixPosition(), layers => layers
                                 .Action("Index", "Admin", routeValues)
-                                .AddClass(type.Name.HtmlClassify())
-                                .Id(type.Name.HtmlClassify())
+                                .AddClass(htmlName)
+                                .Id(htmlName)
                                 .Permission(Permissions.CreatePermissionForType(type))
                                 .Resource(type.Name)
                                 .LocalNav()
