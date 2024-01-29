@@ -8,7 +8,8 @@ public class NullEmailDeliveryServiceTests
     public async Task SendEmail()
     {
         // Arrange
-        var emailDeliveryService = new NullEmailDeliveryService();
+        var logger = NullLogger<NullEmailDeliveryService>.Instance;
+        var emailDeliveryService = new NullEmailDeliveryService(logger);
         var message = new MailMessage
         {
             To = "test@orchardcore.net",
