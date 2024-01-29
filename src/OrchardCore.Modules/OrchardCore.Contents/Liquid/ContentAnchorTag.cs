@@ -51,7 +51,7 @@ namespace OrchardCore.Contents.Liquid
             ContentItem createFor = null;
 
             Dictionary<string, string> routeValues = null;
-            Dictionary<string, string> customAttributes = new Dictionary<string, string>();
+            Dictionary<string, string> customAttributes = new();
 
             foreach (var argument in argumentsList)
             {
@@ -88,7 +88,7 @@ namespace OrchardCore.Contents.Liquid
                 contentItem = displayFor;
                 var previewAspect = await contentManager.PopulateAspectAsync<PreviewAspect>(contentItem);
 
-                if (!String.IsNullOrEmpty(previewAspect.PreviewUrl))
+                if (!string.IsNullOrEmpty(previewAspect.PreviewUrl))
                 {
                     var previewUrl = previewAspect.PreviewUrl;
                     if (!previewUrl.StartsWith("~/", StringComparison.OrdinalIgnoreCase))
@@ -125,14 +125,16 @@ namespace OrchardCore.Contents.Liquid
             }
             else if (editFor != null)
             {
-                contentItem = editFor;
-                var metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(editFor);
+                var metadata = await PopulateAspectForContentItemMetadataAsync(editFor);
 
                 if (metadata.EditorRouteValues != null)
                 {
-                    foreach (var attribute in routeValues)
+                    if (routeValues != null)
                     {
-                        metadata.EditorRouteValues.Add(attribute.Key, attribute.Value);
+                        foreach (var attribute in routeValues)
+                        {
+                            metadata.EditorRouteValues.Add(attribute.Key, attribute.Value);
+                        }
                     }
 
                     customAttributes["href"] = urlHelper.Action(metadata.EditorRouteValues["action"].ToString(), metadata.EditorRouteValues);
@@ -140,8 +142,7 @@ namespace OrchardCore.Contents.Liquid
             }
             else if (adminFor != null)
             {
-                contentItem = adminFor;
-                var metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(adminFor);
+                var metadata = await PopulateAspectForContentItemMetadataAsync(adminFor);
 
                 if (metadata.AdminRouteValues != null)
                 {
@@ -158,8 +159,7 @@ namespace OrchardCore.Contents.Liquid
             }
             else if (removeFor != null)
             {
-                contentItem = removeFor;
-                var metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(removeFor);
+                var metadata = await PopulateAspectForContentItemMetadataAsync(removeFor);
 
                 if (metadata.RemoveRouteValues != null)
                 {
@@ -176,10 +176,9 @@ namespace OrchardCore.Contents.Liquid
             }
             else if (createFor != null)
             {
-                contentItem = createFor;
-                var metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(createFor);
+                var metadata = await PopulateAspectForContentItemMetadataAsync(createFor);
 
-                if (metadata.CreateRouteValues == null)
+                if (metadata.CreateRouteValues != null)
                 {
                     if (routeValues != null)
                     {
@@ -216,20 +215,27 @@ namespace OrchardCore.Contents.Liquid
                     return completion;
                 }
             }
-            else if (!String.IsNullOrEmpty(contentItem.DisplayText))
+            else if (!string.IsNullOrEmpty(contentItem.DisplayText))
             {
                 writer.Write(encoder.Encode(contentItem.DisplayText));
             }
             else
             {
                 var contentDefinitionManager = services.GetRequiredService<IContentDefinitionManager>();
-                var typeDefinition = contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+                var typeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
                 writer.Write(encoder.Encode(typeDefinition.ToString()));
             }
 
             tagBuilder.RenderEndTag().WriteTo(writer, (HtmlEncoder)encoder);
 
             return Completion.Normal;
+
+            async Task<ContentItemMetadata> PopulateAspectForContentItemMetadataAsync(ContentItem item)
+            {
+                contentItem = item;
+
+                return await contentManager.PopulateAspectAsync<ContentItemMetadata>(item);
+            }
         }
     }
 }

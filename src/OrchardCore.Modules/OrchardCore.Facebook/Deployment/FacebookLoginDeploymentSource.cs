@@ -25,10 +25,13 @@ namespace OrchardCore.Facebook.Deployment
 
             var settings = await _facebookService.GetSettingsAsync();
 
-            result.Steps.Add(new JObject(
-                new JProperty("name", "FacebookLogin"),
-                new JProperty("FacebookLogin", JObject.FromObject(settings))
-            ));
+            // The 'name' property should match the related recipe step name.
+            var jObject = new JObject(new JProperty("name", "FacebookCoreSettings"));
+
+            // Merge settings as the recipe step doesn't use a child property.
+            jObject.Merge(JObject.FromObject(settings));
+
+            result.Steps.Add(jObject);
         }
     }
 }

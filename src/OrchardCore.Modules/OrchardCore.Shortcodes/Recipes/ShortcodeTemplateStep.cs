@@ -22,7 +22,7 @@ namespace OrchardCore.Shortcodes.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "ShortcodeTemplates", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "ShortcodeTemplates", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }

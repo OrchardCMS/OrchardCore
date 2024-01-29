@@ -8,7 +8,7 @@ using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Modules;
 using OrchardCore.Taxonomies.Models;
@@ -52,18 +52,15 @@ namespace OrchardCore.Taxonomies.Controllers
                 return Unauthorized();
             }
 
-            ContentItem taxonomy;
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Taxonomy");
+            var versionOption = VersionOptions.Latest;
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Taxonomy");
+            if (contentTypeDefinition.IsDraftable())
+            {
+                versionOption = VersionOptions.DraftRequired;
+            }
 
-            if (!contentTypeDefinition.GetSettings<ContentTypeSettings>().Draftable)
-            {
-                taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.Latest);
-            }
-            else
-            {
-                taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.DraftRequired);
-            }
+            var taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, versionOption);
 
             if (taxonomy == null)
             {
@@ -94,13 +91,13 @@ namespace OrchardCore.Taxonomies.Controllers
             taxonomy.Alter<TaxonomyPart>(part => part.Terms.Add(contentItem));
 
             // Auto publish draftable taxonomies when creating a new tag term.
-            if (contentTypeDefinition.GetSettings<ContentTypeSettings>().Draftable)
+            if (contentTypeDefinition.IsDraftable())
             {
                 await _contentManager.PublishAsync(taxonomy);
             }
             else
             {
-                _session.Save(taxonomy);
+                await _session.SaveAsync(taxonomy);
             }
 
             var viewModel = new CreatedTagViewModel

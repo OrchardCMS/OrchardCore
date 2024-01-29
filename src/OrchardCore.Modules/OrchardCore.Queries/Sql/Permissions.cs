@@ -7,7 +7,7 @@ namespace OrchardCore.Queries.Sql
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageSqlQueries = new Permission("ManageSqlQueries", "Manage SQL Queries");
+        public static readonly Permission ManageSqlQueries = new("ManageSqlQueries", "Manage SQL Queries");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {

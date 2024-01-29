@@ -44,31 +44,35 @@ namespace OrchardCore.DisplayManagement.Manifest
         /// <see cref="!:https://semver.org">Semantic Versioning</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
+        /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public ThemeAttribute(
-            string id
-            , string baseTheme
-            , string description
-            , string author
-            , string semVer
-            , string websiteUrl
-            , string featureDependencies
-            , string tags
-            , object defaultTenant
-            , object alwaysEnabled
+            string id,
+            string baseTheme,
+            string description,
+            string author,
+            string semVer,
+            string websiteUrl,
+            string featureDependencies,
+            string tags,
+            object defaultTenant,
+            object alwaysEnabled,
+            object enabledByDependencyOnly
         ) : this(
-            id
-            , default
-            , baseTheme
-            , default
-            , default
-            , description
-            , author
-            , semVer
-            , websiteUrl
-            , featureDependencies
-            , tags
-            , defaultTenant
-            , alwaysEnabled
+            id,
+            default,
+            baseTheme,
+            default,
+            default,
+            description,
+            author,
+            semVer,
+            websiteUrl,
+            featureDependencies,
+            tags,
+            defaultTenant,
+            alwaysEnabled,
+            enabledByDependencyOnly
         )
         {
         }
@@ -96,32 +100,36 @@ namespace OrchardCore.DisplayManagement.Manifest
         /// <see cref="!:https://semver.org">Semantic Versioning</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
+        /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public ThemeAttribute(
-            string id
-            , string name
-            , string baseTheme
-            , string description
-            , string author
-            , string semVer
-            , string websiteUrl
-            , string featureDependencies
-            , string tags
-            , object defaultTenant
-            , object alwaysEnabled
+            string id,
+            string name,
+            string baseTheme,
+            string description,
+            string author,
+            string semVer,
+            string websiteUrl,
+            string featureDependencies,
+            string tags,
+            object defaultTenant,
+            object alwaysEnabled,
+            object enabledByDependencyOnly
         ) : this(
-            id
-            , name
-            , baseTheme
-            , default
-            , default
-            , description
-            , author
-            , semVer
-            , websiteUrl
-            , featureDependencies
-            , tags
-            , defaultTenant
-            , alwaysEnabled
+            id,
+            name,
+            baseTheme,
+            default,
+            default,
+            description,
+            author,
+            semVer,
+            websiteUrl,
+            featureDependencies,
+            tags,
+            defaultTenant,
+            alwaysEnabled,
+            enabledByDependencyOnly
         )
         {
         }
@@ -152,33 +160,37 @@ namespace OrchardCore.DisplayManagement.Manifest
         /// <see cref="!:https://semver.org">Semantic Versioning</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
+        /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public ThemeAttribute(
-            string id
-            , string name
-            , string baseTheme
-            , string category
-            , string priority
-            , string description
-            , string author
-            , string semVer
-            , string websiteUrl
-            , string featureDependencies
-            , string tags
-            , object defaultTenant
-            , object alwaysEnabled
+            string id,
+            string name,
+            string baseTheme,
+            string category,
+            string priority,
+            string description,
+            string author,
+            string semVer,
+            string websiteUrl,
+            string featureDependencies,
+            string tags,
+            object defaultTenant,
+            object alwaysEnabled,
+            object enabledByDependencyOnly
         ) : base(
-            id
-            , name
-            , category
-            , priority
-            , description
-            , author
-            , semVer
-            , websiteUrl
-            , featureDependencies
-            , tags
-            , defaultTenant
-            , alwaysEnabled
+            id,
+            name,
+            category,
+            priority,
+            description,
+            author,
+            semVer,
+            websiteUrl,
+            featureDependencies,
+            tags,
+            defaultTenant,
+            alwaysEnabled,
+            enabledByDependencyOnly
         )
         {
             BaseTheme = baseTheme;

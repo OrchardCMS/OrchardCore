@@ -23,8 +23,8 @@ namespace OrchardCore.Users.Controllers
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
 
         public RegistrationController(
             UserManager<IUser> userManager,
@@ -70,7 +70,12 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            if (TryValidateModel(model))
+            if (string.IsNullOrEmpty(model.Email))
+            {
+                ModelState.AddModelError("Email", S["Email is required."]);
+            }
+
+            if (ModelState.IsValid)
             {
                 // Check if user with same email already exists
                 var userWithEmail = await _userManager.FindByEmailAsync(model.Email);
@@ -147,7 +152,7 @@ namespace OrchardCore.Users.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SendVerificationEmail(string id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageUsers))
             {
                 return Forbid();
             }

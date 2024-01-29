@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
+using OrchardCore.Contents.Indexing;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
 
@@ -10,7 +11,7 @@ namespace OrchardCore.ContentFields.Indexing
     {
         public override Task BuildIndexAsync(LocalizationSetContentPickerField field, BuildFieldIndexContext context)
         {
-            var options = DocumentIndexOptions.Store;
+            var options = DocumentIndexOptions.Keyword | DocumentIndexOptions.Store;
 
             if (field.LocalizationSets.Length > 0)
             {
@@ -26,7 +27,7 @@ namespace OrchardCore.ContentFields.Indexing
             {
                 foreach (var key in context.Keys)
                 {
-                    context.DocumentIndex.Set(key, "NULL", options);
+                    context.DocumentIndex.Set(key, IndexingConstants.NullValue, options);
                 }
             }
 

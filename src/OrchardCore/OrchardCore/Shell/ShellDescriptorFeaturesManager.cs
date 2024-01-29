@@ -36,20 +36,29 @@ namespace OrchardCore.Environment.Shell
         {
             var featureEventHandlers = ShellScope.Services.GetServices<IFeatureEventHandler>();
 
-            var enabledFeatureIds = _extensionManager.GetFeatures()
-                .Where(f => shellDescriptor.Features.Any(sf => sf.Id == f.Id))
-                .Select(f => f.Id)
+            var enabledFeatures = _extensionManager.GetFeatures()
+                .Where(feature => shellDescriptor.Features.Any(shellFeature => shellFeature.Id == feature.Id))
+                .ToArray();
+
+            var enabledFeatureIds = enabledFeatures
+                .Select(feature => feature.Id)
                 .ToHashSet();
 
             var installedFeatureIds = enabledFeatureIds
-                .Concat(shellDescriptor.Installed.Select(sf => sf.Id))
+                .Concat(shellDescriptor.Installed.Select(shellFeature => shellFeature.Id))
                 .ToHashSet();
 
-            var alwaysEnabledIds = _alwaysEnabledFeatures.Select(sf => sf.Id).ToArray();
+            var alwaysEnabledIds = _alwaysEnabledFeatures.Select(shellFeature => shellFeature.Id).ToArray();
+
+            var byDependencyOnlyFeaturesToDisable = enabledFeatures
+                .Where(feature => feature.EnabledByDependencyOnly);
 
             var allFeaturesToDisable = featuresToDisable
-                .Where(f => !alwaysEnabledIds.Contains(f.Id))
+                .Where(feature => !feature.EnabledByDependencyOnly && !alwaysEnabledIds.Contains(feature.Id))
                 .SelectMany(feature => GetFeaturesToDisable(feature, enabledFeatureIds, force))
+                // Always attempt to disable 'EnabledByDependencyOnly' features
+                // to ensure we auto disable any feature that is no longer needed.
+                .Union(byDependencyOnlyFeaturesToDisable)
                 .Distinct()
                 .Reverse()
                 .ToList();
@@ -67,6 +76,7 @@ namespace OrchardCore.Environment.Shell
             }
 
             var allFeaturesToEnable = featuresToEnable
+                .Where(feature => !feature.EnabledByDependencyOnly)
                 .SelectMany(feature => GetFeaturesToEnable(feature, enabledFeatureIds, force))
                 .Distinct()
                 .ToList();

@@ -1,6 +1,6 @@
 using YesSql;
 
-namespace OrchardCore.Data.YesSql.Abstractions;
+namespace OrchardCore.Data.YesSql;
 
 public class YesSqlOptions
 {
@@ -10,13 +10,9 @@ public class YesSqlOptions
 
     public IIdGenerator IdGenerator { get; set; }
 
-    public ITableNameConvention TableNameConvention { get; set; }
-
     public IAccessorFactory IdentifierAccessorFactory { get; set; }
 
     public IAccessorFactory VersionAccessorFactory { get; set; }
 
     public IContentSerializer ContentSerializer { get; set; }
-
-    public string TablePrefixSeparator { get; set; } = "_";
 }

@@ -59,7 +59,7 @@ namespace OrchardCore.Alias
             services.AddScoped<IScopedIndexProvider>(sp => sp.GetRequiredService<AliasPartIndexProvider>());
             services.AddScoped<IContentHandler>(sp => sp.GetRequiredService<AliasPartIndexProvider>());
 
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
             services.AddScoped<IContentHandleProvider, AliasPartContentHandleProvider>();
 
             // Identity Part

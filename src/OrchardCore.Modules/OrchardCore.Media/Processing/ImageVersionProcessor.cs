@@ -17,13 +17,9 @@ namespace OrchardCore.Media.Processing
         /// </summary>
         public const string VersionCommand = "v";
 
-        private static readonly IEnumerable<string> VersionCommands = new[] { VersionCommand };
+        private static readonly IEnumerable<string> _versionCommands = new[] { VersionCommand };
 
-        public IEnumerable<string> Commands
-            => VersionCommands;
-
-        public FormattedImage Process(FormattedImage image, ILogger logger, IDictionary<string, string> commands, CommandParser parser, CultureInfo culture)
-            => image;
+        public IEnumerable<string> Commands => _versionCommands;
 
         public FormattedImage Process(FormattedImage image, ILogger logger, CommandCollection commands, CommandParser parser, CultureInfo culture)
             => image;

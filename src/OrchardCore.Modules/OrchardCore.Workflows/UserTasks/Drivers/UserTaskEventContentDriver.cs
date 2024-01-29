@@ -25,7 +25,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
         private readonly IWorkflowManager _workflowManager;
         private readonly INotifier _notifier;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
 
         public UserTaskEventContentDriver(
             IWorkflowStore workflowStore,
@@ -63,7 +63,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
             var action = (string)httpContext.Request.Form["submit.Save"] ?? httpContext.Request.Form["submit.Publish"];
             if (action?.StartsWith("user-task.", StringComparison.Ordinal) == true)
             {
-                action = action.Substring("user-task.".Length);
+                action = action["user-task.".Length..];
 
                 var availableActions = await GetUserTaskActionsAsync(model.ContentItemId);
 
@@ -77,7 +77,8 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
                     {
                         Name = nameof(UserTaskEvent),
                         ContentType = model.ContentType,
-                        ContentItemId = model.ContentItemId
+                        ContentItemId = model.ContentItemId,
+                        ContentItemVersionId = model.ContentItemVersionId,
                     };
 
                     var input = new Dictionary<string, object>

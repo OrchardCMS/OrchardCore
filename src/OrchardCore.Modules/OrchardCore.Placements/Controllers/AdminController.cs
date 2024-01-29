@@ -24,14 +24,17 @@ namespace OrchardCore.Placements.Controllers
 {
     public class AdminController : Controller
     {
+        private const string _optionsSearch = "Options.Search";
+
         private readonly ILogger _logger;
         private readonly IAuthorizationService _authorizationService;
         private readonly PlacementsManager _placementsManager;
-        private readonly IHtmlLocalizer H;
-        private readonly IStringLocalizer S;
         private readonly INotifier _notifier;
+        private readonly IShapeFactory _shapeFactory;
         private readonly PagerOptions _pagerOptions;
-        private readonly dynamic New;
+
+        protected readonly IHtmlLocalizer H;
+        protected readonly IStringLocalizer S;
 
         public AdminController(
             ILogger<AdminController> logger,
@@ -47,9 +50,9 @@ namespace OrchardCore.Placements.Controllers
             _authorizationService = authorizationService;
             _placementsManager = placementsManager;
             _notifier = notifier;
+            _shapeFactory = shapeFactory;
             _pagerOptions = pagerOptions.Value;
 
-            New = shapeFactory;
             H = htmlLocalizer;
             S = stringLocalizer;
         }
@@ -61,7 +64,7 @@ namespace OrchardCore.Placements.Controllers
                 return Forbid();
             }
 
-            var pager = new Pager(pagerParameters, _pagerOptions.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
             var shapeTypes = await _placementsManager.ListShapePlacementsAsync();
 
@@ -75,13 +78,21 @@ namespace OrchardCore.Placements.Controllers
                 shapeList = shapeList.Where(x => x.ShapeType.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            var count = shapeList.Count();
+            var count = shapeList.Count;
 
             shapeList = shapeList.OrderBy(x => x.ShapeType)
                 .Skip(pager.GetStartIndex())
                 .Take(pager.PageSize).ToList();
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
+            // Maintain previous route data when generating page links.
+            var routeData = new RouteData();
+
+            if (!string.IsNullOrEmpty(options.Search))
+            {
+                routeData.Values.TryAdd(_optionsSearch, options.Search);
+            }
+
+            var pagerShape = await _shapeFactory.PagerAsync(pager, count, routeData);
 
             var model = new ListShapePlacementsViewModel
             {
@@ -90,21 +101,21 @@ namespace OrchardCore.Placements.Controllers
                 Options = options,
             };
 
-            model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
-            };
+            model.Options.ContentsBulkAction =
+            [
+                new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
+            ];
 
-            return View("Index", model);
+            return View(model);
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(ListShapePlacementsViewModel model)
-        {
-            return RedirectToAction(nameof(Index), new RouteValueDictionary {
-                { "Options.Search", model.Options.Search }
+            => RedirectToAction(nameof(Index), new RouteValueDictionary
+            {
+                { _optionsSearch, model.Options.Search }
             });
-        }
 
         public async Task<IActionResult> Create(string suggestion, string returnUrl = null)
         {
@@ -123,7 +134,7 @@ namespace OrchardCore.Placements.Controllers
             };
 
             ViewData["ReturnUrl"] = returnUrl;
-            return View("Edit", viewModel);
+            return View(nameof(Edit), viewModel);
         }
 
         public async Task<IActionResult> Edit(string shapeType, string displayType = null, string contentType = null, string contentPart = null, string differentiator = null, string returnUrl = null)
@@ -164,7 +175,7 @@ namespace OrchardCore.Placements.Controllers
             return View(viewModel);
         }
 
-        [HttpPost, ActionName("Edit")]
+        [HttpPost, ActionName(nameof(Edit))]
         public async Task<IActionResult> Edit(EditShapePlacementViewModel viewModel, string submit, string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManagePlacements))
@@ -176,21 +187,22 @@ namespace OrchardCore.Placements.Controllers
 
             if (viewModel.Creating && await _placementsManager.GetShapePlacementsAsync(viewModel.ShapeType) != null)
             {
-                // Prevent overriding existing rules on creation
+                // Prevent overriding existing rules on creation.
                 await _notifier.WarningAsync(H["Placement rules for \"{0}\" already exists. Please edit existing rule.", viewModel.ShapeType]);
                 return View(viewModel);
             }
 
             try
             {
-                IEnumerable<PlacementNode> placementNodes = JsonConvert.DeserializeObject<PlacementNode[]>(viewModel.Nodes) ?? new PlacementNode[0];
+                var placementNodes = JsonConvert.DeserializeObject<PlacementNode[]>(viewModel.Nodes)
+                    ?? Enumerable.Empty<PlacementNode>();
 
-                // Remove empty nodes
+                // Remove empty nodes.
                 placementNodes = placementNodes.Where(node => !IsEmpty(node));
 
                 if (placementNodes.Any())
                 {
-                    // Save
+                    // Save.
                     await _placementsManager.UpdateShapePlacementsAsync(viewModel.ShapeType, placementNodes);
                     viewModel.Creating = false;
 
@@ -203,7 +215,7 @@ namespace OrchardCore.Placements.Controllers
                 }
                 else
                 {
-                    // Remove if empty
+                    // Remove if empty.
                     await _placementsManager.RemoveShapePlacementsAsync(viewModel.ShapeType);
                     await _notifier.SuccessAsync(H["The \"{0}\" placement has been deleted.", viewModel.ShapeType]);
                 }
@@ -228,7 +240,7 @@ namespace OrchardCore.Placements.Controllers
             return View(viewModel);
         }
 
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName(nameof(Delete))]
         public async Task<IActionResult> Delete(string shapeType, string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManagePlacements))
@@ -242,9 +254,9 @@ namespace OrchardCore.Placements.Controllers
             return RedirectToReturnUrlOrIndex(returnUrl);
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.BulkAction")]
-        public async Task<ActionResult> IndexPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
+        public async Task<ActionResult> IndexPost(ContentOptions options, IEnumerable<string> itemIds)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManagePlacements))
             {
@@ -265,7 +277,7 @@ namespace OrchardCore.Placements.Controllers
                         await _notifier.SuccessAsync(H["Placements successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(options.BulkAction.ToString(), "Invalid bulk action.");
                 }
             }
 
@@ -274,7 +286,7 @@ namespace OrchardCore.Placements.Controllers
 
         private IActionResult RedirectToReturnUrlOrIndex(string returnUrl)
         {
-            if ((String.IsNullOrEmpty(returnUrl) == false) && (Url.IsLocalUrl(returnUrl)))
+            if ((string.IsNullOrEmpty(returnUrl) == false) && (Url.IsLocalUrl(returnUrl)))
             {
                 return this.Redirect(returnUrl, true);
             }

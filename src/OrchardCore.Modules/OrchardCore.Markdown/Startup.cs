@@ -24,7 +24,7 @@ namespace OrchardCore.Markdown
 {
     public class Startup : StartupBase
     {
-        private static readonly string DefaultMarkdownExtensions = "nohtml+advanced";
+        private const string DefaultMarkdownExtensions = "nohtml+advanced";
 
         private readonly IShellConfiguration _shellConfiguration;
 
@@ -48,7 +48,7 @@ namespace OrchardCore.Markdown
                 .AddHandler<MarkdownBodyPartHandler>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, MarkdownBodyPartSettingsDisplayDriver>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
             services.AddScoped<IContentPartIndexHandler, MarkdownBodyPartIndexHandler>();
 
             // Markdown Field

@@ -32,7 +32,7 @@ namespace OrchardCore.Users.Liquid
             return new ValueTask<FluidValue>(BooleanValue.False);
         }
 
-        public static ValueTask<FluidValue> UserId(FluidValue input, FilterArguments args, TemplateContext ctx)
+        public static ValueTask<FluidValue> UserId(FluidValue input, FilterArguments _, TemplateContext ctx)
         {
             if (input.ToObjectValue() is LiquidUserAccessor)
             {

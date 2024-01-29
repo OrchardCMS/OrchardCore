@@ -13,7 +13,8 @@
     {
       "name": "feature",
       "enable": [
-        "OrchardCore.Lucene"
+        "OrchardCore.Search",
+        "OrchardCore.Search.Lucene"
       ]
     },
     {
@@ -72,6 +73,12 @@
             "QueryLuceneSearchIndex"
           ]
         }
+      ]
+    },
+    {
+      "name": "lucene-index-rebuild",
+      "Indices": [
+        "Search"
       ]
     }
   ]

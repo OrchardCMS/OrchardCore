@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Media.AmazonS3;
+namespace OrchardCore.Media.AmazonS3;
 
 internal static class Constants
 {

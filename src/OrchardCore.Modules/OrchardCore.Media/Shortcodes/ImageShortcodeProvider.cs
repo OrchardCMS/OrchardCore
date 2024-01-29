@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using OrchardCore.Infrastructure.Html;
@@ -12,9 +13,9 @@ namespace OrchardCore.Media.Shortcodes
 {
     public class ImageShortcodeProvider : IShortcodeProvider
     {
-        private static ValueTask<string> Null => new ValueTask<string>((string)null);
-        private static ValueTask<string> ImageShortcode => new ValueTask<string>("[image]");
-        private static readonly HashSet<string> Shortcodes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        private static ValueTask<string> Null => new((string)null);
+        private static ValueTask<string> ImageShortcode => new("[image]");
+        private static readonly HashSet<string> _shortcodes = new(StringComparer.OrdinalIgnoreCase)
         {
             "image",
             "media" // [media] is a deprecated shortcode, and can be removed in a future release.
@@ -24,31 +25,34 @@ namespace OrchardCore.Media.Shortcodes
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ResourceManagementOptions _options;
+        private readonly IFileVersionProvider _fileVersionProvider;
 
         public ImageShortcodeProvider(
             IMediaFileStore mediaFileStore,
             IHtmlSanitizerService htmlSanitizerService,
             IHttpContextAccessor httpContextAccessor,
-            IOptions<ResourceManagementOptions> options)
+            IOptions<ResourceManagementOptions> options,
+            IFileVersionProvider fileVersionProvider)
         {
             _mediaFileStore = mediaFileStore;
             _htmlSanitizerService = htmlSanitizerService;
             _httpContextAccessor = httpContextAccessor;
             _options = options.Value;
+            _fileVersionProvider = fileVersionProvider;
         }
 
         public ValueTask<string> EvaluateAsync(string identifier, Arguments arguments, string content, Context context)
         {
-            if (!Shortcodes.Contains(identifier))
+            if (!_shortcodes.Contains(identifier))
             {
                 return Null;
             }
 
             // Handle self closing shortcodes.
-            if (String.IsNullOrEmpty(content))
+            if (string.IsNullOrEmpty(content))
             {
                 content = arguments.NamedOrDefault("src");
-                if (String.IsNullOrEmpty(content))
+                if (string.IsNullOrEmpty(content))
                 {
                     // Do not handle the deprecated media shortcode in this edge case.
                     return ImageShortcode;
@@ -60,8 +64,8 @@ namespace OrchardCore.Media.Shortcodes
                 // Serve static files from virtual path.
                 if (content.StartsWith("~/", StringComparison.Ordinal))
                 {
-                    content = _httpContextAccessor.HttpContext.Request.PathBase.Add(content.Substring(1)).Value;
-                    if (!String.IsNullOrEmpty(_options.CdnBaseUrl))
+                    content = _httpContextAccessor.HttpContext.Request.PathBase.Add(content[1..]).Value;
+                    if (!string.IsNullOrEmpty(_options.CdnBaseUrl))
                     {
                         content = _options.CdnBaseUrl + content;
                     }
@@ -82,6 +86,7 @@ namespace OrchardCore.Media.Shortcodes
                 var mode = arguments.Named("mode");
                 var quality = arguments.Named("quality");
                 var format = arguments.Named("format");
+                var appendVersion = arguments.Named("append_version");
                 className = arguments.Named("class");
                 altText = arguments.Named("alt");
 
@@ -108,6 +113,11 @@ namespace OrchardCore.Media.Shortcodes
                 if (format != null)
                 {
                     queryStringParams.Add("format", format);
+                }
+
+                if (appendVersion?.Equals("true", StringComparison.OrdinalIgnoreCase) ?? false)
+                {
+                    content = _fileVersionProvider.AddFileVersionToPath(_httpContextAccessor.HttpContext.Request.PathBase, content);
                 }
 
                 if (className != null)

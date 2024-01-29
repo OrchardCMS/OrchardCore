@@ -14,7 +14,7 @@ namespace OrchardCore.Contents.Sitemaps
 {
     public class ContentTypesSitemapSourceBuilder : SitemapSourceBuilderBase<ContentTypesSitemapSource>
     {
-        private static readonly XNamespace Namespace = "http://www.sitemaps.org/schemas/sitemap/0.9";
+        private static readonly XNamespace _namespace = "http://www.sitemaps.org/schemas/sitemap/0.9";
 
         private readonly IRouteableContentTypeCoordinator _routeableContentTypeCoordinator;
         private readonly IContentManager _contentManager;
@@ -46,7 +46,7 @@ namespace OrchardCore.Contents.Sitemaps
 
             foreach (var contentItem in queryContext.ContentItems)
             {
-                var url = new XElement(Namespace + "url");
+                var url = new XElement(_namespace + "url");
 
                 if (await BuildUrlsetMetadataAsync(source, context, queryContext, contentItem, url))
                 {
@@ -95,7 +95,7 @@ namespace OrchardCore.Contents.Sitemaps
 
             var locValue = await _routeableContentTypeCoordinator.GetRouteAsync(context, contentItem);
 
-            var loc = new XElement(Namespace + "loc");
+            var loc = new XElement(_namespace + "loc");
             loc.Add(locValue);
             url.Add(loc);
             return true;
@@ -106,7 +106,7 @@ namespace OrchardCore.Contents.Sitemaps
             var sitemapMetadataAspect = await _contentManager.PopulateAspectAsync<SitemapMetadataAspect>(contentItem);
 
             var changeFrequencyValue = sitemapMetadataAspect.ChangeFrequency;
-            if (String.IsNullOrEmpty(changeFrequencyValue))
+            if (string.IsNullOrEmpty(changeFrequencyValue))
             {
                 if (source.IndexAll)
                 {
@@ -119,7 +119,7 @@ namespace OrchardCore.Contents.Sitemaps
                 else
                 {
                     var sitemapEntry = source.ContentTypes
-                        .FirstOrDefault(ct => String.Equals(ct.ContentTypeName, contentItem.ContentType));
+                        .FirstOrDefault(ct => string.Equals(ct.ContentTypeName, contentItem.ContentType));
 
                     changeFrequencyValue = sitemapEntry.ChangeFrequency.ToString();
                 }
@@ -139,7 +139,7 @@ namespace OrchardCore.Contents.Sitemaps
                 else
                 {
                     var sitemapEntry = source.ContentTypes
-                        .FirstOrDefault(ct => String.Equals(ct.ContentTypeName, contentItem.ContentType));
+                        .FirstOrDefault(ct => string.Equals(ct.ContentTypeName, contentItem.ContentType));
 
                     priorityIntValue = sitemapEntry.Priority;
                 }
@@ -147,21 +147,21 @@ namespace OrchardCore.Contents.Sitemaps
 
             var priorityValue = (priorityIntValue * 0.1f).Value.ToString(CultureInfo.InvariantCulture);
 
-            var changeFreq = new XElement(Namespace + "changefreq");
+            var changeFreq = new XElement(_namespace + "changefreq");
             changeFreq.Add(changeFrequencyValue.ToLower());
             url.Add(changeFreq);
 
-            var priority = new XElement(Namespace + "priority");
+            var priority = new XElement(_namespace + "priority");
             priority.Add(priorityValue);
             url.Add(priority);
         }
 
-        private void PopulateLastMod(ContentItem contentItem, XElement url)
+        private static void PopulateLastMod(ContentItem contentItem, XElement url)
         {
             // Last modified is not required. Do not include if content item has no modified date.
             if (contentItem.ModifiedUtc.HasValue)
             {
-                var lastMod = new XElement(Namespace + "lastmod");
+                var lastMod = new XElement(_namespace + "lastmod");
                 lastMod.Add(contentItem.ModifiedUtc.GetValueOrDefault().ToString("yyyy-MM-ddTHH:mm:sszzz"));
                 url.Add(lastMod);
             }
