@@ -20,14 +20,14 @@ public class AdminMenu(IStringLocalizer<AdminMenu> localizer) : INavigationProvi
                 .AddClass("elasticsearch").Id("Elasticsearch")
                 .Add(S["Indexing"], S["Indexing"].PrefixPosition(), import => import
                     .Add(S["Elasticsearch Indices"], S["Elasticsearch Indices"].PrefixPosition(), indexes => indexes
-                        .Action("Index", "Admin", new { area = "OrchardCore.Search.Elasticsearch" })
+                        .Action("Index", "Admin", "OrchardCore.Search.Elasticsearch")
                         .Permission(Permissions.ManageElasticIndexes)
                         .LocalNav()
                     )
                 )
                 .Add(S["Queries"], S["Queries"].PrefixPosition(), import => import
                     .Add(S["Run Elasticsearch Query"], S["Run Elasticsearch Query"].PrefixPosition(), queries => queries
-                        .Action("Query", "Admin", new { area = "OrchardCore.Search.Elasticsearch" })
+                        .Action("Query", "Admin", "OrchardCore.Search.Elasticsearch")
                         .Permission(Permissions.ManageElasticIndexes)
                         .LocalNav()
                     )

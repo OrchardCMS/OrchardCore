@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 using OrchardCore.ReCaptcha.Drivers;
@@ -7,6 +8,12 @@ namespace OrchardCore.ReCaptcha
 {
     public class AdminMenu : INavigationProvider
     {
+        private static readonly RouteValueDictionary _routeValues = new()
+        {
+            { "area", "OrchardCore.Settings" },
+            { "groupId", ReCaptchaSettingsDisplayDriver.GroupId },
+        };
+
         protected readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
@@ -26,7 +33,7 @@ namespace OrchardCore.ReCaptcha
                     .Add(S["Settings"], settings => settings
                         .Add(S["reCaptcha"], S["reCaptcha"].PrefixPosition(), reCaptcha => reCaptcha
                             .Permission(Permissions.ManageReCaptchaSettings)
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ReCaptchaSettingsDisplayDriver.GroupId })
+                            .Action("Index", "Admin", _routeValues)
                             .LocalNav()
                         )
                     )

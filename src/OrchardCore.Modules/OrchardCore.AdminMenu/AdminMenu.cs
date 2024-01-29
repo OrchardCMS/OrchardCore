@@ -30,7 +30,7 @@ namespace OrchardCore.AdminMenu
                 .Add(S["Configuration"], configuration => configuration
                     .Add(S["Admin Menus"], S["Admin Menus"].PrefixPosition(), adminMenu => adminMenu
                         .Permission(Permissions.ManageAdminMenu)
-                        .Action("List", "Menu", new { area = "OrchardCore.AdminMenu" })
+                        .Action("List", "Menu", "OrchardCore.AdminMenu")
                         .LocalNav()
                     )
                 );

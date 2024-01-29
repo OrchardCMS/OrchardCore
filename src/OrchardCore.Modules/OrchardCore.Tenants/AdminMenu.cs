@@ -34,7 +34,7 @@ namespace OrchardCore.Tenants
                     .AddClass("menu-multitenancy")
                     .Id("multitenancy")
                     .Add(S["Tenants"], S["Tenants"].PrefixPosition(), tenant => tenant
-                        .Action("Index", "Admin", new { area = "OrchardCore.Tenants" })
+                        .Action("Index", "Admin", "OrchardCore.Tenants")
                         .Permission(Permissions.ManageTenants)
                         .LocalNav()
                     ),

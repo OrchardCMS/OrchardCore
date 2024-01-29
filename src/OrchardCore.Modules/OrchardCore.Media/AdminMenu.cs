@@ -26,7 +26,7 @@ namespace OrchardCore.Media
                     .Id("media")
                     .Add(S["Media Library"], S["Media Library"].PrefixPosition(), media => media
                         .Permission(Permissions.ManageMedia)
-                        .Action("Index", "Admin", new { area = "OrchardCore.Media" })
+                        .Action("Index", "Admin", "OrchardCore.Media")
                         .LocalNav()
                     )
                 );
@@ -34,12 +34,12 @@ namespace OrchardCore.Media
             builder.Add(S["Configuration"], configuration => configuration
                 .Add(S["Media"], S["Media"].PrefixPosition(), media => media
                     .Add(S["Media Options"], S["Media Options"].PrefixPosition(), options => options
-                        .Action("Options", "Admin", new { area = "OrchardCore.Media" })
+                        .Action("Options", "Admin", "OrchardCore.Media")
                         .Permission(Permissions.ViewMediaOptions)
                         .LocalNav()
                     )
                     .Add(S["Media Profiles"], S["Media Profiles"].PrefixPosition(), mediaProfiles => mediaProfiles
-                        .Action("Index", "MediaProfiles", new { area = "OrchardCore.Media" })
+                        .Action("Index", "MediaProfiles", "OrchardCore.Media")
                         .Permission(Permissions.ManageMediaProfiles)
                         .LocalNav()
                     )
@@ -69,7 +69,7 @@ namespace OrchardCore.Media
             builder.Add(S["Configuration"], configuration => configuration
                 .Add(S["Media"], S["Media"].PrefixPosition(), media => media
                     .Add(S["Media Cache"], S["Media Cache"].PrefixPosition(), cache => cache
-                        .Action("Index", "MediaCache", new { area = "OrchardCore.Media" })
+                        .Action("Index", "MediaCache", "OrchardCore.Media")
                         .Permission(MediaCachePermissions.ManageAssetCache)
                         .LocalNav())
             ));

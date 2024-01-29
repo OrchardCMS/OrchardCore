@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -40,7 +39,7 @@ namespace OrchardCore.AdminMenu.Services
         // todo: use a public constant for the string
         public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!string.Equals(name, AdminSettings.AdminMenuId))
+            if (!string.Equals(AdminSettings.AdminMenuId, name))
             {
                 return;
             }

@@ -18,6 +18,19 @@ namespace OrchardCore.Contents
 {
     public class AdminMenu : INavigationProvider
     {
+        private static readonly RouteValueDictionary _routeValues = new()
+        {
+            { "area", "OrchardCore.Contents" },
+            { "contentTypeId", string.Empty },
+        };
+
+        private static readonly RouteValueDictionary _adminListRouteValues = new()
+        {
+            { "area", "OrchardCore.Contents" },
+            { "controller", "Admin" },
+            { "Action", "List" },
+        };
+
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContentManager _contentManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -65,7 +78,7 @@ namespace OrchardCore.Contents
                         contentItems.Permission(Permissions.ListContent);
                     }
 
-                    contentItems.Action(nameof(AdminController.List), typeof(AdminController).ControllerName(), new { area = "OrchardCore.Contents", contentTypeId = "" });
+                    contentItems.Action(nameof(AdminController.List), typeof(AdminController).ControllerName(), _routeValues);
                     contentItems.LocalNav();
                 });
             });
@@ -82,12 +95,7 @@ namespace OrchardCore.Contents
                         var ci = await _contentManager.NewAsync(contentTypeDefinition.Name);
                         var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci);
                         var createRouteValues = cim.CreateRouteValues;
-                        createRouteValues.Add("returnUrl", _linkGenerator.GetPathByRouteValues(context, "", new
-                        {
-                            area = "OrchardCore.Contents",
-                            controller = "Admin",
-                            action = "List"
-                        }));
+                        createRouteValues.Add("returnUrl", _linkGenerator.GetPathByRouteValues(context, string.Empty, _adminListRouteValues));
 
                         if (createRouteValues.Count > 0)
                         {

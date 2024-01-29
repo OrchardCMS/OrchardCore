@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -8,6 +9,12 @@ namespace OrchardCore.Google
     [Feature(GoogleConstants.Features.GoogleAuthentication)]
     public class GoogleAuthenticationAdminMenu : INavigationProvider
     {
+        private static readonly RouteValueDictionary _routeValues = new()
+        {
+            { "area", "OrchardCore.Settings" },
+            { "groupId", GoogleConstants.Features.GoogleAuthentication },
+        };
+
         protected readonly IStringLocalizer S;
 
         public GoogleAuthenticationAdminMenu(IStringLocalizer<GoogleAuthenticationAdminMenu> localizer)
@@ -28,7 +35,7 @@ namespace OrchardCore.Google
                     .Add(S["Google"], S["Google"].PrefixPosition(), google => google
                         .AddClass("google")
                         .Id("google")
-                        .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GoogleConstants.Features.GoogleAuthentication })
+                        .Action("Index", "Admin", _routeValues)
                         .Permission(Permissions.ManageGoogleAuthentication)
                         .LocalNav()
                     )
@@ -42,6 +49,12 @@ namespace OrchardCore.Google
     [Feature(GoogleConstants.Features.GoogleAnalytics)]
     public class GoogleAnalyticsAdminMenu : INavigationProvider
     {
+        private static readonly RouteValueDictionary _routeValues = new()
+        {
+            { "area", "OrchardCore.Settings" },
+            { "groupId", GoogleConstants.Features.GoogleAnalytics },
+        };
+
         protected readonly IStringLocalizer S;
 
         public GoogleAnalyticsAdminMenu(IStringLocalizer<GoogleAnalyticsAdminMenu> localizer)
@@ -61,7 +74,7 @@ namespace OrchardCore.Google
                     .Add(S["Settings"], settings => settings
                         .Add(S["Google Analytics"], S["Google Analytics"].PrefixPosition(), google => google
                             .AddClass("googleAnalytics").Id("googleAnalytics")
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GoogleConstants.Features.GoogleAnalytics })
+                            .Action("Index", "Admin", _routeValues)
                             .Permission(Permissions.ManageGoogleAnalytics)
                             .LocalNav()
                         )
@@ -75,6 +88,12 @@ namespace OrchardCore.Google
     [Feature(GoogleConstants.Features.GoogleTagManager)]
     public class GoogleTagManagerAdminMenu : INavigationProvider
     {
+        private static readonly RouteValueDictionary _routeValues = new()
+        {
+            { "area", "OrchardCore.Settings" },
+            { "groupId", GoogleConstants.Features.GoogleTagManager },
+        };
+
         protected readonly IStringLocalizer S;
 
         public GoogleTagManagerAdminMenu(IStringLocalizer<GoogleTagManagerAdminMenu> localizer)
@@ -95,7 +114,7 @@ namespace OrchardCore.Google
                         .Add(S["Google Tag Manager"], S["Google Tag Manager"].PrefixPosition(), google => google
                             .AddClass("googleTagManager")
                             .Id("googleTagManager")
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GoogleConstants.Features.GoogleTagManager })
+                            .Action("Index", "Admin", _routeValues)
                             .Permission(Permissions.ManageGoogleTagManager)
                             .LocalNav()
                         )

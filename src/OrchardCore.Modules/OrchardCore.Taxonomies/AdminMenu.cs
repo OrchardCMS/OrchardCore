@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 using OrchardCore.Taxonomies.Settings;
@@ -7,6 +8,12 @@ namespace OrchardCore.Taxonomies
 {
     public class AdminMenu : INavigationProvider
     {
+        private static readonly RouteValueDictionary _routeValues = new()
+        {
+            { "area", "OrchardCore.Settings" },
+            { "groupId", TaxonomyContentsAdminListSettingsDisplayDriver.GroupId },
+        };
+
         protected readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
@@ -28,7 +35,7 @@ namespace OrchardCore.Taxonomies
                             .AddClass("taxonomyfilters")
                             .Id("taxonomyfilters")
                             .Permission(Permissions.ManageTaxonomies)
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = TaxonomyContentsAdminListSettingsDisplayDriver.GroupId })
+                            .Action("Index", "Admin", _routeValues)
                             .LocalNav()
                         )
                     )

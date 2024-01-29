@@ -23,7 +23,7 @@ namespace OrchardCore.Placements
             builder
                 .Add(S["Design"], design => design
                     .Add(S["Placements"], S["Placements"].PrefixPosition(), import => import
-                        .Action("Index", "Admin", new { area = "OrchardCore.Placements" })
+                        .Action("Index", "Admin", "OrchardCore.Placements")
                         .Permission(Permissions.ManagePlacements)
                         .LocalNav()
                     )

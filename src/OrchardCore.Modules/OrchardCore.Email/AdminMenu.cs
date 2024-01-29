@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Email.Drivers;
 using OrchardCore.Navigation;
@@ -7,6 +8,12 @@ namespace OrchardCore.Email
 {
     public class AdminMenu : INavigationProvider
     {
+        private static readonly RouteValueDictionary _routeValues = new()
+        {
+            { "area", "OrchardCore.Settings" },
+            { "groupId", SmtpSettingsDisplayDriver.GroupId },
+        };
+
         protected readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
@@ -26,7 +33,7 @@ namespace OrchardCore.Email
                     .Add(S["Settings"], settings => settings
                        .Add(S["Email"], S["Email"].PrefixPosition(), entry => entry
                           .AddClass("email").Id("email")
-                          .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SmtpSettingsDisplayDriver.GroupId })
+                          .Action("Index", "Admin", _routeValues)
                           .Permission(Permissions.ManageEmailSettings)
                           .LocalNav()
                         )

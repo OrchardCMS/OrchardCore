@@ -26,7 +26,7 @@ namespace OrchardCore.Recipes
                     .Add(S["Recipes"], S["Recipes"].PrefixPosition(), recipes => recipes
                         .AddClass("recipes").Id("recipes")
                         .Permission(StandardPermissions.SiteOwner)
-                        .Action("Index", "Admin", new { area = "OrchardCore.Recipes" })
+                        .Action("Index", "Admin", "OrchardCore.Recipes")
                         .LocalNav()
                     )
                 );

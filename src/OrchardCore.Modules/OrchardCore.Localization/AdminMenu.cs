@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Localization.Drivers;
 using OrchardCore.Navigation;
@@ -10,6 +11,12 @@ namespace OrchardCore.Localization
     /// </summary>
     public class AdminMenu : INavigationProvider
     {
+        private static readonly RouteValueDictionary _routeValues = new()
+        {
+            { "area", "OrchardCore.Settings" },
+            { "groupId", LocalizationSettingsDisplayDriver.GroupId },
+        };
+
         protected readonly IStringLocalizer S;
 
         /// <summary>
@@ -36,8 +43,9 @@ namespace OrchardCore.Localization
                             .AddClass("localization")
                             .Id("localization")
                             .Add(S["Cultures"], S["Cultures"].PrefixPosition(), cultures => cultures
-                                .AddClass("cultures").Id("cultures")
-                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LocalizationSettingsDisplayDriver.GroupId })
+                                .AddClass("cultures")
+                                .Id("cultures")
+                                .Action("Index", "Admin", _routeValues)
                                 .Permission(Permissions.ManageCultures)
                                 .LocalNav()
                             )

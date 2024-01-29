@@ -25,7 +25,7 @@ namespace OrchardCore.Queries
                     .AddClass("search").Id("search")
                     .Add(S["Queries"], S["Queries"].PrefixPosition(), contentItems => contentItems
                         .Add(S["All queries"], "1", queries => queries
-                        .Action("Index", "Admin", new { area = "OrchardCore.Queries" })
+                        .Action("Index", "Admin", "OrchardCore.Queries")
                         .Permission(Permissions.ManageQueries)
                         .LocalNav()
                     )

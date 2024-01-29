@@ -22,8 +22,8 @@ namespace OrchardCore.Apis.GraphQL
 
             builder
                 .Add(S["Configuration"], configuration => configuration
-                    .Add(S["GraphiQL"], S["GraphiQL"].PrefixPosition(), graphiql => graphiql
-                        .Action("Index", "Admin", new { area = "OrchardCore.Apis.GraphQL" })
+                    .Add(S["GraphiQL"], S["GraphiQL"].PrefixPosition(), graphiQL => graphiQL
+                        .Action("Index", "Admin", "OrchardCore.Apis.GraphQL")
                         .Permission(Permissions.ExecuteGraphQL)
                         .LocalNav()
                     )

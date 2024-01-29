@@ -1,4 +1,6 @@
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.CustomSettings.Services;
 using OrchardCore.Mvc.Utilities;
@@ -10,6 +12,7 @@ namespace OrchardCore.CustomSettings
     {
         private readonly CustomSettingsService _customSettingsService;
         protected readonly IStringLocalizer S;
+        private static readonly ConcurrentDictionary<string, RouteValueDictionary> _routeValues = [];
 
         public AdminMenu(
             IStringLocalizer<AdminMenu> localizer,
@@ -28,11 +31,22 @@ namespace OrchardCore.CustomSettings
 
             foreach (var type in await _customSettingsService.GetAllSettingsTypesAsync())
             {
+                if (!_routeValues.TryGetValue(type.Name, out var routeValues))
+                {
+                    routeValues = new RouteValueDictionary()
+                    {
+                        { "area", "OrchardCore.Settings" },
+                        { "groupId", type.Name },
+                    };
+
+                    _routeValues.TryAdd(type.Name, routeValues);
+                }
+
                 builder
                     .Add(S["Configuration"], configuration => configuration
                         .Add(S["Settings"], settings => settings
                             .Add(new LocalizedString(type.DisplayName, type.DisplayName), type.DisplayName.PrefixPosition(), layers => layers
-                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = type.Name })
+                                .Action("Index", "Admin", routeValues)
                                 .AddClass(type.Name.HtmlClassify())
                                 .Id(type.Name.HtmlClassify())
                                 .Permission(Permissions.CreatePermissionForType(type))

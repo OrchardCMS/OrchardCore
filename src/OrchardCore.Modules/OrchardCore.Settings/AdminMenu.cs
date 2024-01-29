@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 using OrchardCore.Settings.Drivers;
@@ -7,6 +8,12 @@ namespace OrchardCore.Settings
 {
     public class AdminMenu : INavigationProvider
     {
+        private static readonly RouteValueDictionary _routeValues = new()
+        {
+            { "area", "OrchardCore.Settings" },
+            { "groupId", DefaultSiteSettingsDisplayDriver.GroupId },
+        };
+
         protected readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
@@ -27,8 +34,9 @@ namespace OrchardCore.Settings
                     .Id("configuration")
                     .Add(S["Settings"], "1", settings => settings
                         .Add(S["General"], "1", entry => entry
-                            .AddClass("general").Id("general")
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = DefaultSiteSettingsDisplayDriver.GroupId })
+                            .AddClass("general")
+                            .Id("general")
+                            .Action("Index", "Admin", _routeValues)
                             .Permission(Permissions.ManageGroupSettings)
                             .LocalNav()
                         ),
