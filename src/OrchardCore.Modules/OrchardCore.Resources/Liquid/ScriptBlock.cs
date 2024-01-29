@@ -15,7 +15,7 @@ namespace OrchardCore.Resources.Liquid
 {
     public class ScriptBlock
     {
-        private static readonly char[] _separators = new[] { ',', ' ' };
+        private static readonly char[] _separators = [',', ' '];
 
         public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {

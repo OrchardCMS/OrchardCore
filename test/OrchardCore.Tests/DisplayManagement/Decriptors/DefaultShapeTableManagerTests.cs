@@ -96,7 +96,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 Features =
                     new List<IFeatureInfo>()
                     {
-                        { new FeatureInfo(name, name, 0, string.Empty, string.Empty, this, new string[] { baseTheme.Id }, false, false, false) }
+                        { new FeatureInfo(name, name, 0, string.Empty, string.Empty, this, [baseTheme.Id], false, false, false) }
                     };
 
                 Id = name;

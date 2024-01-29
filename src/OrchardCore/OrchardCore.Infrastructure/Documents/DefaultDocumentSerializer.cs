@@ -49,7 +49,7 @@ namespace OrchardCore.Documents
             return Task.FromResult(document);
         }
 
-        private static readonly byte[] _gZipHeaderBytes = { 0x1f, 0x8b };
+        private static readonly byte[] _gZipHeaderBytes = [0x1f, 0x8b];
 
         internal static bool IsCompressed(byte[] data)
         {

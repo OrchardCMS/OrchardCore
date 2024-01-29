@@ -101,7 +101,7 @@ namespace OrchardCore.Localization.PortableObject
                 }
                 else
                 {
-                    argumentsWithCount = new object[] { pluralArgument.Count };
+                    argumentsWithCount = [pluralArgument.Count];
                 }
 
                 translation ??= GetTranslation(pluralArgument.Forms, CultureInfo.CurrentUICulture, pluralArgument.Count);

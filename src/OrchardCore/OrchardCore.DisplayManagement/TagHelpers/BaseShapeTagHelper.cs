@@ -23,7 +23,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
             "cache-sliding-duration"
         ];
 
-        private static readonly char[] _separators = { ',', ' ' };
+        private static readonly char[] _separators = [',', ' '];
 
         protected IShapeFactory _shapeFactory;
         protected IDisplayHelper _displayHelper;

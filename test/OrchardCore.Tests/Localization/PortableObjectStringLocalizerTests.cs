@@ -248,7 +248,7 @@ namespace OrchardCore.Tests.Localization
             var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, true, _logger.Object);
             using (CultureScope.Create("en"))
             {
-                var translation = localizer.Plural(count, new[] { "míč", "{0} míče", "{0} míčů" }, count);
+                var translation = localizer.Plural(count, ["míč", "{0} míče", "{0} míčů"], count);
 
                 Assert.Equal(expected, translation);
             }
@@ -267,7 +267,7 @@ namespace OrchardCore.Tests.Localization
             var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, true, _logger.Object);
             using (CultureScope.Create("en"))
             {
-                var translation = localizer.Plural(count, new[] { "míč", "{0} míče", "{0} míčů" }, count);
+                var translation = localizer.Plural(count, ["míč", "{0} míče", "{0} míčů"], count);
 
                 Assert.Equal(expected, translation);
             }

@@ -13,7 +13,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
     public class ShapeTag
     {
-        private static readonly char[] _separators = { ',', ' ' };
+        private static readonly char[] _separators = [',', ' '];
 
         public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {

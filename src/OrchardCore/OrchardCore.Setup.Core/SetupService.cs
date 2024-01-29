@@ -120,12 +120,12 @@ namespace OrchardCore.Setup.Services
 
             // Features to enable for Setup.
             string[] coreFeatures =
-            {
+            [
                 _applicationName,
                 "OrchardCore.Features",
                 "OrchardCore.Scripting",
                 "OrchardCore.Recipes"
-            };
+            ];
 
             context.EnabledFeatures = coreFeatures.Union(context.EnabledFeatures ?? []).Distinct().ToList();
 

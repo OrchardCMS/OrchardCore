@@ -97,7 +97,7 @@ namespace OrchardCore.ContentLocalization.Services
                 }
                 else
                 {
-                    localizations = ImmutableList.Create(entry);
+                    localizations = [entry];
                 }
 
                 _localizationSets = _localizationSets.SetItem(entry.LocalizationSet, localizations);

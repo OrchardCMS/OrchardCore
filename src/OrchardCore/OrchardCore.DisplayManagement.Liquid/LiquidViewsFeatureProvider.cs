@@ -35,7 +35,7 @@ namespace OrchardCore.DisplayManagement.Liquid
                     _sharedPaths = [];
 
                     var filePaths = templateOptions.Value.FileProvider.GetViewFilePaths(
-                        Application.ModulesPath, new[] { LiquidViewTemplate.ViewExtension },
+                        Application.ModulesPath, [LiquidViewTemplate.ViewExtension],
                         LiquidViewTemplate.ViewsFolder);
 
                     _sharedPaths.AddRange(filePaths.Select(p => '/' + p));

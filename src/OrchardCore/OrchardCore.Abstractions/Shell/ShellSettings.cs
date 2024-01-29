@@ -23,7 +23,7 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// The 'RequestUrlHost' string separators allowing to provide multiple hosts.
         /// </summary>
-        public static readonly char[] HostSeparators = new[] { ',', ' ' };
+        public static readonly char[] HostSeparators = [',', ' '];
 
         private readonly ShellConfiguration _settings;
         private readonly ShellConfiguration _configuration;
