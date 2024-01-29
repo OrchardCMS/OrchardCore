@@ -128,7 +128,7 @@ public class AzureEmailDeliveryService : IEmailDeliveryService
         {
             result = EmailResult.Failed(S["An error occurred while sending an email: '{0}'", ex.Message]);
 
-            _logger.LogError(ex, message: ex.Message);
+            _logger.LogError(ex, "Error while sending an email '{message}'.", message);
         }
 
         return result;
