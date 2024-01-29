@@ -70,8 +70,8 @@ namespace OrchardCore.Navigation
 
         public NavigationItemBuilder RemoveClass(string className)
         {
-            if (_item.Classes.Contains(className))
-                _item.Classes.Remove(className);
+            _item.Classes.Remove(className);
+
             return this;
         }
 

@@ -37,13 +37,9 @@ namespace OrchardCore.Shortcodes.Services
             }
 
             // Check if a shortcode template is recursively called.
-            if (_identifiers.Contains(identifier))
+            if (!_identifiers.Add(identifier))
             {
                 return null;
-            }
-            else
-            {
-                _identifiers.Add(identifier);
             }
 
             var model = new ShortcodeViewModel

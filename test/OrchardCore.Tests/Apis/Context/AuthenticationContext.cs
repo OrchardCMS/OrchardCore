@@ -66,7 +66,7 @@ namespace OrchardCore.Tests.Apis.Context
             return Task.CompletedTask;
         }
 
-        private void GetGrantingNamesInternal(Permission permission, HashSet<string> stack)
+        private static void GetGrantingNamesInternal(Permission permission, HashSet<string> stack)
         {
             // The given name is tested
             stack.Add(permission.Name);

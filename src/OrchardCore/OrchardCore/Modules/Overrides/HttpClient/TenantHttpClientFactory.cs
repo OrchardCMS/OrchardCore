@@ -37,7 +37,7 @@ namespace Microsoft.Extensions.Http
         // 10 distinct named clients * expiry time >= 1s = approximate cleanup queue of 100 items
         //
         // This seems frequent enough. We also rely on GC occurring to actually trigger disposal.
-        private readonly TimeSpan DefaultCleanupInterval = TimeSpan.FromSeconds(10);
+        private readonly TimeSpan _defaultCleanupInterval = TimeSpan.FromSeconds(10);
 
         // We use a new timer for each regular cleanup cycle, protected with a lock. Note that this scheme
         // doesn't give us anything to dispose, as the timer is started/stopped as needed.
@@ -252,7 +252,7 @@ namespace Microsoft.Extensions.Http
         {
             lock (_cleanupTimerLock)
             {
-                _cleanupTimer ??= NonCapturingTimer.Create(_cleanupCallback, this, DefaultCleanupInterval, Timeout.InfiniteTimeSpan);
+                _cleanupTimer ??= NonCapturingTimer.Create(_cleanupCallback, this, _defaultCleanupInterval, Timeout.InfiniteTimeSpan);
             }
         }
 

@@ -18,7 +18,7 @@ namespace OrchardCore.Taxonomies.Drivers
 {
     public class TaxonomyPartDisplayDriver : ContentPartDisplayDriver<TaxonomyPart>
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public TaxonomyPartDisplayDriver(IStringLocalizer<TaxonomyPartDisplayDriver> stringLocalizer)
         {

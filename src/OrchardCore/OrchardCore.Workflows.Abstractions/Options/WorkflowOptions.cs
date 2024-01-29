@@ -22,11 +22,11 @@ namespace OrchardCore.Workflows.Options
 
         public WorkflowOptions RegisterActivity(Type activityType, Type driverType = null)
         {
-            if (ActivityDictionary.ContainsKey(activityType))
+            if (ActivityDictionary.TryGetValue(activityType, out var value))
             {
                 if (driverType != null)
                 {
-                    ActivityDictionary[activityType].DriverTypes.Add(driverType);
+                    value.DriverTypes.Add(driverType);
                 }
             }
             else

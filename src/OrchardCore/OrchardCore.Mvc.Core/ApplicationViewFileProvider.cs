@@ -15,6 +15,8 @@ namespace OrchardCore.Mvc
     /// </summary>
     public class ApplicationViewFileProvider : IFileProvider
     {
+        private static readonly char[] _separators = ['/'];
+
         private readonly IApplicationContext _applicationContext;
 
         public ApplicationViewFileProvider(IApplicationContext applicationContext)
@@ -52,7 +54,7 @@ namespace OrchardCore.Mvc
             else if (folder.StartsWith(Application.ModuleRoot, StringComparison.Ordinal))
             {
                 // Check for a "Pages" or a "Views" segment.
-                var tokenizer = new StringTokenizer(folder, new char[] { '/' });
+                var tokenizer = new StringTokenizer(folder, _separators);
                 if (tokenizer.Any(s => s == "Pages" || s == "Views"))
                 {
                     // Resolve the subpath relative to the application's module root.
