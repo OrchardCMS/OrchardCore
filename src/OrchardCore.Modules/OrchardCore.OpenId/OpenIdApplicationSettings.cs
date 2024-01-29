@@ -223,7 +223,7 @@ namespace OrchardCore.OpenId
             }
 
             descriptor.PostLogoutRedirectUris.Clear();
-            foreach (Uri uri in
+            foreach (var uri in
                 (from uri in model.PostLogoutRedirectUris?.Split(new[] { " ", "," }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
                  select new Uri(uri, UriKind.Absolute)))
             {
@@ -231,7 +231,7 @@ namespace OrchardCore.OpenId
             }
 
             descriptor.RedirectUris.Clear();
-            foreach (Uri uri in
+            foreach (var uri in
                (from uri in model.RedirectUris?.Split(new[] { " ", "," }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
                 select new Uri(uri, UriKind.Absolute)))
             {

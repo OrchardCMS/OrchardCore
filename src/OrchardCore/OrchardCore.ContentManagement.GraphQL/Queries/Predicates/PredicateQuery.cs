@@ -77,7 +77,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
 
             // Check if there's an alias for the full path
             // aliasPart.Alias -> AliasFieldIndex.Alias
-            if (_aliases.TryGetValue(propertyPath, out string alias))
+            if (_aliases.TryGetValue(propertyPath, out var alias))
             {
                 _usedAliases.Add(alias);
                 return;

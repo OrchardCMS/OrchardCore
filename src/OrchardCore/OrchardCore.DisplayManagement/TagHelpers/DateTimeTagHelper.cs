@@ -31,7 +31,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
             dynamic shape = await _shapeFactory.CreateAsync(shapeType);
             shape.Utc = Utc;
             shape.Format = Format;
-            
+
             output.Content.SetHtmlContent(await _displayHelper.ShapeExecuteAsync(shape));
 
             // We don't want any encapsulating tag around the shape
