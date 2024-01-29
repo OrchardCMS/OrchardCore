@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.22.11",
-    "@babel/preset-env": "^7.22.10",
+    "@babel/preset-env": "^7.23.9",
     "@babel/preset-flow": "7.22.5",
     "all-contributors-cli": "^6.26.1",
     "child_process": "^1.0.2",
