@@ -48,7 +48,7 @@ namespace OrchardCore.Environment.Commands
             return _commandHandlers.SelectMany(x => _builder.Build(x.GetType()).Commands);
         }
 
-        private IEnumerable<Match> MatchCommands(CommandParameters parameters)
+        private List<Match> MatchCommands(CommandParameters parameters)
         {
             // Commands are matched with arguments. first argument
             // is the command others are arguments to the command.
