@@ -27,9 +27,9 @@ namespace OrchardCore.OpenId.ViewModels
 
         public string ClientSecret { get; set; }
 
-        public List<RoleEntry> RoleEntries { get; } = new List<RoleEntry>();
+        public List<RoleEntry> RoleEntries { get; } = [];
 
-        public List<ScopeEntry> ScopeEntries { get; } = new List<ScopeEntry>();
+        public List<ScopeEntry> ScopeEntries { get; } = [];
 
         public bool AllowPasswordFlow { get; set; }
 

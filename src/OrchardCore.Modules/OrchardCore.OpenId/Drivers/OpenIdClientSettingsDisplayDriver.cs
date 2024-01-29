@@ -168,7 +168,7 @@ namespace OrchardCore.OpenId.Drivers
                 try
                 {
                     settings.Parameters = string.IsNullOrWhiteSpace(model.Parameters)
-                        ? Array.Empty<ParameterSetting>()
+                        ? []
                         : JsonConvert.DeserializeObject<ParameterSetting[]>(model.Parameters);
                 }
                 catch

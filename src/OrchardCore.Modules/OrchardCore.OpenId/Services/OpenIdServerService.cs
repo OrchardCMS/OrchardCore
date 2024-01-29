@@ -288,7 +288,7 @@ namespace OrchardCore.OpenId.Services
 
                 if (certificate != null)
                 {
-                    return ImmutableArray.Create<SecurityKey>(new X509SecurityKey(certificate));
+                    return [new X509SecurityKey(certificate)];
                 }
 
                 _logger.LogWarning("The encryption certificate '{Thumbprint}' could not be found in the " +
@@ -333,12 +333,15 @@ namespace OrchardCore.OpenId.Services
 
             // If none of the previous attempts succeeded, try to generate an ephemeral RSA key
             // and add it in the tenant memory cache so that future calls to this method return it.
-            return ImmutableArray.Create<SecurityKey>(_memoryCache.GetOrCreate("05A24221-8C15-4E58-A0A7-56EC3E42E783", entry =>
-            {
-                entry.SetPriority(CacheItemPriority.NeverRemove);
+            return
+            [
+                _memoryCache.GetOrCreate("05A24221-8C15-4E58-A0A7-56EC3E42E783", entry =>
+                {
+                    entry.SetPriority(CacheItemPriority.NeverRemove);
 
-                return new RsaSecurityKey(GenerateRsaSecurityKey(size: 2048));
-            }));
+                    return new RsaSecurityKey(GenerateRsaSecurityKey(size: 2048));
+                }),
+            ];
         }
 
         public async Task<ImmutableArray<SecurityKey>> GetSigningKeysAsync()
@@ -357,7 +360,7 @@ namespace OrchardCore.OpenId.Services
 
                 if (certificate != null)
                 {
-                    return ImmutableArray.Create<SecurityKey>(new X509SecurityKey(certificate));
+                    return [new X509SecurityKey(certificate)];
                 }
 
                 _logger.LogWarning("The signing certificate '{Thumbprint}' could not be found in the " +
@@ -402,12 +405,15 @@ namespace OrchardCore.OpenId.Services
 
             // If none of the previous attempts succeeded, try to generate an ephemeral RSA key
             // and add it in the tenant memory cache so that future calls to this method return it.
-            return ImmutableArray.Create<SecurityKey>(_memoryCache.GetOrCreate("44788774-20E3-4499-86F0-AB7CE2DF97F6", entry =>
-            {
-                entry.SetPriority(CacheItemPriority.NeverRemove);
+            return
+            [
+                _memoryCache.GetOrCreate("44788774-20E3-4499-86F0-AB7CE2DF97F6", entry =>
+                {
+                    entry.SetPriority(CacheItemPriority.NeverRemove);
 
-                return new RsaSecurityKey(GenerateRsaSecurityKey(size: 2048));
-            }));
+                    return new RsaSecurityKey(GenerateRsaSecurityKey(size: 2048));
+                }),
+            ];
         }
 
         public async Task PruneManagedCertificatesAsync()
@@ -431,7 +437,7 @@ namespace OrchardCore.OpenId.Services
                     }
                     catch (Exception exception)
                     {
-                        exceptions ??= new List<Exception>();
+                        exceptions ??= [];
 
                         exceptions.Add(exception);
                     }

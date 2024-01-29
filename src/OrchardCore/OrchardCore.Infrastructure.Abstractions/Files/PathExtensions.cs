@@ -7,7 +7,7 @@ namespace System.IO
 {
     public class PathExtensions
     {
-        public static readonly char[] PathSeparators = new[] { '/', '\\' };
+        public static readonly char[] PathSeparators = ['/', '\\'];
         private const string CurrentDirectoryToken = ".";
         private const string ParentDirectoryToken = "..";
 

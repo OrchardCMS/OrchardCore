@@ -33,7 +33,7 @@ namespace OrchardCore.ContentFields.Settings
                 model.Source = GetSource(settings);
                 model.DisplayedContentTypes = settings.DisplayedContentTypes;
                 model.TitlePattern = settings.TitlePattern;
-                model.Stereotypes = string.Join(',', settings.DisplayedStereotypes ?? Array.Empty<string>());
+                model.Stereotypes = string.Join(',', settings.DisplayedStereotypes ?? []);
             }).Location("Content");
         }
 

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
@@ -99,7 +98,7 @@ namespace OrchardCore.ContentLocalization.Services
                 }
             }
 
-            return Enumerable.Empty<LocalizationEntry>();
+            return [];
         }
 
         public void SetContentCulturePickerCookie(string targetCulture)

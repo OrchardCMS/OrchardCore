@@ -54,7 +54,7 @@ namespace OrchardCore.Environment.Commands
                 return attributes.Cast<CommandNameAttribute>().Single().Commands;
             }
 
-            return new[] { methodInfo.Name };
+            return [methodInfo.Name];
         }
     }
 }

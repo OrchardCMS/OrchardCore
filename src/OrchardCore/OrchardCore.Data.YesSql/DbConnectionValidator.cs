@@ -24,7 +24,7 @@ namespace OrchardCore.Data;
 
 public class DbConnectionValidator : IDbConnectionValidator
 {
-    private static readonly string[] _requiredDocumentTableColumns = new[] { "Id", "Type", "Content", "Version" };
+    private static readonly string[] _requiredDocumentTableColumns = ["Id", "Type", "Content", "Version"];
     private static readonly string _shellDescriptorTypeColumnValue = new TypeService()[typeof(ShellDescriptor)];
 
     private readonly IEnumerable<DatabaseProvider> _databaseProviders;

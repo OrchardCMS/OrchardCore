@@ -1,7 +1,6 @@
 using OrchardCore.FileStorage;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Media.Core;
-using OrchardCore.Media.Events;
 using OrchardCore.Media.Shortcodes;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Shortcodes.Services;
@@ -31,8 +30,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
                 Mock.Of<IFileStore>(),
                 "/media",
                 cdnBaseUrl,
-                Enumerable.Empty<IMediaEventHandler>(),
-                Enumerable.Empty<IMediaCreatingEventHandler>(),
+                [],
+                [],
                 Mock.Of<ILogger<DefaultMediaFileStore>>());
 
             var sanitizer = new HtmlSanitizerService(Options.Create(new HtmlSanitizerOptions()));
@@ -45,7 +44,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
 
             var assetUrlProvider = new AssetUrlShortcodeProvider(fileStore, httpContextAccessor, options);
 
-            var processor = new ShortcodeService(new IShortcodeProvider[] { assetUrlProvider }, Enumerable.Empty<IShortcodeContextProvider>());
+            var processor = new ShortcodeService(new IShortcodeProvider[] { assetUrlProvider }, []);
 
             var processed = await processor.ProcessAsync(text);
             // The markdown part sanitizes after processing.

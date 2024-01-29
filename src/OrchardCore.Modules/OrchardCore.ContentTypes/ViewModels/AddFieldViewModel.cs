@@ -9,7 +9,7 @@ namespace OrchardCore.ContentTypes.ViewModels
     {
         public AddFieldViewModel()
         {
-            Fields = new List<string>();
+            Fields = [];
         }
 
         /// <summary>

@@ -13,7 +13,7 @@ namespace OrchardCore.ResourceManagement
 {
     public class ResourceManager : IResourceManager
     {
-        private readonly Dictionary<ResourceTypeName, RequireSettings> _required = new();
+        private readonly Dictionary<ResourceTypeName, RequireSettings> _required = [];
         private readonly Dictionary<string, ResourceRequiredContext[]> _builtResources;
         private readonly IFileVersionProvider _fileVersionProvider;
         private ResourceManifest _dynamicManifest;
@@ -97,21 +97,21 @@ namespace OrchardCore.ResourceManagement
 
         public void RegisterHeadScript(IHtmlContent script)
         {
-            _headScripts ??= new List<IHtmlContent>();
+            _headScripts ??= [];
 
             _headScripts.Add(script);
         }
 
         public void RegisterFootScript(IHtmlContent script)
         {
-            _footScripts ??= new List<IHtmlContent>();
+            _footScripts ??= [];
 
             _footScripts.Add(script);
         }
 
         public void RegisterStyle(IHtmlContent style)
         {
-            _styles ??= new List<IHtmlContent>();
+            _styles ??= [];
 
             _styles.Add(style);
         }
@@ -465,7 +465,7 @@ namespace OrchardCore.ResourceManagement
 
         public void RegisterLink(LinkEntry link)
         {
-            _links ??= new List<LinkEntry>();
+            _links ??= [];
 
             var href = link.Href;
 
@@ -489,7 +489,7 @@ namespace OrchardCore.ResourceManagement
                 return;
             }
 
-            _metas ??= new Dictionary<string, MetaEntry>();
+            _metas ??= [];
 
             var index = meta.Name ?? meta.Property ?? meta.HttpEquiv ?? "charset";
 
@@ -510,7 +510,7 @@ namespace OrchardCore.ResourceManagement
                 return;
             }
 
-            _metas ??= new Dictionary<string, MetaEntry>();
+            _metas ??= [];
 
             if (_metas.TryGetValue(index, out var existingMeta))
             {
@@ -757,12 +757,12 @@ namespace OrchardCore.ResourceManagement
 
         private static class EmptyList<T>
         {
-            public static readonly List<T> Instance = new();
+            public static readonly List<T> Instance = [];
         }
 
         private static class EmptyValueCollection<T>
         {
-            public static readonly Dictionary<string, T>.ValueCollection Instance = new(new Dictionary<string, T>());
+            public static readonly Dictionary<string, T>.ValueCollection Instance = new([]);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
