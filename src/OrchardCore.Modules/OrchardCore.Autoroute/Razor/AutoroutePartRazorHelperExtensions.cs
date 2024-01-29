@@ -18,7 +18,7 @@ public static class AutoroutePartRazorHelperExtensions
     /// <returns>A content item id or <c>null</c> if it was not found.</returns>
     public static async Task<string> GetContentItemIdBySlugAsync(this IOrchardHelper orchardHelper, string slug)
     {
-        if (String.IsNullOrEmpty(slug))
+        if (string.IsNullOrEmpty(slug))
         {
             return null;
         }

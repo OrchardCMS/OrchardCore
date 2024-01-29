@@ -18,12 +18,11 @@ namespace OrchardCore.Environment.Shell.Configuration
     {
         private IConfigurationRoot _configuration;
         private UpdatableDataProvider _updatableData;
-        private readonly IEnumerable<KeyValuePair<string, string>> _initialData;
 
         private readonly string _name;
-        private readonly Func<string, Task<IConfigurationBuilder>> _configBuilderFactory;
-        private readonly IEnumerable<IConfigurationProvider> _configurationProviders;
+        private readonly Func<string, Action<IConfigurationBuilder>, Task<IConfigurationRoot>> _factoryAsync;
         private readonly SemaphoreSlim _semaphore = new(1);
+        private bool _released;
 
         public ShellConfiguration()
         {
@@ -31,15 +30,24 @@ namespace OrchardCore.Environment.Shell.Configuration
 
         public ShellConfiguration(IConfiguration configuration)
         {
-            _configurationProviders = new ConfigurationBuilder()
+            _updatableData = new UpdatableDataProvider();
+
+            _configuration = new ConfigurationBuilder()
                 .AddConfiguration(configuration)
-                .Build().Providers;
+                .Add(_updatableData)
+                .Build();
         }
 
-        public ShellConfiguration(string name, Func<string, Task<IConfigurationBuilder>> factory)
+        public ShellConfiguration(IConfigurationBuilder builder)
+        {
+            _updatableData = new UpdatableDataProvider();
+            _configuration = builder.Add(_updatableData).Build();
+        }
+
+        public ShellConfiguration(string name, Func<string, Action<IConfigurationBuilder>, Task<IConfigurationRoot>> factoryAsync)
         {
             _name = name;
-            _configBuilderFactory = factory;
+            _factoryAsync = factoryAsync;
         }
 
         public ShellConfiguration(ShellConfiguration configuration) : this(null, configuration)
@@ -50,29 +58,29 @@ namespace OrchardCore.Environment.Shell.Configuration
         {
             _name = name;
 
-            if (configuration._configuration != null)
+            if (configuration._configuration is not null)
             {
-                _configurationProviders = configuration._configuration.Providers
-                    .Where(p => p is not UpdatableDataProvider).ToArray();
+                _updatableData = new UpdatableDataProvider(configuration._updatableData.ToArray());
 
-                _initialData = configuration._updatableData.ToArray();
+                _configuration = new ConfigurationBuilder()
+                    .AddConfiguration(configuration._configuration, shouldDisposeConfiguration: true)
+                    .Add(_updatableData)
+                    .Build();
 
                 return;
             }
 
-            if (name == null)
+            if (name is null)
             {
-                _configurationProviders = configuration._configurationProviders;
-                _initialData = configuration._initialData;
                 return;
             }
 
-            _configBuilderFactory = configuration._configBuilderFactory;
+            _factoryAsync = configuration._factoryAsync;
         }
 
         private void EnsureConfiguration()
         {
-            if (_configuration != null)
+            if (_configuration is not null)
             {
                 return;
             }
@@ -82,7 +90,7 @@ namespace OrchardCore.Environment.Shell.Configuration
 
         internal async Task EnsureConfigurationAsync()
         {
-            if (_configuration != null)
+            if (_configuration is not null)
             {
                 return;
             }
@@ -90,30 +98,16 @@ namespace OrchardCore.Environment.Shell.Configuration
             await _semaphore.WaitAsync();
             try
             {
-                if (_configuration != null)
+                if (_configuration is not null)
                 {
                     return;
                 }
 
-                var providers = new List<IConfigurationProvider>();
+                _updatableData = new UpdatableDataProvider();
 
-                if (_configBuilderFactory != null)
-                {
-                    providers.AddRange(new ConfigurationBuilder()
-                        .AddConfiguration((await _configBuilderFactory.Invoke(_name)).Build())
-                        .Build().Providers);
-                }
-
-                if (_configurationProviders != null)
-                {
-                    providers.AddRange(_configurationProviders);
-                }
-
-                _updatableData = new UpdatableDataProvider(_initialData ?? Enumerable.Empty<KeyValuePair<string, string>>());
-
-                providers.Add(_updatableData);
-
-                _configuration = new ConfigurationRoot(providers);
+                _configuration = _factoryAsync is not null
+                    ? await _factoryAsync(_name, builder => builder.Add(_updatableData))
+                    : new ConfigurationBuilder().Add(_updatableData).Build();
             }
             finally
             {
@@ -122,7 +116,7 @@ namespace OrchardCore.Environment.Shell.Configuration
         }
 
         /// <summary>
-        /// The tenant lazily built <see cref="IConfiguration"/>.
+        /// The tenant configuration lazily built <see cref="IConfiguration"/>.
         /// </summary>
         private IConfiguration Configuration
         {
@@ -150,19 +144,23 @@ namespace OrchardCore.Environment.Shell.Configuration
             }
         }
 
-        public IConfigurationSection GetSection(string key)
-        {
-            return Configuration.GetSectionCompat(key);
-        }
+        public IConfigurationSection GetSection(string key) => Configuration.GetSectionCompat(key);
 
-        public IEnumerable<IConfigurationSection> GetChildren()
-        {
-            return Configuration.GetChildren();
-        }
+        public IEnumerable<IConfigurationSection> GetChildren() => Configuration.GetChildren();
 
-        public IChangeToken GetReloadToken()
+        public IChangeToken GetReloadToken() => Configuration.GetReloadToken();
+
+        public void Release()
         {
-            return Configuration.GetReloadToken();
+            if (_released)
+            {
+                return;
+            }
+
+            _released = true;
+
+            (_configuration as IDisposable)?.Dispose();
+            _semaphore?.Dispose();
         }
     }
 }

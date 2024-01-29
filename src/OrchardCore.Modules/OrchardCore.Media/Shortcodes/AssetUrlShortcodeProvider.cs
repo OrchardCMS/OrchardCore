@@ -27,16 +27,16 @@ namespace OrchardCore.Media.Shortcodes
 
         public ValueTask<string> EvaluateAsync(string identifier, Arguments arguments, string content, Context context)
         {
-            if (!String.Equals(identifier, "asset_url", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(identifier, "asset_url", StringComparison.OrdinalIgnoreCase))
             {
                 return new ValueTask<string>((string)null);
             }
 
             // Handle self closing shortcodes.
-            if (String.IsNullOrEmpty(content))
+            if (string.IsNullOrEmpty(content))
             {
                 content = arguments.NamedOrDefault("src");
-                if (String.IsNullOrEmpty(content))
+                if (string.IsNullOrEmpty(content))
                 {
                     return new ValueTask<string>("[asset_url]");
                 }
@@ -48,7 +48,7 @@ namespace OrchardCore.Media.Shortcodes
                 if (content.StartsWith("~/", StringComparison.Ordinal))
                 {
                     content = _httpContextAccessor.HttpContext.Request.PathBase.Add(content[1..]).Value;
-                    if (!String.IsNullOrEmpty(_options.CdnBaseUrl))
+                    if (!string.IsNullOrEmpty(_options.CdnBaseUrl))
                     {
                         content = _options.CdnBaseUrl + content;
                     }

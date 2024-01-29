@@ -1,10 +1,10 @@
-using System;
+using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Utilities;
 
 namespace OrchardCore.Users;
 
-public class UserMenuShapeTableProvider : IShapeTableProvider
+public class UserMenuShapeTableProvider : ShapeTableProvider
 {
     private const string BaseShapeType = "UserMenuItems";
 
@@ -12,13 +12,13 @@ public class UserMenuShapeTableProvider : IShapeTableProvider
 
     private const string ShapeAlternatePrefix = $"{BaseShapeType}_";
 
-    public void Discover(ShapeTableBuilder builder)
+    public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
     {
         // Describe any shape-type that starts with 'UserMenuItems__'.
         builder.Describe($"{ShapeTypePrefix}*")
             .OnDisplaying(context =>
             {
-                if (String.IsNullOrEmpty(context.Shape.Metadata.DisplayType) || context.Shape.Metadata.DisplayType == "Detail")
+                if (string.IsNullOrEmpty(context.Shape.Metadata.DisplayType) || context.Shape.Metadata.DisplayType == "Detail")
                 {
                     return;
                 }
@@ -32,5 +32,7 @@ public class UserMenuShapeTableProvider : IShapeTableProvider
                 // 'UserMenuItems_{displaType}__{subType}' e.g. 'UserMenuItems-Dashboard.DetailAdmin.cshtml'.
                 context.Shape.Metadata.Alternates.Add($"{ShapeAlternatePrefix}{context.Shape.Metadata.DisplayType}__{subType}");
             });
+
+        return ValueTask.CompletedTask;
     }
 }

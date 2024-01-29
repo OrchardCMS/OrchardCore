@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Deployment.Remote.ViewModels
+namespace OrchardCore.Deployment.Remote.ViewModels
 {
     public class EditRemoteClientViewModel
     {

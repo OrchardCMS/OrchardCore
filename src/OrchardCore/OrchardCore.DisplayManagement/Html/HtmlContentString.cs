@@ -27,7 +27,7 @@ namespace OrchardCore.DisplayManagement.Html
 
         private string DebuggerToString()
         {
-            var writer = new ZStringWriter();
+            using var writer = new ZStringWriter();
             WriteTo(writer, HtmlEncoder.Default);
             return writer.ToString();
         }

@@ -56,7 +56,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             var shapeMetadata = shape.Metadata;
 
             // Can't really cope with a shape that has no type information.
-            if (shapeMetadata == null || String.IsNullOrEmpty(shapeMetadata.Type))
+            if (shapeMetadata == null || string.IsNullOrEmpty(shapeMetadata.Type))
             {
                 return new HtmlContentString(context.Value.ToString());
             }
@@ -78,7 +78,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             try
             {
                 var theme = await _themeManager.GetThemeAsync();
-                var shapeTable = _shapeTableManager.GetShapeTable(theme?.Id);
+                var shapeTable = await _shapeTableManager.GetShapeTableAsync(theme?.Id);
 
                 // Evaluate global Shape Display Events.
                 await _shapeDisplayEvents.InvokeAsync((e, displayContext) => e.DisplayingAsync(displayContext), displayContext, _logger);

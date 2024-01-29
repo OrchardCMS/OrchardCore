@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
@@ -9,6 +10,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Taxonomies.Models;
 using OrchardCore.Taxonomies.ViewModels;
 
@@ -16,6 +18,13 @@ namespace OrchardCore.Taxonomies.Drivers
 {
     public class TaxonomyPartDisplayDriver : ContentPartDisplayDriver<TaxonomyPart>
     {
+        private readonly IStringLocalizer S;
+
+        public TaxonomyPartDisplayDriver(IStringLocalizer<TaxonomyPartDisplayDriver> stringLocalizer)
+        {
+            S = stringLocalizer;
+        }
+
         public override IDisplayResult Display(TaxonomyPart part, BuildPartDisplayContext context)
         {
             var hasItems = part.Terms.Any();
@@ -42,7 +51,12 @@ namespace OrchardCore.Taxonomies.Drivers
 
             if (await updater.TryUpdateModelAsync(model, Prefix, t => t.Hierarchy, t => t.TermContentType))
             {
-                if (!String.IsNullOrWhiteSpace(model.Hierarchy))
+                if (string.IsNullOrWhiteSpace(model.TermContentType))
+                {
+                    updater.ModelState.AddModelError(Prefix, nameof(model.TermContentType), S["The Term Content Type field is required."]);
+                }
+
+                if (!string.IsNullOrWhiteSpace(model.Hierarchy))
                 {
                     var originalTaxonomyItems = part.ContentItem.As<TaxonomyPart>();
 

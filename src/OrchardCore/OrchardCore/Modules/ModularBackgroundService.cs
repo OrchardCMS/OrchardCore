@@ -13,7 +13,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Builders;
+using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Settings;
 
@@ -79,7 +79,7 @@ namespace OrchardCore.Modules
                 }
             }
 
-            var previousShells = Array.Empty<ShellContext>();
+            var previousShells = Array.Empty<(string Tenant, long UtcTicks)>();
             while (!stoppingToken.IsCancellationRequested)
             {
                 // Init the delay first to be also waited on exception.
@@ -100,11 +100,15 @@ namespace OrchardCore.Modules
             }
         }
 
-        private async Task RunAsync(IEnumerable<ShellContext> runningShells, CancellationToken stoppingToken)
+        private async Task RunAsync(IEnumerable<(string Tenant, long UtcTicks)> runningShells, CancellationToken stoppingToken)
         {
-            await GetShellsToRun(runningShells).ForEachAsync(async shell =>
+            await GetShellsToRun(runningShells).ForEachAsync(async tenant =>
             {
-                var tenant = shell.Settings.Name;
+                // Check if the shell is still registered and running.
+                if (!_shellHost.TryGetShellContext(tenant, out var shell) || !shell.Settings.IsRunning())
+                {
+                    return;
+                }
 
                 // Create a new 'HttpContext' to be used in the background.
                 _httpContextAccessor.HttpContext = shell.CreateHttpContext();
@@ -117,20 +121,39 @@ namespace OrchardCore.Modules
                         break;
                     }
 
-                    var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
-                    if (!_options.ShellWarmup && !shellScope.ShellContext.HasPipeline())
+                    // Try to create a shell scope on this shell context.
+                    var (shellScope, success) = await _shellHost.TryGetScopeAsync(shell.Settings.Name);
+                    if (!success)
                     {
                         break;
                     }
 
-                    var distributedLock = shellScope.ShellContext.ServiceProvider.GetRequiredService<IDistributedLock>();
-
-                    // Try to acquire a lock before using the scope, so that a next process gets the last committed data.
-                    (var locker, var locked) = await distributedLock.TryAcquireBackgroundTaskLockAsync(scheduler.Settings);
-                    if (!locked)
+                    // Check if the shell has no pipeline and should not be warmed up.
+                    if (!_options.ShellWarmup && !shellScope.ShellContext.HasPipeline())
                     {
-                        _logger.LogInformation("Timeout to acquire a lock on background task '{TaskName}' on tenant '{TenantName}'.", scheduler.Name, tenant);
-                        return;
+                        await shellScope.TerminateShellAsync();
+                        break;
+                    }
+
+                    var locked = false;
+                    ILocker locker = null;
+                    try
+                    {
+                        // Try to acquire a lock before using the scope, so that a next process gets the last committed data.
+                        var distributedLock = shellScope.ShellContext.ServiceProvider.GetRequiredService<IDistributedLock>();
+                        (locker, locked) = await distributedLock.TryAcquireBackgroundTaskLockAsync(scheduler.Settings);
+                        if (!locked)
+                        {
+                            await shellScope.TerminateShellAsync();
+                            _logger.LogInformation("Timeout to acquire a lock on background task '{TaskName}' on tenant '{TenantName}'.", scheduler.Name, tenant);
+                            break;
+                        }
+                    }
+                    catch (Exception ex) when (!ex.IsFatal())
+                    {
+                        await shellScope.TerminateShellAsync();
+                        _logger.LogError(ex, "Failed to acquire a lock on background task '{TaskName}' on tenant '{TenantName}'.", scheduler.Name, tenant);
+                        break;
                     }
 
                     await using var acquiredLock = locker;
@@ -209,27 +232,41 @@ namespace OrchardCore.Modules
             });
         }
 
-        private async Task UpdateAsync(ShellContext[] previousShells, ShellContext[] runningShells, CancellationToken stoppingToken)
+        private async Task UpdateAsync(
+            (string Tenant, long UtcTicks)[] previousShells,
+            (string Tenant, long UtcTicks)[] runningShells, CancellationToken stoppingToken)
         {
             var referenceTime = DateTime.UtcNow;
 
-            await GetShellsToUpdate(previousShells, runningShells).ForEachAsync(async shell =>
+            await GetShellsToUpdate(previousShells, runningShells).ForEachAsync(async tenant =>
             {
-                var tenant = shell.Settings.Name;
-
                 if (stoppingToken.IsCancellationRequested)
                 {
                     return;
                 }
 
-                // Create a new 'HttpContext' to be used in the background.
-                _httpContextAccessor.HttpContext = shell.CreateHttpContext();
-
-                var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
-                if (!_options.ShellWarmup && !shellScope.ShellContext.HasPipeline())
+                // Check if the shell is still registered and running.
+                if (!_shellHost.TryGetShellContext(tenant, out var shell) || !shell.Settings.IsRunning())
                 {
                     return;
                 }
+
+                // Try to create a shell scope on this shell context.
+                var (shellScope, success) = await _shellHost.TryGetScopeAsync(shell.Settings.Name);
+                if (!success)
+                {
+                    return;
+                }
+
+                // Check if the shell has no pipeline and should not be warmed up.
+                if (!_options.ShellWarmup && !shellScope.ShellContext.HasPipeline())
+                {
+                    await shellScope.TerminateShellAsync();
+                    return;
+                }
+
+                // Create a new 'HttpContext' to be used in the background.
+                _httpContextAccessor.HttpContext = shell.CreateHttpContext();
 
                 await shellScope.UsingAsync(async scope =>
                 {
@@ -316,45 +353,64 @@ namespace OrchardCore.Modules
             }
         }
 
-        private ShellContext[] GetRunningShells() => _shellHost
+        private (string Tenant, long UtcTicks)[] GetRunningShells() => _shellHost
             .ListShellContexts()
-            .Where(s => s.Settings.IsRunning() && (_options.ShellWarmup || s.HasPipeline()))
+            .Where(shell => shell.Settings.IsRunning() && (_options.ShellWarmup || shell.HasPipeline()))
+            .Select(shell => (shell.Settings.Name, shell.UtcTicks))
             .ToArray();
 
-        private ShellContext[] GetShellsToRun(IEnumerable<ShellContext> shells)
+        private string[] GetShellsToRun(IEnumerable<(string Tenant, long UtcTicks)> shells)
         {
             var tenantsToRun = _schedulers
-                .Where(s => s.Value.CanRun())
-                .Select(s => s.Value.Tenant)
+                .Where(scheduler => scheduler.Value.CanRun())
+                .Select(scheduler => scheduler.Value.Tenant)
                 .Distinct()
                 .ToArray();
 
-            return shells.Where(s => tenantsToRun.Contains(s.Settings.Name)).ToArray();
+            return shells
+                .Select(shell => shell.Tenant)
+                .Where(tenant => tenantsToRun.Contains(tenant))
+                .ToArray();
         }
 
-        private ShellContext[] GetShellsToUpdate(ShellContext[] previousShells, ShellContext[] runningShells)
+        private string[] GetShellsToUpdate((string Tenant, long UtcTicks)[] previousShells, (string Tenant, long UtcTicks)[] runningShells)
         {
-            var released = previousShells.Where(s => s.Released).Select(s => s.Settings.Name).ToArray();
-            if (released.Length > 0)
+            var previousTenants = previousShells.Select(shell => shell.Tenant);
+
+            var releasedTenants = new List<string>();
+            foreach (var (tenant, utcTicks) in previousShells)
             {
-                UpdateSchedulers(released, s => s.Released = true);
+                if (_shellHost.TryGetShellContext(tenant, out var existing) &&
+                    existing.UtcTicks == utcTicks &&
+                    !existing.Released)
+                {
+                    continue;
+                }
+
+                releasedTenants.Add(tenant);
             }
 
-            var changed = _changeTokens.Where(t => t.Value.HasChanged).Select(t => t.Key).ToArray();
-            if (changed.Length > 0)
+            if (releasedTenants.Count > 0)
             {
-                UpdateSchedulers(changed, s => s.Updated = false);
+                UpdateSchedulers(releasedTenants.ToArray(), scheduler => scheduler.Released = true);
             }
 
-            var valid = previousShells.Select(s => s.Settings.Name).Except(released).Except(changed);
-            var tenantsToUpdate = runningShells.Select(s => s.Settings.Name).Except(valid).ToArray();
+            var changedTenants = _changeTokens.Where(token => token.Value.HasChanged).Select(token => token.Key).ToArray();
+            if (changedTenants.Length > 0)
+            {
+                UpdateSchedulers(changedTenants, scheduler => scheduler.Updated = false);
+            }
 
-            return runningShells.Where(s => tenantsToUpdate.Contains(s.Settings.Name)).ToArray();
+            var runningTenants = runningShells.Select(shell => shell.Tenant);
+            var validTenants = previousTenants.Except(releasedTenants).Except(changedTenants);
+            var tenantsToUpdate = runningTenants.Except(validTenants).ToArray();
+
+            return runningTenants.Where(tenant => tenantsToUpdate.Contains(tenant)).ToArray();
         }
 
         private BackgroundTaskScheduler[] GetSchedulersToRun(string tenant) => _schedulers
-            .Where(s => s.Value.Tenant == tenant && s.Value.CanRun())
-            .Select(s => s.Value)
+            .Where(scheduler => scheduler.Value.Tenant == tenant && scheduler.Value.CanRun())
+            .Select(scheduler => scheduler.Value)
             .ToArray();
 
         private void UpdateSchedulers(string[] tenants, Action<BackgroundTaskScheduler> action)

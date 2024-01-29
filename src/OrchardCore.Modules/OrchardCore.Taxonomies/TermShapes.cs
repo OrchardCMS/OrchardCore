@@ -1,7 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
@@ -14,9 +14,9 @@ using OrchardCore.Taxonomies.ViewModels;
 
 namespace OrchardCore.Taxonomies
 {
-    public class TermShapes : IShapeTableProvider
+    public class TermShapes : ShapeTableProvider
     {
-        public void Discover(ShapeTableBuilder builder)
+        public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
         {
             // Add standard alternates to a TermPart because it is rendered by a content display driver not a part display driver.
             builder.Describe("TermPart")
@@ -25,7 +25,7 @@ namespace OrchardCore.Taxonomies
                     var viewModel = context.Shape as TermPartViewModel;
 
                     var contentType = viewModel?.ContentItem?.ContentType;
-                    var displayTypes = new[] { "", "_" + context.Shape.Metadata.DisplayType };
+                    var displayTypes = new[] { string.Empty, "_" + context.Shape.Metadata.DisplayType };
 
                     // [ShapeType]_[DisplayType], e.g. TermPart.Summary, TermPart.Detail.
                     context.Shape.Metadata.Alternates.Add($"TermPart_{context.Shape.Metadata.DisplayType}");
@@ -43,7 +43,7 @@ namespace OrchardCore.Taxonomies
                     var termShape = context.Shape;
                     var identifier = termShape.GetProperty<string>("TaxonomyContentItemId") ?? termShape.GetProperty<string>("Alias");
 
-                    if (String.IsNullOrEmpty(identifier))
+                    if (string.IsNullOrEmpty(identifier))
                     {
                         return;
                     }
@@ -87,7 +87,7 @@ namespace OrchardCore.Taxonomies
                     var level = 0;
                     List<ContentItem> termItems = null;
                     var termContentItemId = termShape.GetProperty<string>("TermContentItemId");
-                    if (!String.IsNullOrEmpty(termContentItemId))
+                    if (!string.IsNullOrEmpty(termContentItemId))
                     {
                         level = FindTerm(taxonomyContentItem.Content.TaxonomyPart.Terms as JArray, termContentItemId, level, out var termContentItem);
 
@@ -113,7 +113,7 @@ namespace OrchardCore.Taxonomies
 
                     var differentiator = FormatName(termShape.GetProperty<string>("TaxonomyName"));
 
-                    if (!String.IsNullOrEmpty(differentiator))
+                    if (!string.IsNullOrEmpty(differentiator))
                     {
                         // Term__[Differentiator] e.g. Term-Categories, Term-Tags.
                         termShape.Metadata.Alternates.Add("Term__" + differentiator);
@@ -143,7 +143,7 @@ namespace OrchardCore.Taxonomies
                             Level = level,
                             Term = termShape,
                             TermContentItem = termContentItem,
-                            Terms = childTerms ?? Array.Empty<ContentItem>(),
+                            Terms = childTerms ?? [],
                             TaxonomyContentItem = taxonomyContentItem
                         }));
 
@@ -181,7 +181,7 @@ namespace OrchardCore.Taxonomies
                                 TaxonomyContentItem = taxonomyContentItem,
                                 TermContentItem = termContentItem,
                                 Term = termShape,
-                                Terms = childTerms ?? Array.Empty<ContentItem>()
+                                Terms = childTerms ?? []
                             }));
 
                             shape.Metadata.Differentiator = differentiator;
@@ -201,7 +201,7 @@ namespace OrchardCore.Taxonomies
                     termItem.Metadata.Alternates.Add("TermItem__" + encodedContentType);
                     termItem.Metadata.Alternates.Add("TermItem__" + encodedContentType + "__level__" + level);
 
-                    if (!String.IsNullOrEmpty(differentiator))
+                    if (!string.IsNullOrEmpty(differentiator))
                     {
                         // TermItem__[Differentiator] e.g. TermItem-Categories, TermItem-Travel.
                         // TermItem__[Differentiator]__level__[level] e.g. TermItem-Categories-level-2.
@@ -233,7 +233,7 @@ namespace OrchardCore.Taxonomies
                     termItem.Metadata.Alternates.Add("TermContentItem__" + encodedContentType);
                     termItem.Metadata.Alternates.Add("TermContentItem__" + encodedContentType + "__level__" + level);
 
-                    if (!String.IsNullOrEmpty(differentiator))
+                    if (!string.IsNullOrEmpty(differentiator))
                     {
                         // TermContentItem__[Differentiator] e.g. TermContentItem-Categories.
                         termItem.Metadata.Alternates.Add("TermContentItem__" + differentiator);
@@ -246,9 +246,11 @@ namespace OrchardCore.Taxonomies
                         termItem.Metadata.Alternates.Add("TermContentItem__" + differentiator + "__" + encodedContentType + "__level__" + level);
                     }
                 });
+
+            return ValueTask.CompletedTask;
         }
 
-        private int FindTerm(JArray termsArray, string termContentItemId, int level, out ContentItem contentItem)
+        private static int FindTerm(JArray termsArray, string termContentItemId, int level, out ContentItem contentItem)
         {
             foreach (var term in termsArray.Cast<JObject>())
             {
@@ -282,7 +284,7 @@ namespace OrchardCore.Taxonomies
         /// </summary>
         private static string FormatName(string name)
         {
-            if (String.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
             {
                 return null;
             }
@@ -294,7 +296,7 @@ namespace OrchardCore.Taxonomies
             {
                 var c = name[i];
 
-                if (c == '-' || Char.IsWhiteSpace(c))
+                if (c == '-' || char.IsWhiteSpace(c))
                 {
                     nextIsUpper = true;
                     continue;

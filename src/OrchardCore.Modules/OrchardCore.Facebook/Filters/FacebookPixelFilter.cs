@@ -2,9 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using OrchardCore.Admin;
 using OrchardCore.Entities;
 using OrchardCore.Facebook.Settings;
@@ -32,8 +30,7 @@ public class FacebookPixelFilter : IAsyncResultFilter
     public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
     {
         // Should only run on the front-end for a full view.
-        if ((context.Result is ViewResult || context.Result is PageResult)
-            && !AdminAttribute.IsApplied(context.HttpContext))
+        if (context.IsViewOrPageResult() && !AdminAttribute.IsApplied(context.HttpContext))
         {
             var canTrack = context.HttpContext.Features.Get<ITrackingConsentFeature>()?.CanTrack ?? true;
 
@@ -41,7 +38,7 @@ public class FacebookPixelFilter : IAsyncResultFilter
             {
                 var settings = (await _siteService.GetSiteSettingsAsync()).As<FacebookPixelSettings>();
 
-                if (!String.IsNullOrWhiteSpace(settings?.PixelId))
+                if (!string.IsNullOrWhiteSpace(settings?.PixelId))
                 {
                     _scriptsCache = new HtmlString($"<script>const MetaPixelId = '{settings.PixelId.Replace("'", "")}';</script>");
                 }

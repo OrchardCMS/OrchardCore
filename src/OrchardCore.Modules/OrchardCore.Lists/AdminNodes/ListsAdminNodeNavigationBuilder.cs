@@ -46,12 +46,12 @@ namespace OrchardCore.Lists.AdminNodes
         {
             _node = menuItem as ListsAdminNode;
 
-            if (_node == null || !_node.Enabled || String.IsNullOrEmpty(_node.ContentType))
+            if (_node == null || !_node.Enabled || string.IsNullOrEmpty(_node.ContentType))
             {
                 return;
             }
 
-            _contentType = _contentDefinitionManager.GetTypeDefinition(_node.ContentType);
+            _contentType = await _contentDefinitionManager.GetTypeDefinitionAsync(_node.ContentType);
 
             if (_node.AddContentTypeAsParent)
             {

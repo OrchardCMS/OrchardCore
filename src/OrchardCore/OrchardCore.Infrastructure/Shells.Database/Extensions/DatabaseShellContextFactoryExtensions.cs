@@ -9,16 +9,17 @@ namespace OrchardCore.Shells.Database.Extensions
 {
     public static class DatabaseShellContextFactoryExtensions
     {
-        internal static Task<ShellContext> GetDatabaseContextAsync(this IShellContextFactory shellContextFactory, DatabaseShellsStorageOptions options)
+        internal static Task<ShellContext> GetDatabaseContextAsync(
+            this IShellContextFactory shellContextFactory, DatabaseShellsStorageOptions options)
         {
-            if (options.DatabaseProvider == null)
+            if (options.DatabaseProvider is null)
             {
-                throw new ArgumentNullException(nameof(options.DatabaseProvider),
-                    "The 'OrchardCore.Shells.Database' configuration section should define a 'DatabaseProvider'");
+                throw new InvalidOperationException("The 'OrchardCore.Shells.Database' configuration section should define a 'DatabaseProvider'");
             }
 
             var settings = new ShellSettings()
                 .AsDefaultShell()
+                .AsDisposable()
                 .AsRunning();
 
             settings["DatabaseProvider"] = options.DatabaseProvider;

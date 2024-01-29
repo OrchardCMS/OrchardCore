@@ -18,7 +18,7 @@ namespace OrchardCore.Environment.Cache.CacheContextProviders
 
         public Task PopulateContextEntriesAsync(IEnumerable<string> contexts, List<CacheContextEntry> entries)
         {
-            if (contexts.Any(ctx => String.Equals(ctx, "query", StringComparison.OrdinalIgnoreCase)))
+            if (contexts.Any(ctx => string.Equals(ctx, "query", StringComparison.OrdinalIgnoreCase)))
             {
                 var httpContext = _httpContextAccessor.HttpContext;
                 var query = httpContext.Request.Query;

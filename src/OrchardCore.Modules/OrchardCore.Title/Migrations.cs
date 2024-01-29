@@ -28,9 +28,9 @@ namespace OrchardCore.Title
             _logger = logger;
         }
 
-        public int Create()
+        public async Task<int> CreateAsync()
         {
-            _contentDefinitionManager.AlterPartDefinition("TitlePart", builder => builder
+            await _contentDefinitionManager.AlterPartDefinitionAsync("TitlePart", builder => builder
                 .Attachable()
                 .WithDescription("Provides a Title for your content item.")
                 .WithDefaultPosition("0")
@@ -60,10 +60,10 @@ namespace OrchardCore.Title
 
                 foreach (var contentItemVersion in contentItemVersions)
                 {
-                    if (String.IsNullOrEmpty(contentItemVersion.DisplayText)
+                    if (string.IsNullOrEmpty(contentItemVersion.DisplayText)
                         && UpdateTitle(contentItemVersion.Content))
                     {
-                        _session.Save(contentItemVersion);
+                        await _session.SaveAsync(contentItemVersion);
                         _logger.LogInformation("A content item version's Title was upgraded: {ContentItemVersionId}", contentItemVersion.ContentItemVersionId);
                     }
 
@@ -81,7 +81,7 @@ namespace OrchardCore.Title
                 {
                     var title = content["TitlePart"]?["Title"]?.Value<string>();
 
-                    if (!String.IsNullOrWhiteSpace(title))
+                    if (!string.IsNullOrWhiteSpace(title))
                     {
                         content["DisplayText"] = title;
                         changed = true;

@@ -39,8 +39,8 @@ namespace OrchardCore.Lists.Drivers
 
             return
                 Combine(
-                    InitilizeEditListPartNavigationAdmin(part, context, settings),
-                    InitilizeEditListPartHeaderAdmin(part, context, settings)
+                    InitializeEditListPartNavigationAdmin(part, context, settings),
+                    InitializeEditListPartHeaderAdmin(part, context, settings)
                );
         }
 
@@ -50,32 +50,31 @@ namespace OrchardCore.Lists.Drivers
 
             return
                 Combine(
-                    InitilizeDisplayListPartDisplayShape(listPart, context),
-                    InitilizeDisplayListPartDetailAdminShape(listPart, context),
-                    InitilizeDisplayListPartNavigationAdminShape(listPart, context, settings),
-                    InitilizeDisplayListPartHeaderAdminShape(listPart, settings),
-                    InitilizeDisplayListPartSummaryAdmin(listPart)
+                    InitializeDisplayListPartDisplayShape(listPart, context),
+                    InitializeDisplayListPartDetailAdminShape(listPart, context),
+                    InitializeDisplayListPartNavigationAdminShape(listPart, context, settings),
+                    InitializeDisplayListPartHeaderAdminShape(listPart, settings),
+                    InitializeDisplayListPartSummaryAdmin(listPart)
                 );
         }
 
-        private ShapeResult InitilizeEditListPartHeaderAdmin(ListPart part, BuildPartEditorContext context, ListPartSettings settings)
+        private ShapeResult InitializeEditListPartHeaderAdmin(ListPart part, BuildPartEditorContext context, ListPartSettings settings)
         {
-            return Initialize("ListPartHeaderAdmin", (Action<ListPartHeaderAdminViewModel>)(model =>
+            return Initialize<ListPartHeaderAdminViewModel>("ListPartHeaderAdmin", async model =>
             {
                 model.ContainerContentItem = part.ContentItem;
-                model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
+                model.ContainedContentTypeDefinitions = (await GetContainedContentTypesAsync(settings)).ToArray();
                 model.EnableOrdering = settings.EnableOrdering;
-            }))
-                .Location("Content:1")
-                .RenderWhen(() => Task.FromResult(!context.IsNew && settings.ShowHeader));
+            }).Location("Content:1")
+            .RenderWhen(() => Task.FromResult(!context.IsNew && settings.ShowHeader));
         }
 
-        private ShapeResult InitilizeEditListPartNavigationAdmin(ListPart part, BuildPartEditorContext context, ListPartSettings settings)
+        private ShapeResult InitializeEditListPartNavigationAdmin(ListPart part, BuildPartEditorContext context, ListPartSettings settings)
         {
-            return Initialize<ListPartNavigationAdminViewModel>("ListPartNavigationAdmin", model =>
+            return Initialize<ListPartNavigationAdminViewModel>("ListPartNavigationAdmin", async model =>
             {
                 model.Container = part.ContentItem;
-                model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
+                model.ContainedContentTypeDefinitions = (await GetContainedContentTypesAsync(settings)).ToArray();
                 model.EnableOrdering = settings.EnableOrdering;
                 model.ContainerContentTypeDefinition = context.TypePartDefinition.ContentTypeDefinition;
             })
@@ -83,37 +82,35 @@ namespace OrchardCore.Lists.Drivers
                 .RenderWhen(() => Task.FromResult(!context.IsNew));
         }
 
-        private ShapeResult InitilizeDisplayListPartSummaryAdmin(ListPart listPart)
+        private ShapeResult InitializeDisplayListPartSummaryAdmin(ListPart listPart)
         {
-            return Initialize("ListPartSummaryAdmin", (Action<ContentItemViewModel>)(model => model.ContentItem = listPart.ContentItem))
+            return Initialize<ContentItemViewModel>("ListPartSummaryAdmin", model => model.ContentItem = listPart.ContentItem)
                 .Location("SummaryAdmin", "Actions:4");
         }
 
-        private ShapeResult InitilizeDisplayListPartHeaderAdminShape(ListPart listPart, ListPartSettings settings)
+        private ShapeResult InitializeDisplayListPartHeaderAdminShape(ListPart listPart, ListPartSettings settings)
         {
-            return Initialize("ListPartHeaderAdmin", (Action<ListPartHeaderAdminViewModel>)(model =>
+            return Initialize<ListPartHeaderAdminViewModel>("ListPartHeaderAdmin", async model =>
             {
                 model.ContainerContentItem = listPart.ContentItem;
-                model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
+                model.ContainedContentTypeDefinitions = (await GetContainedContentTypesAsync(settings)).ToArray();
                 model.EnableOrdering = settings.EnableOrdering;
-            }))
-                .Location("DetailAdmin", "Content:1")
-                .RenderWhen(() => Task.FromResult(settings.ShowHeader));
+            }).Location("DetailAdmin", "Content:1")
+            .RenderWhen(() => Task.FromResult(settings.ShowHeader));
         }
 
-        private ShapeResult InitilizeDisplayListPartNavigationAdminShape(ListPart listPart, BuildPartDisplayContext context, ListPartSettings settings)
+        private ShapeResult InitializeDisplayListPartNavigationAdminShape(ListPart listPart, BuildPartDisplayContext context, ListPartSettings settings)
         {
-            return Initialize("ListPartNavigationAdmin", (Action<ListPartNavigationAdminViewModel>)(model =>
+            return Initialize<ListPartNavigationAdminViewModel>("ListPartNavigationAdmin", async model =>
             {
-                model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings).ToArray();
+                model.ContainedContentTypeDefinitions = (await GetContainedContentTypesAsync(settings)).ToArray();
                 model.Container = listPart.ContentItem;
                 model.EnableOrdering = settings.EnableOrdering;
                 model.ContainerContentTypeDefinition = context.TypePartDefinition.ContentTypeDefinition;
-            }))
-                .Location("DetailAdmin", "Content:1.5");
+            }).Location("DetailAdmin", "Content:1.5");
         }
 
-        private ShapeResult InitilizeDisplayListPartDetailAdminShape(ListPart listPart, BuildPartDisplayContext context)
+        private ShapeResult InitializeDisplayListPartDetailAdminShape(ListPart listPart, BuildPartDisplayContext context)
         {
             return Initialize("ListPartDetailAdmin", (Func<ListPartViewModel, ValueTask>)(async model =>
             {
@@ -134,7 +131,7 @@ namespace OrchardCore.Lists.Drivers
                     pager,
                     containedItemOptions)).ToArray();
 
-                model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings);
+                model.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(settings);
                 model.Context = context;
                 model.EnableOrdering = settings.EnableOrdering;
                 model.Pager = await context.New.PagerSlim(pager);
@@ -142,7 +139,7 @@ namespace OrchardCore.Lists.Drivers
                 .Location("DetailAdmin", "Content:10");
         }
 
-        private ShapeResult InitilizeDisplayListPartDisplayShape(ListPart listPart, BuildPartDisplayContext context)
+        private ShapeResult InitializeDisplayListPartDisplayShape(ListPart listPart, BuildPartDisplayContext context)
         {
             return Initialize<ListPartViewModel>(GetDisplayShapeType(context), async model =>
             {
@@ -155,7 +152,7 @@ namespace OrchardCore.Lists.Drivers
                     pager,
                     containedItemOptions)).ToArray();
 
-                model.ContainedContentTypeDefinitions = GetContainedContentTypes(settings);
+                model.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(settings);
                 model.Context = context;
                 model.Pager = await context.New.PagerSlim(pager);
             })
@@ -173,11 +170,25 @@ namespace OrchardCore.Lists.Drivers
             return pager;
         }
 
-        private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ListPartSettings settings)
+        private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(ListPartSettings settings)
         {
             var contentTypes = settings.ContainedContentTypes ?? Enumerable.Empty<string>();
 
-            return contentTypes.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType));
+            var definitions = new List<ContentTypeDefinition>();
+
+            foreach (var contentType in contentTypes)
+            {
+                var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType);
+
+                if (definition == null)
+                {
+                    continue;
+                }
+
+                definitions.Add(definition);
+            }
+
+            return definitions;
         }
     }
 }

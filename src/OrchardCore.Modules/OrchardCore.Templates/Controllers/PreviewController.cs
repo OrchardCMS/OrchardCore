@@ -59,7 +59,7 @@ namespace OrchardCore.Templates.Controllers
             var name = Request.Form["Name"];
             var content = Request.Form["Content"];
 
-            if (!String.IsNullOrEmpty(name) && !String.IsNullOrEmpty(content))
+            if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(content))
             {
                 HttpContext.Items["OrchardCore.PreviewTemplate"] = new TemplateViewModel { Name = name, Content = content };
             }
@@ -68,7 +68,7 @@ namespace OrchardCore.Templates.Controllers
 
             string contentItemId;
 
-            if (String.IsNullOrEmpty(handle) || handle == _homeUrl)
+            if (string.IsNullOrEmpty(handle) || handle == _homeUrl)
             {
                 var homeRoute = (await _siteService.GetSiteSettingsAsync()).HomeRoute;
                 contentItemId = homeRoute["contentItemId"]?.ToString();
@@ -83,7 +83,7 @@ namespace OrchardCore.Templates.Controllers
                 contentItemId = await _contentHandleManager.GetContentItemIdAsync("slug:" + handle);
             }
 
-            if (String.IsNullOrEmpty(contentItemId))
+            if (string.IsNullOrEmpty(contentItemId))
             {
                 return NotFound();
             }

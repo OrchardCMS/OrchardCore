@@ -185,7 +185,7 @@ namespace OrchardCore.Lists.RemotePublishing
             var array = new XRpcArray();
 
             // Look for all types using ListPart.
-            foreach (var type in _contentDefinitionManager.ListTypeDefinitions())
+            foreach (var type in await _contentDefinitionManager.ListTypeDefinitionsAsync())
             {
                 if (!type.Parts.Any(x => x.Name == nameof(ListPart)))
                 {
@@ -267,7 +267,7 @@ namespace OrchardCore.Lists.RemotePublishing
             var list = (await _contentManager.GetAsync(contentItemId))
                 ?? throw new InvalidOperationException("Could not find content item " + contentItemId);
 
-            var postType = GetContainedContentTypes(list).FirstOrDefault();
+            var postType = (await GetContainedContentTypesAsync(list)).FirstOrDefault();
             var contentItem = await _contentManager.NewAsync(postType.Name);
 
             contentItem.Owner = user.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -483,13 +483,28 @@ namespace OrchardCore.Lists.RemotePublishing
             }
         }
 
-        private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ContentItem contentItem)
+        private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(ContentItem contentItem)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "ListPart"));
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "ListPart"));
             var settings = contentTypePartDefinition.GetSettings<ListPartSettings>();
             var contentTypes = settings.ContainedContentTypes ?? Enumerable.Empty<string>();
-            return contentTypes.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType));
+
+            var definitions = new List<ContentTypeDefinition>();
+
+            foreach (var contentType in contentTypes)
+            {
+                var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType);
+
+                if (definition == null)
+                {
+                    continue;
+                }
+
+                definitions.Add(definition);
+            }
+
+            return definitions;
         }
     }
 }

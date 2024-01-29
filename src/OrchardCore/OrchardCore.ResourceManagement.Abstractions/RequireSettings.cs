@@ -82,7 +82,7 @@ namespace OrchardCore.ResourceManagement
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public RequireSettings UseCulture(string cultureName)
         {
-            if (!String.IsNullOrEmpty(cultureName))
+            if (!string.IsNullOrEmpty(cultureName))
             {
                 Culture = cultureName;
             }
@@ -139,7 +139,7 @@ namespace OrchardCore.ResourceManagement
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public RequireSettings UseVersion(string version)
         {
-            if (!String.IsNullOrEmpty(version))
+            if (!string.IsNullOrEmpty(version))
             {
                 Version = version;
             }

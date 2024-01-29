@@ -117,19 +117,19 @@ namespace OrchardCore.Indexing.Services
             var ids = localQueue.Select(x => x.ContentItemId).ToArray();
             var table = $"{session.Store.Configuration.TablePrefix}{nameof(IndexingTask)}";
 
-            using var connection = dbConnectionAccessor.CreateConnection();
+            if (logger.IsEnabled(LogLevel.Debug))
+            {
+                logger.LogDebug("Updating indexing tasks: {ContentItemIds}", string.Join(", ", tasks.Select(x => x.ContentItemId)));
+            }
+
+            await using var connection = dbConnectionAccessor.CreateConnection();
             await connection.OpenAsync();
 
-            using var transaction = connection.BeginTransaction(session.Store.Configuration.IsolationLevel);
+            using var transaction = await connection.BeginTransactionAsync(session.Store.Configuration.IsolationLevel);
             var dialect = session.Store.Configuration.SqlDialect;
 
             try
             {
-                if (logger.IsEnabled(LogLevel.Debug))
-                {
-                    logger.LogDebug("Updating indexing tasks: {ContentItemIds}", String.Join(", ", tasks.Select(x => x.ContentItemId)));
-                }
-
                 // Page delete statements to prevent the limits from IN sql statements.
                 var pageSize = 100;
 
@@ -139,21 +139,21 @@ namespace OrchardCore.Indexing.Services
                 {
                     var pageOfIds = ids.Take(pageSize).ToArray();
 
-                    if (pageOfIds.Any())
+                    if (pageOfIds.Length > 0)
                     {
                         await transaction.Connection.ExecuteAsync(deleteCmd, new { Ids = pageOfIds }, transaction);
                         ids = ids.Skip(pageSize).ToArray();
                     }
-                } while (ids.Any());
+                } while (ids.Length > 0);
 
                 var insertCmd = $"insert into {dialect.QuoteForTableName(table, _store.Configuration.Schema)} ({dialect.QuoteForColumnName("CreatedUtc")}, {dialect.QuoteForColumnName("ContentItemId")}, {dialect.QuoteForColumnName("Type")}) values (@CreatedUtc, @ContentItemId, @Type);";
                 await transaction.Connection.ExecuteAsync(insertCmd, localQueue, transaction);
 
-                transaction.Commit();
+                await transaction.CommitAsync();
             }
             catch (Exception e)
             {
-                transaction.Rollback();
+                await transaction.RollbackAsync();
                 logger.LogError(e, "An error occurred while updating indexing tasks");
 
                 throw;
@@ -162,7 +162,7 @@ namespace OrchardCore.Indexing.Services
 
         public async Task<IEnumerable<IndexingTask>> GetIndexingTasksAsync(long afterTaskId, int count)
         {
-            using var connection = _dbConnectionAccessor.CreateConnection();
+            await using var connection = _dbConnectionAccessor.CreateConnection();
             await connection.OpenAsync();
 
             try

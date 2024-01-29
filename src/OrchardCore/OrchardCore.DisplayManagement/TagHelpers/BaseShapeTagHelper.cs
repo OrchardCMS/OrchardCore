@@ -71,22 +71,22 @@ namespace OrchardCore.DisplayManagement.TagHelpers
                 }
             }
 
-            if (String.IsNullOrWhiteSpace(Type))
+            if (string.IsNullOrWhiteSpace(Type))
             {
                 Type = output.TagName;
             }
 
-            if (String.IsNullOrWhiteSpace(Cache) && output.Attributes.ContainsName("cache-id"))
+            if (string.IsNullOrWhiteSpace(Cache) && output.Attributes.ContainsName("cache-id"))
             {
                 Cache = Convert.ToString(output.Attributes["cache-id"].Value);
             }
 
-            if (String.IsNullOrWhiteSpace(Context) && output.Attributes.ContainsName("cache-context"))
+            if (string.IsNullOrWhiteSpace(Context) && output.Attributes.ContainsName("cache-context"))
             {
                 Context = Convert.ToString(output.Attributes["cache-context"].Value);
             }
 
-            if (String.IsNullOrWhiteSpace(Tag) && output.Attributes.ContainsName("cache-tag"))
+            if (string.IsNullOrWhiteSpace(Tag) && output.Attributes.ContainsName("cache-tag"))
             {
                 Tag = Convert.ToString(output.Attributes["cache-tag"].Value);
             }
@@ -128,7 +128,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
 
             tagHelperContext.Items.Add(typeof(IShape), shape);
 
-            if (!String.IsNullOrWhiteSpace(Cache))
+            if (!string.IsNullOrWhiteSpace(Cache))
             {
                 var metadata = shape.Metadata;
 
@@ -144,13 +144,13 @@ namespace OrchardCore.DisplayManagement.TagHelpers
                     metadata.Cache().WithExpirySliding(SlidingDuration.Value);
                 }
 
-                if (!String.IsNullOrWhiteSpace(Context))
+                if (!string.IsNullOrWhiteSpace(Context))
                 {
                     var contexts = Context.Split(_separators, StringSplitOptions.RemoveEmptyEntries);
                     metadata.Cache().AddContext(contexts);
                 }
 
-                if (!String.IsNullOrWhiteSpace(Tag))
+                if (!string.IsNullOrWhiteSpace(Tag))
                 {
                     var tags = Tag.Split(_separators, StringSplitOptions.RemoveEmptyEntries);
                     metadata.Cache().AddTag(tags);

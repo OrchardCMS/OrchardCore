@@ -15,7 +15,7 @@ namespace OrchardCore.ContentLocalization.Services
                 .WithNamedTerm("culture", builder => builder
                     .OneCondition<ContentItem>((val, query) =>
                     {
-                        if (!String.IsNullOrEmpty(val))
+                        if (!string.IsNullOrEmpty(val))
                         {
                             query.With<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.Culture == val);
                         }
@@ -25,11 +25,11 @@ namespace OrchardCore.ContentLocalization.Services
                     .MapTo<LocalizationContentsAdminFilterViewModel>((val, model) => model.SelectedCulture = val)
                     .MapFrom<LocalizationContentsAdminFilterViewModel>((model) =>
                     {
-                        if (!String.IsNullOrEmpty(model.SelectedCulture))
+                        if (!string.IsNullOrEmpty(model.SelectedCulture))
                         {
                             return (true, model.SelectedCulture);
                         }
-                        return (false, String.Empty);
+                        return (false, string.Empty);
                     })
                 );
         }

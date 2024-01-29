@@ -17,9 +17,9 @@ using OrchardCore.DisplayManagement.Utilities;
 
 namespace OrchardCore.Navigation
 {
-    public class PagerShapesTableProvider : IShapeTableProvider
+    public class PagerShapesTableProvider : ShapeTableProvider
     {
-        public void Discover(ShapeTableBuilder builder)
+        public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
         {
             builder.Describe("Pager")
                 .OnCreated(created =>
@@ -31,7 +31,7 @@ namespace OrchardCore.Navigation
                 })
                 .OnDisplaying(displaying =>
                 {
-                    if (displaying.Shape.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
+                    if (displaying.Shape.TryGetProperty("PagerId", out string pagerId) && !string.IsNullOrEmpty(pagerId))
                     {
                         displaying.Shape.Metadata.Alternates.Add("Pager__" + pagerId.EncodeAlternateElement());
                     };
@@ -47,7 +47,7 @@ namespace OrchardCore.Navigation
                 })
                 .OnDisplaying(displaying =>
                 {
-                    if (displaying.Shape.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
+                    if (displaying.Shape.TryGetProperty("PagerId", out string pagerId) && !string.IsNullOrEmpty(pagerId))
                     {
                         displaying.Shape.Metadata.Alternates.Add("Pager__" + pagerId.EncodeAlternateElement());
                     };
@@ -58,7 +58,7 @@ namespace OrchardCore.Navigation
                 {
                     var shape = displaying.Shape;
 
-                    if (shape.TryGetProperty("Pager", out IShape pager) && pager.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
+                    if (shape.TryGetProperty("Pager", out IShape pager) && pager.TryGetProperty("PagerId", out string pagerId) && !string.IsNullOrEmpty(pagerId))
                     {
                         displaying.Shape.Metadata.Alternates.Add("Pager_Gap__" + pagerId.EncodeAlternateElement());
                     }
@@ -69,7 +69,7 @@ namespace OrchardCore.Navigation
                 {
                     var shape = displaying.Shape;
 
-                    if (shape.TryGetProperty("Pager", out IShape pager) && pager.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
+                    if (shape.TryGetProperty("Pager", out IShape pager) && pager.TryGetProperty("PagerId", out string pagerId) && !string.IsNullOrEmpty(pagerId))
                     {
                         displaying.Shape.Metadata.Alternates.Add("Pager_First__" + pagerId.EncodeAlternateElement());
                     }
@@ -80,7 +80,7 @@ namespace OrchardCore.Navigation
                 {
                     var shape = displaying.Shape;
 
-                    if (shape.TryGetProperty("Pager", out IShape pager) && pager.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
+                    if (shape.TryGetProperty("Pager", out IShape pager) && pager.TryGetProperty("PagerId", out string pagerId) && !string.IsNullOrEmpty(pagerId))
                     {
                         displaying.Shape.Metadata.Alternates.Add("Pager_Previous__" + pagerId.EncodeAlternateElement());
                     }
@@ -91,7 +91,7 @@ namespace OrchardCore.Navigation
                 {
                     var shape = displaying.Shape;
 
-                    if (shape.TryGetProperty("Pager", out IShape pager) && pager.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
+                    if (shape.TryGetProperty("Pager", out IShape pager) && pager.TryGetProperty("PagerId", out string pagerId) && !string.IsNullOrEmpty(pagerId))
                     {
                         displaying.Shape.Metadata.Alternates.Add("Pager_Next__" + pagerId.EncodeAlternateElement());
                     }
@@ -102,7 +102,7 @@ namespace OrchardCore.Navigation
                 {
                     var shape = displaying.Shape;
 
-                    if (shape.TryGetProperty("Pager", out IShape pager) && pager.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
+                    if (shape.TryGetProperty("Pager", out IShape pager) && pager.TryGetProperty("PagerId", out string pagerId) && !string.IsNullOrEmpty(pagerId))
                     {
                         displaying.Shape.Metadata.Alternates.Add("Pager_Last__" + pagerId.EncodeAlternateElement());
                     }
@@ -113,7 +113,7 @@ namespace OrchardCore.Navigation
                 {
                     var shape = displaying.Shape;
 
-                    if (shape.TryGetProperty("Pager", out IShape pager) && pager.TryGetProperty("PagerId", out string pagerId) && !String.IsNullOrEmpty(pagerId))
+                    if (shape.TryGetProperty("Pager", out IShape pager) && pager.TryGetProperty("PagerId", out string pagerId) && !string.IsNullOrEmpty(pagerId))
                     {
                         displaying.Shape.Metadata.Alternates.Add("Pager_CurrentPage__" + pagerId.EncodeAlternateElement());
                     }
@@ -127,6 +127,8 @@ namespace OrchardCore.Navigation
                         displaying.Shape.Metadata.Alternates.Add("Pager_Links__" + pagerId.EncodeAlternateElement());
                     }
                 });
+
+            return ValueTask.CompletedTask;
         }
     }
 
@@ -186,9 +188,10 @@ namespace OrchardCore.Navigation
             var firstPage = Math.Max(1, Page - (numberOfPagesToShow / 2));
             var lastPage = Math.Min(totalPageCount, Page + (numberOfPagesToShow / 2));
 
-            var pageKey = String.IsNullOrEmpty(PagerId) ? "pagenum" : PagerId;
+            var pageKey = string.IsNullOrEmpty(PagerId) ? "pagenum" : PagerId;
 
             shape.Classes.Add("pager");
+            shape.Classes.Add("pagination");
             shape.Metadata.Alternates.Clear();
             shape.Metadata.Type = "List";
 
@@ -368,6 +371,7 @@ namespace OrchardCore.Navigation
             var nextText = NextText ?? S[">"];
 
             shape.Classes.Add("pager");
+            shape.Classes.Add("pagination");
             shape.Metadata.Alternates.Clear();
             shape.Metadata.Type = "List";
 

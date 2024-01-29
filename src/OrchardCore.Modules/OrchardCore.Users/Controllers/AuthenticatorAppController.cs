@@ -147,7 +147,7 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
         // Load the authenticator key & QR code URI to display on the form.
         var unformattedKey = await UserManager.GetAuthenticatorKeyAsync(user);
 
-        if (String.IsNullOrEmpty(unformattedKey))
+        if (string.IsNullOrEmpty(unformattedKey))
         {
             await UserManager.ResetAuthenticatorKeyAsync(user);
             unformattedKey = await UserManager.GetAuthenticatorKeyAsync(user);
@@ -186,9 +186,9 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
     {
         var site = await SiteService.GetSiteSettingsAsync();
 
-        var issuer = String.IsNullOrWhiteSpace(site.SiteName) ? _shellSettings.Name : site.SiteName.Trim();
+        var issuer = string.IsNullOrWhiteSpace(site.SiteName) ? _shellSettings.Name : site.SiteName.Trim();
 
-        return String.Format(
+        return string.Format(
             CultureInfo.InvariantCulture,
             AuthenticatorUriFormat,
             _urlEncoder.Encode(issuer),

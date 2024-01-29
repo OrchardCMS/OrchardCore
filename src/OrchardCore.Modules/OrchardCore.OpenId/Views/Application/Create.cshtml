@@ -11,17 +11,17 @@
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Create" method="post" class="no-multisubmit">
     <div class="mb-3" asp-validation-class-for="ClientId">
-        <label asp-for="ClientId">@T["Client Id"]</label>
+        <label asp-for="ClientId" class="form-label">@T["Client Id"]</label>
         <input asp-for="ClientId" class="form-control" autofocus />
         <span asp-validation-for="ClientId" class="text-danger"></span>
     </div>
     <div class="mb-3" asp-validation-class-for="DisplayName">
-        <label asp-for="DisplayName">@T["Display Name"]</label>
+        <label asp-for="DisplayName" class="form-label">@T["Display Name"]</label>
         <input asp-for="DisplayName" class="form-control" autofocus />
         <span asp-validation-for="DisplayName" class="text-danger"></span>
     </div>
     <div class="mb-3" asp-validation-class-for="Type">
-        <label asp-for="Type">@T["Type"]</label>
+        <label asp-for="Type" class="form-label">@T["Type"]</label>
         <select asp-for="Type" class="form-select">
             <option value="@OpenIddictConstants.ClientTypes.Confidential">@T["Confidential client"]</option>
             <option value="@OpenIddictConstants.ClientTypes.Public">@T["Public client"]</option>
@@ -29,7 +29,7 @@
         <div class="hint">@T["Confidential applications MUST send their client secret when communicating with the token and revocation endpoints. This guarantees that only the legit client can exchange an authorization code or get a refresh token."]</div>
     </div>
     <div class="mb-3" asp-validation-class-for="ClientSecret">
-        <label asp-for="ClientSecret">@T["Client Secret"]</label>
+        <label asp-for="ClientSecret" class="form-label">@T["Client Secret"]</label>
         <input asp-for="ClientSecret" class="form-control" autofocus autocomplete="off" />
         <span asp-validation-for="ClientSecret" class="text-danger"></span>
     </div>
@@ -91,7 +91,7 @@
 
     <div id="RedirectSection" class="mb-3 collapse">
         <div asp-validation-class-for="RedirectUris">
-            <label asp-for="RedirectUris">@T["Redirect Uris"]</label>
+            <label asp-for="RedirectUris" class="form-label">@T["Redirect Uris"]</label>
             <input asp-for="RedirectUris" class="form-select" autofocus />
             <span asp-validation-for="RedirectUris" class="text-danger"></span>
         </div>
@@ -107,7 +107,7 @@
             </div>
             <div class="mb-3 collapse" id="postLogoutRedirectUris" name="postLogoutRedirectUris">
                 <div class="mb-3" asp-validation-class-for="PostLogoutRedirectUris">
-                    <label asp-for="PostLogoutRedirectUris">@T["Logout Redirect Uris"]</label>
+                    <label asp-for="PostLogoutRedirectUris" class="form-label">@T["Logout Redirect Uris"]</label>
                     <input asp-for="PostLogoutRedirectUris" class="form-control" autofocus />
                     <span asp-validation-for="PostLogoutRedirectUris" class="text-danger"></span>
                 </div>
@@ -128,7 +128,7 @@
             </div>            
         </div>
         <div class="mb-3" asp-validation-class-for="ConsentType">
-            <label asp-for="ConsentType">@T["Consent type"]</label>
+            <label asp-for="ConsentType" class="form-label">@T["Consent type"]</label>
             <select asp-for="ConsentType" class="form-select">
                 <option value="@OpenIddictConstants.ConsentTypes.Explicit">@T["Explicit consent"]</option>
                 <option value="@OpenIddictConstants.ConsentTypes.Implicit">@T["Implicit consent"]</option>

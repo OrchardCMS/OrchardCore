@@ -49,15 +49,15 @@ namespace OrchardCore.Markdown.Handlers
             {
                 try
                 {
-                    var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-                    var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "MarkdownBodyPart"));
+                    var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
+                    var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "MarkdownBodyPart"));
                     var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
 
                     // The default Markdown option is to entity escape html
                     // so filters must be run after the markdown has been processed.
                     var html = _markdownService.ToHtml(part.Markdown);
 
-                    // The liquid rendering is for backwards compatability and can be removed in a future version.
+                    // The liquid rendering is for backwards compatibility and can be removed in a future version.
                     if (!settings.SanitizeHtml)
                     {
                         var model = new MarkdownBodyPartViewModel()

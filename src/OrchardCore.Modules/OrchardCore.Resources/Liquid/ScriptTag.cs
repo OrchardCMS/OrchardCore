@@ -57,12 +57,12 @@ namespace OrchardCore.Resources.Liquid
                 }
             }
 
-            if (String.IsNullOrEmpty(name) && !String.IsNullOrEmpty(src))
+            if (string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(src))
             {
                 // {% script src:"~/TheBlogTheme/js/clean-blog.min.js" %}
                 RequireSettings setting;
 
-                if (String.IsNullOrEmpty(dependsOn))
+                if (string.IsNullOrEmpty(dependsOn))
                 {
                     // Include custom script url
                     setting = resourceManager.RegisterUrl("script", src, debugSrc);
@@ -77,22 +77,22 @@ namespace OrchardCore.Resources.Liquid
                     var definition = resourceManager.InlineManifest.DefineScript(s);
                     definition.SetUrl(src, debugSrc);
 
-                    if (!String.IsNullOrEmpty(version))
+                    if (!string.IsNullOrEmpty(version))
                     {
                         definition.SetVersion(version);
                     }
 
-                    if (!String.IsNullOrEmpty(cdnSrc))
+                    if (!string.IsNullOrEmpty(cdnSrc))
                     {
                         definition.SetCdn(cdnSrc, debugCdnSrc);
                     }
 
-                    if (!String.IsNullOrEmpty(culture))
+                    if (!string.IsNullOrEmpty(culture))
                     {
                         definition.SetCultures(culture.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
                     }
 
-                    if (!String.IsNullOrEmpty(dependsOn))
+                    if (!string.IsNullOrEmpty(dependsOn))
                     {
                         definition.SetDependencies(dependsOn.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
                     }
@@ -102,7 +102,7 @@ namespace OrchardCore.Resources.Liquid
                         definition.ShouldAppendVersion(appendVersion);
                     }
 
-                    if (!String.IsNullOrEmpty(version))
+                    if (!string.IsNullOrEmpty(version))
                     {
                         definition.SetVersion(version);
                     }
@@ -115,7 +115,7 @@ namespace OrchardCore.Resources.Liquid
                     setting.AtLocation(at);
                 }
 
-                if (!String.IsNullOrEmpty(condition))
+                if (!string.IsNullOrEmpty(condition))
                 {
                     setting.UseCondition(condition);
                 }
@@ -125,7 +125,7 @@ namespace OrchardCore.Resources.Liquid
                     setting.UseDebugMode(debug.Value);
                 }
 
-                if (!String.IsNullOrEmpty(culture))
+                if (!string.IsNullOrEmpty(culture))
                 {
                     setting.UseCulture(culture);
                 }
@@ -148,7 +148,7 @@ namespace OrchardCore.Resources.Liquid
                     resourceManager.RenderLocalScript(setting, writer);
                 }
             }
-            else if (!String.IsNullOrEmpty(name) && String.IsNullOrEmpty(src))
+            else if (!string.IsNullOrEmpty(name) && string.IsNullOrEmpty(src))
             {
                 // Resource required
                 // {% script name:"bootstrap" %}
@@ -165,7 +165,7 @@ namespace OrchardCore.Resources.Liquid
                     setting.UseCdn(useCdn.Value);
                 }
 
-                if (!String.IsNullOrEmpty(condition))
+                if (!string.IsNullOrEmpty(condition))
                 {
                     setting.UseCondition(condition);
                 }
@@ -175,7 +175,7 @@ namespace OrchardCore.Resources.Liquid
                     setting.UseDebugMode(debug.Value);
                 }
 
-                if (!String.IsNullOrEmpty(culture))
+                if (!string.IsNullOrEmpty(culture))
                 {
                     setting.UseCulture(culture);
                 }
@@ -185,13 +185,13 @@ namespace OrchardCore.Resources.Liquid
                     setting.ShouldAppendVersion(appendVersion);
                 }
 
-                if (!String.IsNullOrEmpty(version))
+                if (!string.IsNullOrEmpty(version))
                 {
                     setting.UseVersion(version);
                 }
 
                 // This allows additions to the pre registered scripts dependencies.
-                if (!String.IsNullOrEmpty(dependsOn))
+                if (!string.IsNullOrEmpty(dependsOn))
                 {
                     setting.SetDependencies(dependsOn.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
                 }
@@ -201,29 +201,29 @@ namespace OrchardCore.Resources.Liquid
                     resourceManager.RenderLocalScript(setting, writer);
                 }
             }
-            else if (!String.IsNullOrEmpty(name) && !String.IsNullOrEmpty(src))
+            else if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(src))
             {
                 // Inline declaration
 
                 var definition = resourceManager.InlineManifest.DefineScript(name);
                 definition.SetUrl(src, debugSrc);
 
-                if (!String.IsNullOrEmpty(version))
+                if (!string.IsNullOrEmpty(version))
                 {
                     definition.SetVersion(version);
                 }
 
-                if (!String.IsNullOrEmpty(cdnSrc))
+                if (!string.IsNullOrEmpty(cdnSrc))
                 {
                     definition.SetCdn(cdnSrc, debugCdnSrc);
                 }
 
-                if (!String.IsNullOrEmpty(culture))
+                if (!string.IsNullOrEmpty(culture))
                 {
                     definition.SetCultures(culture.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
                 }
 
-                if (!String.IsNullOrEmpty(dependsOn))
+                if (!string.IsNullOrEmpty(dependsOn))
                 {
                     definition.SetDependencies(dependsOn.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
                 }
@@ -233,7 +233,7 @@ namespace OrchardCore.Resources.Liquid
                     definition.ShouldAppendVersion(appendVersion);
                 }
 
-                if (!String.IsNullOrEmpty(version))
+                if (!string.IsNullOrEmpty(version))
                 {
                     definition.SetVersion(version);
                 }
@@ -250,7 +250,7 @@ namespace OrchardCore.Resources.Liquid
                         setting.UseCdn(useCdn.Value);
                     }
 
-                    if (!String.IsNullOrEmpty(condition))
+                    if (!string.IsNullOrEmpty(condition))
                     {
                         setting.UseCondition(condition);
                     }
@@ -260,7 +260,7 @@ namespace OrchardCore.Resources.Liquid
                         setting.UseDebugMode(debug.Value);
                     }
 
-                    if (!String.IsNullOrEmpty(culture))
+                    if (!string.IsNullOrEmpty(culture))
                     {
                         setting.UseCulture(culture);
                     }

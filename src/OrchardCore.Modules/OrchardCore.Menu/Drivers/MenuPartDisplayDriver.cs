@@ -41,7 +41,7 @@ namespace OrchardCore.Menu.Drivers
         {
             return Initialize<MenuPartEditViewModel>("MenuPart_Edit", async model =>
             {
-                var menuItemContentTypes = _contentDefinitionManager.ListTypeDefinitions().Where(t => t.GetStereotype() == "MenuItem");
+                var menuItemContentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync()).Where(t => t.StereotypeEquals("MenuItem"));
                 var notify = false;
 
                 foreach (var menuItem in part.ContentItem.As<MenuItemsListPart>().MenuItems)
@@ -68,7 +68,7 @@ namespace OrchardCore.Menu.Drivers
         {
             var model = new MenuPartEditViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix, t => t.Hierarchy) && !String.IsNullOrWhiteSpace(model.Hierarchy))
+            if (await updater.TryUpdateModelAsync(model, Prefix, t => t.Hierarchy) && !string.IsNullOrWhiteSpace(model.Hierarchy))
             {
                 var originalMenuItems = part.ContentItem.As<MenuItemsListPart>();
 

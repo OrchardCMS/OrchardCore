@@ -153,11 +153,11 @@ namespace OrchardCore.Setup.Services
             _httpContextAccessor.HttpContext.Features.Set(recipeEnvironmentFeature);
 
             var shellSettings = new ShellSettings(context.ShellSettings).ConfigureDatabaseTableOptions();
-            if (String.IsNullOrWhiteSpace(shellSettings["DatabaseProvider"]))
+            if (string.IsNullOrWhiteSpace(shellSettings["DatabaseProvider"]))
             {
-                shellSettings["DatabaseProvider"] = context.Properties.TryGetValue(SetupConstants.DatabaseProvider, out var databaseProvider) ? databaseProvider?.ToString() : String.Empty;
-                shellSettings["ConnectionString"] = context.Properties.TryGetValue(SetupConstants.DatabaseConnectionString, out var databaseConnectionString) ? databaseConnectionString?.ToString() : String.Empty;
-                shellSettings["TablePrefix"] = context.Properties.TryGetValue(SetupConstants.DatabaseTablePrefix, out var databaseTablePrefix) ? databaseTablePrefix?.ToString() : String.Empty;
+                shellSettings["DatabaseProvider"] = context.Properties.TryGetValue(SetupConstants.DatabaseProvider, out var databaseProvider) ? databaseProvider?.ToString() : string.Empty;
+                shellSettings["ConnectionString"] = context.Properties.TryGetValue(SetupConstants.DatabaseConnectionString, out var databaseConnectionString) ? databaseConnectionString?.ToString() : string.Empty;
+                shellSettings["TablePrefix"] = context.Properties.TryGetValue(SetupConstants.DatabaseTablePrefix, out var databaseTablePrefix) ? databaseTablePrefix?.ToString() : string.Empty;
                 shellSettings["Schema"] = context.Properties.TryGetValue(SetupConstants.DatabaseSchema, out var schema) ? schema?.ToString() : null;
             }
 
@@ -165,16 +165,16 @@ namespace OrchardCore.Setup.Services
             switch (await _dbConnectionValidator.ValidateAsync(validationContext))
             {
                 case DbConnectionValidatorResult.NoProvider:
-                    context.Errors.Add(String.Empty, S["DatabaseProvider setting is required."]);
+                    context.Errors.Add(string.Empty, S["DatabaseProvider setting is required."]);
                     break;
                 case DbConnectionValidatorResult.UnsupportedProvider:
-                    context.Errors.Add(String.Empty, S["The provided database provider is not supported."]);
+                    context.Errors.Add(string.Empty, S["The provided database provider is not supported."]);
                     break;
                 case DbConnectionValidatorResult.InvalidConnection:
-                    context.Errors.Add(String.Empty, S["The provided connection string is invalid or server is unreachable."]);
+                    context.Errors.Add(string.Empty, S["The provided connection string is invalid or server is unreachable."]);
                     break;
                 case DbConnectionValidatorResult.DocumentTableFound:
-                    context.Errors.Add(String.Empty, S["The provided database, table prefix and schema are already in use."]);
+                    context.Errors.Add(string.Empty, S["The provided database, table prefix and schema are already in use."]);
                     break;
             }
 
@@ -207,7 +207,7 @@ namespace OrchardCore.Setup.Services
                     catch (Exception e)
                     {
                         _logger.LogError(e, "An error occurred while initializing the datastore.");
-                        context.Errors.Add(String.Empty, S["An error occurred while initializing the datastore: {0}", e.Message]);
+                        context.Errors.Add(string.Empty, S["An error occurred while initializing the datastore: {0}", e.Message]);
                     }
                 });
 
@@ -245,10 +245,9 @@ namespace OrchardCore.Setup.Services
             // Update the shell state.
             await _shellHost.UpdateShellSettingsAsync(shellSettings.AsRunning());
 
-            await (await _shellHost.GetScopeAsync(shellSettings)).UsingAsync(async scope =>
+            await (await _shellHost.GetScopeAsync(shellSettings.Name)).UsingAsync(async scope =>
             {
                 var handlers = scope.ServiceProvider.GetServices<ISetupEventHandler>();
-
                 await handlers.InvokeAsync((handler) => handler.SucceededAsync(), _logger);
             });
 

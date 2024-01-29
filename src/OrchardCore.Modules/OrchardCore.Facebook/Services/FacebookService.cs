@@ -50,7 +50,7 @@ namespace OrchardCore.Facebook.Services
 
             var results = new List<ValidationResult>();
 
-            if (String.IsNullOrEmpty(settings.AppId))
+            if (string.IsNullOrEmpty(settings.AppId))
             {
                 results.Add(new ValidationResult(S["The AppId is required."], new[]
                 {
@@ -58,7 +58,7 @@ namespace OrchardCore.Facebook.Services
                 }));
             }
 
-            if (String.IsNullOrEmpty(settings.AppSecret))
+            if (string.IsNullOrEmpty(settings.AppSecret))
             {
                 results.Add(new ValidationResult(S["The App Secret is required."], new[]
                 {

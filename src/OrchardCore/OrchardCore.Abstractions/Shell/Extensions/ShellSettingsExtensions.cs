@@ -41,13 +41,18 @@ public static class ShellSettingsExtensions
     public static bool IsRemovable(this ShellSettings settings) => settings.IsUninitialized() || settings.IsDisabled();
 
     /// <summary>
+    /// Whether or not the tenant configuration has not been disposed.
+    /// </summary>
+    public static bool HasConfiguration(this ShellSettings settings) => settings is { Disposed: false };
+
+    /// <summary>
     /// Whether or not the tenant has the provided url prefix.
     /// </summary>
     public static bool HasUrlPrefix(this ShellSettings settings, string urlPrefix) =>
         settings is not null &&
-        String.Equals(
-            settings.RequestUrlPrefix ?? String.Empty,
-            urlPrefix?.Trim(' ', '/') ?? String.Empty,
+        string.Equals(
+            settings.RequestUrlPrefix ?? string.Empty,
+            urlPrefix?.Trim(' ', '/') ?? string.Empty,
             StringComparison.OrdinalIgnoreCase);
 
     /// <summary>
@@ -134,6 +139,15 @@ public static class ShellSettingsExtensions
     public static ShellSettings AsDisabled(this ShellSettings settings)
     {
         settings.State = TenantState.Disabled;
+        return settings;
+    }
+
+    /// <summary>
+    /// Marks the tenant settings to be disposable.
+    /// </summary>
+    public static ShellSettings AsDisposable(this ShellSettings settings)
+    {
+        settings.Disposable = true;
         return settings;
     }
 }

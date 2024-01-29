@@ -18,8 +18,6 @@ describe('Agency Tests', function () {
     it('Agency admin login should work', function(){
         cy.login(tenant);
         cy.visit(`${tenant.prefix}/Admin`);
-        cy.get('.ta-content').should('contain.text', 'Welcome to Orchard')
+        cy.get('.menu-admin').should('have.id', 'adminMenu')
     })
-
-
 });

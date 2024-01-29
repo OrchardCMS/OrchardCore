@@ -14,7 +14,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Entities;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
@@ -30,7 +29,7 @@ namespace OrchardCore.Users.Controllers;
 public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
 {
     private readonly IUserService _userService;
-    private readonly ISmsProvider _smsProvider;
+    private readonly ISmsService _smsService;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly IPhoneFormatValidator _phoneFormatValidator;
     private readonly HtmlEncoder _htmlEncoder;
@@ -45,7 +44,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         INotifier notifier,
         IDistributedCache distributedCache,
         IUserService userService,
-        ISmsProvider smsProvider,
+        ISmsService smsService,
         ILiquidTemplateManager liquidTemplateManager,
         IPhoneFormatValidator phoneFormatValidator,
         HtmlEncoder htmlEncoder,
@@ -62,7 +61,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
             twoFactorOptions)
     {
         _userService = userService;
-        _smsProvider = smsProvider;
+        _smsService = smsService;
         _liquidTemplateManager = liquidTemplateManager;
         _phoneFormatValidator = phoneFormatValidator;
         _htmlEncoder = htmlEncoder;
@@ -85,7 +84,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         {
             PhoneNumber = currentPhoneNumber,
             AllowChangingPhoneNumber = settings.AllowChangingPhoneNumber
-            || String.IsNullOrEmpty(currentPhoneNumber)
+            || string.IsNullOrEmpty(currentPhoneNumber)
             || !_phoneFormatValidator.IsValid(currentPhoneNumber),
         };
 
@@ -106,7 +105,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         var currentPhoneNumber = await UserManager.GetPhoneNumberAsync(user);
 
         var canSetNewPhone = settings.AllowChangingPhoneNumber
-            || String.IsNullOrEmpty(currentPhoneNumber)
+            || string.IsNullOrEmpty(currentPhoneNumber)
             || !_phoneFormatValidator.IsValid(currentPhoneNumber);
 
         model.AllowChangingPhoneNumber = canSetNewPhone;
@@ -129,7 +128,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
             Body = await GetBodyAsync(smsSettings, user, code),
         };
 
-        var result = await _smsProvider.SendAsync(message);
+        var result = await _smsService.SendAsync(message);
 
         if (!result.Succeeded)
         {
@@ -179,7 +178,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
             return UserNotFound();
         }
 
-        if (String.IsNullOrWhiteSpace(model.PhoneNumber))
+        if (string.IsNullOrWhiteSpace(model.PhoneNumber))
         {
             await Notifier.ErrorAsync(H["Unable to find a phone number."]);
 
@@ -228,7 +227,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
             Body = await GetBodyAsync(settings, user, code),
         };
 
-        var result = await _smsProvider.SendAsync(message);
+        var result = await _smsService.SendAsync(message);
 
         return Ok(new
         {
@@ -240,7 +239,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
 
     private Task<string> GetBodyAsync(SmsAuthenticatorLoginSettings settings, IUser user, string code)
     {
-        var message = String.IsNullOrWhiteSpace(settings.Body)
+        var message = string.IsNullOrWhiteSpace(settings.Body)
         ? EmailAuthenticatorLoginSettings.DefaultBody
         : settings.Body;
 

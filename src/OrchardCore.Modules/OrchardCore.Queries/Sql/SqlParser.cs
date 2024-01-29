@@ -149,49 +149,49 @@ namespace OrchardCore.Queries.Sql
 
             EvaluateFromClause(selectStatement.ChildNodes[3]);
 
-            if (!String.IsNullOrEmpty(_from))
+            if (!string.IsNullOrEmpty(_from))
             {
                 sqlBuilder.From(_from);
             }
 
             EvaluateWhereClause(selectStatement.ChildNodes[4]);
 
-            if (!String.IsNullOrEmpty(_where))
+            if (!string.IsNullOrEmpty(_where))
             {
                 sqlBuilder.WhereAnd(_where);
             }
 
             EvaluateGroupClause(selectStatement.ChildNodes[5]);
 
-            if (!String.IsNullOrEmpty(_groupBy))
+            if (!string.IsNullOrEmpty(_groupBy))
             {
                 sqlBuilder.GroupBy(_groupBy);
             }
 
             EvaluateHavingClause(selectStatement.ChildNodes[6]);
 
-            if (!String.IsNullOrEmpty(_having))
+            if (!string.IsNullOrEmpty(_having))
             {
                 sqlBuilder.Having(_having);
             }
 
             EvaluateOrderClause(selectStatement.ChildNodes[7]);
 
-            if (!String.IsNullOrEmpty(_orderBy))
+            if (!string.IsNullOrEmpty(_orderBy))
             {
                 sqlBuilder.OrderBy(_orderBy);
             }
 
             EvaluateLimitClause(selectStatement.ChildNodes[8]);
 
-            if (!String.IsNullOrEmpty(_limit))
+            if (!string.IsNullOrEmpty(_limit))
             {
                 sqlBuilder.Take(_limit);
             }
 
             EvaluateOffsetClause(selectStatement.ChildNodes[9]);
 
-            if (!String.IsNullOrEmpty(_offset))
+            if (!string.IsNullOrEmpty(_offset))
             {
                 sqlBuilder.Skip(_offset);
             }
