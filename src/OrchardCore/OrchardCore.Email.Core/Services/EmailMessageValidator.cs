@@ -20,7 +20,7 @@ public class EmailMessageValidator : IEmailMessageValidator
         S = stringLocalizer;
     }
 
-    public bool IsValidate(MailMessage message, out List<LocalizedString> errors)
+    public bool IsValid(MailMessage message, out List<LocalizedString> errors)
     {
         errors = [];
         var senderAddress = string.IsNullOrWhiteSpace(message.Sender)
