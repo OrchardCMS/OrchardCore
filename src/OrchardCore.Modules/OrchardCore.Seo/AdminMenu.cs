@@ -33,7 +33,7 @@ public class AdminMenu : INavigationProvider
                    .Add(S["SEO"], S["SEO"].PrefixPosition(), seo => seo
                        .AddClass("seo")
                        .Id("seo")
-                       .Action("Index", "Admin", new { area = "OrchardCore.Settings", _routeValues)
+                       .Action("Index", "Admin", _routeValues)
                        .Permission(SeoConstants.ManageSeoSettings)
                        .LocalNav()
                     )
