@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -16,10 +17,14 @@ namespace OrchardCore.Users.Localization.Drivers;
 public class UserLocalizationDisplayDriver : SectionDisplayDriver<User, UserLocalizationSettings>
 {
     private readonly ILocalizationService _localizationService;
+    protected readonly IStringLocalizer S;
 
-    public UserLocalizationDisplayDriver(ILocalizationService localizationService)
+    public UserLocalizationDisplayDriver(
+        ILocalizationService localizationService,
+        IStringLocalizer<UserLocalizationDisplayDriver> localizer)
     {
         _localizationService = localizationService;
+        S = localizer;
     }
 
     public override Task<IDisplayResult> EditAsync(UserLocalizationSettings section, BuildEditorContext context)
@@ -28,13 +33,17 @@ public class UserLocalizationDisplayDriver : SectionDisplayDriver<User, UserLoca
         {
             var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
 
-            model.Culture = section.Culture;
-            model.SupportedCultures = supportedCultures.Select(culture =>
+            var cultureList = supportedCultures.Select(culture =>
                 new SelectListItem
                 {
                     Text = CultureInfo.GetCultureInfo(culture).DisplayName + " (" + culture + ")",
                     Value = culture
-                });
+                }).ToList();
+
+            cultureList.Insert(0, new SelectListItem(){ Text = S["Use site's culture"], Value = "none" });
+
+            model.SelectedCulture = section.Culture;
+            model.CultureList = cultureList;
         }).Location("Content:2"));
     }
 
@@ -44,7 +53,7 @@ public class UserLocalizationDisplayDriver : SectionDisplayDriver<User, UserLoca
 
         if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix))
         {
-            section.Culture = viewModel.Culture;
+            section.Culture = viewModel.SelectedCulture;
         }
 
         return await EditAsync(section, context);

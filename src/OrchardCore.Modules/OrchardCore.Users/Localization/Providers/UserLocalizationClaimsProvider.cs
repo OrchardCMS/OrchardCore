@@ -26,9 +26,9 @@ public class UserLocalizationClaimsProvider : IUserClaimsProvider
         {
             var localizationSetting = currentUser.As<UserLocalizationSettings>();
 
-            if (!string.IsNullOrEmpty(localizationSetting.Culture))
+            if (localizationSetting.Culture != "none")
             {
-                claims.AddClaim(new Claim(CultureClaimType, localizationSetting.Culture));
+                claims.AddClaim(new Claim(CultureClaimType, localizationSetting.Culture ?? ""));
             }
         }
 

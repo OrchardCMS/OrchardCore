@@ -62,7 +62,7 @@ using OrchardCore.Users;
     Description = "Provides a way to set the culture per user.",
     Dependencies = new[] { "OrchardCore.Users", "OrchardCore.Localization" },
     Category = "Settings",
-    Priority = "-1"
+    Priority = "-1" // Added to avoid changing the order in the localization module.
 )]
 
 [assembly: Feature(

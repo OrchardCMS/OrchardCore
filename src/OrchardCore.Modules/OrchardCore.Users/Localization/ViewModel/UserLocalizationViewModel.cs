@@ -6,8 +6,8 @@ namespace OrchardCore.Users.Localization.ViewModels;
 
 public class UserLocalizationViewModel
 {
-    public string Culture { get; set; }
+    public string SelectedCulture { get; set; }
 
     [BindNever]
-    public IEnumerable<SelectListItem> SupportedCultures { get; set; } = new List<SelectListItem>();
+    public IEnumerable<SelectListItem> CultureList { get; set; } = new List<SelectListItem>();
 }
