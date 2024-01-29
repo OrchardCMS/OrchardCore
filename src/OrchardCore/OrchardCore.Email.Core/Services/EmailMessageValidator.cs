@@ -20,7 +20,7 @@ public class EmailMessageValidator : IEmailMessageValidator
         S = stringLocalizer;
     }
 
-    public void Validate(MailMessage message, out List<LocalizedString> errors)
+    public bool IsValidate(MailMessage message, out List<LocalizedString> errors)
     {
         errors = [];
         var submitterAddress = string.IsNullOrWhiteSpace(message.Sender)
@@ -61,5 +61,7 @@ public class EmailMessageValidator : IEmailMessageValidator
         {
             errors.Add(S["The mail message should have at least one of these headers: To, Cc or Bcc."]);
         }
+
+        return errors.Count == 0;
     }
 }

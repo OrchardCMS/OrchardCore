@@ -17,9 +17,7 @@ public class EmailService : IEmailService
 
     public async Task<EmailResult> SendAsync(MailMessage message, string deliveryMethodName = null)
     {
-        _emailMessageValidator.Validate(message, out var errors);
-
-        if (errors.Count > 0)
+        if (!_emailMessageValidator.IsValidate(message, out var errors))
         {
             return EmailResult.Failed([.. errors]);
         }

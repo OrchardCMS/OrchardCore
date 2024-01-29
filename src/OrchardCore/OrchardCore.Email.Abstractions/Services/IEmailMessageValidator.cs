@@ -5,5 +5,5 @@ namespace OrchardCore.Email.Services;
 
 public interface IEmailMessageValidator
 {
-    void Validate(MailMessage message, out List<LocalizedString> errors);
+    bool IsValidate(MailMessage message, out List<LocalizedString> errors);
 }
