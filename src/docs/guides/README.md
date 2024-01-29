@@ -20,7 +20,7 @@ These guides are specific to Orchard Core CMS
 - [How to use the assets transpiler/bundler/minifier pipeline](gulp-pipeline/README.md)
 - [Integrate facebook plugins](integrate-facebook-plugins/README.md)
 - [Implement Full Text search](implement-fulltext-search/README.md)
-- [Integrate AzureAD as external provider](azuread-integration/README.md)
+- [Integrate AzureAD as external provider](microsoft-entra-id-integration/README.md)
 
 ## Tutorials
 

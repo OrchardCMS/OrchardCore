@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
 using OrchardCore.Environment.Shell.Scope;
@@ -34,7 +35,7 @@ namespace OrchardCore.Navigation
         /// <param name="viewContext">The current <see cref="ViewContext"/>.</param>
         public static async Task PopulateMenuLevelAsync(dynamic shapeFactory, dynamic parentShape, dynamic menu, IEnumerable<MenuItem> menuItems, ViewContext viewContext)
         {
-            foreach (MenuItem menuItem in menuItems)
+            foreach (var menuItem in menuItems)
             {
                 dynamic menuItemShape = await BuildMenuItemShapeAsync(shapeFactory, parentShape, menu, menuItem, viewContext);
 
@@ -75,7 +76,7 @@ namespace OrchardCore.Navigation
 
             menuItemShape.Id = menuItem.Id;
 
-            if (!String.IsNullOrEmpty(menuItem.Href) && menuItem.Href[0] == '/')
+            if (!string.IsNullOrEmpty(menuItem.Href) && menuItem.Href[0] == '/')
             {
                 menuItemShape.Href = QueryHelpers.AddQueryString(menuItem.Href, menu.MenuName, menuItemShape.Hash);
             }
@@ -92,7 +93,7 @@ namespace OrchardCore.Navigation
 
         private static void MarkAsSelectedIfMatchesQueryOrCookie(MenuItem menuItem, dynamic menuItemShape, ViewContext viewContext)
         {
-            if (!String.IsNullOrEmpty(menuItem.Href) && menuItem.Href[0] == '/')
+            if (!string.IsNullOrEmpty(menuItem.Href) && menuItem.Href[0] == '/')
             {
                 var hash = viewContext.HttpContext.Request.Query[(string)menuItemShape.Menu.MenuName];
 
@@ -129,7 +130,7 @@ namespace OrchardCore.Navigation
             // Apply the selection to the hierarchy
             if (selectedItem != null)
             {
-                viewContext.HttpContext.Response.Cookies.Append(selectedItem.Menu.MenuName + '_' + ShellScope.Context.Settings.Name, selectedItem.Hash);
+                viewContext.HttpContext.Response.Cookies.Append(HttpUtility.UrlEncode($"{selectedItem.Menu.MenuName}_{ShellScope.Context.Settings.Name}"), selectedItem.Hash);
 
                 while (selectedItem.Parent != null)
                 {

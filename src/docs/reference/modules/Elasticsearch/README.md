@@ -4,13 +4,13 @@ The Elasticsearch module allows you to manage Elasticsearch indices.
 
 ## How to use
 
-You can use an Elasticsearch cloud service like offered on https://www.elastic.co or install it on-premises. For development and testing purposes, it is also available to be deployed with Docker.
+You can use an Elasticsearch cloud service like offered on <https://www.elastic.co> or install it on-premises. For development and testing purposes, it is also available to be deployed with Docker.
 
 ### Install Elasticsearch 7.x with Docker compose
 
 Elasticsearch uses a mmapfs directory by default to store its indices. The default operating system limits on mmap counts is likely to be too low, which may result in out of memory exceptions.
 
-https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html
+<https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html>
 
 For Docker with WSL2, you will need to persist this setting by using a .wslconfig file.
 
@@ -28,7 +28,7 @@ Then exit any WSL instance, `wsl --shutdown`, and restart.
 vm.max_map_count = 262144
 ```
 
-Elasticsearch v7.17.5 Docker Compose file : 
+Elasticsearch v7.17.5 Docker Compose file :
 [docker-compose.yml](docker-compose.yml)
 
 - Copy this file in a folder named Elasticsearch somewhere safe.
@@ -37,13 +37,13 @@ Elasticsearch v7.17.5 Docker Compose file :
 
 Advice: don't remove this file from its folder if you want to remove all their containers at once later on in Docker desktop.
 
-You should get this result in Docker Desktop app: 
+You should get this result in Docker Desktop app:
 
 ![Elasticsearch docker containers](images/elasticsearch-docker.png)
 
 ### Set up Elasticsearch in Orchard Core
 
-- Add Elastic Connection in the shell configuration (OrchardCore.Cms.Web appsettings.json file). [See Elasticsearch Configurations](#elasticsearch-configuration).
+- Add Elastic Connection in the shell configuration (OrchardCore.Cms.Web `appsettings.json` file). [See Elasticsearch Configurations](#elasticsearch-configuration).
 
 - Start an Orchard Core instance with VS Code debugger
 - Go to Orchard Core features, Enable Elasticsearch.
@@ -55,20 +55,24 @@ Here is a sample step:
 
 ```json
 {
-  "name": "ElasticIndexSettings",
-  "Indices": [
+  "steps":[
     {
-      "Search": {
-        "AnalyzerName": "standardanalyzer",
-        "IndexLatest": false,
-        "IndexedContentTypes": [
-          "Article",
-          "BlogPost"
-        ]
-      }
+      "name":"ElasticIndexSettings",
+      "Indices":[
+        {
+          "Search":{
+            "AnalyzerName":"standardanalyzer",
+            "IndexLatest":false,
+            "IndexedContentTypes":[
+              "Article",
+              "BlogPost"
+            ]
+          }
+        }
+      ]
     }
   ]
-},
+}
 ```
 
 ## Elasticsearch settings recipe step
@@ -77,17 +81,22 @@ Here is an example for setting default search settings:
 
 ```json
 {
-  // Create the search settings.
-  "name": "Settings",
-  "ElasticSettings": {
-    "SearchIndex": "search",
-    "DefaultSearchFields": [
-      "Content.ContentItem.FullText"
-    ],
-    "AllowElasticQueryStringQueryInSearch": false,
-    "SyncWithLucene":  true // Allows to sync content index settings
-  }
-},
+  "steps":[
+    {
+      // Create the search settings.
+      "name":"Settings",
+      "ElasticSettings":{
+        "SearchIndex":"search",
+        "DefaultSearchFields":[
+          "Content.ContentItem.FullText"
+        ],
+        "SearchType": "", // Use 'custom' for a custom query in DefaultQuery and 'query_string' for a Query String Query search. Leave it blank for the default, which is a Multi-Match Query search.
+        "DefaultQuery": null,
+        "SyncWithLucene":true // Allows to sync content index settings.
+      }
+    }
+  ]
+}
 ```
 
 ### Reset Elasticsearch Index Step
@@ -97,21 +106,30 @@ Restarts the indexing process from the beginning in order to update current cont
 It doesn't delete existing entries from the index.
 
 ```json
+{
+  "steps":[
     {
-      "name": "lucene-index-reset",
-      "Indices": [
-        "IndexName1", "IndexName2"
+      "name":"elastic-index-reset",
+      "Indices":[
+        "IndexName1",
+        "IndexName2"
       ]
     }
+  ]
+}
 ```
 
-To reset all indices:   
+To reset all indices:
 
 ```json
+{
+  "steps":[
     {
-      "name": "lucene-index-reset",
-      "IncludeAll": true
+      "name":"elastic-index-reset",
+      "IncludeAll":true
     }
+  ]
+}
 ```
 
 ### Rebuild Elasticsearch Index Step
@@ -120,21 +138,30 @@ This Rebuild Index Step rebuilds an Elasticsearch index.
 Deletes and recreates the full index content.
 
 ```json
+{
+  "steps":[
     {
-      "name": "lucene-index-rebuild",
-      "Indices": [
-        "IndexName1", "IndexName2"
+      "name":"elastic-index-rebuild",
+      "Indices":[
+        "IndexName1",
+        "IndexName2"
       ]
     }
+  ]
+}
 ```
 
-To rebuild all indices:   
+To rebuild all indices:
 
 ```json
+{
+  "steps":[
     {
-      "name": "lucene-index-rebuild",
-      "IncludeAll": true
+      "name":"elastic-index-rebuild",
+      "IncludeAll":true
     }
+  ]
+}
 ```
 
 ## Queries recipe step
@@ -143,11 +170,14 @@ Here is an example for creating a Elasticsearch query from a Queries recipe step
 
 ```json
 {
-    "Source": "Elasticsearch",
-    "Name": "RecentBlogPosts",
-    "Index": "Search",
-    "Template": "...", // json encoded query template
-    "ReturnContentItems": true
+  "steps":[
+    {
+        "Source": "Elasticsearch",
+        "Name": "RecentBlogPosts",
+        "Index": "Search",
+        "Template": "...", // json encoded query template
+        "ReturnContentItems": true
+    }
 }
 ```
 
@@ -180,28 +210,86 @@ Verbs: `POST` and `GET`
 ## Elasticsearch Queries
 
 The Elasticsearch module provides a management UI and APIs for querying Elasticsearch data using ElasticSearch Queries.
-See: https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html
+See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html>
 
 ## Elasticsearch configuration
 
-The Elasticsearch module connection configuration can be set globally in the appsettings.json file or per tenant.
+The Elasticsearch module connection configuration can be set globally in the `appsettings.json` file or per tenant.
 
 ```json
-    "OrchardCore_Elasticsearch": {
-      "ConnectionType": "SingleNodeConnectionPool",
-      "Url": "http://localhost",
-      "Ports": [ 9200 ],
-      "CloudId": "Orchard_Core_deployment:ZWFzdHVzMi5henVyZS5lbGFzdGljLWNsb3VkLmNvbTo0NDMkNmMxZGQ4YzBrQ2Y2NDI5ZDkyNzc1MTUxN2IyYjZkYTgkMTJmMjA1MzBlOTU0NDgyNDlkZWVmZWYzNmZlY2Q5Yjc="
-      "Username": "admin",
-      "Password": "admin",
-      "CertificateFingerprint": "75:21:E7:92:8F:D5:7A:27:06:38:8E:A4:35:FE:F5:17:D7:37:F4:DF:F0:9A:D2:C0:C4:B6:FF:EE:D1:EA:2B:A7",
-      "EnableApiVersioningHeader": false
+"OrchardCore_Elasticsearch": {
+  "ConnectionType": "SingleNodeConnectionPool",
+  "Url": "http://localhost",
+  "Ports": [ 9200 ],
+  "CloudId": "Orchard_Core_deployment:ZWFzdHVzMi5henVyZS5lbGFzdGljLWNsb3VkLmNvbTo0NDMkNmMxZGQ4YzBrQ2Y2NDI5ZDkyNzc1MTUxN2IyYjZkYTgkMTJmMjA1MzBlOTU0NDgyNDlkZWVmZWYzNmZlY2Q5Yjc=",
+  "Username": "admin",
+  "Password": "admin",
+  "CertificateFingerprint": "75:21:E7:92:8F:D5:7A:27:06:38:8E:A4:35:FE:F5:17:D7:37:F4:DF:F0:9A:D2:C0:C4:B6:FF:EE:D1:EA:2B:A7",
+  "EnableApiVersioningHeader": false,
+  "IndexPrefix": "",
+  "Analyzers": {
+    "standard": {
+      "type": "standard"
     }
+  }
+}
 ```
 
-The connection types documentation and examples can be found at this url : 
+!!! note
+    When `CloudConnectionPool` connection type is used, `CertificateFingerprint` is not needed.
 
-https://www.elastic.co/guide/en/elasticsearch/client/net-api/current/connection-pooling.html
+The connection types documentation and examples can be found at this url:
+
+<https://www.elastic.co/guide/en/elasticsearch/client/net-api/7.17/connection-pooling.html>
+
+## Elasticsearch Analyzers
+
+As of version 1.6, [built-in](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-analyzers.html) and custom analyzers are supported. By default, only `standard` analyzer is available. You may update the Elasticsearch configurations to enable any of the built-in and any custom analyzers. For example, to enable the built in `stop` and `standard` analyzers, you may add the following to the [appsettings.json](../../core/Configuration/README.md) file
+
+```json
+"OrchardCore_Elasticsearch": {
+  "Analyzers": {
+    "standard": {
+      "type": "standard"
+    },
+    "stop": {
+      "type": "stop"
+    }
+  }
+}
+```
+
+At the same time, you may define custom analyzers using the [appsettings.json](../../core/Configuration/README.md) file as well. In the following example, we are enabling the [standard](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-standard-analyzer.html) analyzer, customizing the [stop](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-stop-analyzer.html) analyzer and creating a [custom analyzer](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-custom-analyzer.html) named `english_analyzer`.
+
+```json
+"OrchardCore_Elasticsearch": {
+  "Analyzers": {
+    "standard": {
+      "type": "standard"
+    },
+    "stop": {
+      "type": "stop",
+      "stopwords": [
+         "a", 
+         "the", 
+         "and",
+         "or" 
+       ]
+    },
+    "english_analyzer": {
+      "type": "custom",
+      "tokenizer": "standard",
+      "filter": [
+        "lowercase",
+        "stop"
+      ],
+      "char_filter": [
+        "html_strip"
+      ]
+    }
+  }
+}
+```
 
 ## Elasticsearch vs Lucene
 
@@ -214,7 +302,7 @@ The Lucene module though will always only return `stored` fields from Lucene Que
 
 Here is one example of a Query that will return only specific fields from Elasticsearch.
 
-```
+```json
 {
   "query": {
     "match_all": { }
@@ -234,7 +322,7 @@ There may be differences between Lucene and Elasticsearch indexed fields. Lucene
 
 ### Indexed vs Stored
 
-When we say that a field is indexed it means that it is parsed by the configured Analyzer that is set on the index (Elasticsearch also allows to pass custom Analyzers on Queries too). 
+When we say that a field is indexed it means that it is parsed by the configured Analyzer that is set on the index (Elasticsearch also allows to pass custom Analyzers on Queries too).
 
 Though, when a field is stored it can have different contexts.
 
@@ -251,3 +339,7 @@ Here is a small table to compare Lucene and Elasticsearch (string) types:
 | StringField | Keyword  | A field that is indexed but not tokenized: the entire value is indexed as a single token     | original value AND indexed | [stored fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/term-level-queries.html) because indexed as a single token.  |
 | TextField   | Text     | A field that is indexed and tokenized, without term vectors | original value AND indexed  | [analyzed fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/full-text-queries.html). Also known as full-text search |
 | StoredField | stored in _source by mapping configuration | A field containing original value (not analyzed) | original value | [stored fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/term-level-queries.html) |
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/7Mx1Vjsy3Xw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>

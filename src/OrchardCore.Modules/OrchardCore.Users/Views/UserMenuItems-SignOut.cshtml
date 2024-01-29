@@ -1,0 +1,12 @@
+<li>
+    <a class="dropdown-item" asp-area="OrchardCore.Users" asp-controller="Account" asp-action="ChangePassword" asp-route-returnUrl="@FullRequestPath">
+        <i class="fa-solid fa-key" aria-hidden="true"></i> @T["Change password"]
+    </a>
+</li>
+<li>
+    <form asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="LogOff" method="post" class="no-multisubmit">
+        <button type="submit" class="dropdown-item">
+            <i class="fa-solid fa-sign-out-alt" aria-hidden="true"></i> @T["Log off"]
+        </button>
+    </form>
+</li>

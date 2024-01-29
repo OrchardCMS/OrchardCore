@@ -1,1 +1,16 @@
-<div class="hint">@T["Displays a list of validation errors."]</div>
+@using OrchardCore
+@using OrchardCore.Forms.ViewModels
+
+@model ValidationSummaryViewModel
+
+<div class="@Orchard.GetWrapperClasses()">
+    <div class="@Orchard.GetEndClasses(true)">
+        <div class="form-check">
+            <input class="form-check-input" asp-for="ModelOnly">
+            <label class="form-check-label" asp-for="ModelOnly">
+                @T["Show Model Only Error"]
+            </label>
+        </div>
+        <div class="hint">@T["When checked, model level errors will be visible otherwise all errors will be visible."]</div>
+    </div>
+</div>

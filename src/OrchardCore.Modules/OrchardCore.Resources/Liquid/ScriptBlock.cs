@@ -15,7 +15,7 @@ namespace OrchardCore.Resources.Liquid
 {
     public class ScriptBlock
     {
-        private static readonly char[] Separators = new[] { ',', ' ' };
+        private static readonly char[] _separators = new[] { ',', ' ' };
 
         public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
@@ -48,7 +48,7 @@ namespace OrchardCore.Resources.Liquid
                 }
             }
 
-            if (!String.IsNullOrEmpty(name))
+            if (!string.IsNullOrEmpty(name))
             {
                 // Resource required
 
@@ -64,7 +64,7 @@ namespace OrchardCore.Resources.Liquid
                     setting.UseCdn(useCdn.Value);
                 }
 
-                if (!String.IsNullOrEmpty(condition))
+                if (!string.IsNullOrEmpty(condition))
                 {
                     setting.UseCondition(condition);
                 }
@@ -74,20 +74,20 @@ namespace OrchardCore.Resources.Liquid
                     setting.UseDebugMode(debug.Value);
                 }
 
-                if (!String.IsNullOrEmpty(culture))
+                if (!string.IsNullOrEmpty(culture))
                 {
                     setting.UseCulture(culture);
                 }
 
-                if (!String.IsNullOrEmpty(version))
+                if (!string.IsNullOrEmpty(version))
                 {
                     setting.UseVersion(version);
                 }
 
                 // This allows additions to the pre registered scripts dependencies.
-                if (!String.IsNullOrEmpty(dependsOn))
+                if (!string.IsNullOrEmpty(dependsOn))
                 {
-                    setting.SetDependencies(dependsOn.Split(Separators, StringSplitOptions.RemoveEmptyEntries));
+                    setting.SetDependencies(dependsOn.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 // Allow Inline to work with both named scripts, and named inline scripts.
@@ -109,7 +109,7 @@ namespace OrchardCore.Resources.Liquid
                     }
 
                     // Named inline declaration.
-                    if (!String.IsNullOrWhiteSpace(content))
+                    if (!string.IsNullOrWhiteSpace(content))
                     {
                         // Inline content definition
                         resourceManager.InlineManifest.DefineScript(name).SetInnerContent(content);

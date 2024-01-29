@@ -22,36 +22,35 @@ namespace OrchardCore.Roles.Controllers
     public class AdminController : Controller
     {
         private readonly IDocumentStore _documentStore;
-        private readonly IAuthorizationService _authorizationService;
-        private readonly IStringLocalizer S;
         private readonly RoleManager<IRole> _roleManager;
+        private readonly IAuthorizationService _authorizationService;
         private readonly IEnumerable<IPermissionProvider> _permissionProviders;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly IRoleService _roleService;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer H;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
 
         public AdminController(
-            IAuthorizationService authorizationService,
-            ITypeFeatureProvider typeFeatureProvider,
             IDocumentStore documentStore,
-            IStringLocalizer<AdminController> stringLocalizer,
-            IHtmlLocalizer<AdminController> htmlLocalizer,
             RoleManager<IRole> roleManager,
+            IAuthorizationService authorizationService,
+            IEnumerable<IPermissionProvider> permissionProviders,
+            ITypeFeatureProvider typeFeatureProvider,
             IRoleService roleService,
             INotifier notifier,
-            IEnumerable<IPermissionProvider> permissionProviders
-            )
+            IStringLocalizer<AdminController> stringLocalizer,
+            IHtmlLocalizer<AdminController> htmlLocalizer)
         {
-            H = htmlLocalizer;
-            _notifier = notifier;
-            _roleService = roleService;
-            _typeFeatureProvider = typeFeatureProvider;
-            _permissionProviders = permissionProviders;
-            _roleManager = roleManager;
-            S = stringLocalizer;
-            _authorizationService = authorizationService;
             _documentStore = documentStore;
+            _roleManager = roleManager;
+            _authorizationService = authorizationService;
+            _permissionProviders = permissionProviders;
+            _typeFeatureProvider = typeFeatureProvider;
+            _roleService = roleService;
+            _notifier = notifier;
+            S = stringLocalizer;
+            H = htmlLocalizer;
         }
 
         public async Task<ActionResult> Index()
@@ -171,8 +170,7 @@ namespace OrchardCore.Roles.Controllers
                 return Forbid();
             }
 
-            var role = (Role)await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(id));
-            if (role == null)
+            if (await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(id)) is not Role role)
             {
                 return NotFound();
             }
@@ -200,22 +198,20 @@ namespace OrchardCore.Roles.Controllers
                 return Forbid();
             }
 
-            var role = (Role)await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(id));
-
-            if (role == null)
+            if (await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(id)) is not Role role)
             {
                 return NotFound();
             }
 
             role.RoleDescription = roleDescription;
 
-            // Save
+            // Save.
             var rolePermissions = new List<RoleClaim>();
-            foreach (string key in Request.Form.Keys)
+            foreach (var key in Request.Form.Keys)
             {
                 if (key.StartsWith("Checkbox.", StringComparison.Ordinal) && Request.Form[key] == "true")
                 {
-                    string permissionName = key.Substring("Checkbox.".Length);
+                    var permissionName = key["Checkbox.".Length..];
                     rolePermissions.Add(new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = permissionName });
                 }
             }
@@ -268,12 +264,12 @@ namespace OrchardCore.Roles.Controllers
 
         private PermissionGroupKey GetGroupKey(IFeatureInfo feature, string category)
         {
-            if (!String.IsNullOrWhiteSpace(category))
+            if (!string.IsNullOrWhiteSpace(category))
             {
                 return new PermissionGroupKey(category, category);
             }
 
-            var title = String.IsNullOrWhiteSpace(feature.Name) ? S["{0} Feature", feature.Id] : feature.Name;
+            var title = string.IsNullOrWhiteSpace(feature.Name) ? S["{0} Feature", feature.Id] : feature.Name;
 
             return new PermissionGroupKey(feature.Id, title)
             {

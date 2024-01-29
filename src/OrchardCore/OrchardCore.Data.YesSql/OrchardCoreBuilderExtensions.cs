@@ -3,14 +3,14 @@ using System.Buffers;
 using System.Data;
 using System.IO;
 using System.Linq;
-using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data;
 using OrchardCore.Data.Documents;
 using OrchardCore.Data.Migration;
 using OrchardCore.Data.YesSql;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using YesSql;
@@ -28,17 +28,20 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class OrchardCoreBuilderExtensions
     {
         /// <summary>
-        /// Adds tenant level data access services.
+        /// Adds host and tenant level data access services.
         /// </summary>
         /// <param name="builder">The <see cref="OrchardCoreBuilder"/>.</param>
         public static OrchardCoreBuilder AddDataAccess(this OrchardCoreBuilder builder)
         {
+            builder.ApplicationServices.AddSingleton<IShellRemovingHandler, ShellDbTablesRemovingHandler>();
+
             builder.ConfigureServices(services =>
             {
                 services.AddScoped<IDbConnectionValidator, DbConnectionValidator>();
                 services.AddScoped<IDataMigrationManager, DataMigrationManager>();
                 services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
 
+                services.AddTransient<ITableNameConventionFactory, TableNameConventionFactory>();
                 services.AddTransient<IConfigureOptions<SqliteOptions>, SqliteOptionsConfiguration>();
 
                 // Adding supported databases
@@ -47,28 +50,26 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.TryAddDataProvider(name: "MySql", value: DatabaseProviderValue.MySql, hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;Uid=username;Pwd=password", hasTablePrefix: true, isDefault: false);
                 services.TryAddDataProvider(name: "Postgres", value: DatabaseProviderValue.Postgres, hasConnectionString: true, sampleConnectionString: "Server=localhost;Port=5432;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
 
-                // Ensure a non null 'TableNameConvention' to be always used for `YesSql.Configuration` and then in sync with it.
-                services.PostConfigure<YesSqlOptions>(o => o.TableNameConvention ??= new YesSql.Configuration().TableNameConvention);
-
                 // Configuring data access
                 services.AddSingleton(sp =>
                 {
                     var shellSettings = sp.GetService<ShellSettings>();
 
                     // Before the setup, a 'DatabaseProvider' may be configured without a required 'ConnectionString'.
-                    if (shellSettings.State == TenantState.Uninitialized || shellSettings["DatabaseProvider"] == null)
+                    if (shellSettings.IsUninitialized() || shellSettings["DatabaseProvider"] is null)
                     {
                         return null;
                     }
 
                     var yesSqlOptions = sp.GetService<IOptions<YesSqlOptions>>().Value;
-                    var storeConfiguration = GetStoreConfiguration(sp, yesSqlOptions);
+                    var databaseTableOptions = shellSettings.GetDatabaseTableOptions();
+                    var storeConfiguration = GetStoreConfiguration(sp, yesSqlOptions, databaseTableOptions);
 
                     switch (shellSettings["DatabaseProvider"])
                     {
                         case DatabaseProviderValue.SqlConnection:
                             storeConfiguration
-                                .UseSqlServer(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted)
+                                .UseSqlServer(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, shellSettings["Schema"])
                                 .UseBlockIdGenerator();
                             break;
                         case DatabaseProviderValue.Sqlite:
@@ -85,36 +86,49 @@ namespace Microsoft.Extensions.DependencyInjection
                             break;
                         case DatabaseProviderValue.MySql:
                             storeConfiguration
-                                .UseMySql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted)
+                                .UseMySql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, shellSettings["Schema"])
                                 .UseBlockIdGenerator();
                             break;
                         case DatabaseProviderValue.Postgres:
                             storeConfiguration
-                                .UsePostgreSql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted)
+                                .UsePostgreSql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, shellSettings["Schema"])
                                 .UseBlockIdGenerator();
                             break;
                         default:
                             throw new ArgumentException("Unknown database provider: " + shellSettings["DatabaseProvider"]);
                     }
 
-                    if (!String.IsNullOrWhiteSpace(shellSettings["TablePrefix"]))
+                    if (!string.IsNullOrWhiteSpace(shellSettings["TablePrefix"]))
                     {
-                        var tablePrefix = shellSettings["TablePrefix"].Trim() + yesSqlOptions.TablePrefixSeparator;
-                        storeConfiguration = storeConfiguration.SetTablePrefix(tablePrefix);
+                        var tablePrefix = shellSettings["TablePrefix"].Trim() + databaseTableOptions.TableNameSeparator;
+
+                        storeConfiguration.SetTablePrefix(tablePrefix);
                     }
 
-                    var store = StoreFactory.CreateAndInitializeAsync(storeConfiguration).GetAwaiter().GetResult();
-                    var options = sp.GetService<IOptions<StoreCollectionOptions>>().Value;
-                    foreach (var collection in options.Collections)
-                    {
-                        store.InitializeCollectionAsync(collection).GetAwaiter().GetResult();
-                    }
+                    var store = StoreFactory.Create(storeConfiguration);
 
                     var indexes = sp.GetServices<IIndexProvider>();
 
                     store.RegisterIndexes(indexes);
 
                     return store;
+                });
+
+                services.Initialize(async sp =>
+                {
+                    var store = sp.GetService<IStore>();
+                    if (store == null)
+                    {
+                        return;
+                    }
+
+                    await store.InitializeAsync();
+
+                    var storeCollectionOptions = sp.GetService<IOptions<StoreCollectionOptions>>().Value;
+                    foreach (var collection in storeCollectionOptions.Collections)
+                    {
+                        await store.InitializeCollectionAsync(collection);
+                    }
                 });
 
                 services.AddScoped(sp =>
@@ -151,21 +165,25 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 services.AddScoped<IDocumentStore, DocumentStore>();
                 services.AddSingleton<IFileDocumentStore, FileDocumentStore>();
-
                 services.AddTransient<IDbConnectionAccessor, DbConnectionAccessor>();
             });
 
             return builder;
         }
 
-        private static IConfiguration GetStoreConfiguration(IServiceProvider sp, YesSqlOptions yesSqlOptions)
+        private static YesSql.Configuration GetStoreConfiguration(IServiceProvider sp, YesSqlOptions yesSqlOptions, DatabaseTableOptions databaseTableOptions)
         {
+            var tableNameFactory = sp.GetRequiredService<ITableNameConventionFactory>();
+            var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
+
             var storeConfiguration = new YesSql.Configuration
             {
                 CommandsPageSize = yesSqlOptions.CommandsPageSize,
                 QueryGatingEnabled = yesSqlOptions.QueryGatingEnabled,
                 ContentSerializer = new PoolingJsonContentSerializer(sp.GetService<ArrayPool<char>>()),
-                TableNameConvention = yesSqlOptions.TableNameConvention
+                TableNameConvention = tableNameFactory.Create(databaseTableOptions),
+                IdentityColumnSize = Enum.Parse<IdentityColumnSize>(databaseTableOptions.IdentityColumnSize),
+                Logger = loggerFactory.CreateLogger("YesSql"),
             };
 
             if (yesSqlOptions.IdGenerator != null)

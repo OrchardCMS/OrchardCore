@@ -6,14 +6,14 @@
     var formInputElementPart = Model.Value.ContentItem.As<FormInputElementPart>();
     var elementId = formElementPart.Id;
     var fieldName = formInputElementPart.Name;
-    var fieldId = !String.IsNullOrEmpty(elementId) ? elementId : !String.IsNullOrEmpty(fieldName) ? Html.GenerateIdFromName(fieldName) : default(string);
+    var fieldId = !string.IsNullOrEmpty(elementId) ? elementId : !string.IsNullOrEmpty(fieldName) ? Html.GenerateIdFromName(fieldName) : default(string);
 }
 
 @if (Model.Value.Option == ValidationOptions.Standard)
 {
     // HtmlFieldPrefix is the PartName i.e. ValidationPart, which is not needed in Display.
     var htmlFieldPrefix = ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
-    ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = String.Empty;
+    ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = string.Empty;
 
     @Html.ValidationMessage(fieldName)
 

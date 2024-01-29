@@ -1,11 +1,7 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Moq;
 using OrchardCore.Roles;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Tests.Security;
-using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Roles
 {
@@ -26,14 +22,14 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
                 {
                     RoleName = "Anonymous",
                     RoleClaims = new List<RoleClaim> {
-                        new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = "AllowAnonymous" }
+                        new() { ClaimType = Permission.ClaimType, ClaimValue = "AllowAnonymous" }
                     }
                 },
                 new Role
                 {
                     RoleName = "Authenticated",
                     RoleClaims = new List<RoleClaim> {
-                        new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = "AllowAuthenticated" }
+                        new() { ClaimType = Permission.ClaimType, ClaimValue = "AllowAuthenticated" }
                     }
                 }
             );
@@ -77,7 +73,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
                 {
                     RoleName = "Anonymous",
                     RoleClaims = new List<RoleClaim> {
-                        new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = "Implicit2" }
+                        new() { ClaimType = Permission.ClaimType, ClaimValue = "Implicit2" }
                     }
                 }
             );
@@ -102,14 +98,14 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
                 {
                     RoleName = "Anonymous",
                     RoleClaims = new List<RoleClaim> {
-                        new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = "aLlOwAnOnYmOuS" }
+                        new() { ClaimType = Permission.ClaimType, ClaimValue = "aLlOwAnOnYmOuS" }
                     }
                 },
                 new Role
                 {
                     RoleName = "Authenticated",
                     RoleClaims = new List<RoleClaim> {
-                        new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = "aLlOwAuThEnTiCaTeD" }
+                        new() { ClaimType = Permission.ClaimType, ClaimValue = "aLlOwAuThEnTiCaTeD" }
                     }
                 }
             );

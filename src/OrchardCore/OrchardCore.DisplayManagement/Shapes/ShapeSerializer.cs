@@ -15,12 +15,12 @@ namespace OrchardCore.DisplayManagement.Shapes
     public class ShapeSerializer
     {
         // This code is used for debugging so does not need to be performance optimized.
-        private static readonly JsonSerializer ShapeJsonSerializer = new JsonSerializer
+        private static readonly JsonSerializer _shapeJsonSerializer = new()
         {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore
         };
 
-        private readonly HashSet<IShape> _shapes = new HashSet<IShape>();
+        private readonly HashSet<IShape> _shapes = new();
         private readonly IShape _shape;
 
         public ShapeSerializer(IShape shape)
@@ -39,35 +39,35 @@ namespace OrchardCore.DisplayManagement.Shapes
 
             // Provides a convenient identifier in console.
             var displayText = _shape.Metadata.Name;
-            if (String.IsNullOrEmpty(displayText))
+            if (string.IsNullOrEmpty(displayText))
             {
                 displayText = _shape.Metadata.Type;
             }
 
-            if (String.IsNullOrEmpty(displayText))
+            if (string.IsNullOrEmpty(displayText))
             {
                 displayText = _shape.GetType().Name;
             }
 
             jObject.Add("Shape", displayText);
 
-            var metadata = JObject.FromObject(_shape.Metadata, ShapeJsonSerializer);
+            var metadata = JObject.FromObject(_shape.Metadata, _shapeJsonSerializer);
 
             jObject.Add(nameof(ShapeMetadata), metadata);
 
             if (_shape.Classes != null && _shape.Classes.Any())
             {
-                jObject.Add(nameof(_shape.Classes), JArray.FromObject(_shape.Classes, ShapeJsonSerializer));
+                jObject.Add(nameof(_shape.Classes), JArray.FromObject(_shape.Classes, _shapeJsonSerializer));
             }
 
             if (_shape.Attributes != null && _shape.Attributes.Any())
             {
-                jObject.Add(nameof(_shape.Attributes), JObject.FromObject(_shape.Attributes, ShapeJsonSerializer));
+                jObject.Add(nameof(_shape.Attributes), JObject.FromObject(_shape.Attributes, _shapeJsonSerializer));
             }
 
             if (_shape.Properties != null && _shape.Properties.Any())
             {
-                jObject.Add(nameof(_shape.Properties), JObject.FromObject(_shape.Properties, ShapeJsonSerializer));
+                jObject.Add(nameof(_shape.Properties), JObject.FromObject(_shape.Properties, _shapeJsonSerializer));
                 FindShapesInProperties(_shape);
             }
 
@@ -98,7 +98,7 @@ namespace OrchardCore.DisplayManagement.Shapes
                 if (property is Shape shapeProperty && _shapes.Add(shapeProperty) && shapeProperty.HasItems)
                 {
                     var shapeItems = shapeProperty.Items.ToArray();
-                    foreach (IShape item in shapeItems)
+                    foreach (var item in shapeItems.Cast<IShape>())
                     {
                         if (item is IShape shapeItem && _shapes.Add(shapeItem))
                         {

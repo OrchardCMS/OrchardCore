@@ -45,6 +45,11 @@ namespace OrchardCore.Users.Services
                     case "Account":
                         useSiteTheme = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().UseSiteTheme;
                         break;
+                    case "TwoFactorAuthentication":
+                        useSiteTheme = routeValues["action"] != null
+                            && routeValues["action"].ToString().StartsWith("LoginWith", StringComparison.OrdinalIgnoreCase)
+                            && (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().UseSiteTheme;
+                        break;
                     case "Registration":
                         useSiteTheme = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UseSiteTheme;
                         break;
@@ -57,7 +62,7 @@ namespace OrchardCore.Users.Services
 
                 var adminThemeName = await _adminThemeService.GetAdminThemeNameAsync();
 
-                if (String.IsNullOrEmpty(adminThemeName))
+                if (string.IsNullOrEmpty(adminThemeName))
                 {
                     return null;
                 }

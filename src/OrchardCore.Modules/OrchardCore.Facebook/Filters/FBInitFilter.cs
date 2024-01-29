@@ -1,7 +1,6 @@
+using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using OrchardCore.Admin;
 using OrchardCore.Entities;
 using OrchardCore.Facebook.Settings;
@@ -26,8 +25,7 @@ namespace OrchardCore.Facebook.Filters
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
             // Should only run on the front-end for a full view
-            if ((context.Result is ViewResult || context.Result is PageResult) &&
-                !AdminAttribute.IsApplied(context.HttpContext))
+            if (context.IsViewOrPageResult() && !AdminAttribute.IsApplied(context.HttpContext))
             {
                 var site = (await _siteService.GetSiteSettingsAsync());
                 var settings = site.As<FacebookSettings>();

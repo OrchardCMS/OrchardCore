@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -49,24 +48,22 @@ namespace OrchardCore.Seo.Drivers
             {
                 aspect.Render = part.Render;
 
-                if (!String.IsNullOrEmpty(part.PageTitle))
+                if (!string.IsNullOrEmpty(part.PageTitle))
                 {
                     aspect.PageTitle = part.PageTitle;
                 }
 
-                if (!String.IsNullOrEmpty(part.MetaDescription))
+                if (!string.IsNullOrEmpty(part.MetaDescription))
                 {
                     aspect.MetaDescription = part.MetaDescription;
                 }
 
-                if (!String.IsNullOrEmpty(part.MetaKeywords))
+                if (!string.IsNullOrEmpty(part.MetaKeywords))
                 {
                     aspect.MetaKeywords = part.MetaKeywords;
                 }
 
-
-
-                if (!String.IsNullOrEmpty(part.MetaRobots))
+                if (!string.IsNullOrEmpty(part.MetaRobots))
                 {
                     aspect.MetaRobots = part.MetaRobots;
                 }
@@ -77,14 +74,11 @@ namespace OrchardCore.Seo.Drivers
 
                 var actionContext = _actionContextAccessor.ActionContext;
 
-                if (actionContext == null)
-                {
-                    actionContext = await GetActionContextAsync(_httpContextAccessor.HttpContext);
-                }
+                actionContext ??= await GetActionContextAsync(_httpContextAccessor.HttpContext);
 
                 var urlHelper = _urlHelperFactory.GetUrlHelper(actionContext);
 
-                if (!String.IsNullOrEmpty(part.Canonical))
+                if (!string.IsNullOrEmpty(part.Canonical))
                 {
                     aspect.Canonical = part.Canonical;
                 }
@@ -114,7 +108,7 @@ namespace OrchardCore.Seo.Drivers
                     aspect.OpenGraphImageAlt = part.DefaultSocialImage.MediaTexts[0];
                 }
 
-                if (!String.IsNullOrEmpty(part.OpenGraphTitle))
+                if (!string.IsNullOrEmpty(part.OpenGraphTitle))
                 {
                     aspect.OpenGraphTitle = part.OpenGraphTitle;
                 }
@@ -123,7 +117,7 @@ namespace OrchardCore.Seo.Drivers
                     aspect.OpenGraphTitle = part.PageTitle;
                 }
 
-                if (!String.IsNullOrEmpty(part.OpenGraphDescription))
+                if (!string.IsNullOrEmpty(part.OpenGraphDescription))
                 {
                     aspect.OpenGraphDescription = part.OpenGraphDescription;
                 }
@@ -152,7 +146,7 @@ namespace OrchardCore.Seo.Drivers
                     aspect.TwitterImageAlt = part.DefaultSocialImage.MediaTexts[0];
                 }
 
-                if (!String.IsNullOrEmpty(part.TwitterTitle))
+                if (!string.IsNullOrEmpty(part.TwitterTitle))
                 {
                     aspect.TwitterTitle = part.TwitterTitle;
                 }
@@ -161,7 +155,7 @@ namespace OrchardCore.Seo.Drivers
                     aspect.TwitterTitle = part.PageTitle;
                 }
 
-                if (!String.IsNullOrEmpty(part.TwitterDescription))
+                if (!string.IsNullOrEmpty(part.TwitterDescription))
                 {
                     aspect.TwitterDescription = part.TwitterDescription;
                 }
@@ -170,17 +164,17 @@ namespace OrchardCore.Seo.Drivers
                     aspect.TwitterDescription = part.MetaDescription;
                 }
 
-                if (!String.IsNullOrEmpty(part.TwitterCard))
+                if (!string.IsNullOrEmpty(part.TwitterCard))
                 {
                     aspect.TwitterCard = part.TwitterCard;
                 }
 
-                if (!String.IsNullOrEmpty(part.TwitterCreator))
+                if (!string.IsNullOrEmpty(part.TwitterCreator))
                 {
                     aspect.TwitterCreator = part.TwitterCreator;
                 }
 
-                if (!String.IsNullOrEmpty(part.TwitterSite))
+                if (!string.IsNullOrEmpty(part.TwitterSite))
                 {
                     aspect.TwitterSite = part.TwitterSite;
                 }

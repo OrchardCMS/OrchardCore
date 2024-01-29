@@ -15,7 +15,7 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
                 return null;
             }
 
-            if (!(toFilter is BooleanQuery booleanQuery))
+            if (toFilter is not BooleanQuery booleanQuery)
             {
                 return null;
             }
@@ -59,7 +59,6 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
                             {
                                 var matchAllDocsQuery = new MatchAllDocsQuery();
                                 booleanQuery.Add(matchAllDocsQuery, Occur.MUST);
-                                queryFilter = new QueryWrapperFilter(matchAllDocsQuery);
                                 break;
                             }
                         }

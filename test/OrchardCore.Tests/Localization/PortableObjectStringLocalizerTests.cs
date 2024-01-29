@@ -1,21 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using Moq;
 using OrchardCore.Localization;
 using OrchardCore.Localization.PortableObject;
-using Xunit;
 
 namespace OrchardCore.Tests.Localization
 {
@@ -219,20 +203,19 @@ namespace OrchardCore.Tests.Localization
         [InlineData("zh-Hans", "球", 2, new string[] { "球" })]
         public void LocalizerReturnsCorrectTranslationForPluralIfNoPluralFormsSpecified(string culture, string expected, int count, string[] translations)
         {
-            using (var cultureScope = CultureScope.Create(culture))
-            {
-                // using DefaultPluralRuleProvider to test it returns correct rule
-                TryGetRuleFromDefaultPluralRuleProvider(cultureScope.UICulture, out var rule);
+            using var cultureScope = CultureScope.Create(culture);
 
-                Assert.NotNull(rule);
+            // using DefaultPluralRuleProvider to test it returns correct rule.
+            TryGetRuleFromDefaultPluralRuleProvider(cultureScope.UICulture, out var rule);
 
-                SetupDictionary(culture, new[] { new CultureDictionaryRecord("ball", translations), }, rule);
+            Assert.NotNull(rule);
 
-                var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, true, _logger.Object);
-                var translation = localizer.Plural(count, "ball", "{0} balls", count);
+            SetupDictionary(culture, new[] { new CultureDictionaryRecord("ball", translations), }, rule);
 
-                Assert.Equal(expected, translation);
-            }
+            var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, true, _logger.Object);
+            var translation = localizer.Plural(count, "ball", "{0} balls", count);
+
+            Assert.Equal(expected, translation);
         }
 
         [Theory]
@@ -278,7 +261,7 @@ namespace OrchardCore.Tests.Localization
         {
             SetupDictionary("en", new CultureDictionaryRecord[]
             {
-                new CultureDictionaryRecord("míč", "ball", "{0} balls")
+                new("míč", "ball", "{0} balls")
             }, PluralizationRule.English);
 
             var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, true, _logger.Object);
@@ -297,7 +280,7 @@ namespace OrchardCore.Tests.Localization
         {
             SetupDictionary("ar", new CultureDictionaryRecord[]
             {
-                new CultureDictionaryRecord("hello", "مرحبا")
+                new("hello", "مرحبا")
             }, PluralizationRule.Arabic);
 
             SetupDictionary("ar-YE", Array.Empty<CultureDictionaryRecord>(), PluralizationRule.Arabic);
@@ -318,16 +301,16 @@ namespace OrchardCore.Tests.Localization
         {
             SetupDictionary("ar", new CultureDictionaryRecord[]
             {
-                new CultureDictionaryRecord("Blog", "مدونة"),
-                new CultureDictionaryRecord("Menu", "قائمة"),
-                new CultureDictionaryRecord("Page", "صفحة"),
-                new CultureDictionaryRecord("Article", "مقالة")
+                new("Blog", "مدونة"),
+                new("Menu", "قائمة"),
+                new("Page", "صفحة"),
+                new("Article", "مقالة")
             }, PluralizationRule.Arabic);
 
             SetupDictionary("ar-YE", new CultureDictionaryRecord[]
             {
-                new CultureDictionaryRecord("Blog", "مدونة"),
-                new CultureDictionaryRecord("Product", "منتج")
+                new("Blog", "مدونة"),
+                new("Product", "منتج")
             }, PluralizationRule.Arabic);
 
             var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, false, _logger.Object);
@@ -381,13 +364,17 @@ namespace OrchardCore.Tests.Localization
 
         public class PortableObjectLocalizationStartup
         {
+#pragma warning disable CA1822 // Mark members as static
             public void ConfigureServices(IServiceCollection services)
+#pragma warning restore CA1822 // Mark members as static
             {
                 services.AddMvc();
                 services.AddPortableObjectLocalization();
             }
 
+#pragma warning disable CA1822 // Mark members as static
             public void Configure(
+#pragma warning restore CA1822 // Mark members as static
                 IApplicationBuilder app,
                 IStringLocalizer<PortableObjectLocalizationStartup> localizer)
             {

@@ -1,10 +1,5 @@
-using System.Collections.Generic;
-using System.Reflection;
-using System.Threading.Tasks;
-using Microsoft.Extensions.FileProviders;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
-using Xunit;
 
 namespace OrchardCore.Tests.Apis.Context
 {
@@ -39,7 +34,7 @@ namespace OrchardCore.Tests.Apis.Context
 
             foreach (var fileInfo in fileInfos)
             {
-                var descriptor = await _recipeReader.GetRecipeDescriptor(fileInfo.PhysicalPath, fileInfo, testAssemblyFileProvider);
+                var descriptor = await _recipeReader.GetRecipeDescriptorAsync(fileInfo.PhysicalPath, fileInfo, testAssemblyFileProvider);
                 recipeDescriptors.Add(descriptor);
             }
 

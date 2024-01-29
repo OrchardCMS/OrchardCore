@@ -1,11 +1,13 @@
+@using OrchardCore
 @model HtmlBodyPartViewModel
+
 @{
     var settings = Model.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
     var trumbowygSettings = Model.TypePartDefinition.GetSettings<HtmlBodyPartTrumbowygEditorSettings>();
     var culture = await Orchard.GetContentCultureAsync(Model.ContentItem) ?? CultureInfo.CurrentUICulture;
 }
 
-<script asp-name="trumbowyg-plugins" depends-on="admin" version="2" at="Foot"></script>
+<script asp-name="trumbowyg-plugins" version="2" at="Foot"></script>
 <style asp-name="trumbowyg-plugins" version="2"></style>
 <script asp-name="trumbowyg-shortcodes" at="Foot"></script>
 
@@ -20,19 +22,21 @@ else
 
 @await DisplayAsync(await New.ShortcodeModal())
 
-<div class="mb-3">
-    <label asp-for="Html">@Model.TypePartDefinition.DisplayName()</label>
-    @if (culture.IsRightToLeft())
-    {
-        <div style="text-align:right">
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Html" class="@Orchard.GetLabelClasses()">@Model.TypePartDefinition.DisplayName()</label>
+    <div class="@Orchard.GetEndClasses()">
+        @if (culture.IsRightToLeft())
+        {
+            <div style="text-align:right">
+                <textarea asp-for="Html"></textarea>
+            </div>
+        }
+        else
+        {
             <textarea asp-for="Html"></textarea>
-        </div>
-    }
-    else
-    {
-        <textarea asp-for="Html"></textarea>
-    }
-    <span class="hint">@T["The body of the content item."]</span>
+        }
+        <span class="hint">@T["The body of the content item."]</span>
+    </div>
 </div>
 
 <script at="Foot">

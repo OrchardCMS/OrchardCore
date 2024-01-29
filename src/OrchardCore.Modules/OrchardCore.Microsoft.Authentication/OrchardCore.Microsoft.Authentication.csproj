@@ -6,7 +6,7 @@
     <Title>OrchardCore Microsoft Authentication</Title>
     <Description>$(OCCMSDescription)
 
-    Provide features to Authenticates users using  Microsoft Account, Azure Active Directory Account.</Description>
+    Provide features to Authenticates users using Microsoft Account, Microsoft Entra ID (Azure Active Directory) Account.</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>
 
@@ -27,8 +27,8 @@
   </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" />
       <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" />
+      <PackageReference Include="Microsoft.Identity.Web" />
     </ItemGroup>
 
   </Project>

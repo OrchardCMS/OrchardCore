@@ -79,6 +79,11 @@ namespace OrchardCore.Email
         /// </summary>
         public int ProxyPort { get; set; }
 
+        /// <summary>
+        /// Gets or sets whether invalid SSL certificates should be ignored.
+        /// </summary>
+        public bool IgnoreInvalidSslCertificate { get; set; }
+
         /// <inheritdocs />
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
@@ -87,13 +92,13 @@ namespace OrchardCore.Email
             switch (DeliveryMethod)
             {
                 case SmtpDeliveryMethod.Network:
-                    if (String.IsNullOrEmpty(Host))
+                    if (string.IsNullOrEmpty(Host))
                     {
                         yield return new ValidationResult(S["The {0} field is required.", "Host name"], new[] { nameof(Host) });
                     }
                     break;
                 case SmtpDeliveryMethod.SpecifiedPickupDirectory:
-                    if (String.IsNullOrEmpty(PickupDirectoryLocation))
+                    if (string.IsNullOrEmpty(PickupDirectoryLocation))
                     {
                         yield return new ValidationResult(S["The {0} field is required.", "Pickup directory location"], new[] { nameof(PickupDirectoryLocation) });
                     }

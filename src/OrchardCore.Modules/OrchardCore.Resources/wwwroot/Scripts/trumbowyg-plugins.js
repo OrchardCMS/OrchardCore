@@ -4,277 +4,22 @@
 */
 
 /* ===========================================================
- * trumbowyg.allowTagsFromPaste.js v1.0.2
- * It cleans tags from pasted text, whilst allowing several specified tags
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author	: Fathi Anshory (0x00000F5C)
- * Twitter	: @fscchannl
- * Notes:
- *  - removeformatPasted must be set to FALSE since it was applied prior to pasteHandlers, or else it will be useless
- *	- It is most advisable to use along with the cleanpaste plugin, or else you'd end up with dirty markup
- */
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    // When empty, all tags are allowed making this plugin useless
-    // If you want to remove all tags, use removeformatPasted core option instead
-    allowedTags: [],
-    // List of tags which can be allowed
-    removableTags: ['a', 'abbr', 'address', 'b', 'bdi', 'bdo', 'blockquote', 'br', 'cite', 'code', 'del', 'dfn', 'details', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'ins', 'kbd', 'mark', 'meter', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'small', 'span', 'strong', 'sub', 'summary', 'sup', 'time', 'u', 'var', 'wbr', 'img', 'map', 'area', 'canvas', 'figcaption', 'figure', 'picture', 'audio', 'source', 'track', 'video', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'table', 'caption', 'th', 'tr', 'td', 'thead', 'tbody', 'tfoot', 'col', 'colgroup', 'style', 'div', 'p', 'form', 'input', 'textarea', 'button', 'select', 'optgroup', 'option', 'label', 'fieldset', 'legend', 'datalist', 'keygen', 'output', 'iframe', 'link', 'nav', 'header', 'hgroup', 'footer', 'main', 'section', 'article', 'aside', 'dialog', 'script', 'noscript', 'embed', 'object', 'param']
-  };
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      allowTagsFromPaste: {
-        init: function init(trumbowyg) {
-          if (!trumbowyg.o.plugins.allowTagsFromPaste) {
-            return;
-          } // Force disable remove format pasted
-
-
-          trumbowyg.o.removeformatPasted = false;
-          var allowedTags = trumbowyg.o.plugins.allowTagsFromPaste.allowedTags || defaultOptions.allowedTags;
-          var removableTags = trumbowyg.o.plugins.allowTagsFromPaste.removableTags || defaultOptions.removableTags;
-
-          if (allowedTags.length === 0) {
-            return;
-          } // Get list of tags to remove
-
-
-          var tagsToRemove = $(removableTags).not(allowedTags).get();
-          trumbowyg.pasteHandlers.push(function () {
-            setTimeout(function () {
-              var processNodes = trumbowyg.$ed.html();
-              $.each(tagsToRemove, function (iterator, tagName) {
-                processNodes = processNodes.replace(new RegExp('<\\/?' + tagName + '(\\s[^>]*)?>', 'gi'), '');
-              });
-              trumbowyg.$ed.html(processNodes);
-            }, 0);
-          });
-        }
-      }
-    }
-  });
-})(jQuery);
-!function (e) {
-  "use strict";
-
-  var a = {
-    allowedTags: [],
-    removableTags: ["a", "abbr", "address", "b", "bdi", "bdo", "blockquote", "br", "cite", "code", "del", "dfn", "details", "em", "h1", "h2", "h3", "h4", "h5", "h6", "hr", "i", "ins", "kbd", "mark", "meter", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp", "small", "span", "strong", "sub", "summary", "sup", "time", "u", "var", "wbr", "img", "map", "area", "canvas", "figcaption", "figure", "picture", "audio", "source", "track", "video", "ul", "ol", "li", "dl", "dt", "dd", "table", "caption", "th", "tr", "td", "thead", "tbody", "tfoot", "col", "colgroup", "style", "div", "p", "form", "input", "textarea", "button", "select", "optgroup", "option", "label", "fieldset", "legend", "datalist", "keygen", "output", "iframe", "link", "nav", "header", "hgroup", "footer", "main", "section", "article", "aside", "dialog", "script", "noscript", "embed", "object", "param"]
-  };
-  e.extend(!0, e.trumbowyg, {
-    plugins: {
-      allowTagsFromPaste: {
-        init: function init(t) {
-          if (t.o.plugins.allowTagsFromPaste) {
-            t.o.removeformatPasted = !1;
-            var o = t.o.plugins.allowTagsFromPaste.allowedTags || a.allowedTags,
-                r = t.o.plugins.allowTagsFromPaste.removableTags || a.removableTags;
-
-            if (0 !== o.length) {
-              var s = e(r).not(o).get();
-              t.pasteHandlers.push(function () {
-                setTimeout(function () {
-                  var a = t.$ed.html();
-                  e.each(s, function (e, t) {
-                    a = a.replace(new RegExp("<\\/?" + t + "(\\s[^>]*)?>", "gi"), "");
-                  }), t.$ed.html(a);
-                }, 0);
-              });
-            }
-          }
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
- * trumbowyg.cleanpaste.js v1.0
- * Font Clean paste plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Authors : Eric Radin
- *           Todd Graham (slackwalker)
- *
- * This plugin will perform a "cleaning" on any paste, in particular
- * it will clean pasted content of microsoft word document tags and classes.
- */
-(function ($) {
-  'use strict';
-
-  function checkValidTags(snippet) {
-    var theString = snippet; // Replace uppercase element names with lowercase
-
-    theString = theString.replace(/<[^> ]*/g, function (match) {
-      return match.toLowerCase();
-    }); // Replace uppercase attribute names with lowercase
-
-    theString = theString.replace(/<[^>]*>/g, function (match) {
-      match = match.replace(/ [^=]+=/g, function (match2) {
-        return match2.toLowerCase();
-      });
-      return match;
-    }); // Put quotes around unquoted attributes
-
-    theString = theString.replace(/<[^>]*>/g, function (match) {
-      match = match.replace(/( [^=]+=)([^"][^ >]*)/g, '$1\"$2\"');
-      return match;
-    });
-    return theString;
-  }
-
-  function cleanIt(html) {
-    // first make sure all tags and attributes are made valid
-    html = checkValidTags(html); // Replace opening bold tags with strong
-
-    html = html.replace(/<b(\s+|>)/g, '<strong$1'); // Replace closing bold tags with closing strong
-
-    html = html.replace(/<\/b(\s+|>)/g, '</strong$1'); // Replace italic tags with em
-
-    html = html.replace(/<i(\s+|>)/g, '<em$1'); // Replace closing italic tags with closing em
-
-    html = html.replace(/<\/i(\s+|>)/g, '</em$1'); // strip out comments -cgCraft
-
-    html = html.replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, ''); // strip out &nbsp; -cgCraft
-
-    html = html.replace(/&nbsp;/gi, ' '); // strip out extra spaces -cgCraft
-
-    html = html.replace(/ <\//gi, '</'); // Remove multiple spaces
-
-    html.replace(/\s+/g, ' '); // strip &nbsp; -cgCraft
-
-    html = html.replace(/^\s*|\s*$/g, ''); // Strip out unaccepted attributes
-
-    html = html.replace(/<[^>]*>/g, function (match) {
-      match = match.replace(/ ([^=]+)="[^"]*"/g, function (match2, attributeName) {
-        if (['alt', 'href', 'src', 'title'].indexOf(attributeName) !== -1) {
-          return match2;
-        }
-
-        return '';
-      });
-      return match;
-    }); // Final clean out for MS Word crud
-
-    html = html.replace(/<\?xml[^>]*>/g, '');
-    html = html.replace(/<[^ >]+:[^>]*>/g, '');
-    html = html.replace(/<\/[^ >]+:[^>]*>/g, ''); // remove unwanted tags
-
-    html = html.replace(/<(div|span|style|meta|link).*?>/gi, '');
-    return html;
-  } // clean editor
-  // this will clean the inserted contents
-  // it does a compare, before and after paste to determine the
-  // pasted contents
-
-
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      cleanPaste: {
-        init: function init(trumbowyg) {
-          trumbowyg.pasteHandlers.push(function (pasteEvent) {
-            setTimeout(function () {
-              try {
-                trumbowyg.saveRange();
-                var clipboardData = (pasteEvent.originalEvent || pasteEvent).clipboardData,
-                    pastedData = clipboardData.getData('Text'),
-                    node = trumbowyg.doc.getSelection().focusNode,
-                    range = trumbowyg.doc.createRange(),
-                    cleanedPaste = cleanIt(pastedData.trim()),
-                    newNode = $(cleanedPaste)[0] || trumbowyg.doc.createTextNode(cleanedPaste);
-
-                if (trumbowyg.$ed.html() === '') {
-                  // simply append if there is no content in editor
-                  trumbowyg.$ed[0].appendChild(newNode);
-                } else {
-                  // insert pasted content behind last focused node
-                  range.setStartAfter(node);
-                  range.setEndAfter(node);
-                  trumbowyg.doc.getSelection().removeAllRanges();
-                  trumbowyg.doc.getSelection().addRange(range);
-                  trumbowyg.range.insertNode(newNode);
-                } // now set cursor right after pasted content
-
-
-                range = trumbowyg.doc.createRange();
-                range.setStartAfter(newNode);
-                range.setEndAfter(newNode);
-                trumbowyg.doc.getSelection().removeAllRanges();
-                trumbowyg.doc.getSelection().addRange(range); // prevent defaults
-
-                pasteEvent.stopPropagation();
-                pasteEvent.preventDefault(); // save new node as focused node
-
-                trumbowyg.saveRange();
-                trumbowyg.syncCode();
-                trumbowyg.$c.trigger('tbwchange');
-              } catch (c) {}
-            }, 0);
-          });
-        }
-      }
-    }
-  });
-})(jQuery);
-!function (e) {
-  "use strict";
-
-  e.extend(!0, e.trumbowyg, {
-    plugins: {
-      cleanPaste: {
-        init: function init(t) {
-          t.pasteHandlers.push(function (r) {
-            setTimeout(function () {
-              try {
-                t.saveRange();
-                var a = (r.originalEvent || r).clipboardData.getData("Text"),
-                    n = t.doc.getSelection().focusNode,
-                    c = t.doc.createRange(),
-                    g = ((l = (l = (l = (l = (l = (l = (l = (l = (l = a.trim()).replace(/<[^> ]*/g, function (e) {
-                  return e.toLowerCase();
-                }).replace(/<[^>]*>/g, function (e) {
-                  return e.replace(/ [^=]+=/g, function (e) {
-                    return e.toLowerCase();
-                  });
-                }).replace(/<[^>]*>/g, function (e) {
-                  return e.replace(/( [^=]+=)([^"][^ >]*)/g, '$1"$2"');
-                })).replace(/<b(\s+|>)/g, "<strong$1")).replace(/<\/b(\s+|>)/g, "</strong$1")).replace(/<i(\s+|>)/g, "<em$1")).replace(/<\/i(\s+|>)/g, "</em$1")).replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, "")).replace(/&nbsp;/gi, " ")).replace(/ <\//gi, "</")).replace(/\s+/g, " "), (l = (l = (l = (l = (l = l.replace(/^\s*|\s*$/g, "")).replace(/<[^>]*>/g, function (e) {
-                  return e.replace(/ ([^=]+)="[^"]*"/g, function (e, t) {
-                    return -1 !== ["alt", "href", "src", "title"].indexOf(t) ? e : "";
-                  });
-                })).replace(/<\?xml[^>]*>/g, "")).replace(/<[^ >]+:[^>]*>/g, "")).replace(/<\/[^ >]+:[^>]*>/g, "")).replace(/<(div|span|style|meta|link).*?>/gi, "")),
-                    o = e(g)[0] || t.doc.createTextNode(g);
-                "" === t.$ed.html() ? t.$ed[0].appendChild(o) : (c.setStartAfter(n), c.setEndAfter(n), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(c), t.range.insertNode(o)), (c = t.doc.createRange()).setStartAfter(o), c.setEndAfter(o), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(c), r.stopPropagation(), r.preventDefault(), t.saveRange(), t.syncCode(), t.$c.trigger("tbwchange");
-              } catch (e) {}
-
-              var l;
-            }, 0);
-          });
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
  * trumbowyg.base64.js v1.0
  * Base64 plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
  * ===========================================================
  * Author : Cyril Biencourt (lizardK)
  */
+
 (function ($) {
   'use strict';
 
   var isSupported = function isSupported() {
     return typeof FileReader !== 'undefined';
   };
-
   var isValidImage = function isValidImage(type) {
     return /^data:image\/[a-z]?/i.test(type);
   };
-
   $.extend(true, $.trumbowyg, {
     langs: {
       // jshint camelcase:false
@@ -283,6 +28,12 @@
         file: 'File',
         errFileReaderNotSupported: 'FileReader is not supported by your browser.',
         errInvalidImage: 'Invalid image file.'
+      },
+      az: {
+        base64: 'base64 olaraq şəkil',
+        file: 'Fayl',
+        errFileReaderNotSupported: 'FileReader brauzeriniz tərəfindən dəstəklənmir.',
+        errInvalidImage: 'Yanlış şəkil faylı.'
       },
       by: {
         base64: 'Выява (фармат base64)',
@@ -308,7 +59,9 @@
       },
       fr: {
         base64: 'Image en base64',
-        file: 'Fichier'
+        file: 'Fichier',
+        errFileReaderNotSupported: 'FileReader n\'est pas supporté par votre navigateur.',
+        errInvalidImage: 'Fichier image invalide.'
       },
       hu: {
         base64: 'Kép beszúrás inline',
@@ -346,6 +99,12 @@
         errFileReaderNotSupported: 'FileReader не поддерживается вашим браузером.',
         errInvalidImage: 'Недопустимый файл изображения.'
       },
+      sl: {
+        base64: 'Slika kot base64',
+        file: 'Datoteka',
+        errFileReaderNotSupported: 'FileReader ni podprt v tem brskalniku.',
+        errInvalidImage: 'Neveljavna datoteka s sliko.'
+      },
       tr: {
         base64: 'Base64 olarak resim',
         file: 'Dosya',
@@ -364,6 +123,7 @@
       }
     },
     // jshint camelcase:true
+
     plugins: {
       base64: {
         shouldInit: isSupported,
@@ -373,8 +133,10 @@
             fn: function fn() {
               trumbowyg.saveRange();
               var file;
-              var $modal = trumbowyg.openModalInsert( // Title
-              trumbowyg.lang.base64, // Fields
+              var $modal = trumbowyg.openModalInsert(
+              // Title
+              trumbowyg.lang.base64,
+              // Fields
               {
                 file: {
                   type: 'file',
@@ -387,10 +149,10 @@
                   label: 'description',
                   value: trumbowyg.getRangeText()
                 }
-              }, // Callback
+              },
+              // Callback
               function (values) {
                 var fReader = new FileReader();
-
                 fReader.onloadend = function (e) {
                   if (isValidImage(e.target.result)) {
                     trumbowyg.execCmd('insertImage', fReader.result, false, true);
@@ -400,7 +162,6 @@
                     trumbowyg.addErrorOnModalField($('input[type=file]', $modal), trumbowyg.lang.errInvalidImage);
                   }
                 };
-
                 fReader.readAsDataURL(file);
               });
               $('input[type=file]').on('change', function (e) {
@@ -414,13 +175,19 @@
     }
   });
 })(jQuery);
+/* ===========================================================
+ * trumbowyg.base64.js v1.0
+ * Base64 plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Cyril Biencourt (lizardK)
+ */
 !function (e) {
   "use strict";
 
   var a = function a() {
     return "undefined" != typeof FileReader;
   };
-
   e.extend(!0, e.trumbowyg, {
     langs: {
       en: {
@@ -428,6 +195,18 @@
         file: "File",
         errFileReaderNotSupported: "FileReader is not supported by your browser.",
         errInvalidImage: "Invalid image file."
+      },
+      az: {
+        base64: "base64 olaraq şəkil",
+        file: "Fayl",
+        errFileReaderNotSupported: "FileReader brauzeriniz tərəfindən dəstəklənmir.",
+        errInvalidImage: "Yanlış şəkil faylı."
+      },
+      by: {
+        base64: "Выява (фармат base64)",
+        file: "Файл",
+        errFileReaderNotSupported: "FileReader не падтрымліваецца вашым браўзэрам.",
+        errInvalidImage: "Несапраўдны файл выявы."
       },
       cs: {
         base64: "Vložit obrázek",
@@ -447,7 +226,9 @@
       },
       fr: {
         base64: "Image en base64",
-        file: "Fichier"
+        file: "Fichier",
+        errFileReaderNotSupported: "FileReader n'est pas supporté par votre navigateur.",
+        errInvalidImage: "Fichier image invalide."
       },
       hu: {
         base64: "Kép beszúrás inline",
@@ -484,6 +265,12 @@
         file: "Файл",
         errFileReaderNotSupported: "FileReader не поддерживается вашим браузером.",
         errInvalidImage: "Недопустимый файл изображения."
+      },
+      sl: {
+        base64: "Slika kot base64",
+        file: "Datoteka",
+        errFileReaderNotSupported: "FileReader ni podprt v tem brskalniku.",
+        errInvalidImage: "Neveljavna datoteka s sliko."
       },
       tr: {
         base64: "Base64 olarak resim",
@@ -526,8 +313,8 @@
               }, function (l) {
                 var t = new FileReader();
                 t.onloadend = function (a) {
-                  var n;
-                  n = a.target.result, /^data:image\/[a-z]?/i.test(n) ? (r.execCmd("insertImage", t.result, !1, !0), e(['img[src="', t.result, '"]:not([alt])'].join(""), r.$box).attr("alt", l.alt), r.closeModal()) : r.addErrorOnModalField(e("input[type=file]", i), r.lang.errInvalidImage);
+                  var d;
+                  d = a.target.result, /^data:image\/[a-z]?/i.test(d) ? (r.execCmd("insertImage", t.result, !1, !0), e(['img[src="', t.result, '"]:not([alt])'].join(""), r.$box).attr("alt", l.alt), r.closeModal()) : r.addErrorOnModalField(e("input[type=file]", i), r.lang.errInvalidImage);
                 }, t.readAsDataURL(a);
               });
               e("input[type=file]").on("change", function (e) {
@@ -542,190 +329,777 @@
   });
 }(jQuery);
 /* ===========================================================
- * trumbowyg.emoji.js v0.1
- * Emoji picker plugin for Trumbowyg
+ * trumbowyg.allowTagsFromPaste.js v1.0.2
+ * It cleans tags from pasted text, whilst allowing several specified tags
  * http://alex-d.github.com/Trumbowyg
  * ===========================================================
- * Author : Nicolas Pion
- *          Twitter : @nicolas_pion
+ * Author	: Fathi Anshory (0x00000F5C)
+ * Twitter	: @fscchannl
+ * Notes:
+ *  - removeformatPasted must be set to FALSE since it was applied prior to pasteHandlers, or else it will be useless
+ *	- It is most advisable to use along with the cleanpaste plugin, or else you'd end up with dirty markup
  */
+
 (function ($) {
   'use strict';
 
   var defaultOptions = {
-    emojiList: ['&#x2049', '&#x2122', '&#x2139', '&#x2194', '&#x2195', '&#x2196', '&#x2197', '&#x2198', '&#x2199', '&#x2328', '&#x2600', '&#x2601', '&#x2602', '&#x2603', '&#x2604', '&#x2611', '&#x2614', '&#x2615', '&#x2618', '&#x2620', '&#x2622', '&#x2623', '&#x2626', '&#x2638', '&#x2639', '&#x2640', '&#x2642', '&#x2648', '&#x2649', '&#x2650', '&#x2651', '&#x2652', '&#x2653', '&#x2660', '&#x2663', '&#x2665', '&#x2666', '&#x2668', '&#x2692', '&#x2693', '&#x2694', '&#x2695', '&#x2696', '&#x2697', '&#x2699', '&#x2702', '&#x2705', '&#x2708', '&#x2709', '&#x2712', '&#x2714', '&#x2716', '&#x2721', '&#x2728', '&#x2733', '&#x2734', '&#x2744', '&#x2747', '&#x2753', '&#x2754', '&#x2755', '&#x2757', '&#x2763', '&#x2764', '&#x2795', '&#x2796', '&#x2797', '&#x2934', '&#x2935', '&#x3030', '&#x3297', '&#x3299', '&#x1F600', '&#x1F603', '&#x1F604', '&#x1F601', '&#x1F606', '&#x1F605', '&#x1F602', '&#x1F923', '&#x263A', '&#x1F60A', '&#x1F607', '&#x1F642', '&#x1F643', '&#x1F609', '&#x1F60C', '&#x1F972', '&#x1F60D', '&#x1F970', '&#x1F618', '&#x1F617', '&#x1F619', '&#x1F61A', '&#x1F60B', '&#x1F61B', '&#x1F61D', '&#x1F61C', '&#x1F92A', '&#x1F928', '&#x1F9D0', '&#x1F913', '&#x1F60E', '&#x1F929', '&#x1F973', '&#x1F60F', '&#x1F612', '&#x1F61E', '&#x1F614', '&#x1F61F', '&#x1F615', '&#x1F641', '&#x1F623', '&#x1F616', '&#x1F62B', '&#x1F629', '&#x1F97A', '&#x1F622', '&#x1F62D', '&#x1F624', '&#x1F62E', '&#x1F620', '&#x1F621', '&#x1F92C', '&#x1F92F', '&#x1F633', '&#x1F636', '&#x1F975', '&#x1F976', '&#x1F631', '&#x1F628', '&#x1F630', '&#x1F625', '&#x1F613', '&#x1F917', '&#x1F914', '&#x1F92D', '&#x1F971', '&#x1F92B', '&#x1F925', '&#x1F610', '&#x1F611', '&#x1F62C', '&#x1F644', '&#x1F62F', '&#x1F626', '&#x1F627', '&#x1F632', '&#x1F634', '&#x1F924', '&#x1F62A', '&#x1F635', '&#x1F910', '&#x1F974', '&#x1F922', '&#x1F92E', '&#x1F927', '&#x1F637', '&#x1F912', '&#x1F915', '&#x1F911', '&#x1F920', '&#x1F978', '&#x1F608', '&#x1F47F', '&#x1F479', '&#x1F47A', '&#x1F921', '&#x1F4A9', '&#x1F47B', '&#x1F480', '&#x1F47D', '&#x1F47E', '&#x1F916', '&#x1F383', '&#x1F63A', '&#x1F638', '&#x1F639', '&#x1F63B', '&#x1F63C', '&#x1F63D', '&#x1F640', '&#x1F63F', '&#x1F63E', '&#x1F932', '&#x1F450', '&#x1F64C', '&#x1F44F', '&#x1F91D', '&#x1F44D', '&#x1F44E', '&#x1F44A', '&#x270A', '&#x1F91B', '&#x1F91C', '&#x1F91E', '&#x270C', '&#x1F91F', '&#x1F918', '&#x1F44C', '&#x1F90F', '&#x1F90C', '&#x1F448', '&#x1F449', '&#x1F446', '&#x1F447', '&#x261D', '&#x270B', '&#x1F91A', '&#x1F590', '&#x1F596', '&#x1F44B', '&#x1F919', '&#x1F4AA', '&#x1F9BE', '&#x1F595', '&#x270D', '&#x1F64F', '&#x1F9B6', '&#x1F9B5', '&#x1F9BF', '&#x1F484', '&#x1F48B', '&#x1F444', '&#x1F9B7', '&#x1F445', '&#x1F442', '&#x1F9BB', '&#x1F443', '&#x1F463', '&#x1F441', '&#x1F440', '&#x1F9E0', '&#x1FAC0', '&#x1FAC1', '&#x1F9B4', '&#x1F5E3', '&#x1F464', '&#x1F465', '&#x1FAC2', '&#x1F476', '&#x1F467', '&#x1F9D2', '&#x1F466', '&#x1F469', '&#x1F9D1', '&#x1F468', '&#x1F471', '&#x1F9D4', '&#x1F475', '&#x1F9D3', '&#x1F474', '&#x1F472', '&#x1F473', '&#x1F9D5', '&#x1F46E', '&#x1F477', '&#x1F482', '&#x1F575', '&#x1F470', '&#x1F935', '&#x1F478', '&#x1F934', '&#x1F9B8', '&#x1F9B9', '&#x1F977', '&#x1F936', '&#x1F385', '&#x1F9D9', '&#x1F9DD', '&#x1F9DB', '&#x1F9DF', '&#x1F9DE', '&#x1F9DC', '&#x1F9DA', '&#x1F47C', '&#x1F930', '&#x1F931', '&#x1F647', '&#x1F481', '&#x1F645', '&#x1F646', '&#x1F64B', '&#x1F9CF', '&#x1F926', '&#x1F937', '&#x1F64E', '&#x1F64D', '&#x1F487', '&#x1F486', '&#x1F9D6', '&#x1F485', '&#x1F933', '&#x1F483', '&#x1F57A', '&#x1F46F', '&#x1F574', '&#x1F6B6', '&#x1F9CE', '&#x1F3C3', '&#x1F9CD', '&#x1F46B', '&#x1F46D', '&#x1F46C', '&#x1F491', '&#x1F48F', '&#x1F46A', '&#x1F9F6', '&#x1F9F5', '&#x1F9E5', '&#x1F97C', '&#x1F9BA', '&#x1F45A', '&#x1F455', '&#x1F456', '&#x1FA72', '&#x1FA73', '&#x1F454', '&#x1F457', '&#x1F459', '&#x1FA71', '&#x1F458', '&#x1F97B', '&#x1F97F', '&#x1F460', '&#x1F461', '&#x1F462', '&#x1F45E', '&#x1F45F', '&#x1F97E', '&#x1FA74', '&#x1F9E6', '&#x1F9E4', '&#x1F9E3', '&#x1F3A9', '&#x1F9E2', '&#x1F452', '&#x1F393', '&#x26D1', '&#x1FA96', '&#x1F451', '&#x1F48D', '&#x1F45D', '&#x1F45B', '&#x1F45C', '&#x1F4BC', '&#x1F392', '&#x1F9F3', '&#x1F453', '&#x1F576', '&#x1F97D', '&#x1F302', '&#x1F9B1', '&#x1F9B0', '&#x1F9B3', '&#x1F9B2', '&#x1F436', '&#x1F431', '&#x1F42D', '&#x1F439', '&#x1F430', '&#x1F98A', '&#x1F43B', '&#x1F43C', '&#x1F428', '&#x1F42F', '&#x1F981', '&#x1F42E', '&#x1F437', '&#x1F43D', '&#x1F438', '&#x1F435', '&#x1F648', '&#x1F649', '&#x1F64A', '&#x1F412', '&#x1F414', '&#x1F427', '&#x1F426', '&#x1F424', '&#x1F423', '&#x1F425', '&#x1F986', '&#x1F9A4', '&#x1F985', '&#x1F989', '&#x1F987', '&#x1F43A', '&#x1F417', '&#x1F434', '&#x1F984', '&#x1F41D', '&#x1F41B', '&#x1F98B', '&#x1F40C', '&#x1FAB1', '&#x1F41E', '&#x1F41C', '&#x1FAB0', '&#x1F99F', '&#x1FAB3', '&#x1FAB2', '&#x1F997', '&#x1F577', '&#x1F578', '&#x1F982', '&#x1F422', '&#x1F40D', '&#x1F98E', '&#x1F996', '&#x1F995', '&#x1F419', '&#x1F991', '&#x1F990', '&#x1F99E', '&#x1F980', '&#x1F421', '&#x1F420', '&#x1F41F', '&#x1F9AD', '&#x1F42C', '&#x1F433', '&#x1F40B', '&#x1F988', '&#x1F40A', '&#x1F405', '&#x1F406', '&#x1F993', '&#x1F98D', '&#x1F9A7', '&#x1F418', '&#x1F9A3', '&#x1F9AC', '&#x1F99B', '&#x1F98F', '&#x1F42A', '&#x1F42B', '&#x1F992', '&#x1F998', '&#x1F403', '&#x1F402', '&#x1F404', '&#x1F40E', '&#x1F416', '&#x1F40F', '&#x1F411', '&#x1F999', '&#x1F410', '&#x1F98C', '&#x1F415', '&#x1F429', '&#x1F9AE', '&#x1F408', '&#x1F413', '&#x1F983', '&#x1F99A', '&#x1F99C', '&#x1F9A2', '&#x1F9A9', '&#x1F54A', '&#x1F407', '&#x1F99D', '&#x1F9A8', '&#x1F9A1', '&#x1F9AB', '&#x1F9A6', '&#x1F9A5', '&#x1F401', '&#x1F400', '&#x1F43F', '&#x1F994', '&#x1F43E', '&#x1F409', '&#x1F432', '&#x1F335', '&#x1F384', '&#x1F332', '&#x1F333', '&#x1F334', '&#x1F331', '&#x1F33F', '&#x1F340', '&#x1F38D', '&#x1F38B', '&#x1F343', '&#x1F342', '&#x1F341', '&#x1FAB6', '&#x1F344', '&#x1F41A', '&#x1FAA8', '&#x1FAB5', '&#x1F33E', '&#x1FAB4', '&#x1F490', '&#x1F337', '&#x1F339', '&#x1F940', '&#x1F33A', '&#x1F338', '&#x1F33C', '&#x1F33B', '&#x1F31E', '&#x1F31D', '&#x1F31B', '&#x1F31C', '&#x1F31A', '&#x1F315', '&#x1F316', '&#x1F317', '&#x1F318', '&#x1F311', '&#x1F312', '&#x1F313', '&#x1F314', '&#x1F319', '&#x1F30E', '&#x1F30D', '&#x1F30F', '&#x1FA90', '&#x1F4AB', '&#x2B50', '&#x1F31F', '&#x26A1', '&#x1F4A5', '&#x1F525', '&#x1F32A', '&#x1F308', '&#x1F324', '&#x26C5', '&#x1F325', '&#x1F326', '&#x1F327', '&#x26C8', '&#x1F329', '&#x1F328', '&#x26C4', '&#x1F32C', '&#x1F4A8', '&#x1F4A7', '&#x1F4A6', '&#x1F30A', '&#x1F32B', '&#x1F34F', '&#x1F34E', '&#x1F350', '&#x1F34A', '&#x1F34B', '&#x1F34C', '&#x1F349', '&#x1F347', '&#x1FAD0', '&#x1F353', '&#x1F348', '&#x1F352', '&#x1F351', '&#x1F96D', '&#x1F34D', '&#x1F965', '&#x1F95D', '&#x1F345', '&#x1F346', '&#x1F951', '&#x1FAD2', '&#x1F966', '&#x1F96C', '&#x1FAD1', '&#x1F952', '&#x1F336', '&#x1F33D', '&#x1F955', '&#x1F9C4', '&#x1F9C5', '&#x1F954', '&#x1F360', '&#x1F950', '&#x1F96F', '&#x1F35E', '&#x1F956', '&#x1FAD3', '&#x1F968', '&#x1F9C0', '&#x1F95A', '&#x1F373', '&#x1F9C8', '&#x1F95E', '&#x1F9C7', '&#x1F953', '&#x1F969', '&#x1F357', '&#x1F356', '&#x1F32D', '&#x1F354', '&#x1F35F', '&#x1F355', '&#x1F96A', '&#x1F959', '&#x1F9C6', '&#x1F32E', '&#x1F32F', '&#x1FAD4', '&#x1F957', '&#x1F958', '&#x1FAD5', '&#x1F96B', '&#x1F35D', '&#x1F35C', '&#x1F372', '&#x1F35B', '&#x1F363', '&#x1F371', '&#x1F95F', '&#x1F9AA', '&#x1F364', '&#x1F359', '&#x1F35A', '&#x1F358', '&#x1F365', '&#x1F960', '&#x1F96E', '&#x1F362', '&#x1F361', '&#x1F367', '&#x1F368', '&#x1F366', '&#x1F967', '&#x1F9C1', '&#x1F370', '&#x1F382', '&#x1F36E', '&#x1F36D', '&#x1F36C', '&#x1F36B', '&#x1F37F', '&#x1F369', '&#x1F36A', '&#x1F330', '&#x1F95C', '&#x1F36F', '&#x1F95B', '&#x1F37C', '&#x1F375', '&#x1FAD6', '&#x1F9C9', '&#x1F9CB', '&#x1F9C3', '&#x1F964', '&#x1F376', '&#x1F37A', '&#x1F37B', '&#x1F942', '&#x1F377', '&#x1F943', '&#x1F378', '&#x1F379', '&#x1F37E', '&#x1F9CA', '&#x1F944', '&#x1F374', '&#x1F37D', '&#x1F963', '&#x1F961', '&#x1F962', '&#x1F9C2', '&#x26BD', '&#x1F3C0', '&#x1F3C8', '&#x26BE', '&#x1F94E', '&#x1F3BE', '&#x1F3D0', '&#x1F3C9', '&#x1F94F', '&#x1FA83', '&#x1F3B1', '&#x1FA80', '&#x1F3D3', '&#x1F3F8', '&#x1F3D2', '&#x1F3D1', '&#x1F94D', '&#x1F3CF', '&#x1F945', '&#x26F3', '&#x1FA81', '&#x1F3F9', '&#x1F3A3', '&#x1F93F', '&#x1F94A', '&#x1F94B', '&#x1F3BD', '&#x1F6F9', '&#x1F6FC', '&#x1F6F7', '&#x26F8', '&#x1F94C', '&#x1F3BF', '&#x26F7', '&#x1F3C2', '&#x1FA82', '&#x1F3CB', '&#x1F93C', '&#x1F938', '&#x26F9', '&#x1F93A', '&#x1F93E', '&#x1F3CC', '&#x1F3C7', '&#x1F9D8', '&#x1F3C4', '&#x1F3CA', '&#x1F93D', '&#x1F6A3', '&#x1F9D7', '&#x1F6B5', '&#x1F6B4', '&#x1F3C6', '&#x1F947', '&#x1F948', '&#x1F949', '&#x1F3C5', '&#x1F396', '&#x1F3F5', '&#x1F397', '&#x1F3AB', '&#x1F39F', '&#x1F3AA', '&#x1F939', '&#x1F3AD', '&#x1FA70', '&#x1F3A8', '&#x1F3AC', '&#x1F3A4', '&#x1F3A7', '&#x1F3BC', '&#x1F3B9', '&#x1F941', '&#x1FA98', '&#x1F3B7', '&#x1F3BA', '&#x1F3B8', '&#x1FA95', '&#x1F3BB', '&#x1FA97', '&#x1F3B2', '&#x265F', '&#x1F3AF', '&#x1F3B3', '&#x1F3AE', '&#x1F3B0', '&#x1F9E9', '&#x1F697', '&#x1F695', '&#x1F699', '&#x1F6FB', '&#x1F68C', '&#x1F68E', '&#x1F3CE', '&#x1F693', '&#x1F691', '&#x1F692', '&#x1F690', '&#x1F69A', '&#x1F69B', '&#x1F69C', '&#x1F9AF', '&#x1F9BD', '&#x1F9BC', '&#x1F6F4', '&#x1F6B2', '&#x1F6F5', '&#x1F3CD', '&#x1F6FA', '&#x1F6A8', '&#x1F694', '&#x1F68D', '&#x1F698', '&#x1F696', '&#x1F6A1', '&#x1F6A0', '&#x1F69F', '&#x1F683', '&#x1F68B', '&#x1F69E', '&#x1F69D', '&#x1F684', '&#x1F685', '&#x1F688', '&#x1F682', '&#x1F686', '&#x1F687', '&#x1F68A', '&#x1F689', '&#x1F6EB', '&#x1F6EC', '&#x1F6E9', '&#x1F4BA', '&#x1F6F0', '&#x1F680', '&#x1F6F8', '&#x1F681', '&#x1F6F6', '&#x26F5', '&#x1F6A4', '&#x1F6E5', '&#x1F6F3', '&#x26F4', '&#x1F6A2', '&#x26FD', '&#x1F6A7', '&#x1F6A6', '&#x1F6A5', '&#x1F68F', '&#x1F5FA', '&#x1F5FF', '&#x1F5FD', '&#x1F5FC', '&#x1F3F0', '&#x1F3EF', '&#x1F3DF', '&#x1F3A1', '&#x1F3A2', '&#x1F3A0', '&#x26F2', '&#x26F1', '&#x1F3D6', '&#x1F3DD', '&#x1F3DC', '&#x1F30B', '&#x26F0', '&#x1F3D4', '&#x1F5FB', '&#x1F3D5', '&#x26FA', '&#x1F3E0', '&#x1F3E1', '&#x1F3D8', '&#x1F3DA', '&#x1F6D6', '&#x1F3D7', '&#x1F3ED', '&#x1F3E2', '&#x1F3EC', '&#x1F3E3', '&#x1F3E4', '&#x1F3E5', '&#x1F3E6', '&#x1F3E8', '&#x1F3EA', '&#x1F3EB', '&#x1F3E9', '&#x1F492', '&#x1F3DB', '&#x26EA', '&#x1F54C', '&#x1F54D', '&#x1F6D5', '&#x1F54B', '&#x26E9', '&#x1F6E4', '&#x1F6E3', '&#x1F5FE', '&#x1F391', '&#x1F3DE', '&#x1F305', '&#x1F304', '&#x1F320', '&#x1F387', '&#x1F386', '&#x1F307', '&#x1F306', '&#x1F3D9', '&#x1F303', '&#x1F30C', '&#x1F309', '&#x1F301', '&#x231A', '&#x1F4F1', '&#x1F4F2', '&#x1F4BB', '&#x1F5A5', '&#x1F5A8', '&#x1F5B1', '&#x1F5B2', '&#x1F579', '&#x1F5DC', '&#x1F4BD', '&#x1F4BE', '&#x1F4BF', '&#x1F4C0', '&#x1F4FC', '&#x1F4F7', '&#x1F4F8', '&#x1F4F9', '&#x1F3A5', '&#x1F4FD', '&#x1F39E', '&#x1F4DE', '&#x260E', '&#x1F4DF', '&#x1F4E0', '&#x1F4FA', '&#x1F4FB', '&#x1F399', '&#x1F39A', '&#x1F39B', '&#x1F9ED', '&#x23F1', '&#x23F2', '&#x23F0', '&#x1F570', '&#x231B', '&#x23F3', '&#x1F4E1', '&#x1F50B', '&#x1F50C', '&#x1F4A1', '&#x1F526', '&#x1F56F', '&#x1FA94', '&#x1F9EF', '&#x1F6E2', '&#x1F4B8', '&#x1F4B5', '&#x1F4B4', '&#x1F4B6', '&#x1F4B7', '&#x1FA99', '&#x1F4B0', '&#x1F4B3', '&#x1F48E', '&#x1FA9C', '&#x1F9F0', '&#x1FA9B', '&#x1F527', '&#x1F528', '&#x1F6E0', '&#x26CF', '&#x1F529', '&#x1F9F1', '&#x26D3', '&#x1FA9D', '&#x1FAA2', '&#x1F9F2', '&#x1F52B', '&#x1F4A3', '&#x1F9E8', '&#x1FA93', '&#x1FA9A', '&#x1F52A', '&#x1F5E1', '&#x1F6E1', '&#x1F6AC', '&#x26B0', '&#x1FAA6', '&#x26B1', '&#x1F3FA', '&#x1FA84', '&#x1F52E', '&#x1F4FF', '&#x1F9FF', '&#x1F488', '&#x1F52D', '&#x1F52C', '&#x1F573', '&#x1FA9F', '&#x1FA79', '&#x1FA7A', '&#x1F48A', '&#x1F489', '&#x1FA78', '&#x1F9EC', '&#x1F9A0', '&#x1F9EB', '&#x1F9EA', '&#x1F321', '&#x1FAA4', '&#x1F9F9', '&#x1F9FA', '&#x1FAA1', '&#x1F9FB', '&#x1F6BD', '&#x1FAA0', '&#x1FAA3', '&#x1F6B0', '&#x1F6BF', '&#x1F6C1', '&#x1F6C0', '&#x1FAA5', '&#x1F9FC', '&#x1FA92', '&#x1F9FD', '&#x1F9F4', '&#x1F6CE', '&#x1F511', '&#x1F5DD', '&#x1F6AA', '&#x1FA91', '&#x1FA9E', '&#x1F6CB', '&#x1F6CF', '&#x1F6CC', '&#x1F9F8', '&#x1F5BC', '&#x1F6CD', '&#x1F6D2', '&#x1F381', '&#x1F388', '&#x1F38F', '&#x1F380', '&#x1F38A', '&#x1F389', '&#x1FA85', '&#x1FA86', '&#x1F38E', '&#x1F3EE', '&#x1F390', '&#x1F9E7', '&#x1F4E9', '&#x1F4E8', '&#x1F4E7', '&#x1F48C', '&#x1F4E5', '&#x1F4E4', '&#x1F4E6', '&#x1F3F7', '&#x1F4EA', '&#x1F4EB', '&#x1F4EC', '&#x1F4ED', '&#x1F4EE', '&#x1F4EF', '&#x1FAA7', '&#x1F4DC', '&#x1F4C3', '&#x1F4C4', '&#x1F4D1', '&#x1F9FE', '&#x1F4CA', '&#x1F4C8', '&#x1F4C9', '&#x1F5D2', '&#x1F5D3', '&#x1F4C6', '&#x1F4C5', '&#x1F5D1', '&#x1F4C7', '&#x1F5C3', '&#x1F5F3', '&#x1F5C4', '&#x1F4CB', '&#x1F4C1', '&#x1F4C2', '&#x1F5C2', '&#x1F5DE', '&#x1F4F0', '&#x1F4D3', '&#x1F4D4', '&#x1F4D2', '&#x1F4D5', '&#x1F4D7', '&#x1F4D8', '&#x1F4D9', '&#x1F4DA', '&#x1F4D6', '&#x1F516', '&#x1F9F7', '&#x1F517', '&#x1F4CE', '&#x1F587', '&#x1F4D0', '&#x1F4CF', '&#x1F9EE', '&#x1F4CC', '&#x1F4CD', '&#x1F58A', '&#x1F58B', '&#x1F58C', '&#x1F58D', '&#x1F4DD', '&#x270F', '&#x1F50D', '&#x1F50E', '&#x1F50F', '&#x1F510', '&#x1F512', '&#x1F513', '&#x1F9E1', '&#x1F49B', '&#x1F49A', '&#x1F499', '&#x1F49C', '&#x1F5A4', '&#x1F90E', '&#x1F90D', '&#x1F494', '&#x1F495', '&#x1F49E', '&#x1F493', '&#x1F497', '&#x1F496', '&#x1F498', '&#x1F49D', '&#x1F49F', '&#x262E', '&#x271D', '&#x262A', '&#x1F549', '&#x1F52F', '&#x1F54E', '&#x262F', '&#x1F6D0', '&#x26CE', '&#x264A', '&#x264B', '&#x264C', '&#x264D', '&#x264E', '&#x264F', '&#x1F194', '&#x269B', '&#x1F251', '&#x1F4F4', '&#x1F4F3', '&#x1F236', '&#x1F21A', '&#x1F238', '&#x1F23A', '&#x1F237', '&#x1F19A', '&#x1F4AE', '&#x1F250', '&#x1F234', '&#x1F235', '&#x1F239', '&#x1F232', '&#x1F170', '&#x1F171', '&#x1F18E', '&#x1F191', '&#x1F17E', '&#x1F198', '&#x274C', '&#x2B55', '&#x1F6D1', '&#x26D4', '&#x1F4DB', '&#x1F6AB', '&#x1F4AF', '&#x1F4A2', '&#x1F6B7', '&#x1F6AF', '&#x1F6B3', '&#x1F6B1', '&#x1F51E', '&#x1F4F5', '&#x1F6AD', '&#x203C', '&#x1F505', '&#x1F506', '&#x303D', '&#x26A0', '&#x1F6B8', '&#x1F531', '&#x269C', '&#x1F530', '&#x267B', '&#x1F22F', '&#x1F4B9', '&#x274E', '&#x1F310', '&#x1F4A0', '&#x24C2', '&#x1F300', '&#x1F4A4', '&#x1F3E7', '&#x1F6BE', '&#x267F', '&#x1F17F', '&#x1F233', '&#x1F202', '&#x1F6C2', '&#x1F6C3', '&#x1F6C4', '&#x1F6C5', '&#x1F6D7', '&#x1F6B9', '&#x1F6BA', '&#x1F6BC', '&#x1F6BB', '&#x1F6AE', '&#x1F3A6', '&#x1F4F6', '&#x1F201', '&#x1F523', '&#x1F524', '&#x1F521', '&#x1F520', '&#x1F196', '&#x1F197', '&#x1F199', '&#x1F192', '&#x1F195', '&#x1F193', '&#x0030', '&#x0031', '&#x0032', '&#x0033', '&#x0034', '&#x0035', '&#x0036', '&#x0037', '&#x0038', '&#x0039', '&#x1F51F', '&#x1F522', '&#x0023', '&#x002A', '&#x23CF', '&#x25B6', '&#x23F8', '&#x23EF', '&#x23F9', '&#x23FA', '&#x23ED', '&#x23EE', '&#x23E9', '&#x23EA', '&#x23EB', '&#x23EC', '&#x25C0', '&#x1F53C', '&#x1F53D', '&#x27A1', '&#x2B05', '&#x2B06', '&#x2B07', '&#x21AA', '&#x21A9', '&#x1F500', '&#x1F501', '&#x1F502', '&#x1F504', '&#x1F503', '&#x1F3B5', '&#x1F3B6', '&#x267E', '&#x1F4B2', '&#x1F4B1', '&#x00A9', '&#x00AE', '&#x27B0', '&#x27BF', '&#x1F51A', '&#x1F519', '&#x1F51B', '&#x1F51D', '&#x1F51C', '&#x1F518', '&#x26AA', '&#x26AB', '&#x1F534', '&#x1F535', '&#x1F7E4', '&#x1F7E3', '&#x1F7E2', '&#x1F7E1', '&#x1F7E0', '&#x1F53A', '&#x1F53B', '&#x1F538', '&#x1F539', '&#x1F536', '&#x1F537', '&#x1F533', '&#x1F532', '&#x25AA', '&#x25AB', '&#x25FE', '&#x25FD', '&#x25FC', '&#x25FB', '&#x2B1B', '&#x2B1C', '&#x1F7E7', '&#x1F7E6', '&#x1F7E5', '&#x1F7EB', '&#x1F7EA', '&#x1F7E9', '&#x1F7E8', '&#x1F508', '&#x1F507', '&#x1F509', '&#x1F50A', '&#x1F514', '&#x1F515', '&#x1F4E3', '&#x1F4E2', '&#x1F5E8', '&#x1F4AC', '&#x1F4AD', '&#x1F5EF', '&#x1F0CF', '&#x1F3B4', '&#x1F004', '&#x1F550', '&#x1F551', '&#x1F552', '&#x1F553', '&#x1F554', '&#x1F555', '&#x1F556', '&#x1F557', '&#x1F558', '&#x1F559', '&#x1F55A', '&#x1F55B', '&#x1F55C', '&#x1F55D', '&#x1F55E', '&#x1F55F', '&#x1F560', '&#x1F561', '&#x1F562', '&#x1F563', '&#x1F564', '&#x1F565', '&#x1F566', '&#x1F567', '&#x26A7', '&#x1F3F3', '&#x1F3F4', '&#x1F3C1', '&#x1F6A9', '&#x1F1E6', '&#x1F1E9', '&#x1F1E7', '&#x1F1EE', '&#x1F1FB', '&#x1F1F0', '&#x1F1E8', '&#x1F1F9', '&#x1F1ED', '&#x1F1EA', '&#x1F1F8', '&#x1F1EC', '&#x1F1EB', '&#x1F1F5', '&#x1F1EF', '&#x1F38C', '&#x1F1FD', '&#x1F1F1', '&#x1F1F2', '&#x1F1FE', '&#x1F1F3', '&#x1F1F4', '&#x1F1F6', '&#x1F1F7', '&#x1F1FC', '&#x1F1FF', '&#x1F1FA', '&#x1F3FB', '&#x1F3FC', '&#x1F3FD', '&#x1F3FE', '&#x1F3FF']
-  }; // Add all emoji in a dropdown
+    // When empty, all tags are allowed making this plugin useless
+    // If you want to remove all tags, use removeformatPasted core option instead
+    allowedTags: [],
+    // List of tags which can be allowed
+    removableTags: ['a', 'abbr', 'address', 'b', 'bdi', 'bdo', 'blockquote', 'br', 'cite', 'code', 'del', 'dfn', 'details', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'ins', 'kbd', 'mark', 'meter', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'small', 'span', 'strong', 'sub', 'summary', 'sup', 'time', 'u', 'var', 'wbr', 'img', 'map', 'area', 'canvas', 'figcaption', 'figure', 'picture', 'audio', 'source', 'track', 'video', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'table', 'caption', 'th', 'tr', 'td', 'thead', 'tbody', 'tfoot', 'col', 'colgroup', 'style', 'div', 'p', 'form', 'input', 'textarea', 'button', 'select', 'optgroup', 'option', 'label', 'fieldset', 'legend', 'datalist', 'keygen', 'output', 'iframe', 'link', 'nav', 'header', 'hgroup', 'footer', 'main', 'section', 'article', 'aside', 'dialog', 'script', 'noscript', 'embed', 'object', 'param']
+  };
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      allowTagsFromPaste: {
+        init: function init(trumbowyg) {
+          if (!trumbowyg.o.plugins.allowTagsFromPaste) {
+            return;
+          }
+
+          // Force disable remove format pasted
+          trumbowyg.o.removeformatPasted = false;
+          var allowedTags = trumbowyg.o.plugins.allowTagsFromPaste.allowedTags || defaultOptions.allowedTags;
+          var removableTags = trumbowyg.o.plugins.allowTagsFromPaste.removableTags || defaultOptions.removableTags;
+          if (allowedTags.length === 0) {
+            return;
+          }
+
+          // Get list of tags to remove
+          var tagsToRemove = $(removableTags).not(allowedTags).get();
+          trumbowyg.pasteHandlers.push(function () {
+            setTimeout(function () {
+              var processNodes = trumbowyg.$ed.html();
+              $.each(tagsToRemove, function (iterator, tagName) {
+                processNodes = processNodes.replace(new RegExp('<\\/?' + tagName + '(\\s[^>]*)?>', 'gi'), '');
+              });
+              trumbowyg.$ed.html(processNodes);
+            }, 0);
+          });
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.allowTagsFromPaste.js v1.0.2
+ * It cleans tags from pasted text, whilst allowing several specified tags
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author	: Fathi Anshory (0x00000F5C)
+ * Twitter	: @fscchannl
+ * Notes:
+ *  - removeformatPasted must be set to FALSE since it was applied prior to pasteHandlers, or else it will be useless
+ *	- It is most advisable to use along with the cleanpaste plugin, or else you'd end up with dirty markup
+ */
+!function (e) {
+  "use strict";
+
+  var a = {
+    allowedTags: [],
+    removableTags: ["a", "abbr", "address", "b", "bdi", "bdo", "blockquote", "br", "cite", "code", "del", "dfn", "details", "em", "h1", "h2", "h3", "h4", "h5", "h6", "hr", "i", "ins", "kbd", "mark", "meter", "pre", "progress", "q", "rp", "rt", "ruby", "s", "samp", "small", "span", "strong", "sub", "summary", "sup", "time", "u", "var", "wbr", "img", "map", "area", "canvas", "figcaption", "figure", "picture", "audio", "source", "track", "video", "ul", "ol", "li", "dl", "dt", "dd", "table", "caption", "th", "tr", "td", "thead", "tbody", "tfoot", "col", "colgroup", "style", "div", "p", "form", "input", "textarea", "button", "select", "optgroup", "option", "label", "fieldset", "legend", "datalist", "keygen", "output", "iframe", "link", "nav", "header", "hgroup", "footer", "main", "section", "article", "aside", "dialog", "script", "noscript", "embed", "object", "param"]
+  };
+  e.extend(!0, e.trumbowyg, {
+    plugins: {
+      allowTagsFromPaste: {
+        init: function init(t) {
+          if (t.o.plugins.allowTagsFromPaste) {
+            t.o.removeformatPasted = !1;
+            var o = t.o.plugins.allowTagsFromPaste.allowedTags || a.allowedTags,
+              r = t.o.plugins.allowTagsFromPaste.removableTags || a.removableTags;
+            if (0 !== o.length) {
+              var s = e(r).not(o).get();
+              t.pasteHandlers.push(function () {
+                setTimeout(function () {
+                  var a = t.$ed.html();
+                  e.each(s, function (e, t) {
+                    a = a.replace(new RegExp("<\\/?" + t + "(\\s[^>]*)?>", "gi"), "");
+                  }), t.$ed.html(a);
+                }, 0);
+              });
+            }
+          }
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
+ * trumbowyg.cleanpaste.js v1.0
+ * Font Clean paste plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Authors : Eric Radin
+ *           Todd Graham (slackwalker)
+ *
+ * This plugin will perform a "cleaning" on any paste, in particular
+ * it will clean pasted content of microsoft word document tags and classes.
+ */
+
+(function ($) {
+  'use strict';
+
+  function checkValidTags(snippet) {
+    var theString = snippet;
+
+    // Replace uppercase element names with lowercase
+    theString = theString.replace(/<[^> ]*/g, function (match) {
+      return match.toLowerCase();
+    });
+
+    // Replace uppercase attribute names with lowercase
+    theString = theString.replace(/<[^>]*>/g, function (match) {
+      match = match.replace(/ [^=]+=/g, function (match2) {
+        return match2.toLowerCase();
+      });
+      return match;
+    });
+
+    // Put quotes around unquoted attributes
+    theString = theString.replace(/<[^>]*>/g, function (match) {
+      match = match.replace(/( [^=]+=)([^"][^ >]*)/g, '$1\"$2\"');
+      return match;
+    });
+    return theString;
+  }
+  function cleanIt(html) {
+    // first make sure all tags and attributes are made valid
+    html = checkValidTags(html);
+
+    // Replace opening bold tags with strong
+    html = html.replace(/<b(\s+|>)/g, '<strong$1');
+    // Replace closing bold tags with closing strong
+    html = html.replace(/<\/b(\s+|>)/g, '</strong$1');
+
+    // Replace italic tags with em
+    html = html.replace(/<i(\s+|>)/g, '<em$1');
+    // Replace closing italic tags with closing em
+    html = html.replace(/<\/i(\s+|>)/g, '</em$1');
+
+    // strip out comments -cgCraft
+    html = html.replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, '');
+
+    // strip out &nbsp; -cgCraft
+    html = html.replace(/&nbsp;/gi, ' ');
+    // strip out extra spaces -cgCraft
+    html = html.replace(/ <\//gi, '</');
+
+    // Remove multiple spaces
+    html.replace(/\s+/g, ' ');
+
+    // strip &nbsp; -cgCraft
+    html = html.replace(/^\s*|\s*$/g, '');
+
+    // Strip out unaccepted attributes
+    html = html.replace(/<[^>]*>/g, function (match) {
+      match = match.replace(/ ([^=]+)="[^"]*"/g, function (match2, attributeName) {
+        if (['alt', 'href', 'src', 'title'].indexOf(attributeName) !== -1) {
+          return match2;
+        }
+        return '';
+      });
+      return match;
+    });
+
+    // Final clean out for MS Word crud
+    html = html.replace(/<\?xml[^>]*>/g, '');
+    html = html.replace(/<[^ >]+:[^>]*>/g, '');
+    html = html.replace(/<\/[^ >]+:[^>]*>/g, '');
+
+    // remove unwanted tags
+    html = html.replace(/<(div|span|style|meta|link).*?>/gi, '');
+    return html;
+  }
+
+  // clean editor
+  // this will clean the inserted contents
+  // it does a compare, before and after paste to determine the
+  // pasted contents
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      cleanPaste: {
+        init: function init(trumbowyg) {
+          trumbowyg.pasteHandlers.push(function (pasteEvent) {
+            setTimeout(function () {
+              try {
+                trumbowyg.saveRange();
+                var clipboardData = (pasteEvent.originalEvent || pasteEvent).clipboardData,
+                  pastedData = clipboardData.getData('Text'),
+                  node = trumbowyg.doc.getSelection().focusNode,
+                  range = trumbowyg.doc.createRange(),
+                  cleanedPaste = cleanIt(pastedData.trim()),
+                  newNode = $(cleanedPaste)[0] || trumbowyg.doc.createTextNode(cleanedPaste);
+                if (trumbowyg.$ed.html() === '') {
+                  // simply append if there is no content in editor
+                  trumbowyg.$ed[0].appendChild(newNode);
+                } else {
+                  // insert pasted content behind last focused node
+                  range.setStartAfter(node);
+                  range.setEndAfter(node);
+                  trumbowyg.doc.getSelection().removeAllRanges();
+                  trumbowyg.doc.getSelection().addRange(range);
+                  trumbowyg.range.insertNode(newNode);
+                }
+
+                // now set cursor right after pasted content
+                range = trumbowyg.doc.createRange();
+                range.setStartAfter(newNode);
+                range.setEndAfter(newNode);
+                trumbowyg.doc.getSelection().removeAllRanges();
+                trumbowyg.doc.getSelection().addRange(range);
+
+                // prevent defaults
+                pasteEvent.stopPropagation();
+                pasteEvent.preventDefault();
+
+                // save new node as focused node
+                trumbowyg.saveRange();
+                trumbowyg.syncCode();
+                trumbowyg.$c.trigger('tbwchange');
+              } catch (c) {}
+            }, 0);
+          });
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.cleanpaste.js v1.0
+ * Font Clean paste plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Authors : Eric Radin
+ *           Todd Graham (slackwalker)
+ *
+ * This plugin will perform a "cleaning" on any paste, in particular
+ * it will clean pasted content of microsoft word document tags and classes.
+ */
+!function (e) {
+  "use strict";
+
+  e.extend(!0, e.trumbowyg, {
+    plugins: {
+      cleanPaste: {
+        init: function init(t) {
+          t.pasteHandlers.push(function (r) {
+            setTimeout(function () {
+              try {
+                t.saveRange();
+                var a = (r.originalEvent || r).clipboardData.getData("Text"),
+                  n = t.doc.getSelection().focusNode,
+                  c = t.doc.createRange(),
+                  g = ((l = (l = (l = (l = (l = (l = (l = (l = (l = a.trim()).replace(/<[^> ]*/g, function (e) {
+                    return e.toLowerCase();
+                  }).replace(/<[^>]*>/g, function (e) {
+                    return e.replace(/ [^=]+=/g, function (e) {
+                      return e.toLowerCase();
+                    });
+                  }).replace(/<[^>]*>/g, function (e) {
+                    return e.replace(/( [^=]+=)([^"][^ >]*)/g, '$1"$2"');
+                  })).replace(/<b(\s+|>)/g, "<strong$1")).replace(/<\/b(\s+|>)/g, "</strong$1")).replace(/<i(\s+|>)/g, "<em$1")).replace(/<\/i(\s+|>)/g, "</em$1")).replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, "")).replace(/&nbsp;/gi, " ")).replace(/ <\//gi, "</")).replace(/\s+/g, " "), (l = (l = (l = (l = (l = l.replace(/^\s*|\s*$/g, "")).replace(/<[^>]*>/g, function (e) {
+                    return e.replace(/ ([^=]+)="[^"]*"/g, function (e, t) {
+                      return -1 !== ["alt", "href", "src", "title"].indexOf(t) ? e : "";
+                    });
+                  })).replace(/<\?xml[^>]*>/g, "")).replace(/<[^ >]+:[^>]*>/g, "")).replace(/<\/[^ >]+:[^>]*>/g, "")).replace(/<(div|span|style|meta|link).*?>/gi, "")),
+                  o = e(g)[0] || t.doc.createTextNode(g);
+                "" === t.$ed.html() ? t.$ed[0].appendChild(o) : (c.setStartAfter(n), c.setEndAfter(n), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(c), t.range.insertNode(o)), (c = t.doc.createRange()).setStartAfter(o), c.setEndAfter(o), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(c), r.stopPropagation(), r.preventDefault(), t.saveRange(), t.syncCode(), t.$c.trigger("tbwchange");
+              } catch (e) {}
+              var l;
+            }, 0);
+          });
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
+ * trumbowyg.colors.js v1.2
+ * Colors picker plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Alexandre Demode (Alex-D)
+ *          Twitter : @AlexandreDemode
+ *          Website : alex-d.fr
+ */
+
+(function ($) {
+  'use strict';
 
   $.extend(true, $.trumbowyg, {
     langs: {
       // jshint camelcase:false
       en: {
-        emoji: 'Add an emoji'
+        foreColor: 'Text color',
+        backColor: 'Background color',
+        foreColorRemove: 'Remove text color',
+        backColorRemove: 'Remove background color'
+      },
+      az: {
+        foreColor: 'Yazı rəngi',
+        backColor: 'Arxa plan rəngi',
+        foreColorRemove: 'Yazı rəngini sil',
+        backColorRemove: 'Arxa plan rəngini sil'
+      },
+      by: {
+        foreColor: 'Колер тэксту',
+        backColor: 'Колер фону тэксту',
+        foreColorRemove: 'Выдаліць колер тэксту',
+        backColorRemove: 'Выдаліць колер фону тэксту'
+      },
+      ca: {
+        foreColor: 'Color del text',
+        backColor: 'Color del fons',
+        foreColorRemove: 'Eliminar color del text',
+        backColorRemove: 'Eliminar color del fons'
+      },
+      cs: {
+        foreColor: 'Barva textu',
+        backColor: 'Barva pozadí'
       },
       da: {
-        emoji: 'Tilføj et humørikon'
+        foreColor: 'Tekstfarve',
+        backColor: 'Baggrundsfarve'
       },
       de: {
-        emoji: 'Emoticon einfügen'
+        foreColor: 'Textfarbe',
+        backColor: 'Hintergrundfarbe'
+      },
+      es: {
+        foreColor: 'Color del texto',
+        backColor: 'Color del fondo',
+        foreColorRemove: 'Eliminar color del texto',
+        backColorRemove: 'Eliminar color del fondo'
       },
       et: {
-        emoji: 'Lisa emotikon'
+        foreColor: 'Teksti värv',
+        backColor: 'Taustavärv',
+        foreColorRemove: 'Eemalda teksti värv',
+        backColorRemove: 'Eemalda taustavärv'
       },
       fr: {
-        emoji: 'Ajouter un emoji'
+        foreColor: 'Couleur du texte',
+        backColor: 'Couleur de fond',
+        foreColorRemove: 'Supprimer la couleur du texte',
+        backColorRemove: 'Supprimer la couleur de fond'
       },
       hu: {
-        emoji: 'Emoji beszúrás'
+        foreColor: 'Betű szín',
+        backColor: 'Háttér szín',
+        foreColorRemove: 'Betű szín eltávolítása',
+        backColorRemove: 'Háttér szín eltávolítása'
       },
       ja: {
-        emoji: '絵文字の挿入'
+        foreColor: '文字色',
+        backColor: '背景色'
       },
       ko: {
-        emoji: '이모지 넣기'
+        foreColor: '글자색',
+        backColor: '배경색',
+        foreColorRemove: '글자색 지우기',
+        backColorRemove: '배경색 지우기'
+      },
+      nl: {
+        foreColor: 'Tekstkleur',
+        backColor: 'Achtergrondkleur'
+      },
+      pt_br: {
+        foreColor: 'Cor de fonte',
+        backColor: 'Cor de fundo'
       },
       ru: {
-        emoji: 'Вставить emoji'
+        foreColor: 'Цвет текста',
+        backColor: 'Цвет выделения текста',
+        foreColorRemove: 'Очистить цвет текста',
+        backColorRemove: 'Очистить цвет выделения текста'
+      },
+      sl: {
+        foreColor: 'Barva teksta',
+        backColor: 'Barva ozadja',
+        foreColorRemove: 'Ponastavi barvo teksta',
+        backColorRemove: 'Ponastavi barvo ozadja'
+      },
+      sk: {
+        foreColor: 'Farba textu',
+        backColor: 'Farba pozadia'
       },
       tr: {
-        emoji: 'Emoji ekle'
+        foreColor: 'Yazı rengi',
+        backColor: 'Arka plan rengi',
+        foreColorRemove: 'Yazı rengini kaldır',
+        backColorRemove: 'Arka plan rengini kaldır'
       },
       zh_cn: {
-        emoji: '添加表情'
-      }
-    },
-    // jshint camelcase:true
-    plugins: {
-      emoji: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.emoji = trumbowyg.o.plugins.emoji || defaultOptions;
-          var emojiBtnDef = {
-            dropdown: buildDropdown(trumbowyg)
-          };
-          trumbowyg.addBtnDef('emoji', emojiBtnDef);
-        }
+        foreColor: '文字颜色',
+        backColor: '背景颜色'
+      },
+      zh_tw: {
+        foreColor: '文字顏色',
+        backColor: '背景顏色'
       }
     }
   });
 
-  function buildDropdown(trumbowyg) {
-    var dropdown = [];
-    $.each(trumbowyg.o.plugins.emoji.emojiList, function (i, emoji) {
-      if ($.isArray(emoji)) {
-        // Custom emoji behaviour
-        var emojiCode = emoji[0],
-            emojiUrl = emoji[1],
-            emojiHtml = '<img src="' + emojiUrl + '" alt="' + emojiCode + '">',
-            customEmojiBtnName = 'emoji-' + emojiCode.replace(/:/g, ''),
-            customEmojiBtnDef = {
-          hasIcon: false,
-          text: emojiHtml,
-          fn: function fn() {
-            trumbowyg.execCmd('insertImage', emojiUrl, false, true);
-            return true;
-          }
-        };
-        trumbowyg.addBtnDef(customEmojiBtnName, customEmojiBtnDef);
-        dropdown.push(customEmojiBtnName);
-      } else {
-        // Default behaviour
-        var btn = emoji.replace(/:/g, ''),
-            defaultEmojiBtnName = 'emoji-' + btn,
-            defaultEmojiBtnDef = {
-          text: emoji,
-          fn: function fn() {
-            var encodedEmoji = String.fromCodePoint(emoji.replace('&#', '0'));
-            trumbowyg.execCmd('insertText', encodedEmoji);
-            return true;
-          }
-        };
-        trumbowyg.addBtnDef(defaultEmojiBtnName, defaultEmojiBtnDef);
-        dropdown.push(defaultEmojiBtnName);
+  // jshint camelcase:true
+
+  function hex(x) {
+    return ('0' + parseInt(x).toString(16)).slice(-2);
+  }
+  function colorToHex(rgb) {
+    if (rgb.search('rgb') === -1) {
+      return rgb.replace('#', '');
+    } else if (rgb === 'rgba(0, 0, 0, 0)') {
+      return 'transparent';
+    } else {
+      rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/);
+      if (rgb == null) {
+        return 'transparent'; // No match, return transparent as unkown color
       }
+
+      return hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+    }
+  }
+  function colorTagHandler(element, trumbowyg) {
+    var tags = [];
+    if (!element.style) {
+      return tags;
+    }
+
+    // background color
+    if (element.style.backgroundColor !== '') {
+      var backColor = colorToHex(element.style.backgroundColor);
+      if (trumbowyg.o.plugins.colors.colorList.indexOf(backColor) >= 0) {
+        tags.push('backColor' + backColor);
+      } else {
+        tags.push('backColorFree');
+      }
+    }
+
+    // text color
+    var foreColor;
+    if (element.style.color !== '') {
+      foreColor = colorToHex(element.style.color);
+    } else if (element.hasAttribute('color')) {
+      foreColor = colorToHex(element.getAttribute('color'));
+    }
+    if (foreColor) {
+      if (trumbowyg.o.plugins.colors.colorList.indexOf(foreColor) >= 0) {
+        tags.push('foreColor' + foreColor);
+      } else {
+        tags.push('foreColorFree');
+      }
+    }
+    return tags;
+  }
+  var defaultOptions = {
+    colorList: ['ffffff', '000000', 'eeece1', '1f497d', '4f81bd', 'c0504d', '9bbb59', '8064a2', '4bacc6', 'f79646', 'ffff00', 'f2f2f2', '7f7f7f', 'ddd9c3', 'c6d9f0', 'dbe5f1', 'f2dcdb', 'ebf1dd', 'e5e0ec', 'dbeef3', 'fdeada', 'fff2ca', 'd8d8d8', '595959', 'c4bd97', '8db3e2', 'b8cce4', 'e5b9b7', 'd7e3bc', 'ccc1d9', 'b7dde8', 'fbd5b5', 'ffe694', 'bfbfbf', '3f3f3f', '938953', '548dd4', '95b3d7', 'd99694', 'c3d69b', 'b2a2c7', 'b7dde8', 'fac08f', 'f2c314', 'a5a5a5', '262626', '494429', '17365d', '366092', '953734', '76923c', '5f497a', '92cddc', 'e36c09', 'c09100', '7f7f7f', '0c0c0c', '1d1b10', '0f243e', '244061', '632423', '4f6128', '3f3151', '31859b', '974806', '7f6000'],
+    foreColorList: null,
+    // fallbacks on colorList
+    backColorList: null,
+    // fallbacks on colorList
+    allowCustomForeColor: true,
+    allowCustomBackColor: true,
+    displayAsList: false
+  };
+
+  // Add all colors in two dropdowns
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      color: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.colors = trumbowyg.o.plugins.colors || defaultOptions;
+          var dropdownClass = trumbowyg.o.plugins.colors.displayAsList ? trumbowyg.o.prefix + 'dropdown--color-list' : '';
+          var foreColorBtnDef = {
+              dropdown: buildDropdown('foreColor', trumbowyg),
+              dropdownClass: dropdownClass
+            },
+            backColorBtnDef = {
+              dropdown: buildDropdown('backColor', trumbowyg),
+              dropdownClass: dropdownClass
+            };
+          trumbowyg.addBtnDef('foreColor', foreColorBtnDef);
+          trumbowyg.addBtnDef('backColor', backColorBtnDef);
+        },
+        tagHandler: colorTagHandler
+      }
+    }
+  });
+  function buildDropdown(_fn, trumbowyg) {
+    var dropdown = [],
+      trumbowygColorOptions = trumbowyg.o.plugins.colors,
+      colorList = trumbowygColorOptions[_fn + 'List'] || trumbowygColorOptions.colorList;
+    $.each(colorList, function (i, color) {
+      var btn = _fn + color,
+        btnDef = {
+          fn: _fn,
+          forceCss: true,
+          hasIcon: false,
+          text: trumbowyg.lang['#' + color] || '#' + color,
+          param: '#' + color,
+          style: 'background-color: #' + color + ';'
+        };
+      if (trumbowygColorOptions.displayAsList && _fn === 'foreColor') {
+        btnDef.style = 'color: #' + color + ' !important;';
+      }
+      trumbowyg.addBtnDef(btn, btnDef);
+      dropdown.push(btn);
     });
+
+    // Remove color
+    var removeColorButtonName = _fn + 'Remove',
+      removeColorBtnDef = {
+        fn: 'removeFormat',
+        hasIcon: false,
+        param: _fn,
+        style: 'background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVQIW2NkQAAfEJMRmwBYhoGBYQtMBYoAADziAp0jtJTgAAAAAElFTkSuQmCC);'
+      };
+    if (trumbowygColorOptions.displayAsList) {
+      removeColorBtnDef.style = '';
+    }
+    trumbowyg.addBtnDef(removeColorButtonName, removeColorBtnDef);
+    dropdown.push(removeColorButtonName);
+
+    // Custom color
+    if (trumbowygColorOptions['allowCustom' + _fn.charAt(0).toUpperCase() + _fn.substr(1)]) {
+      // add free color btn
+      var freeColorButtonName = _fn + 'Free',
+        freeColorBtnDef = {
+          fn: function fn() {
+            trumbowyg.openModalInsert(trumbowyg.lang[_fn], {
+              color: {
+                label: _fn,
+                forceCss: true,
+                type: 'color',
+                value: '#FFFFFF'
+              }
+            },
+            // callback
+            function (values) {
+              trumbowyg.execCmd(_fn, values.color);
+              return true;
+            });
+          },
+          hasIcon: false,
+          text: '#',
+          // style adjust for displaying the text
+          style: 'text-indent: 0; line-height: 20px; padding: 0 5px;'
+        };
+      trumbowyg.addBtnDef(freeColorButtonName, freeColorBtnDef);
+      dropdown.push(freeColorButtonName);
+    }
     return dropdown;
   }
 })(jQuery);
-!function (x) {
+/* ===========================================================
+ * trumbowyg.colors.js v1.2
+ * Colors picker plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Alexandre Demode (Alex-D)
+ *          Twitter : @AlexandreDemode
+ *          Website : alex-d.fr
+ */
+!function (o) {
   "use strict";
 
-  var F = {
-    emojiList: ["&#x2049", "&#x2122", "&#x2139", "&#x2194", "&#x2195", "&#x2196", "&#x2197", "&#x2198", "&#x2199", "&#x2328", "&#x2600", "&#x2601", "&#x2602", "&#x2603", "&#x2604", "&#x2611", "&#x2614", "&#x2615", "&#x2618", "&#x2620", "&#x2622", "&#x2623", "&#x2626", "&#x2638", "&#x2639", "&#x2640", "&#x2642", "&#x2648", "&#x2649", "&#x2650", "&#x2651", "&#x2652", "&#x2653", "&#x2660", "&#x2663", "&#x2665", "&#x2666", "&#x2668", "&#x2692", "&#x2693", "&#x2694", "&#x2695", "&#x2696", "&#x2697", "&#x2699", "&#x2702", "&#x2705", "&#x2708", "&#x2709", "&#x2712", "&#x2714", "&#x2716", "&#x2721", "&#x2728", "&#x2733", "&#x2734", "&#x2744", "&#x2747", "&#x2753", "&#x2754", "&#x2755", "&#x2757", "&#x2763", "&#x2764", "&#x2795", "&#x2796", "&#x2797", "&#x2934", "&#x2935", "&#x3030", "&#x3297", "&#x3299", "&#x1F9E1", "&#x1F49B", "&#x1F49A", "&#x1F499", "&#x1F49C", "&#x1F5A4", "&#x1F90E", "&#x1F90D", "&#x1F494", "&#x1F495", "&#x1F49E", "&#x1F493", "&#x1F497", "&#x1F496", "&#x1F498", "&#x1F49D", "&#x1F49F", "&#x262E", "&#x271D", "&#x262A", "&#x1F549", "&#x1F52F", "&#x1F54E", "&#x262F", "&#x1F6D0", "&#x26CE", "&#x264A", "&#x264B", "&#x264C", "&#x264D", "&#x264E", "&#x264F", "&#x1F194", "&#x269B", "&#x1F251", "&#x1F4F4", "&#x1F4F3", "&#x1F236", "&#x1F21A", "&#x1F238", "&#x1F23A", "&#x1F237", "&#x1F19A", "&#x1F4AE", "&#x1F250", "&#x1F234", "&#x1F235", "&#x1F239", "&#x1F232", "&#x1F170", "&#x1F171", "&#x1F18E", "&#x1F191", "&#x1F17E", "&#x1F198", "&#x274C", "&#x2B55", "&#x1F6D1", "&#x26D4", "&#x1F4DB", "&#x1F6AB", "&#x1F4AF", "&#x1F4A2", "&#x1F6B7", "&#x1F6AF", "&#x1F6B3", "&#x1F6B1", "&#x1F51E", "&#x1F4F5", "&#x1F6AD", "&#x203C", "&#x1F505", "&#x1F506", "&#x303D", "&#x26A0", "&#x1F6B8", "&#x1F531", "&#x269C", "&#x1F530", "&#x267B", "&#x1F22F", "&#x1F4B9", "&#x274E", "&#x1F310", "&#x1F4A0", "&#x24C2", "&#x1F300", "&#x1F4A4", "&#x1F3E7", "&#x1F6BE", "&#x267F", "&#x1F17F", "&#x1F233", "&#x1F202", "&#x1F6C2", "&#x1F6C3", "&#x1F6C4", "&#x1F6C5", "&#x1F6B9", "&#x1F6BA", "&#x1F6BC", "&#x1F6BB", "&#x1F6AE", "&#x1F3A6", "&#x1F4F6", "&#x1F201", "&#x1F523", "&#x1F524", "&#x1F521", "&#x1F520", "&#x1F196", "&#x1F197", "&#x1F199", "&#x1F192", "&#x1F195", "&#x1F193", "&#x0030", "&#x0031", "&#x0032", "&#x0033", "&#x0034", "&#x0035", "&#x0036", "&#x0037", "&#x0038", "&#x0039", "&#x1F51F", "&#x1F522", "&#x0023", "&#x002A", "&#x23CF", "&#x25B6", "&#x23F8", "&#x23EF", "&#x23F9", "&#x23FA", "&#x23ED", "&#x23EE", "&#x23E9", "&#x23EA", "&#x23EB", "&#x23EC", "&#x25C0", "&#x1F53C", "&#x1F53D", "&#x27A1", "&#x2B05", "&#x2B06", "&#x2B07", "&#x21AA", "&#x21A9", "&#x1F500", "&#x1F501", "&#x1F502", "&#x1F504", "&#x1F503", "&#x1F3B5", "&#x1F3B6", "&#x267E", "&#x1F4B2", "&#x1F4B1", "&#x00A9", "&#x00AE", "&#x27B0", "&#x27BF", "&#x1F51A", "&#x1F519", "&#x1F51B", "&#x1F51D", "&#x1F51C", "&#x1F518", "&#x26AA", "&#x26AB", "&#x1F534", "&#x1F535", "&#x1F7E4", "&#x1F7E3", "&#x1F7E2", "&#x1F7E1", "&#x1F7E0", "&#x1F53A", "&#x1F53B", "&#x1F538", "&#x1F539", "&#x1F536", "&#x1F537", "&#x1F533", "&#x1F532", "&#x25AA", "&#x25AB", "&#x25FE", "&#x25FD", "&#x25FC", "&#x25FB", "&#x2B1B", "&#x2B1C", "&#x1F7E7", "&#x1F7E6", "&#x1F7E5", "&#x1F7EB", "&#x1F7EA", "&#x1F7E9", "&#x1F7E8", "&#x1F508", "&#x1F507", "&#x1F509", "&#x1F50A", "&#x1F514", "&#x1F515", "&#x1F4E3", "&#x1F4E2", "&#x1F5E8", "&#x1F441", "&#x1F4AC", "&#x1F4AD", "&#x1F5EF", "&#x1F0CF", "&#x1F3B4", "&#x1F004", "&#x1F550", "&#x1F551", "&#x1F552", "&#x1F553", "&#x1F554", "&#x1F555", "&#x1F556", "&#x1F557", "&#x1F558", "&#x1F559", "&#x1F55A", "&#x1F55B", "&#x1F55C", "&#x1F55D", "&#x1F55E", "&#x1F55F", "&#x1F560", "&#x1F561", "&#x1F562", "&#x1F563", "&#x1F564", "&#x1F565", "&#x1F566", "&#x1F567", "&#x26BD", "&#x1F3C0", "&#x1F3C8", "&#x26BE", "&#x1F94E", "&#x1F3BE", "&#x1F3D0", "&#x1F3C9", "&#x1F94F", "&#x1F3B1", "&#x1F3D3", "&#x1F3F8", "&#x1F3D2", "&#x1F3D1", "&#x1F94D", "&#x1F3CF", "&#x1F945", "&#x26F3", "&#x1F3F9", "&#x1F3A3", "&#x1F94A", "&#x1F94B", "&#x1F3BD", "&#x1F6F9", "&#x1F6F7", "&#x1FA82", "&#x26F8", "&#x1F94C", "&#x1F3BF", "&#x26F7", "&#x1F3C2", "&#x1F3CB", "&#x1F93C", "&#x1F938", "&#x26F9", "&#x1F93A", "&#x1F93E", "&#x1F3CC", "&#x1F3C7", "&#x1F9D8", "&#x1F3C4", "&#x1F3CA", "&#x1F93D", "&#x1F6A3", "&#x1F9D7", "&#x1F6B5", "&#x1F6B4", "&#x1F3C6", "&#x1F947", "&#x1F948", "&#x1F949", "&#x1F3C5", "&#x1F396", "&#x1F3F5", "&#x1F397", "&#x1F3AB", "&#x1F39F", "&#x1F3AA", "&#x1F939", "&#x1F3AD", "&#x1F3A8", "&#x1F3AC", "&#x1F3A4", "&#x1F3A7", "&#x1F3BC", "&#x1F3B9", "&#x1F941", "&#x1F3B7", "&#x1F3BA", "&#x1FA95", "&#x1F3B8", "&#x1F3BB", "&#x1F3B2", "&#x265F", "&#x1F3AF", "&#x1FA81", "&#x1FA80", "&#x1F3B3", "&#x1F3AE", "&#x1F3B0", "&#x1F9E9", "&#x231A", "&#x1F4F1", "&#x1F4F2", "&#x1F4BB", "&#x1F5A5", "&#x1F5A8", "&#x1F5B1", "&#x1F5B2", "&#x1F579", "&#x1F5DC", "&#x1F4BD", "&#x1F4BE", "&#x1F4BF", "&#x1F4C0", "&#x1F4FC", "&#x1F4F7", "&#x1F4F8", "&#x1F4F9", "&#x1F3A5", "&#x1F4FD", "&#x1F39E", "&#x1F4DE", "&#x260E", "&#x1F4DF", "&#x1F4E0", "&#x1F4FA", "&#x1F4FB", "&#x1F399", "&#x1F39A", "&#x1F39B", "&#x1F9ED", "&#x23F1", "&#x23F2", "&#x23F0", "&#x1F570", "&#x231B", "&#x23F3", "&#x1F4E1", "&#x1F50B", "&#x1F50C", "&#x1F4A1", "&#x1F526", "&#x1F56F", "&#x1F9EF", "&#x1F6E2", "&#x1F4B8", "&#x1F4B5", "&#x1F4B4", "&#x1F4B6", "&#x1F4B7", "&#x1F4B0", "&#x1F4B3", "&#x1F48E", "&#x1F9F0", "&#x1F527", "&#x1F528", "&#x1F6E0", "&#x26CF", "&#x1F529", "&#x1F9F1", "&#x26D3", "&#x1F9F2", "&#x1F52B", "&#x1F4A3", "&#x1F9E8", "&#x1FA93", "&#x1FA92", "&#x1F52A", "&#x1F5E1", "&#x1F6E1", "&#x1F6AC", "&#x26B0", "&#x26B1", "&#x1F3FA", "&#x1FA94", "&#x1F52E", "&#x1F4FF", "&#x1F9FF", "&#x1F488", "&#x1F52D", "&#x1F52C", "&#x1F573", "&#x1F9AF", "&#x1FA7A", "&#x1FA79", "&#x1F48A", "&#x1F489", "&#x1FA78", "&#x1F9EC", "&#x1F9A0", "&#x1F9EB", "&#x1F9EA", "&#x1F321", "&#x1FA91", "&#x1F9F9", "&#x1F9FA", "&#x1F9FB", "&#x1F6BD", "&#x1F6B0", "&#x1F6BF", "&#x1F6C1", "&#x1F6C0", "&#x1F9FC", "&#x1F9FD", "&#x1F9F4", "&#x1F6CE", "&#x1F511", "&#x1F5DD", "&#x1F6AA", "&#x1F6CB", "&#x1F6CF", "&#x1F6CC", "&#x1F9F8", "&#x1F5BC", "&#x1F6CD", "&#x1F6D2", "&#x1F381", "&#x1F388", "&#x1F38F", "&#x1F380", "&#x1F38A", "&#x1F389", "&#x1F38E", "&#x1F3EE", "&#x1F390", "&#x1F9E7", "&#x1F4E9", "&#x1F4E8", "&#x1F4E7", "&#x1F48C", "&#x1F4E5", "&#x1F4E4", "&#x1F4E6", "&#x1F3F7", "&#x1F4EA", "&#x1F4EB", "&#x1F4EC", "&#x1F4ED", "&#x1F4EE", "&#x1F4EF", "&#x1F4DC", "&#x1F4C3", "&#x1F4C4", "&#x1F4D1", "&#x1F9FE", "&#x1F4CA", "&#x1F4C8", "&#x1F4C9", "&#x1F5D2", "&#x1F5D3", "&#x1F4C6", "&#x1F4C5", "&#x1F5D1", "&#x1F4C7", "&#x1F5C3", "&#x1F5F3", "&#x1F5C4", "&#x1F4CB", "&#x1F4C1", "&#x1F4C2", "&#x1F5C2", "&#x1F5DE", "&#x1F4F0", "&#x1F4D3", "&#x1F4D4", "&#x1F4D2", "&#x1F4D5", "&#x1F4D7", "&#x1F4D8", "&#x1F4D9", "&#x1F4DA", "&#x1F4D6", "&#x1F516", "&#x1F9F7", "&#x1F517", "&#x1F4CE", "&#x1F587", "&#x1F4D0", "&#x1F4CF", "&#x1F9EE", "&#x1F4CC", "&#x1F4CD", "&#x1F58A", "&#x1F58B", "&#x1F58C", "&#x1F58D", "&#x1F4DD", "&#x270F", "&#x1F50D", "&#x1F50E", "&#x1F50F", "&#x1F510", "&#x1F512", "&#x1F513", "&#x1F436", "&#x1F431", "&#x1F42D", "&#x1F439", "&#x1F430", "&#x1F98A", "&#x1F43B", "&#x1F43C", "&#x1F428", "&#x1F42F", "&#x1F981", "&#x1F42E", "&#x1F437", "&#x1F43D", "&#x1F438", "&#x1F435", "&#x1F648", "&#x1F649", "&#x1F64A", "&#x1F412", "&#x1F414", "&#x1F427", "&#x1F426", "&#x1F424", "&#x1F423", "&#x1F425", "&#x1F986", "&#x1F985", "&#x1F989", "&#x1F987", "&#x1F43A", "&#x1F417", "&#x1F434", "&#x1F984", "&#x1F41D", "&#x1F41B", "&#x1F98B", "&#x1F40C", "&#x1F41A", "&#x1F41E", "&#x1F41C", "&#x1F99F", "&#x1F997", "&#x1F577", "&#x1F578", "&#x1F982", "&#x1F422", "&#x1F40D", "&#x1F98E", "&#x1F996", "&#x1F995", "&#x1F419", "&#x1F991", "&#x1F990", "&#x1F99E", "&#x1F9AA", "&#x1F980", "&#x1F421", "&#x1F420", "&#x1F41F", "&#x1F42C", "&#x1F433", "&#x1F40B", "&#x1F988", "&#x1F40A", "&#x1F405", "&#x1F406", "&#x1F993", "&#x1F98D", "&#x1F9A7", "&#x1F418", "&#x1F99B", "&#x1F98F", "&#x1F42A", "&#x1F42B", "&#x1F992", "&#x1F998", "&#x1F403", "&#x1F402", "&#x1F404", "&#x1F40E", "&#x1F416", "&#x1F40F", "&#x1F999", "&#x1F411", "&#x1F410", "&#x1F98C", "&#x1F415", "&#x1F9AE", "&#x1F429", "&#x1F408", "&#x1F413", "&#x1F983", "&#x1F99A", "&#x1F99C", "&#x1F9A2", "&#x1F9A9", "&#x1F54A", "&#x1F407", "&#x1F9A5", "&#x1F9A6", "&#x1F9A8", "&#x1F99D", "&#x1F9A1", "&#x1F401", "&#x1F400", "&#x1F43F", "&#x1F994", "&#x1F43E", "&#x1F409", "&#x1F432", "&#x1F335", "&#x1F384", "&#x1F332", "&#x1F333", "&#x1F334", "&#x1F331", "&#x1F33F", "&#x1F340", "&#x1F38D", "&#x1F38B", "&#x1F343", "&#x1F342", "&#x1F341", "&#x1F344", "&#x1F33E", "&#x1F490", "&#x1F337", "&#x1F339", "&#x1F940", "&#x1F33A", "&#x1F338", "&#x1F33C", "&#x1F33B", "&#x1F31E", "&#x1F31D", "&#x1F31B", "&#x1F31C", "&#x1F31A", "&#x1F315", "&#x1F316", "&#x1F317", "&#x1F318", "&#x1F311", "&#x1F312", "&#x1F313", "&#x1F314", "&#x1F319", "&#x1F30E", "&#x1F30D", "&#x1F30F", "&#x1FA90", "&#x1F4AB", "&#x2B50", "&#x1F31F", "&#x26A1", "&#x1F4A5", "&#x1F525", "&#x1F32A", "&#x1F308", "&#x1F324", "&#x26C5", "&#x1F325", "&#x1F326", "&#x1F327", "&#x26C8", "&#x1F329", "&#x1F328", "&#x26C4", "&#x1F32C", "&#x1F4A8", "&#x1F4A7", "&#x1F4A6", "&#x1F30A", "&#x1F32B", "&#x1F34F", "&#x1F34E", "&#x1F350", "&#x1F34A", "&#x1F34B", "&#x1F34C", "&#x1F349", "&#x1F347", "&#x1F353", "&#x1F348", "&#x1F352", "&#x1F351", "&#x1F96D", "&#x1F34D", "&#x1F965", "&#x1F95D", "&#x1F345", "&#x1F346", "&#x1F951", "&#x1F966", "&#x1F96C", "&#x1F952", "&#x1F336", "&#x1F33D", "&#x1F955", "&#x1F9C5", "&#x1F9C4", "&#x1F954", "&#x1F360", "&#x1F950", "&#x1F96F", "&#x1F35E", "&#x1F956", "&#x1F968", "&#x1F9C0", "&#x1F95A", "&#x1F373", "&#x1F95E", "&#x1F9C7", "&#x1F953", "&#x1F969", "&#x1F357", "&#x1F356", "&#x1F32D", "&#x1F354", "&#x1F35F", "&#x1F355", "&#x1F96A", "&#x1F9C6", "&#x1F959", "&#x1F32E", "&#x1F32F", "&#x1F957", "&#x1F958", "&#x1F96B", "&#x1F35D", "&#x1F35C", "&#x1F372", "&#x1F35B", "&#x1F363", "&#x1F371", "&#x1F95F", "&#x1F364", "&#x1F359", "&#x1F35A", "&#x1F358", "&#x1F365", "&#x1F960", "&#x1F96E", "&#x1F362", "&#x1F361", "&#x1F367", "&#x1F368", "&#x1F366", "&#x1F967", "&#x1F9C1", "&#x1F370", "&#x1F382", "&#x1F36E", "&#x1F36D", "&#x1F36C", "&#x1F36B", "&#x1F37F", "&#x1F369", "&#x1F36A", "&#x1F330", "&#x1F95C", "&#x1F36F", "&#x1F9C8", "&#x1F95B", "&#x1F37C", "&#x1F375", "&#x1F9C9", "&#x1F964", "&#x1F9C3", "&#x1F9CA", "&#x1F376", "&#x1F37A", "&#x1F37B", "&#x1F942", "&#x1F377", "&#x1F943", "&#x1F378", "&#x1F379", "&#x1F37E", "&#x1F944", "&#x1F374", "&#x1F37D", "&#x1F963", "&#x1F961", "&#x1F962", "&#x1F9C2", "&#x1F600", "&#x1F603", "&#x1F604", "&#x1F601", "&#x1F606", "&#x1F605", "&#x1F602", "&#x1F923", "&#x263A", "&#x1F60A", "&#x1F607", "&#x1F642", "&#x1F643", "&#x1F609", "&#x1F60C", "&#x1F60D", "&#x1F970", "&#x1F618", "&#x1F617", "&#x1F619", "&#x1F61A", "&#x1F60B", "&#x1F61B", "&#x1F61D", "&#x1F61C", "&#x1F92A", "&#x1F928", "&#x1F9D0", "&#x1F913", "&#x1F60E", "&#x1F929", "&#x1F973", "&#x1F60F", "&#x1F612", "&#x1F61E", "&#x1F614", "&#x1F61F", "&#x1F615", "&#x1F641", "&#x1F623", "&#x1F616", "&#x1F62B", "&#x1F629", "&#x1F97A", "&#x1F622", "&#x1F62D", "&#x1F624", "&#x1F620", "&#x1F621", "&#x1F92C", "&#x1F92F", "&#x1F633", "&#x1F975", "&#x1F976", "&#x1F631", "&#x1F628", "&#x1F630", "&#x1F625", "&#x1F613", "&#x1F917", "&#x1F914", "&#x1F92D", "&#x1F971", "&#x1F92B", "&#x1F925", "&#x1F636", "&#x1F610", "&#x1F611", "&#x1F62C", "&#x1F644", "&#x1F62F", "&#x1F626", "&#x1F627", "&#x1F62E", "&#x1F632", "&#x1F634", "&#x1F924", "&#x1F62A", "&#x1F635", "&#x1F910", "&#x1F974", "&#x1F922", "&#x1F92E", "&#x1F927", "&#x1F637", "&#x1F912", "&#x1F915", "&#x1F911", "&#x1F920", "&#x1F608", "&#x1F47F", "&#x1F479", "&#x1F47A", "&#x1F921", "&#x1F4A9", "&#x1F47B", "&#x1F480", "&#x1F47D", "&#x1F47E", "&#x1F916", "&#x1F383", "&#x1F63A", "&#x1F638", "&#x1F639", "&#x1F63B", "&#x1F63C", "&#x1F63D", "&#x1F640", "&#x1F63F", "&#x1F63E", "&#x1F932", "&#x1F450", "&#x1F64C", "&#x1F44F", "&#x1F91D", "&#x1F44D", "&#x1F44E", "&#x1F44A", "&#x270A", "&#x1F91B", "&#x1F91C", "&#x1F91E", "&#x270C", "&#x1F91F", "&#x1F918", "&#x1F44C", "&#x1F90F", "&#x1F448", "&#x1F449", "&#x1F446", "&#x1F447", "&#x261D", "&#x270B", "&#x1F91A", "&#x1F590", "&#x1F596", "&#x1F44B", "&#x1F919", "&#x1F4AA", "&#x1F9BE", "&#x1F595", "&#x270D", "&#x1F64F", "&#x1F9B6", "&#x1F9B5", "&#x1F9BF", "&#x1F484", "&#x1F48B", "&#x1F444", "&#x1F9B7", "&#x1F9B4", "&#x1F445", "&#x1F442", "&#x1F9BB", "&#x1F443", "&#x1F463", "&#x1F440", "&#x1F9E0", "&#x1F5E3", "&#x1F464", "&#x1F465", "&#x1F476", "&#x1F467", "&#x1F9D2", "&#x1F466", "&#x1F469", "&#x1F9D1", "&#x1F468", "&#x1F471", "&#x1F9D4", "&#x1F475", "&#x1F9D3", "&#x1F474", "&#x1F472", "&#x1F473", "&#x1F9D5", "&#x1F46E", "&#x1F477", "&#x1F482", "&#x1F575", "&#x1F470", "&#x1F935", "&#x1F478", "&#x1F934", "&#x1F9B8", "&#x1F9B9", "&#x1F936", "&#x1F385", "&#x1F9D9", "&#x1F9DD", "&#x1F9DB", "&#x1F9DF", "&#x1F9DE", "&#x1F9DC", "&#x1F9DA", "&#x1F47C", "&#x1F930", "&#x1F931", "&#x1F647", "&#x1F481", "&#x1F645", "&#x1F646", "&#x1F64B", "&#x1F9CF", "&#x1F926", "&#x1F937", "&#x1F64E", "&#x1F64D", "&#x1F487", "&#x1F486", "&#x1F9D6", "&#x1F485", "&#x1F933", "&#x1F483", "&#x1F57A", "&#x1F46F", "&#x1F574", "&#x1F6B6", "&#x1F3C3", "&#x1F9CD", "&#x1F9CE", "&#x1F46B", "&#x1F46D", "&#x1F46C", "&#x1F491", "&#x1F48F", "&#x1F46A", "&#x1F9F6", "&#x1F9F5", "&#x1F9E5", "&#x1F97C", "&#x1F9BA", "&#x1F45A", "&#x1F455", "&#x1F456", "&#x1FA73", "&#x1F454", "&#x1F457", "&#x1F459", "&#x1FA71", "&#x1F458", "&#x1F97B", "&#x1F97F", "&#x1F460", "&#x1F461", "&#x1F462", "&#x1FA70", "&#x1F45E", "&#x1F45F", "&#x1F97E", "&#x1FA72", "&#x1F9E6", "&#x1F9E4", "&#x1F9E3", "&#x1F3A9", "&#x1F9E2", "&#x1F452", "&#x1F393", "&#x26D1", "&#x1F451", "&#x1F48D", "&#x1F45D", "&#x1F45B", "&#x1F45C", "&#x1F4BC", "&#x1F392", "&#x1F9F3", "&#x1F453", "&#x1F576", "&#x1F97D", "&#x1F93F", "&#x1F302", "&#x1F9B1", "&#x1F9B0", "&#x1F9B3", "&#x1F9B2", "&#x1F697", "&#x1F695", "&#x1F699", "&#x1F68C", "&#x1F68E", "&#x1F3CE", "&#x1F693", "&#x1F691", "&#x1F692", "&#x1F690", "&#x1F69A", "&#x1F69B", "&#x1F69C", "&#x1F6FA", "&#x1F6F5", "&#x1F3CD", "&#x1F6F4", "&#x1F6B2", "&#x1F9BC", "&#x1F9BD", "&#x1F6A8", "&#x1F694", "&#x1F68D", "&#x1F698", "&#x1F696", "&#x1F6A1", "&#x1F6A0", "&#x1F69F", "&#x1F683", "&#x1F68B", "&#x1F69E", "&#x1F69D", "&#x1F684", "&#x1F685", "&#x1F688", "&#x1F682", "&#x1F686", "&#x1F687", "&#x1F68A", "&#x1F689", "&#x1F6EB", "&#x1F6EC", "&#x1F6E9", "&#x1F4BA", "&#x1F6F0", "&#x1F680", "&#x1F6F8", "&#x1F681", "&#x1F6F6", "&#x26F5", "&#x1F6A4", "&#x1F6E5", "&#x1F6F3", "&#x26F4", "&#x1F6A2", "&#x26FD", "&#x1F6A7", "&#x1F6A6", "&#x1F6A5", "&#x1F68F", "&#x1F5FA", "&#x1F5FF", "&#x1F5FD", "&#x1F5FC", "&#x1F3F0", "&#x1F3EF", "&#x1F3DF", "&#x1F3A1", "&#x1F3A2", "&#x1F3A0", "&#x26F2", "&#x26F1", "&#x1F3D6", "&#x1F3DD", "&#x1F3DC", "&#x1F30B", "&#x26F0", "&#x1F3D4", "&#x1F5FB", "&#x1F3D5", "&#x26FA", "&#x1F3E0", "&#x1F3E1", "&#x1F3D8", "&#x1F3DA", "&#x1F3D7", "&#x1F3ED", "&#x1F3E2", "&#x1F3EC", "&#x1F3E3", "&#x1F3E4", "&#x1F3E5", "&#x1F3E6", "&#x1F3E8", "&#x1F3EA", "&#x1F3EB", "&#x1F3E9", "&#x1F492", "&#x1F3DB", "&#x26EA", "&#x1F54C", "&#x1F6D5", "&#x1F54D", "&#x1F54B", "&#x26E9", "&#x1F6E4", "&#x1F6E3", "&#x1F5FE", "&#x1F391", "&#x1F3DE", "&#x1F305", "&#x1F304", "&#x1F320", "&#x1F387", "&#x1F386", "&#x1F307", "&#x1F306", "&#x1F3D9", "&#x1F303", "&#x1F30C", "&#x1F309", "&#x1F301", "&#x1F1FF", "&#x1F1FE", "&#x1F1FD", "&#x1F1FC", "&#x1F1FB", "&#x1F1FA", "&#x1F1F9", "&#x1F1F8", "&#x1F1F7", "&#x1F1F6", "&#x1F1F5", "&#x1F1F4", "&#x1F1F3", "&#x1F1F2", "&#x1F1F1", "&#x1F1F0", "&#x1F1EF", "&#x1F1EE", "&#x1F1ED", "&#x1F1EC", "&#x1F1EB", "&#x1F1EA", "&#x1F1E9", "&#x1F1E8", "&#x1F1E7", "&#x1F1E6", "&#x1F3F3", "&#x1F3F4", "&#x1F3C1", "&#x1F6A9", "&#x1F38C", "&#x1F3FB", "&#x1F3FC", "&#x1F3FD", "&#x1F3FE", "&#x1F3FF"]
-  };
-
-  function A(F) {
-    var A = [];
-    return x.each(F.o.plugins.emoji.emojiList, function (E, B) {
-      if (x.isArray(B)) {
-        var C = B[0],
-            D = B[1],
-            e = '<img src="' + D + '" alt="' + C + '">',
-            i = "emoji-" + C.replace(/:/g, ""),
-            o = {
-          hasIcon: !1,
-          text: e,
-          fn: function fn() {
-            return F.execCmd("insertImage", D, !1, !0), !0;
-          }
-        };
-        F.addBtnDef(i, o), A.push(i);
-      } else {
-        var n = "emoji-" + B.replace(/:/g, ""),
-            t = {
-          text: B,
-          fn: function fn() {
-            var x = String.fromCodePoint(B.replace("&#", "0"));
-            return F.execCmd("insertText", x), !0;
-          }
-        };
-        F.addBtnDef(n, t), A.push(n);
-      }
-    }), A;
+  function r(o) {
+    return ("0" + parseInt(o).toString(16)).slice(-2);
   }
-
-  x.extend(!0, x.trumbowyg, {
+  function e(o) {
+    return -1 === o.search("rgb") ? o.replace("#", "") : "rgba(0, 0, 0, 0)" === o || null == (o = o.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/)) ? "transparent" : r(o[1]) + r(o[2]) + r(o[3]);
+  }
+  o.extend(!0, o.trumbowyg, {
     langs: {
       en: {
-        emoji: "Add an emoji"
+        foreColor: "Text color",
+        backColor: "Background color",
+        foreColorRemove: "Remove text color",
+        backColorRemove: "Remove background color"
+      },
+      az: {
+        foreColor: "Yazı rəngi",
+        backColor: "Arxa plan rəngi",
+        foreColorRemove: "Yazı rəngini sil",
+        backColorRemove: "Arxa plan rəngini sil"
+      },
+      by: {
+        foreColor: "Колер тэксту",
+        backColor: "Колер фону тэксту",
+        foreColorRemove: "Выдаліць колер тэксту",
+        backColorRemove: "Выдаліць колер фону тэксту"
+      },
+      ca: {
+        foreColor: "Color del text",
+        backColor: "Color del fons",
+        foreColorRemove: "Eliminar color del text",
+        backColorRemove: "Eliminar color del fons"
+      },
+      cs: {
+        foreColor: "Barva textu",
+        backColor: "Barva pozadí"
       },
       da: {
-        emoji: "Tilføj et humørikon"
+        foreColor: "Tekstfarve",
+        backColor: "Baggrundsfarve"
       },
       de: {
-        emoji: "Emoticon einfügen"
+        foreColor: "Textfarbe",
+        backColor: "Hintergrundfarbe"
+      },
+      es: {
+        foreColor: "Color del texto",
+        backColor: "Color del fondo",
+        foreColorRemove: "Eliminar color del texto",
+        backColorRemove: "Eliminar color del fondo"
       },
       et: {
-        emoji: "Lisa emotikon"
+        foreColor: "Teksti värv",
+        backColor: "Taustavärv",
+        foreColorRemove: "Eemalda teksti värv",
+        backColorRemove: "Eemalda taustavärv"
       },
       fr: {
-        emoji: "Ajouter un emoji"
+        foreColor: "Couleur du texte",
+        backColor: "Couleur de fond",
+        foreColorRemove: "Supprimer la couleur du texte",
+        backColorRemove: "Supprimer la couleur de fond"
       },
       hu: {
-        emoji: "Emoji beszúrás"
+        foreColor: "Betű szín",
+        backColor: "Háttér szín",
+        foreColorRemove: "Betű szín eltávolítása",
+        backColorRemove: "Háttér szín eltávolítása"
       },
       ja: {
-        emoji: "絵文字の挿入"
+        foreColor: "文字色",
+        backColor: "背景色"
       },
       ko: {
-        emoji: "이모지 넣기"
+        foreColor: "글자색",
+        backColor: "배경색",
+        foreColorRemove: "글자색 지우기",
+        backColorRemove: "배경색 지우기"
+      },
+      nl: {
+        foreColor: "Tekstkleur",
+        backColor: "Achtergrondkleur"
+      },
+      pt_br: {
+        foreColor: "Cor de fonte",
+        backColor: "Cor de fundo"
       },
       ru: {
-        emoji: "Вставить emoji"
+        foreColor: "Цвет текста",
+        backColor: "Цвет выделения текста",
+        foreColorRemove: "Очистить цвет текста",
+        backColorRemove: "Очистить цвет выделения текста"
+      },
+      sl: {
+        foreColor: "Barva teksta",
+        backColor: "Barva ozadja",
+        foreColorRemove: "Ponastavi barvo teksta",
+        backColorRemove: "Ponastavi barvo ozadja"
+      },
+      sk: {
+        foreColor: "Farba textu",
+        backColor: "Farba pozadia"
       },
       tr: {
-        emoji: "Emoji ekle"
+        foreColor: "Yazı rengi",
+        backColor: "Arka plan rengi",
+        foreColorRemove: "Yazı rengini kaldır",
+        backColorRemove: "Arka plan rengini kaldır"
       },
       zh_cn: {
-        emoji: "添加表情"
+        foreColor: "文字颜色",
+        backColor: "背景颜色"
+      },
+      zh_tw: {
+        foreColor: "文字顏色",
+        backColor: "背景顏色"
       }
-    },
+    }
+  });
+  var l = {
+    colorList: ["ffffff", "000000", "eeece1", "1f497d", "4f81bd", "c0504d", "9bbb59", "8064a2", "4bacc6", "f79646", "ffff00", "f2f2f2", "7f7f7f", "ddd9c3", "c6d9f0", "dbe5f1", "f2dcdb", "ebf1dd", "e5e0ec", "dbeef3", "fdeada", "fff2ca", "d8d8d8", "595959", "c4bd97", "8db3e2", "b8cce4", "e5b9b7", "d7e3bc", "ccc1d9", "b7dde8", "fbd5b5", "ffe694", "bfbfbf", "3f3f3f", "938953", "548dd4", "95b3d7", "d99694", "c3d69b", "b2a2c7", "b7dde8", "fac08f", "f2c314", "a5a5a5", "262626", "494429", "17365d", "366092", "953734", "76923c", "5f497a", "92cddc", "e36c09", "c09100", "7f7f7f", "0c0c0c", "1d1b10", "0f243e", "244061", "632423", "4f6128", "3f3151", "31859b", "974806", "7f6000"],
+    foreColorList: null,
+    backColorList: null,
+    allowCustomForeColor: !0,
+    allowCustomBackColor: !0,
+    displayAsList: !1
+  };
+  function a(r, e) {
+    var l = [],
+      a = e.o.plugins.colors,
+      t = a[r + "List"] || a.colorList;
+    o.each(t, function (o, t) {
+      var c = r + t,
+        f = {
+          fn: r,
+          forceCss: !0,
+          hasIcon: !1,
+          text: e.lang["#" + t] || "#" + t,
+          param: "#" + t,
+          style: "background-color: #" + t + ";"
+        };
+      a.displayAsList && "foreColor" === r && (f.style = "color: #" + t + " !important;"), e.addBtnDef(c, f), l.push(c);
+    });
+    var c = r + "Remove",
+      f = {
+        fn: "removeFormat",
+        hasIcon: !1,
+        param: r,
+        style: "background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVQIW2NkQAAfEJMRmwBYhoGBYQtMBYoAADziAp0jtJTgAAAAAElFTkSuQmCC);"
+      };
+    if (a.displayAsList && (f.style = ""), e.addBtnDef(c, f), l.push(c), a["allowCustom" + r.charAt(0).toUpperCase() + r.substr(1)]) {
+      var n = r + "Free",
+        d = {
+          fn: function fn() {
+            e.openModalInsert(e.lang[r], {
+              color: {
+                label: r,
+                forceCss: !0,
+                type: "color",
+                value: "#FFFFFF"
+              }
+            }, function (o) {
+              return e.execCmd(r, o.color), !0;
+            });
+          },
+          hasIcon: !1,
+          text: "#",
+          style: "text-indent: 0; line-height: 20px; padding: 0 5px;"
+        };
+      e.addBtnDef(n, d), l.push(n);
+    }
+    return l;
+  }
+  o.extend(!0, o.trumbowyg, {
     plugins: {
-      emoji: {
-        init: function init(x) {
-          x.o.plugins.emoji = x.o.plugins.emoji || F;
-          var E = {
-            dropdown: A(x)
-          };
-          x.addBtnDef("emoji", E);
+      color: {
+        init: function init(o) {
+          o.o.plugins.colors = o.o.plugins.colors || l;
+          var r = o.o.plugins.colors.displayAsList ? o.o.prefix + "dropdown--color-list" : "",
+            e = {
+              dropdown: a("foreColor", o),
+              dropdownClass: r
+            },
+            t = {
+              dropdown: a("backColor", o),
+              dropdownClass: r
+            };
+          o.addBtnDef("foreColor", e), o.addBtnDef("backColor", t);
+        },
+        tagHandler: function tagHandler(o, r) {
+          var l,
+            a = [];
+          if (!o.style) return a;
+          if ("" !== o.style.backgroundColor) {
+            var t = e(o.style.backgroundColor);
+            r.o.plugins.colors.colorList.indexOf(t) >= 0 ? a.push("backColor" + t) : a.push("backColorFree");
+          }
+          return "" !== o.style.color ? l = e(o.style.color) : o.hasAttribute("color") && (l = e(o.getAttribute("color"))), l && (r.o.plugins.colors.colorList.indexOf(l) >= 0 ? a.push("foreColor" + l) : a.push("foreColorFree")), a;
         }
       }
     }
@@ -740,17 +1114,23 @@
       en: {
         fontFamily: 'Font'
       },
+      az: {
+        fontFamily: 'Şrift'
+      },
       by: {
         fontFamily: 'Шрыфт'
       },
-      es: {
-        fontFamily: 'Fuente'
+      ca: {
+        fontFamily: 'Font'
       },
       da: {
         fontFamily: 'Skrifttype'
       },
       de: {
         fontFamily: 'Schriftart'
+      },
+      es: {
+        fontFamily: 'Fuente'
       },
       et: {
         fontFamily: 'Font'
@@ -773,6 +1153,9 @@
       ru: {
         fontFamily: 'Шрифт'
       },
+      sl: {
+        fontFamily: 'Pisava'
+      },
       tr: {
         fontFamily: 'Yazı tipi'
       },
@@ -780,7 +1163,8 @@
         fontFamily: '字體'
       }
     }
-  }); // jshint camelcase:true
+  });
+  // jshint camelcase:true
 
   var defaultOptions = {
     fontList: [{
@@ -823,8 +1207,9 @@
       name: 'Verdana',
       family: 'Verdana, Geneva, sans-serif'
     }]
-  }; // Add dropdown with web safe fonts
+  };
 
+  // Add dropdown with web safe fonts
   $.extend(true, $.trumbowyg, {
     plugins: {
       fontfamily: {
@@ -839,7 +1224,6 @@
       }
     }
   });
-
   function buildDropdown(trumbowyg) {
     var dropdown = [];
     $.each(trumbowyg.o.plugins.fontfamily.fontList, function (index, font) {
@@ -863,14 +1247,23 @@
       en: {
         fontFamily: "Font"
       },
-      es: {
-        fontFamily: "Fuente"
+      az: {
+        fontFamily: "Şrift"
+      },
+      by: {
+        fontFamily: "Шрыфт"
+      },
+      ca: {
+        fontFamily: "Font"
       },
       da: {
         fontFamily: "Skrifttype"
       },
       de: {
         fontFamily: "Schriftart"
+      },
+      es: {
+        fontFamily: "Fuente"
       },
       et: {
         fontFamily: "Font"
@@ -889,6 +1282,12 @@
       },
       pt_br: {
         fontFamily: "Fonte"
+      },
+      ru: {
+        fontFamily: "Шрифт"
+      },
+      sl: {
+        fontFamily: "Pisava"
       },
       tr: {
         fontFamily: "Yazı tipi"
@@ -940,7 +1339,6 @@
       family: "Verdana, Geneva, sans-serif"
     }]
   };
-
   function i(n) {
     var i = [];
     return a.each(n.o.plugins.fontfamily.fontList, function (a, e) {
@@ -953,7 +1351,6 @@
       }), i.push("fontfamily_" + a);
     }), i;
   }
-
   a.extend(!0, a.trumbowyg, {
     plugins: {
       fontfamily: {
@@ -969,442 +1366,221 @@
   });
 }(jQuery);
 /* ===========================================================
- * trumbowyg.colors.js v1.2
- * Colors picker plugin for Trumbowyg
+ * trumbowyg.emoji.js v0.1
+ * Emoji picker plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
  * ===========================================================
- * Author : Alexandre Demode (Alex-D)
- *          Twitter : @AlexandreDemode
- *          Website : alex-d.fr
+ * Author : Nicolas Pion
+ *          Twitter : @nicolas_pion
  */
+
 (function ($) {
   'use strict';
 
+  var defaultOptions = {
+    emojiList: ['&#x2049', '&#x2122', '&#x2139', '&#x2194', '&#x2195', '&#x2196', '&#x2197', '&#x2198', '&#x2199', '&#x2328', '&#x2600', '&#x2601', '&#x2602', '&#x2603', '&#x2604', '&#x2611', '&#x2614', '&#x2615', '&#x2618', '&#x2620', '&#x2622', '&#x2623', '&#x2626', '&#x2638', '&#x2639', '&#x2640', '&#x2642', '&#x2648', '&#x2649', '&#x2650', '&#x2651', '&#x2652', '&#x2653', '&#x2660', '&#x2663', '&#x2665', '&#x2666', '&#x2668', '&#x2692', '&#x2693', '&#x2694', '&#x2695', '&#x2696', '&#x2697', '&#x2699', '&#x2702', '&#x2705', '&#x2708', '&#x2709', '&#x2712', '&#x2714', '&#x2716', '&#x2721', '&#x2728', '&#x2733', '&#x2734', '&#x2744', '&#x2747', '&#x2753', '&#x2754', '&#x2755', '&#x2757', '&#x2763', '&#x2764', '&#x2795', '&#x2796', '&#x2797', '&#x2934', '&#x2935', '&#x3030', '&#x3297', '&#x3299', '&#x1F600', '&#x1F603', '&#x1F604', '&#x1F601', '&#x1F606', '&#x1F605', '&#x1F602', '&#x1F923', '&#x263A', '&#x1F60A', '&#x1F607', '&#x1F642', '&#x1F643', '&#x1F609', '&#x1F60C', '&#x1F972', '&#x1F60D', '&#x1F970', '&#x1F618', '&#x1F617', '&#x1F619', '&#x1F61A', '&#x1F60B', '&#x1F61B', '&#x1F61D', '&#x1F61C', '&#x1F92A', '&#x1F928', '&#x1F9D0', '&#x1F913', '&#x1F60E', '&#x1F929', '&#x1F973', '&#x1F60F', '&#x1F612', '&#x1F61E', '&#x1F614', '&#x1F61F', '&#x1F615', '&#x1F641', '&#x1F623', '&#x1F616', '&#x1F62B', '&#x1F629', '&#x1F97A', '&#x1F622', '&#x1F62D', '&#x1F624', '&#x1F62E', '&#x1F620', '&#x1F621', '&#x1F92C', '&#x1F92F', '&#x1F633', '&#x1F636', '&#x1F975', '&#x1F976', '&#x1F631', '&#x1F628', '&#x1F630', '&#x1F625', '&#x1F613', '&#x1F917', '&#x1F914', '&#x1F92D', '&#x1F971', '&#x1F92B', '&#x1F925', '&#x1F610', '&#x1F611', '&#x1F62C', '&#x1F644', '&#x1F62F', '&#x1F626', '&#x1F627', '&#x1F632', '&#x1F634', '&#x1F924', '&#x1F62A', '&#x1F635', '&#x1F910', '&#x1F974', '&#x1F922', '&#x1F92E', '&#x1F927', '&#x1F637', '&#x1F912', '&#x1F915', '&#x1F911', '&#x1F920', '&#x1F978', '&#x1F608', '&#x1F47F', '&#x1F479', '&#x1F47A', '&#x1F921', '&#x1F4A9', '&#x1F47B', '&#x1F480', '&#x1F47D', '&#x1F47E', '&#x1F916', '&#x1F383', '&#x1F63A', '&#x1F638', '&#x1F639', '&#x1F63B', '&#x1F63C', '&#x1F63D', '&#x1F640', '&#x1F63F', '&#x1F63E', '&#x1F932', '&#x1F450', '&#x1F64C', '&#x1F44F', '&#x1F91D', '&#x1F44D', '&#x1F44E', '&#x1F44A', '&#x270A', '&#x1F91B', '&#x1F91C', '&#x1F91E', '&#x270C', '&#x1F91F', '&#x1F918', '&#x1F44C', '&#x1F90F', '&#x1F90C', '&#x1F448', '&#x1F449', '&#x1F446', '&#x1F447', '&#x261D', '&#x270B', '&#x1F91A', '&#x1F590', '&#x1F596', '&#x1F44B', '&#x1F919', '&#x1F4AA', '&#x1F9BE', '&#x1F595', '&#x270D', '&#x1F64F', '&#x1F9B6', '&#x1F9B5', '&#x1F9BF', '&#x1F484', '&#x1F48B', '&#x1F444', '&#x1F9B7', '&#x1F445', '&#x1F442', '&#x1F9BB', '&#x1F443', '&#x1F463', '&#x1F441', '&#x1F440', '&#x1F9E0', '&#x1FAC0', '&#x1FAC1', '&#x1F9B4', '&#x1F5E3', '&#x1F464', '&#x1F465', '&#x1FAC2', '&#x1F476', '&#x1F467', '&#x1F9D2', '&#x1F466', '&#x1F469', '&#x1F9D1', '&#x1F468', '&#x1F471', '&#x1F9D4', '&#x1F475', '&#x1F9D3', '&#x1F474', '&#x1F472', '&#x1F473', '&#x1F9D5', '&#x1F46E', '&#x1F477', '&#x1F482', '&#x1F575', '&#x1F470', '&#x1F935', '&#x1F478', '&#x1F934', '&#x1F9B8', '&#x1F9B9', '&#x1F977', '&#x1F936', '&#x1F385', '&#x1F9D9', '&#x1F9DD', '&#x1F9DB', '&#x1F9DF', '&#x1F9DE', '&#x1F9DC', '&#x1F9DA', '&#x1F47C', '&#x1F930', '&#x1F931', '&#x1F647', '&#x1F481', '&#x1F645', '&#x1F646', '&#x1F64B', '&#x1F9CF', '&#x1F926', '&#x1F937', '&#x1F64E', '&#x1F64D', '&#x1F487', '&#x1F486', '&#x1F9D6', '&#x1F485', '&#x1F933', '&#x1F483', '&#x1F57A', '&#x1F46F', '&#x1F574', '&#x1F6B6', '&#x1F9CE', '&#x1F3C3', '&#x1F9CD', '&#x1F46B', '&#x1F46D', '&#x1F46C', '&#x1F491', '&#x1F48F', '&#x1F46A', '&#x1F9F6', '&#x1F9F5', '&#x1F9E5', '&#x1F97C', '&#x1F9BA', '&#x1F45A', '&#x1F455', '&#x1F456', '&#x1FA72', '&#x1FA73', '&#x1F454', '&#x1F457', '&#x1F459', '&#x1FA71', '&#x1F458', '&#x1F97B', '&#x1F97F', '&#x1F460', '&#x1F461', '&#x1F462', '&#x1F45E', '&#x1F45F', '&#x1F97E', '&#x1FA74', '&#x1F9E6', '&#x1F9E4', '&#x1F9E3', '&#x1F3A9', '&#x1F9E2', '&#x1F452', '&#x1F393', '&#x26D1', '&#x1FA96', '&#x1F451', '&#x1F48D', '&#x1F45D', '&#x1F45B', '&#x1F45C', '&#x1F4BC', '&#x1F392', '&#x1F9F3', '&#x1F453', '&#x1F576', '&#x1F97D', '&#x1F302', '&#x1F9B1', '&#x1F9B0', '&#x1F9B3', '&#x1F9B2', '&#x1F436', '&#x1F431', '&#x1F42D', '&#x1F439', '&#x1F430', '&#x1F98A', '&#x1F43B', '&#x1F43C', '&#x1F428', '&#x1F42F', '&#x1F981', '&#x1F42E', '&#x1F437', '&#x1F43D', '&#x1F438', '&#x1F435', '&#x1F648', '&#x1F649', '&#x1F64A', '&#x1F412', '&#x1F414', '&#x1F427', '&#x1F426', '&#x1F424', '&#x1F423', '&#x1F425', '&#x1F986', '&#x1F9A4', '&#x1F985', '&#x1F989', '&#x1F987', '&#x1F43A', '&#x1F417', '&#x1F434', '&#x1F984', '&#x1F41D', '&#x1F41B', '&#x1F98B', '&#x1F40C', '&#x1FAB1', '&#x1F41E', '&#x1F41C', '&#x1FAB0', '&#x1F99F', '&#x1FAB3', '&#x1FAB2', '&#x1F997', '&#x1F577', '&#x1F578', '&#x1F982', '&#x1F422', '&#x1F40D', '&#x1F98E', '&#x1F996', '&#x1F995', '&#x1F419', '&#x1F991', '&#x1F990', '&#x1F99E', '&#x1F980', '&#x1F421', '&#x1F420', '&#x1F41F', '&#x1F9AD', '&#x1F42C', '&#x1F433', '&#x1F40B', '&#x1F988', '&#x1F40A', '&#x1F405', '&#x1F406', '&#x1F993', '&#x1F98D', '&#x1F9A7', '&#x1F418', '&#x1F9A3', '&#x1F9AC', '&#x1F99B', '&#x1F98F', '&#x1F42A', '&#x1F42B', '&#x1F992', '&#x1F998', '&#x1F403', '&#x1F402', '&#x1F404', '&#x1F40E', '&#x1F416', '&#x1F40F', '&#x1F411', '&#x1F999', '&#x1F410', '&#x1F98C', '&#x1F415', '&#x1F429', '&#x1F9AE', '&#x1F408', '&#x1F413', '&#x1F983', '&#x1F99A', '&#x1F99C', '&#x1F9A2', '&#x1F9A9', '&#x1F54A', '&#x1F407', '&#x1F99D', '&#x1F9A8', '&#x1F9A1', '&#x1F9AB', '&#x1F9A6', '&#x1F9A5', '&#x1F401', '&#x1F400', '&#x1F43F', '&#x1F994', '&#x1F43E', '&#x1F409', '&#x1F432', '&#x1F335', '&#x1F384', '&#x1F332', '&#x1F333', '&#x1F334', '&#x1F331', '&#x1F33F', '&#x1F340', '&#x1F38D', '&#x1F38B', '&#x1F343', '&#x1F342', '&#x1F341', '&#x1FAB6', '&#x1F344', '&#x1F41A', '&#x1FAA8', '&#x1FAB5', '&#x1F33E', '&#x1FAB4', '&#x1F490', '&#x1F337', '&#x1F339', '&#x1F940', '&#x1F33A', '&#x1F338', '&#x1F33C', '&#x1F33B', '&#x1F31E', '&#x1F31D', '&#x1F31B', '&#x1F31C', '&#x1F31A', '&#x1F315', '&#x1F316', '&#x1F317', '&#x1F318', '&#x1F311', '&#x1F312', '&#x1F313', '&#x1F314', '&#x1F319', '&#x1F30E', '&#x1F30D', '&#x1F30F', '&#x1FA90', '&#x1F4AB', '&#x2B50', '&#x1F31F', '&#x26A1', '&#x1F4A5', '&#x1F525', '&#x1F32A', '&#x1F308', '&#x1F324', '&#x26C5', '&#x1F325', '&#x1F326', '&#x1F327', '&#x26C8', '&#x1F329', '&#x1F328', '&#x26C4', '&#x1F32C', '&#x1F4A8', '&#x1F4A7', '&#x1F4A6', '&#x1F30A', '&#x1F32B', '&#x1F34F', '&#x1F34E', '&#x1F350', '&#x1F34A', '&#x1F34B', '&#x1F34C', '&#x1F349', '&#x1F347', '&#x1FAD0', '&#x1F353', '&#x1F348', '&#x1F352', '&#x1F351', '&#x1F96D', '&#x1F34D', '&#x1F965', '&#x1F95D', '&#x1F345', '&#x1F346', '&#x1F951', '&#x1FAD2', '&#x1F966', '&#x1F96C', '&#x1FAD1', '&#x1F952', '&#x1F336', '&#x1F33D', '&#x1F955', '&#x1F9C4', '&#x1F9C5', '&#x1F954', '&#x1F360', '&#x1F950', '&#x1F96F', '&#x1F35E', '&#x1F956', '&#x1FAD3', '&#x1F968', '&#x1F9C0', '&#x1F95A', '&#x1F373', '&#x1F9C8', '&#x1F95E', '&#x1F9C7', '&#x1F953', '&#x1F969', '&#x1F357', '&#x1F356', '&#x1F32D', '&#x1F354', '&#x1F35F', '&#x1F355', '&#x1F96A', '&#x1F959', '&#x1F9C6', '&#x1F32E', '&#x1F32F', '&#x1FAD4', '&#x1F957', '&#x1F958', '&#x1FAD5', '&#x1F96B', '&#x1F35D', '&#x1F35C', '&#x1F372', '&#x1F35B', '&#x1F363', '&#x1F371', '&#x1F95F', '&#x1F9AA', '&#x1F364', '&#x1F359', '&#x1F35A', '&#x1F358', '&#x1F365', '&#x1F960', '&#x1F96E', '&#x1F362', '&#x1F361', '&#x1F367', '&#x1F368', '&#x1F366', '&#x1F967', '&#x1F9C1', '&#x1F370', '&#x1F382', '&#x1F36E', '&#x1F36D', '&#x1F36C', '&#x1F36B', '&#x1F37F', '&#x1F369', '&#x1F36A', '&#x1F330', '&#x1F95C', '&#x1F36F', '&#x1F95B', '&#x1F37C', '&#x1F375', '&#x1FAD6', '&#x1F9C9', '&#x1F9CB', '&#x1F9C3', '&#x1F964', '&#x1F376', '&#x1F37A', '&#x1F37B', '&#x1F942', '&#x1F377', '&#x1F943', '&#x1F378', '&#x1F379', '&#x1F37E', '&#x1F9CA', '&#x1F944', '&#x1F374', '&#x1F37D', '&#x1F963', '&#x1F961', '&#x1F962', '&#x1F9C2', '&#x26BD', '&#x1F3C0', '&#x1F3C8', '&#x26BE', '&#x1F94E', '&#x1F3BE', '&#x1F3D0', '&#x1F3C9', '&#x1F94F', '&#x1FA83', '&#x1F3B1', '&#x1FA80', '&#x1F3D3', '&#x1F3F8', '&#x1F3D2', '&#x1F3D1', '&#x1F94D', '&#x1F3CF', '&#x1F945', '&#x26F3', '&#x1FA81', '&#x1F3F9', '&#x1F3A3', '&#x1F93F', '&#x1F94A', '&#x1F94B', '&#x1F3BD', '&#x1F6F9', '&#x1F6FC', '&#x1F6F7', '&#x26F8', '&#x1F94C', '&#x1F3BF', '&#x26F7', '&#x1F3C2', '&#x1FA82', '&#x1F3CB', '&#x1F93C', '&#x1F938', '&#x26F9', '&#x1F93A', '&#x1F93E', '&#x1F3CC', '&#x1F3C7', '&#x1F9D8', '&#x1F3C4', '&#x1F3CA', '&#x1F93D', '&#x1F6A3', '&#x1F9D7', '&#x1F6B5', '&#x1F6B4', '&#x1F3C6', '&#x1F947', '&#x1F948', '&#x1F949', '&#x1F3C5', '&#x1F396', '&#x1F3F5', '&#x1F397', '&#x1F3AB', '&#x1F39F', '&#x1F3AA', '&#x1F939', '&#x1F3AD', '&#x1FA70', '&#x1F3A8', '&#x1F3AC', '&#x1F3A4', '&#x1F3A7', '&#x1F3BC', '&#x1F3B9', '&#x1F941', '&#x1FA98', '&#x1F3B7', '&#x1F3BA', '&#x1F3B8', '&#x1FA95', '&#x1F3BB', '&#x1FA97', '&#x1F3B2', '&#x265F', '&#x1F3AF', '&#x1F3B3', '&#x1F3AE', '&#x1F3B0', '&#x1F9E9', '&#x1F697', '&#x1F695', '&#x1F699', '&#x1F6FB', '&#x1F68C', '&#x1F68E', '&#x1F3CE', '&#x1F693', '&#x1F691', '&#x1F692', '&#x1F690', '&#x1F69A', '&#x1F69B', '&#x1F69C', '&#x1F9AF', '&#x1F9BD', '&#x1F9BC', '&#x1F6F4', '&#x1F6B2', '&#x1F6F5', '&#x1F3CD', '&#x1F6FA', '&#x1F6A8', '&#x1F694', '&#x1F68D', '&#x1F698', '&#x1F696', '&#x1F6A1', '&#x1F6A0', '&#x1F69F', '&#x1F683', '&#x1F68B', '&#x1F69E', '&#x1F69D', '&#x1F684', '&#x1F685', '&#x1F688', '&#x1F682', '&#x1F686', '&#x1F687', '&#x1F68A', '&#x1F689', '&#x1F6EB', '&#x1F6EC', '&#x1F6E9', '&#x1F4BA', '&#x1F6F0', '&#x1F680', '&#x1F6F8', '&#x1F681', '&#x1F6F6', '&#x26F5', '&#x1F6A4', '&#x1F6E5', '&#x1F6F3', '&#x26F4', '&#x1F6A2', '&#x26FD', '&#x1F6A7', '&#x1F6A6', '&#x1F6A5', '&#x1F68F', '&#x1F5FA', '&#x1F5FF', '&#x1F5FD', '&#x1F5FC', '&#x1F3F0', '&#x1F3EF', '&#x1F3DF', '&#x1F3A1', '&#x1F3A2', '&#x1F3A0', '&#x26F2', '&#x26F1', '&#x1F3D6', '&#x1F3DD', '&#x1F3DC', '&#x1F30B', '&#x26F0', '&#x1F3D4', '&#x1F5FB', '&#x1F3D5', '&#x26FA', '&#x1F3E0', '&#x1F3E1', '&#x1F3D8', '&#x1F3DA', '&#x1F6D6', '&#x1F3D7', '&#x1F3ED', '&#x1F3E2', '&#x1F3EC', '&#x1F3E3', '&#x1F3E4', '&#x1F3E5', '&#x1F3E6', '&#x1F3E8', '&#x1F3EA', '&#x1F3EB', '&#x1F3E9', '&#x1F492', '&#x1F3DB', '&#x26EA', '&#x1F54C', '&#x1F54D', '&#x1F6D5', '&#x1F54B', '&#x26E9', '&#x1F6E4', '&#x1F6E3', '&#x1F5FE', '&#x1F391', '&#x1F3DE', '&#x1F305', '&#x1F304', '&#x1F320', '&#x1F387', '&#x1F386', '&#x1F307', '&#x1F306', '&#x1F3D9', '&#x1F303', '&#x1F30C', '&#x1F309', '&#x1F301', '&#x231A', '&#x1F4F1', '&#x1F4F2', '&#x1F4BB', '&#x1F5A5', '&#x1F5A8', '&#x1F5B1', '&#x1F5B2', '&#x1F579', '&#x1F5DC', '&#x1F4BD', '&#x1F4BE', '&#x1F4BF', '&#x1F4C0', '&#x1F4FC', '&#x1F4F7', '&#x1F4F8', '&#x1F4F9', '&#x1F3A5', '&#x1F4FD', '&#x1F39E', '&#x1F4DE', '&#x260E', '&#x1F4DF', '&#x1F4E0', '&#x1F4FA', '&#x1F4FB', '&#x1F399', '&#x1F39A', '&#x1F39B', '&#x1F9ED', '&#x23F1', '&#x23F2', '&#x23F0', '&#x1F570', '&#x231B', '&#x23F3', '&#x1F4E1', '&#x1F50B', '&#x1F50C', '&#x1F4A1', '&#x1F526', '&#x1F56F', '&#x1FA94', '&#x1F9EF', '&#x1F6E2', '&#x1F4B8', '&#x1F4B5', '&#x1F4B4', '&#x1F4B6', '&#x1F4B7', '&#x1FA99', '&#x1F4B0', '&#x1F4B3', '&#x1F48E', '&#x1FA9C', '&#x1F9F0', '&#x1FA9B', '&#x1F527', '&#x1F528', '&#x1F6E0', '&#x26CF', '&#x1F529', '&#x1F9F1', '&#x26D3', '&#x1FA9D', '&#x1FAA2', '&#x1F9F2', '&#x1F52B', '&#x1F4A3', '&#x1F9E8', '&#x1FA93', '&#x1FA9A', '&#x1F52A', '&#x1F5E1', '&#x1F6E1', '&#x1F6AC', '&#x26B0', '&#x1FAA6', '&#x26B1', '&#x1F3FA', '&#x1FA84', '&#x1F52E', '&#x1F4FF', '&#x1F9FF', '&#x1F488', '&#x1F52D', '&#x1F52C', '&#x1F573', '&#x1FA9F', '&#x1FA79', '&#x1FA7A', '&#x1F48A', '&#x1F489', '&#x1FA78', '&#x1F9EC', '&#x1F9A0', '&#x1F9EB', '&#x1F9EA', '&#x1F321', '&#x1FAA4', '&#x1F9F9', '&#x1F9FA', '&#x1FAA1', '&#x1F9FB', '&#x1F6BD', '&#x1FAA0', '&#x1FAA3', '&#x1F6B0', '&#x1F6BF', '&#x1F6C1', '&#x1F6C0', '&#x1FAA5', '&#x1F9FC', '&#x1FA92', '&#x1F9FD', '&#x1F9F4', '&#x1F6CE', '&#x1F511', '&#x1F5DD', '&#x1F6AA', '&#x1FA91', '&#x1FA9E', '&#x1F6CB', '&#x1F6CF', '&#x1F6CC', '&#x1F9F8', '&#x1F5BC', '&#x1F6CD', '&#x1F6D2', '&#x1F381', '&#x1F388', '&#x1F38F', '&#x1F380', '&#x1F38A', '&#x1F389', '&#x1FA85', '&#x1FA86', '&#x1F38E', '&#x1F3EE', '&#x1F390', '&#x1F9E7', '&#x1F4E9', '&#x1F4E8', '&#x1F4E7', '&#x1F48C', '&#x1F4E5', '&#x1F4E4', '&#x1F4E6', '&#x1F3F7', '&#x1F4EA', '&#x1F4EB', '&#x1F4EC', '&#x1F4ED', '&#x1F4EE', '&#x1F4EF', '&#x1FAA7', '&#x1F4DC', '&#x1F4C3', '&#x1F4C4', '&#x1F4D1', '&#x1F9FE', '&#x1F4CA', '&#x1F4C8', '&#x1F4C9', '&#x1F5D2', '&#x1F5D3', '&#x1F4C6', '&#x1F4C5', '&#x1F5D1', '&#x1F4C7', '&#x1F5C3', '&#x1F5F3', '&#x1F5C4', '&#x1F4CB', '&#x1F4C1', '&#x1F4C2', '&#x1F5C2', '&#x1F5DE', '&#x1F4F0', '&#x1F4D3', '&#x1F4D4', '&#x1F4D2', '&#x1F4D5', '&#x1F4D7', '&#x1F4D8', '&#x1F4D9', '&#x1F4DA', '&#x1F4D6', '&#x1F516', '&#x1F9F7', '&#x1F517', '&#x1F4CE', '&#x1F587', '&#x1F4D0', '&#x1F4CF', '&#x1F9EE', '&#x1F4CC', '&#x1F4CD', '&#x1F58A', '&#x1F58B', '&#x1F58C', '&#x1F58D', '&#x1F4DD', '&#x270F', '&#x1F50D', '&#x1F50E', '&#x1F50F', '&#x1F510', '&#x1F512', '&#x1F513', '&#x1F9E1', '&#x1F49B', '&#x1F49A', '&#x1F499', '&#x1F49C', '&#x1F5A4', '&#x1F90E', '&#x1F90D', '&#x1F494', '&#x1F495', '&#x1F49E', '&#x1F493', '&#x1F497', '&#x1F496', '&#x1F498', '&#x1F49D', '&#x1F49F', '&#x262E', '&#x271D', '&#x262A', '&#x1F549', '&#x1F52F', '&#x1F54E', '&#x262F', '&#x1F6D0', '&#x26CE', '&#x264A', '&#x264B', '&#x264C', '&#x264D', '&#x264E', '&#x264F', '&#x1F194', '&#x269B', '&#x1F251', '&#x1F4F4', '&#x1F4F3', '&#x1F236', '&#x1F21A', '&#x1F238', '&#x1F23A', '&#x1F237', '&#x1F19A', '&#x1F4AE', '&#x1F250', '&#x1F234', '&#x1F235', '&#x1F239', '&#x1F232', '&#x1F170', '&#x1F171', '&#x1F18E', '&#x1F191', '&#x1F17E', '&#x1F198', '&#x274C', '&#x2B55', '&#x1F6D1', '&#x26D4', '&#x1F4DB', '&#x1F6AB', '&#x1F4AF', '&#x1F4A2', '&#x1F6B7', '&#x1F6AF', '&#x1F6B3', '&#x1F6B1', '&#x1F51E', '&#x1F4F5', '&#x1F6AD', '&#x203C', '&#x1F505', '&#x1F506', '&#x303D', '&#x26A0', '&#x1F6B8', '&#x1F531', '&#x269C', '&#x1F530', '&#x267B', '&#x1F22F', '&#x1F4B9', '&#x274E', '&#x1F310', '&#x1F4A0', '&#x24C2', '&#x1F300', '&#x1F4A4', '&#x1F3E7', '&#x1F6BE', '&#x267F', '&#x1F17F', '&#x1F233', '&#x1F202', '&#x1F6C2', '&#x1F6C3', '&#x1F6C4', '&#x1F6C5', '&#x1F6D7', '&#x1F6B9', '&#x1F6BA', '&#x1F6BC', '&#x1F6BB', '&#x1F6AE', '&#x1F3A6', '&#x1F4F6', '&#x1F201', '&#x1F523', '&#x1F524', '&#x1F521', '&#x1F520', '&#x1F196', '&#x1F197', '&#x1F199', '&#x1F192', '&#x1F195', '&#x1F193', '&#x0030', '&#x0031', '&#x0032', '&#x0033', '&#x0034', '&#x0035', '&#x0036', '&#x0037', '&#x0038', '&#x0039', '&#x1F51F', '&#x1F522', '&#x0023', '&#x002A', '&#x23CF', '&#x25B6', '&#x23F8', '&#x23EF', '&#x23F9', '&#x23FA', '&#x23ED', '&#x23EE', '&#x23E9', '&#x23EA', '&#x23EB', '&#x23EC', '&#x25C0', '&#x1F53C', '&#x1F53D', '&#x27A1', '&#x2B05', '&#x2B06', '&#x2B07', '&#x21AA', '&#x21A9', '&#x1F500', '&#x1F501', '&#x1F502', '&#x1F504', '&#x1F503', '&#x1F3B5', '&#x1F3B6', '&#x267E', '&#x1F4B2', '&#x1F4B1', '&#x00A9', '&#x00AE', '&#x27B0', '&#x27BF', '&#x1F51A', '&#x1F519', '&#x1F51B', '&#x1F51D', '&#x1F51C', '&#x1F518', '&#x26AA', '&#x26AB', '&#x1F534', '&#x1F535', '&#x1F7E4', '&#x1F7E3', '&#x1F7E2', '&#x1F7E1', '&#x1F7E0', '&#x1F53A', '&#x1F53B', '&#x1F538', '&#x1F539', '&#x1F536', '&#x1F537', '&#x1F533', '&#x1F532', '&#x25AA', '&#x25AB', '&#x25FE', '&#x25FD', '&#x25FC', '&#x25FB', '&#x2B1B', '&#x2B1C', '&#x1F7E7', '&#x1F7E6', '&#x1F7E5', '&#x1F7EB', '&#x1F7EA', '&#x1F7E9', '&#x1F7E8', '&#x1F508', '&#x1F507', '&#x1F509', '&#x1F50A', '&#x1F514', '&#x1F515', '&#x1F4E3', '&#x1F4E2', '&#x1F5E8', '&#x1F4AC', '&#x1F4AD', '&#x1F5EF', '&#x1F0CF', '&#x1F3B4', '&#x1F004', '&#x1F550', '&#x1F551', '&#x1F552', '&#x1F553', '&#x1F554', '&#x1F555', '&#x1F556', '&#x1F557', '&#x1F558', '&#x1F559', '&#x1F55A', '&#x1F55B', '&#x1F55C', '&#x1F55D', '&#x1F55E', '&#x1F55F', '&#x1F560', '&#x1F561', '&#x1F562', '&#x1F563', '&#x1F564', '&#x1F565', '&#x1F566', '&#x1F567', '&#x26A7', '&#x1F3F3', '&#x1F3F4', '&#x1F3C1', '&#x1F6A9', '&#x1F1E6', '&#x1F1E9', '&#x1F1E7', '&#x1F1EE', '&#x1F1FB', '&#x1F1F0', '&#x1F1E8', '&#x1F1F9', '&#x1F1ED', '&#x1F1EA', '&#x1F1F8', '&#x1F1EC', '&#x1F1EB', '&#x1F1F5', '&#x1F1EF', '&#x1F38C', '&#x1F1FD', '&#x1F1F1', '&#x1F1F2', '&#x1F1FE', '&#x1F1F3', '&#x1F1F4', '&#x1F1F6', '&#x1F1F7', '&#x1F1FC', '&#x1F1FF', '&#x1F1FA', '&#x1F3FB', '&#x1F3FC', '&#x1F3FD', '&#x1F3FE', '&#x1F3FF']
+  };
+
+  // Add all emoji in a dropdown
   $.extend(true, $.trumbowyg, {
     langs: {
       // jshint camelcase:false
       en: {
-        foreColor: 'Text color',
-        backColor: 'Background color',
-        foreColorRemove: 'Remove text color',
-        backColorRemove: 'Remove background color'
+        emoji: 'Add an emoji'
       },
-      by: {
-        foreColor: 'Колер тэксту',
-        backColor: 'Колер фону тэксту',
-        foreColorRemove: 'Выдаліць колер тэксту',
-        backColorRemove: 'Выдаліць колер фону тэксту'
+      az: {
+        emoji: 'Emoji yerləşdir'
       },
-      cs: {
-        foreColor: 'Barva textu',
-        backColor: 'Barva pozadí'
+      ca: {
+        emoji: 'Afegir una emoticona'
       },
       da: {
-        foreColor: 'Tekstfarve',
-        backColor: 'Baggrundsfarve'
+        emoji: 'Tilføj et humørikon'
       },
       de: {
-        foreColor: 'Textfarbe',
-        backColor: 'Hintergrundfarbe'
+        emoji: 'Emoticon einfügen'
+      },
+      es: {
+        emoji: 'Añadir un emoticono'
       },
       et: {
-        foreColor: 'Teksti värv',
-        backColor: 'Taustavärv',
-        foreColorRemove: 'Eemalda teksti värv',
-        backColorRemove: 'Eemalda taustavärv'
+        emoji: 'Lisa emotikon'
       },
       fr: {
-        foreColor: 'Couleur du texte',
-        backColor: 'Couleur de fond',
-        foreColorRemove: 'Supprimer la couleur du texte',
-        backColorRemove: 'Supprimer la couleur de fond'
+        emoji: 'Ajouter un emoji'
       },
       hu: {
-        foreColor: 'Betű szín',
-        backColor: 'Háttér szín',
-        foreColorRemove: 'Betű szín eltávolítása',
-        backColorRemove: 'Háttér szín eltávolítása'
+        emoji: 'Emoji beszúrás'
       },
       ja: {
-        foreColor: '文字色',
-        backColor: '背景色'
+        emoji: '絵文字の挿入'
       },
       ko: {
-        foreColor: '글자색',
-        backColor: '배경색',
-        foreColorRemove: '글자색 지우기',
-        backColorRemove: '배경색 지우기'
-      },
-      nl: {
-        foreColor: 'Tekstkleur',
-        backColor: 'Achtergrondkleur'
-      },
-      pt_br: {
-        foreColor: 'Cor de fonte',
-        backColor: 'Cor de fundo'
+        emoji: '이모지 넣기'
       },
       ru: {
-        foreColor: 'Цвет текста',
-        backColor: 'Цвет выделения текста',
-        foreColorRemove: 'Очистить цвет текста',
-        backColorRemove: 'Очистить цвет выделения текста'
+        emoji: 'Вставить emoji'
       },
-      sk: {
-        foreColor: 'Farba textu',
-        backColor: 'Farba pozadia'
+      sl: {
+        emoji: 'Vstavi emotikon'
       },
       tr: {
-        foreColor: 'Yazı rengi',
-        backColor: 'Arka plan rengi',
-        foreColorRemove: 'Yazı rengini kaldır',
-        backColorRemove: 'Arka plan rengini kaldır'
+        emoji: 'Emoji ekle'
       },
       zh_cn: {
-        foreColor: '文字颜色',
-        backColor: '背景颜色'
-      },
-      zh_tw: {
-        foreColor: '文字顏色',
-        backColor: '背景顏色'
+        emoji: '添加表情'
       }
-    }
-  }); // jshint camelcase:true
-
-  function hex(x) {
-    return ('0' + parseInt(x).toString(16)).slice(-2);
-  }
-
-  function colorToHex(rgb) {
-    if (rgb.search('rgb') === -1) {
-      return rgb.replace('#', '');
-    } else if (rgb === 'rgba(0, 0, 0, 0)') {
-      return 'transparent';
-    } else {
-      rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/);
-
-      if (rgb == null) {
-        return 'transparent'; // No match, return transparent as unkown color
-      }
-
-      return hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
-    }
-  }
-
-  function colorTagHandler(element, trumbowyg) {
-    var tags = [];
-
-    if (!element.style) {
-      return tags;
-    } // background color
-
-
-    if (element.style.backgroundColor !== '') {
-      var backColor = colorToHex(element.style.backgroundColor);
-
-      if (trumbowyg.o.plugins.colors.colorList.indexOf(backColor) >= 0) {
-        tags.push('backColor' + backColor);
-      } else {
-        tags.push('backColorFree');
-      }
-    } // text color
-
-
-    var foreColor;
-
-    if (element.style.color !== '') {
-      foreColor = colorToHex(element.style.color);
-    } else if (element.hasAttribute('color')) {
-      foreColor = colorToHex(element.getAttribute('color'));
-    }
-
-    if (foreColor) {
-      if (trumbowyg.o.plugins.colors.colorList.indexOf(foreColor) >= 0) {
-        tags.push('foreColor' + foreColor);
-      } else {
-        tags.push('foreColorFree');
-      }
-    }
-
-    return tags;
-  }
-
-  var defaultOptions = {
-    colorList: ['ffffff', '000000', 'eeece1', '1f497d', '4f81bd', 'c0504d', '9bbb59', '8064a2', '4bacc6', 'f79646', 'ffff00', 'f2f2f2', '7f7f7f', 'ddd9c3', 'c6d9f0', 'dbe5f1', 'f2dcdb', 'ebf1dd', 'e5e0ec', 'dbeef3', 'fdeada', 'fff2ca', 'd8d8d8', '595959', 'c4bd97', '8db3e2', 'b8cce4', 'e5b9b7', 'd7e3bc', 'ccc1d9', 'b7dde8', 'fbd5b5', 'ffe694', 'bfbfbf', '3f3f3f', '938953', '548dd4', '95b3d7', 'd99694', 'c3d69b', 'b2a2c7', 'b7dde8', 'fac08f', 'f2c314', 'a5a5a5', '262626', '494429', '17365d', '366092', '953734', '76923c', '5f497a', '92cddc', 'e36c09', 'c09100', '7f7f7f', '0c0c0c', '1d1b10', '0f243e', '244061', '632423', '4f6128', '3f3151', '31859b', '974806', '7f6000'],
-    foreColorList: null,
-    // fallbacks on colorList
-    backColorList: null,
-    // fallbacks on colorList
-    allowCustomForeColor: true,
-    allowCustomBackColor: true,
-    displayAsList: false
-  }; // Add all colors in two dropdowns
-
-  $.extend(true, $.trumbowyg, {
+    },
+    // jshint camelcase:true
     plugins: {
-      color: {
+      emoji: {
         init: function init(trumbowyg) {
-          trumbowyg.o.plugins.colors = trumbowyg.o.plugins.colors || defaultOptions;
-          var dropdownClass = trumbowyg.o.plugins.colors.displayAsList ? trumbowyg.o.prefix + 'dropdown--color-list' : '';
-          var foreColorBtnDef = {
-            dropdown: buildDropdown('foreColor', trumbowyg),
-            dropdownClass: dropdownClass
-          },
-              backColorBtnDef = {
-            dropdown: buildDropdown('backColor', trumbowyg),
-            dropdownClass: dropdownClass
+          trumbowyg.o.plugins.emoji = trumbowyg.o.plugins.emoji || defaultOptions;
+          var emojiBtnDef = {
+            dropdown: buildDropdown(trumbowyg)
           };
-          trumbowyg.addBtnDef('foreColor', foreColorBtnDef);
-          trumbowyg.addBtnDef('backColor', backColorBtnDef);
-        },
-        tagHandler: colorTagHandler
+          trumbowyg.addBtnDef('emoji', emojiBtnDef);
+        }
       }
     }
   });
-
-  function buildDropdown(_fn, trumbowyg) {
-    var dropdown = [],
-        trumbowygColorOptions = trumbowyg.o.plugins.colors,
-        colorList = trumbowygColorOptions[_fn + 'List'] || trumbowygColorOptions.colorList;
-    $.each(colorList, function (i, color) {
-      var btn = _fn + color,
-          btnDef = {
-        fn: _fn,
-        forceCss: true,
-        hasIcon: false,
-        text: trumbowyg.lang['#' + color] || '#' + color,
-        param: '#' + color,
-        style: 'background-color: #' + color + ';'
-      };
-
-      if (trumbowygColorOptions.displayAsList && _fn === 'foreColor') {
-        btnDef.style = 'color: #' + color + ' !important;';
-      }
-
-      trumbowyg.addBtnDef(btn, btnDef);
-      dropdown.push(btn);
-    }); // Remove color
-
-    var removeColorButtonName = _fn + 'Remove',
-        removeColorBtnDef = {
-      fn: 'removeFormat',
-      hasIcon: false,
-      param: _fn,
-      style: 'background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVQIW2NkQAAfEJMRmwBYhoGBYQtMBYoAADziAp0jtJTgAAAAAElFTkSuQmCC);'
-    };
-
-    if (trumbowygColorOptions.displayAsList) {
-      removeColorBtnDef.style = '';
-    }
-
-    trumbowyg.addBtnDef(removeColorButtonName, removeColorBtnDef);
-    dropdown.push(removeColorButtonName); // Custom color
-
-    if (trumbowygColorOptions['allowCustom' + _fn.charAt(0).toUpperCase() + _fn.substr(1)]) {
-      // add free color btn
-      var freeColorButtonName = _fn + 'Free',
-          freeColorBtnDef = {
-        fn: function fn() {
-          trumbowyg.openModalInsert(trumbowyg.lang[_fn], {
-            color: {
-              label: _fn,
-              forceCss: true,
-              type: 'color',
-              value: '#FFFFFF'
+  function buildDropdown(trumbowyg) {
+    var dropdown = [];
+    $.each(trumbowyg.o.plugins.emoji.emojiList, function (i, emoji) {
+      if ($.isArray(emoji)) {
+        // Custom emoji behaviour
+        var emojiCode = emoji[0],
+          emojiUrl = emoji[1],
+          emojiHtml = '<img src="' + emojiUrl + '" alt="' + emojiCode + '">',
+          customEmojiBtnName = 'emoji-' + emojiCode.replace(/:/g, ''),
+          customEmojiBtnDef = {
+            hasIcon: false,
+            text: emojiHtml,
+            fn: function fn() {
+              trumbowyg.execCmd('insertImage', emojiUrl, false, true);
+              return true;
             }
-          }, // callback
-          function (values) {
-            trumbowyg.execCmd(_fn, values.color);
-            return true;
-          });
-        },
-        hasIcon: false,
-        text: '#',
-        // style adjust for displaying the text
-        style: 'text-indent: 0; line-height: 20px; padding: 0 5px;'
-      };
-      trumbowyg.addBtnDef(freeColorButtonName, freeColorBtnDef);
-      dropdown.push(freeColorButtonName);
-    }
-
+          };
+        trumbowyg.addBtnDef(customEmojiBtnName, customEmojiBtnDef);
+        dropdown.push(customEmojiBtnName);
+      } else {
+        // Default behaviour
+        var btn = emoji.replace(/:/g, ''),
+          defaultEmojiBtnName = 'emoji-' + btn,
+          defaultEmojiBtnDef = {
+            text: emoji,
+            fn: function fn() {
+              var encodedEmoji = String.fromCodePoint(emoji.replace('&#', '0'));
+              trumbowyg.execCmd('insertText', encodedEmoji);
+              return true;
+            }
+          };
+        trumbowyg.addBtnDef(defaultEmojiBtnName, defaultEmojiBtnDef);
+        dropdown.push(defaultEmojiBtnName);
+      }
+    });
     return dropdown;
   }
 })(jQuery);
-!function (o) {
+/* ===========================================================
+ * trumbowyg.emoji.js v0.1
+ * Emoji picker plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Nicolas Pion
+ *          Twitter : @nicolas_pion
+ */
+!function (x) {
   "use strict";
 
-  function r(o) {
-    return ("0" + parseInt(o).toString(16)).slice(-2);
+  var F = {
+    emojiList: ["&#x2049", "&#x2122", "&#x2139", "&#x2194", "&#x2195", "&#x2196", "&#x2197", "&#x2198", "&#x2199", "&#x2328", "&#x2600", "&#x2601", "&#x2602", "&#x2603", "&#x2604", "&#x2611", "&#x2614", "&#x2615", "&#x2618", "&#x2620", "&#x2622", "&#x2623", "&#x2626", "&#x2638", "&#x2639", "&#x2640", "&#x2642", "&#x2648", "&#x2649", "&#x2650", "&#x2651", "&#x2652", "&#x2653", "&#x2660", "&#x2663", "&#x2665", "&#x2666", "&#x2668", "&#x2692", "&#x2693", "&#x2694", "&#x2695", "&#x2696", "&#x2697", "&#x2699", "&#x2702", "&#x2705", "&#x2708", "&#x2709", "&#x2712", "&#x2714", "&#x2716", "&#x2721", "&#x2728", "&#x2733", "&#x2734", "&#x2744", "&#x2747", "&#x2753", "&#x2754", "&#x2755", "&#x2757", "&#x2763", "&#x2764", "&#x2795", "&#x2796", "&#x2797", "&#x2934", "&#x2935", "&#x3030", "&#x3297", "&#x3299", "&#x1F600", "&#x1F603", "&#x1F604", "&#x1F601", "&#x1F606", "&#x1F605", "&#x1F602", "&#x1F923", "&#x263A", "&#x1F60A", "&#x1F607", "&#x1F642", "&#x1F643", "&#x1F609", "&#x1F60C", "&#x1F972", "&#x1F60D", "&#x1F970", "&#x1F618", "&#x1F617", "&#x1F619", "&#x1F61A", "&#x1F60B", "&#x1F61B", "&#x1F61D", "&#x1F61C", "&#x1F92A", "&#x1F928", "&#x1F9D0", "&#x1F913", "&#x1F60E", "&#x1F929", "&#x1F973", "&#x1F60F", "&#x1F612", "&#x1F61E", "&#x1F614", "&#x1F61F", "&#x1F615", "&#x1F641", "&#x1F623", "&#x1F616", "&#x1F62B", "&#x1F629", "&#x1F97A", "&#x1F622", "&#x1F62D", "&#x1F624", "&#x1F62E", "&#x1F620", "&#x1F621", "&#x1F92C", "&#x1F92F", "&#x1F633", "&#x1F636", "&#x1F975", "&#x1F976", "&#x1F631", "&#x1F628", "&#x1F630", "&#x1F625", "&#x1F613", "&#x1F917", "&#x1F914", "&#x1F92D", "&#x1F971", "&#x1F92B", "&#x1F925", "&#x1F610", "&#x1F611", "&#x1F62C", "&#x1F644", "&#x1F62F", "&#x1F626", "&#x1F627", "&#x1F632", "&#x1F634", "&#x1F924", "&#x1F62A", "&#x1F635", "&#x1F910", "&#x1F974", "&#x1F922", "&#x1F92E", "&#x1F927", "&#x1F637", "&#x1F912", "&#x1F915", "&#x1F911", "&#x1F920", "&#x1F978", "&#x1F608", "&#x1F47F", "&#x1F479", "&#x1F47A", "&#x1F921", "&#x1F4A9", "&#x1F47B", "&#x1F480", "&#x1F47D", "&#x1F47E", "&#x1F916", "&#x1F383", "&#x1F63A", "&#x1F638", "&#x1F639", "&#x1F63B", "&#x1F63C", "&#x1F63D", "&#x1F640", "&#x1F63F", "&#x1F63E", "&#x1F932", "&#x1F450", "&#x1F64C", "&#x1F44F", "&#x1F91D", "&#x1F44D", "&#x1F44E", "&#x1F44A", "&#x270A", "&#x1F91B", "&#x1F91C", "&#x1F91E", "&#x270C", "&#x1F91F", "&#x1F918", "&#x1F44C", "&#x1F90F", "&#x1F90C", "&#x1F448", "&#x1F449", "&#x1F446", "&#x1F447", "&#x261D", "&#x270B", "&#x1F91A", "&#x1F590", "&#x1F596", "&#x1F44B", "&#x1F919", "&#x1F4AA", "&#x1F9BE", "&#x1F595", "&#x270D", "&#x1F64F", "&#x1F9B6", "&#x1F9B5", "&#x1F9BF", "&#x1F484", "&#x1F48B", "&#x1F444", "&#x1F9B7", "&#x1F445", "&#x1F442", "&#x1F9BB", "&#x1F443", "&#x1F463", "&#x1F441", "&#x1F440", "&#x1F9E0", "&#x1FAC0", "&#x1FAC1", "&#x1F9B4", "&#x1F5E3", "&#x1F464", "&#x1F465", "&#x1FAC2", "&#x1F476", "&#x1F467", "&#x1F9D2", "&#x1F466", "&#x1F469", "&#x1F9D1", "&#x1F468", "&#x1F471", "&#x1F9D4", "&#x1F475", "&#x1F9D3", "&#x1F474", "&#x1F472", "&#x1F473", "&#x1F9D5", "&#x1F46E", "&#x1F477", "&#x1F482", "&#x1F575", "&#x1F470", "&#x1F935", "&#x1F478", "&#x1F934", "&#x1F9B8", "&#x1F9B9", "&#x1F977", "&#x1F936", "&#x1F385", "&#x1F9D9", "&#x1F9DD", "&#x1F9DB", "&#x1F9DF", "&#x1F9DE", "&#x1F9DC", "&#x1F9DA", "&#x1F47C", "&#x1F930", "&#x1F931", "&#x1F647", "&#x1F481", "&#x1F645", "&#x1F646", "&#x1F64B", "&#x1F9CF", "&#x1F926", "&#x1F937", "&#x1F64E", "&#x1F64D", "&#x1F487", "&#x1F486", "&#x1F9D6", "&#x1F485", "&#x1F933", "&#x1F483", "&#x1F57A", "&#x1F46F", "&#x1F574", "&#x1F6B6", "&#x1F9CE", "&#x1F3C3", "&#x1F9CD", "&#x1F46B", "&#x1F46D", "&#x1F46C", "&#x1F491", "&#x1F48F", "&#x1F46A", "&#x1F9F6", "&#x1F9F5", "&#x1F9E5", "&#x1F97C", "&#x1F9BA", "&#x1F45A", "&#x1F455", "&#x1F456", "&#x1FA72", "&#x1FA73", "&#x1F454", "&#x1F457", "&#x1F459", "&#x1FA71", "&#x1F458", "&#x1F97B", "&#x1F97F", "&#x1F460", "&#x1F461", "&#x1F462", "&#x1F45E", "&#x1F45F", "&#x1F97E", "&#x1FA74", "&#x1F9E6", "&#x1F9E4", "&#x1F9E3", "&#x1F3A9", "&#x1F9E2", "&#x1F452", "&#x1F393", "&#x26D1", "&#x1FA96", "&#x1F451", "&#x1F48D", "&#x1F45D", "&#x1F45B", "&#x1F45C", "&#x1F4BC", "&#x1F392", "&#x1F9F3", "&#x1F453", "&#x1F576", "&#x1F97D", "&#x1F302", "&#x1F9B1", "&#x1F9B0", "&#x1F9B3", "&#x1F9B2", "&#x1F436", "&#x1F431", "&#x1F42D", "&#x1F439", "&#x1F430", "&#x1F98A", "&#x1F43B", "&#x1F43C", "&#x1F428", "&#x1F42F", "&#x1F981", "&#x1F42E", "&#x1F437", "&#x1F43D", "&#x1F438", "&#x1F435", "&#x1F648", "&#x1F649", "&#x1F64A", "&#x1F412", "&#x1F414", "&#x1F427", "&#x1F426", "&#x1F424", "&#x1F423", "&#x1F425", "&#x1F986", "&#x1F9A4", "&#x1F985", "&#x1F989", "&#x1F987", "&#x1F43A", "&#x1F417", "&#x1F434", "&#x1F984", "&#x1F41D", "&#x1F41B", "&#x1F98B", "&#x1F40C", "&#x1FAB1", "&#x1F41E", "&#x1F41C", "&#x1FAB0", "&#x1F99F", "&#x1FAB3", "&#x1FAB2", "&#x1F997", "&#x1F577", "&#x1F578", "&#x1F982", "&#x1F422", "&#x1F40D", "&#x1F98E", "&#x1F996", "&#x1F995", "&#x1F419", "&#x1F991", "&#x1F990", "&#x1F99E", "&#x1F980", "&#x1F421", "&#x1F420", "&#x1F41F", "&#x1F9AD", "&#x1F42C", "&#x1F433", "&#x1F40B", "&#x1F988", "&#x1F40A", "&#x1F405", "&#x1F406", "&#x1F993", "&#x1F98D", "&#x1F9A7", "&#x1F418", "&#x1F9A3", "&#x1F9AC", "&#x1F99B", "&#x1F98F", "&#x1F42A", "&#x1F42B", "&#x1F992", "&#x1F998", "&#x1F403", "&#x1F402", "&#x1F404", "&#x1F40E", "&#x1F416", "&#x1F40F", "&#x1F411", "&#x1F999", "&#x1F410", "&#x1F98C", "&#x1F415", "&#x1F429", "&#x1F9AE", "&#x1F408", "&#x1F413", "&#x1F983", "&#x1F99A", "&#x1F99C", "&#x1F9A2", "&#x1F9A9", "&#x1F54A", "&#x1F407", "&#x1F99D", "&#x1F9A8", "&#x1F9A1", "&#x1F9AB", "&#x1F9A6", "&#x1F9A5", "&#x1F401", "&#x1F400", "&#x1F43F", "&#x1F994", "&#x1F43E", "&#x1F409", "&#x1F432", "&#x1F335", "&#x1F384", "&#x1F332", "&#x1F333", "&#x1F334", "&#x1F331", "&#x1F33F", "&#x1F340", "&#x1F38D", "&#x1F38B", "&#x1F343", "&#x1F342", "&#x1F341", "&#x1FAB6", "&#x1F344", "&#x1F41A", "&#x1FAA8", "&#x1FAB5", "&#x1F33E", "&#x1FAB4", "&#x1F490", "&#x1F337", "&#x1F339", "&#x1F940", "&#x1F33A", "&#x1F338", "&#x1F33C", "&#x1F33B", "&#x1F31E", "&#x1F31D", "&#x1F31B", "&#x1F31C", "&#x1F31A", "&#x1F315", "&#x1F316", "&#x1F317", "&#x1F318", "&#x1F311", "&#x1F312", "&#x1F313", "&#x1F314", "&#x1F319", "&#x1F30E", "&#x1F30D", "&#x1F30F", "&#x1FA90", "&#x1F4AB", "&#x2B50", "&#x1F31F", "&#x26A1", "&#x1F4A5", "&#x1F525", "&#x1F32A", "&#x1F308", "&#x1F324", "&#x26C5", "&#x1F325", "&#x1F326", "&#x1F327", "&#x26C8", "&#x1F329", "&#x1F328", "&#x26C4", "&#x1F32C", "&#x1F4A8", "&#x1F4A7", "&#x1F4A6", "&#x1F30A", "&#x1F32B", "&#x1F34F", "&#x1F34E", "&#x1F350", "&#x1F34A", "&#x1F34B", "&#x1F34C", "&#x1F349", "&#x1F347", "&#x1FAD0", "&#x1F353", "&#x1F348", "&#x1F352", "&#x1F351", "&#x1F96D", "&#x1F34D", "&#x1F965", "&#x1F95D", "&#x1F345", "&#x1F346", "&#x1F951", "&#x1FAD2", "&#x1F966", "&#x1F96C", "&#x1FAD1", "&#x1F952", "&#x1F336", "&#x1F33D", "&#x1F955", "&#x1F9C4", "&#x1F9C5", "&#x1F954", "&#x1F360", "&#x1F950", "&#x1F96F", "&#x1F35E", "&#x1F956", "&#x1FAD3", "&#x1F968", "&#x1F9C0", "&#x1F95A", "&#x1F373", "&#x1F9C8", "&#x1F95E", "&#x1F9C7", "&#x1F953", "&#x1F969", "&#x1F357", "&#x1F356", "&#x1F32D", "&#x1F354", "&#x1F35F", "&#x1F355", "&#x1F96A", "&#x1F959", "&#x1F9C6", "&#x1F32E", "&#x1F32F", "&#x1FAD4", "&#x1F957", "&#x1F958", "&#x1FAD5", "&#x1F96B", "&#x1F35D", "&#x1F35C", "&#x1F372", "&#x1F35B", "&#x1F363", "&#x1F371", "&#x1F95F", "&#x1F9AA", "&#x1F364", "&#x1F359", "&#x1F35A", "&#x1F358", "&#x1F365", "&#x1F960", "&#x1F96E", "&#x1F362", "&#x1F361", "&#x1F367", "&#x1F368", "&#x1F366", "&#x1F967", "&#x1F9C1", "&#x1F370", "&#x1F382", "&#x1F36E", "&#x1F36D", "&#x1F36C", "&#x1F36B", "&#x1F37F", "&#x1F369", "&#x1F36A", "&#x1F330", "&#x1F95C", "&#x1F36F", "&#x1F95B", "&#x1F37C", "&#x1F375", "&#x1FAD6", "&#x1F9C9", "&#x1F9CB", "&#x1F9C3", "&#x1F964", "&#x1F376", "&#x1F37A", "&#x1F37B", "&#x1F942", "&#x1F377", "&#x1F943", "&#x1F378", "&#x1F379", "&#x1F37E", "&#x1F9CA", "&#x1F944", "&#x1F374", "&#x1F37D", "&#x1F963", "&#x1F961", "&#x1F962", "&#x1F9C2", "&#x26BD", "&#x1F3C0", "&#x1F3C8", "&#x26BE", "&#x1F94E", "&#x1F3BE", "&#x1F3D0", "&#x1F3C9", "&#x1F94F", "&#x1FA83", "&#x1F3B1", "&#x1FA80", "&#x1F3D3", "&#x1F3F8", "&#x1F3D2", "&#x1F3D1", "&#x1F94D", "&#x1F3CF", "&#x1F945", "&#x26F3", "&#x1FA81", "&#x1F3F9", "&#x1F3A3", "&#x1F93F", "&#x1F94A", "&#x1F94B", "&#x1F3BD", "&#x1F6F9", "&#x1F6FC", "&#x1F6F7", "&#x26F8", "&#x1F94C", "&#x1F3BF", "&#x26F7", "&#x1F3C2", "&#x1FA82", "&#x1F3CB", "&#x1F93C", "&#x1F938", "&#x26F9", "&#x1F93A", "&#x1F93E", "&#x1F3CC", "&#x1F3C7", "&#x1F9D8", "&#x1F3C4", "&#x1F3CA", "&#x1F93D", "&#x1F6A3", "&#x1F9D7", "&#x1F6B5", "&#x1F6B4", "&#x1F3C6", "&#x1F947", "&#x1F948", "&#x1F949", "&#x1F3C5", "&#x1F396", "&#x1F3F5", "&#x1F397", "&#x1F3AB", "&#x1F39F", "&#x1F3AA", "&#x1F939", "&#x1F3AD", "&#x1FA70", "&#x1F3A8", "&#x1F3AC", "&#x1F3A4", "&#x1F3A7", "&#x1F3BC", "&#x1F3B9", "&#x1F941", "&#x1FA98", "&#x1F3B7", "&#x1F3BA", "&#x1F3B8", "&#x1FA95", "&#x1F3BB", "&#x1FA97", "&#x1F3B2", "&#x265F", "&#x1F3AF", "&#x1F3B3", "&#x1F3AE", "&#x1F3B0", "&#x1F9E9", "&#x1F697", "&#x1F695", "&#x1F699", "&#x1F6FB", "&#x1F68C", "&#x1F68E", "&#x1F3CE", "&#x1F693", "&#x1F691", "&#x1F692", "&#x1F690", "&#x1F69A", "&#x1F69B", "&#x1F69C", "&#x1F9AF", "&#x1F9BD", "&#x1F9BC", "&#x1F6F4", "&#x1F6B2", "&#x1F6F5", "&#x1F3CD", "&#x1F6FA", "&#x1F6A8", "&#x1F694", "&#x1F68D", "&#x1F698", "&#x1F696", "&#x1F6A1", "&#x1F6A0", "&#x1F69F", "&#x1F683", "&#x1F68B", "&#x1F69E", "&#x1F69D", "&#x1F684", "&#x1F685", "&#x1F688", "&#x1F682", "&#x1F686", "&#x1F687", "&#x1F68A", "&#x1F689", "&#x1F6EB", "&#x1F6EC", "&#x1F6E9", "&#x1F4BA", "&#x1F6F0", "&#x1F680", "&#x1F6F8", "&#x1F681", "&#x1F6F6", "&#x26F5", "&#x1F6A4", "&#x1F6E5", "&#x1F6F3", "&#x26F4", "&#x1F6A2", "&#x26FD", "&#x1F6A7", "&#x1F6A6", "&#x1F6A5", "&#x1F68F", "&#x1F5FA", "&#x1F5FF", "&#x1F5FD", "&#x1F5FC", "&#x1F3F0", "&#x1F3EF", "&#x1F3DF", "&#x1F3A1", "&#x1F3A2", "&#x1F3A0", "&#x26F2", "&#x26F1", "&#x1F3D6", "&#x1F3DD", "&#x1F3DC", "&#x1F30B", "&#x26F0", "&#x1F3D4", "&#x1F5FB", "&#x1F3D5", "&#x26FA", "&#x1F3E0", "&#x1F3E1", "&#x1F3D8", "&#x1F3DA", "&#x1F6D6", "&#x1F3D7", "&#x1F3ED", "&#x1F3E2", "&#x1F3EC", "&#x1F3E3", "&#x1F3E4", "&#x1F3E5", "&#x1F3E6", "&#x1F3E8", "&#x1F3EA", "&#x1F3EB", "&#x1F3E9", "&#x1F492", "&#x1F3DB", "&#x26EA", "&#x1F54C", "&#x1F54D", "&#x1F6D5", "&#x1F54B", "&#x26E9", "&#x1F6E4", "&#x1F6E3", "&#x1F5FE", "&#x1F391", "&#x1F3DE", "&#x1F305", "&#x1F304", "&#x1F320", "&#x1F387", "&#x1F386", "&#x1F307", "&#x1F306", "&#x1F3D9", "&#x1F303", "&#x1F30C", "&#x1F309", "&#x1F301", "&#x231A", "&#x1F4F1", "&#x1F4F2", "&#x1F4BB", "&#x1F5A5", "&#x1F5A8", "&#x1F5B1", "&#x1F5B2", "&#x1F579", "&#x1F5DC", "&#x1F4BD", "&#x1F4BE", "&#x1F4BF", "&#x1F4C0", "&#x1F4FC", "&#x1F4F7", "&#x1F4F8", "&#x1F4F9", "&#x1F3A5", "&#x1F4FD", "&#x1F39E", "&#x1F4DE", "&#x260E", "&#x1F4DF", "&#x1F4E0", "&#x1F4FA", "&#x1F4FB", "&#x1F399", "&#x1F39A", "&#x1F39B", "&#x1F9ED", "&#x23F1", "&#x23F2", "&#x23F0", "&#x1F570", "&#x231B", "&#x23F3", "&#x1F4E1", "&#x1F50B", "&#x1F50C", "&#x1F4A1", "&#x1F526", "&#x1F56F", "&#x1FA94", "&#x1F9EF", "&#x1F6E2", "&#x1F4B8", "&#x1F4B5", "&#x1F4B4", "&#x1F4B6", "&#x1F4B7", "&#x1FA99", "&#x1F4B0", "&#x1F4B3", "&#x1F48E", "&#x1FA9C", "&#x1F9F0", "&#x1FA9B", "&#x1F527", "&#x1F528", "&#x1F6E0", "&#x26CF", "&#x1F529", "&#x1F9F1", "&#x26D3", "&#x1FA9D", "&#x1FAA2", "&#x1F9F2", "&#x1F52B", "&#x1F4A3", "&#x1F9E8", "&#x1FA93", "&#x1FA9A", "&#x1F52A", "&#x1F5E1", "&#x1F6E1", "&#x1F6AC", "&#x26B0", "&#x1FAA6", "&#x26B1", "&#x1F3FA", "&#x1FA84", "&#x1F52E", "&#x1F4FF", "&#x1F9FF", "&#x1F488", "&#x1F52D", "&#x1F52C", "&#x1F573", "&#x1FA9F", "&#x1FA79", "&#x1FA7A", "&#x1F48A", "&#x1F489", "&#x1FA78", "&#x1F9EC", "&#x1F9A0", "&#x1F9EB", "&#x1F9EA", "&#x1F321", "&#x1FAA4", "&#x1F9F9", "&#x1F9FA", "&#x1FAA1", "&#x1F9FB", "&#x1F6BD", "&#x1FAA0", "&#x1FAA3", "&#x1F6B0", "&#x1F6BF", "&#x1F6C1", "&#x1F6C0", "&#x1FAA5", "&#x1F9FC", "&#x1FA92", "&#x1F9FD", "&#x1F9F4", "&#x1F6CE", "&#x1F511", "&#x1F5DD", "&#x1F6AA", "&#x1FA91", "&#x1FA9E", "&#x1F6CB", "&#x1F6CF", "&#x1F6CC", "&#x1F9F8", "&#x1F5BC", "&#x1F6CD", "&#x1F6D2", "&#x1F381", "&#x1F388", "&#x1F38F", "&#x1F380", "&#x1F38A", "&#x1F389", "&#x1FA85", "&#x1FA86", "&#x1F38E", "&#x1F3EE", "&#x1F390", "&#x1F9E7", "&#x1F4E9", "&#x1F4E8", "&#x1F4E7", "&#x1F48C", "&#x1F4E5", "&#x1F4E4", "&#x1F4E6", "&#x1F3F7", "&#x1F4EA", "&#x1F4EB", "&#x1F4EC", "&#x1F4ED", "&#x1F4EE", "&#x1F4EF", "&#x1FAA7", "&#x1F4DC", "&#x1F4C3", "&#x1F4C4", "&#x1F4D1", "&#x1F9FE", "&#x1F4CA", "&#x1F4C8", "&#x1F4C9", "&#x1F5D2", "&#x1F5D3", "&#x1F4C6", "&#x1F4C5", "&#x1F5D1", "&#x1F4C7", "&#x1F5C3", "&#x1F5F3", "&#x1F5C4", "&#x1F4CB", "&#x1F4C1", "&#x1F4C2", "&#x1F5C2", "&#x1F5DE", "&#x1F4F0", "&#x1F4D3", "&#x1F4D4", "&#x1F4D2", "&#x1F4D5", "&#x1F4D7", "&#x1F4D8", "&#x1F4D9", "&#x1F4DA", "&#x1F4D6", "&#x1F516", "&#x1F9F7", "&#x1F517", "&#x1F4CE", "&#x1F587", "&#x1F4D0", "&#x1F4CF", "&#x1F9EE", "&#x1F4CC", "&#x1F4CD", "&#x1F58A", "&#x1F58B", "&#x1F58C", "&#x1F58D", "&#x1F4DD", "&#x270F", "&#x1F50D", "&#x1F50E", "&#x1F50F", "&#x1F510", "&#x1F512", "&#x1F513", "&#x1F9E1", "&#x1F49B", "&#x1F49A", "&#x1F499", "&#x1F49C", "&#x1F5A4", "&#x1F90E", "&#x1F90D", "&#x1F494", "&#x1F495", "&#x1F49E", "&#x1F493", "&#x1F497", "&#x1F496", "&#x1F498", "&#x1F49D", "&#x1F49F", "&#x262E", "&#x271D", "&#x262A", "&#x1F549", "&#x1F52F", "&#x1F54E", "&#x262F", "&#x1F6D0", "&#x26CE", "&#x264A", "&#x264B", "&#x264C", "&#x264D", "&#x264E", "&#x264F", "&#x1F194", "&#x269B", "&#x1F251", "&#x1F4F4", "&#x1F4F3", "&#x1F236", "&#x1F21A", "&#x1F238", "&#x1F23A", "&#x1F237", "&#x1F19A", "&#x1F4AE", "&#x1F250", "&#x1F234", "&#x1F235", "&#x1F239", "&#x1F232", "&#x1F170", "&#x1F171", "&#x1F18E", "&#x1F191", "&#x1F17E", "&#x1F198", "&#x274C", "&#x2B55", "&#x1F6D1", "&#x26D4", "&#x1F4DB", "&#x1F6AB", "&#x1F4AF", "&#x1F4A2", "&#x1F6B7", "&#x1F6AF", "&#x1F6B3", "&#x1F6B1", "&#x1F51E", "&#x1F4F5", "&#x1F6AD", "&#x203C", "&#x1F505", "&#x1F506", "&#x303D", "&#x26A0", "&#x1F6B8", "&#x1F531", "&#x269C", "&#x1F530", "&#x267B", "&#x1F22F", "&#x1F4B9", "&#x274E", "&#x1F310", "&#x1F4A0", "&#x24C2", "&#x1F300", "&#x1F4A4", "&#x1F3E7", "&#x1F6BE", "&#x267F", "&#x1F17F", "&#x1F233", "&#x1F202", "&#x1F6C2", "&#x1F6C3", "&#x1F6C4", "&#x1F6C5", "&#x1F6D7", "&#x1F6B9", "&#x1F6BA", "&#x1F6BC", "&#x1F6BB", "&#x1F6AE", "&#x1F3A6", "&#x1F4F6", "&#x1F201", "&#x1F523", "&#x1F524", "&#x1F521", "&#x1F520", "&#x1F196", "&#x1F197", "&#x1F199", "&#x1F192", "&#x1F195", "&#x1F193", "&#x0030", "&#x0031", "&#x0032", "&#x0033", "&#x0034", "&#x0035", "&#x0036", "&#x0037", "&#x0038", "&#x0039", "&#x1F51F", "&#x1F522", "&#x0023", "&#x002A", "&#x23CF", "&#x25B6", "&#x23F8", "&#x23EF", "&#x23F9", "&#x23FA", "&#x23ED", "&#x23EE", "&#x23E9", "&#x23EA", "&#x23EB", "&#x23EC", "&#x25C0", "&#x1F53C", "&#x1F53D", "&#x27A1", "&#x2B05", "&#x2B06", "&#x2B07", "&#x21AA", "&#x21A9", "&#x1F500", "&#x1F501", "&#x1F502", "&#x1F504", "&#x1F503", "&#x1F3B5", "&#x1F3B6", "&#x267E", "&#x1F4B2", "&#x1F4B1", "&#x00A9", "&#x00AE", "&#x27B0", "&#x27BF", "&#x1F51A", "&#x1F519", "&#x1F51B", "&#x1F51D", "&#x1F51C", "&#x1F518", "&#x26AA", "&#x26AB", "&#x1F534", "&#x1F535", "&#x1F7E4", "&#x1F7E3", "&#x1F7E2", "&#x1F7E1", "&#x1F7E0", "&#x1F53A", "&#x1F53B", "&#x1F538", "&#x1F539", "&#x1F536", "&#x1F537", "&#x1F533", "&#x1F532", "&#x25AA", "&#x25AB", "&#x25FE", "&#x25FD", "&#x25FC", "&#x25FB", "&#x2B1B", "&#x2B1C", "&#x1F7E7", "&#x1F7E6", "&#x1F7E5", "&#x1F7EB", "&#x1F7EA", "&#x1F7E9", "&#x1F7E8", "&#x1F508", "&#x1F507", "&#x1F509", "&#x1F50A", "&#x1F514", "&#x1F515", "&#x1F4E3", "&#x1F4E2", "&#x1F5E8", "&#x1F4AC", "&#x1F4AD", "&#x1F5EF", "&#x1F0CF", "&#x1F3B4", "&#x1F004", "&#x1F550", "&#x1F551", "&#x1F552", "&#x1F553", "&#x1F554", "&#x1F555", "&#x1F556", "&#x1F557", "&#x1F558", "&#x1F559", "&#x1F55A", "&#x1F55B", "&#x1F55C", "&#x1F55D", "&#x1F55E", "&#x1F55F", "&#x1F560", "&#x1F561", "&#x1F562", "&#x1F563", "&#x1F564", "&#x1F565", "&#x1F566", "&#x1F567", "&#x26A7", "&#x1F3F3", "&#x1F3F4", "&#x1F3C1", "&#x1F6A9", "&#x1F1E6", "&#x1F1E9", "&#x1F1E7", "&#x1F1EE", "&#x1F1FB", "&#x1F1F0", "&#x1F1E8", "&#x1F1F9", "&#x1F1ED", "&#x1F1EA", "&#x1F1F8", "&#x1F1EC", "&#x1F1EB", "&#x1F1F5", "&#x1F1EF", "&#x1F38C", "&#x1F1FD", "&#x1F1F1", "&#x1F1F2", "&#x1F1FE", "&#x1F1F3", "&#x1F1F4", "&#x1F1F6", "&#x1F1F7", "&#x1F1FC", "&#x1F1FF", "&#x1F1FA", "&#x1F3FB", "&#x1F3FC", "&#x1F3FD", "&#x1F3FE", "&#x1F3FF"]
+  };
+  function A(F) {
+    var A = [];
+    return x.each(F.o.plugins.emoji.emojiList, function (E, B) {
+      if (x.isArray(B)) {
+        var C = B[0],
+          D = B[1],
+          e = '<img src="' + D + '" alt="' + C + '">',
+          i = "emoji-" + C.replace(/:/g, ""),
+          o = {
+            hasIcon: !1,
+            text: e,
+            fn: function fn() {
+              return F.execCmd("insertImage", D, !1, !0), !0;
+            }
+          };
+        F.addBtnDef(i, o), A.push(i);
+      } else {
+        var n = "emoji-" + B.replace(/:/g, ""),
+          m = {
+            text: B,
+            fn: function fn() {
+              var x = String.fromCodePoint(B.replace("&#", "0"));
+              return F.execCmd("insertText", x), !0;
+            }
+          };
+        F.addBtnDef(n, m), A.push(n);
+      }
+    }), A;
   }
-
-  function e(o) {
-    return -1 === o.search("rgb") ? o.replace("#", "") : "rgba(0, 0, 0, 0)" === o ? "transparent" : r((o = o.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/))[1]) + r(o[2]) + r(o[3]);
-  }
-
-  o.extend(!0, o.trumbowyg, {
+  x.extend(!0, x.trumbowyg, {
     langs: {
       en: {
-        foreColor: "Text color",
-        backColor: "Background color",
-        foreColorRemove: "Remove text color",
-        backColorRemove: "Remove background color"
+        emoji: "Add an emoji"
       },
-      cs: {
-        foreColor: "Barva textu",
-        backColor: "Barva pozadí"
+      az: {
+        emoji: "Emoji yerləşdir"
+      },
+      ca: {
+        emoji: "Afegir una emoticona"
       },
       da: {
-        foreColor: "Tekstfarve",
-        backColor: "Baggrundsfarve"
+        emoji: "Tilføj et humørikon"
       },
       de: {
-        foreColor: "Textfarbe",
-        backColor: "Hintergrundfarbe"
+        emoji: "Emoticon einfügen"
+      },
+      es: {
+        emoji: "Añadir un emoticono"
       },
       et: {
-        foreColor: "Teksti värv",
-        backColor: "Taustavärv",
-        foreColorRemove: "Eemalda teksti värv",
-        backColorRemove: "Eemalda taustavärv"
+        emoji: "Lisa emotikon"
       },
       fr: {
-        foreColor: "Couleur du texte",
-        backColor: "Couleur de fond",
-        foreColorRemove: "Supprimer la couleur du texte",
-        backColorRemove: "Supprimer la couleur de fond"
+        emoji: "Ajouter un emoji"
       },
       hu: {
-        foreColor: "Betű szín",
-        backColor: "Háttér szín",
-        foreColorRemove: "Betű szín eltávolítása",
-        backColorRemove: "Háttér szín eltávolítása"
+        emoji: "Emoji beszúrás"
       },
       ja: {
-        foreColor: "文字色",
-        backColor: "背景色"
+        emoji: "絵文字の挿入"
       },
       ko: {
-        foreColor: "글자색",
-        backColor: "배경색",
-        foreColorRemove: "글자색 지우기",
-        backColorRemove: "배경색 지우기"
-      },
-      nl: {
-        foreColor: "Tekstkleur",
-        backColor: "Achtergrondkleur"
-      },
-      pt_br: {
-        foreColor: "Cor de fonte",
-        backColor: "Cor de fundo"
+        emoji: "이모지 넣기"
       },
       ru: {
-        foreColor: "Цвет текста",
-        backColor: "Цвет выделения текста"
+        emoji: "Вставить emoji"
       },
-      sk: {
-        foreColor: "Farba textu",
-        backColor: "Farba pozadia"
+      sl: {
+        emoji: "Vstavi emotikon"
       },
       tr: {
-        foreColor: "Yazı rengi",
-        backColor: "Arka plan rengi",
-        foreColorRemove: "Yazı rengini kaldır",
-        backColorRemove: "Arka plan rengini kaldır"
+        emoji: "Emoji ekle"
       },
       zh_cn: {
-        foreColor: "文字颜色",
-        backColor: "背景颜色"
-      },
-      zh_tw: {
-        foreColor: "文字顏色",
-        backColor: "背景顏色"
+        emoji: "添加表情"
       }
-    }
-  });
-  var l = {
-    colorList: ["ffffff", "000000", "eeece1", "1f497d", "4f81bd", "c0504d", "9bbb59", "8064a2", "4bacc6", "f79646", "ffff00", "f2f2f2", "7f7f7f", "ddd9c3", "c6d9f0", "dbe5f1", "f2dcdb", "ebf1dd", "e5e0ec", "dbeef3", "fdeada", "fff2ca", "d8d8d8", "595959", "c4bd97", "8db3e2", "b8cce4", "e5b9b7", "d7e3bc", "ccc1d9", "b7dde8", "fbd5b5", "ffe694", "bfbfbf", "3f3f3f", "938953", "548dd4", "95b3d7", "d99694", "c3d69b", "b2a2c7", "b7dde8", "fac08f", "f2c314", "a5a5a5", "262626", "494429", "17365d", "366092", "953734", "76923c", "5f497a", "92cddc", "e36c09", "c09100", "7f7f7f", "0c0c0c", "1d1b10", "0f243e", "244061", "632423", "4f6128", "3f3151", "31859b", "974806", "7f6000"],
-    foreColorList: null,
-    backColorList: null,
-    allowCustomForeColor: !0,
-    allowCustomBackColor: !0,
-    displayAsList: !1
-  };
-
-  function a(r, e) {
-    var l = [],
-        a = e.o.plugins.colors,
-        t = a[r + "List"] || a.colorList;
-    o.each(t, function (o, t) {
-      var c = r + t,
-          f = {
-        fn: r,
-        forceCss: !0,
-        hasIcon: !1,
-        text: e.lang["#" + t] || "#" + t,
-        param: "#" + t,
-        style: "background-color: #" + t + ";"
-      };
-      a.displayAsList && "foreColor" === r && (f.style = "color: #" + t + " !important;"), e.addBtnDef(c, f), l.push(c);
-    });
-    var c = r + "Remove",
-        f = {
-      fn: "removeFormat",
-      hasIcon: !1,
-      param: r,
-      style: "background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVQIW2NkQAAfEJMRmwBYhoGBYQtMBYoAADziAp0jtJTgAAAAAElFTkSuQmCC);"
-    };
-
-    if (a.displayAsList && (f.style = ""), e.addBtnDef(c, f), l.push(c), a["allowCustom" + r.charAt(0).toUpperCase() + r.substr(1)]) {
-      var d = r + "Free",
-          n = {
-        fn: function fn() {
-          e.openModalInsert(e.lang[r], {
-            color: {
-              label: r,
-              forceCss: !0,
-              type: "color",
-              value: "#FFFFFF"
-            }
-          }, function (o) {
-            return e.execCmd(r, o.color), !0;
-          });
-        },
-        hasIcon: !1,
-        text: "#",
-        style: "text-indent: 0; line-height: 20px; padding: 0 5px;"
-      };
-      e.addBtnDef(d, n), l.push(d);
-    }
-
-    return l;
-  }
-
-  o.extend(!0, o.trumbowyg, {
+    },
     plugins: {
-      color: {
-        init: function init(o) {
-          o.o.plugins.colors = o.o.plugins.colors || l;
-          var r = o.o.plugins.colors.displayAsList ? o.o.prefix + "dropdown--color-list" : "",
-              e = {
-            dropdown: a("foreColor", o),
-            dropdownClass: r
-          },
-              t = {
-            dropdown: a("backColor", o),
-            dropdownClass: r
+      emoji: {
+        init: function init(x) {
+          x.o.plugins.emoji = x.o.plugins.emoji || F;
+          var E = {
+            dropdown: A(x)
           };
-          o.addBtnDef("foreColor", e), o.addBtnDef("backColor", t);
-        },
-        tagHandler: function tagHandler(o, r) {
-          var l,
-              a = [];
-          if (!o.style) return a;
-
-          if ("" !== o.style.backgroundColor) {
-            var t = e(o.style.backgroundColor);
-            r.o.plugins.colors.colorList.indexOf(t) >= 0 ? a.push("backColor" + t) : a.push("backColorFree");
-          }
-
-          return "" !== o.style.color ? l = e(o.style.color) : o.hasAttribute("color") && (l = e(o.getAttribute("color"))), l && (r.o.plugins.colors.colorList.indexOf(l) >= 0 ? a.push("foreColor" + l) : a.push("foreColorFree")), a;
+          x.addBtnDef("emoji", E);
         }
       }
     }
@@ -1432,6 +1608,22 @@
           value: '48px'
         }
       },
+      az: {
+        fontsize: 'Şrift həcmi',
+        fontsizes: {
+          'x-small': 'Daha kiçik',
+          'small': 'Kiçik',
+          'medium': 'Normal',
+          'large': 'Böyük',
+          'x-large': 'Daha böyük',
+          'custom': 'Fərdi həcm'
+        },
+        fontCustomSize: {
+          title: 'Fərdi şrift həcmi',
+          label: 'Şrift həcmi',
+          value: '48px'
+        }
+      },
       by: {
         fontsize: 'Памер шрыфта',
         fontsizes: {
@@ -1445,6 +1637,22 @@
         fontCustomSize: {
           title: 'Карыстальніцкі Памер Шрыфта',
           label: 'Памер Шрыфта',
+          value: '48px'
+        }
+      },
+      ca: {
+        fontsize: 'Mida de la lletra',
+        fontsizes: {
+          'x-small': 'Molt petita',
+          'small': 'Petita',
+          'medium': 'Normal',
+          'large': 'Gran',
+          'x-large': 'Molt Gran',
+          'custom': 'Personalitzada'
+        },
+        fontCustomSize: {
+          title: 'Mida de lletra personalitzada',
+          label: 'Mida de lletra',
           value: '48px'
         }
       },
@@ -1579,7 +1787,12 @@
           'medium': 'Normaal',
           'large': 'Groot',
           'x-large': 'Extra groot',
-          'custom': 'Tilpasset'
+          'custom': 'Handmatig'
+        },
+        fontCustomSize: {
+          title: 'Handmatige lettergrootte',
+          label: 'Lettergrootte',
+          value: '48px'
         }
       },
       pt_br: {
@@ -1611,6 +1824,22 @@
         fontCustomSize: {
           title: 'Пользовательский Размер Шрифта',
           label: 'Размер Шрифта',
+          value: '48px'
+        }
+      },
+      sl: {
+        fontsize: 'Velikost pisave',
+        fontsizes: {
+          'x-small': 'Ekstra majhna',
+          'small': 'Majhna',
+          'medium': 'Navadno',
+          'large': 'Velika',
+          'x-large': 'Ekstra velika',
+          'custom': 'Poljubna'
+        },
+        fontCustomSize: {
+          title: 'Poljubna velikost pisave',
+          label: 'Velikost pisave',
           value: '48px'
         }
       },
@@ -1647,13 +1876,15 @@
         }
       }
     }
-  }); // jshint camelcase:true
+  });
+  // jshint camelcase:true
 
   var defaultOptions = {
     sizeList: ['x-small', 'small', 'medium', 'large', 'x-large'],
     allowCustomSize: true
-  }; // Add dropdown with font sizes
+  };
 
+  // Add dropdown with font sizes
   $.extend(true, $.trumbowyg, {
     plugins: {
       fontsize: {
@@ -1666,18 +1897,20 @@
       }
     }
   });
-
   function setFontSize(trumbowyg, size) {
     trumbowyg.$ed.focus();
-    trumbowyg.saveRange(); // Temporary size
+    trumbowyg.saveRange();
 
+    // Temporary size
     trumbowyg.execCmd('fontSize', '1');
-    var fontElements = trumbowyg.$ed.find('font[size="1"]'); // Remove previous font-size span tags. Needed to prevent Firefox from
+    var fontElements = trumbowyg.$ed.find('font[size="1"]');
+
+    // Remove previous font-size span tags. Needed to prevent Firefox from
     // nesting multiple spans on font-size changes.
     // (see https://github.com/Alex-D/Trumbowyg/issues/1252)
+    fontElements.find('span[style*="font-size"]').contents().unwrap();
 
-    fontElements.find('span[style*="font-size"]').contents().unwrap(); // Find <font> elements that were added and change to <span> with chosen size
-
+    // Find <font> elements that were added and change to <span> with chosen size
     fontElements.replaceWith(function () {
       return $('<span/>', {
         css: {
@@ -1685,14 +1918,14 @@
         },
         html: this.innerHTML
       });
-    }); // Remove and leftover <span> elements
+    });
 
+    // Remove and leftover <span> elements
     $(trumbowyg.range.startContainer.parentElement).find('span[style=""]').contents().unwrap();
     trumbowyg.restoreRange();
     trumbowyg.syncCode();
     trumbowyg.$c.trigger('tbwchange');
   }
-
   function buildDropdown(trumbowyg) {
     var dropdown = [];
     $.each(trumbowyg.o.plugins.fontsize.sizeList, function (index, size) {
@@ -1705,7 +1938,6 @@
       });
       dropdown.push('fontsize_' + size);
     });
-
     if (trumbowyg.o.plugins.fontsize.allowCustomSize) {
       var customSizeButtonName = 'fontsize_custom';
       var customSizeBtnDef = {
@@ -1726,7 +1958,6 @@
       trumbowyg.addBtnDef(customSizeButtonName, customSizeBtnDef);
       dropdown.push(customSizeButtonName);
     }
-
     return dropdown;
   }
 })(jQuery);
@@ -1748,6 +1979,54 @@
         fontCustomSize: {
           title: "Custom Font Size",
           label: "Font Size",
+          value: "48px"
+        }
+      },
+      az: {
+        fontsize: "Şrift həcmi",
+        fontsizes: {
+          "x-small": "Daha kiçik",
+          small: "Kiçik",
+          medium: "Normal",
+          large: "Böyük",
+          "x-large": "Daha böyük",
+          custom: "Fərdi həcm"
+        },
+        fontCustomSize: {
+          title: "Fərdi şrift həcmi",
+          label: "Şrift həcmi",
+          value: "48px"
+        }
+      },
+      by: {
+        fontsize: "Памер шрыфта",
+        fontsizes: {
+          "x-small": "Вельмі маленькі",
+          small: "Маленькі",
+          medium: "Звычайны",
+          large: "Вялікі",
+          "x-large": "Вельмі вялікі",
+          custom: "Карыстальніцкі"
+        },
+        fontCustomSize: {
+          title: "Карыстальніцкі Памер Шрыфта",
+          label: "Памер Шрыфта",
+          value: "48px"
+        }
+      },
+      ca: {
+        fontsize: "Mida de la lletra",
+        fontsizes: {
+          "x-small": "Molt petita",
+          small: "Petita",
+          medium: "Normal",
+          large: "Gran",
+          "x-large": "Molt Gran",
+          custom: "Personalitzada"
+        },
+        fontCustomSize: {
+          title: "Mida de lletra personalitzada",
+          label: "Mida de lletra",
           value: "48px"
         }
       },
@@ -1882,7 +2161,12 @@
           medium: "Normaal",
           large: "Groot",
           "x-large": "Extra groot",
-          custom: "Tilpasset"
+          custom: "Handmatig"
+        },
+        fontCustomSize: {
+          title: "Handmatige lettergrootte",
+          label: "Lettergrootte",
+          value: "48px"
         }
       },
       pt_br: {
@@ -1898,6 +2182,38 @@
         fontCustomSize: {
           title: "Tamanho de Fonte Personalizado",
           label: "Tamanho de Fonte",
+          value: "48px"
+        }
+      },
+      ru: {
+        fontsize: "Размер шрифта",
+        fontsizes: {
+          "x-small": "Очень маленький",
+          small: "Маленький",
+          medium: "Обычный",
+          large: "Большой",
+          "x-large": "Очень большой",
+          custom: "Пользовательский"
+        },
+        fontCustomSize: {
+          title: "Пользовательский Размер Шрифта",
+          label: "Размер Шрифта",
+          value: "48px"
+        }
+      },
+      sl: {
+        fontsize: "Velikost pisave",
+        fontsizes: {
+          "x-small": "Ekstra majhna",
+          small: "Majhna",
+          medium: "Navadno",
+          large: "Velika",
+          "x-large": "Ekstra velika",
+          custom: "Poljubna"
+        },
+        fontCustomSize: {
+          title: "Poljubna velikost pisave",
+          label: "Velikost pisave",
           value: "48px"
         }
       },
@@ -1939,9 +2255,10 @@
     sizeList: ["x-small", "small", "medium", "large", "x-large"],
     allowCustomSize: !0
   };
-
   function l(t, l) {
-    t.$ed.focus(), t.saveRange(), t.execCmd("fontSize", "1"), t.$ed.find('font[size="1"]').replaceWith(function () {
+    t.$ed.focus(), t.saveRange(), t.execCmd("fontSize", "1");
+    var a = t.$ed.find('font[size="1"]');
+    a.find('span[style*="font-size"]').contents().unwrap(), a.replaceWith(function () {
       return e("<span/>", {
         css: {
           "font-size": l
@@ -1950,10 +2267,8 @@
       });
     }), e(t.range.startContainer.parentElement).find('span[style=""]').contents().unwrap(), t.restoreRange(), t.syncCode(), t.$c.trigger("tbwchange");
   }
-
   function a(t) {
     var a = [];
-
     if (e.each(t.o.plugins.fontsize.sizeList, function (e, s) {
       t.addBtnDef("fontsize_" + s, {
         text: '<span style="font-size: ' + s + ';">' + (t.lang.fontsizes[s] || s) + "</span>",
@@ -1964,26 +2279,24 @@
       }), a.push("fontsize_" + s);
     }), t.o.plugins.fontsize.allowCustomSize) {
       var s = "fontsize_custom",
-          o = {
-        fn: function fn() {
-          t.openModalInsert(t.lang.fontCustomSize.title, {
-            size: {
-              label: t.lang.fontCustomSize.label,
-              value: t.lang.fontCustomSize.value
-            }
-          }, function (e) {
-            return l(t, e.size), !0;
-          });
-        },
-        text: '<span style="font-size: medium;">' + t.lang.fontsizes.custom + "</span>",
-        hasIcon: !1
-      };
-      t.addBtnDef(s, o), a.push(s);
+        i = {
+          fn: function fn() {
+            t.openModalInsert(t.lang.fontCustomSize.title, {
+              size: {
+                label: t.lang.fontCustomSize.label,
+                value: t.lang.fontCustomSize.value
+              }
+            }, function (e) {
+              return l(t, e.size), !0;
+            });
+          },
+          text: '<span style="font-size: medium;">' + t.lang.fontsizes.custom + "</span>",
+          hasIcon: !1
+        };
+      t.addBtnDef(s, i), a.push(s);
     }
-
     return a;
   }
-
   e.extend(!0, e.trumbowyg, {
     plugins: {
       fontsize: {
@@ -2005,6 +2318,9 @@
       en: {
         giphy: 'Insert GIF'
       },
+      az: {
+        giphy: 'GIF yerləşdir'
+      },
       by: {
         giphy: 'Уставіць GIF'
       },
@@ -2020,16 +2336,21 @@
       ru: {
         giphy: 'Вставить GIF'
       },
+      sl: {
+        giphy: 'Vstavi GIF'
+      },
       tr: {
         giphy: 'GIF ekle'
-      } // jshint camelcase:true
-
+      }
+      // jshint camelcase:true
     }
   });
+
   var giphyLogo = '<svg viewBox="0 0 231 53" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"><path d="M48.32 22.386c0-1.388-.252-1.892-1.767-1.85-3.448.126-6.855.042-10.303.042H25.443c-.927 0-1.346.211-1.305 1.22.085 2.86.085 5.72.043 8.58 0 .883.252 1.169 1.169 1.135 2.018-.084 3.995-.042 6.014 0 1.64 0 4.164-.546 4.752.252.841 1.169.421 3.364.337 5.089-.043.547-.547 1.304-1.094 1.598-2.692 1.556-5.678 2.018-8.747 1.892-5.342-.21-9.336-2.439-11.481-7.527-1.388-3.364-1.725-6.855-1.01-10.43 1.01-4.963 3.407-8.747 8.58-10.051 5.215-1.305 10.136-.547 14.467 2.817 1.219.967 1.798.715 2.691-.294 1.514-1.724 3.154-3.322 4.753-4.963 1.892-1.933 1.892-1.892-.169-3.7C38.429.813 31.238-.617 23.5.224 12.818 1.393 5.248 6.658 1.59 17.045-.177 22.008-.428 27.097.623 32.227c1.682 7.914 5.551 14.12 13.289 17.368 6.898 2.901 14.046 3.448 21.321 1.598 4.331-1.093 8.411-2.608 11.354-6.223 1.136-1.388 1.725-2.902 1.682-4.71l.043-17.873.008-.001zm125.153 3.784l.042-23.046c0-1.136-.168-1.598-1.472-1.556a238.02 238.02 0 0 1-11.017 0c-1.136-.042-1.439.337-1.439 1.439v15.645c0 1.345-.421 1.556-1.641 1.556a422.563 422.563 0 0 0-14.593 0c-1.262.042-1.472-.421-1.439-1.556l.043-15.813c0-.926-.169-1.304-1.17-1.262h-11.513c-.927 0-1.304.169-1.304 1.22v46.764c0 .967.252 1.262 1.219 1.262h11.512c1.169.042 1.262-.462 1.262-1.388l-.042-15.644c0-1.053.251-1.346 1.304-1.346h15.14c1.22 0 1.388.421 1.388 1.472l-.042 15.477c0 1.093.21 1.472 1.388 1.439 3.615-.085 7.233-.085 10.807 0 1.304.042 1.598-.337 1.598-1.598l-.042-23.047.011-.018zM106.565 1.654c-8.369-.211-16.728-.126-25.065-.211-1.346 0-1.767.337-1.767 1.724l.043 23.004v23.215c0 1.009.168 1.439 1.304 1.387a271.22 271.22 0 0 1 11.691 0c1.094 0 1.346-.336 1.346-1.345l-.042-10.64c0-1.052.294-1.345 1.345-1.345 3.322.042 6.645.085 9.967-.085 4.407-.21 8.621-1.219 12.111-4.12 5.551-4.584 7.613-12.701 5.131-20.061-2.313-6.561-8.747-11.354-16.064-11.522v-.001zm-3.028 24.013c-2.818.042-5.594-.043-8.411.042-1.169.042-1.439-.378-1.345-1.439.084-1.556 0-3.069 0-4.626v-5.131c-.043-.841.251-1.094 1.052-1.052 2.986.042 5.929-.085 8.915.042 3.616.126 5.887 2.692 5.846 6.266-.126 3.658-2.313 5.846-6.055 5.887l-.002.011zM229.699 1.569c-4.458 0-8.915-.042-13.415.043-.629 0-1.472.503-1.85 1.052a505.695 505.695 0 0 0-8.957 14.214c-.884 1.472-1.22 1.169-1.977-.084l-8.496-14.089c-.503-.841-1.052-1.136-2.018-1.136l-13.078.043c-.462 0-.967.125-1.439.21.21.378.378.799.629 1.169l17.412 27.167c.462.715.715 1.682.757 2.524v16.653c0 1.052.168 1.514 1.388 1.472 3.784-.084 7.57-.084 11.354 0 1.136.043 1.304-.377 1.304-1.387l-.042-8.58c0-2.734-.084-5.51.042-8.243.043-.926.337-1.933.841-2.649l18.167-27.041c.252-.337.337-.758.547-1.17a3.636 3.636 0 0 0-1.169-.168zM70.104 2.661c0-1.009-.294-1.219-1.262-1.219H57.69c-1.262-.043-1.472.377-1.472 1.513l.042 23.004v23.34c0 1.053.126 1.514 1.346 1.473 3.7-.085 7.444-.043 11.152 0 .966 0 1.387-.085 1.387-1.262l-.042-46.857.001.008z" fill="currentColor" fill-rule="nonzero"/></svg>'; // jshint ignore:line
 
-  var CANCEL_EVENT = 'tbwcancel'; // Throttle helper
+  var CANCEL_EVENT = 'tbwcancel';
 
+  // Throttle helper
   function trumbowygThrottle(callback, delay) {
     var last;
     var timer;
@@ -2037,7 +2358,6 @@
       var context = this;
       var now = +new Date();
       var args = arguments;
-
       if (last && now < last + delay) {
         clearTimeout(timer);
         timer = setTimeout(function () {
@@ -2049,47 +2369,79 @@
         callback.apply(context, args);
       }
     };
-  } // Fills modal with response gifs
+  }
 
-
+  // Fills modal with response gifs
   function renderGifs(response, $giphyModal, trumbowyg, mustEmpty) {
     var width = ($giphyModal.width() - 20) / 3;
     var html = response.data.filter(function (gifData) {
-      return gifData.images.downsized.url !== '';
+      // jshint camelcase:false
+      var downsized = gifData.images.downsized || gifData.images.downsized_medium;
+      // jshint camelcase:true
+      return !!downsized.url;
     }).map(function (gifData) {
-      var image = gifData.images.downsized,
-          imageRatio = image.height / image.width;
-      return '<div class="img-container"><img src=' + image.url + ' width="' + width + '" height="' + imageRatio * width + '" loading="lazy" onload="this.classList.add(\'tbw-loaded\')"/></div>';
+      // jshint camelcase:false
+      var downsized = gifData.images.downsized || gifData.images.downsized_medium;
+      // jshint camelcase:true
+      var image = downsized,
+        imageRatio = image.height / image.width,
+        altText = gifData.title;
+      var imgHtml = '<img src=' + image.url + ' width="' + width + '" height="' + imageRatio * width + '" alt="' + altText + '" loading="lazy" />';
+      return '<div class="img-container">' + imgHtml + '</div>';
     }).join('');
-
     if (mustEmpty === true) {
       if (html.length === 0) {
         if ($('.' + trumbowyg.o.prefix + 'giphy-no-result', $giphyModal).length > 0) {
           return;
         }
-
         html = '<img class="' + trumbowyg.o.prefix + 'giphy-no-result" src="' + trumbowyg.o.plugins.giphy.noResultGifUrl + '"/>';
       }
-
       $giphyModal.empty();
     }
-
     $giphyModal.append(html);
+
+    // Remove gray overlay on image load
+    // moved here from inline callback definition due to CSP issue
+    // Note: this is being done post-factum because load event doesn't bubble up and so can't be delegated
+    var addLoadedClass = function addLoadedClass(img) {
+      img.classList.add('tbw-loaded');
+    };
+    $('img', $giphyModal).each(function () {
+      var img = this;
+      if (img.complete) {
+        // images load instantly when cached and esp. when loaded in previous modal open
+        addLoadedClass(img);
+      } else {
+        img.addEventListener('load', function () {
+          addLoadedClass(this);
+        });
+      }
+    });
     $('img', $giphyModal).on('click', function () {
+      var src = $(this).attr('src'),
+        alt = $(this).attr('alt');
       trumbowyg.restoreRange();
-      trumbowyg.execCmd('insertImage', $(this).attr('src'), false, true);
+      trumbowyg.execCmd('insertImage', src, false, true);
+
+      // relay alt tag into inserted image
+      if (alt) {
+        var $img = $('img[src="' + src + '"]:not([alt])', trumbowyg.$box);
+        $img.attr('alt', alt);
+        // Note: This seems to fire relatively early and could be wrapped in a setTimeout if needed
+        trumbowyg.syncCode();
+      }
       $('img', $giphyModal).off();
       trumbowyg.closeModal();
     });
   }
-
   var defaultOptions = {
     rating: 'g',
     apiKey: null,
     throttleDelay: 300,
     noResultGifUrl: 'https://media.giphy.com/media/2Faz9FbRzmwxY0pZS/giphy.gif'
-  }; // Add dropdown with font sizes
+  };
 
+  // Add dropdown with font sizes
   $.extend(true, $.trumbowyg, {
     plugins: {
       giphy: {
@@ -2100,37 +2452,35 @@
               if (trumbowyg.o.plugins.giphy.apiKey === null) {
                 throw new Error('You must set a Giphy API Key');
               }
-
               var BASE_URL = 'https://api.giphy.com/v1/gifs/search?api_key=' + trumbowyg.o.plugins.giphy.apiKey + '&rating=' + trumbowyg.o.plugins.giphy.rating,
-                  DEFAULT_URL = BASE_URL.replace('/search', '/trending');
+                DEFAULT_URL = BASE_URL.replace('/search', '/trending');
               var previousAjaxCall = {
                 abort: function abort() {}
               };
-              var prefix = trumbowyg.o.prefix; // Create and open the modal
+              var prefix = trumbowyg.o.prefix;
 
+              // Create and open the modal
               var searchInput = '<input name="" class="' + prefix + 'giphy-search" placeholder="Search a GIF" autofocus="autofocus">',
-                  closeButton = '<button class="' + prefix + 'giphy-close" title="' + trumbowyg.lang.close + '"><svg><use xlink:href="' + trumbowyg.svgPath + '#' + prefix + 'close"/></svg></button>',
-                  poweredByGiphy = '<div class="' + prefix + 'powered-by-giphy"><span>Powered by</span>' + giphyLogo + '</div>',
-                  giphyModalHtml = searchInput + closeButton + poweredByGiphy + '<div class="' + prefix + 'giphy-modal-scroll"><div class="' + prefix + 'giphy-modal"></div></div>';
+                closeButton = '<button class="' + prefix + 'giphy-close" title="' + trumbowyg.lang.close + '"><svg><use xlink:href="' + trumbowyg.svgPath + '#' + prefix + 'close"/></svg></button>',
+                poweredByGiphy = '<div class="' + prefix + 'powered-by-giphy"><span>Powered by</span>' + giphyLogo + '</div>',
+                giphyModalHtml = searchInput + closeButton + poweredByGiphy + '<div class="' + prefix + 'giphy-modal-scroll"><div class="' + prefix + 'giphy-modal"></div></div>';
               trumbowyg.openModal(null, giphyModalHtml, false).one(CANCEL_EVENT, function () {
                 try {
                   previousAjaxCall.abort();
                 } catch (e) {}
-
                 trumbowyg.closeModal();
               });
               var $giphyInput = $('.' + prefix + 'giphy-search'),
-                  $giphyClose = $('.' + prefix + 'giphy-close'),
-                  $giphyModal = $('.' + prefix + 'giphy-modal');
-
+                $giphyClose = $('.' + prefix + 'giphy-close'),
+                $giphyModal = $('.' + prefix + 'giphy-modal');
               var ajaxError = function ajaxError() {
                 if (!navigator.onLine && !$('.' + prefix + 'giphy-offline', $giphyModal).length) {
                   $giphyModal.empty();
                   $giphyModal.append('<p class="' + prefix + 'giphy-offline">You are offline</p>');
                 }
-              }; // Load trending gifs as default
+              };
 
-
+              // Load trending gifs as default
               $.ajax({
                 url: DEFAULT_URL,
                 dataType: 'json',
@@ -2139,18 +2489,14 @@
                 },
                 error: ajaxError
               });
-
               var searchGifsOnInput = function searchGifsOnInput() {
                 var query = $giphyInput.val();
-
                 if (query.length === 0) {
                   return;
                 }
-
                 try {
                   previousAjaxCall.abort();
                 } catch (e) {}
-
                 previousAjaxCall = $.ajax({
                   url: BASE_URL + '&q=' + encodeURIComponent(query),
                   dataType: 'json',
@@ -2160,7 +2506,6 @@
                   error: ajaxError
                 });
               };
-
               var throttledInputRequest = trumbowygThrottle(searchGifsOnInput, trumbowyg.o.plugins.giphy.throttleDelay);
               $giphyInput.on('input', throttledInputRequest);
               $giphyInput.focus();
@@ -2182,6 +2527,12 @@
       en: {
         giphy: "Insert GIF"
       },
+      az: {
+        giphy: "GIF yerləşdir"
+      },
+      by: {
+        giphy: "Уставіць GIF"
+      },
       et: {
         giphy: "Sisesta GIF"
       },
@@ -2191,38 +2542,52 @@
       hu: {
         giphy: "GIF beszúrás"
       },
+      ru: {
+        giphy: "Вставить GIF"
+      },
+      sl: {
+        giphy: "Vstavi GIF"
+      },
       tr: {
         giphy: "GIF ekle"
       }
     }
   });
   var e = "tbwcancel";
-
-  function n(e, n, t, l) {
-    var o = (n.width() - 20) / 3,
-        a = e.data.filter(function (i) {
-      return "" !== i.images.downsized.url;
-    }).map(function (i) {
-      var e = i.images.downsized,
-          n = e.height / e.width;
-      return '<div class="img-container"><img src=' + e.url + ' width="' + o + '" height="' + n * o + '" loading="lazy" onload="this.classList.add(\'tbw-loaded\')"/></div>';
-    }).join("");
-
+  function t(e, t, n, l) {
+    var a = (t.width() - 20) / 3,
+      o = e.data.filter(function (i) {
+        return !!(i.images.downsized || i.images.downsized_medium).url;
+      }).map(function (i) {
+        var e = i.images.downsized || i.images.downsized_medium,
+          t = e.height / e.width,
+          n = i.title;
+        return '<div class="img-container">' + ("<img src=" + e.url + ' width="' + a + '" height="' + t * a + '" alt="' + n + '" loading="lazy" />') + "</div>";
+      }).join("");
     if (!0 === l) {
-      if (0 === a.length) {
-        if (i("." + t.o.prefix + "giphy-no-result", n).length > 0) return;
-        a = '<img class="' + t.o.prefix + 'giphy-no-result" src="' + t.o.plugins.giphy.noResultGifUrl + '"/>';
+      if (0 === o.length) {
+        if (i("." + n.o.prefix + "giphy-no-result", t).length > 0) return;
+        o = '<img class="' + n.o.prefix + 'giphy-no-result" src="' + n.o.plugins.giphy.noResultGifUrl + '"/>';
       }
-
-      n.empty();
+      t.empty();
     }
-
-    n.append(a), i("img", n).on("click", function () {
-      t.restoreRange(), t.execCmd("insertImage", i(this).attr("src"), !1, !0), i("img", n).off(), t.closeModal();
+    t.append(o);
+    var c = function c(i) {
+      i.classList.add("tbw-loaded");
+    };
+    i("img", t).each(function () {
+      var i = this;
+      i.complete ? c(i) : i.addEventListener("load", function () {
+        c(this);
+      });
+    }), i("img", t).on("click", function () {
+      var e = i(this).attr("src"),
+        l = i(this).attr("alt");
+      (n.restoreRange(), n.execCmd("insertImage", e, !1, !0), l) && (i('img[src="' + e + '"]:not([alt])', n.$box).attr("alt", l), n.syncCode());
+      i("img", t).off(), n.closeModal();
     });
   }
-
-  var t = {
+  var n = {
     rating: "g",
     apiKey: null,
     throttleDelay: 300,
@@ -2232,70 +2597,65 @@
     plugins: {
       giphy: {
         init: function init(l) {
-          l.o.plugins.giphy = i.extend({}, t, l.o.plugins.giphy || {}), l.addBtnDef("giphy", {
+          l.o.plugins.giphy = i.extend({}, n, l.o.plugins.giphy || {}), l.addBtnDef("giphy", {
             fn: function fn() {
               if (null === l.o.plugins.giphy.apiKey) throw new Error("You must set a Giphy API Key");
-              var t = "https://api.giphy.com/v1/gifs/search?api_key=" + l.o.plugins.giphy.apiKey + "&rating=" + l.o.plugins.giphy.rating,
-                  o = t.replace("/search", "/trending"),
-                  a = {
-                abort: function abort() {}
-              },
-                  c = l.o.prefix,
-                  r = '<input name="" class="' + c + 'giphy-search" placeholder="Search a GIF" autofocus="autofocus">' + ('<button class="' + c + 'giphy-close" title="' + l.lang.close + '"><svg><use xlink:href="' + l.svgPath + "#" + c + 'close"/></svg></button>') + ('<div class="' + c + 'powered-by-giphy"><span>Powered by</span><svg viewBox="0 0 231 53" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"><path d="M48.32 22.386c0-1.388-.252-1.892-1.767-1.85-3.448.126-6.855.042-10.303.042H25.443c-.927 0-1.346.211-1.305 1.22.085 2.86.085 5.72.043 8.58 0 .883.252 1.169 1.169 1.135 2.018-.084 3.995-.042 6.014 0 1.64 0 4.164-.546 4.752.252.841 1.169.421 3.364.337 5.089-.043.547-.547 1.304-1.094 1.598-2.692 1.556-5.678 2.018-8.747 1.892-5.342-.21-9.336-2.439-11.481-7.527-1.388-3.364-1.725-6.855-1.01-10.43 1.01-4.963 3.407-8.747 8.58-10.051 5.215-1.305 10.136-.547 14.467 2.817 1.219.967 1.798.715 2.691-.294 1.514-1.724 3.154-3.322 4.753-4.963 1.892-1.933 1.892-1.892-.169-3.7C38.429.813 31.238-.617 23.5.224 12.818 1.393 5.248 6.658 1.59 17.045-.177 22.008-.428 27.097.623 32.227c1.682 7.914 5.551 14.12 13.289 17.368 6.898 2.901 14.046 3.448 21.321 1.598 4.331-1.093 8.411-2.608 11.354-6.223 1.136-1.388 1.725-2.902 1.682-4.71l.043-17.873.008-.001zm125.153 3.784l.042-23.046c0-1.136-.168-1.598-1.472-1.556a238.02 238.02 0 0 1-11.017 0c-1.136-.042-1.439.337-1.439 1.439v15.645c0 1.345-.421 1.556-1.641 1.556a422.563 422.563 0 0 0-14.593 0c-1.262.042-1.472-.421-1.439-1.556l.043-15.813c0-.926-.169-1.304-1.17-1.262h-11.513c-.927 0-1.304.169-1.304 1.22v46.764c0 .967.252 1.262 1.219 1.262h11.512c1.169.042 1.262-.462 1.262-1.388l-.042-15.644c0-1.053.251-1.346 1.304-1.346h15.14c1.22 0 1.388.421 1.388 1.472l-.042 15.477c0 1.093.21 1.472 1.388 1.439 3.615-.085 7.233-.085 10.807 0 1.304.042 1.598-.337 1.598-1.598l-.042-23.047.011-.018zM106.565 1.654c-8.369-.211-16.728-.126-25.065-.211-1.346 0-1.767.337-1.767 1.724l.043 23.004v23.215c0 1.009.168 1.439 1.304 1.387a271.22 271.22 0 0 1 11.691 0c1.094 0 1.346-.336 1.346-1.345l-.042-10.64c0-1.052.294-1.345 1.345-1.345 3.322.042 6.645.085 9.967-.085 4.407-.21 8.621-1.219 12.111-4.12 5.551-4.584 7.613-12.701 5.131-20.061-2.313-6.561-8.747-11.354-16.064-11.522v-.001zm-3.028 24.013c-2.818.042-5.594-.043-8.411.042-1.169.042-1.439-.378-1.345-1.439.084-1.556 0-3.069 0-4.626v-5.131c-.043-.841.251-1.094 1.052-1.052 2.986.042 5.929-.085 8.915.042 3.616.126 5.887 2.692 5.846 6.266-.126 3.658-2.313 5.846-6.055 5.887l-.002.011zM229.699 1.569c-4.458 0-8.915-.042-13.415.043-.629 0-1.472.503-1.85 1.052a505.695 505.695 0 0 0-8.957 14.214c-.884 1.472-1.22 1.169-1.977-.084l-8.496-14.089c-.503-.841-1.052-1.136-2.018-1.136l-13.078.043c-.462 0-.967.125-1.439.21.21.378.378.799.629 1.169l17.412 27.167c.462.715.715 1.682.757 2.524v16.653c0 1.052.168 1.514 1.388 1.472 3.784-.084 7.57-.084 11.354 0 1.136.043 1.304-.377 1.304-1.387l-.042-8.58c0-2.734-.084-5.51.042-8.243.043-.926.337-1.933.841-2.649l18.167-27.041c.252-.337.337-.758.547-1.17a3.636 3.636 0 0 0-1.169-.168zM70.104 2.661c0-1.009-.294-1.219-1.262-1.219H57.69c-1.262-.043-1.472.377-1.472 1.513l.042 23.004v23.34c0 1.053.126 1.514 1.346 1.473 3.7-.085 7.444-.043 11.152 0 .966 0 1.387-.085 1.387-1.262l-.042-46.857.001.008z" fill="currentColor" fill-rule="nonzero"/></svg></div>') + '<div class="' + c + 'giphy-modal-scroll"><div class="' + c + 'giphy-modal"></div></div>';
+              var n = "https://api.giphy.com/v1/gifs/search?api_key=" + l.o.plugins.giphy.apiKey + "&rating=" + l.o.plugins.giphy.rating,
+                a = n.replace("/search", "/trending"),
+                o = {
+                  abort: function abort() {}
+                },
+                c = l.o.prefix,
+                r = '<input name="" class="' + c + 'giphy-search" placeholder="Search a GIF" autofocus="autofocus">' + ('<button class="' + c + 'giphy-close" title="' + l.lang.close + '"><svg><use xlink:href="' + l.svgPath + "#" + c + 'close"/></svg></button>') + ('<div class="' + c + 'powered-by-giphy"><span>Powered by</span><svg viewBox="0 0 231 53" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"><path d="M48.32 22.386c0-1.388-.252-1.892-1.767-1.85-3.448.126-6.855.042-10.303.042H25.443c-.927 0-1.346.211-1.305 1.22.085 2.86.085 5.72.043 8.58 0 .883.252 1.169 1.169 1.135 2.018-.084 3.995-.042 6.014 0 1.64 0 4.164-.546 4.752.252.841 1.169.421 3.364.337 5.089-.043.547-.547 1.304-1.094 1.598-2.692 1.556-5.678 2.018-8.747 1.892-5.342-.21-9.336-2.439-11.481-7.527-1.388-3.364-1.725-6.855-1.01-10.43 1.01-4.963 3.407-8.747 8.58-10.051 5.215-1.305 10.136-.547 14.467 2.817 1.219.967 1.798.715 2.691-.294 1.514-1.724 3.154-3.322 4.753-4.963 1.892-1.933 1.892-1.892-.169-3.7C38.429.813 31.238-.617 23.5.224 12.818 1.393 5.248 6.658 1.59 17.045-.177 22.008-.428 27.097.623 32.227c1.682 7.914 5.551 14.12 13.289 17.368 6.898 2.901 14.046 3.448 21.321 1.598 4.331-1.093 8.411-2.608 11.354-6.223 1.136-1.388 1.725-2.902 1.682-4.71l.043-17.873.008-.001zm125.153 3.784l.042-23.046c0-1.136-.168-1.598-1.472-1.556a238.02 238.02 0 0 1-11.017 0c-1.136-.042-1.439.337-1.439 1.439v15.645c0 1.345-.421 1.556-1.641 1.556a422.563 422.563 0 0 0-14.593 0c-1.262.042-1.472-.421-1.439-1.556l.043-15.813c0-.926-.169-1.304-1.17-1.262h-11.513c-.927 0-1.304.169-1.304 1.22v46.764c0 .967.252 1.262 1.219 1.262h11.512c1.169.042 1.262-.462 1.262-1.388l-.042-15.644c0-1.053.251-1.346 1.304-1.346h15.14c1.22 0 1.388.421 1.388 1.472l-.042 15.477c0 1.093.21 1.472 1.388 1.439 3.615-.085 7.233-.085 10.807 0 1.304.042 1.598-.337 1.598-1.598l-.042-23.047.011-.018zM106.565 1.654c-8.369-.211-16.728-.126-25.065-.211-1.346 0-1.767.337-1.767 1.724l.043 23.004v23.215c0 1.009.168 1.439 1.304 1.387a271.22 271.22 0 0 1 11.691 0c1.094 0 1.346-.336 1.346-1.345l-.042-10.64c0-1.052.294-1.345 1.345-1.345 3.322.042 6.645.085 9.967-.085 4.407-.21 8.621-1.219 12.111-4.12 5.551-4.584 7.613-12.701 5.131-20.061-2.313-6.561-8.747-11.354-16.064-11.522v-.001zm-3.028 24.013c-2.818.042-5.594-.043-8.411.042-1.169.042-1.439-.378-1.345-1.439.084-1.556 0-3.069 0-4.626v-5.131c-.043-.841.251-1.094 1.052-1.052 2.986.042 5.929-.085 8.915.042 3.616.126 5.887 2.692 5.846 6.266-.126 3.658-2.313 5.846-6.055 5.887l-.002.011zM229.699 1.569c-4.458 0-8.915-.042-13.415.043-.629 0-1.472.503-1.85 1.052a505.695 505.695 0 0 0-8.957 14.214c-.884 1.472-1.22 1.169-1.977-.084l-8.496-14.089c-.503-.841-1.052-1.136-2.018-1.136l-13.078.043c-.462 0-.967.125-1.439.21.21.378.378.799.629 1.169l17.412 27.167c.462.715.715 1.682.757 2.524v16.653c0 1.052.168 1.514 1.388 1.472 3.784-.084 7.57-.084 11.354 0 1.136.043 1.304-.377 1.304-1.387l-.042-8.58c0-2.734-.084-5.51.042-8.243.043-.926.337-1.933.841-2.649l18.167-27.041c.252-.337.337-.758.547-1.17a3.636 3.636 0 0 0-1.169-.168zM70.104 2.661c0-1.009-.294-1.219-1.262-1.219H57.69c-1.262-.043-1.472.377-1.472 1.513l.042 23.004v23.34c0 1.053.126 1.514 1.346 1.473 3.7-.085 7.444-.043 11.152 0 .966 0 1.387-.085 1.387-1.262l-.042-46.857.001.008z" fill="currentColor" fill-rule="nonzero"/></svg></div>') + '<div class="' + c + 'giphy-modal-scroll"><div class="' + c + 'giphy-modal"></div></div>';
               l.openModal(null, r, !1).one(e, function () {
                 try {
-                  a.abort();
+                  o.abort();
                 } catch (i) {}
-
                 l.closeModal();
               });
-
               var s = i("." + c + "giphy-search"),
-                  p = i("." + c + "giphy-close"),
-                  g = i("." + c + "giphy-modal"),
-                  u = function u() {
-                navigator.onLine || i("." + c + "giphy-offline", g).length || (g.empty(), g.append('<p class="' + c + 'giphy-offline">You are offline</p>'));
-              };
-
+                g = i("." + c + "giphy-close"),
+                p = i("." + c + "giphy-modal"),
+                h = function h() {
+                  navigator.onLine || i("." + c + "giphy-offline", p).length || (p.empty(), p.append('<p class="' + c + 'giphy-offline">You are offline</p>'));
+                };
               i.ajax({
-                url: o,
+                url: a,
                 dataType: "json",
                 success: function success(i) {
-                  n(i, g, l, !0);
+                  t(i, p, l, !0);
                 },
-                error: u
+                error: h
               });
-              var h,
-                  d,
-                  y,
-                  f,
-                  v = (h = function h() {
-                var e = s.val();
-
-                if (0 !== e.length) {
-                  try {
-                    a.abort();
-                  } catch (i) {}
-
-                  a = i.ajax({
-                    url: t + "&q=" + encodeURIComponent(e),
-                    dataType: "json",
-                    success: function success(i) {
-                      n(i, g, l, !0);
-                    },
-                    error: u
-                  });
-                }
-              }, d = l.o.plugins.giphy.throttleDelay, function () {
-                var i = this,
+              var u,
+                d,
+                y,
+                f,
+                m = (u = function u() {
+                  var e = s.val();
+                  if (0 !== e.length) {
+                    try {
+                      o.abort();
+                    } catch (i) {}
+                    o = i.ajax({
+                      url: n + "&q=" + encodeURIComponent(e),
+                      dataType: "json",
+                      success: function success(i) {
+                        t(i, p, l, !0);
+                      },
+                      error: h
+                    });
+                  }
+                }, d = l.o.plugins.giphy.throttleDelay, function () {
+                  var i = this,
                     e = +new Date(),
-                    n = arguments;
-                y && e < y + d ? (clearTimeout(f), f = setTimeout(function () {
-                  y = e, h.apply(i, n);
-                }, d)) : (y = e, h.apply(i, n));
-              });
-              s.on("input", v), s.focus(), p.one("click", function () {
-                g.trigger(e);
+                    t = arguments;
+                  y && e < y + d ? (clearTimeout(f), f = setTimeout(function () {
+                    y = e, u.apply(i, t);
+                  }, d)) : (y = e, u.apply(i, t));
+                });
+              s.on("input", m), s.focus(), g.one("click", function () {
+                p.trigger(e);
               });
             }
           });
@@ -2311,88 +2671,16 @@
  * ===========================================================
  * Author : Sven Dunemann [dunemann@forelabs.eu]
  */
+
 (function ($) {
   'use strict';
 
   $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        history: {
-          redo: 'Redo',
-          undo: 'Undo'
-        }
-      },
-      by: {
-        history: {
-          redo: 'Паўтарыць',
-          undo: 'Скасаваць'
-        }
-      },
-      da: {
-        history: {
-          redo: 'Annuller fortryd',
-          undo: 'Fortryd'
-        }
-      },
-      de: {
-        history: {
-          redo: 'Wiederholen',
-          undo: 'Rückgängig'
-        }
-      },
-      et: {
-        history: {
-          redo: 'Võta tagasi',
-          undo: 'Tee uuesti'
-        }
-      },
-      fr: {
-        history: {
-          redo: 'Annuler',
-          undo: 'Rétablir'
-        }
-      },
-      hu: {
-        history: {
-          redo: 'Visszállít',
-          undo: 'Visszavon'
-        }
-      },
-      ko: {
-        history: {
-          redo: '다시 실행',
-          undo: '되돌리기'
-        }
-      },
-      pt_br: {
-        history: {
-          redo: 'Refazer',
-          undo: 'Desfazer'
-        }
-      },
-      ru: {
-        history: {
-          redo: 'Повторить',
-          undo: 'Отменить'
-        }
-      },
-      tr: {
-        history: {
-          redo: 'Geri al',
-          undo: 'Yinele'
-        }
-      },
-      zh_tw: {
-        history: {
-          redo: '重做',
-          undo: '復原'
-        }
-      } // jshint camelcase:true
-
-    },
     plugins: {
       history: {
+        destroy: function destroy(t) {
+          t.$c.off('tbwinit.history tbwchange.history');
+        },
         init: function init(t) {
           t.o.plugins.history = $.extend(true, {
             _stack: [],
@@ -2400,7 +2688,7 @@
             _focusEl: undefined
           }, t.o.plugins.history || {});
           var btnBuildDefRedo = {
-            title: t.lang.history.redo,
+            title: t.lang.redo,
             ico: 'redo',
             key: 'Y',
             fn: function fn() {
@@ -2408,9 +2696,9 @@
                 t.o.plugins.history._index += 1;
                 var index = t.o.plugins.history._index;
                 var newState = t.o.plugins.history._stack[index];
-                t.execCmd('html', newState); // because of some semantic optimisations we have to save the state back
+                t.execCmd('html', newState);
+                // because of some semantic optimisations we have to save the state back
                 // to history
-
                 t.o.plugins.history._stack[index] = t.$ed.html();
                 carretToEnd();
                 toggleButtonStates();
@@ -2418,112 +2706,98 @@
             }
           };
           var btnBuildDefUndo = {
-            title: t.lang.history.undo,
+            title: t.lang.undo,
             ico: 'undo',
             key: 'Z',
             fn: function fn() {
               if (t.o.plugins.history._index > 0) {
                 t.o.plugins.history._index -= 1;
                 var index = t.o.plugins.history._index,
-                    newState = t.o.plugins.history._stack[index];
-                t.execCmd('html', newState); // because of some semantic optimisations we have to save the state back
+                  newState = t.o.plugins.history._stack[index];
+                t.execCmd('html', newState);
+                // because of some semantic optimisations we have to save the state back
                 // to history
-
                 t.o.plugins.history._stack[index] = t.$ed.html();
                 carretToEnd();
                 toggleButtonStates();
               }
             }
           };
-
           var pushToHistory = function pushToHistory() {
             var index = t.o.plugins.history._index,
-                stack = t.o.plugins.history._stack,
-                latestState = stack.slice(-1)[0] || '<p></p>',
-                prevState = stack[index],
-                newState = t.$ed.html(),
-                focusEl = t.doc.getSelection().focusNode,
-                focusElText = '',
-                latestStateTagsList,
-                newStateTagsList,
-                prevFocusEl = t.o.plugins.history._focusEl;
+              stack = t.o.plugins.history._stack,
+              latestState = stack.slice(-1)[0] || '<p></p>',
+              prevState = stack[index],
+              newState = t.$ed.html(),
+              focusEl = t.doc.getSelection().focusNode,
+              focusElText = '',
+              latestStateTagsList,
+              newStateTagsList,
+              prevFocusEl = t.o.plugins.history._focusEl;
             latestStateTagsList = $('<div>' + latestState + '</div>').find('*').map(function () {
               return this.localName;
             });
             newStateTagsList = $('<div>' + newState + '</div>').find('*').map(function () {
               return this.localName;
             });
-
             if (focusEl) {
               t.o.plugins.history._focusEl = focusEl;
               focusElText = focusEl.outerHTML || focusEl.textContent;
             }
-
             if (newState !== prevState) {
               // a new stack entry is defined when current insert ends on a whitespace character
               // or count of node elements has been changed
               // or focused element differs from previous one
               if (focusElText.slice(-1).match(/\s/) || !arraysAreIdentical(latestStateTagsList, newStateTagsList) || t.o.plugins.history._index <= 0 || focusEl !== prevFocusEl) {
-                t.o.plugins.history._index += 1; // remove newer entries in history when something new was added
+                t.o.plugins.history._index += 1;
+                // remove newer entries in history when something new was added
                 // because timeline was changes with interaction
-
-                t.o.plugins.history._stack = stack.slice(0, t.o.plugins.history._index); // now add new state to modified history
-
+                t.o.plugins.history._stack = stack.slice(0, t.o.plugins.history._index);
+                // now add new state to modified history
                 t.o.plugins.history._stack.push(newState);
               } else {
                 // modify last stack entry
                 t.o.plugins.history._stack[index] = newState;
               }
-
               toggleButtonStates();
             }
           };
-
           var toggleButtonStates = function toggleButtonStates() {
             var index = t.o.plugins.history._index,
-                stackSize = t.o.plugins.history._stack.length,
-                undoState = index > 0,
-                redoState = stackSize !== 0 && index !== stackSize - 1;
+              stackSize = t.o.plugins.history._stack.length,
+              undoState = index > 0,
+              redoState = stackSize !== 0 && index !== stackSize - 1;
             toggleButtonState('historyUndo', undoState);
             toggleButtonState('historyRedo', redoState);
           };
-
           var toggleButtonState = function toggleButtonState(btn, enable) {
             var button = t.$box.find('.trumbowyg-' + btn + '-button');
-
             if (enable) {
               button.removeClass('trumbowyg-disable');
             } else if (!button.hasClass('trumbowyg-disable')) {
               button.addClass('trumbowyg-disable');
             }
           };
-
           var arraysAreIdentical = function arraysAreIdentical(a, b) {
             if (a === b) {
               return true;
             }
-
             if (a == null || b == null) {
               return false;
             }
-
             if (a.length !== b.length) {
               return false;
             }
-
             for (var i = 0; i < a.length; i += 1) {
               if (a[i] !== b[i]) {
                 return false;
               }
             }
-
             return true;
           };
-
           var carretToEnd = function carretToEnd() {
             var node = t.doc.getSelection().focusNode,
-                range = t.doc.createRange();
-
+              range = t.doc.createRange();
             if (node.childNodes.length > 0) {
               range.setStartAfter(node.childNodes[node.childNodes.length - 1]);
               range.setEndAfter(node.childNodes[node.childNodes.length - 1]);
@@ -2531,8 +2805,7 @@
               t.doc.getSelection().addRange(range);
             }
           };
-
-          t.$c.on('tbwinit tbwchange', pushToHistory);
+          t.$c.on('tbwinit.history tbwchange.history', pushToHistory);
           t.addBtnDef('historyRedo', btnBuildDefRedo);
           t.addBtnDef('historyUndo', btnBuildDefUndo);
         }
@@ -2540,145 +2813,93 @@
     }
   });
 })(jQuery);
-!function (o) {
+/*/* ===========================================================
+ * trumbowyg.history.js v1.0
+ * history plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Sven Dunemann [dunemann@forelabs.eu]
+ */
+!function (i) {
   "use strict";
 
-  o.extend(!0, o.trumbowyg, {
-    langs: {
-      en: {
-        history: {
-          redo: "Redo",
-          undo: "Undo"
-        }
-      },
-      da: {
-        history: {
-          redo: "Annuller fortryd",
-          undo: "Fortryd"
-        }
-      },
-      de: {
-        history: {
-          redo: "Wiederholen",
-          undo: "Rückgängig"
-        }
-      },
-      et: {
-        history: {
-          redo: "Võta tagasi",
-          undo: "Tee uuesti"
-        }
-      },
-      fr: {
-        history: {
-          redo: "Annuler",
-          undo: "Rétablir"
-        }
-      },
-      hu: {
-        history: {
-          redo: "Visszállít",
-          undo: "Visszavon"
-        }
-      },
-      ko: {
-        history: {
-          redo: "다시 실행",
-          undo: "되돌리기"
-        }
-      },
-      pt_br: {
-        history: {
-          redo: "Refazer",
-          undo: "Desfazer"
-        }
-      },
-      zh_tw: {
-        history: {
-          redo: "重做",
-          undo: "復原"
-        }
-      }
-    },
+  i.extend(!0, i.trumbowyg, {
     plugins: {
       history: {
-        init: function init(i) {
-          i.o.plugins.history = o.extend(!0, {
+        destroy: function destroy(i) {
+          i.$c.off("tbwinit.history tbwchange.history");
+        },
+        init: function init(t) {
+          t.o.plugins.history = i.extend(!0, {
             _stack: [],
             _index: -1,
             _focusEl: void 0
-          }, i.o.plugins.history || {});
-
-          var t = {
-            title: i.lang.history.redo,
-            ico: "redo",
-            key: "Y",
-            fn: function fn() {
-              if (i.o.plugins.history._index < i.o.plugins.history._stack.length - 1) {
-                i.o.plugins.history._index += 1;
-                var o = i.o.plugins.history._index,
-                    t = i.o.plugins.history._stack[o];
-                i.execCmd("html", t), i.o.plugins.history._stack[o] = i.$ed.html(), d(), e();
+          }, t.o.plugins.history || {});
+          var o = {
+              title: t.lang.redo,
+              ico: "redo",
+              key: "Y",
+              fn: function fn() {
+                if (t.o.plugins.history._index < t.o.plugins.history._stack.length - 1) {
+                  t.o.plugins.history._index += 1;
+                  var i = t.o.plugins.history._index,
+                    o = t.o.plugins.history._stack[i];
+                  t.execCmd("html", o), t.o.plugins.history._stack[i] = t.$ed.html(), r(), s();
+                }
               }
-            }
-          },
-              n = {
-            title: i.lang.history.undo,
-            ico: "undo",
-            key: "Z",
-            fn: function fn() {
-              if (i.o.plugins.history._index > 0) {
-                i.o.plugins.history._index -= 1;
-                var o = i.o.plugins.history._index,
-                    t = i.o.plugins.history._stack[o];
-                i.execCmd("html", t), i.o.plugins.history._stack[o] = i.$ed.html(), d(), e();
+            },
+            n = {
+              title: t.lang.undo,
+              ico: "undo",
+              key: "Z",
+              fn: function fn() {
+                if (t.o.plugins.history._index > 0) {
+                  t.o.plugins.history._index -= 1;
+                  var i = t.o.plugins.history._index,
+                    o = t.o.plugins.history._stack[i];
+                  t.execCmd("html", o), t.o.plugins.history._stack[i] = t.$ed.html(), r(), s();
+                }
               }
-            }
-          },
-              e = function e() {
-            var o = i.o.plugins.history._index,
-                t = i.o.plugins.history._stack.length,
-                n = 0 !== t && o !== t - 1;
-            s("historyUndo", o > 0), s("historyRedo", n);
-          },
-              s = function s(o, t) {
-            var n = i.$box.find(".trumbowyg-" + o + "-button");
-            t ? n.removeClass("trumbowyg-disable") : n.hasClass("trumbowyg-disable") || n.addClass("trumbowyg-disable");
-          },
-              r = function r(o, i) {
-            if (o === i) return !0;
-            if (null == o || null == i) return !1;
-            if (o.length !== i.length) return !1;
-
-            for (var t = 0; t < o.length; t += 1) {
-              if (o[t] !== i[t]) return !1;
-            }
-
-            return !0;
-          },
-              d = function d() {
-            var o = i.doc.getSelection().focusNode,
-                t = i.doc.createRange();
-            o.childNodes.length > 0 && (t.setStartAfter(o.childNodes[o.childNodes.length - 1]), t.setEndAfter(o.childNodes[o.childNodes.length - 1]), i.doc.getSelection().removeAllRanges(), i.doc.getSelection().addRange(t));
-          };
-
-          i.$c.on("tbwinit tbwchange", function () {
-            var t,
-                n,
-                s = i.o.plugins.history._index,
-                d = i.o.plugins.history._stack,
-                l = d.slice(-1)[0] || "<p></p>",
-                u = d[s],
-                h = i.$ed.html(),
-                c = i.doc.getSelection().focusNode,
-                a = "",
-                g = i.o.plugins.history._focusEl;
-            t = o("<div>" + l + "</div>").find("*").map(function () {
+            },
+            s = function s() {
+              var i = t.o.plugins.history._index,
+                o = t.o.plugins.history._stack.length,
+                n = 0 !== o && i !== o - 1;
+              e("historyUndo", i > 0), e("historyRedo", n);
+            },
+            e = function e(i, o) {
+              var n = t.$box.find(".trumbowyg-" + i + "-button");
+              o ? n.removeClass("trumbowyg-disable") : n.hasClass("trumbowyg-disable") || n.addClass("trumbowyg-disable");
+            },
+            l = function l(i, t) {
+              if (i === t) return !0;
+              if (null == i || null == t) return !1;
+              if (i.length !== t.length) return !1;
+              for (var o = 0; o < i.length; o += 1) if (i[o] !== t[o]) return !1;
+              return !0;
+            },
+            r = function r() {
+              var i = t.doc.getSelection().focusNode,
+                o = t.doc.createRange();
+              i.childNodes.length > 0 && (o.setStartAfter(i.childNodes[i.childNodes.length - 1]), o.setEndAfter(i.childNodes[i.childNodes.length - 1]), t.doc.getSelection().removeAllRanges(), t.doc.getSelection().addRange(o));
+            };
+          t.$c.on("tbwinit.history tbwchange.history", function () {
+            var o,
+              n,
+              e = t.o.plugins.history._index,
+              r = t.o.plugins.history._stack,
+              d = r.slice(-1)[0] || "<p></p>",
+              u = r[e],
+              h = t.$ed.html(),
+              c = t.doc.getSelection().focusNode,
+              g = "",
+              a = t.o.plugins.history._focusEl;
+            o = i("<div>" + d + "</div>").find("*").map(function () {
               return this.localName;
-            }), n = o("<div>" + h + "</div>").find("*").map(function () {
+            }), n = i("<div>" + h + "</div>").find("*").map(function () {
               return this.localName;
-            }), c && (i.o.plugins.history._focusEl = c, a = c.outerHTML || c.textContent), h !== u && (a.slice(-1).match(/\s/) || !r(t, n) || i.o.plugins.history._index <= 0 || c !== g ? (i.o.plugins.history._index += 1, i.o.plugins.history._stack = d.slice(0, i.o.plugins.history._index), i.o.plugins.history._stack.push(h)) : i.o.plugins.history._stack[s] = h, e());
-          }), i.addBtnDef("historyRedo", t), i.addBtnDef("historyUndo", n);
+            }), c && (t.o.plugins.history._focusEl = c, g = c.outerHTML || c.textContent), h !== u && (g.slice(-1).match(/\s/) || !l(o, n) || t.o.plugins.history._index <= 0 || c !== a ? (t.o.plugins.history._index += 1, t.o.plugins.history._stack = r.slice(0, t.o.plugins.history._index), t.o.plugins.history._stack.push(h)) : t.o.plugins.history._stack[e] = h, s());
+          }), t.addBtnDef("historyRedo", o), t.addBtnDef("historyUndo", n);
         }
       }
     }
@@ -2692,6 +2913,7 @@
  * Author : Fabacks
  *          Website : https://github.com/Fabacks
  */
+
 (function ($) {
   'use strict';
 
@@ -2701,6 +2923,10 @@
       en: {
         indent: 'Indent',
         outdent: 'Outdent'
+      },
+      az: {
+        indent: 'Girinti',
+        outdent: 'Çıxıntı'
       },
       by: {
         indent: 'Водступ',
@@ -2722,14 +2948,19 @@
         indent: 'Отступ',
         outdent: 'Выступ'
       },
+      sl: {
+        indent: 'Povečaj zamik',
+        outdent: 'Zmanjšaj zamik'
+      },
       tr: {
         indent: 'Girinti',
         outdent: 'Çıkıntı'
-      } // jshint camelcase:true
-
+      }
+      // jshint camelcase:true
     }
-  }); // Adds the extra button definition
+  });
 
+  // Adds the extra button definition
   $.extend(true, $.trumbowyg, {
     plugins: {
       paragraph: {
@@ -2757,6 +2988,14 @@
     }
   });
 })(jQuery);
+/* ===========================================================
+ * trumbowyg.indent.js v1.0
+ * Indent or Outdent plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Fabacks
+ *          Website : https://github.com/Fabacks
+ */
 !function (n) {
   "use strict";
 
@@ -2766,6 +3005,14 @@
         indent: "Indent",
         outdent: "Outdent"
       },
+      az: {
+        indent: "Girinti",
+        outdent: "Çıxıntı"
+      },
+      by: {
+        indent: "Водступ",
+        outdent: "Выступ"
+      },
       et: {
         indent: "Taande suurendamine",
         outdent: "Taande vähendamine"
@@ -2773,6 +3020,22 @@
       fr: {
         indent: "Augmenter le retrait",
         outdent: "Diminuer le retrait"
+      },
+      pt_br: {
+        indent: "Aumentar Recuo",
+        outdent: "Diminuir Recuo"
+      },
+      ru: {
+        indent: "Отступ",
+        outdent: "Выступ"
+      },
+      sl: {
+        indent: "Povečaj zamik",
+        outdent: "Zmanjšaj zamik"
+      },
+      tr: {
+        indent: "Girinti",
+        outdent: "Çıkıntı"
       }
     }
   }), n.extend(!0, n.trumbowyg, {
@@ -2780,21 +3043,21 @@
       paragraph: {
         init: function init(n) {
           var t = {
-            fn: "indent",
-            title: n.lang.indent,
-            isSupported: function isSupported() {
-              return !!document.queryCommandSupported && !!document.queryCommandSupported("indent");
+              fn: "indent",
+              title: n.lang.indent,
+              isSupported: function isSupported() {
+                return !!document.queryCommandSupported && !!document.queryCommandSupported("indent");
+              },
+              ico: "indent"
             },
-            ico: "indent"
-          },
-              e = {
-            fn: "outdent",
-            title: n.lang.outdent,
-            isSupported: function isSupported() {
-              return !!document.queryCommandSupported && !!document.queryCommandSupported("outdent");
-            },
-            ico: "outdent"
-          };
+            e = {
+              fn: "outdent",
+              title: n.lang.outdent,
+              isSupported: function isSupported() {
+                return !!document.queryCommandSupported && !!document.queryCommandSupported("outdent");
+              },
+              ico: "outdent"
+            };
           n.addBtnDef("indent", t), n.addBtnDef("outdent", e);
         }
       }
@@ -2808,6 +3071,7 @@
  * ===========================================================
  * Author : Adam Hess (AdamHess)
  */
+
 (function ($) {
   'use strict';
 
@@ -2837,11 +3101,20 @@
       en: {
         insertAudio: 'Insert Audio'
       },
+      az: {
+        insertAudio: 'Səs yerləşdir'
+      },
       by: {
         insertAudio: 'Уставіць аўдыё'
       },
+      ca: {
+        insertAudio: 'Inserir Audio'
+      },
       da: {
         insertAudio: 'Indsæt lyd'
+      },
+      es: {
+        insertAudio: 'Insertar Audio'
       },
       et: {
         insertAudio: 'Lisa helifail'
@@ -2864,11 +3137,15 @@
       ru: {
         insertAudio: 'Вставить аудио'
       },
+      sl: {
+        insertAudio: 'Vstavi zvočno datoteko'
+      },
       tr: {
         insertAudio: 'Ses Ekle'
-      } // jshint camelcase:true
-
+      }
+      // jshint camelcase:true
     },
+
     plugins: {
       insertAudio: {
         init: function init(trumbowyg) {
@@ -2878,30 +3155,24 @@
                 // controls should always be show otherwise the audio will
                 // be invisible defeating the point of a wysiwyg
                 var html = '<audio controls';
-
                 if (v.src) {
                   html += ' src=\'' + v.src + '\'';
                 }
-
                 if (v.autoplay) {
                   html += ' autoplay';
                 }
-
                 if (v.muted) {
                   html += ' muted';
                 }
-
                 if (v.preload) {
                   html += ' preload=\'' + v + '\'';
                 }
-
                 html += '></audio>';
                 var node = $(html)[0];
                 trumbowyg.range.deleteContents();
                 trumbowyg.range.insertNode(node);
                 return true;
               };
-
               trumbowyg.openModalInsert(trumbowyg.lang.insertAudio, insertAudioOptions, insertAudioCallback);
             }
           };
@@ -2911,10 +3182,17 @@
     }
   });
 })(jQuery);
+/*/* ===========================================================
+ * trumbowyg.insertaudio.js v1.0
+ * InsertAudio plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Adam Hess (AdamHess)
+ */
 !function (e) {
   "use strict";
 
-  var r = {
+  var i = {
     src: {
       label: "URL",
       required: !0
@@ -2939,8 +3217,20 @@
       en: {
         insertAudio: "Insert Audio"
       },
+      az: {
+        insertAudio: "Səs yerləşdir"
+      },
+      by: {
+        insertAudio: "Уставіць аўдыё"
+      },
+      ca: {
+        insertAudio: "Inserir Audio"
+      },
       da: {
         insertAudio: "Indsæt lyd"
+      },
+      es: {
+        insertAudio: "Insertar Audio"
       },
       et: {
         insertAudio: "Lisa helifail"
@@ -2963,24 +3253,27 @@
       ru: {
         insertAudio: "Вставить аудио"
       },
+      sl: {
+        insertAudio: "Vstavi zvočno datoteko"
+      },
       tr: {
         insertAudio: "Ses Ekle"
       }
     },
     plugins: {
       insertAudio: {
-        init: function init(i) {
+        init: function init(r) {
           var t = {
             fn: function fn() {
-              i.openModalInsert(i.lang.insertAudio, r, function (r) {
+              r.openModalInsert(r.lang.insertAudio, i, function (i) {
                 var t = "<audio controls";
-                r.src && (t += " src='" + r.src + "'"), r.autoplay && (t += " autoplay"), r.muted && (t += " muted"), r.preload && (t += " preload='" + r + "'");
-                var n = e(t += "></audio>")[0];
-                return i.range.deleteContents(), i.range.insertNode(n), !0;
+                i.src && (t += " src='" + i.src + "'"), i.autoplay && (t += " autoplay"), i.muted && (t += " muted"), i.preload && (t += " preload='" + i + "'");
+                var o = e(t += "></audio>")[0];
+                return r.range.deleteContents(), r.range.insertNode(o), !0;
               });
             }
           };
-          i.addBtnDef("insertAudio", t);
+          r.addBtnDef("insertAudio", t);
         }
       }
     }
@@ -2999,6 +3292,15 @@
           'normal': 'Regular',
           '1.5': 'Large',
           '2.0': 'Extra large'
+        }
+      },
+      az: {
+        lineheight: 'Sətir yüksəkliyi',
+        lineheights: {
+          '0.9': 'Kiçik',
+          'normal': 'Normal',
+          '1.5': 'Böyük',
+          '2.0': 'Daha böyük'
         }
       },
       by: {
@@ -3091,6 +3393,15 @@
           '2.0': 'Очень большой'
         }
       },
+      sl: {
+        lineheight: 'Višina vrstice',
+        lineheights: {
+          '0.9': 'Majhna',
+          'normal': 'Navadna',
+          '1.5': 'Velika',
+          '2.0': 'Ekstra velika'
+        }
+      },
       tr: {
         lineheight: 'Satır yüksekliği',
         lineheights: {
@@ -3110,12 +3421,14 @@
         }
       }
     }
-  }); // jshint camelcase:true
+  });
+  // jshint camelcase:true
 
   var defaultOptions = {
     sizeList: ['0.9', 'normal', '1.5', '2.0']
-  }; // Add dropdown with font sizes
+  };
 
+  // Add dropdown with font sizes
   $.extend(true, $.trumbowyg, {
     plugins: {
       lineheight: {
@@ -3127,8 +3440,9 @@
         }
       }
     }
-  }); // Build the dropdown
+  });
 
+  // Build the dropdown
   function buildDropdown(trumbowyg) {
     var dropdown = [];
     $.each(trumbowyg.o.plugins.lineheight.sizeList, function (index, size) {
@@ -3138,7 +3452,6 @@
         fn: function fn() {
           trumbowyg.saveRange();
           var text = trumbowyg.getRangeText();
-
           if (text.replace(/\s/g, '') !== '') {
             try {
               var parent = getSelectionParentElement();
@@ -3150,19 +3463,16 @@
       dropdown.push('lineheight_' + size);
     });
     return dropdown;
-  } // Get the selection's parent
+  }
 
-
+  // Get the selection's parent
   function getSelectionParentElement() {
     var parentEl = null,
-        selection;
-
+      selection;
     if (window.getSelection) {
       selection = window.getSelection();
-
       if (selection.rangeCount) {
         parentEl = selection.getRangeAt(0).commonAncestorContainer;
-
         if (parentEl.nodeType !== 1) {
           parentEl = parentEl.parentNode;
         }
@@ -3170,7 +3480,6 @@
     } else if ((selection = document.selection) && selection.type !== 'Control') {
       parentEl = selection.createRange().parentElement();
     }
-
     return parentEl;
   }
 })(jQuery);
@@ -3186,6 +3495,24 @@
           normal: "Regular",
           1.5: "Large",
           "2.0": "Extra large"
+        }
+      },
+      az: {
+        lineheight: "Sətir yüksəkliyi",
+        lineheights: {
+          .9: "Kiçik",
+          normal: "Normal",
+          1.5: "Böyük",
+          "2.0": "Daha böyük"
+        }
+      },
+      by: {
+        lineheight: "Міжрадковы інтэрвал",
+        lineheights: {
+          .9: "Маленькі",
+          normal: "Звычайны",
+          1.5: "Вялікі",
+          "2.0": "Вельмі вялікі"
         }
       },
       da: {
@@ -3260,6 +3587,24 @@
           "2.0": "Extra grande"
         }
       },
+      ru: {
+        lineheight: "Межстрочный интервал",
+        lineheights: {
+          .9: "Маленький",
+          normal: "Обычный",
+          1.5: "Большой",
+          "2.0": "Очень большой"
+        }
+      },
+      sl: {
+        lineheight: "Višina vrstice",
+        lineheights: {
+          .9: "Majhna",
+          normal: "Navadna",
+          1.5: "Velika",
+          "2.0": "Ekstra velika"
+        }
+      },
       tr: {
         lineheight: "Satır yüksekliği",
         lineheights: {
@@ -3280,39 +3625,250 @@
       }
     }
   });
-  var n = {
+  var i = {
     sizeList: ["0.9", "normal", "1.5", "2.0"]
   };
-
-  function i(n) {
-    var i = [];
-    return e.each(n.o.plugins.lineheight.sizeList, function (t, l) {
-      n.addBtnDef("lineheight_" + l, {
-        text: n.lang.lineheights[l] || l,
+  function n(i) {
+    var n = [];
+    return e.each(i.o.plugins.lineheight.sizeList, function (t, l) {
+      i.addBtnDef("lineheight_" + l, {
+        text: i.lang.lineheights[l] || l,
         hasIcon: !1,
         fn: function fn() {
-          if (n.saveRange(), "" !== n.getRangeText().replace(/\s/g, "")) try {
-            var i = function () {
+          if (i.saveRange(), "" !== i.getRangeText().replace(/\s/g, "")) try {
+            var n = function () {
               var e,
-                  n = null;
-              window.getSelection ? (e = window.getSelection()).rangeCount && 1 !== (n = e.getRangeAt(0).commonAncestorContainer).nodeType && (n = n.parentNode) : (e = document.selection) && "Control" !== e.type && (n = e.createRange().parentElement());
-              return n;
+                i = null;
+              window.getSelection ? (e = window.getSelection()).rangeCount && 1 !== (i = e.getRangeAt(0).commonAncestorContainer).nodeType && (i = i.parentNode) : (e = document.selection) && "Control" !== e.type && (i = e.createRange().parentElement());
+              return i;
             }();
-
-            e(i).css("lineHeight", l);
+            e(n).css("lineHeight", l);
           } catch (e) {}
         }
-      }), i.push("lineheight_" + l);
-    }), i;
+      }), n.push("lineheight_" + l);
+    }), n;
   }
-
   e.extend(!0, e.trumbowyg, {
     plugins: {
       lineheight: {
         init: function init(t) {
-          t.o.plugins.lineheight = e.extend({}, n, t.o.plugins.lineheight || {}), t.addBtnDef("lineheight", {
-            dropdown: i(t)
+          t.o.plugins.lineheight = e.extend({}, i, t.o.plugins.lineheight || {}), t.addBtnDef("lineheight", {
+            dropdown: n(t)
           });
+        }
+      }
+    }
+  });
+}(jQuery);
+/* ===========================================================
+ * trumbowyg.mention.js v0.1
+ * Mention plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Viper
+ *          Github: https://github.com/Globulopolis
+ *          Website: http://киноархив.com
+ */
+
+(function ($) {
+  'use strict';
+
+  var defaultOptions = {
+    source: [],
+    formatDropdownItem: formatDropdownItem,
+    formatResult: formatResult
+  };
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        mention: 'Mention'
+      },
+      az: {
+        mention: 'Bildirmək'
+      },
+      by: {
+        mention: 'Згадаць'
+      },
+      da: {
+        mention: 'Nævn'
+      },
+      et: {
+        mention: 'Maini'
+      },
+      fr: {
+        mention: 'Mentionner'
+      },
+      hu: {
+        mention: 'Említ'
+      },
+      ko: {
+        mention: '언급'
+      },
+      pt_br: {
+        mention: 'Menção'
+      },
+      ru: {
+        mention: 'Упомянуть'
+      },
+      sl: {
+        mention: 'Omeni'
+      },
+      tr: {
+        mention: 'Bahset'
+      },
+      zh_tw: {
+        mention: '標記'
+      }
+      // jshint camelcase:true
+    },
+
+    plugins: {
+      mention: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.mention = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.mention || {});
+          var btnDef = {
+            dropdown: buildDropdown(trumbowyg.o.plugins.mention.source, trumbowyg)
+          };
+          trumbowyg.addBtnDef('mention', btnDef);
+        }
+      }
+    }
+  });
+
+  /**
+   * Build dropdown list
+   *
+   * @param {Array}   items      Items
+   * @param {object}  trumbowyg  Editor
+   *
+   * @return {Array}
+   */
+  function buildDropdown(items, trumbowyg) {
+    var dropdown = [];
+    $.each(items, function (i, item) {
+      var btn = 'mention-' + i,
+        btnDef = {
+          hasIcon: false,
+          text: trumbowyg.o.plugins.mention.formatDropdownItem(item),
+          fn: function fn() {
+            trumbowyg.execCmd('insertHTML', trumbowyg.o.plugins.mention.formatResult(item));
+            return true;
+          }
+        };
+      trumbowyg.addBtnDef(btn, btnDef);
+      dropdown.push(btn);
+    });
+    return dropdown;
+  }
+
+  /**
+   * Format item in dropdown.
+   *
+   * @param   {object}  item  Item object.
+   *
+   * @return  {string}
+   */
+  function formatDropdownItem(item) {
+    return item.login;
+  }
+
+  /**
+   * Format result pasted in editor.
+   *
+   * @param   {object}  item  Item object.
+   *
+   * @return  {string}
+   */
+  function formatResult(item) {
+    return '@' + item.login + ' ';
+  }
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.mention.js v0.1
+ * Mention plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Viper
+ *          Github: https://github.com/Globulopolis
+ *          Website: http://киноархив.com
+ */
+!function (n) {
+  "use strict";
+
+  var t = {
+    source: [],
+    formatDropdownItem: function formatDropdownItem(n) {
+      return n.login;
+    },
+    formatResult: function formatResult(n) {
+      return "@" + n.login + " ";
+    }
+  };
+  function o(t, o) {
+    var e = [];
+    return n.each(t, function (n, t) {
+      var i = "mention-" + n,
+        m = {
+          hasIcon: !1,
+          text: o.o.plugins.mention.formatDropdownItem(t),
+          fn: function fn() {
+            return o.execCmd("insertHTML", o.o.plugins.mention.formatResult(t)), !0;
+          }
+        };
+      o.addBtnDef(i, m), e.push(i);
+    }), e;
+  }
+  n.extend(!0, n.trumbowyg, {
+    langs: {
+      en: {
+        mention: "Mention"
+      },
+      az: {
+        mention: "Bildirmək"
+      },
+      by: {
+        mention: "Згадаць"
+      },
+      da: {
+        mention: "Nævn"
+      },
+      et: {
+        mention: "Maini"
+      },
+      fr: {
+        mention: "Mentionner"
+      },
+      hu: {
+        mention: "Említ"
+      },
+      ko: {
+        mention: "언급"
+      },
+      pt_br: {
+        mention: "Menção"
+      },
+      ru: {
+        mention: "Упомянуть"
+      },
+      sl: {
+        mention: "Omeni"
+      },
+      tr: {
+        mention: "Bahset"
+      },
+      zh_tw: {
+        mention: "標記"
+      }
+    },
+    plugins: {
+      mention: {
+        init: function init(e) {
+          e.o.plugins.mention = n.extend(!0, {}, t, e.o.plugins.mention || {});
+          var i = {
+            dropdown: o(e.o.plugins.mention.source, e)
+          };
+          e.addBtnDef("mention", i);
         }
       }
     }
@@ -3338,15 +3894,30 @@
         formulas: 'Formulas',
         inline: 'Inline'
       },
+      az: {
+        mathml: 'Düstur əlavə et',
+        formulas: 'Düsturlar',
+        inline: 'Sətir içi'
+      },
       by: {
         mathml: 'Уставіць формулу',
         formulas: 'Формула',
         inline: 'Inline-элемент'
       },
+      ca: {
+        mathml: 'Inserir Fórmula',
+        formulas: 'Fórmula',
+        inline: 'En línia'
+      },
       da: {
         mathml: 'Indsæt formler',
         formulas: 'Formler',
         inline: 'Inline'
+      },
+      es: {
+        mathml: 'Insertar Fórmula',
+        formulas: 'Fórmula',
+        inline: 'En línea'
       },
       et: {
         mathml: 'Sisesta valem',
@@ -3378,6 +3949,11 @@
         formulas: 'Формула',
         inline: 'Строчный элемент'
       },
+      sl: {
+        mathml: 'Vstavi matematični izraz',
+        formulas: 'Formula',
+        inline: 'V vrstici'
+      },
       tr: {
         mathml: 'Formül Ekle',
         formulas: 'Formüller',
@@ -3390,6 +3966,7 @@
       }
     },
     // jshint camelcase:true
+
     plugins: {
       mathml: {
         init: function init(trumbowyg) {
@@ -3408,10 +3985,8 @@
               required: false
             }
           };
-
           var mathmlCallback = function mathmlCallback(v) {
             var delimiter = v.inline ? '$' : '$$';
-
             if (trumbowyg.currentMathNode) {
               $(trumbowyg.currentMathNode).html(delimiter + ' ' + v.formulas + ' ' + delimiter).attr('formulas', v.formulas).attr('inline', v.inline ? 'true' : 'false');
             } else {
@@ -3421,25 +3996,20 @@
               trumbowyg.range.deleteContents();
               trumbowyg.range.insertNode(node);
             }
-
             trumbowyg.currentMathNode = false;
             MathJax.Hub.Queue(['Typeset', MathJax.Hub]);
             return true;
           };
-
           var openModal = function openModal() {
             trumbowyg.currentMathNode = this;
             mathMlOptions.formulas.value = $(this).attr('formulas');
-
             if ($(this).attr('inline') === 'true') {
               mathMlOptions.inline.attributes.checked = true;
             } else {
               delete mathMlOptions.inline.attributes.checked;
             }
-
             trumbowyg.openModalInsert(trumbowyg.lang.mathml, mathMlOptions, mathmlCallback);
           };
-
           var btnDef = {
             fn: function fn() {
               trumbowyg.saveRange();
@@ -3460,6 +4030,13 @@
     }
   });
 })(jQuery);
+/* ===========================================================
+ * trumbowyg.mathMl.js v1.0
+ * MathML plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : loclamor
+ */
 !function (e) {
   "use strict";
 
@@ -3470,10 +4047,30 @@
         formulas: "Formulas",
         inline: "Inline"
       },
+      az: {
+        mathml: "Düstur əlavə et",
+        formulas: "Düsturlar",
+        inline: "Sətir içi"
+      },
+      by: {
+        mathml: "Уставіць формулу",
+        formulas: "Формула",
+        inline: "Inline-элемент"
+      },
+      ca: {
+        mathml: "Inserir Fórmula",
+        formulas: "Fórmula",
+        inline: "En línia"
+      },
       da: {
         mathml: "Indsæt formler",
         formulas: "Formler",
         inline: "Inline"
+      },
+      es: {
+        mathml: "Insertar Fórmula",
+        formulas: "Fórmula",
+        inline: "En línea"
       },
       et: {
         mathml: "Sisesta valem",
@@ -3500,6 +4097,16 @@
         formulas: "Fórmulas",
         inline: "Em linha"
       },
+      ru: {
+        mathml: "Вставить формулу",
+        formulas: "Формула",
+        inline: "Строчный элемент"
+      },
+      sl: {
+        mathml: "Vstavi matematični izraz",
+        formulas: "Formula",
+        inline: "V vrstici"
+      },
       tr: {
         mathml: "Formül Ekle",
         formulas: "Formüller",
@@ -3515,232 +4122,42 @@
       mathml: {
         init: function init(l) {
           var n = {
-            fn: function fn() {
-              l.saveRange();
-
-              var n = {
-                formulas: {
-                  label: l.lang.formulas,
-                  required: !0,
-                  value: ""
-                },
-                inline: {
-                  label: l.lang.inline,
-                  attributes: {
-                    checked: !0
-                  },
-                  type: "checkbox",
-                  required: !1
-                }
+              formulas: {
+                label: l.lang.formulas,
+                required: !0,
+                value: ""
               },
-                  a = function a(t) {
-                var r = t.inline ? "$" : "$$";
-                if (l.currentMathNode) e(l.currentMathNode).html(r + " " + t.formulas + " " + r).attr("formulas", t.formulas).attr("inline", t.inline ? "true" : "false");else {
-                  var i = '<span class="mathMlContainer" contenteditable="false" formulas="' + t.formulas + '" inline="' + (t.inline ? "true" : "false") + '" >' + r + " " + t.formulas + " " + r + "</span>",
-                      m = e(i)[0];
-                  m.onclick = function () {
-                    l.currentMathNode = this, n.formulas.value = e(this).attr("formulas"), "true" === e(this).attr("inline") ? n.inline.attributes.checked = !0 : delete n.inline.attributes.checked, l.openModalInsert(l.lang.mathml, n, a);
-                  }, l.range.deleteContents(), l.range.insertNode(m);
-                }
-                return l.currentMathNode = !1, MathJax.Hub.Queue(["Typeset", MathJax.Hub]), !0;
-              };
-
-              n.formulas.value = l.getRangeText(), n.inline.attributes.checked = !0, l.openModalInsert(l.lang.mathml, n, a);
-            }
-          };
-          l.addBtnDef("mathml", n);
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
- * trumbowyg.mention.js v0.1
- * Mention plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Viper
- *          Github: https://github.com/Globulopolis
- *          Website: http://киноархив.com
- */
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    source: [],
-    formatDropdownItem: formatDropdownItem,
-    formatResult: formatResult
-  };
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        mention: 'Mention'
-      },
-      by: {
-        mention: 'Згадаць'
-      },
-      da: {
-        mention: 'Nævn'
-      },
-      et: {
-        mention: 'Maini'
-      },
-      fr: {
-        mention: 'Mentionner'
-      },
-      hu: {
-        mention: 'Említ'
-      },
-      ko: {
-        mention: '언급'
-      },
-      pt_br: {
-        mention: 'Menção'
-      },
-      ru: {
-        mention: 'Упомянуть'
-      },
-      tr: {
-        mention: 'Bahset'
-      },
-      zh_tw: {
-        mention: '標記'
-      } // jshint camelcase:true
-
-    },
-    plugins: {
-      mention: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.mention = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.mention || {});
-          var btnDef = {
-            dropdown: buildDropdown(trumbowyg.o.plugins.mention.source, trumbowyg)
-          };
-          trumbowyg.addBtnDef('mention', btnDef);
-        }
-      }
-    }
-  });
-  /**
-   * Build dropdown list
-   *
-   * @param {Array}   items      Items
-   * @param {object}  trumbowyg  Editor
-   *
-   * @return {Array}
-   */
-
-  function buildDropdown(items, trumbowyg) {
-    var dropdown = [];
-    $.each(items, function (i, item) {
-      var btn = 'mention-' + i,
-          btnDef = {
-        hasIcon: false,
-        text: trumbowyg.o.plugins.mention.formatDropdownItem(item),
-        fn: function fn() {
-          trumbowyg.execCmd('insertHTML', trumbowyg.o.plugins.mention.formatResult(item));
-          return true;
-        }
-      };
-      trumbowyg.addBtnDef(btn, btnDef);
-      dropdown.push(btn);
-    });
-    return dropdown;
-  }
-  /**
-   * Format item in dropdown.
-   *
-   * @param   {object}  item  Item object.
-   *
-   * @return  {string}
-   */
-
-
-  function formatDropdownItem(item) {
-    return item.login;
-  }
-  /**
-   * Format result pasted in editor.
-   *
-   * @param   {object}  item  Item object.
-   *
-   * @return  {string}
-   */
-
-
-  function formatResult(item) {
-    return '@' + item.login + ' ';
-  }
-})(jQuery);
-!function (n) {
-  "use strict";
-
-  var t = {
-    source: [],
-    formatDropdownItem: function formatDropdownItem(n) {
-      return n.login;
-    },
-    formatResult: function formatResult(n) {
-      return "@" + n.login + " ";
-    }
-  };
-
-  function o(t, o) {
-    var e = [];
-    return n.each(t, function (n, t) {
-      var i = "mention-" + n,
-          r = {
-        hasIcon: !1,
-        text: o.o.plugins.mention.formatDropdownItem(t),
-        fn: function fn() {
-          return o.execCmd("insertHTML", o.o.plugins.mention.formatResult(t)), !0;
-        }
-      };
-      o.addBtnDef(i, r), e.push(i);
-    }), e;
-  }
-
-  n.extend(!0, n.trumbowyg, {
-    langs: {
-      en: {
-        mention: "Mention"
-      },
-      da: {
-        mention: "Nævn"
-      },
-      et: {
-        mention: "Maini"
-      },
-      fr: {
-        mention: "Mentionner"
-      },
-      hu: {
-        mention: "Említ"
-      },
-      ko: {
-        mention: "언급"
-      },
-      pt_br: {
-        mention: "Menção"
-      },
-      ru: {
-        mention: "Упомянуть"
-      },
-      tr: {
-        mention: "Bahset"
-      },
-      zh_tw: {
-        mention: "標記"
-      }
-    },
-    plugins: {
-      mention: {
-        init: function init(e) {
-          e.o.plugins.mention = n.extend(!0, {}, t, e.o.plugins.mention || {});
-          var i = {
-            dropdown: o(e.o.plugins.mention.source, e)
-          };
-          e.addBtnDef("mention", i);
+              inline: {
+                label: l.lang.inline,
+                attributes: {
+                  checked: !0
+                },
+                type: "checkbox",
+                required: !1
+              }
+            },
+            a = function a(n) {
+              var a = n.inline ? "$" : "$$";
+              if (l.currentMathNode) e(l.currentMathNode).html(a + " " + n.formulas + " " + a).attr("formulas", n.formulas).attr("inline", n.inline ? "true" : "false");else {
+                var r = '<span contenteditable="false" formulas="' + n.formulas + '" inline="' + (n.inline ? "true" : "false") + '" >' + a + " " + n.formulas + " " + a + "</span>",
+                  i = e(r)[0];
+                i.onclick = t, l.range.deleteContents(), l.range.insertNode(i);
+              }
+              return l.currentMathNode = !1, MathJax.Hub.Queue(["Typeset", MathJax.Hub]), !0;
+            },
+            t = function t() {
+              l.currentMathNode = this, n.formulas.value = e(this).attr("formulas"), "true" === e(this).attr("inline") ? n.inline.attributes.checked = !0 : delete n.inline.attributes.checked, l.openModalInsert(l.lang.mathml, n, a);
+            },
+            r = {
+              fn: function fn() {
+                l.saveRange(), n.formulas.value = l.getRangeText(), n.inline.attributes.checked = !0, l.openModalInsert(l.lang.mathml, n, a);
+              }
+            };
+          l.$ta.on("tbwinit", function () {
+            l.$ed.find("[formulas]").each(function (e, l) {
+              l.onclick = t;
+            });
+          }), l.addBtnDef("mathml", r);
         }
       }
     }
@@ -3753,6 +4170,7 @@
  * ===========================================================
  * Author : Jake Johns (jakejohns)
  */
+
 (function ($) {
   'use strict';
 
@@ -3769,6 +4187,10 @@
       en: {
         noembed: 'Noembed',
         noembedError: 'Error'
+      },
+      az: {
+        noembed: 'Noembed',
+        noembedError: 'Xəta'
       },
       by: {
         noembedError: 'Памылка'
@@ -3804,6 +4226,10 @@
       ru: {
         noembedError: 'Ошибка'
       },
+      sl: {
+        noembed: 'Noembed',
+        noembedError: 'Napaka'
+      },
       sk: {
         noembedError: 'Chyba'
       },
@@ -3813,23 +4239,27 @@
       zh_tw: {
         noembed: '插入影片',
         noembedError: '錯誤'
-      } // jshint camelcase:true
-
+      }
+      // jshint camelcase:true
     },
+
     plugins: {
       noembed: {
         init: function init(trumbowyg) {
           trumbowyg.o.plugins.noembed = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.noembed || {});
           var btnDef = {
             fn: function fn() {
-              var $modal = trumbowyg.openModalInsert( // Title
-              trumbowyg.lang.noembed, // Fields
+              var $modal = trumbowyg.openModalInsert(
+              // Title
+              trumbowyg.lang.noembed,
+              // Fields
               {
                 url: {
                   label: 'URL',
                   required: true
                 }
-              }, // Callback
+              },
+              // Callback
               function (data) {
                 $.ajax({
                   url: trumbowyg.o.plugins.noembed.proxy,
@@ -3837,15 +4267,19 @@
                   data: data,
                   cache: false,
                   dataType: 'json',
-                  success: trumbowyg.o.plugins.noembed.success || function (data) {
-                    if (data.html) {
-                      trumbowyg.execCmd('insertHTML', data.html);
-                      setTimeout(function () {
-                        trumbowyg.closeModal();
-                      }, 250);
-                    } else {
-                      trumbowyg.addErrorOnModalField($('input[type=text]', $modal), data.error);
+                  success: function success(data) {
+                    if (trumbowyg.o.plugins.noembed.success) {
+                      trumbowyg.o.plugins.noembed.success(data, trumbowyg, $modal);
+                      return;
                     }
+                    if (!data.html) {
+                      trumbowyg.addErrorOnModalField($('input[type=text]', $modal), data.error);
+                      return;
+                    }
+                    trumbowyg.execCmd('insertHTML', data.html);
+                    setTimeout(function () {
+                      trumbowyg.closeModal();
+                    }, 250);
                   },
                   error: trumbowyg.o.plugins.noembed.error || function () {
                     trumbowyg.addErrorOnModalField($('input[type=text]', $modal), trumbowyg.lang.noembedError);
@@ -3860,6 +4294,13 @@
     }
   });
 })(jQuery);
+/* ===========================================================
+ * trumbowyg.noembed.js v1.0
+ * noEmbed plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Jake Johns (jakejohns)
+ */
 !function (e) {
   "use strict";
 
@@ -3875,6 +4316,13 @@
       en: {
         noembed: "Noembed",
         noembedError: "Error"
+      },
+      az: {
+        noembed: "Noembed",
+        noembedError: "Xəta"
+      },
+      by: {
+        noembedError: "Памылка"
       },
       cs: {
         noembedError: "Chyba"
@@ -3907,6 +4355,10 @@
       ru: {
         noembedError: "Ошибка"
       },
+      sl: {
+        noembed: "Noembed",
+        noembedError: "Napaka"
+      },
       sk: {
         noembedError: "Chyba"
       },
@@ -3936,8 +4388,8 @@
                   data: n,
                   cache: !1,
                   dataType: "json",
-                  success: o.o.plugins.noembed.success || function (n) {
-                    n.html ? (o.execCmd("insertHTML", n.html), setTimeout(function () {
+                  success: function success(n) {
+                    o.o.plugins.noembed.success ? o.o.plugins.noembed.success(n, o, r) : n.html ? (o.execCmd("insertHTML", n.html), setTimeout(function () {
                       o.closeModal();
                     }, 250)) : o.addErrorOnModalField(e("input[type=text]", r), n.error);
                   },
@@ -3963,6 +4415,7 @@
  *          Facebook : https://facebook.com/maxse
  *          Website : https://www.maxmade.nl/
  */
+
 (function ($) {
   'use strict';
 
@@ -3975,18 +4428,15 @@
       pasteEmbed: {
         init: function init(trumbowyg) {
           trumbowyg.o.plugins.pasteEmbed = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.pasteEmbed || {});
-
           if (!trumbowyg.o.plugins.pasteEmbed.enabled) {
             return;
           }
-
           trumbowyg.pasteHandlers.push(function (pasteEvent) {
             try {
               var clipboardData = (pasteEvent.originalEvent || pasteEvent).clipboardData,
-                  pastedData = clipboardData.getData('Text'),
-                  endpoints = trumbowyg.o.plugins.pasteEmbed.endpoints,
-                  request = null;
-
+                pastedData = clipboardData.getData('Text'),
+                endpoints = trumbowyg.o.plugins.pasteEmbed.endpoints,
+                request = null;
               if (pastedData.startsWith('http')) {
                 pasteEvent.stopPropagation();
                 pasteEvent.preventDefault();
@@ -3995,11 +4445,9 @@
                 };
                 var content = '';
                 var index = 0;
-
                 if (request && request.transport) {
                   request.transport.abort();
                 }
-
                 request = $.ajax({
                   crossOrigin: true,
                   url: endpoints[index],
@@ -4024,14 +4472,12 @@
                       this.data = query;
                       $.ajax(this);
                     }
-
                     if (index === endpoints.length - 1) {
                       content = $('<a>', {
                         href: pastedData,
                         text: pastedData
                       }).prop('outerHTML');
                     }
-
                     if (content.length > 0) {
                       index = 0;
                       trumbowyg.execCmd('insertHTML', content);
@@ -4046,6 +4492,15 @@
     }
   });
 })(jQuery);
+/* ===========================================================
+ * trumbowyg.pasteembed.js v1.0
+ * Url paste to iframe with noembed. Plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Max Seelig
+ *          Facebook : https://facebook.com/maxse
+ *          Website : https://www.maxmade.nl/
+ */
 !function (t) {
   "use strict";
 
@@ -4060,16 +4515,15 @@
           n.o.plugins.pasteEmbed = t.extend(!0, {}, e, n.o.plugins.pasteEmbed || {}), n.o.plugins.pasteEmbed.enabled && n.pasteHandlers.push(function (e) {
             try {
               var a = (e.originalEvent || e).clipboardData.getData("Text"),
-                  r = n.o.plugins.pasteEmbed.endpoints,
-                  s = null;
-
+                r = n.o.plugins.pasteEmbed.endpoints,
+                s = null;
               if (a.startsWith("http")) {
                 e.stopPropagation(), e.preventDefault();
                 var i = {
-                  url: a.trim()
-                },
-                    o = "",
-                    p = 0;
+                    url: a.trim()
+                  },
+                  o = "",
+                  p = 0;
                 s && s.transport && s.transport.abort(), s = t.ajax({
                   crossOrigin: !0,
                   url: r[p],
@@ -4107,6 +4561,7 @@
  *          Twitter : @AlexandreDemode
  *          Website : alex-d.fr
  */
+
 (function ($) {
   'use strict';
 
@@ -4117,25 +4572,20 @@
           trumbowyg.pasteHandlers.push(function (pasteEvent) {
             try {
               var items = (pasteEvent.originalEvent || pasteEvent).clipboardData.items,
-                  mustPreventDefault = false,
-                  reader;
-
+                mustPreventDefault = false,
+                reader;
               for (var i = items.length - 1; i >= 0; i -= 1) {
                 if (items[i].type.match(/^image\//)) {
                   reader = new FileReader();
                   /* jshint -W083 */
-
                   reader.onloadend = function (event) {
                     trumbowyg.execCmd('insertImage', event.target.result, false, true);
                   };
                   /* jshint +W083 */
-
-
                   reader.readAsDataURL(items[i].getAsFile());
                   mustPreventDefault = true;
                 }
               }
-
               if (mustPreventDefault) {
                 pasteEvent.stopPropagation();
                 pasteEvent.preventDefault();
@@ -4147,6 +4597,15 @@
     }
   });
 })(jQuery);
+/* ===========================================================
+ * trumbowyg.pasteimage.js v1.0
+ * Basic base64 paste plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Alexandre Demode (Alex-D)
+ *          Twitter : @AlexandreDemode
+ *          Website : alex-d.fr
+ */
 !function (e) {
   "use strict";
 
@@ -4156,12 +4615,9 @@
         init: function init(e) {
           e.pasteHandlers.push(function (t) {
             try {
-              for (var a, n = (t.originalEvent || t).clipboardData.items, i = !1, r = n.length - 1; r >= 0; r -= 1) {
-                n[r].type.match(/^image\//) && ((a = new FileReader()).onloadend = function (t) {
-                  e.execCmd("insertImage", t.target.result, !1, !0);
-                }, a.readAsDataURL(n[r].getAsFile()), i = !0);
-              }
-
+              for (var a, n = (t.originalEvent || t).clipboardData.items, i = !1, r = n.length - 1; r >= 0; r -= 1) n[r].type.match(/^image\//) && ((a = new FileReader()).onloadend = function (t) {
+                e.execCmd("insertImage", t.target.result, !1, !0);
+              }, a.readAsDataURL(n[r].getAsFile()), i = !0);
               i && (t.stopPropagation(), t.preventDefault());
             } catch (e) {}
           });
@@ -4177,6 +4633,7 @@
  * ===========================================================
  * Author : Casella Edoardo (Civile)
  */
+
 (function ($) {
   'use strict';
 
@@ -4185,6 +4642,9 @@
       // jshint camelcase:false
       en: {
         preformatted: 'Code sample <pre>'
+      },
+      az: {
+        preformatted: 'Kod nümunəsi <pre>'
       },
       by: {
         preformatted: 'Прыклад кода <pre>'
@@ -4216,6 +4676,9 @@
       ru: {
         preformatted: 'Пример кода <pre>'
       },
+      sl: {
+        preformatted: 'Vstavi neformatiran tekst <pre>'
+      },
       tr: {
         preformatted: 'Kod örneği <pre>'
       },
@@ -4227,6 +4690,7 @@
       }
     },
     // jshint camelcase:true
+
     plugins: {
       preformatted: {
         init: function init(trumbowyg) {
@@ -4234,11 +4698,9 @@
             fn: function fn() {
               trumbowyg.saveRange();
               var text = trumbowyg.getRangeText();
-
               if (text.replace(/\s/g, '') !== '') {
                 try {
                   var curtag = getSelectionParentElement().tagName.toLowerCase();
-
                   if (curtag === 'code' || curtag === 'pre') {
                     return unwrapCode();
                   } else {
@@ -4254,20 +4716,17 @@
       }
     }
   });
+
   /*
    * GetSelectionParentElement
    */
-
   function getSelectionParentElement() {
     var parentEl = null,
-        selection;
-
+      selection;
     if (window.getSelection) {
       selection = window.getSelection();
-
       if (selection.rangeCount) {
         parentEl = selection.getRangeAt(0).commonAncestorContainer;
-
         if (parentEl.nodeType !== 1) {
           parentEl = parentEl.parentNode;
         }
@@ -4275,45 +4734,39 @@
     } else if ((selection = document.selection) && selection.type !== 'Control') {
       parentEl = selection.createRange().parentElement();
     }
-
     return parentEl;
   }
+
   /*
    * Strip
    * returns a text without HTML tags
    */
-
-
   function strip(html) {
     var tmp = document.createElement('DIV');
     tmp.innerHTML = html;
     return tmp.textContent || tmp.innerText || '';
   }
+
   /*
    * UnwrapCode
    * ADD/FIX: to improve, works but can be better
    * "paranoic" solution
    */
-
-
   function unwrapCode() {
     var container = null;
-
     if (document.selection) {
       //for IE
       container = document.selection.createRange().parentElement();
     } else {
       var select = window.getSelection();
-
       if (select.rangeCount > 0) {
         container = select.getRangeAt(0).startContainer.parentNode;
       }
-    } //'paranoic' unwrap
+    }
 
-
+    //'paranoic' unwrap
     var ispre = $(container).contents().closest('pre').length;
     var iscode = $(container).contents().closest('code').length;
-
     if (ispre && iscode) {
       $(container).contents().unwrap('code').unwrap('pre');
     } else if (ispre) {
@@ -4323,6 +4776,13 @@
     }
   }
 })(jQuery);
+/* ===========================================================
+ * trumbowyg.preformatted.js v1.0
+ * Preformatted plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Casella Edoardo (Civile)
+ */
 !function (e) {
   "use strict";
 
@@ -4330,6 +4790,12 @@
     langs: {
       en: {
         preformatted: "Code sample <pre>"
+      },
+      az: {
+        preformatted: "Kod nümunəsi <pre>"
+      },
+      by: {
+        preformatted: "Прыклад кода <pre>"
       },
       da: {
         preformatted: "Præformateret <pre>"
@@ -4358,6 +4824,9 @@
       ru: {
         preformatted: "Пример кода <pre>"
       },
+      sl: {
+        preformatted: "Vstavi neformatiran tekst <pre>"
+      },
       tr: {
         preformatted: "Kod örneği <pre>"
       },
@@ -4375,16 +4844,15 @@
             fn: function fn() {
               t.saveRange();
               var r,
-                  n,
-                  o = t.getRangeText();
+                n,
+                o = t.getRangeText();
               if ("" !== o.replace(/\s/g, "")) try {
                 var a = function () {
                   var e,
-                      t = null;
+                    t = null;
                   window.getSelection ? (e = window.getSelection()).rangeCount && 1 !== (t = e.getRangeAt(0).commonAncestorContainer).nodeType && (t = t.parentNode) : (e = document.selection) && "Control" !== e.type && (t = e.createRange().parentElement());
                   return t;
                 }().tagName.toLowerCase();
-
                 if ("code" === a || "pre" === a) return function () {
                   var t = null;
                   if (document.selection) t = document.selection.createRange().parentElement();else {
@@ -4392,7 +4860,7 @@
                     r.rangeCount > 0 && (t = r.getRangeAt(0).startContainer.parentNode);
                   }
                   var n = e(t).contents().closest("pre").length,
-                      o = e(t).contents().closest("code").length;
+                    o = e(t).contents().closest("code").length;
                   n && o ? e(t).contents().unwrap("code").unwrap("pre") : n ? e(t).contents().unwrap("pre") : o && e(t).contents().unwrap("code");
                 }();
                 t.execCmd("insertHTML", "<pre><code>" + (r = o, (n = document.createElement("DIV")).innerHTML = r, (n.textContent || n.innerText || "") + "</code></pre>"));
@@ -4407,7 +4875,6 @@
   });
 }(jQuery);
 ;
-
 (function ($) {
   'use strict';
 
@@ -4415,143 +4882,132 @@
     minSize: 32,
     step: 4
   };
-
   function preventDefault(e) {
     e.stopPropagation();
     e.preventDefault();
   }
-
   var ResizeWithCanvas = function ResizeWithCanvas(trumbowyg) {
     // variable to create canvas and save img in resize mode
-    this.resizeCanvas = document.createElement('canvas'); // to allow canvas to get focus
-
+    this.resizeCanvas = document.createElement('canvas');
+    // to allow canvas to get focus
     this.resizeCanvas.setAttribute('tabindex', '0');
     this.resizeCanvas.id = 'trumbowyg-resizimg-' + +new Date();
     this.ctx = null;
     this.resizeImg = null;
-
     this.pressEscape = function (obj) {
       obj.reset();
     };
-
     this.pressBackspaceOrDelete = function (obj) {
       $(obj.resizeCanvas).remove();
       obj.resizeImg = null;
-
       if (trumbowyg !== null) {
-        trumbowyg.syncCode(); // notify changes
-
+        trumbowyg.syncCode();
+        // notify changes
         trumbowyg.$c.trigger('tbwchange');
       }
-    }; // PRIVATE FUNCTION
+    };
 
-
+    // PRIVATE FUNCTION
     var focusedNow = false;
-    var isCursorSeResize = false; // calculate offset to change mouse over square in the canvas
+    var isCursorSeResize = false;
 
+    // calculate offset to change mouse over square in the canvas
     var offsetX, offsetY;
-
     var reOffset = function reOffset(canvas) {
       var BB = canvas.getBoundingClientRect();
       offsetX = BB.left;
       offsetY = BB.top;
     };
-
     var updateCanvas = function updateCanvas(canvas, ctx, img, canvasWidth, canvasHeight) {
       ctx.translate(0.5, 0.5);
-      ctx.lineWidth = 1; // image
+      ctx.lineWidth = 1;
 
-      ctx.drawImage(img, 5, 5, canvasWidth - 10, canvasHeight - 10); // border
+      // image
+      ctx.drawImage(img, 5, 5, canvasWidth - 10, canvasHeight - 10);
 
+      // border
       ctx.beginPath();
       ctx.rect(5, 5, canvasWidth - 10, canvasHeight - 10);
-      ctx.stroke(); // square in the angle
+      ctx.stroke();
 
+      // square in the angle
       ctx.beginPath();
       ctx.fillStyle = 'rgb(255, 255, 255)';
       ctx.rect(canvasWidth - 10, canvasHeight - 10, 9, 9);
       ctx.fill();
-      ctx.stroke(); // get the offset to change the mouse cursor
+      ctx.stroke();
 
+      // get the offset to change the mouse cursor
       reOffset(canvas);
       return ctx;
-    }; // PUBLIC FUNCTION
+    };
+
+    // PUBLIC FUNCTION
     // necessary to correctly print cursor over square. Called once for instance. Useless with trumbowyg.
-
-
     this.init = function () {
       var _this = this;
-
       $(window).on('scroll resize', function () {
         _this.reCalcOffset();
       });
     };
-
     this.reCalcOffset = function () {
       reOffset(this.resizeCanvas);
     };
-
     this.canvasId = function () {
       return this.resizeCanvas.id;
     };
-
     this.isActive = function () {
       return this.resizeImg !== null;
     };
-
     this.isFocusedNow = function () {
       return focusedNow;
     };
-
     this.blurNow = function () {
       focusedNow = false;
-    }; // restore image in the HTML of the editor
+    };
 
-
+    // restore image in the HTML of the editor
     this.reset = function () {
       if (this.resizeImg === null) {
         return;
-      } // set style of image to avoid issue on resize because this attribute have priority over width and height attribute
+      }
 
-
+      // set style of image to avoid issue on resize because this attribute have priority over width and height attribute
       this.resizeImg.setAttribute('style', 'width: 100%; max-width: ' + (this.resizeCanvas.clientWidth - 10) + 'px; height: auto; max-height: ' + (this.resizeCanvas.clientHeight - 10) + 'px;');
-      $(this.resizeCanvas).replaceWith($(this.resizeImg)); // reset canvas style
+      $(this.resizeCanvas).replaceWith($(this.resizeImg));
 
+      // reset canvas style
       this.resizeCanvas.removeAttribute('style');
       this.resizeImg = null;
-    }; // setup canvas with points and border to allow the resizing operation
+    };
 
-
+    // setup canvas with points and border to allow the resizing operation
     this.setup = function (img, resizableOptions) {
       this.resizeImg = img;
-
       if (!this.resizeCanvas.getContext) {
         return false;
       }
+      focusedNow = true;
 
-      focusedNow = true; // draw canvas
-
+      // draw canvas
       this.resizeCanvas.width = $(this.resizeImg).width() + 10;
       this.resizeCanvas.height = $(this.resizeImg).height() + 10;
       this.resizeCanvas.style.margin = '-5px';
-      this.ctx = this.resizeCanvas.getContext('2d'); // replace image with canvas
+      this.ctx = this.resizeCanvas.getContext('2d');
 
+      // replace image with canvas
       $(this.resizeImg).replaceWith($(this.resizeCanvas));
-      updateCanvas(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height); // enable resize
+      updateCanvas(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height);
 
+      // enable resize
       $(this.resizeCanvas).resizableSafe(resizableOptions).on('mousedown', preventDefault);
-
       var _this = this;
-
       $(this.resizeCanvas).on('mousemove', function (e) {
         var mouseX = Math.round(e.clientX - offsetX);
         var mouseY = Math.round(e.clientY - offsetY);
         var wasCursorSeResize = isCursorSeResize;
-
         _this.ctx.rect(_this.resizeCanvas.width - 10, _this.resizeCanvas.height - 10, 9, 9);
-
         isCursorSeResize = _this.ctx.isPointInPath(mouseX, mouseY);
-
         if (wasCursorSeResize !== isCursorSeResize) {
           this.style.cursor = isCursorSeResize ? 'se-resize' : 'default';
         }
@@ -4559,9 +5015,7 @@
         if (!_this.isActive()) {
           return;
         }
-
         var x = e.keyCode;
-
         if (x === 27) {
           // ESC
           _this.pressEscape(_this);
@@ -4570,47 +5024,43 @@
           _this.pressBackspaceOrDelete(_this);
         }
       }).on('focus', preventDefault).on('blur', function () {
-        _this.reset(); // save changes
-
-
+        _this.reset();
+        // save changes
         if (trumbowyg !== null) {
-          trumbowyg.syncCode(); // notify changes
-
+          trumbowyg.syncCode();
+          // notify changes
           trumbowyg.$c.trigger('tbwchange');
         }
       });
       this.resizeCanvas.focus();
       return true;
-    }; // update the canvas after the resizing
+    };
 
-
+    // update the canvas after the resizing
     this.refresh = function () {
       if (!this.resizeCanvas.getContext) {
         return;
       }
-
       this.resizeCanvas.width = this.resizeCanvas.clientWidth;
       this.resizeCanvas.height = this.resizeCanvas.clientHeight;
       updateCanvas(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height);
     };
   };
-
   $.extend(true, $.trumbowyg, {
     plugins: {
       resizimg: {
         destroyResizable: function destroyResizable() {},
         init: function init(trumbowyg) {
-          var destroyResizable = this.destroyResizable; // object to interact with canvas
+          var destroyResizable = this.destroyResizable;
 
+          // object to interact with canvas
           var resizeWithCanvas = new ResizeWithCanvas(trumbowyg);
-
           this.destroyResizable = function () {
             // clean html code
             trumbowyg.$ed.find('canvas.resizable').resizableSafe('destroy').off('mousedown', preventDefault).removeClass('resizable');
             resizeWithCanvas.reset();
             trumbowyg.syncCode();
           };
-
           trumbowyg.o.plugins.resizimg = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.resizimg || {}, {
             resizable: {
               resizeWidth: false,
@@ -4618,18 +5068,15 @@
                 var opt = trumbowyg.o.plugins.resizimg;
                 var x = ev.pageX - $el.offset().left;
                 var y = ev.pageY - $el.offset().top;
-
                 if (x < $el.width() - opt.minSize || y < $el.height() - opt.minSize) {
                   return false;
                 }
               },
               onDrag: function onDrag(ev, $el, newWidth, newHeight) {
                 var opt = trumbowyg.o.plugins.resizimg;
-
                 if (newHeight < opt.minSize) {
                   newHeight = opt.minSize;
                 }
-
                 newHeight -= newHeight % opt.step;
                 $el.height(newHeight);
                 return false;
@@ -4641,34 +5088,31 @@
               }
             }
           });
-
           function initResizable() {
             trumbowyg.$ed.find('img').off('click').on('click', function (e) {
               // if I'm already do a resize, reset it
               if (resizeWithCanvas.isActive()) {
                 resizeWithCanvas.reset();
-              } // initialize resize of image
-
-
+              }
+              // initialize resize of image
               resizeWithCanvas.setup(this, trumbowyg.o.plugins.resizimg.resizable);
               preventDefault(e);
             });
           }
-
           trumbowyg.$c.on('tbwinit', function () {
-            initResizable(); // disable resize when click on other items
+            initResizable();
 
+            // disable resize when click on other items
             trumbowyg.$ed.on('click', function (e) {
               // check if I've clicked out of canvas or image to reset it
               if ($(e.target).is('img') || e.target.id === resizeWithCanvas.canvasId()) {
                 return;
               }
-
               preventDefault(e);
-              resizeWithCanvas.reset(); //sync
-
-              trumbowyg.syncCode(); // notify changes
-
+              resizeWithCanvas.reset();
+              //sync
+              trumbowyg.syncCode();
+              // notify changes
               trumbowyg.$c.trigger('tbwchange');
             });
             trumbowyg.$ed.on('scroll', function () {
@@ -4678,8 +5122,9 @@
           trumbowyg.$c.on('tbwfocus tbwchange', initResizable);
           trumbowyg.$c.on('tbwresize', function () {
             resizeWithCanvas.reCalcOffset();
-          }); // Destroy
+          });
 
+          // Destroy
           trumbowyg.$c.on('tbwblur', function () {
             // when canvas is created the tbwblur is called
             // this code avoid to destroy the canvas that allow the image resizing
@@ -4704,30 +5149,27 @@
     minSize: 32,
     step: 4
   };
-
   function t(e) {
     e.stopPropagation(), e.preventDefault();
   }
-
   var s = function s(i) {
     this.resizeCanvas = document.createElement("canvas"), this.resizeCanvas.setAttribute("tabindex", "0"), this.resizeCanvas.id = "trumbowyg-resizimg-" + +new Date(), this.ctx = null, this.resizeImg = null, this.pressEscape = function (e) {
       e.reset();
     }, this.pressBackspaceOrDelete = function (t) {
       e(t.resizeCanvas).remove(), t.resizeImg = null, null !== i && (i.syncCode(), i.$c.trigger("tbwchange"));
     };
-
     var s,
-        n,
-        r = !1,
-        a = !1,
-        o = function o(e) {
-      var i = e.getBoundingClientRect();
-      s = i.left, n = i.top;
-    },
-        h = function h(e, i, t, s, n) {
-      return i.translate(.5, .5), i.lineWidth = 1, i.drawImage(t, 5, 5, s - 10, n - 10), i.beginPath(), i.rect(5, 5, s - 10, n - 10), i.stroke(), i.beginPath(), i.fillStyle = "rgb(255, 255, 255)", i.rect(s - 10, n - 10, 9, 9), i.fill(), i.stroke(), o(e), i;
-    };
-
+      n,
+      r = !1,
+      a = !1,
+      o = function o(e) {
+        var i = e.getBoundingClientRect();
+        s = i.left, n = i.top;
+      },
+      h = function h(e, i, t, s, n) {
+        return i.translate(.5, .5), i.lineWidth = 1, i.drawImage(t, 5, 5, s - 10, n - 10), i.beginPath(), i.rect(5, 5, s - 10, n - 10), i.stroke(), i.beginPath(), i.fillStyle = "rgb(255, 255, 255)", i.rect(s - 10, n - 10, 9, 9), i.fill(), i.stroke(), o(e), i;
+      };
+    // necessary to correctly print cursor over square. Called once for instance. Useless with trumbowyg.
     this.init = function () {
       var i = this;
       e(window).on("scroll resize", function () {
@@ -4751,8 +5193,8 @@
       var u = this;
       return e(this.resizeCanvas).on("mousemove", function (e) {
         var i = Math.round(e.clientX - s),
-            t = Math.round(e.clientY - n),
-            r = a;
+          t = Math.round(e.clientY - n),
+          r = a;
         u.ctx.rect(u.resizeCanvas.width - 10, u.resizeCanvas.height - 10, 9, 9), r !== (a = u.ctx.isPointInPath(i, t)) && (this.style.cursor = a ? "se-resize" : "default");
       }).on("keydown", function (e) {
         if (u.isActive()) {
@@ -4766,21 +5208,18 @@
       this.resizeCanvas.getContext && (this.resizeCanvas.width = this.resizeCanvas.clientWidth, this.resizeCanvas.height = this.resizeCanvas.clientHeight, h(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height));
     };
   };
-
   e.extend(!0, e.trumbowyg, {
     plugins: {
       resizimg: {
         destroyResizable: function destroyResizable() {},
         init: function init(n) {
           var r = this.destroyResizable,
-              a = new s(n);
-
+            a = new s(n);
           function o() {
             n.$ed.find("img").off("click").on("click", function (e) {
               a.isActive() && a.reset(), a.setup(this, n.o.plugins.resizimg.resizable), t(e);
             });
           }
-
           this.destroyResizable = function () {
             n.$ed.find("canvas.resizable").resizableSafe("destroy").off("mousedown", t).removeClass("resizable"), a.reset(), n.syncCode();
           }, n.o.plugins.resizimg = e.extend(!0, {}, i, n.o.plugins.resizimg || {}, {
@@ -4788,8 +5227,8 @@
               resizeWidth: !1,
               onDragStart: function onDragStart(e, i) {
                 var t = n.o.plugins.resizimg,
-                    s = e.pageX - i.offset().left,
-                    r = e.pageY - i.offset().top;
+                  s = e.pageX - i.offset().left,
+                  r = e.pageY - i.offset().top;
                 if (s < i.width() - t.minSize || r < i.height() - t.minSize) return !1;
               },
               onDrag: function onDrag(e, i, t, s) {
@@ -4820,800 +5259,34 @@
   });
 }(jQuery);
 /* ===========================================================
- * trumbowyg.table.custom.js v2.0
- * Table plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Sven Dunemann [dunemann@forelabs.eu]
- */
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    rows: 8,
-    columns: 8,
-    styler: 'table'
-  };
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        table: 'Insert table',
-        tableAddRow: 'Add row',
-        tableAddRowAbove: 'Add row above',
-        tableAddColumnLeft: 'Add column to the left',
-        tableAddColumn: 'Add column to the right',
-        tableDeleteRow: 'Delete row',
-        tableDeleteColumn: 'Delete column',
-        tableDestroy: 'Delete table',
-        error: 'Error'
-      },
-      cs: {
-        table: 'Vytvořit příkaz Table',
-        tableAddRow: 'Přidat řádek',
-        tableAddRowAbove: 'Přidat řádek',
-        tableAddColumnLeft: 'Přidat sloupec',
-        tableAddColumn: 'Přidat sloupec',
-        error: 'Chyba'
-      },
-      da: {
-        table: 'Indsæt tabel',
-        tableAddRow: 'Tilføj række',
-        tableAddRowAbove: 'Tilføj række',
-        tableAddColumnLeft: 'Tilføj kolonne',
-        tableAddColumn: 'Tilføj kolonne',
-        tableDeleteRow: 'Slet række',
-        tableDeleteColumn: 'Slet kolonne',
-        tableDestroy: 'Slet tabel',
-        error: 'Fejl'
-      },
-      de: {
-        table: 'Tabelle einfügen',
-        tableAddRow: 'Zeile hinzufügen',
-        tableAddRowAbove: 'Zeile hinzufügen',
-        tableAddColumnLeft: 'Spalte hinzufügen',
-        tableAddColumn: 'Spalte hinzufügen',
-        tableDeleteRow: 'Zeile löschen',
-        tableDeleteColumn: 'Spalte löschen',
-        tableDestroy: 'Tabelle löschen',
-        error: 'Error'
-      },
-      et: {
-        table: 'Sisesta tabel',
-        tableAddRow: 'Lisa rida',
-        tableAddRowAbove: 'Lisa rida üles',
-        tableAddColumnLeft: 'Lisa tulp vasakule',
-        tableAddColumn: 'Lisa tulp paremale',
-        tableDeleteRow: 'Kustuta rida',
-        tableDeleteColumn: 'Kustuta tulp',
-        tableDestroy: 'Kustuta tabel',
-        error: 'Viga'
-      },
-      fr: {
-        table: 'Insérer un tableau',
-        tableAddRow: 'Ajouter des lignes',
-        tableAddRowAbove: 'Ajouter des lignes',
-        tableAddColumnLeft: 'Ajouter des colonnes',
-        tableAddColumn: 'Ajouter des colonnes',
-        tableDeleteRow: 'Effacer la ligne',
-        tableDeleteColumn: 'Effacer la colonne',
-        tableDestroy: 'Effacer le tableau',
-        error: 'Erreur'
-      },
-      hu: {
-        table: 'Táblázat beszúrás',
-        tableAddRow: 'Sor hozzáadás',
-        tableAddRowAbove: 'Sor beszúrás fönt',
-        tableAddColumnLeft: 'Sor beszúrás balra',
-        tableAddColumn: 'Sor beszúrás jobbra',
-        tableDeleteRow: 'Sor törlés',
-        tableDeleteColumn: 'Oszlop törlés',
-        tableDestroy: 'Táblázat törlés',
-        error: 'Hiba'
-      },
-      id: {
-        table: 'Sisipkan tabel',
-        tableAddRow: 'Sisipkan baris',
-        tableAddRowAbove: 'Sisipkan baris',
-        tableAddColumnLeft: 'Sisipkan kolom',
-        tableAddColumn: 'Sisipkan kolom',
-        tableDeleteRow: 'Hapus baris',
-        tableDeleteColumn: 'Hapus kolom',
-        tableDestroy: 'Hapus tabel',
-        error: 'Galat'
-      },
-      ja: {
-        table: '表の挿入',
-        tableAddRow: '行の追加',
-        tableAddRowAbove: '行の追加',
-        tableAddColumnLeft: '列の追加',
-        tableAddColumn: '列の追加',
-        error: 'エラー'
-      },
-      ko: {
-        table: '표 넣기',
-        tableAddRow: '줄 추가',
-        tableAddRowAbove: '줄 추가',
-        tableAddColumnLeft: '칸 추가',
-        tableAddColumn: '칸 추가',
-        tableDeleteRow: '줄 삭제',
-        tableDeleteColumn: '칸 삭제',
-        tableDestroy: '표 지우기',
-        error: '에러'
-      },
-      pt_br: {
-        table: 'Inserir tabela',
-        tableAddRow: 'Adicionar linha',
-        tableAddRowAbove: 'Adicionar linha',
-        tableAddColumnLeft: 'Adicionar coluna',
-        tableAddColumn: 'Adicionar coluna',
-        tableDeleteRow: 'Deletar linha',
-        tableDeleteColumn: 'Deletar coluna',
-        tableDestroy: 'Deletar tabela',
-        error: 'Erro'
-      },
-      ru: {
-        table: 'Вставить таблицу',
-        tableAddRow: 'Добавить строку',
-        tableAddRowAbove: 'Добавить строку',
-        tableAddColumnLeft: 'Добавить столбец',
-        tableAddColumn: 'Добавить столбец',
-        tableDeleteRow: 'Удалить строку',
-        tableDeleteColumn: 'Удалить столбец',
-        tableDestroy: 'Удалить таблицу',
-        error: 'Ошибка'
-      },
-      sk: {
-        table: 'Vytvoriť tabuľky',
-        tableAddRow: 'Pridať riadok',
-        tableAddRowAbove: 'Pridať riadok',
-        tableAddColumnLeft: 'Pridať stĺpec',
-        tableAddColumn: 'Pridať stĺpec',
-        error: 'Chyba'
-      },
-      tr: {
-        table: 'Tablo ekle',
-        tableAddRow: 'Satır ekle',
-        tableAddRowAbove: 'Yukarıya satır ekle',
-        tableAddColumnLeft: 'Sola sütun ekle',
-        tableAddColumn: 'Sağa sütun ekle',
-        tableDeleteRow: 'Satırı sil',
-        tableDeleteColumn: 'Sütunu sil',
-        tableDestroy: 'Tabloyu sil',
-        error: 'Hata'
-      },
-      zh_tw: {
-        table: '插入表格',
-        tableAddRow: '加入行',
-        tableAddRowAbove: '加入行',
-        tableAddColumnLeft: '加入列',
-        tableAddColumn: '加入列',
-        tableDeleteRow: '刪除行',
-        tableDeleteColumn: '刪除列',
-        tableDestroy: '刪除表格',
-        error: '錯誤'
-      },
-      es: {
-        table: 'Insertar tabla',
-        tableAddRow: 'Agregar fila',
-        tableAddRowAbove: 'Agregar fila arriba',
-        tableAddColumnLeft: 'Agregar columna a la izquierda',
-        tableAddColumn: 'Agregar columna a la derecha',
-        tableDeleteRow: 'Borrar fila',
-        tableDeleteColumn: 'Borrar columna',
-        tableDestroy: 'Borrar tabla',
-        error: 'Error'
-      } // jshint camelcase:true
-
-    },
-    plugins: {
-      table: {
-        init: function init(t) {
-          t.o.plugins.table = $.extend(true, {}, defaultOptions, t.o.plugins.table || {});
-          var buildButtonDef = {
-            fn: function fn() {
-              t.saveRange();
-              var btnName = 'table';
-              var dropdownPrefix = t.o.prefix + 'dropdown',
-                  dropdownOptions = {
-                // the dropdown
-                "class": dropdownPrefix + '-' + btnName + ' ' + dropdownPrefix + ' ' + t.o.prefix + 'fixed-top'
-              };
-              dropdownOptions['data-' + dropdownPrefix] = btnName;
-              var $dropdown = $('<div/>', dropdownOptions);
-
-              if (t.$box.find('.' + dropdownPrefix + '-' + btnName).length === 0) {
-                t.$box.append($dropdown.hide());
-              } else {
-                $dropdown = t.$box.find('.' + dropdownPrefix + '-' + btnName);
-              } // clear dropdown
-
-
-              $dropdown.html(''); // when active table show AddRow / AddColumn
-
-              if (t.$box.find('.' + t.o.prefix + 'table-button').hasClass(t.o.prefix + 'active-button')) {
-                $dropdown.append(t.buildSubBtn('tableAddRowAbove'));
-                $dropdown.append(t.buildSubBtn('tableAddRow'));
-                $dropdown.append(t.buildSubBtn('tableAddColumnLeft'));
-                $dropdown.append(t.buildSubBtn('tableAddColumn'));
-                $dropdown.append(t.buildSubBtn('tableDeleteRow'));
-                $dropdown.append(t.buildSubBtn('tableDeleteColumn'));
-                $dropdown.append(t.buildSubBtn('tableDestroy'));
-              } else {
-                var tableSelect = $('<table/>');
-                $('<tbody/>').appendTo(tableSelect);
-
-                for (var i = 0; i < t.o.plugins.table.rows; i += 1) {
-                  var row = $('<tr/>').appendTo(tableSelect);
-
-                  for (var j = 0; j < t.o.plugins.table.columns; j += 1) {
-                    $('<td/>').appendTo(row);
-                  }
-                }
-
-                tableSelect.find('td').on('mouseover', tableAnimate);
-                tableSelect.find('td').on('mousedown', tableBuild);
-                $dropdown.append(tableSelect);
-                $dropdown.append($('<div class="trumbowyg-table-size">1x1</div>'));
-              }
-
-              t.dropdown(btnName);
-            }
-          };
-
-          var tableAnimate = function tableAnimate(columnEvent) {
-            var column = $(columnEvent.target),
-                table = column.closest('table'),
-                colIndex = this.cellIndex,
-                rowIndex = this.parentNode.rowIndex; // reset all columns
-
-            table.find('td').removeClass('active');
-
-            for (var i = 0; i <= rowIndex; i += 1) {
-              for (var j = 0; j <= colIndex; j += 1) {
-                table.find('tr:nth-of-type(' + (i + 1) + ')').find('td:nth-of-type(' + (j + 1) + ')').addClass('active');
-              }
-            } // set label
-
-
-            table.next('.trumbowyg-table-size').html(colIndex + 1 + 'x' + (rowIndex + 1));
-          };
-
-          var tableBuild = function tableBuild() {
-            t.saveRange();
-            var tabler = $('<table/>');
-            $('<tbody/>').appendTo(tabler);
-
-            if (t.o.plugins.table.styler) {
-              tabler.attr('class', t.o.plugins.table.styler);
-            }
-
-            var colIndex = this.cellIndex,
-                rowIndex = this.parentNode.rowIndex;
-
-            for (var i = 0; i <= rowIndex; i += 1) {
-              var row = $('<tr></tr>').appendTo(tabler);
-
-              for (var j = 0; j <= colIndex; j += 1) {
-                $('<td/>').appendTo(row);
-              }
-            }
-
-            t.range.deleteContents();
-            t.range.insertNode(tabler[0]);
-            t.$c.trigger('tbwchange');
-          };
-
-          var addRow = {
-            title: t.lang.tableAddRow,
-            text: t.lang.tableAddRow,
-            ico: 'row-below',
-            fn: function fn() {
-              t.saveRange();
-              var node = t.doc.getSelection().focusNode;
-              var focusedRow = $(node).closest('tr');
-              var table = $(node).closest('table');
-
-              if (table.length > 0) {
-                var row = $('<tr/>'); // add columns according to current columns count
-
-                for (var i = 0; i < table.find('tr')[0].childElementCount; i += 1) {
-                  $('<td/>').appendTo(row);
-                } // add row to table
-
-
-                focusedRow.after(row);
-              }
-
-              t.syncCode();
-            }
-          };
-          var addRowAbove = {
-            title: t.lang.tableAddRowAbove,
-            text: t.lang.tableAddRowAbove,
-            ico: 'row-above',
-            fn: function fn() {
-              t.saveRange();
-              var node = t.doc.getSelection().focusNode;
-              var focusedRow = $(node).closest('tr');
-              var table = $(node).closest('table');
-
-              if (table.length > 0) {
-                var row = $('<tr/>'); // add columns according to current columns count
-
-                for (var i = 0; i < table.find('tr')[0].childElementCount; i += 1) {
-                  $('<td/>').appendTo(row);
-                } // add row to table
-
-
-                focusedRow.before(row);
-              }
-
-              t.syncCode();
-            }
-          };
-          var addColumn = {
-            title: t.lang.tableAddColumn,
-            text: t.lang.tableAddColumn,
-            ico: 'col-right',
-            fn: function fn() {
-              t.saveRange();
-              var node = t.doc.getSelection().focusNode;
-              var focusedCol = $(node).closest('td');
-              var table = $(node).closest('table');
-              var focusedColIdx = focusedCol.index();
-
-              if (table.length > 0) {
-                $(table).find('tr').each(function () {
-                  $($(this).children()[focusedColIdx]).after('<td></td>');
-                });
-              }
-
-              t.syncCode();
-            }
-          };
-          var addColumnLeft = {
-            title: t.lang.tableAddColumnLeft,
-            text: t.lang.tableAddColumnLeft,
-            ico: 'col-left',
-            fn: function fn() {
-              t.saveRange();
-              var node = t.doc.getSelection().focusNode;
-              var focusedCol = $(node).closest('td');
-              var table = $(node).closest('table');
-              var focusedColIdx = focusedCol.index();
-
-              if (table.length > 0) {
-                $(table).find('tr').each(function () {
-                  $($(this).children()[focusedColIdx]).before('<td></td>');
-                });
-              }
-
-              t.syncCode();
-            }
-          };
-          var destroy = {
-            title: t.lang.tableDestroy,
-            text: t.lang.tableDestroy,
-            ico: 'table-delete',
-            fn: function fn() {
-              t.saveRange();
-              var node = t.doc.getSelection().focusNode,
-                  table = $(node).closest('table');
-              table.remove();
-              t.syncCode();
-            }
-          };
-          var deleteRow = {
-            title: t.lang.tableDeleteRow,
-            text: t.lang.tableDeleteRow,
-            ico: 'row-delete',
-            fn: function fn() {
-              t.saveRange();
-              var node = t.doc.getSelection().focusNode,
-                  row = $(node).closest('tr');
-              row.remove();
-              t.syncCode();
-            }
-          };
-          var deleteColumn = {
-            title: t.lang.tableDeleteColumn,
-            text: t.lang.tableDeleteColumn,
-            ico: 'col-delete',
-            fn: function fn() {
-              t.saveRange();
-              var node = t.doc.getSelection().focusNode,
-                  table = $(node).closest('table'),
-                  td = $(node).closest('td'),
-                  cellIndex = td.index();
-              $(table).find('tr').each(function () {
-                $(this).find('td:eq(' + cellIndex + ')').remove();
-              });
-              t.syncCode();
-            }
-          };
-          t.addBtnDef('table', buildButtonDef);
-          t.addBtnDef('tableAddRowAbove', addRowAbove);
-          t.addBtnDef('tableAddRow', addRow);
-          t.addBtnDef('tableAddColumnLeft', addColumnLeft);
-          t.addBtnDef('tableAddColumn', addColumn);
-          t.addBtnDef('tableDeleteRow', deleteRow);
-          t.addBtnDef('tableDeleteColumn', deleteColumn);
-          t.addBtnDef('tableDestroy', destroy);
-        }
-      }
-    }
-  });
-})(jQuery);
-!function (e) {
-  "use strict";
-
-  var t = {
-    rows: 8,
-    columns: 8,
-    styler: "table"
-  };
-  e.extend(!0, e.trumbowyg, {
-    langs: {
-      en: {
-        table: "Insert table",
-        tableAddRow: "Add row",
-        tableAddRowAbove: "Add row above",
-        tableAddColumnLeft: "Add column to the left",
-        tableAddColumn: "Add column to the right",
-        tableDeleteRow: "Delete row",
-        tableDeleteColumn: "Delete column",
-        tableDestroy: "Delete table",
-        error: "Error"
-      },
-      cs: {
-        table: "Vytvořit příkaz Table",
-        tableAddRow: "Přidat řádek",
-        tableAddRowAbove: "Přidat řádek",
-        tableAddColumnLeft: "Přidat sloupec",
-        tableAddColumn: "Přidat sloupec",
-        error: "Chyba"
-      },
-      da: {
-        table: "Indsæt tabel",
-        tableAddRow: "Tilføj række",
-        tableAddRowAbove: "Tilføj række",
-        tableAddColumnLeft: "Tilføj kolonne",
-        tableAddColumn: "Tilføj kolonne",
-        tableDeleteRow: "Slet række",
-        tableDeleteColumn: "Slet kolonne",
-        tableDestroy: "Slet tabel",
-        error: "Fejl"
-      },
-      de: {
-        table: "Tabelle einfügen",
-        tableAddRow: "Zeile hinzufügen",
-        tableAddRowAbove: "Zeile hinzufügen",
-        tableAddColumnLeft: "Spalte hinzufügen",
-        tableAddColumn: "Spalte hinzufügen",
-        tableDeleteRow: "Zeile löschen",
-        tableDeleteColumn: "Spalte löschen",
-        tableDestroy: "Tabelle löschen",
-        error: "Error"
-      },
-      et: {
-        table: "Sisesta tabel",
-        tableAddRow: "Lisa rida",
-        tableAddRowAbove: "Lisa rida üles",
-        tableAddColumnLeft: "Lisa tulp vasakule",
-        tableAddColumn: "Lisa tulp paremale",
-        tableDeleteRow: "Kustuta rida",
-        tableDeleteColumn: "Kustuta tulp",
-        tableDestroy: "Kustuta tabel",
-        error: "Viga"
-      },
-      fr: {
-        table: "Insérer un tableau",
-        tableAddRow: "Ajouter des lignes",
-        tableAddRowAbove: "Ajouter des lignes",
-        tableAddColumnLeft: "Ajouter des colonnes",
-        tableAddColumn: "Ajouter des colonnes",
-        tableDeleteRow: "Effacer la ligne",
-        tableDeleteColumn: "Effacer la colonne",
-        tableDestroy: "Effacer le tableau",
-        error: "Erreur"
-      },
-      hu: {
-        table: "Táblázat beszúrás",
-        tableAddRow: "Sor hozzáadás",
-        tableAddRowAbove: "Sor beszúrás fönt",
-        tableAddColumnLeft: "Sor beszúrás balra",
-        tableAddColumn: "Sor beszúrás jobbra",
-        tableDeleteRow: "Sor törlés",
-        tableDeleteColumn: "Oszlop törlés",
-        tableDestroy: "Táblázat törlés",
-        error: "Hiba"
-      },
-      id: {
-        table: "Sisipkan tabel",
-        tableAddRow: "Sisipkan baris",
-        tableAddRowAbove: "Sisipkan baris",
-        tableAddColumnLeft: "Sisipkan kolom",
-        tableAddColumn: "Sisipkan kolom",
-        tableDeleteRow: "Hapus baris",
-        tableDeleteColumn: "Hapus kolom",
-        tableDestroy: "Hapus tabel",
-        error: "Galat"
-      },
-      ja: {
-        table: "表の挿入",
-        tableAddRow: "行の追加",
-        tableAddRowAbove: "行の追加",
-        tableAddColumnLeft: "列の追加",
-        tableAddColumn: "列の追加",
-        error: "エラー"
-      },
-      ko: {
-        table: "표 넣기",
-        tableAddRow: "줄 추가",
-        tableAddRowAbove: "줄 추가",
-        tableAddColumnLeft: "칸 추가",
-        tableAddColumn: "칸 추가",
-        tableDeleteRow: "줄 삭제",
-        tableDeleteColumn: "칸 삭제",
-        tableDestroy: "표 지우기",
-        error: "에러"
-      },
-      pt_br: {
-        table: "Inserir tabela",
-        tableAddRow: "Adicionar linha",
-        tableAddRowAbove: "Adicionar linha",
-        tableAddColumnLeft: "Adicionar coluna",
-        tableAddColumn: "Adicionar coluna",
-        tableDeleteRow: "Deletar linha",
-        tableDeleteColumn: "Deletar coluna",
-        tableDestroy: "Deletar tabela",
-        error: "Erro"
-      },
-      ru: {
-        table: "Вставить таблицу",
-        tableAddRow: "Добавить строку",
-        tableAddRowAbove: "Добавить строку",
-        tableAddColumnLeft: "Добавить столбец",
-        tableAddColumn: "Добавить столбец",
-        tableDeleteRow: "Удалить строку",
-        tableDeleteColumn: "Удалить столбец",
-        tableDestroy: "Удалить таблицу",
-        error: "Ошибка"
-      },
-      sk: {
-        table: "Vytvoriť tabuľky",
-        tableAddRow: "Pridať riadok",
-        tableAddRowAbove: "Pridať riadok",
-        tableAddColumnLeft: "Pridať stĺpec",
-        tableAddColumn: "Pridať stĺpec",
-        error: "Chyba"
-      },
-      tr: {
-        table: "Tablo ekle",
-        tableAddRow: "Satır ekle",
-        tableAddRowAbove: "Yukarıya satır ekle",
-        tableAddColumnLeft: "Sola sütun ekle",
-        tableAddColumn: "Sağa sütun ekle",
-        tableDeleteRow: "Satırı sil",
-        tableDeleteColumn: "Sütunu sil",
-        tableDestroy: "Tabloyu sil",
-        error: "Hata"
-      },
-      zh_tw: {
-        table: "插入表格",
-        tableAddRow: "加入行",
-        tableAddRowAbove: "加入行",
-        tableAddColumnLeft: "加入列",
-        tableAddColumn: "加入列",
-        tableDeleteRow: "刪除行",
-        tableDeleteColumn: "刪除列",
-        tableDestroy: "刪除表格",
-        error: "錯誤"
-      },
-      es: {
-        table: "Insertar tabla",
-        tableAddRow: "Agregar fila",
-        tableAddRowAbove: "Agregar fila arriba",
-        tableAddColumnLeft: "Agregar columna a la izquierda",
-        tableAddColumn: "Agregar columna a la derecha",
-        tableDeleteRow: "Borrar fila",
-        tableDeleteColumn: "Borrar columna",
-        tableDestroy: "Borrar tabla",
-        error: "Error"
-      }
-    },
-    plugins: {
-      table: {
-        init: function init(l) {
-          l.o.plugins.table = e.extend(!0, {}, t, l.o.plugins.table || {});
-
-          var a = {
-            fn: function fn() {
-              l.saveRange();
-              var t = "table",
-                  a = l.o.prefix + "dropdown",
-                  n = {
-                "class": a + "-" + "table " + a + " " + l.o.prefix + "fixed-top"
-              };
-              n["data-" + a] = t;
-              var b = e("<div/>", n);
-              if (0 === l.$box.find("." + a + "-" + t).length ? l.$box.append(b.hide()) : b = l.$box.find("." + a + "-" + t), b.html(""), l.$box.find("." + l.o.prefix + "table-button").hasClass(l.o.prefix + "active-button")) b.append(l.buildSubBtn("tableAddRowAbove")), b.append(l.buildSubBtn("tableAddRow")), b.append(l.buildSubBtn("tableAddColumnLeft")), b.append(l.buildSubBtn("tableAddColumn")), b.append(l.buildSubBtn("tableDeleteRow")), b.append(l.buildSubBtn("tableDeleteColumn")), b.append(l.buildSubBtn("tableDestroy"));else {
-                var r = e("<table/>");
-                e("<tbody/>").appendTo(r);
-
-                for (var i = 0; i < l.o.plugins.table.rows; i += 1) {
-                  for (var s = e("<tr/>").appendTo(r), u = 0; u < l.o.plugins.table.columns; u += 1) {
-                    e("<td/>").appendTo(s);
-                  }
-                }
-
-                r.find("td").on("mouseover", o), r.find("td").on("mousedown", d), b.append(r), b.append(e('<div class="trumbowyg-table-size">1x1</div>'));
-              }
-              l.dropdown(t);
-            }
-          },
-              o = function o(t) {
-            var l = e(t.target).closest("table"),
-                a = this.cellIndex,
-                o = this.parentNode.rowIndex;
-            l.find("td").removeClass("active");
-
-            for (var d = 0; d <= o; d += 1) {
-              for (var n = 0; n <= a; n += 1) {
-                l.find("tr:nth-of-type(" + (d + 1) + ")").find("td:nth-of-type(" + (n + 1) + ")").addClass("active");
-              }
-            }
-
-            l.next(".trumbowyg-table-size").html(a + 1 + "x" + (o + 1));
-          },
-              d = function d() {
-            l.saveRange();
-            var t = e("<table/>");
-            e("<tbody/>").appendTo(t), l.o.plugins.table.styler && t.attr("class", l.o.plugins.table.styler);
-
-            for (var a = this.cellIndex, o = this.parentNode.rowIndex, d = 0; d <= o; d += 1) {
-              for (var n = e("<tr></tr>").appendTo(t), b = 0; b <= a; b += 1) {
-                e("<td/>").appendTo(n);
-              }
-            }
-
-            l.range.deleteContents(), l.range.insertNode(t[0]), l.$c.trigger("tbwchange");
-          },
-              n = {
-            title: l.lang.tableAddRow,
-            text: l.lang.tableAddRow,
-            ico: "row-below",
-            fn: function fn() {
-              l.saveRange();
-              var t = l.doc.getSelection().focusNode,
-                  a = e(t).closest("tr"),
-                  o = e(t).closest("table");
-
-              if (o.length > 0) {
-                for (var d = e("<tr/>"), n = 0; n < o.find("tr")[0].childElementCount; n += 1) {
-                  e("<td/>").appendTo(d);
-                }
-
-                a.after(d);
-              }
-
-              l.syncCode();
-            }
-          },
-              b = {
-            title: l.lang.tableAddRowAbove,
-            text: l.lang.tableAddRowAbove,
-            ico: "row-above",
-            fn: function fn() {
-              l.saveRange();
-              var t = l.doc.getSelection().focusNode,
-                  a = e(t).closest("tr"),
-                  o = e(t).closest("table");
-
-              if (o.length > 0) {
-                for (var d = e("<tr/>"), n = 0; n < o.find("tr")[0].childElementCount; n += 1) {
-                  e("<td/>").appendTo(d);
-                }
-
-                a.before(d);
-              }
-
-              l.syncCode();
-            }
-          },
-              r = {
-            title: l.lang.tableAddColumn,
-            text: l.lang.tableAddColumn,
-            ico: "col-right",
-            fn: function fn() {
-              l.saveRange();
-              var t = l.doc.getSelection().focusNode,
-                  a = e(t).closest("td"),
-                  o = e(t).closest("table"),
-                  d = a.index();
-              o.length > 0 && e(o).find("tr").each(function () {
-                e(e(this).children()[d]).after("<td></td>");
-              }), l.syncCode();
-            }
-          },
-              i = {
-            title: l.lang.tableAddColumnLeft,
-            text: l.lang.tableAddColumnLeft,
-            ico: "col-left",
-            fn: function fn() {
-              l.saveRange();
-              var t = l.doc.getSelection().focusNode,
-                  a = e(t).closest("td"),
-                  o = e(t).closest("table"),
-                  d = a.index();
-              o.length > 0 && e(o).find("tr").each(function () {
-                e(e(this).children()[d]).before("<td></td>");
-              }), l.syncCode();
-            }
-          },
-              s = {
-            title: l.lang.tableDestroy,
-            text: l.lang.tableDestroy,
-            ico: "table-delete",
-            fn: function fn() {
-              l.saveRange();
-              var t = l.doc.getSelection().focusNode;
-              e(t).closest("table").remove(), l.syncCode();
-            }
-          },
-              u = {
-            title: l.lang.tableDeleteRow,
-            text: l.lang.tableDeleteRow,
-            ico: "row-delete",
-            fn: function fn() {
-              l.saveRange();
-              var t = l.doc.getSelection().focusNode;
-              e(t).closest("tr").remove(), l.syncCode();
-            }
-          },
-              f = {
-            title: l.lang.tableDeleteColumn,
-            text: l.lang.tableDeleteColumn,
-            ico: "col-delete",
-            fn: function fn() {
-              l.saveRange();
-              var t = l.doc.getSelection().focusNode,
-                  a = e(t).closest("table"),
-                  o = e(t).closest("td").index();
-              e(a).find("tr").each(function () {
-                e(this).find("td:eq(" + o + ")").remove();
-              }), l.syncCode();
-            }
-          };
-
-          l.addBtnDef("table", a), l.addBtnDef("tableAddRowAbove", b), l.addBtnDef("tableAddRow", n), l.addBtnDef("tableAddColumnLeft", i), l.addBtnDef("tableAddColumn", r), l.addBtnDef("tableDeleteRow", u), l.addBtnDef("tableDeleteColumn", f), l.addBtnDef("tableDestroy", s);
-        }
-      }
-    }
-  });
-}(jQuery);
-/* ===========================================================
  * trumbowyg.specialchars.js v0.99
  * Unicode characters picker plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
  * ===========================================================
  * Author : Renaud Hoyoux (geektortoise)
 */
+
 (function ($) {
   'use strict';
 
   var defaultOptions = {
-    symbolList: [// currencies
-    '0024', '20AC', '00A3', '00A2', '00A5', '00A4', '2030', null, // legal signs
-    '00A9', '00AE', '2122', null, // textual sign
-    '00A7', '00B6', '00C6', '00E6', '0152', '0153', null, '2022', '25CF', '2023', '25B6', '2B29', '25C6', null, //maths
+    symbolList: [
+    // currencies
+    '0024', '20AC', '00A3', '00A2', '00A5', '00A4', '2030', null,
+    // legal signs
+    '00A9', '00AE', '2122', null,
+    // textual sign
+    '00A7', '00B6', '00C6', '00E6', '0152', '0153', null, '2022', '25CF', '2023', '25B6', '2B29', '25C6', null,
+    //maths
     '00B1', '00D7', '00F7', '21D2', '21D4', '220F', '2211', '2243', '2264', '2265']
   };
   $.extend(true, $.trumbowyg, {
     langs: {
       en: {
         specialChars: 'Special characters'
+      },
+      az: {
+        specialChars: 'Xüsusi simvollar'
       },
       by: {
         specialChars: 'Спецыяльныя сімвалы'
@@ -5633,6 +5306,9 @@
       ru: {
         specialChars: 'Специальные символы'
       },
+      sl: {
+        specialChars: 'Posebni znaki'
+      },
       tr: {
         specialChars: 'Özel karakterler'
       }
@@ -5649,7 +5325,6 @@
       }
     }
   });
-
   function buildDropdown(trumbowyg) {
     var dropdown = [];
     $.each(trumbowyg.o.plugins.specialchars.symbolList, function (i, symbol) {
@@ -5658,51 +5333,61 @@
       } else {
         symbol = '&#x' + symbol;
       }
-
       var btn = symbol.replace(/:/g, ''),
-          defaultSymbolBtnName = 'symbol-' + btn,
-          defaultSymbolBtnDef = {
-        text: symbol,
-        hasIcon: false,
-        fn: function fn() {
-          var encodedSymbol = String.fromCodePoint(parseInt(symbol.replace('&#', '0')));
-          trumbowyg.execCmd('insertText', encodedSymbol);
-          return true;
-        }
-      };
+        defaultSymbolBtnName = 'symbol-' + btn,
+        defaultSymbolBtnDef = {
+          text: symbol,
+          hasIcon: false,
+          fn: function fn() {
+            var encodedSymbol = String.fromCodePoint(parseInt(symbol.replace('&#', '0')));
+            trumbowyg.execCmd('insertText', encodedSymbol);
+            return true;
+          }
+        };
       trumbowyg.addBtnDef(defaultSymbolBtnName, defaultSymbolBtnDef);
       dropdown.push(defaultSymbolBtnName);
     });
     return dropdown;
   }
 })(jQuery);
+/* ===========================================================
+ * trumbowyg.specialchars.js v0.99
+ * Unicode characters picker plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Renaud Hoyoux (geektortoise)
+*/
 !function (a) {
   "use strict";
 
   var s = {
     symbolList: ["0024", "20AC", "00A3", "00A2", "00A5", "00A4", "2030", null, "00A9", "00AE", "2122", null, "00A7", "00B6", "00C6", "00E6", "0152", "0153", null, "2022", "25CF", "2023", "25B6", "2B29", "25C6", null, "00B1", "00D7", "00F7", "21D2", "21D4", "220F", "2211", "2243", "2264", "2265"]
   };
-
-  function e(s) {
-    var e = [];
-    return a.each(s.o.plugins.specialchars.symbolList, function (a, r) {
-      var n = "symbol-" + (r = null === r ? "&nbsp" : "&#x" + r).replace(/:/g, ""),
-          i = {
-        text: r,
-        hasIcon: !1,
-        fn: function fn() {
-          var a = String.fromCodePoint(parseInt(r.replace("&#", "0")));
-          return s.execCmd("insertText", a), !0;
-        }
-      };
-      s.addBtnDef(n, i), e.push(n);
-    }), e;
+  function r(s) {
+    var r = [];
+    return a.each(s.o.plugins.specialchars.symbolList, function (a, e) {
+      var i = "symbol-" + (e = null === e ? "&nbsp" : "&#x" + e).replace(/:/g, ""),
+        l = {
+          text: e,
+          hasIcon: !1,
+          fn: function fn() {
+            var a = String.fromCodePoint(parseInt(e.replace("&#", "0")));
+            return s.execCmd("insertText", a), !0;
+          }
+        };
+      s.addBtnDef(i, l), r.push(i);
+    }), r;
   }
-
   a.extend(!0, a.trumbowyg, {
     langs: {
       en: {
         specialChars: "Special characters"
+      },
+      az: {
+        specialChars: "Xüsusi simvollar"
+      },
+      by: {
+        specialChars: "Спецыяльныя сімвалы"
       },
       et: {
         specialChars: "Erimärgid"
@@ -5715,23 +5400,2362 @@
       },
       ko: {
         specialChars: "특수문자"
+      },
+      ru: {
+        specialChars: "Специальные символы"
+      },
+      sl: {
+        specialChars: "Posebni znaki"
+      },
+      tr: {
+        specialChars: "Özel karakterler"
       }
     },
     plugins: {
       specialchars: {
         init: function init(a) {
           a.o.plugins.specialchars = a.o.plugins.specialchars || s;
-          var r = {
-            dropdown: e(a)
+          var e = {
+            dropdown: r(a)
           };
-          a.addBtnDef("specialChars", r);
+          a.addBtnDef("specialChars", e);
         }
       }
     }
   });
 }(jQuery);
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+/* ===========================================================
+ * trumbowyg.table.js v3.0
+ * Table plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Alexandre Demode (Alex-D)
+ *          Twitter : @AlexandreDemode
+ *          Website : alex-d.fr
+ * Original Author : Sven Dunemann [dunemann@forelabs.eu]
+ */
 
+(function ($) {
+  'use strict';
+
+  var defaultOptions = {
+    rows: 8,
+    columns: 8,
+    allowHorizontalResize: true,
+    colorList: ['ffffff', '000000', 'eeece1', '1f497d', '4f81bd', 'c0504d', '9bbb59', '8064a2', '4bacc6', 'f79646', 'ffff00', 'f2f2f2', '7f7f7f', 'ddd9c3', 'c6d9f0', 'dbe5f1', 'f2dcdb', 'ebf1dd', 'e5e0ec', 'dbeef3', 'fdeada', 'fff2ca', 'd8d8d8', '595959', 'c4bd97', '8db3e2', 'b8cce4', 'e5b9b7', 'd7e3bc', 'ccc1d9', 'b7dde8', 'fbd5b5', 'ffe694', 'bfbfbf', '3f3f3f', '938953', '548dd4', '95b3d7', 'd99694', 'c3d69b', 'b2a2c7', 'b7dde8', 'fac08f', 'f2c314', 'a5a5a5', '262626', '494429', '17365d', '366092', '953734', '76923c', '5f497a', '92cddc', 'e36c09', 'c09100', '7f7f7f', '0c0c0c', '1d1b10', '0f243e', '244061', '632423', '4f6128', '3f3151', '31859b', '974806', '7f6000'],
+    backgroundColorList: null,
+    // fallbacks on colorList
+    allowCustomBackgroundColor: true,
+    displayBackgroundColorsAsList: false,
+    borderColorList: null,
+    // fallbacks on colorList
+    allowCustomBorderColor: true,
+    displayBorderColorsAsList: false,
+    dropdown: [{
+      title: 'tableRows',
+      buttons: ['tableAddHeaderRow', 'tableAddRowAbove', 'tableAddRow', 'tableDeleteRow']
+    }, {
+      title: 'tableColumns',
+      buttons: ['tableAddColumnLeft', 'tableAddColumn', 'tableDeleteColumn']
+    }, {
+      title: 'tableVerticalAlign',
+      buttons: ['tableVerticalAlignTop', 'tableVerticalAlignMiddle', 'tableVerticalAlignBottom']
+    }, {
+      title: 'tableOthers',
+      buttons: [
+      // Cell merge/split
+      'tableMergeCells', 'tableUnmergeCells', 'tableDestroy']
+    }]
+  };
+  function ucFirst(value) {
+    return value[0].toUpperCase() + value.slice(1);
+  }
+  function hex(x) {
+    return ('0' + parseInt(x).toString(16)).slice(-2);
+  }
+  function colorToHex(rgb) {
+    if (rgb.search('rgb') === -1) {
+      return rgb.replace('#', '');
+    } else if (rgb === 'rgba(0, 0, 0, 0)') {
+      return 'transparent';
+    } else {
+      rgb = rgb.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/);
+      if (rgb == null) {
+        return 'transparent'; // No match, return transparent as unkown color
+      }
+
+      return hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+    }
+  }
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        table: 'Insert table',
+        tableRows: 'Rows',
+        tableColumns: 'Columns',
+        tableVerticalAlign: 'Vertical align',
+        tableOthers: 'Others',
+        tableAddHeaderRow: 'Insert head row',
+        tableAddRowAbove: 'Insert row above',
+        tableAddRow: 'Insert row below',
+        tableAddColumnLeft: 'Insert column to the left',
+        tableAddColumn: 'Insert column to the right',
+        tableDeleteRow: 'Delete row',
+        tableDeleteColumn: 'Delete column',
+        tableDestroy: 'Delete table',
+        tableMergeCells: 'Merge cells',
+        tableUnmergeCells: 'Unmerge cells',
+        tableVerticalAlignTop: 'Align text to top',
+        tableVerticalAlignMiddle: 'Center text vertically',
+        tableVerticalAlignBottom: 'Align text to bottom',
+        tableCellBackgroundColor: 'Cell background color'
+      },
+      az: {
+        table: 'Cədvəl yerləşdir',
+        tableAddRow: 'Sətir əlavə et',
+        tableAddRowAbove: 'Yuxarı sətir əlavə et',
+        tableAddColumnLeft: 'Sola sütun əlavə et',
+        tableAddColumn: 'Sağa sütun əlavə et',
+        tableDeleteRow: 'Sətri sil',
+        tableDeleteColumn: 'Sütunu sil',
+        tableDestroy: 'Cədvəli sil'
+      },
+      ca: {
+        table: 'Inserir taula',
+        tableAddRow: 'Afegir fila',
+        tableAddRowAbove: 'Afegir fila a dalt',
+        tableAddColumnLeft: 'Afegir columna a l\'esquerra',
+        tableAddColumn: 'Afegir columna a la dreta',
+        tableDeleteRow: 'Esborrar fila',
+        tableDeleteColumn: 'Esborrar columna',
+        tableDestroy: 'Esborrar taula',
+        error: 'Error'
+      },
+      cs: {
+        table: 'Vytvořit příkaz Table',
+        tableAddRow: 'Přidat řádek',
+        tableAddRowAbove: 'Přidat řádek',
+        tableAddColumnLeft: 'Přidat sloupec',
+        tableAddColumn: 'Přidat sloupec'
+      },
+      da: {
+        table: 'Indsæt tabel',
+        tableAddRow: 'Tilføj række',
+        tableAddRowAbove: 'Tilføj række',
+        tableAddColumnLeft: 'Tilføj kolonne',
+        tableAddColumn: 'Tilføj kolonne',
+        tableDeleteRow: 'Slet række',
+        tableDeleteColumn: 'Slet kolonne',
+        tableDestroy: 'Slet tabel'
+      },
+      de: {
+        table: 'Tabelle einfügen',
+        tableAddRow: 'Zeile hinzufügen',
+        tableAddRowAbove: 'Zeile hinzufügen',
+        tableAddColumnLeft: 'Spalte hinzufügen',
+        tableAddColumn: 'Spalte hinzufügen',
+        tableDeleteRow: 'Zeile löschen',
+        tableDeleteColumn: 'Spalte löschen',
+        tableDestroy: 'Tabelle löschen'
+      },
+      et: {
+        table: 'Sisesta tabel',
+        tableAddRow: 'Lisa rida',
+        tableAddRowAbove: 'Lisa rida üles',
+        tableAddColumnLeft: 'Lisa tulp vasakule',
+        tableAddColumn: 'Lisa tulp paremale',
+        tableDeleteRow: 'Kustuta rida',
+        tableDeleteColumn: 'Kustuta tulp',
+        tableDestroy: 'Kustuta tabel'
+      },
+      fr: {
+        table: 'Insérer un tableau',
+        tableRows: 'Lignes',
+        tableColumns: 'Colonnes',
+        tableVerticalAlign: 'Alignement vertical',
+        tableOthers: 'Autres',
+        tableAddHeaderRow: 'Insérer une line d\'en-tête',
+        tableAddRowAbove: 'Insérer une ligne au dessus',
+        tableAddRow: 'Insérer une ligne en dessous',
+        tableAddColumnLeft: 'Insérer une colonne à gauche',
+        tableAddColumn: 'Insérer une colonne à droite',
+        tableDeleteRow: 'Supprimer la ligne',
+        tableDeleteColumn: 'Supprimer la colonne',
+        tableDestroy: 'Supprimer le tableau',
+        tableMergeCells: 'Fusionner les cellules',
+        tableUnmergeCells: 'Dissocier les cellules',
+        tableVerticalAlignTop: 'Aligner en haut',
+        tableVerticalAlignMiddle: 'Aligner au milieu',
+        tableVerticalAlignBottom: 'Aligner en bas',
+        tableCellBackgroundColor: 'Couleur de fond des cellules',
+        tableBorderColor: 'Couleur de la bordure du tableau'
+      },
+      hu: {
+        table: 'Táblázat beszúrás',
+        tableAddRow: 'Sor hozzáadás',
+        tableAddRowAbove: 'Sor beszúrás fönt',
+        tableAddColumnLeft: 'Sor beszúrás balra',
+        tableAddColumn: 'Sor beszúrás jobbra',
+        tableDeleteRow: 'Sor törlés',
+        tableDeleteColumn: 'Oszlop törlés',
+        tableDestroy: 'Táblázat törlés'
+      },
+      id: {
+        table: 'Sisipkan tabel',
+        tableAddRow: 'Sisipkan baris',
+        tableAddRowAbove: 'Sisipkan baris',
+        tableAddColumnLeft: 'Sisipkan kolom',
+        tableAddColumn: 'Sisipkan kolom',
+        tableDeleteRow: 'Hapus baris',
+        tableDeleteColumn: 'Hapus kolom',
+        tableDestroy: 'Hapus tabel'
+      },
+      ja: {
+        table: '表の挿入',
+        tableAddRow: '行の追加',
+        tableAddRowAbove: '行の追加',
+        tableAddColumnLeft: '列の追加',
+        tableAddColumn: '列の追加'
+      },
+      ko: {
+        table: '표 넣기',
+        tableAddRow: '줄 추가',
+        tableAddRowAbove: '줄 추가',
+        tableAddColumnLeft: '칸 추가',
+        tableAddColumn: '칸 추가',
+        tableDeleteRow: '줄 삭제',
+        tableDeleteColumn: '칸 삭제',
+        tableDestroy: '표 지우기'
+      },
+      pt_br: {
+        table: 'Inserir tabela',
+        tableAddRow: 'Adicionar linha',
+        tableAddRowAbove: 'Adicionar linha',
+        tableAddColumnLeft: 'Adicionar coluna',
+        tableAddColumn: 'Adicionar coluna',
+        tableDeleteRow: 'Deletar linha',
+        tableDeleteColumn: 'Deletar coluna',
+        tableDestroy: 'Deletar tabela'
+      },
+      ru: {
+        table: 'Вставить таблицу',
+        tableAddRow: 'Добавить строку',
+        tableAddRowAbove: 'Добавить строку',
+        tableAddColumnLeft: 'Добавить столбец',
+        tableAddColumn: 'Добавить столбец',
+        tableDeleteRow: 'Удалить строку',
+        tableDeleteColumn: 'Удалить столбец',
+        tableDestroy: 'Удалить таблицу'
+      },
+      sl: {
+        table: 'Dodaj tabelo',
+        tableAddRow: 'Dodaj vrstico',
+        tableAddRowAbove: 'Vrini vrstico',
+        tableAddColumnLeft: 'Vrini stolpec',
+        tableAddColumn: 'Dodaj stolpec',
+        tableDeleteRow: 'Izbriši vrstico',
+        tableDeleteColumn: 'Izbriši stolpec',
+        tableDestroy: 'Izbriši tabelo'
+      },
+      sk: {
+        table: 'Vytvoriť tabuľky',
+        tableAddRow: 'Pridať riadok',
+        tableAddRowAbove: 'Pridať riadok',
+        tableAddColumnLeft: 'Pridať stĺpec',
+        tableAddColumn: 'Pridať stĺpec'
+      },
+      tr: {
+        table: 'Tablo ekle',
+        tableAddRow: 'Satır ekle',
+        tableAddRowAbove: 'Yukarıya satır ekle',
+        tableAddColumnLeft: 'Sola sütun ekle',
+        tableAddColumn: 'Sağa sütun ekle',
+        tableDeleteRow: 'Satırı sil',
+        tableDeleteColumn: 'Sütunu sil',
+        tableDestroy: 'Tabloyu sil'
+      },
+      zh_tw: {
+        table: '插入表格',
+        tableAddRow: '加入行',
+        tableAddRowAbove: '加入行',
+        tableAddColumnLeft: '加入列',
+        tableAddColumn: '加入列',
+        tableDeleteRow: '刪除行',
+        tableDeleteColumn: '刪除列',
+        tableDestroy: '刪除表格'
+      },
+      es: {
+        table: 'Insertar tabla',
+        tableAddRow: 'Agregar fila',
+        tableAddRowAbove: 'Agregar fila arriba',
+        tableAddColumnLeft: 'Agregar columna a la izquierda',
+        tableAddColumn: 'Agregar columna a la derecha',
+        tableDeleteRow: 'Borrar fila',
+        tableDeleteColumn: 'Borrar columna',
+        tableDestroy: 'Borrar tabla'
+      } // jshint camelcase:true
+    },
+
+    plugins: {
+      table: {
+        // jshint maxstatements:false
+        init: function init(t) {
+          t.o.plugins.table = $.extend(true, {}, defaultOptions, t.o.plugins.table || {});
+
+          // State
+          var tableSelectedCells;
+
+          ////////////////////////////////////////////////////
+          // Dropdown
+
+          var buildButtonDef = {
+            fn: function fn() {
+              t.saveRange();
+              var btnName = 'table';
+              var dropdownPrefix = t.o.prefix + 'dropdown',
+                dropdownOptions = {
+                  // the dropdown
+                  "class": dropdownPrefix + '-' + btnName + ' ' + dropdownPrefix + ' ' + t.o.prefix + 'fixed-top'
+                };
+              dropdownOptions['data-' + dropdownPrefix] = btnName;
+              var $dropdown = $('<div/>', dropdownOptions);
+              if (t.$box.find('.' + dropdownPrefix + '-' + btnName).length === 0) {
+                t.$box.append($dropdown.hide());
+              } else {
+                $dropdown = t.$box.find('.' + dropdownPrefix + '-' + btnName);
+              }
+
+              // clear dropdown
+              $dropdown.html('');
+
+              // when active table show AddRow / AddColumn
+              if (t.$box.find('.' + t.o.prefix + 'table-button').hasClass(t.o.prefix + 'active-button')) {
+                var $table = $(t.doc.getSelection().anchorNode).closest('table');
+                var tableState = getTableState($table);
+                var hasSelectedCells = tableSelectedCells !== undefined;
+                $(t.o.plugins.table.dropdown).each(function (_, buttonGroup) {
+                  $dropdown.append($('<div/>', {
+                    html: t.lang[buttonGroup.title] ? t.lang[buttonGroup.title] : buttonGroup.title,
+                    "class": t.o.prefix + 'table-dropdown-title'
+                  })).text();
+                  var $buttonGroup = $('<div/>', {
+                    "class": t.o.prefix + 'dropdown-button-group'
+                  });
+                  $(buttonGroup.buttons).each(function (_, buttonName) {
+                    // Conditional thead button
+                    if (buttonName === 'tableAddHeaderRow') {
+                      var hasThead = $('thead', $table).length !== 0;
+                      if (hasThead) {
+                        return;
+                      }
+                    }
+
+                    // Conditional merge button
+                    if (buttonName === 'tableMergeCells' && !hasSelectedCells) {
+                      return;
+                    }
+
+                    // Conditional unmerge button
+                    if (buttonName === 'tableUnmergeCells') {
+                      var hasAtLeastOneMergedCell = false;
+                      foreachSelectedCell(function ($cell) {
+                        var isMergedCell = $cell.is('[colspan]') || $cell.is('[rowspan]');
+                        hasAtLeastOneMergedCell = hasAtLeastOneMergedCell || isMergedCell;
+                      }, tableState);
+                      if (!hasAtLeastOneMergedCell) {
+                        return;
+                      }
+                    }
+                    $buttonGroup.append(t.buildSubBtn(buttonName));
+                  });
+                  $dropdown.append($buttonGroup);
+                });
+              } else {
+                var $tableSelect = $('<table/>');
+                $('<tbody/>').appendTo($tableSelect);
+                for (var i = 0; i < t.o.plugins.table.rows; i += 1) {
+                  var row = $('<tr/>').appendTo($tableSelect);
+                  for (var j = 0; j < t.o.plugins.table.columns; j += 1) {
+                    $('<td/>').appendTo(row);
+                  }
+                }
+                $tableSelect.find('td').on('mouseover', toggleActiveDropdownCells);
+                $tableSelect.find('td').on('mousedown', tableBuild);
+                $dropdown.append($tableSelect);
+                $dropdown.append($('<div class="trumbowyg-table-size">1x1</div>'));
+              }
+              t.dropdown(btnName);
+            },
+            "class": t.o.prefix + 'open-dropdown'
+          };
+          var toggleActiveDropdownCells = function toggleActiveDropdownCells(columnEvent) {
+            var column = $(columnEvent.target),
+              table = column.closest('table'),
+              colIndex = this.cellIndex,
+              rowIndex = this.parentNode.rowIndex;
+
+            // reset all columns
+            table.find('td').removeClass('active');
+            for (var i = 0; i <= rowIndex; i += 1) {
+              for (var j = 0; j <= colIndex; j += 1) {
+                table.find('tr:nth-of-type(' + (i + 1) + ')').find('td:nth-of-type(' + (j + 1) + ')').addClass('active');
+              }
+            }
+
+            // set label
+            table.next('.trumbowyg-table-size').html(colIndex + 1 + 'x' + (rowIndex + 1));
+          };
+          var applyTagClassesToElement = function applyTagClassesToElement(element) {
+            var tagClasses = t.o.tagClasses[element.tagName.toLowerCase()];
+            if (!tagClasses) {
+              return;
+            }
+            $(element).addClass(tagClasses);
+          };
+          var applyTagClasses = function applyTagClasses($table) {
+            applyTagClassesToElement($table[0]);
+            $('*', $table).each(function (_, element) {
+              applyTagClassesToElement(element);
+            });
+          };
+          var tableBuild = function tableBuild() {
+            t.saveRange();
+            var $newTable = $('<table/>');
+
+            // Build thead
+            var $thead = $('<thead/>');
+            var $theadTr = $('<tr/>');
+            $theadTr.appendTo($thead);
+            for (var th = 0; th <= this.cellIndex; th += 1) {
+              $('<th/>', {
+                scope: 'col'
+              }).appendTo($theadTr);
+            }
+            $thead.appendTo($newTable);
+
+            // Build tbody
+            var $tbody = $('<tbody/>');
+            var colIndex = this.cellIndex,
+              rowIndex = this.parentNode.rowIndex;
+            for (var i = 0; i <= rowIndex; i += 1) {
+              var row = $('<tr/>').appendTo($tbody);
+              for (var j = 0; j <= colIndex; j += 1) {
+                $('<td/>').appendTo(row);
+              }
+            }
+            $tbody.appendTo($newTable);
+
+            // Apply tag classes
+            applyTagClasses($newTable);
+
+            // Find first parent element
+            var rangeNode = t.range.endContainer;
+            while (rangeNode.nodeType !== Node.ELEMENT_NODE) {
+              rangeNode = rangeNode.parentNode;
+            }
+
+            // Put range after the parent of the selected element
+            if (rangeNode !== t.$ed[0]) {
+              t.range.setEndAfter(rangeNode);
+            }
+
+            // Insert table after the range
+            t.range.collapse();
+            t.range.insertNode($newTable[0]);
+
+            // Remove empty paragraph
+            if (rangeNode.nodeName === 'P' && rangeNode.textContent.trim().length === 0) {
+              rangeNode.remove();
+            }
+            t.syncCode();
+            rebuildResizeLayers();
+          };
+          var getTableState = function getTableState($table) {
+            var $tableRows = $('tr', $table);
+            var tableState = [];
+            for (var i = 0; i < $tableRows.length; i += 1) {
+              tableState.push([]);
+            }
+            $tableRows.each(function (rowIndex, row) {
+              var columnIndex = 0;
+              $('td, th', $(row)).each(function (cellIndex, cell) {
+                var $cell = $(cell);
+                var colspanAttr = $cell.attr('colspan');
+                var rowspanAttr = $cell.attr('rowspan');
+                var colspan = parseInt(colspanAttr ? colspanAttr : 1, 10);
+                var rowspan = parseInt(rowspanAttr ? rowspanAttr : 1, 10);
+                while (tableState[rowIndex][columnIndex] !== undefined) {
+                  columnIndex += 1;
+                }
+                tableState[rowIndex][columnIndex] = {
+                  tag: cell.tagName,
+                  element: cell,
+                  colspan: colspan,
+                  rowspan: rowspan
+                };
+                for (var cols = 1; cols < colspan; cols += 1) {
+                  tableState[rowIndex][columnIndex + cols] = {
+                    mergedIn: [rowIndex, columnIndex]
+                  };
+                }
+                for (var rows = 1; rows < rowspan; rows += 1) {
+                  tableState[rowIndex + rows][columnIndex] = {
+                    mergedIn: [rowIndex, columnIndex]
+                  };
+                  for (var colsInRow = 1; colsInRow < colspan; colsInRow += 1) {
+                    tableState[rowIndex + rows][columnIndex + colsInRow] = {
+                      mergedIn: [rowIndex, columnIndex]
+                    };
+                  }
+                }
+                columnIndex += colspan;
+              });
+            });
+            return tableState;
+          };
+
+          ////////////////////////////////////////////////////
+          // Buttons
+
+          var tableButtonAction = function tableButtonAction(callback) {
+            return function () {
+              t.saveRange();
+              var node = t.doc.getSelection().anchorNode;
+              var $table = $(node).closest('table');
+              if ($table.length === 0) {
+                return;
+              }
+              if (node.tagName === 'TR') {
+                node = $('td, th', node)[0];
+              }
+              var $focusedRow = $(node).closest('tr');
+              var tableState = getTableState($table);
+              callback($table, $focusedRow, node, tableState);
+              t.syncCode();
+            };
+          };
+
+          ////// Rows
+
+          var addRowButtonAction = function addRowButtonAction() {
+            var isBefore = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+            return tableButtonAction(function ($table, $focusedRow, node, tableState) {
+              var $rows = $('tr', $table);
+              var $newRow = $('<tr/>');
+
+              // Shift one row before if insert before
+              var focusedRowIndex = $rows.index($focusedRow);
+              if (isBefore) {
+                focusedRowIndex = Math.max(0, focusedRowIndex - 1);
+                $focusedRow = $($rows[focusedRowIndex]);
+              } else {
+                var rawCellRowspan = $(node).closest('td, th').attr('rowspan');
+                var cellRowspan = parseInt(rawCellRowspan ? rawCellRowspan : 1, 10);
+                focusedRowIndex += cellRowspan - 1;
+                $focusedRow = $($rows[focusedRowIndex]);
+              }
+
+              // Cannot add line to thead, so move to first tbody row
+              var $tbodyRows = $('tbody tr', $table);
+              var isFocusInHead = $focusedRow.closest('thead').length !== 0;
+              if (isFocusInHead) {
+                $focusedRow = $tbodyRows.first();
+              }
+
+              // add columns according to current columns count
+              var focusedRowState = tableState[focusedRowIndex];
+              var nextRowState = tableState[focusedRowIndex + 1];
+              var columnCount = tableState[0].length;
+              for (var columnIndex = 0; columnIndex < columnCount; columnIndex += 1) {
+                if (nextRowState !== undefined) {
+                  var originCellState = focusedRowState[columnIndex];
+                  var originCellMergedInState = getCellState(tableState, originCellState.mergedIn);
+                  var nextCellState = nextRowState[columnIndex];
+                  var nextCellMergedInState = getCellState(tableState, nextCellState.mergedIn);
+                  var realOriginCellState = originCellState.element ? originCellState : originCellMergedInState;
+                  var originCellElement = realOriginCellState.element;
+                  var nextCellElement = nextCellState.element ? nextCellState.element : nextCellMergedInState.element;
+                  if (originCellElement === nextCellElement) {
+                    originCellElement.setAttribute('rowspan', realOriginCellState.rowspan + 1);
+                    continue;
+                  }
+                }
+                $('<td/>').appendTo($newRow);
+              }
+
+              // add row to table
+              if (focusedRowIndex === 0 && (isBefore || isFocusInHead)) {
+                $focusedRow.before($newRow);
+              } else {
+                $focusedRow.after($newRow);
+              }
+              applyTagClasses($table);
+              rebuildResizeLayers();
+            });
+          };
+          var addRowAbove = {
+            title: t.lang.tableAddRowAbove,
+            text: t.lang.tableAddRowAbove,
+            ico: 'row-above',
+            fn: addRowButtonAction(true)
+          };
+          var addRowBelow = {
+            title: t.lang.tableAddRow,
+            text: t.lang.tableAddRow,
+            ico: 'row-below',
+            fn: addRowButtonAction(false)
+          };
+          var addHeaderRow = {
+            title: t.lang.tableAddHeaderRow,
+            text: t.lang.tableAddHeaderRow,
+            ico: 'header-row',
+            fn: tableButtonAction(function ($table, $focusedRow, node, tableState) {
+              var hasThead = $('thead', $table).length !== 0;
+              if (hasThead) {
+                return false;
+              }
+              var columnCount = tableState[0].length;
+              var $thead = $('<thead/>');
+              var $theadRow = $('<tr/>').appendTo($thead);
+
+              // add columns according to current columns count
+              for (var columnIndex = 0; columnIndex < columnCount; columnIndex += 1) {
+                $('<th/>').appendTo($theadRow);
+              }
+
+              // add thead to table
+              $table.prepend($thead);
+              applyTagClasses($table);
+              rebuildResizeLayers();
+            })
+          };
+
+          ////// Columns
+
+          var addColumnButtonAction = function addColumnButtonAction() {
+            var isBefore = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+            return tableButtonAction(function ($table, $focusedRow, node, tableState) {
+              var $rows = $('tr', $table);
+              var focusedRowIndex = $rows.index($focusedRow);
+              var focusedRowState = tableState[focusedRowIndex];
+              var $focusedCell = $(node).closest('td, th');
+
+              // Shift one column before if insert before
+              var cellIndex = getCellIndex($focusedCell[0], focusedRowState);
+              if (isBefore) {
+                cellIndex = Math.max(0, cellIndex - 1);
+              } else {
+                var rawCellColspan = $focusedCell.attr('colspan');
+                var cellColspan = parseInt(rawCellColspan ? rawCellColspan : 1, 10);
+                cellIndex += cellColspan - 1;
+              }
+
+              // add a cell to each row
+              var rowCount = tableState.length;
+              var mustInsertBefore = isBefore && cellIndex === 0;
+              for (var rowIndex = 0; rowIndex < rowCount; rowIndex += 1) {
+                var rowState = tableState[rowIndex];
+                var nextCellState = mustInsertBefore ? undefined : rowState[cellIndex + 1];
+                if (nextCellState !== undefined) {
+                  var originCellState = rowState[cellIndex];
+                  var originCellMergedInState = getCellState(tableState, originCellState.mergedIn);
+                  var nextCellMergedInState = getCellState(tableState, nextCellState.mergedIn);
+                  var realOriginCellState = originCellState.element ? originCellState : originCellMergedInState;
+                  var originCellElement = realOriginCellState.element;
+                  var nextCellElement = nextCellState.element ? nextCellState.element : nextCellMergedInState.element;
+                  if (originCellElement === nextCellElement) {
+                    originCellElement.setAttribute('colspan', realOriginCellState.colspan + 1);
+                    continue;
+                  }
+                }
+
+                // Get previous real cell state
+                var previousRealCellState;
+                var previousColumnShift = 0;
+                do {
+                  var newIndex = cellIndex - previousColumnShift;
+                  if (newIndex < 0) {
+                    break;
+                  }
+                  previousRealCellState = rowState[newIndex];
+                  previousColumnShift += 1;
+                } while (previousRealCellState.mergedIn !== undefined);
+
+                // Create and append the cell next to the previous
+                var $previousCell = previousRealCellState.element;
+                var newCellElement = t.doc.createElement($previousCell.tagName);
+                if (cellIndex === 0 && isBefore) {
+                  $previousCell.before(newCellElement);
+                } else {
+                  $previousCell.after(newCellElement);
+                }
+              }
+              applyTagClasses($table);
+              rebuildResizeLayers();
+            });
+          };
+          var addColumnLeft = {
+            title: t.lang.tableAddColumnLeft,
+            text: t.lang.tableAddColumnLeft,
+            ico: 'col-left',
+            fn: addColumnButtonAction(true)
+          };
+          var addColumnRight = {
+            title: t.lang.tableAddColumn,
+            text: t.lang.tableAddColumn,
+            ico: 'col-right',
+            fn: addColumnButtonAction(false)
+          };
+
+          ////// Delete
+
+          var destroy = {
+            title: t.lang.tableDestroy,
+            text: t.lang.tableDestroy,
+            ico: 'table-delete',
+            fn: tableButtonAction(function ($table) {
+              $table.remove();
+            })
+          };
+          var deleteRow = {
+            title: t.lang.tableDeleteRow,
+            text: t.lang.tableDeleteRow,
+            ico: 'row-delete',
+            fn: tableButtonAction(function ($table, $focusedRow, node, tableState) {
+              // Only one row is remaining in the table, remove the table
+              if ($('tbody tr', $table).length === 1) {
+                $table.remove();
+                return;
+              }
+
+              // Pick element to remove
+              var $elementToRemove = $focusedRow;
+              var $focusedRowParent = $focusedRow.parent();
+              if ($focusedRowParent.is('thead')) {
+                $elementToRemove = $focusedRowParent;
+              }
+
+              // Manage merged cells
+              var $rows = $('tr', $table);
+              var rowIndex = $rows.index($(node).closest('tr'));
+              for (var y = 0; y < tableState[0].length; y += 1) {
+                var cellState = getCellState(tableState, [rowIndex, y], false);
+                if (cellState.rowspan === 1) {
+                  continue;
+                }
+                var originCellState = getCellState(tableState, [rowIndex, y]);
+                originCellState.element.setAttribute('rowspan', originCellState.rowspan - 1);
+
+                // If origin cell is not in this row, continue
+                if (cellState.mergedIn !== undefined) {
+                  continue;
+                }
+
+                // If origin cell is in this row, move it to the next row
+                var originCellIndex = getCellIndex(cellState.element, tableState[rowIndex]);
+                if (originCellIndex === 0) {
+                  $($rows[rowIndex + 1]).prepend(originCellState.element);
+                  continue;
+                }
+                var nextRowPreviousColumnCellState = getCellState(tableState, [rowIndex + 1, originCellIndex - 1]);
+                $(nextRowPreviousColumnCellState.element).after(originCellState.element);
+              }
+              $elementToRemove.remove();
+              simplifyCells($table);
+              redrawResizeLayers();
+            })
+          };
+          var deleteColumn = {
+            title: t.lang.tableDeleteColumn,
+            text: t.lang.tableDeleteColumn,
+            ico: 'col-delete',
+            fn: tableButtonAction(function ($table, $focusedRow, node, tableState) {
+              var $rows = $('tr', $table);
+              var rowIndex = $rows.index($(node).closest('tr'));
+              var columnIndex = getCellIndex($(node).closest('td, th')[0], tableState[rowIndex]);
+              for (var x = 0; x < tableState.length; x += 1) {
+                var cellState = getCellState(tableState, [x, columnIndex], false);
+
+                // Reduce cell colspan by 1
+                if (cellState.colspan > 1) {
+                  var originCellState = getCellState(tableState, [x, columnIndex]);
+                  originCellState.element.setAttribute('colspan', originCellState.colspan - 1);
+                  continue;
+                }
+
+                // Delete cell if not merged
+                cellState.element.remove();
+              }
+              simplifyCells();
+              redrawResizeLayers();
+            })
+          };
+
+          ////// Cell merging
+
+          var getCellState = function getCellState(tableState, cellCoordinates) {
+            var mustGetDeep = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+            if (cellCoordinates === undefined) {
+              return undefined;
+            }
+            var cellState = tableState[cellCoordinates[0]][cellCoordinates[1]];
+            if (mustGetDeep && cellState.mergedIn !== undefined) {
+              cellState = tableState[cellState.mergedIn[0]][cellState.mergedIn[1]];
+            }
+            return cellState;
+          };
+          var canMergeSelectedCells = function canMergeSelectedCells(tableState) {
+            if (tableSelectedCells.length === 0) {
+              return false;
+            }
+
+            // Check that all tags are the same
+            var firstCellStateCoordinates = tableSelectedCells[0];
+            var firstSelectedCellTag = getCellState(tableState, firstCellStateCoordinates).tag;
+            var allTagsAreTheSame = tableSelectedCells.every(function (cellCoordinates) {
+              var cellState = getCellState(tableState, cellCoordinates);
+              return cellState.tag === firstSelectedCellTag;
+            });
+            if (!allTagsAreTheSame) {
+              return false;
+            }
+
+            // Check that all selected cells make a rectangle
+            var minByRow = [];
+            var maxByRow = [];
+            $(tableSelectedCells).each(function (_, tableSelectedCell) {
+              var y = tableSelectedCell[0];
+              var x = tableSelectedCell[1];
+              var cellState = tableState[y][x];
+              var cellRowspan = cellState.rowspan;
+              var maxRow = y + cellRowspan;
+              for (; y < maxRow; y += 1) {
+                if (minByRow[y] === undefined) {
+                  minByRow[y] = tableState[0].length;
+                }
+                if (maxByRow[y] === undefined) {
+                  maxByRow[y] = 0;
+                }
+                minByRow[y] = Math.min(minByRow[y], x);
+                maxByRow[y] = Math.max(maxByRow[y], x + cellState.colspan);
+              }
+            });
+            if (minByRow.length === 0 || maxByRow.length === 0) {
+              return false;
+            }
+            var allMinAreTheSame = minByRow.every(function (value) {
+              return value === minByRow[minByRow.length - 1];
+            });
+            var allMaxAreTheSame = maxByRow.every(function (value) {
+              return value === maxByRow[maxByRow.length - 1];
+            });
+            return allMinAreTheSame && allMaxAreTheSame;
+          };
+          var findTopLeftCellInSelection = function findTopLeftCellInSelection() {
+            var MAX_VALUE = 999999;
+            var topLeftY = MAX_VALUE;
+            var topLeftX = MAX_VALUE;
+            $(tableSelectedCells).each(function (_, cell) {
+              topLeftY = Math.min(cell[0], topLeftY);
+              topLeftX = Math.min(cell[1], topLeftX);
+            });
+            if (topLeftX === MAX_VALUE || topLeftY === MAX_VALUE) {
+              return undefined;
+            }
+            return [topLeftY, topLeftX];
+          };
+          var simplifyCells = function simplifyCells($table) {
+            var tableState = getTableState($table);
+
+            // Remove rowspan if a row is empty
+            var $rows = $('tr', $table);
+            $(tableState).each(function (rowIndex, rowState) {
+              var isRowEmpty = rowState.every(function (cellState) {
+                return cellState.mergedIn !== undefined;
+              });
+              if (!isRowEmpty) {
+                return;
+              }
+
+              // Reduce by 1 the rowspan on each cell in previous row
+              $(tableState[rowIndex - 1]).each(function (_, cellState) {
+                if (cellState.mergedIn !== undefined) {
+                  cellState = getCellState(tableState, cellState.mergedIn);
+                }
+                cellState.rowspan -= 1;
+                if (cellState.rowspan <= 1) {
+                  cellState.element.removeAttribute('rowspan');
+                  return;
+                }
+                cellState.element.setAttribute('rowspan', cellState.rowspan);
+              });
+
+              // Remove empty tr
+              $rows[rowIndex].remove();
+            });
+
+            // Remove empty attributes
+            $('[class=""]', $table).removeAttr('class');
+            $('[style=""]', $table).removeAttr('style');
+          };
+          var mergeCells = {
+            title: t.lang.tableMergeCells,
+            text: t.lang.tableMergeCells,
+            ico: 'table-merge',
+            fn: tableButtonAction(function ($table, $focusedRow, node, tableState) {
+              if (!canMergeSelectedCells(tableState)) {
+                return;
+              }
+              var topLeftCellCoordinates = findTopLeftCellInSelection();
+              if (topLeftCellCoordinates === undefined) {
+                return;
+              }
+              var topLeftCellState = getCellState(tableState, topLeftCellCoordinates);
+              var $topLeftCell = $(topLeftCellState.element);
+              var minY = 999999;
+              var maxY = 0;
+              var minX = 999999;
+              var maxX = 0;
+              $(tableSelectedCells).each(function (_, selectedCell) {
+                var y = selectedCell[0];
+                var x = selectedCell[1];
+                var cellState = tableState[y][x];
+                minY = Math.min(minY, y);
+                maxY = Math.max(maxY, y + cellState.rowspan - 1);
+                minX = Math.min(minX, x);
+                maxX = Math.max(maxX, x + cellState.colspan - 1);
+                if (cellState.element === $topLeftCell[0]) {
+                  return;
+                }
+                cellState.element.remove();
+              });
+              var cellHeight = maxY - minY + 1;
+              var cellWidth = maxX - minX + 1;
+              if (cellHeight > 1) {
+                $topLeftCell.attr('rowspan', cellHeight);
+              }
+              if (cellWidth > 1) {
+                $topLeftCell.attr('colspan', cellWidth);
+              }
+              simplifyCells($table);
+              rebuildResizeLayers();
+            })
+          };
+          var unmergeCells = {
+            title: t.lang.tableUnmergeCells,
+            text: t.lang.tableUnmergeCells,
+            ico: 'table-unmerge',
+            fn: tableButtonAction(function ($table, $focusedRow, node, tableState) {
+              foreachSelectedCell(function ($cell) {
+                $cell.removeAttr('colspan').removeAttr('rowspan');
+                var $rows = $('tr', $table);
+                var cellRowIndex = $rows.index($cell.closest('tr'));
+                var cellColumnIndex = getCellIndex($cell[0], tableState[cellRowIndex]);
+                var cellState = tableState[cellRowIndex][cellColumnIndex];
+                for (var rowIndex = 0; rowIndex < cellState.rowspan; rowIndex += 1) {
+                  var colIndex = rowIndex === 0 ? 1 : 0;
+                  var previousCellState = getCellState(tableState, [cellRowIndex + rowIndex, cellColumnIndex + colIndex - 1]);
+                  var previousCellElement = previousCellState.element;
+                  for (; colIndex < cellState.colspan; colIndex += 1) {
+                    var newCellElement = t.doc.createElement(previousCellElement.tagName);
+                    $(previousCellElement).after(newCellElement);
+                  }
+                }
+              }, tableState);
+              applyTagClasses($table);
+              rebuildResizeLayers();
+            })
+          };
+
+          ////// Cell selection
+
+          var getCellIndex = function getCellIndex(cellElement, rowState) {
+            return rowState.findIndex(function (rowStateCell) {
+              if (rowStateCell.element === undefined) {
+                return false;
+              }
+              return rowStateCell.element === cellElement;
+            });
+          };
+          var resetTableMouseHacks = function resetTableMouseHacks() {
+            $('table', t.$ed).off('mousedown.tbwTable');
+            $('table', t.$ed).on('mousedown.tbwTable', function (e) {
+              // Cells drag and drop while changing cell selection
+              t.doc.getSelection().removeAllRanges();
+
+              // Prevent Ctrl+Click on Firefox
+              if (!e.ctrlKey) {
+                return;
+              }
+              e.preventDefault();
+            });
+          };
+          var tableCellSelectionModeClass = t.o.prefix + 'table-cell-selection-mode';
+          var tableCellSelectedClass = t.o.prefix + 'table-cell-selected';
+          setTimeout(function () {
+            // Wait for init
+            resetTableMouseHacks();
+            t.$c.on('tbwchange.tbwTable', function () {
+              resetTableMouseHacks();
+              rebuildResizeLayers();
+            });
+            rebuildResizeLayers();
+            $(t.doc).on('selectionchange.tbwTable', function () {
+              tableSelectedCells = undefined;
+              var selection = t.doc.getSelection();
+              var rangeCount = selection.rangeCount;
+              var anchorNode = selection.anchorNode;
+              var focusNode = selection.focusNode;
+
+              // Firefox create one range by cell
+              if (rangeCount > 1) {
+                var firstRange = selection.getRangeAt(0);
+                var lastRange = selection.getRangeAt(rangeCount - 1);
+                anchorNode = firstRange.startContainer.childNodes[firstRange.startOffset];
+                focusNode = lastRange.startContainer.childNodes[lastRange.startOffset];
+              }
+              var $anchorSelectedCell = $(anchorNode).closest('td, th');
+              var $focusSelectedCell = $(focusNode).closest('td, th');
+              var $tableAnchor = $anchorSelectedCell.closest('table');
+              var $tableFocus = $focusSelectedCell.closest('table');
+              $('[class="' + tableCellSelectedClass + '"]', t.$ed).removeAttr('class');
+              $('.' + tableCellSelectedClass, t.$ed).removeClass(tableCellSelectedClass);
+              if ($tableAnchor.length === 0 && $tableFocus.length === 0 || $tableAnchor[0] !== $tableFocus[0] || $anchorSelectedCell[0] === $focusSelectedCell[0]) {
+                $('.' + tableCellSelectionModeClass, t.$ed).removeClass(tableCellSelectionModeClass);
+                return;
+              }
+
+              // Toggle table to selection mode
+              $tableAnchor.addClass(tableCellSelectionModeClass);
+
+              // Get table state
+              var tableState = getTableState($tableAnchor);
+
+              // Find cells to set as selected
+              var $allRows = $('tr', $tableAnchor);
+              var $anchorSelectedRow = $anchorSelectedCell.closest('tr');
+              var anchorSelectedRowIndex = $allRows.index($anchorSelectedRow);
+              var $focusSelectedRow = $focusSelectedCell.closest('tr');
+              var focusSelectedRowIndex = $allRows.index($focusSelectedRow);
+              var anchorSelectedCellIndex = getCellIndex($anchorSelectedCell[0], tableState[anchorSelectedRowIndex]);
+              var focusSelectedCellIndex = getCellIndex($focusSelectedCell[0], tableState[focusSelectedRowIndex]);
+              var firstSelectedRowIndex = Math.min(anchorSelectedRowIndex, focusSelectedRowIndex);
+              var lastSelectedRowIndex = Math.max(anchorSelectedRowIndex, focusSelectedRowIndex);
+              var firstSelectedCellIndex = Math.min(anchorSelectedCellIndex, focusSelectedCellIndex);
+              var lastSelectedCellIndex = Math.max(anchorSelectedCellIndex, focusSelectedCellIndex);
+
+              // Set cells as selected
+              var selectedCellsCoordinates = [];
+              $allRows.each(function (rowIndex, rowElement) {
+                if (rowIndex < firstSelectedRowIndex || rowIndex > lastSelectedRowIndex) {
+                  return;
+                }
+                $('td, th', rowElement).each(function (_, cellElement) {
+                  var cellIndex = getCellIndex(cellElement, tableState[rowIndex]);
+                  if (cellIndex < firstSelectedCellIndex || cellIndex > lastSelectedCellIndex) {
+                    return;
+                  }
+                  selectedCellsCoordinates.push([rowIndex, cellIndex]);
+                  $(cellElement).addClass(tableCellSelectedClass);
+                });
+              });
+              tableSelectedCells = selectedCellsCoordinates;
+            });
+          });
+          var foreachSelectedCell = function foreachSelectedCell(callback, tableState) {
+            if (tableSelectedCells === undefined) {
+              var $cell = $(t.doc.getSelection().anchorNode).closest('td, th');
+              if ($cell.length === 0) {
+                return;
+              }
+              callback($cell);
+              return;
+            }
+            $(tableSelectedCells).each(function (_, cellCoordinates) {
+              var cellState = getCellState(tableState, cellCoordinates, false);
+              if (cellState.mergedIn !== undefined) {
+                return;
+              }
+              callback($(cellState.element));
+            });
+          };
+
+          ////// Cell resize
+
+          var TRUMBOWYG_TABLE_HANDLE_FOR = 'trumbowyg-table-handle-for';
+          var rebuildResizeLayers = function rebuildResizeLayers() {
+            if (!t.o.plugins.table.allowHorizontalResize) {
+              return;
+            }
+            var tableState;
+            var targetColumnIndex;
+            var $table;
+            var $resizeLayers = $(t.o.prefix + 'table-resize-layers');
+            var hasResizeLayers = $resizeLayers.length > 0;
+            if (!hasResizeLayers) {
+              $resizeLayers = $('<div/>', {
+                "class": t.o.prefix + 'table-resize-layers'
+              }).appendTo(t.$edBox);
+              $(t.o.prefix + 'table-resize-vertical-handle', $resizeLayers).each(function (_, handle) {
+                $(handle).off().remove();
+              });
+            }
+            $('table', t.$ed).each(function (_tableIndex, table) {
+              $('td, th', $(table)).each(function (_cellIndex, cell) {
+                // Vertical handles
+                $('<div/>', {
+                  "class": t.o.prefix + 'table-resize-vertical-handle'
+                }).prop(TRUMBOWYG_TABLE_HANDLE_FOR, cell).on('mousedown.tbwTable', function (e) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  var targetCell = $(e.target).prop(TRUMBOWYG_TABLE_HANDLE_FOR);
+                  $table = $(targetCell).closest('table');
+                  tableState = getTableState($table);
+                  var $allRows = $('tr', $table);
+                  var $row = $(targetCell).closest('tr');
+                  var rowIndex = $allRows.index($row);
+                  var rowState = tableState[rowIndex];
+                  var columnIndex = getCellIndex(targetCell, rowState);
+                  var targetCellState = tableState[rowIndex][columnIndex];
+                  if (targetCellState.mergedIn !== undefined) {
+                    targetCellState = tableState[targetCellState.mergedIn[0]][targetCellState.mergedIn[1]];
+                  }
+                  targetColumnIndex = columnIndex + targetCellState.colspan - 1;
+                  ensureColgroupExists($table, tableState);
+                  setColWidthInPixels($table, tableState);
+                  $table.css({
+                    maxWidth: ''
+                  });
+                }).appendTo($resizeLayers);
+              });
+            });
+            redrawResizeLayers();
+
+            // If resize layer was here
+            // We do not need to add following events
+            if (hasResizeLayers) {
+              return;
+            }
+            $(t.doc).on('mousemove.tbwTable', function (e) {
+              if (targetColumnIndex === undefined) {
+                return;
+              }
+              e.preventDefault();
+              e.stopPropagation();
+              var tableRect = $table[0].getBoundingClientRect();
+              var tableLeftInPixels = e.pageX - tableRect.left;
+              var cellState = findFirstCellAtIndex(tableState, targetColumnIndex);
+              var cellElement = cellState.element;
+              var cellRect = cellElement.getBoundingClientRect();
+              var cellLeftInPixels = cellRect.left - tableRect.left;
+              var cellWidthInPixels = tableLeftInPixels - cellLeftInPixels;
+              var colElement = $('col', $table)[targetColumnIndex];
+              $(colElement).css({
+                width: cellWidthInPixels
+              });
+              redrawResizeLayers();
+            }).on('mouseup.tbwTable', function (e) {
+              if (targetColumnIndex === undefined) {
+                return;
+              }
+              e.preventDefault();
+              e.stopPropagation();
+
+              // Fix width
+              ensureColgroupExists($table, tableState);
+              setColWidthInPercents($table, tableState);
+
+              // Reset resize state
+              $table = undefined;
+              tableState = undefined;
+              targetColumnIndex = undefined;
+
+              // Update HTML
+              t.syncCode();
+              redrawResizeLayers();
+            });
+            $(window).on('resize.tbwTable', function () {
+              redrawResizeLayers();
+            });
+          };
+          var ensureColgroupExists = function ensureColgroupExists($table, tableState) {
+            var $colgroup = $('colgroup', $table);
+            if ($colgroup.length === 0) {
+              $colgroup = $('<colgroup/>').prependTo($table);
+            }
+            var columnCount = tableState[0].length;
+            var currentColCount = $('col', $colgroup).length;
+            for (; currentColCount < columnCount; currentColCount += 1) {
+              $('<col/>').appendTo($colgroup);
+            }
+          };
+          var findFirstCellAtIndex = function findFirstCellAtIndex(tableState, cellIndex) {
+            var cellState;
+            var rowIndex = 0;
+            do {
+              cellState = tableState[rowIndex][cellIndex];
+              rowIndex += 1;
+            } while (cellState.element === undefined || cellState.colspan !== 1);
+            return cellState;
+          };
+          var setColWidths = function setColWidths($table, tableState) {
+            var isUnitPercent = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+            var $colgroup = $('colgroup', $table);
+            var $cols = $('col', $colgroup);
+            var tableWidth = $table[0].offsetWidth;
+            $table.css({
+              maxWidth: $table[0].offsetWidth
+            });
+            var columnCount = tableState[0].length;
+            var colWidths = [];
+            for (var columnIndex = 0; columnIndex < columnCount; columnIndex += 1) {
+              var cellElement = findFirstCellAtIndex(tableState, columnIndex).element;
+              var cellWidth = cellElement.getBoundingClientRect().width;
+              if (isUnitPercent) {
+                cellWidth = cellWidth / tableWidth * 100 + '%';
+              }
+              colWidths[columnIndex] = cellWidth;
+            }
+            for (var colIndex = 0; colIndex < columnCount; colIndex += 1) {
+              $($cols[colIndex]).css({
+                width: colWidths[colIndex]
+              });
+            }
+          };
+          var setColWidthInPixels = function setColWidthInPixels($table, tableState) {
+            setColWidths($table, tableState, false);
+          };
+          var setColWidthInPercents = function setColWidthInPercents($table, tableState) {
+            setColWidths($table, tableState, true);
+          };
+          var redrawResizeLayers = function redrawResizeLayers() {
+            var $resizeLayers = $('.' + t.o.prefix + 'table-resize-layers', t.$edBox);
+            var resizeLayersBoundingClientRect = $resizeLayers[0].getBoundingClientRect();
+            var resizeLayersTop = resizeLayersBoundingClientRect.top;
+            var resizeLayersLeft = resizeLayersBoundingClientRect.left;
+            $('.' + t.o.prefix + 'table-resize-vertical-handle', $resizeLayers).each(function (_, cellHandle) {
+              var $cellHandle = $(cellHandle);
+              var cell = $cellHandle.prop(TRUMBOWYG_TABLE_HANDLE_FOR);
+              var cellBoundingClientRect = cell.getBoundingClientRect();
+              $cellHandle.css({
+                top: cellBoundingClientRect.top - resizeLayersTop,
+                left: cellBoundingClientRect.left - resizeLayersLeft + cellBoundingClientRect.width,
+                height: cellBoundingClientRect.height
+              });
+            });
+          };
+
+          ////// Vertical alignment
+
+          var tableVerticalAlign = function tableVerticalAlign(alignPosition) {
+            return tableButtonAction(function ($table, $focusedRow, node, tableState) {
+              foreachSelectedCell(function ($cell) {
+                $cell.css({
+                  verticalAlign: alignPosition
+                });
+              }, tableState);
+            });
+          };
+          var verticalAlignTop = {
+            title: t.lang.tableVerticalAlignTop,
+            text: t.lang.tableVerticalAlignTop,
+            ico: 'align-top',
+            fn: tableVerticalAlign('top')
+          };
+          var verticalAlignMiddle = {
+            title: t.lang.tableVerticalAlignMiddle,
+            text: t.lang.tableVerticalAlignMiddle,
+            ico: 'align-middle',
+            fn: tableVerticalAlign('middle')
+          };
+          var verticalAlignBottom = {
+            title: t.lang.tableVerticalAlignBottom,
+            text: t.lang.tableVerticalAlignBottom,
+            ico: 'align-bottom',
+            fn: tableVerticalAlign('bottom')
+          };
+
+          ////// Cell Background color
+
+          var getColorDropdownClass = function getColorDropdownClass(mustDisplayAsList) {
+            return mustDisplayAsList ? t.o.prefix + 'dropdown--color-list' : '';
+          };
+          var buildColorDropdown = function buildColorDropdown(name, colorList, mustDisplayAsList, allowCustomColor, callback) {
+            var dropdown = [];
+            var trumbowygTableOptions = t.o.plugins.table;
+            $.each(colorList, function (i, color) {
+              var btn = name + color;
+              var btnDef = {
+                fn: callback('#' + color),
+                hasIcon: false,
+                text: t.lang['#' + color] || '#' + color,
+                style: 'background-color: #' + color + ';'
+              };
+              t.addBtnDef(btn, btnDef);
+              dropdown.push(btn);
+            });
+
+            // Remove color
+            var removeColorButtonName = 'remove' + ucFirst(name),
+              removeColorBtnDef = {
+                fn: callback(''),
+                hasIcon: false,
+                style: 'background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVQIW2NkQAAfEJMRmwBYhoGBYQtMBYoAADziAp0jtJTgAAAAAElFTkSuQmCC);'
+              };
+            if (mustDisplayAsList) {
+              removeColorBtnDef.style = '';
+            }
+            t.addBtnDef(removeColorButtonName, removeColorBtnDef);
+            dropdown.push(removeColorButtonName);
+
+            // Custom color
+            if (trumbowygTableOptions.allowCustomBackgroundColor) {
+              var freeColorBtnDef = {
+                fn: function fn() {
+                  t.openModalInsert(t.lang.backgroundColor, {
+                    color: {
+                      label: 'backgroundColor',
+                      forceCss: true,
+                      type: 'color',
+                      value: '#FFFFFF'
+                    }
+                  },
+                  // callback
+                  function (values) {
+                    callback(values.color)();
+                    return true;
+                  });
+                },
+                hasIcon: false,
+                text: '#',
+                // style adjust for displaying the text
+                style: 'text-indent: 0; line-height: 20px; padding: 0 5px;'
+              };
+              var freeColorButtonName = 'free' + ucFirst(name);
+              t.addBtnDef(freeColorButtonName, freeColorBtnDef);
+              dropdown.push(freeColorButtonName);
+            }
+            return dropdown;
+          };
+          var applyBackgroundColorToSelectedCells = function applyBackgroundColorToSelectedCells(color) {
+            return function () {
+              var $table = $(t.doc.getSelection().anchorNode).closest('table');
+              if ($table.length === 0) {
+                return;
+              }
+              var tableState = getTableState($table);
+              foreachSelectedCell(function ($cell) {
+                $cell.css({
+                  backgroundColor: color
+                });
+              }, tableState);
+              simplifyCells($table);
+            };
+          };
+          var cellBackgroundColorBtnDef = {
+            dropdown: buildColorDropdown('tableCellBackgroundColor', t.o.plugins.table.backgroundColorList || t.o.plugins.table.colorList, t.o.plugins.table.displayBackgroundColorsAsList, t.o.plugins.table.allowCustomBackgroundColor, applyBackgroundColorToSelectedCells),
+            dropdownClass: getColorDropdownClass(t.o.plugins.table.displayBackgroundColorsAsList)
+          };
+
+          ////// Table border color
+
+          var applyBorderColor = function applyBorderColor(color) {
+            return function () {
+              var $table = $(t.doc.getSelection().anchorNode).closest('table');
+              if ($table.length === 0) {
+                return;
+              }
+              var border = {
+                borderColor: color
+              };
+              if (parseInt($table.css('border-width'), 10) === 0) {
+                border.borderWidth = '2px';
+                border.borderStyle = 'solid';
+              }
+              if (color === '') {
+                border.borderWidth = '';
+                border.borderStyle = '';
+              }
+              $table.css(border);
+            };
+          };
+          var tableBorderColorBtnDef = {
+            dropdown: buildColorDropdown('tableBorderColor', t.o.plugins.table.borderColorList || t.o.plugins.table.colorList, t.o.plugins.table.displayBorderColorsAsList, t.o.plugins.table.allowCustomBorderColor, applyBorderColor),
+            dropdownClass: getColorDropdownClass(t.o.plugins.table.displayBorderColorsAsList)
+          };
+
+          ////// Register buttons
+
+          t.addBtnDef('table', buildButtonDef);
+          t.addBtnDef('tableAddHeaderRow', addHeaderRow);
+          t.addBtnDef('tableAddRowAbove', addRowAbove);
+          t.addBtnDef('tableAddRow', addRowBelow);
+          t.addBtnDef('tableAddColumnLeft', addColumnLeft);
+          t.addBtnDef('tableAddColumn', addColumnRight);
+          t.addBtnDef('tableMergeCells', mergeCells);
+          t.addBtnDef('tableUnmergeCells', unmergeCells);
+          t.addBtnDef('tableVerticalAlignTop', verticalAlignTop);
+          t.addBtnDef('tableVerticalAlignMiddle', verticalAlignMiddle);
+          t.addBtnDef('tableVerticalAlignBottom', verticalAlignBottom);
+          t.addBtnDef('tableCellBackgroundColor', cellBackgroundColorBtnDef);
+          t.addBtnDef('tableBorderColor', tableBorderColorBtnDef);
+          t.addBtnDef('tableDeleteRow', deleteRow);
+          t.addBtnDef('tableDeleteColumn', deleteColumn);
+          t.addBtnDef('tableDestroy', destroy);
+        },
+        destroy: function destroy(t) {
+          $(window).off('resize.tbwTable');
+          $(t.doc).off('selectionchange.tbwTable').off('mousemove.tbwTable').off('mouseup.tbwTable');
+          t.$c.off('tbwchange.tbwTable');
+          $('table', t.$ed).off('mousedown.tbwTable');
+        },
+        tagHandler: function tagHandler(element, t) {
+          var tags = [];
+          if (element.tagName === 'TABLE') {
+            tags.push('table');
+            var elementBorderColor = element.style.borderColor;
+            if (elementBorderColor !== '') {
+              var borderColor = colorToHex(elementBorderColor);
+              if (t.o.plugins.table.colorList.indexOf(borderColor) >= 0) {
+                tags.push('tableBorderColor' + borderColor);
+              } else {
+                tags.push('freeTableBorderColor');
+              }
+            }
+          }
+          if (!element.style) {
+            return tags;
+          }
+          var elementVerticalAlign = element.style.verticalAlign;
+          if (elementVerticalAlign !== '') {
+            tags.push('tableVerticalAlign' + ucFirst(elementVerticalAlign));
+          }
+          var elementBackgroundColor = element.style.backgroundColor;
+          if ((element.tagName === 'TH' || element.tagName === 'TD') && elementBackgroundColor !== '') {
+            var backgroundColor = colorToHex(elementBackgroundColor);
+            if (t.o.plugins.table.colorList.indexOf(backgroundColor) >= 0) {
+              tags.push('tableCellBackgroundColor' + backgroundColor);
+            } else {
+              tags.push('freeTableCellBackgroundColor');
+            }
+          }
+          return tags;
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.table.js v3.0
+ * Table plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Alexandre Demode (Alex-D)
+ *          Twitter : @AlexandreDemode
+ *          Website : alex-d.fr
+ * Original Author : Sven Dunemann [dunemann@forelabs.eu]
+ */
+!function (e) {
+  "use strict";
+
+  var t = {
+    rows: 8,
+    columns: 8,
+    allowHorizontalResize: !0,
+    colorList: ["ffffff", "000000", "eeece1", "1f497d", "4f81bd", "c0504d", "9bbb59", "8064a2", "4bacc6", "f79646", "ffff00", "f2f2f2", "7f7f7f", "ddd9c3", "c6d9f0", "dbe5f1", "f2dcdb", "ebf1dd", "e5e0ec", "dbeef3", "fdeada", "fff2ca", "d8d8d8", "595959", "c4bd97", "8db3e2", "b8cce4", "e5b9b7", "d7e3bc", "ccc1d9", "b7dde8", "fbd5b5", "ffe694", "bfbfbf", "3f3f3f", "938953", "548dd4", "95b3d7", "d99694", "c3d69b", "b2a2c7", "b7dde8", "fac08f", "f2c314", "a5a5a5", "262626", "494429", "17365d", "366092", "953734", "76923c", "5f497a", "92cddc", "e36c09", "c09100", "7f7f7f", "0c0c0c", "1d1b10", "0f243e", "244061", "632423", "4f6128", "3f3151", "31859b", "974806", "7f6000"],
+    backgroundColorList: null,
+    allowCustomBackgroundColor: !0,
+    displayBackgroundColorsAsList: !1,
+    borderColorList: null,
+    allowCustomBorderColor: !0,
+    displayBorderColorsAsList: !1,
+    dropdown: [{
+      title: "tableRows",
+      buttons: ["tableAddHeaderRow", "tableAddRowAbove", "tableAddRow", "tableDeleteRow"]
+    }, {
+      title: "tableColumns",
+      buttons: ["tableAddColumnLeft", "tableAddColumn", "tableDeleteColumn"]
+    }, {
+      title: "tableVerticalAlign",
+      buttons: ["tableVerticalAlignTop", "tableVerticalAlignMiddle", "tableVerticalAlignBottom"]
+    }, {
+      title: "tableOthers",
+      buttons: ["tableMergeCells", "tableUnmergeCells", "tableDestroy"]
+    }]
+  };
+  function l(e) {
+    return e[0].toUpperCase() + e.slice(1);
+  }
+  function a(e) {
+    return ("0" + parseInt(e).toString(16)).slice(-2);
+  }
+  function o(e) {
+    return -1 === e.search("rgb") ? e.replace("#", "") : "rgba(0, 0, 0, 0)" === e || null == (e = e.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d?(.\d+)))?\)$/)) ? "transparent" : a(e[1]) + a(e[2]) + a(e[3]);
+  }
+  e.extend(!0, e.trumbowyg, {
+    langs: {
+      en: {
+        table: "Insert table",
+        tableRows: "Rows",
+        tableColumns: "Columns",
+        tableVerticalAlign: "Vertical align",
+        tableOthers: "Others",
+        tableAddHeaderRow: "Insert head row",
+        tableAddRowAbove: "Insert row above",
+        tableAddRow: "Insert row below",
+        tableAddColumnLeft: "Insert column to the left",
+        tableAddColumn: "Insert column to the right",
+        tableDeleteRow: "Delete row",
+        tableDeleteColumn: "Delete column",
+        tableDestroy: "Delete table",
+        tableMergeCells: "Merge cells",
+        tableUnmergeCells: "Unmerge cells",
+        tableVerticalAlignTop: "Align text to top",
+        tableVerticalAlignMiddle: "Center text vertically",
+        tableVerticalAlignBottom: "Align text to bottom",
+        tableCellBackgroundColor: "Cell background color"
+      },
+      az: {
+        table: "Cədvəl yerləşdir",
+        tableAddRow: "Sətir əlavə et",
+        tableAddRowAbove: "Yuxarı sətir əlavə et",
+        tableAddColumnLeft: "Sola sütun əlavə et",
+        tableAddColumn: "Sağa sütun əlavə et",
+        tableDeleteRow: "Sətri sil",
+        tableDeleteColumn: "Sütunu sil",
+        tableDestroy: "Cədvəli sil"
+      },
+      ca: {
+        table: "Inserir taula",
+        tableAddRow: "Afegir fila",
+        tableAddRowAbove: "Afegir fila a dalt",
+        tableAddColumnLeft: "Afegir columna a l'esquerra",
+        tableAddColumn: "Afegir columna a la dreta",
+        tableDeleteRow: "Esborrar fila",
+        tableDeleteColumn: "Esborrar columna",
+        tableDestroy: "Esborrar taula",
+        error: "Error"
+      },
+      cs: {
+        table: "Vytvořit příkaz Table",
+        tableAddRow: "Přidat řádek",
+        tableAddRowAbove: "Přidat řádek",
+        tableAddColumnLeft: "Přidat sloupec",
+        tableAddColumn: "Přidat sloupec"
+      },
+      da: {
+        table: "Indsæt tabel",
+        tableAddRow: "Tilføj række",
+        tableAddRowAbove: "Tilføj række",
+        tableAddColumnLeft: "Tilføj kolonne",
+        tableAddColumn: "Tilføj kolonne",
+        tableDeleteRow: "Slet række",
+        tableDeleteColumn: "Slet kolonne",
+        tableDestroy: "Slet tabel"
+      },
+      de: {
+        table: "Tabelle einfügen",
+        tableAddRow: "Zeile hinzufügen",
+        tableAddRowAbove: "Zeile hinzufügen",
+        tableAddColumnLeft: "Spalte hinzufügen",
+        tableAddColumn: "Spalte hinzufügen",
+        tableDeleteRow: "Zeile löschen",
+        tableDeleteColumn: "Spalte löschen",
+        tableDestroy: "Tabelle löschen"
+      },
+      et: {
+        table: "Sisesta tabel",
+        tableAddRow: "Lisa rida",
+        tableAddRowAbove: "Lisa rida üles",
+        tableAddColumnLeft: "Lisa tulp vasakule",
+        tableAddColumn: "Lisa tulp paremale",
+        tableDeleteRow: "Kustuta rida",
+        tableDeleteColumn: "Kustuta tulp",
+        tableDestroy: "Kustuta tabel"
+      },
+      fr: {
+        table: "Insérer un tableau",
+        tableRows: "Lignes",
+        tableColumns: "Colonnes",
+        tableVerticalAlign: "Alignement vertical",
+        tableOthers: "Autres",
+        tableAddHeaderRow: "Insérer une line d'en-tête",
+        tableAddRowAbove: "Insérer une ligne au dessus",
+        tableAddRow: "Insérer une ligne en dessous",
+        tableAddColumnLeft: "Insérer une colonne à gauche",
+        tableAddColumn: "Insérer une colonne à droite",
+        tableDeleteRow: "Supprimer la ligne",
+        tableDeleteColumn: "Supprimer la colonne",
+        tableDestroy: "Supprimer le tableau",
+        tableMergeCells: "Fusionner les cellules",
+        tableUnmergeCells: "Dissocier les cellules",
+        tableVerticalAlignTop: "Aligner en haut",
+        tableVerticalAlignMiddle: "Aligner au milieu",
+        tableVerticalAlignBottom: "Aligner en bas",
+        tableCellBackgroundColor: "Couleur de fond des cellules",
+        tableBorderColor: "Couleur de la bordure du tableau"
+      },
+      hu: {
+        table: "Táblázat beszúrás",
+        tableAddRow: "Sor hozzáadás",
+        tableAddRowAbove: "Sor beszúrás fönt",
+        tableAddColumnLeft: "Sor beszúrás balra",
+        tableAddColumn: "Sor beszúrás jobbra",
+        tableDeleteRow: "Sor törlés",
+        tableDeleteColumn: "Oszlop törlés",
+        tableDestroy: "Táblázat törlés"
+      },
+      id: {
+        table: "Sisipkan tabel",
+        tableAddRow: "Sisipkan baris",
+        tableAddRowAbove: "Sisipkan baris",
+        tableAddColumnLeft: "Sisipkan kolom",
+        tableAddColumn: "Sisipkan kolom",
+        tableDeleteRow: "Hapus baris",
+        tableDeleteColumn: "Hapus kolom",
+        tableDestroy: "Hapus tabel"
+      },
+      ja: {
+        table: "表の挿入",
+        tableAddRow: "行の追加",
+        tableAddRowAbove: "行の追加",
+        tableAddColumnLeft: "列の追加",
+        tableAddColumn: "列の追加"
+      },
+      ko: {
+        table: "표 넣기",
+        tableAddRow: "줄 추가",
+        tableAddRowAbove: "줄 추가",
+        tableAddColumnLeft: "칸 추가",
+        tableAddColumn: "칸 추가",
+        tableDeleteRow: "줄 삭제",
+        tableDeleteColumn: "칸 삭제",
+        tableDestroy: "표 지우기"
+      },
+      pt_br: {
+        table: "Inserir tabela",
+        tableAddRow: "Adicionar linha",
+        tableAddRowAbove: "Adicionar linha",
+        tableAddColumnLeft: "Adicionar coluna",
+        tableAddColumn: "Adicionar coluna",
+        tableDeleteRow: "Deletar linha",
+        tableDeleteColumn: "Deletar coluna",
+        tableDestroy: "Deletar tabela"
+      },
+      ru: {
+        table: "Вставить таблицу",
+        tableAddRow: "Добавить строку",
+        tableAddRowAbove: "Добавить строку",
+        tableAddColumnLeft: "Добавить столбец",
+        tableAddColumn: "Добавить столбец",
+        tableDeleteRow: "Удалить строку",
+        tableDeleteColumn: "Удалить столбец",
+        tableDestroy: "Удалить таблицу"
+      },
+      sl: {
+        table: "Dodaj tabelo",
+        tableAddRow: "Dodaj vrstico",
+        tableAddRowAbove: "Vrini vrstico",
+        tableAddColumnLeft: "Vrini stolpec",
+        tableAddColumn: "Dodaj stolpec",
+        tableDeleteRow: "Izbriši vrstico",
+        tableDeleteColumn: "Izbriši stolpec",
+        tableDestroy: "Izbriši tabelo"
+      },
+      sk: {
+        table: "Vytvoriť tabuľky",
+        tableAddRow: "Pridať riadok",
+        tableAddRowAbove: "Pridať riadok",
+        tableAddColumnLeft: "Pridať stĺpec",
+        tableAddColumn: "Pridať stĺpec"
+      },
+      tr: {
+        table: "Tablo ekle",
+        tableAddRow: "Satır ekle",
+        tableAddRowAbove: "Yukarıya satır ekle",
+        tableAddColumnLeft: "Sola sütun ekle",
+        tableAddColumn: "Sağa sütun ekle",
+        tableDeleteRow: "Satırı sil",
+        tableDeleteColumn: "Sütunu sil",
+        tableDestroy: "Tabloyu sil"
+      },
+      zh_tw: {
+        table: "插入表格",
+        tableAddRow: "加入行",
+        tableAddRowAbove: "加入行",
+        tableAddColumnLeft: "加入列",
+        tableAddColumn: "加入列",
+        tableDeleteRow: "刪除行",
+        tableDeleteColumn: "刪除列",
+        tableDestroy: "刪除表格"
+      },
+      es: {
+        table: "Insertar tabla",
+        tableAddRow: "Agregar fila",
+        tableAddRowAbove: "Agregar fila arriba",
+        tableAddColumnLeft: "Agregar columna a la izquierda",
+        tableAddColumn: "Agregar columna a la derecha",
+        tableDeleteRow: "Borrar fila",
+        tableDeleteColumn: "Borrar columna",
+        tableDestroy: "Borrar tabla"
+      }
+    },
+    plugins: {
+      table: {
+        init: function init(a) {
+          var o;
+          a.o.plugins.table = e.extend(!0, {}, t, a.o.plugins.table || {});
+          var n = {
+              fn: function fn() {
+                a.saveRange();
+                var t = "table",
+                  l = a.o.prefix + "dropdown",
+                  n = {
+                    "class": l + "-" + t + " " + l + " " + a.o.prefix + "fixed-top"
+                  };
+                n["data-" + l] = t;
+                var d = e("<div/>", n);
+                if (0 === a.$box.find("." + l + "-" + t).length ? a.$box.append(d.hide()) : d = a.$box.find("." + l + "-" + t), d.html(""), a.$box.find("." + a.o.prefix + "table-button").hasClass(a.o.prefix + "active-button")) {
+                  var i = e(a.doc.getSelection().anchorNode).closest("table"),
+                    c = b(i),
+                    u = void 0 !== o;
+                  e(a.o.plugins.table.dropdown).each(function (t, l) {
+                    d.append(e("<div/>", {
+                      html: a.lang[l.title] ? a.lang[l.title] : l.title,
+                      "class": a.o.prefix + "table-dropdown-title"
+                    })).text();
+                    var o = e("<div/>", {
+                      "class": a.o.prefix + "dropdown-button-group"
+                    });
+                    e(l.buttons).each(function (t, l) {
+                      if ("tableAddHeaderRow" === l && 0 !== e("thead", i).length) return;
+                      if ("tableMergeCells" !== l || u) {
+                        if ("tableUnmergeCells" === l) {
+                          var n = !1;
+                          if (L(function (e) {
+                            var t = e.is("[colspan]") || e.is("[rowspan]");
+                            n = n || t;
+                          }, c), !n) return;
+                        }
+                        o.append(a.buildSubBtn(l));
+                      }
+                    }), d.append(o);
+                  });
+                } else {
+                  var f = e("<table/>");
+                  e("<tbody/>").appendTo(f);
+                  for (var g = 0; g < a.o.plugins.table.rows; g += 1) for (var p = e("<tr/>").appendTo(f), m = 0; m < a.o.plugins.table.columns; m += 1) e("<td/>").appendTo(p);
+                  f.find("td").on("mouseover", r), f.find("td").on("mousedown", s), d.append(f), d.append(e('<div class="trumbowyg-table-size">1x1</div>'));
+                }
+                a.dropdown(t);
+              },
+              "class": a.o.prefix + "open-dropdown"
+            },
+            r = function r(t) {
+              var l = e(t.target).closest("table"),
+                a = this.cellIndex,
+                o = this.parentNode.rowIndex;
+              l.find("td").removeClass("active");
+              for (var n = 0; n <= o; n += 1) for (var r = 0; r <= a; r += 1) l.find("tr:nth-of-type(" + (n + 1) + ")").find("td:nth-of-type(" + (r + 1) + ")").addClass("active");
+              l.next(".trumbowyg-table-size").html(a + 1 + "x" + (o + 1));
+            },
+            d = function d(t) {
+              var l = a.o.tagClasses[t.tagName.toLowerCase()];
+              l && e(t).addClass(l);
+            },
+            i = function i(t) {
+              d(t[0]), e("*", t).each(function (e, t) {
+                d(t);
+              });
+            },
+            s = function s() {
+              a.saveRange();
+              var t = e("<table/>"),
+                l = e("<thead/>"),
+                o = e("<tr/>");
+              o.appendTo(l);
+              for (var n = 0; n <= this.cellIndex; n += 1) e("<th/>", {
+                scope: "col"
+              }).appendTo(o);
+              l.appendTo(t);
+              for (var r = e("<tbody/>"), d = this.cellIndex, s = this.parentNode.rowIndex, b = 0; b <= s; b += 1) for (var c = e("<tr/>").appendTo(r), u = 0; u <= d; u += 1) e("<td/>").appendTo(c);
+              r.appendTo(t), i(t);
+              for (var f = a.range.endContainer; f.nodeType !== Node.ELEMENT_NODE;) f = f.parentNode;
+              f !== a.$ed[0] && a.range.setEndAfter(f), a.range.collapse(), a.range.insertNode(t[0]), "P" === f.nodeName && 0 === f.textContent.trim().length && f.remove(), a.syncCode(), z();
+            },
+            b = function b(t) {
+              for (var l = e("tr", t), a = [], o = 0; o < l.length; o += 1) a.push([]);
+              return l.each(function (t, l) {
+                var o = 0;
+                e("td, th", e(l)).each(function (l, n) {
+                  for (var r = e(n), d = r.attr("colspan"), i = r.attr("rowspan"), s = parseInt(d || 1, 10), b = parseInt(i || 1, 10); void 0 !== a[t][o];) o += 1;
+                  a[t][o] = {
+                    tag: n.tagName,
+                    element: n,
+                    colspan: s,
+                    rowspan: b
+                  };
+                  for (var c = 1; c < s; c += 1) a[t][o + c] = {
+                    mergedIn: [t, o]
+                  };
+                  for (var u = 1; u < b; u += 1) {
+                    a[t + u][o] = {
+                      mergedIn: [t, o]
+                    };
+                    for (var f = 1; f < s; f += 1) a[t + u][o + f] = {
+                      mergedIn: [t, o]
+                    };
+                  }
+                  o += s;
+                });
+              }), a;
+            },
+            c = function c(t) {
+              return function () {
+                a.saveRange();
+                var l = a.doc.getSelection().anchorNode,
+                  o = e(l).closest("table");
+                if (0 !== o.length) {
+                  "TR" === l.tagName && (l = e("td, th", l)[0]);
+                  var n = e(l).closest("tr"),
+                    r = b(o);
+                  t(o, n, l, r), a.syncCode();
+                }
+              };
+            },
+            u = function u() {
+              var t = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : !1;
+              return c(function (l, a, o, n) {
+                var r = e("tr", l),
+                  d = e("<tr/>"),
+                  s = r.index(a);
+                if (t) s = Math.max(0, s - 1), a = e(r[s]);else {
+                  var b = e(o).closest("td, th").attr("rowspan"),
+                    c = parseInt(b || 1, 10);
+                  a = e(r[s += c - 1]);
+                }
+                var u = e("tbody tr", l),
+                  f = 0 !== a.closest("thead").length;
+                f && (a = u.first());
+                for (var g = n[s], p = n[s + 1], m = n[0].length, A = 0; A < m; A += 1) {
+                  if (void 0 !== p) {
+                    var v = g[A],
+                      h = D(n, v.mergedIn),
+                      w = p[A],
+                      C = D(n, w.mergedIn),
+                      R = v.element ? v : h,
+                      x = R.element;
+                    if (x === (w.element ? w.element : C.element)) {
+                      x.setAttribute("rowspan", R.rowspan + 1);
+                      continue;
+                    }
+                  }
+                  e("<td/>").appendTo(d);
+                }
+                0 === s && (t || f) ? a.before(d) : a.after(d), i(l), z();
+              });
+            },
+            f = {
+              title: a.lang.tableAddRowAbove,
+              text: a.lang.tableAddRowAbove,
+              ico: "row-above",
+              fn: u(!0)
+            },
+            g = {
+              title: a.lang.tableAddRow,
+              text: a.lang.tableAddRow,
+              ico: "row-below",
+              fn: u(!1)
+            },
+            p = {
+              title: a.lang.tableAddHeaderRow,
+              text: a.lang.tableAddHeaderRow,
+              ico: "header-row",
+              fn: c(function (t, l, a, o) {
+                if (0 !== e("thead", t).length) return !1;
+                for (var n = o[0].length, r = e("<thead/>"), d = e("<tr/>").appendTo(r), s = 0; s < n; s += 1) e("<th/>").appendTo(d);
+                t.prepend(r), i(t), z();
+              })
+            },
+            m = function m() {
+              var t = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : !1;
+              return c(function (l, o, n, r) {
+                var d = r[e("tr", l).index(o)],
+                  s = e(n).closest("td, th"),
+                  b = B(s[0], d);
+                if (t) b = Math.max(0, b - 1);else {
+                  var c = s.attr("colspan");
+                  b += parseInt(c || 1, 10) - 1;
+                }
+                for (var u = r.length, f = t && 0 === b, g = 0; g < u; g += 1) {
+                  var p,
+                    m = r[g],
+                    A = f ? void 0 : m[b + 1];
+                  if (void 0 !== A) {
+                    var v = m[b],
+                      h = D(r, v.mergedIn),
+                      w = D(r, A.mergedIn),
+                      C = v.element ? v : h,
+                      R = C.element;
+                    if (R === (A.element ? A.element : w.element)) {
+                      R.setAttribute("colspan", C.colspan + 1);
+                      continue;
+                    }
+                  }
+                  var x = 0;
+                  do {
+                    var y = b - x;
+                    if (y < 0) break;
+                    p = m[y], x += 1;
+                  } while (void 0 !== p.mergedIn);
+                  var T = p.element,
+                    k = a.doc.createElement(T.tagName);
+                  0 === b && t ? T.before(k) : T.after(k);
+                }
+                i(l), z();
+              });
+            },
+            A = {
+              title: a.lang.tableAddColumnLeft,
+              text: a.lang.tableAddColumnLeft,
+              ico: "col-left",
+              fn: m(!0)
+            },
+            v = {
+              title: a.lang.tableAddColumn,
+              text: a.lang.tableAddColumn,
+              ico: "col-right",
+              fn: m(!1)
+            },
+            h = {
+              title: a.lang.tableDestroy,
+              text: a.lang.tableDestroy,
+              ico: "table-delete",
+              fn: c(function (e) {
+                e.remove();
+              })
+            },
+            w = {
+              title: a.lang.tableDeleteRow,
+              text: a.lang.tableDeleteRow,
+              ico: "row-delete",
+              fn: c(function (t, l, a, o) {
+                if (1 !== e("tbody tr", t).length) {
+                  var n = l,
+                    r = l.parent();
+                  r.is("thead") && (n = r);
+                  for (var d = e("tr", t), i = d.index(e(a).closest("tr")), s = 0; s < o[0].length; s += 1) {
+                    var b = D(o, [i, s], !1);
+                    if (1 !== b.rowspan) {
+                      var c = D(o, [i, s]);
+                      if (c.element.setAttribute("rowspan", c.rowspan - 1), void 0 === b.mergedIn) {
+                        var u = B(b.element, o[i]);
+                        if (0 !== u) {
+                          var f = D(o, [i + 1, u - 1]);
+                          e(f.element).after(c.element);
+                        } else e(d[i + 1]).prepend(c.element);
+                      }
+                    }
+                  }
+                  n.remove(), R(t), H();
+                } else t.remove();
+              })
+            },
+            C = {
+              title: a.lang.tableDeleteColumn,
+              text: a.lang.tableDeleteColumn,
+              ico: "col-delete",
+              fn: c(function (t, l, a, o) {
+                for (var n = e("tr", t).index(e(a).closest("tr")), r = B(e(a).closest("td, th")[0], o[n]), d = 0; d < o.length; d += 1) {
+                  var i = D(o, [d, r], !1);
+                  if (i.colspan > 1) {
+                    var s = D(o, [d, r]);
+                    s.element.setAttribute("colspan", s.colspan - 1);
+                  } else i.element.remove();
+                }
+                R(), H();
+              })
+            },
+            D = function D(e, t) {
+              var l = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : !0;
+              if (void 0 !== t) {
+                var a = e[t[0]][t[1]];
+                return l && void 0 !== a.mergedIn && (a = e[a.mergedIn[0]][a.mergedIn[1]]), a;
+              }
+            },
+            R = function R(t) {
+              var l = b(t),
+                a = e("tr", t);
+              e(l).each(function (t, o) {
+                o.every(function (e) {
+                  return void 0 !== e.mergedIn;
+                }) && (e(l[t - 1]).each(function (e, t) {
+                  void 0 !== t.mergedIn && (t = D(l, t.mergedIn)), t.rowspan -= 1, t.rowspan <= 1 ? t.element.removeAttribute("rowspan") : t.element.setAttribute("rowspan", t.rowspan);
+                }), a[t].remove());
+              }), e('[class=""]', t).removeAttr("class"), e('[style=""]', t).removeAttr("style");
+            },
+            x = {
+              title: a.lang.tableMergeCells,
+              text: a.lang.tableMergeCells,
+              ico: "table-merge",
+              fn: c(function (t, l, a, n) {
+                if (function (t) {
+                  if (0 === o.length) return !1;
+                  var l = o[0],
+                    a = D(t, l).tag;
+                  if (!o.every(function (e) {
+                    return D(t, e).tag === a;
+                  })) return !1;
+                  var n = [],
+                    r = [];
+                  if (e(o).each(function (e, l) {
+                    for (var a = l[0], o = l[1], d = t[a][o], i = a + d.rowspan; a < i; a += 1) void 0 === n[a] && (n[a] = t[0].length), void 0 === r[a] && (r[a] = 0), n[a] = Math.min(n[a], o), r[a] = Math.max(r[a], o + d.colspan);
+                  }), 0 === n.length || 0 === r.length) return !1;
+                  var d = n.every(function (e) {
+                      return e === n[n.length - 1];
+                    }),
+                    i = r.every(function (e) {
+                      return e === r[r.length - 1];
+                    });
+                  return d && i;
+                }(n)) {
+                  var r = function () {
+                    var t = 999999,
+                      l = t,
+                      a = t;
+                    if (e(o).each(function (e, t) {
+                      l = Math.min(t[0], l), a = Math.min(t[1], a);
+                    }), a !== t && l !== t) return [l, a];
+                  }();
+                  if (void 0 !== r) {
+                    var d = D(n, r),
+                      i = e(d.element),
+                      s = 999999,
+                      b = 0,
+                      c = 999999,
+                      u = 0;
+                    e(o).each(function (e, t) {
+                      var l = t[0],
+                        a = t[1],
+                        o = n[l][a];
+                      s = Math.min(s, l), b = Math.max(b, l + o.rowspan - 1), c = Math.min(c, a), u = Math.max(u, a + o.colspan - 1), o.element !== i[0] && o.element.remove();
+                    });
+                    var f = b - s + 1,
+                      g = u - c + 1;
+                    f > 1 && i.attr("rowspan", f), g > 1 && i.attr("colspan", g), R(t), z();
+                  }
+                }
+              })
+            },
+            y = {
+              title: a.lang.tableUnmergeCells,
+              text: a.lang.tableUnmergeCells,
+              ico: "table-unmerge",
+              fn: c(function (t, l, o, n) {
+                L(function (l) {
+                  l.removeAttr("colspan").removeAttr("rowspan");
+                  for (var o = e("tr", t).index(l.closest("tr")), r = B(l[0], n[o]), d = n[o][r], i = 0; i < d.rowspan; i += 1) for (var s = 0 === i ? 1 : 0, b = D(n, [o + i, r + s - 1]).element; s < d.colspan; s += 1) {
+                    var c = a.doc.createElement(b.tagName);
+                    e(b).after(c);
+                  }
+                }, n), i(t), z();
+              })
+            },
+            B = function B(e, t) {
+              return t.findIndex(function (t) {
+                return void 0 !== t.element && t.element === e;
+              });
+            },
+            T = function T() {
+              e("table", a.$ed).off("mousedown.tbwTable"), e("table", a.$ed).on("mousedown.tbwTable", function (e) {
+                a.doc.getSelection().removeAllRanges(), e.ctrlKey && e.preventDefault();
+              });
+            },
+            k = a.o.prefix + "table-cell-selection-mode",
+            I = a.o.prefix + "table-cell-selected";
+          setTimeout(function () {
+            T(), a.$c.on("tbwchange.tbwTable", function () {
+              T(), z();
+            }), z(), e(a.doc).on("selectionchange.tbwTable", function () {
+              o = void 0;
+              var t = a.doc.getSelection(),
+                l = t.rangeCount,
+                n = t.anchorNode,
+                r = t.focusNode;
+              if (l > 1) {
+                var d = t.getRangeAt(0),
+                  i = t.getRangeAt(l - 1);
+                n = d.startContainer.childNodes[d.startOffset], r = i.startContainer.childNodes[i.startOffset];
+              }
+              var s = e(n).closest("td, th"),
+                c = e(r).closest("td, th"),
+                u = s.closest("table"),
+                f = c.closest("table");
+              if (e('[class="' + I + '"]', a.$ed).removeAttr("class"), e("." + I, a.$ed).removeClass(I), 0 === u.length && 0 === f.length || u[0] !== f[0] || s[0] === c[0]) e("." + k, a.$ed).removeClass(k);else {
+                u.addClass(k);
+                var g = b(u),
+                  p = e("tr", u),
+                  m = s.closest("tr"),
+                  A = p.index(m),
+                  v = c.closest("tr"),
+                  h = p.index(v),
+                  w = B(s[0], g[A]),
+                  C = B(c[0], g[h]),
+                  D = Math.min(A, h),
+                  R = Math.max(A, h),
+                  x = Math.min(w, C),
+                  y = Math.max(w, C),
+                  T = [];
+                p.each(function (t, l) {
+                  t < D || t > R || e("td, th", l).each(function (l, a) {
+                    var o = B(a, g[t]);
+                    o < x || o > y || (T.push([t, o]), e(a).addClass(I));
+                  });
+                }), o = T;
+              }
+            });
+          });
+          var L = function L(t, l) {
+              if (void 0 !== o) e(o).each(function (a, o) {
+                var n = D(l, o, !1);
+                void 0 === n.mergedIn && t(e(n.element));
+              });else {
+                var n = e(a.doc.getSelection().anchorNode).closest("td, th");
+                if (0 === n.length) return;
+                t(n);
+              }
+            },
+            S = "trumbowyg-table-handle-for",
+            z = function z() {
+              if (a.o.plugins.table.allowHorizontalResize) {
+                var t,
+                  l,
+                  o,
+                  n = e(a.o.prefix + "table-resize-layers"),
+                  r = n.length > 0;
+                r || (n = e("<div/>", {
+                  "class": a.o.prefix + "table-resize-layers"
+                }).appendTo(a.$edBox), e(a.o.prefix + "table-resize-vertical-handle", n).each(function (t, l) {
+                  e(l).off().remove();
+                })), e("table", a.$ed).each(function (r, d) {
+                  e("td, th", e(d)).each(function (r, d) {
+                    e("<div/>", {
+                      "class": a.o.prefix + "table-resize-vertical-handle"
+                    }).prop(S, d).on("mousedown.tbwTable", function (a) {
+                      a.preventDefault(), a.stopPropagation();
+                      var n = e(a.target).prop(S);
+                      o = e(n).closest("table"), t = b(o);
+                      var r = e("tr", o),
+                        d = e(n).closest("tr"),
+                        i = r.index(d),
+                        s = t[i],
+                        c = B(n, s),
+                        u = t[i][c];
+                      void 0 !== u.mergedIn && (u = t[u.mergedIn[0]][u.mergedIn[1]]), l = c + u.colspan - 1, M(o, t), E(o, t), o.css({
+                        maxWidth: ""
+                      });
+                    }).appendTo(n);
+                  });
+                }), H(), r || (e(a.doc).on("mousemove.tbwTable", function (a) {
+                  if (void 0 !== l) {
+                    a.preventDefault(), a.stopPropagation();
+                    var n = o[0].getBoundingClientRect(),
+                      r = a.pageX - n.left - (V(t, l).element.getBoundingClientRect().left - n.left),
+                      d = e("col", o)[l];
+                    e(d).css({
+                      width: r
+                    }), H();
+                  }
+                }).on("mouseup.tbwTable", function (e) {
+                  void 0 !== l && (e.preventDefault(), e.stopPropagation(), M(o, t), $(o, t), o = void 0, t = void 0, l = void 0, a.syncCode(), H());
+                }), e(window).on("resize.tbwTable", function () {
+                  H();
+                }));
+              }
+            },
+            M = function M(t, l) {
+              var a = e("colgroup", t);
+              0 === a.length && (a = e("<colgroup/>").prependTo(t));
+              for (var o = l[0].length, n = e("col", a).length; n < o; n += 1) e("<col/>").appendTo(a);
+            },
+            V = function V(e, t) {
+              var l,
+                a = 0;
+              do {
+                l = e[a][t], a += 1;
+              } while (void 0 === l.element || 1 !== l.colspan);
+              return l;
+            },
+            N = function N(t, l) {
+              var a = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : !1;
+              var o = e("colgroup", t),
+                n = e("col", o),
+                r = t[0].offsetWidth;
+              t.css({
+                maxWidth: t[0].offsetWidth
+              });
+              for (var d = l[0].length, i = [], s = 0; s < d; s += 1) {
+                var b = V(l, s).element.getBoundingClientRect().width;
+                a && (b = b / r * 100 + "%"), i[s] = b;
+              }
+              for (var c = 0; c < d; c += 1) e(n[c]).css({
+                width: i[c]
+              });
+            },
+            E = function E(e, t) {
+              N(e, t, !1);
+            },
+            $ = function $(e, t) {
+              N(e, t, !0);
+            },
+            H = function H() {
+              var t = e("." + a.o.prefix + "table-resize-layers", a.$edBox),
+                l = t[0].getBoundingClientRect(),
+                o = l.top,
+                n = l.left;
+              e("." + a.o.prefix + "table-resize-vertical-handle", t).each(function (t, l) {
+                var a = e(l),
+                  r = a.prop(S).getBoundingClientRect();
+                a.css({
+                  top: r.top - o,
+                  left: r.left - n + r.width,
+                  height: r.height
+                });
+              });
+            },
+            P = function P(e) {
+              return c(function (t, l, a, o) {
+                L(function (t) {
+                  t.css({
+                    verticalAlign: e
+                  });
+                }, o);
+              });
+            },
+            j = {
+              title: a.lang.tableVerticalAlignTop,
+              text: a.lang.tableVerticalAlignTop,
+              ico: "align-top",
+              fn: P("top")
+            },
+            O = {
+              title: a.lang.tableVerticalAlignMiddle,
+              text: a.lang.tableVerticalAlignMiddle,
+              ico: "align-middle",
+              fn: P("middle")
+            },
+            U = {
+              title: a.lang.tableVerticalAlignBottom,
+              text: a.lang.tableVerticalAlignBottom,
+              ico: "align-bottom",
+              fn: P("bottom")
+            },
+            F = function F(e) {
+              return e ? a.o.prefix + "dropdown--color-list" : "";
+            },
+            Q = function Q(t, o, n, r, d) {
+              var i = [],
+                s = a.o.plugins.table;
+              e.each(o, function (e, l) {
+                var o = t + l,
+                  n = {
+                    fn: d("#" + l),
+                    hasIcon: !1,
+                    text: a.lang["#" + l] || "#" + l,
+                    style: "background-color: #" + l + ";"
+                  };
+                a.addBtnDef(o, n), i.push(o);
+              });
+              var b = "remove" + l(t),
+                c = {
+                  fn: d(""),
+                  hasIcon: !1,
+                  style: "background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVQIW2NkQAAfEJMRmwBYhoGBYQtMBYoAADziAp0jtJTgAAAAAElFTkSuQmCC);"
+                };
+              if (n && (c.style = ""), a.addBtnDef(b, c), i.push(b), s.allowCustomBackgroundColor) {
+                var u = {
+                    fn: function fn() {
+                      a.openModalInsert(a.lang.backgroundColor, {
+                        color: {
+                          label: "backgroundColor",
+                          forceCss: !0,
+                          type: "color",
+                          value: "#FFFFFF"
+                        }
+                      }, function (e) {
+                        return d(e.color)(), !0;
+                      });
+                    },
+                    hasIcon: !1,
+                    text: "#",
+                    style: "text-indent: 0; line-height: 20px; padding: 0 5px;"
+                  },
+                  f = "free" + l(t);
+                a.addBtnDef(f, u), i.push(f);
+              }
+              return i;
+            },
+            W = {
+              dropdown: Q("tableCellBackgroundColor", a.o.plugins.table.backgroundColorList || a.o.plugins.table.colorList, a.o.plugins.table.displayBackgroundColorsAsList, a.o.plugins.table.allowCustomBackgroundColor, function (t) {
+                return function () {
+                  var l = e(a.doc.getSelection().anchorNode).closest("table");
+                  if (0 !== l.length) {
+                    var o = b(l);
+                    L(function (e) {
+                      e.css({
+                        backgroundColor: t
+                      });
+                    }, o), R(l);
+                  }
+                };
+              }),
+              dropdownClass: F(a.o.plugins.table.displayBackgroundColorsAsList)
+            },
+            Y = {
+              dropdown: Q("tableBorderColor", a.o.plugins.table.borderColorList || a.o.plugins.table.colorList, a.o.plugins.table.displayBorderColorsAsList, a.o.plugins.table.allowCustomBorderColor, function (t) {
+                return function () {
+                  var l = e(a.doc.getSelection().anchorNode).closest("table");
+                  if (0 !== l.length) {
+                    var o = {
+                      borderColor: t
+                    };
+                    0 === parseInt(l.css("border-width"), 10) && (o.borderWidth = "2px", o.borderStyle = "solid"), "" === t && (o.borderWidth = "", o.borderStyle = ""), l.css(o);
+                  }
+                };
+              }),
+              dropdownClass: F(a.o.plugins.table.displayBorderColorsAsList)
+            };
+          a.addBtnDef("table", n), a.addBtnDef("tableAddHeaderRow", p), a.addBtnDef("tableAddRowAbove", f), a.addBtnDef("tableAddRow", g), a.addBtnDef("tableAddColumnLeft", A), a.addBtnDef("tableAddColumn", v), a.addBtnDef("tableMergeCells", x), a.addBtnDef("tableUnmergeCells", y), a.addBtnDef("tableVerticalAlignTop", j), a.addBtnDef("tableVerticalAlignMiddle", O), a.addBtnDef("tableVerticalAlignBottom", U), a.addBtnDef("tableCellBackgroundColor", W), a.addBtnDef("tableBorderColor", Y), a.addBtnDef("tableDeleteRow", w), a.addBtnDef("tableDeleteColumn", C), a.addBtnDef("tableDestroy", h);
+        },
+        destroy: function destroy(t) {
+          e(window).off("resize.tbwTable"), e(t.doc).off("selectionchange.tbwTable").off("mousemove.tbwTable").off("mouseup.tbwTable"), t.$c.off("tbwchange.tbwTable"), e("table", t.$ed).off("mousedown.tbwTable");
+        },
+        tagHandler: function tagHandler(e, t) {
+          var a = [];
+          if ("TABLE" === e.tagName) {
+            a.push("table");
+            var n = e.style.borderColor;
+            if ("" !== n) {
+              var r = o(n);
+              t.o.plugins.table.colorList.indexOf(r) >= 0 ? a.push("tableBorderColor" + r) : a.push("freeTableBorderColor");
+            }
+          }
+          if (!e.style) return a;
+          var d = e.style.verticalAlign;
+          "" !== d && a.push("tableVerticalAlign" + l(d));
+          var i = e.style.backgroundColor;
+          if (("TH" === e.tagName || "TD" === e.tagName) && "" !== i) {
+            var s = o(i);
+            t.o.plugins.table.colorList.indexOf(s) >= 0 ? a.push("tableCellBackgroundColor" + s) : a.push("freeTableCellBackgroundColor");
+          }
+          return a;
+        }
+      }
+    }
+  });
+}(jQuery);
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 /* ===========================================================
  * trumbowyg.upload.js v1.2
  * Upload plugin for Trumbowyg
@@ -5744,6 +7768,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
  *          Twitter : @Aleksandr_ru
  *          Website : aleksandr.ru
  */
+
 (function ($) {
   'use strict';
 
@@ -5765,26 +7790,21 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     error: undefined,
     // Error callback: function () {}
     imageWidthModalEdit: false // Add ability to edit image width
-
   };
 
   function getDeep(object, propertyParts) {
     var mainProperty = propertyParts.shift(),
-        otherProperties = propertyParts;
-
+      otherProperties = propertyParts;
     if (object !== null) {
       if (otherProperties.length === 0) {
         return object[mainProperty];
       }
-
       if (_typeof(object) === 'object') {
         return getDeep(object[mainProperty], otherProperties);
       }
     }
-
     return object;
   }
-
   addXhrProgressEvent();
   $.extend(true, $.trumbowyg, {
     langs: {
@@ -5794,10 +7814,20 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         file: 'File',
         uploadError: 'Error'
       },
+      az: {
+        upload: 'Yüklə',
+        file: 'Fayl',
+        uploadError: 'Xəta'
+      },
       by: {
         upload: 'Загрузка',
         file: 'Файл',
         uploadError: 'Памылка'
+      },
+      ca: {
+        upload: 'Pujar fitxer',
+        file: 'Fitxer',
+        uploadError: 'Error'
       },
       cs: {
         upload: 'Nahrát obrázek',
@@ -5813,6 +7843,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         upload: 'Hochladen',
         file: 'Datei',
         uploadError: 'Fehler'
+      },
+      es: {
+        upload: 'Subir archivo',
+        file: 'Archivo',
+        uploadError: 'Error'
       },
       et: {
         upload: 'Lae üles',
@@ -5849,6 +7884,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         file: 'Файл',
         uploadError: 'Ошибка'
       },
+      sl: {
+        upload: 'Naloži datoteko',
+        file: 'Datoteka',
+        uploadError: 'Napaka'
+      },
       sk: {
         upload: 'Nahrať',
         file: 'Súbor',
@@ -5871,6 +7911,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       }
     },
     // jshint camelcase:true
+
     plugins: {
       upload: {
         init: function init(trumbowyg) {
@@ -5879,7 +7920,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
             fn: function fn() {
               trumbowyg.saveRange();
               var file,
-                  prefix = trumbowyg.o.prefix;
+                prefix = trumbowyg.o.prefix;
               var fields = {
                 file: {
                   type: 'file',
@@ -5893,23 +7934,24 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
                   value: trumbowyg.getRangeText()
                 }
               };
-
               if (trumbowyg.o.plugins.upload.imageWidthModalEdit) {
                 fields.width = {
                   value: ''
                 };
-              } // Prevent multiple submissions while uploading
+              }
 
-
+              // Prevent multiple submissions while uploading
               var isUploading = false;
-              var $modal = trumbowyg.openModalInsert( // Title
-              trumbowyg.lang.upload, // Fields
-              fields, // Callback
+              var $modal = trumbowyg.openModalInsert(
+              // Title
+              trumbowyg.lang.upload,
+              // Fields
+              fields,
+              // Callback
               function (values) {
                 if (isUploading) {
                   return;
                 }
-
                 isUploading = true;
                 var data = new FormData();
                 data.append(trumbowyg.o.plugins.upload.fileFieldName, file);
@@ -5921,7 +7963,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
                     data.append(key, curr);
                   }
                 });
-
                 if ($('.' + prefix + 'progress', $modal).length === 0) {
                   $('.' + prefix + 'modal-title', $modal).after($('<div/>', {
                     'class': prefix + 'progress'
@@ -5929,7 +7970,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
                     'class': prefix + 'progress-bar'
                   })));
                 }
-
                 $.ajax({
                   url: trumbowyg.o.plugins.upload.serverPath,
                   headers: trumbowyg.o.plugins.upload.headers,
@@ -5952,13 +7992,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
                         trumbowyg.execCmd('insertImage', url, false, true);
                         var $img = $('img[src="' + url + '"]:not([alt])', trumbowyg.$box);
                         $img.attr('alt', values.alt);
-
                         if (trumbowyg.o.plugins.upload.imageWidthModalEdit && parseInt(values.width) > 0) {
                           $img.attr({
                             width: values.width
                           });
                         }
-
                         setTimeout(function () {
                           trumbowyg.closeModal();
                         }, 250);
@@ -5968,7 +8006,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
                         trumbowyg.$c.trigger('tbwuploaderror', [trumbowyg, data]);
                       }
                     }
-
                     isUploading = false;
                   },
                   error: trumbowyg.o.plugins.upload.error || function () {
@@ -5994,7 +8031,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       }
     }
   });
-
   function addXhrProgressEvent() {
     if (!$.trumbowyg.addedXhrProgressEvent) {
       // Avoid adding progress event multiple times
@@ -6002,14 +8038,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       $.ajaxSetup({
         xhr: function xhr() {
           var that = this,
-              req = originalXhr();
-
+            req = originalXhr();
           if (req && _typeof(req.upload) === 'object' && that.progressUpload !== undefined) {
             req.upload.addEventListener('progress', function (e) {
               that.progressUpload(e);
             }, false);
           }
-
           return req;
         }
       });
@@ -6017,8 +8051,19 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     }
   }
 })(jQuery);
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+/* ===========================================================
+ * trumbowyg.upload.js v1.2
+ * Upload plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Alexandre Demode (Alex-D)
+ *          Twitter : @AlexandreDemode
+ *          Website : alex-d.fr
+ * Mod by : Aleksandr-ru
+ *          Twitter : @Aleksandr_ru
+ *          Website : aleksandr.ru
+ */
 !function (r) {
   "use strict";
 
@@ -6034,29 +8079,25 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     error: void 0,
     imageWidthModalEdit: !1
   };
-
-  function e(r, a) {
-    var o = a.shift(),
-        l = a;
-
+  function o(r, a) {
+    var e = a.shift(),
+      l = a;
     if (null !== r) {
-      if (0 === l.length) return r[o];
-      if ("object" == _typeof(r)) return e(r[o], l);
+      if (0 === l.length) return r[e];
+      if ("object" == _typeof(r)) return o(r[e], l);
     }
-
     return r;
   }
-
   !function () {
     if (!r.trumbowyg.addedXhrProgressEvent) {
       var a = r.ajaxSettings.xhr;
       r.ajaxSetup({
         xhr: function xhr() {
           var r = this,
-              e = a();
-          return e && "object" == _typeof(e.upload) && void 0 !== r.progressUpload && e.upload.addEventListener("progress", function (a) {
+            o = a();
+          return o && "object" == _typeof(o.upload) && void 0 !== r.progressUpload && o.upload.addEventListener("progress", function (a) {
             r.progressUpload(a);
-          }, !1), e;
+          }, !1), o;
         }
       }), r.trumbowyg.addedXhrProgressEvent = !0;
     }
@@ -6065,6 +8106,21 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       en: {
         upload: "Upload",
         file: "File",
+        uploadError: "Error"
+      },
+      az: {
+        upload: "Yüklə",
+        file: "Fayl",
+        uploadError: "Xəta"
+      },
+      by: {
+        upload: "Загрузка",
+        file: "Файл",
+        uploadError: "Памылка"
+      },
+      ca: {
+        upload: "Pujar fitxer",
+        file: "Fitxer",
         uploadError: "Error"
       },
       cs: {
@@ -6081,6 +8137,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         upload: "Hochladen",
         file: "Datei",
         uploadError: "Fehler"
+      },
+      es: {
+        upload: "Subir archivo",
+        file: "Archivo",
+        uploadError: "Error"
       },
       et: {
         upload: "Lae üles",
@@ -6117,6 +8178,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         file: "Файл",
         uploadError: "Ошибка"
       },
+      sl: {
+        upload: "Naloži datoteko",
+        file: "Datoteka",
+        uploadError: "Napaka"
+      },
       sk: {
         upload: "Nahrať",
         file: "Súbor",
@@ -6140,97 +8206,101 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     },
     plugins: {
       upload: {
-        init: function init(o) {
-          o.o.plugins.upload = r.extend(!0, {}, a, o.o.plugins.upload || {});
+        init: function init(e) {
+          e.o.plugins.upload = r.extend(!0, {}, a, e.o.plugins.upload || {});
           var l = {
             fn: function fn() {
-              o.saveRange();
+              e.saveRange();
               var a,
-                  l = o.o.prefix,
-                  t = {
-                file: {
-                  type: "file",
-                  required: !0,
-                  attributes: {
-                    accept: "image/*"
+                l = e.o.prefix,
+                d = {
+                  file: {
+                    type: "file",
+                    required: !0,
+                    attributes: {
+                      accept: "image/*"
+                    }
+                  },
+                  alt: {
+                    label: "description",
+                    value: e.getRangeText()
                   }
-                },
-                alt: {
-                  label: "description",
-                  value: o.getRangeText()
-                }
-              };
-              o.o.plugins.upload.imageWidthModalEdit && (t.width = {
+                };
+              e.o.plugins.upload.imageWidthModalEdit && (d.width = {
                 value: ""
               });
-              var d = !1,
-                  i = o.openModalInsert(o.lang.upload, t, function (t) {
-                if (!d) {
-                  d = !0;
-                  var u = new FormData();
-                  u.append(o.o.plugins.upload.fileFieldName, a), o.o.plugins.upload.data.map(function (r) {
-                    u.append(r.name, r.value);
-                  }), r.map(t, function (r, a) {
-                    "file" !== a && u.append(a, r);
-                  }), 0 === r("." + l + "progress", i).length && r("." + l + "modal-title", i).after(r("<div/>", {
-                    "class": l + "progress"
-                  }).append(r("<div/>", {
-                    "class": l + "progress-bar"
-                  }))), r.ajax({
-                    url: o.o.plugins.upload.serverPath,
-                    headers: o.o.plugins.upload.headers,
-                    xhrFields: o.o.plugins.upload.xhrFields,
-                    type: "POST",
-                    data: u,
-                    cache: !1,
-                    dataType: "json",
-                    processData: !1,
-                    contentType: !1,
-                    progressUpload: function progressUpload(a) {
-                      r("." + l + "progress-bar").css("width", Math.round(100 * a.loaded / a.total) + "%");
-                    },
-                    success: function success(a) {
-                      if (o.o.plugins.upload.success) o.o.plugins.upload.success(a, o, i, t);else if (e(a, o.o.plugins.upload.statusPropertyName.split("."))) {
-                        var l = e(a, o.o.plugins.upload.urlPropertyName.split("."));
-                        o.execCmd("insertImage", l, !1, !0);
-                        var u = r('img[src="' + l + '"]:not([alt])', o.$box);
-                        u.attr("alt", t.alt), o.o.plugins.upload.imageWidthModalEdit && parseInt(t.width) > 0 && u.attr({
-                          width: t.width
-                        }), setTimeout(function () {
-                          o.closeModal();
-                        }, 250), o.$c.trigger("tbwuploadsuccess", [o, a, l]);
-                      } else o.addErrorOnModalField(r("input[type=file]", i), o.lang[a.message]), o.$c.trigger("tbwuploaderror", [o, a]);
-                      d = !1;
-                    },
-                    error: o.o.plugins.upload.error || function () {
-                      o.addErrorOnModalField(r("input[type=file]", i), o.lang.uploadError), o.$c.trigger("tbwuploaderror", [o]), d = !1;
-                    }
-                  });
-                }
-              });
+              var t = !1,
+                i = e.openModalInsert(e.lang.upload, d, function (d) {
+                  if (!t) {
+                    t = !0;
+                    var u = new FormData();
+                    u.append(e.o.plugins.upload.fileFieldName, a), e.o.plugins.upload.data.map(function (r) {
+                      u.append(r.name, r.value);
+                    }), r.map(d, function (r, a) {
+                      "file" !== a && u.append(a, r);
+                    }), 0 === r("." + l + "progress", i).length && r("." + l + "modal-title", i).after(r("<div/>", {
+                      "class": l + "progress"
+                    }).append(r("<div/>", {
+                      "class": l + "progress-bar"
+                    }))), r.ajax({
+                      url: e.o.plugins.upload.serverPath,
+                      headers: e.o.plugins.upload.headers,
+                      xhrFields: e.o.plugins.upload.xhrFields,
+                      type: "POST",
+                      data: u,
+                      cache: !1,
+                      dataType: "json",
+                      processData: !1,
+                      contentType: !1,
+                      progressUpload: function progressUpload(a) {
+                        r("." + l + "progress-bar").css("width", Math.round(100 * a.loaded / a.total) + "%");
+                      },
+                      success: function success(a) {
+                        if (e.o.plugins.upload.success) e.o.plugins.upload.success(a, e, i, d);else if (o(a, e.o.plugins.upload.statusPropertyName.split("."))) {
+                          var l = o(a, e.o.plugins.upload.urlPropertyName.split("."));
+                          e.execCmd("insertImage", l, !1, !0);
+                          var u = r('img[src="' + l + '"]:not([alt])', e.$box);
+                          u.attr("alt", d.alt), e.o.plugins.upload.imageWidthModalEdit && parseInt(d.width) > 0 && u.attr({
+                            width: d.width
+                          }), setTimeout(function () {
+                            e.closeModal();
+                          }, 250), e.$c.trigger("tbwuploadsuccess", [e, a, l]);
+                        } else e.addErrorOnModalField(r("input[type=file]", i), e.lang[a.message]), e.$c.trigger("tbwuploaderror", [e, a]);
+                        t = !1;
+                      },
+                      error: e.o.plugins.upload.error || function () {
+                        e.addErrorOnModalField(r("input[type=file]", i), e.lang.uploadError), e.$c.trigger("tbwuploaderror", [e]), t = !1;
+                      }
+                    });
+                  }
+                });
               r("input[type=file]").on("change", function (r) {
                 try {
                   a = r.target.files[0];
-                } catch (e) {
+                } catch (o) {
                   a = r.target.value;
                 }
               });
             }
           };
-          o.addBtnDef("upload", l);
+          e.addBtnDef("upload", l);
         }
       }
     }
   });
 }(jQuery);
 (function ($) {
-  'use strict'; // Adds the language variables
+  'use strict';
 
+  // Adds the language variables
   $.extend(true, $.trumbowyg, {
     langs: {
       // jshint camelcase:false
       en: {
         template: 'Template'
+      },
+      az: {
+        template: 'Şablon'
       },
       by: {
         template: 'Шаблон'
@@ -6265,16 +8335,20 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       ru: {
         template: 'Шаблон'
       },
+      sl: {
+        template: 'Predloga'
+      },
       tr: {
         template: 'Şablon'
       },
       zh_tw: {
         template: '模板'
-      } // jshint camelcase:true
-
+      }
+      // jshint camelcase:true
     }
-  }); // Adds the extra button definition
+  });
 
+  // Adds the extra button definition
   $.extend(true, $.trumbowyg, {
     plugins: {
       template: {
@@ -6290,8 +8364,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         }
       }
     }
-  }); // Creates the template-selector dropdown.
+  });
 
+  // Creates the template-selector dropdown.
   function templateSelector(trumbowyg) {
     var available = trumbowyg.o.plugins.templates;
     var templates = [];
@@ -6313,7 +8388,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 
   function e(e) {
     var a = e.o.plugins.templates,
-        l = [];
+      l = [];
     return t.each(a, function (t, a) {
       e.addBtnDef("template_" + t, {
         fn: function fn() {
@@ -6324,11 +8399,16 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       }), l.push("template_" + t);
     }), l;
   }
-
   t.extend(!0, t.trumbowyg, {
     langs: {
       en: {
         template: "Template"
+      },
+      az: {
+        template: "Şablon"
+      },
+      by: {
+        template: "Шаблон"
       },
       da: {
         template: "Skabelon"
@@ -6359,6 +8439,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       },
       ru: {
         template: "Шаблон"
+      },
+      sl: {
+        template: "Predloga"
       },
       tr: {
         template: "Şablon"
