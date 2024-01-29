@@ -15,7 +15,7 @@ namespace OrchardCore.ContentFields.Fields
         {
             var userNames = userPickerField.Content["UserNames"] as JArray;
 
-            return userNames != null ? userNames.ToObject<string[]>() : Array.Empty<string>();
+            return userNames != null ? userNames.ToObject<string[]>() : [];
         }
 
         /// <summary>

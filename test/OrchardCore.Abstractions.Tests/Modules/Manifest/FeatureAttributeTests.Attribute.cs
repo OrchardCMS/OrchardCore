@@ -173,9 +173,9 @@ namespace OrchardCore.Modules.Manifest
         /// <returns></returns>
         private static TAttribute DefaultFactory()
         {
-            var paramlessCtor = typeof(TAttribute).GetConstructor(CtorFlags, Array.Empty<Type>());
+            var paramlessCtor = typeof(TAttribute).GetConstructor(CtorFlags, []);
             Assert.NotNull(paramlessCtor);
-            var instance = paramlessCtor.Invoke(Array.Empty<object>());
+            var instance = paramlessCtor.Invoke([]);
             var feature = Assert.IsType<TAttribute>(instance);
             return feature;
         }

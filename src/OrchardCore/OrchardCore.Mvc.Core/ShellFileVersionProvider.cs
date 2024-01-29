@@ -19,7 +19,7 @@ namespace OrchardCore.Mvc
     public class ShellFileVersionProvider : IFileVersionProvider
     {
         private const string VersionKey = "v";
-        private static readonly char[] _queryStringAndFragmentTokens = new[] { '?', '#' };
+        private static readonly char[] _queryStringAndFragmentTokens = ['?', '#'];
         private static readonly MemoryCache _sharedCache = new(new MemoryCacheOptions());
 
         private readonly IFileProvider[] _fileProviders;

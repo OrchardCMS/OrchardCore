@@ -4,7 +4,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
 {
     public class PlacementInfo
     {
-        private static readonly char[] _delimiters = { ':', '#', '@', '%', '|' };
+        private static readonly char[] _delimiters = [':', '#', '@', '%', '|'];
 
         public string Location { get; set; }
         public string Source { get; set; }

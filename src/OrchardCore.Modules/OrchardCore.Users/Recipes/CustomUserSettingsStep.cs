@@ -39,7 +39,7 @@ public class CustomUserSettingsStep : IRecipeStepHandler
 
         var allUsers = await _session.Query<User>().ListAsync();
 
-        foreach (JObject userCustomUserSettings in customUserSettingsList.Cast<JObject>())
+        foreach (var userCustomUserSettings in customUserSettingsList.Cast<JObject>())
         {
             var userId = userCustomUserSettings
                 .Properties()
@@ -58,7 +58,7 @@ public class CustomUserSettingsStep : IRecipeStepHandler
                 .FirstOrDefault(p => p.Name == "user-custom-user-settings")
                 ?.Value;
 
-            foreach (JObject userSetting in userSettings.Cast<JObject>())
+            foreach (var userSetting in userSettings.Cast<JObject>())
             {
                 var contentItem = userSetting.ToObject<ContentItem>();
                 user.Properties[contentItem.ContentType] = userSetting;

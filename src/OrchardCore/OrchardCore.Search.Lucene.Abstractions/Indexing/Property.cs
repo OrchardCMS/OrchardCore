@@ -47,7 +47,7 @@ namespace OrchardCore.Search.Lucene.Indexing
         /// <summary>
         /// Gets the list of supplemental values to be indexed.
         /// </summary>
-        public Dictionary<string, Property> Fields { get; } = new Dictionary<string, Property>();
+        public Dictionary<string, Property> Fields { get; } = [];
 
         /// <summary>
         /// Gets or sets the query time boosting.

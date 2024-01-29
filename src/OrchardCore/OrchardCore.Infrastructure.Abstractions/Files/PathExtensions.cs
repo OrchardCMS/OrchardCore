@@ -7,7 +7,7 @@ namespace System.IO
 {
     public class PathExtensions
     {
-        public static readonly char[] PathSeparators = new[] { '/', '\\' };
+        public static readonly char[] PathSeparators = ['/', '\\'];
         private const string CurrentDirectoryToken = ".";
         private const string ParentDirectoryToken = "..";
 
@@ -49,7 +49,7 @@ namespace System.IO
         /// </summary>
         public static string Combine(string path, params string[] others)
         {
-            string result = path;
+            var result = path;
 
             for (var i = 0; i < others.Length; i++)
             {

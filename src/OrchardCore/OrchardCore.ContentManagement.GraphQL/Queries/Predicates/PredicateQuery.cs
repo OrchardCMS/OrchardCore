@@ -10,9 +10,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         private readonly IConfiguration _configuration;
         private readonly IEnumerable<IIndexPropertyProvider> _propertyProviders;
 
-        private readonly HashSet<string> _usedAliases = new();
-        private readonly Dictionary<string, string> _aliases = new();
-        private readonly Dictionary<string, string> _tableAliases = new();
+        private readonly HashSet<string> _usedAliases = [];
+        private readonly Dictionary<string, string> _aliases = [];
+        private readonly Dictionary<string, string> _tableAliases = [];
 
         public PredicateQuery(
             IConfiguration configuration,
@@ -77,7 +77,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
 
             // Check if there's an alias for the full path
             // aliasPart.Alias -> AliasFieldIndex.Alias
-            if (_aliases.TryGetValue(propertyPath, out string alias))
+            if (_aliases.TryGetValue(propertyPath, out var alias))
             {
                 _usedAliases.Add(alias);
                 return;

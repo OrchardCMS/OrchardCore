@@ -48,7 +48,7 @@ namespace OrchardCore.Localization
             }
 
             public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
-                => Enumerable.Empty<LocalizedString>();
+                => [];
 
             public LocalizedString GetString(string name) => this[name];
 

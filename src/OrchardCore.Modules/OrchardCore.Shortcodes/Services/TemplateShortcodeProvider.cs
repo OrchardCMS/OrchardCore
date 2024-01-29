@@ -16,7 +16,7 @@ namespace OrchardCore.Shortcodes.Services
         private readonly HtmlEncoder _htmlEncoder;
 
         private ShortcodeTemplatesDocument _shortcodeTemplatesDocument;
-        private readonly HashSet<string> _identifiers = new();
+        private readonly HashSet<string> _identifiers = [];
 
         public TemplateShortcodeProvider(
             ShortcodeTemplatesManager shortcodeTemplatesManager,

@@ -193,7 +193,7 @@ namespace OrchardCore.ContentTypes.Services
 
             // Code-defined parts.
             var codeDefinedParts = metadataPartsOnly
-                ? Enumerable.Empty<EditPartViewModel>()
+                ? []
                 : _contentPartTypes
                         .Where(cpd => !userContentParts.ContainsKey(cpd.Name))
                         .Select(cpi => new EditPartViewModel { Name = cpi.Name, DisplayName = cpi.Name })

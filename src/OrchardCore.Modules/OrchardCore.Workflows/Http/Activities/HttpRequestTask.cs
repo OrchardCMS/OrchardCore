@@ -153,7 +153,7 @@ namespace OrchardCore.Workflows.Http.Activities
 
                     return new Outcome(status.ToString(), new LocalizedString(description, description));
                 }).ToList()
-                : new List<Outcome>();
+                : [];
             outcomes.Add(new Outcome("UnhandledHttpStatus", S["Unhandled Http Status"]));
 
             return outcomes;
@@ -198,7 +198,9 @@ namespace OrchardCore.Workflows.Http.Activities
         private static IEnumerable<KeyValuePair<string, string>> ParseHeaders(string text)
         {
             if (string.IsNullOrWhiteSpace(text))
-                return Enumerable.Empty<KeyValuePair<string, string>>();
+            {
+                return [];
+            }
 
             return
                 from header in text.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim())

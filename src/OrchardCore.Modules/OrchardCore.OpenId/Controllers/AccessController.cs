@@ -633,7 +633,7 @@ namespace OrchardCore.OpenId.Controllers
 
                 // Never include the security stamp in the access and identity tokens, as it's a secret value.
                 case "AspNet.Identity.SecurityStamp":
-                    return Enumerable.Empty<string>();
+                    return [];
 
                 // Only add the claim to the id_token if the corresponding scope was granted.
                 // The other claims will only be added to the access_token.
@@ -656,7 +656,7 @@ namespace OrchardCore.OpenId.Controllers
             // Note: the current tenant name is always added as a valid resource/audience,
             // which allows the end user to use the corresponding tokens with the APIs
             // located in the current tenant without having to explicitly register a scope.
-            var resources = new List<string>(1)
+            var resources = new List<string>()
             {
                 OpenIdConstants.Prefixes.Tenant + _shellSettings.Name
             };
