@@ -164,7 +164,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         return DbConnectionValidatorResult.DocumentTableFound;
     }
 
-    private static ISqlBuilder GetSelectBuilderForDocumentTable(ISqlBuilder sqlBuilder, string documentTable, string schema)
+    private static SqlBuilder GetSelectBuilderForDocumentTable(SqlBuilder sqlBuilder, string documentTable, string schema)
     {
         sqlBuilder.Select();
         sqlBuilder.Selector("*");
@@ -174,7 +174,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         return sqlBuilder;
     }
 
-    private static ISqlBuilder GetSelectBuilderForShellDescriptorDocument(ISqlBuilder sqlBuilder, string documentTable, string schema)
+    private static SqlBuilder GetSelectBuilderForShellDescriptorDocument(SqlBuilder sqlBuilder, string documentTable, string schema)
     {
         sqlBuilder.Select();
         sqlBuilder.Selector("*");
@@ -209,7 +209,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         };
     }
 
-    private static ISqlBuilder GetSqlBuilder(ISqlDialect sqlDialect, string tablePrefix, string tableNameSeparator)
+    private static SqlBuilder GetSqlBuilder(ISqlDialect sqlDialect, string tablePrefix, string tableNameSeparator)
     {
         var prefix = string.Empty;
         if (!string.IsNullOrWhiteSpace(tablePrefix))

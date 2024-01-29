@@ -49,7 +49,7 @@ namespace System.IO
         /// </summary>
         public static string Combine(string path, params string[] others)
         {
-            string result = path;
+            var result = path;
 
             for (var i = 0; i < others.Length; i++)
             {
