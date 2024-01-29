@@ -29,7 +29,7 @@ public class EmailService : IEmailService
     {
         await _emailServiceEvents.InvokeAsync((e, message) => e.OnMessageSendingAsync(message), message, _logger);
 
-        if (!_emailMessageValidator.IsValidate(message, out var errors))
+        if (!_emailMessageValidator.IsValid(message, out var errors))
         {
             return EmailResult.Failed([.. errors]);
         }
