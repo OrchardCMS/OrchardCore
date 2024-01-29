@@ -13,7 +13,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
         private IFeatureInfo _feature;
         private readonly string _shapeType;
         private readonly string _bindingName;
-        private readonly IList<Action<ShapeDescriptor>> _configurations = new List<Action<ShapeDescriptor>>();
+        private readonly List<Action<ShapeDescriptor>> _configurations = [];
 
         public ShapeAlterationBuilder(IFeatureInfo feature, string shapeType)
         {
