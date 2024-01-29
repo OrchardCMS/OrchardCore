@@ -28,7 +28,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         /// <summary>
         /// This method gets called for each tenant. Use this method to add services to the container.
-        /// For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
+        /// For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940.
         /// </summary>
         /// <param name="configure">The action to execute when configuring the services for a tenant.</param>
         /// <param name="order">The order of the action to execute. Lower values will be executed first.</param>

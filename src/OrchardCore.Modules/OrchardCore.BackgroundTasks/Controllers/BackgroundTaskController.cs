@@ -23,12 +23,16 @@ namespace OrchardCore.BackgroundTasks.Controllers
     [Admin]
     public class BackgroundTaskController : Controller
     {
+        private const string _optionsSearch = $"{nameof(BackgroundTaskIndexViewModel.Options)}.{nameof(AdminIndexOptions.Search)}";
+        private const string _optionsStatus = $"{nameof(BackgroundTaskIndexViewModel.Options)}.{nameof(AdminIndexOptions.Status)}";
+
         private readonly IAuthorizationService _authorizationService;
         private readonly IEnumerable<IBackgroundTask> _backgroundTasks;
         private readonly BackgroundTaskManager _backgroundTaskManager;
         private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
-        protected readonly dynamic New;
+        private readonly IShapeFactory _shapeFactory;
+
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
 
@@ -47,8 +51,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
             _backgroundTaskManager = backgroundTaskManager;
             _pagerOptions = pagerOptions.Value;
             _notifier = notifier;
-
-            New = shapeFactory;
+            _shapeFactory = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
@@ -102,20 +105,27 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 items = items.Where(entry => !entry.Enable);
             }
 
-            options.Statuses = new List<SelectListItem>()
-            {
-                new SelectListItem() { Text = S["Enabled"], Value = "enabled" },
-                new SelectListItem() { Text = S["Disabled"], Value = "disabled" }
-            };
+            options.Statuses =
+            [
+                new SelectListItem(S["Enabled"], "enabled"),
+                new SelectListItem(S["Disabled"], "disabled")
+            ];
 
             var taskItems = items.ToList();
             var routeData = new RouteData();
 
-            routeData.Values.Add($"{nameof(BackgroundTaskIndexViewModel.Options)}.{nameof(options.Search)}", options.Search);
-            routeData.Values.Add($"{nameof(BackgroundTaskIndexViewModel.Options)}.{nameof(options.Status)}", options.Status);
+            if (!string.IsNullOrEmpty(options.Search))
+            {
+                routeData.Values.TryAdd(_optionsSearch, options.Search);
+            }
+
+            if (!string.IsNullOrEmpty(options.Status))
+            {
+                routeData.Values.TryAdd(_optionsStatus, options.Status);
+            }
 
             var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(taskItems.Count).RouteData(routeData);
+            var pagerShape = await _shapeFactory.PagerAsync(pager, taskItems.Count, routeData);
 
             var model = new BackgroundTaskIndexViewModel
             {
@@ -130,12 +140,11 @@ namespace OrchardCore.BackgroundTasks.Controllers
         [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(BackgroundTaskIndexViewModel model)
-        {
-            return RedirectToAction(nameof(Index), new RouteValueDictionary {
-                { $"{nameof(model.Options)}.{nameof(AdminIndexOptions.Search)}", model.Options.Search },
-                { $"{nameof(model.Options)}.{nameof(AdminIndexOptions.Status)}", model.Options.Status },
+            => RedirectToAction(nameof(Index), new RouteValueDictionary
+            {
+                { _optionsSearch, model.Options.Search },
+                { _optionsStatus, model.Options.Status },
             });
-        }
 
         public async Task<IActionResult> Edit(string name)
         {

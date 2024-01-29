@@ -27,15 +27,18 @@ namespace OrchardCore.Shortcodes.Controllers
     [Feature("OrchardCore.Shortcodes.Templates")]
     public class AdminController : Controller
     {
+        private const string _optionsSearch = "Options.Search";
+
         private readonly IAuthorizationService _authorizationService;
         private readonly ShortcodeTemplatesManager _shortcodeTemplatesManager;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly PagerOptions _pagerOptions;
         private readonly INotifier _notifier;
-        protected readonly dynamic New;
+        private readonly IShapeFactory _shapeFactory;
+        private readonly IHtmlSanitizerService _htmlSanitizerService;
+
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
-        private readonly IHtmlSanitizerService _htmlSanitizerService;
 
         public AdminController(
             IAuthorizationService authorizationService,
@@ -54,7 +57,7 @@ namespace OrchardCore.Shortcodes.Controllers
             _liquidTemplateManager = liquidTemplateManager;
             _pagerOptions = pagerOptions.Value;
             _notifier = notifier;
-            New = shapeFactory;
+            _shapeFactory = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
             _htmlSanitizerService = htmlSanitizerService;
@@ -83,7 +86,15 @@ namespace OrchardCore.Shortcodes.Controllers
                 .Skip(pager.GetStartIndex())
                 .Take(pager.PageSize).ToList();
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
+            // Maintain previous route data when generating page links.
+            var routeData = new RouteData();
+
+            if (!string.IsNullOrEmpty(options.Search))
+            {
+                routeData.Values.TryAdd(_optionsSearch, options.Search);
+            }
+
+            var pagerShape = await _shapeFactory.PagerAsync(pager, count, routeData);
 
             var model = new ShortcodeTemplateIndexViewModel
             {
@@ -92,21 +103,21 @@ namespace OrchardCore.Shortcodes.Controllers
                 Pager = pagerShape
             };
 
-            model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
-            };
+            model.Options.ContentsBulkAction =
+            [
+                new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
+            ];
 
-            return View("Index", model);
+            return View(model);
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(ShortcodeTemplateIndexViewModel model)
-        {
-            return RedirectToAction(nameof(Index), new RouteValueDictionary {
-                { "Options.Search", model.Options.Search }
+            => RedirectToAction(nameof(Index), new RouteValueDictionary
+            {
+                { _optionsSearch, model.Options.Search }
             });
-        }
 
         public async Task<IActionResult> Create()
         {
@@ -118,7 +129,7 @@ namespace OrchardCore.Shortcodes.Controllers
             return View(new ShortcodeTemplateViewModel());
         }
 
-        [HttpPost, ActionName("Create")]
+        [HttpPost, ActionName(nameof(Create))]
         public async Task<IActionResult> CreatePost(ShortcodeTemplateViewModel model, string submit)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
@@ -173,10 +184,8 @@ namespace OrchardCore.Shortcodes.Controllers
                 {
                     return RedirectToAction(nameof(Edit), new { name = model.Name });
                 }
-                else
-                {
-                    return RedirectToAction(nameof(Index));
-                }
+
+                return RedirectToAction(nameof(Index));
             }
 
             // If we got this far, something failed, redisplay form
@@ -192,12 +201,10 @@ namespace OrchardCore.Shortcodes.Controllers
 
             var shortcodeTemplatesDocument = await _shortcodeTemplatesManager.GetShortcodeTemplatesDocumentAsync();
 
-            if (!shortcodeTemplatesDocument.ShortcodeTemplates.ContainsKey(name))
+            if (!shortcodeTemplatesDocument.ShortcodeTemplates.TryGetValue(name, out var template))
             {
                 return RedirectToAction(nameof(Create), new { name });
             }
-
-            var template = shortcodeTemplatesDocument.ShortcodeTemplates[name];
 
             var model = new ShortcodeTemplateViewModel
             {
@@ -272,10 +279,8 @@ namespace OrchardCore.Shortcodes.Controllers
                 {
                     return RedirectToAction(nameof(Edit), new { name = model.Name });
                 }
-                else
-                {
-                    return RedirectToAction(nameof(Index));
-                }
+
+                return RedirectToAction(nameof(Index));
             }
 
             // If we got this far, something failed, redisplay form
@@ -308,9 +313,9 @@ namespace OrchardCore.Shortcodes.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.BulkAction")]
-        public async Task<ActionResult> IndexPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
+        public async Task<ActionResult> IndexPost(ContentOptions options, IEnumerable<string> itemIds)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
             {
@@ -333,7 +338,7 @@ namespace OrchardCore.Shortcodes.Controllers
                         await _notifier.SuccessAsync(H["Shortcode templates successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
+                        throw new ArgumentOutOfRangeException(options.BulkAction.ToString(), "Invalid bulk action.");
                 }
             }
 

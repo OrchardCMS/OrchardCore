@@ -71,6 +71,40 @@ cookie and OAuth 2.0 authentication. This means it's compatible with the OpenId 
 
 By default anonymous users are not able to execute a GraphQL query.
 
+## Configuring Contents
+
+When identifying content types for GraphQL exposure, we identify those without a stereotype to provide you with control over the behavior of stereotyped content types. A new option, `DiscoverableSterotypes`, has been introduced in `GraphQLContentOptions`. This allows you to specify stereotypes that should be discoverable by default.
+
+For instance, if you have several content types sterotyped as `ExampleStereotype`, you can make them discoverable by incorporating the following code into the startup class:
+
+```csharp
+services.Configure<GraphQLContentOptions>(options =>
+{
+    options.DiscoverableSterotypes.Add("ExampleStereotype");
+});
+```
+
+By utilizing the `GraphQLContentOptions`, you can customize the default visibility of content types, parts, or fields. For example, you have the option to conceal the author's name by configuring it as follows.
+
+```csharp
+services.Configure<GraphQLContentOptions>(options =>
+{
+    options.IgnoreField<ContentItemType>(nameof(ContentItem.Owner));
+});
+```
+
+Or, hide a content type by default
+
+```csharp
+services.Configure<GraphQLContentOptions>(options =>
+{
+    options.ConfigureContentType("SiteLayers", x =>
+    {
+        x.Hidden = true;
+    });
+});
+```
+
 ## Configuration
 
 It's possible to configure graphql options for exposing exceptions and max depth, max complexity and field impact.

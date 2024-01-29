@@ -4,14 +4,13 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.Data;
 using OrchardCore.Recipes.Models;
-using OrchardCore.Setup.Annotations;
 
 namespace OrchardCore.Setup.ViewModels
 {
     public class SetupViewModel
     {
         [Required]
-        [SiteNameValid(maximumLength: 70)]
+        [StringLength(70)]
         public string SiteName { get; set; }
 
         public string Description { get; set; }

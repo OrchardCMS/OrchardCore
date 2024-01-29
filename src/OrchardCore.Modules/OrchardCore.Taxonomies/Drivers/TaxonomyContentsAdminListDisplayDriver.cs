@@ -80,8 +80,8 @@ namespace OrchardCore.Taxonomies.Drivers
                         PopulateTermEntries(termEntries, taxonomy.As<TaxonomyPart>().Terms, 0);
                         var terms = new List<SelectListItem>
                             {
-                                new SelectListItem { Text = S["Clear filter"], Value = ""  },
-                                new SelectListItem { Text = S["Show all"], Value = "Taxonomy:" + taxonomy.ContentItemId }
+                                new() { Text = S["Clear filter"], Value = ""  },
+                                new() { Text = S["Show all"], Value = "Taxonomy:" + taxonomy.ContentItemId }
                             };
 
                         foreach (var term in termEntries)

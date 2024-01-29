@@ -29,7 +29,7 @@ namespace OrchardCore.Settings.Recipes
             var model = context.Step;
             var site = await _siteService.LoadSiteSettingsAsync();
 
-            foreach (JProperty property in model.Properties())
+            foreach (var property in model.Properties())
             {
                 switch (property.Name)
                 {
