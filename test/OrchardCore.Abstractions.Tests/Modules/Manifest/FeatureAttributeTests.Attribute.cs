@@ -341,7 +341,7 @@ namespace OrchardCore.Modules.Manifest
         /// <param name="feature"></param>
         protected virtual void VerifyDefault(TAttribute feature)
         {
-            Assert.False(feature.Dependencies.Length != 0);
+            Assert.False(feature.Dependencies.Length > 0);
             Assert.False(feature.DefaultTenantOnly);
             Assert.False(feature.IsAlwaysEnabled);
             Assert.False(feature.Exists);
