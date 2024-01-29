@@ -58,7 +58,7 @@ namespace OrchardCore.Admin
             var menuShape = await _shapeFactory.CreateAsync("Navigation",
                 Arguments.From(new
                 {
-                    MenuName = NavigationConstants.AdminMenuName,
+                    MenuName = NavigationConstants.AdminId,
                     filterContext.RouteData,
                 }));
 

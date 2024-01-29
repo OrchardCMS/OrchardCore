@@ -9,5 +9,6 @@ public static class NavigationConstants
     public const string AdminMenuAuditTrailPosition = "7.5";
     public const string AdminMenuWorkflowsPosition = "8";
     public const string AdminMenuConfigurationPosition = "100";
-    public const string AdminMenuName = "admin";
+    public const string AdminId = "admin";
+    public const string AdminMenuId = "adminMenu";
 }

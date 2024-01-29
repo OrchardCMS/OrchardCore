@@ -39,7 +39,7 @@ namespace OrchardCore.CustomSettings
                         { "groupId", type.Name },
                     };
 
-                    _routeValues.TryAdd(type.Name, routeValues);
+                    _routeValues[type.Name] = routeValues;
                 }
 
                 builder

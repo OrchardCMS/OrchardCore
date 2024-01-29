@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Admin.Models;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.Navigation;
 
@@ -36,7 +35,7 @@ namespace OrchardCore.AdminMenu
                 );
 
             // This is the entry point for the adminMenu: dynamically generated custom admin menus
-            await _adminMenuNavigationProvider.BuildNavigationAsync(AdminSettings.AdminMenuId, builder);
+            await _adminMenuNavigationProvider.BuildNavigationAsync(NavigationConstants.AdminMenuId, builder);
         }
     }
 }

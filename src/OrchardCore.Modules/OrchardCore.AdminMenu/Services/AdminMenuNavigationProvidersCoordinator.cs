@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Admin.Models;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.AdminMenu.Services
@@ -39,7 +38,7 @@ namespace OrchardCore.AdminMenu.Services
         // todo: use a public constant for the string
         public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!string.Equals(AdminSettings.AdminMenuId, name))
+            if (!string.Equals(NavigationConstants.AdminMenuId, name))
             {
                 return;
             }

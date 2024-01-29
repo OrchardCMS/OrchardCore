@@ -10,8 +10,13 @@ namespace OrchardCore.Navigation
 {
     public class NavigationHelper
     {
+        /// <summary>
+        /// Checks if the given name matches the value <see cref="NavigationConstants.AdminId"/>.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns>boolean.</returns>
         public static bool IsAdminMenu(string name)
-            => NavigationConstants.AdminMenuName == name;
+            => NavigationConstants.AdminId == name;
 
         /// <summary>
         /// Populates the menu shapes.
