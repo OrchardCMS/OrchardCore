@@ -18,7 +18,7 @@ public class EmailDeliveryServiceResolver : IEmailDeliveryServiceResolver
 
         if (!emailDeliveryServiceDictionary.TryGetValue(name, out var emailDeliveryService))
         {
-            emailDeliveryService = emailDeliveryServiceDictionary[EmailDeliveryServiceName.None];
+            emailDeliveryService = emailDeliveryServiceDictionary[EmailConstants.NullEmailDeliveryServiceName];
         }
 
         return emailDeliveryService;

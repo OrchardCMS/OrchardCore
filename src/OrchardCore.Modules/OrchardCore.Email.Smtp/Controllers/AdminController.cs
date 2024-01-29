@@ -51,7 +51,7 @@ public class AdminController : Controller
         {
             var message = CreateMessageFromViewModel(model);
 
-            var result = await _emailService.SendAsync(message, EmailDeliveryServiceName.Smtp);
+            var result = await _emailService.SendAsync(message, SmtpEmailConstants.EmailDeliveryServiceName);
 
             if (!result.Succeeded)
             {

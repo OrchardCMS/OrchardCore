@@ -7,7 +7,6 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Email.Smtp.Controllers;
 using OrchardCore.Email.Smtp.Drivers;
-using OrchardCore.Email.Services;
 using OrchardCore.Email.Smtp.Services;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
@@ -31,7 +30,7 @@ public class Startup : StartupBase
         services.AddScoped<IPermissionProvider, Permissions>();
         services.AddScoped<IDisplayDriver<ISite>, SmtpSettingsDisplayDriver>();
         services.AddScoped<INavigationProvider, AdminMenu>();
-        services.AddEmailDeliveryService<SmtpEmailDeliveryService>(EmailDeliveryServiceName.Smtp);
+        services.AddEmailDeliveryService<SmtpEmailDeliveryService>(SmtpEmailConstants.EmailDeliveryServiceName);
 
         services.AddTransient<IConfigureOptions<SmtpEmailSettings>, SmtpEmailSettingsConfiguration>();
     }

@@ -12,7 +12,7 @@ public static class EmailServiceCollectionExtensions
     public static IServiceCollection AddEmailServices(this IServiceCollection services)
     {
         services.AddScoped<IEmailMessageValidator, EmailMessageValidator>();
-        services.AddEmailDeliveryService<NullEmailDeliveryService>(EmailDeliveryServiceName.None);
+        services.AddEmailDeliveryService<NullEmailDeliveryService>(EmailConstants.NullEmailDeliveryServiceName);
         services.AddScoped<IEmailDeliveryServiceResolver, EmailDeliveryServiceResolver>();
         services.AddScoped<IEmailService, EmailService>();
 
