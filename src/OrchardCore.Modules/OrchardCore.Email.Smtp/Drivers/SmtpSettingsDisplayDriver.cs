@@ -22,7 +22,6 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpEmailSe
     private readonly ISiteService _site;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private string _defaultSender;
 
     public SmtpSettingsDisplayDriver(
         IDataProtectionProvider dataProtectionProvider,
@@ -49,18 +48,13 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpEmailSe
             return null;
         }
 
-        if (_defaultSender == null)
-        {
-            var emailSettings = (await _site.GetSiteSettingsAsync()).As<EmailSettings>();
-
-            _defaultSender = emailSettings.DefaultSender;
-        }
+        var emailSettings = (await _site.GetSiteSettingsAsync()).As<EmailSettings>();
 
         var shapes = new List<IDisplayResult>
         {
             Initialize<SmtpEmailSettings>("SmtpEmailSettings_Edit", model =>
             {
-                model.DefaultSender = _defaultSender;
+                model.DefaultSender = emailSettings.DefaultSender;
                 model.DeliveryMethod = settings.DeliveryMethod;
                 model.PickupDirectoryLocation = settings.PickupDirectoryLocation;
                 model.Host = settings.Host;
@@ -77,7 +71,7 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpEmailSe
             }).Location("Content:5").OnGroup(GroupId),
         };
 
-        if (_defaultSender != null)
+        if (emailSettings.DefaultSender != null)
         {
             shapes.Add(Dynamic("SmtpEmailSettings_TestButton").Location("Actions").OnGroup(GroupId));
         }
@@ -97,9 +91,6 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpEmailSe
         if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
         {
             await context.Updater.TryUpdateModelAsync(section, Prefix);
-
-            // Don't check the DefaultSender from within SmtpEmailSettings.
-            context.Updater.ModelState.Remove($"{nameof(ISite)}.{nameof(SmtpEmailSettings)}.{nameof(SmtpEmailSettings.DefaultSender)}");
 
             var previousPassword = section.Password;
             // Restore password if the input is empty, meaning that it has not been reset.

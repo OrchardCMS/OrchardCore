@@ -1,13 +1,11 @@
 using System;
-using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
 using OrchardCore.Email.Services;
 
 namespace OrchardCore.Email.Core.Services;
 
 public class EmailDeliveryServiceResolver : IEmailDeliveryServiceResolver
 {
-    private static IEmailDeliveryService _nullEmailDeliveryService;
-
     private readonly IServiceProvider _serviceProvider;
 
     public EmailDeliveryServiceResolver(IServiceProvider serviceProvider)
@@ -17,8 +15,18 @@ public class EmailDeliveryServiceResolver : IEmailDeliveryServiceResolver
 
     public IEmailDeliveryService Resolve(string name)
     {
-        _nullEmailDeliveryService ??= _serviceProvider.GetKeyedService<IEmailDeliveryService>(EmailConstants.NullEmailDeliveryServiceName);
+        var emailDeliveryServiceDictionary = _serviceProvider.GetEmailDeliveryServiceDictionary();
 
-        return _serviceProvider.GetKeyedService<IEmailDeliveryService>(name) ?? _nullEmailDeliveryService;
+        if (name is null)
+        {
+            return emailDeliveryServiceDictionary.LastOrDefault().Value;
+        }
+
+        if (!emailDeliveryServiceDictionary.TryGetValue(name, out var emailDeliveryService))
+        {
+            emailDeliveryService = emailDeliveryServiceDictionary[EmailConstants.NullEmailDeliveryServiceName];
+        }
+
+        return emailDeliveryService;
     }
 }
