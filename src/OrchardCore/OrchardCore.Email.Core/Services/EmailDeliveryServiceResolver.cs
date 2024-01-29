@@ -1,7 +1,7 @@
 using System;
 using OrchardCore.Email.Services;
 
-namespace OrchardCore.Email;
+namespace OrchardCore.Email.Core.Services;
 
 public class EmailDeliveryServiceResolver : IEmailDeliveryServiceResolver
 {

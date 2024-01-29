@@ -1,6 +1,4 @@
-using OrchardCore.Email.Services;
-
-namespace OrchardCore.Email;
+namespace OrchardCore.Email.Services;
 
 public interface IEmailDeliveryServiceResolver
 {

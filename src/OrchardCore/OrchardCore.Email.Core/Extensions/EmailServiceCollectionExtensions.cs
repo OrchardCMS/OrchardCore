@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Email.Core.Services;
 using OrchardCore.Email.Services;
 
 namespace OrchardCore.Email;
