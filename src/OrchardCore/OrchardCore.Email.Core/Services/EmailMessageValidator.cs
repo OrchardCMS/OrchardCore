@@ -27,11 +27,11 @@ public class EmailMessageValidator : IEmailMessageValidator
             ? _emailSettings.DefaultSender
             : message.Sender;
 
-        if (!string.IsNullOrEmpty(submitterAddress))
+        if (!string.IsNullOrEmpty(senderAddress))
         {
-            if (!_emailAddressValidator.Validate(submitterAddress))
+            if (!_emailAddressValidator.Validate(senderAddress))
             {
-                errors.Add(S["Invalid email address for the sender: '{0}'.", submitterAddress]);
+                errors.Add(S["Invalid email address for the sender: '{0}'.", senderAddress]);
             }
         }
 
