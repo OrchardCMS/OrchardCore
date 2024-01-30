@@ -36,6 +36,7 @@ namespace OrchardCore.CustomSettings
                      { "area", "OrchardCore.Settings" },
                      { "groupId", value },
                 });
+
                 var htmlName = type.Name.HtmlClassify();
 
                 builder
