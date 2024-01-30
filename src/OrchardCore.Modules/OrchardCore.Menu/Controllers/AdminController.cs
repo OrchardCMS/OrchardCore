@@ -129,7 +129,7 @@ namespace OrchardCore.Menu.Controllers
                 if (menuItems == null)
                 {
                     parentMenuItem["MenuItemsListPart"] = new JObject(
-                        new JProperty("MenuItems", menuItems = new JArray())
+                        new JProperty("MenuItems", menuItems = [])
                         );
                 }
 

@@ -8,10 +8,7 @@ namespace OrchardCore.Security
     {
         public PermissionRequirement(Permission permission)
         {
-            if (permission == null)
-            {
-                throw new ArgumentNullException(nameof(permission));
-            }
+            ArgumentNullException.ThrowIfNull(permission);
 
             Permission = permission;
         }

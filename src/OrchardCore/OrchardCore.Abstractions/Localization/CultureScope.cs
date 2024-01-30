@@ -8,7 +8,7 @@ namespace OrchardCore.Localization
     /// </summary>
     /// <remarks>
     /// The scope disallow the current culture depends on local computer settings by default.
-    /// For more information refer to https://github.com/OrchardCMS/OrchardCore/issues/11228
+    /// For more information refer to https://github.com/OrchardCMS/OrchardCore/issues/11228.
     /// </remarks>
     public sealed class CultureScope : IDisposable
     {

@@ -19,7 +19,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment
                 return Task.CompletedTask;
             }
 
-            var indicesToRebuild = elasticIndexRebuildStep.IncludeAll ? Array.Empty<string>() : elasticIndexRebuildStep.Indices;
+            var indicesToRebuild = elasticIndexRebuildStep.IncludeAll ? [] : elasticIndexRebuildStep.Indices;
 
             result.Steps.Add(new JObject(
                 new JProperty("name", "elastic-index-rebuild"),

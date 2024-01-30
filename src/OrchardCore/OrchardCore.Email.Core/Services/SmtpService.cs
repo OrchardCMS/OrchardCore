@@ -22,7 +22,7 @@ namespace OrchardCore.Email.Services
     {
         private const string EmailExtension = ".eml";
 
-        private static readonly char[] _emailsSeparator = new char[] { ',', ';' };
+        private static readonly char[] _emailsSeparator = [',', ';'];
 
         private readonly SmtpSettings _options;
         private readonly ILogger _logger;

@@ -8,6 +8,6 @@ namespace OrchardCore.Documents
     /// </summary>
     public class DocumentEntity : Document, IDocumentEntity
     {
-        public JObject Properties { get; set; } = new();
+        public JObject Properties { get; set; } = [];
     }
 }

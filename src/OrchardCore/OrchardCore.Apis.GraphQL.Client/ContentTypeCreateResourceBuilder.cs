@@ -6,8 +6,8 @@ namespace OrchardCore.Apis.GraphQL.Client
 {
     public class ContentTypeCreateResourceBuilder
     {
-        private readonly Dictionary<string, object> _values = new();
-        private readonly List<ContentPartBuilder> _contentPartBuilders = new();
+        private readonly Dictionary<string, object> _values = [];
+        private readonly List<ContentPartBuilder> _contentPartBuilders = [];
 
         private string ContentType { get; set; }
 

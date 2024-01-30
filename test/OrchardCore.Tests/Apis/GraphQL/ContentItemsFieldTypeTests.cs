@@ -388,13 +388,14 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 {
                     Name = "Inputs",
                     ResolvedType = new ListGraphType(new StringGraphType() { Name = "Animal" }),
-                    Arguments = new QueryArguments {
-                            new QueryArgument<WhereInputObjectGraphType> {
+                    Arguments = [
+                            new QueryArgument<WhereInputObjectGraphType>
+                            {
                                 Name = "where",
                                 Description = "filters the animals",
                                 ResolvedType = where
                             }
-                        }
+                        ]
                 },
                 RequestServices = services
             };
@@ -494,8 +495,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
     public class MultipleAliasIndexProvider : IIndexAliasProvider
     {
-        private static readonly IndexAlias[] _aliases = new[]
-        {
+        private static readonly IndexAlias[] _aliases =
+        [
             new IndexAlias
             {
                 Alias = "cats",
@@ -514,7 +515,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 Index = nameof(AnimalIndex),
                 IndexType = typeof(AnimalIndex)
             }
-        };
+        ];
 
         public IEnumerable<IndexAlias> GetAliases()
         {
@@ -524,8 +525,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
     public class MultipleIndexesIndexProvider : IIndexAliasProvider
     {
-        private static readonly IndexAlias[] _aliases = new[]
-        {
+        private static readonly IndexAlias[] _aliases =
+        [
             new IndexAlias
             {
                 Alias = "animals.name",
@@ -544,7 +545,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 Index = $"IsScary",
                 IndexType = typeof(AnimalTraitsIndex)
             }
-        };
+        ];
 
         public IEnumerable<IndexAlias> GetAliases()
         {
