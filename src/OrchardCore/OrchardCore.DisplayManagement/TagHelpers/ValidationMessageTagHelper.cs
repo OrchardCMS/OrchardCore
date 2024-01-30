@@ -51,7 +51,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
 
             if (For != null)
             {
-                //contextualize IHtmlHelper
+                // contextualize IHtmlHelper
                 var viewContextAware = _htmlHelper as IViewContextAware;
                 viewContextAware?.Contextualize(ViewContext);
 

@@ -137,10 +137,10 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
 
             TestShapeProvider.InitFeatureShapes(new Dictionary<IFeatureInfo, IEnumerable<string>>
             {
-                { TestFeature(), new [] {"Hello"} },
-                { features[1], new [] {"Theme1Shape"} },
-                { features[2], new [] {"DerivedShape", "OverriddenShape"} },
-                { features[3], new [] {"BaseShape", "OverriddenShape"} },
+                { TestFeature(), new[] {"Hello"} },
+                { features[1], new[] {"Theme1Shape"} },
+                { features[2], new[] {"DerivedShape", "OverriddenShape"} },
+                { features[3], new[] {"BaseShape", "OverriddenShape"} },
             });
 
             serviceCollection.AddScoped<IShapeTableProvider, TestShapeProvider>();
@@ -152,7 +152,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             typeFeatureProvider.TryAdd(typeof(TestShapeProvider), TestFeature());
         }
 
-        private static IFeatureInfo TestFeature()
+        private static FeatureInfo TestFeature()
         {
             return new FeatureInfo("Testing", new TestModuleExtensionInfo("Testing"));
         }

@@ -38,12 +38,12 @@ namespace OrchardCore.DisplayManagement.LocationExpander
         public virtual IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context,
                                                                IEnumerable<string> viewLocations)
         {
-            if (!context.Values.ContainsKey("Theme"))
+            if (!context.Values.TryGetValue("Theme", out var value))
             {
                 return viewLocations;
             }
 
-            var currentThemeId = context.Values["Theme"];
+            var currentThemeId = value;
 
             var currentThemeAndBaseThemesOrdered = _extensionManager
                 .GetFeatures([currentThemeId])

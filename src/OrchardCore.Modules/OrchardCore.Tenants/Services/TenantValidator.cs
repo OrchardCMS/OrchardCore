@@ -11,7 +11,7 @@ using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Services
 {
-    public class TenantValidator : ITenantValidator
+    public partial class TenantValidator : ITenantValidator
     {
         private readonly IShellHost _shellHost;
         private readonly IShellSettingsManager _shellSettingsManager;
@@ -55,7 +55,7 @@ namespace OrchardCore.Tenants.Services
                 }
             }
 
-            if (!string.IsNullOrEmpty(model.Name) && !Regex.IsMatch(model.Name, @"^\w+$"))
+            if (!string.IsNullOrEmpty(model.Name) && !GetRegex().IsMatch(model.Name))
             {
                 errors.Add(new ModelError(nameof(model.Name), S["Invalid tenant name. Must contain characters only and no spaces."]));
             }
@@ -150,5 +150,8 @@ namespace OrchardCore.Tenants.Services
                     break;
             }
         }
+
+        [GeneratedRegex(@"^\w+$")]
+        private static partial Regex GetRegex();
     }
 }

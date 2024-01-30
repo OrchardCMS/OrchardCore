@@ -380,9 +380,9 @@ namespace OrchardCore.Mvc.Utilities
             for (var i = 0; i < subject.Length; i++)
             {
                 var current = subject[i];
-                if (map.ContainsKey(current))
+                if (map.TryGetValue(current, out var value))
                 {
-                    result[i] = map[current];
+                    result[i] = value;
                 }
                 else
                 {

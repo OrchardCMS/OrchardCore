@@ -24,7 +24,7 @@ public class NotificationIndex : MapIndex
     public string Content { get; set; }
 }
 
-public class NotificationIndexProvider : IndexProvider<Notification>
+public partial class NotificationIndexProvider : IndexProvider<Notification>
 {
     public NotificationIndexProvider()
     {
@@ -66,10 +66,13 @@ public class NotificationIndexProvider : IndexProvider<Notification>
             });
     }
 
-    private static readonly Regex _htmlRegex = new("<.*?>", RegexOptions.Compiled);
+    private static readonly Regex _htmlRegex = GetRegex();
 
     public static string StripHTML(string html)
     {
         return _htmlRegex.Replace(html, string.Empty);
     }
+
+    [GeneratedRegex("<.*?>", RegexOptions.Compiled)]
+    private static partial Regex GetRegex();
 }

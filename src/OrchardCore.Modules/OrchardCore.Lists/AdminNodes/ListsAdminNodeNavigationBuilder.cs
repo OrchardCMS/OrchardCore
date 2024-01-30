@@ -94,7 +94,7 @@ namespace OrchardCore.Lists.AdminNodes
             {
                 var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci);
 
-                if (cim.AdminRouteValues.Any() && ci.DisplayText != null)
+                if (cim.AdminRouteValues.Count > 0 && ci.DisplayText != null)
                 {
                     listTypeMenu.Add(new LocalizedString(ci.DisplayText, ci.DisplayText), m =>
                     {

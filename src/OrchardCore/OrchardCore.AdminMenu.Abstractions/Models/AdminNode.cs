@@ -14,7 +14,7 @@ namespace OrchardCore.AdminMenu.Models
         {
             var tempStack = new Stack<AdminNode>(new AdminNode[] { this });
 
-            while (tempStack.Any())
+            while (tempStack.Count > 0)
             {
                 // Evaluate first node.
                 var item = tempStack.Pop();
@@ -39,7 +39,7 @@ namespace OrchardCore.AdminMenu.Models
         {
             var tempStack = new Stack<AdminNode>(new AdminNode[] { this });
 
-            while (tempStack.Any())
+            while (tempStack.Count > 0)
             {
                 // Evaluate first.
                 var item = tempStack.Pop();
@@ -63,7 +63,7 @@ namespace OrchardCore.AdminMenu.Models
         public bool InsertMenuItem(AdminNode nodeToInsert, MenuItem destinationNode, int position)
         {
             var tempStack = new Stack<AdminNode>(new AdminNode[] { this });
-            while (tempStack.Any())
+            while (tempStack.Count > 0)
             {
                 // Evaluate first.
                 var node = tempStack.Pop();

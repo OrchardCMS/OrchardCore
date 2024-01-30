@@ -11,7 +11,7 @@ namespace OrchardCore.ContentTypes
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return Task.FromResult(GetPermissions());
+            return Task.FromResult(_permissions);
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -21,18 +21,15 @@ namespace OrchardCore.ContentTypes
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = GetPermissions(),
+                    Permissions = _permissions,
                 },
             };
         }
 
-        private static IEnumerable<Permission> GetPermissions()
-        {
-            return new[]
-            {
-                ViewContentTypes,
-                EditContentTypes,
-            };
-        }
+        private readonly IEnumerable<Permission> _permissions =
+        [
+            ViewContentTypes,
+            EditContentTypes,
+        ];
     }
 }
