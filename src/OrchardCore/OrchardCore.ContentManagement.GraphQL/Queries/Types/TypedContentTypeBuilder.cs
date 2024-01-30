@@ -51,7 +51,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 }
 
                 var partType = PartTypes.GetOrAdd(part.PartDefinition.Name, key => typeActivator.GetTypeActivator(key).Type);
-                var queryGraphType = serviceProvider.GetService<IEnumerable<IObjectGraphType>>()?.FirstOrDefault(x => x.Name == part.PartDefinition.Name);
+                var queryGraphType = serviceProvider.GetService<IEnumerable<IObjectGraphType>>()
+                                                    ?.FirstOrDefault(x => x.GetType().BaseType.GetGenericArguments().First().Name == part.PartDefinition.Name);
 
                 var collapsePart = _contentOptions.ShouldCollapse(part);
 
@@ -111,7 +112,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
 
                 var queryGraphTypes = serviceProvider.GetService<IEnumerable<IInputObjectGraphType>>();
-                var inputGraphTypeResolved = queryGraphTypes?.FirstOrDefault(x => x.Name == part.PartDefinition.Name);
+                var inputGraphTypeResolved = queryGraphTypes?.FirstOrDefault(x =>
+                                                                x.GetType().BaseType.GetGenericArguments().FirstOrDefault()?.Name == part.PartDefinition.Name);
 
                 if (inputGraphTypeResolved != null)
                 {
