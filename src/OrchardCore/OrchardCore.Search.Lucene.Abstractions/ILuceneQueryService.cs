@@ -12,9 +12,9 @@ namespace OrchardCore.Search.Lucene
         /// </summary>
         /// <param name="context"></param>
         /// <param name="queryObj"></param>
-        /// <returns><see cref="LuceneTopDocs"/.></returns>
+        /// <returns><see cref="LuceneTopDocs"/>.</returns>
         Task<LuceneTopDocs> SearchAsync(LuceneQueryContext context, JsonObject queryObj);
-      
+
         Query CreateQueryFragment(LuceneQueryContext context, JsonObject queryObj);
     }
 }
