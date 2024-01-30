@@ -98,7 +98,7 @@ namespace OrchardCore.Entities
             }
             else
             {
-                obj = value.Deserialize<TAspect>();
+                obj = value.Deserialize<TAspect>(JOptions.Default);
             }
 
             action?.Invoke(obj);

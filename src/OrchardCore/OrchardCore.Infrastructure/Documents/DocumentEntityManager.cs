@@ -19,7 +19,7 @@ namespace OrchardCore.Documents
             var document = await _documentManager.GetOrCreateImmutableAsync();
             if (document.Properties.TryGetPropertyValue(key, out var value))
             {
-                return value.Deserialize<T>();
+                return value.Deserialize<T>(JOptions.Default);
             }
 
             return new T();

@@ -201,7 +201,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 return new ValueTask<JsonWebKeySet>(result: null);
             }
 
-            return new ValueTask<JsonWebKeySet>(JsonSerializer.Deserialize<JsonWebKeySet>(application.JsonWebKeySet.ToString()));
+            return new ValueTask<JsonWebKeySet>(JsonSerializer.Deserialize<JsonWebKeySet>(application.JsonWebKeySet.ToString(), JOptions.Default));
         }
 
         /// <inheritdoc/>

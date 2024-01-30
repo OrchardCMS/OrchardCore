@@ -187,11 +187,12 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 CommandsPageSize = yesSqlOptions.CommandsPageSize,
                 QueryGatingEnabled = yesSqlOptions.QueryGatingEnabled,
-                ContentSerializer = new DefaultJsonContentSerializer(typeInfoResolvers),
                 TableNameConvention = tableNameFactory.Create(databaseTableOptions),
                 IdentityColumnSize = Enum.Parse<IdentityColumnSize>(databaseTableOptions.IdentityColumnSize),
                 Logger = loggerFactory.CreateLogger("YesSql"),
             };
+
+            storeConfiguration.ContentSerializer = new DefaultJsonContentSerializer(typeInfoResolvers);
 
             if (yesSqlOptions.IdGenerator != null)
             {

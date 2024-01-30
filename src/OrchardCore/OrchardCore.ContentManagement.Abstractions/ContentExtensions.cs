@@ -74,7 +74,7 @@ namespace OrchardCore.ContentManagement
                 return null;
             }
 
-            var result = (ContentElement)elementData.Deserialize(contentElementType);
+            var result = (ContentElement)elementData.Deserialize(contentElementType, JOptions.Default);
 
             result.Data = elementData;
             result.ContentItem = contentElement.ContentItem;
