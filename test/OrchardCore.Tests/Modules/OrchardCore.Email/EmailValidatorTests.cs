@@ -8,7 +8,7 @@ namespace OrchardCore.Modules.Email.Smtp.Tests;
 public class EmailValidatorTests
 {
     [Fact]
-    public async Task SendEmail_WithoutToAndCcAndBccHeaders_ShouldReturnsErrors()
+    public async Task SendEmail_WithoutToAndCcAndBccHeaders_ShouldReturnErrors()
     {
         // Arrange
         var message = new MailMessage
