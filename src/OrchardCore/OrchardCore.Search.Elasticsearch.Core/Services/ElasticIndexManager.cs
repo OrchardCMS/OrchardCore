@@ -345,7 +345,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
         /// <summary>
         /// Deletes all documents in an index in one request.
-        /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/master/docs-delete-by-query.html"/>
+        /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/master/docs-delete-by-query.html"/>.
         /// </summary>
         public async Task<bool> DeleteAllDocumentsAsync(string indexName)
         {

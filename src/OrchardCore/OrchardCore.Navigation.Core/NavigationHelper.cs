@@ -141,10 +141,10 @@ namespace OrchardCore.Navigation
         }
 
         /// <summary>
-        /// Traverses the menu and returns the selected item with the highest priority
+        /// Traverses the menu and returns the selected item with the highest priority.
         /// </summary>
         /// <param name="parentShape">The menu shape.</param>
-        /// <returns>The selected menu item shape</returns>
+        /// <returns>The selected menu item shape.</returns>
         private static dynamic GetHighestPrioritySelectedMenuItem(dynamic parentShape)
         {
             dynamic result = null;

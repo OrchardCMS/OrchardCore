@@ -40,7 +40,7 @@ namespace Microsoft.AspNetCore.Authorization
         }
 
         /// <summary>
-        /// Evaluate if we have a specific owner variation permission to at least one content type
+        /// Evaluate if we have a specific owner variation permission to at least one content type.
         /// </summary>
         public static async Task<bool> AuthorizeContentTypeDefinitionsAsync(this IAuthorizationService service, ClaimsPrincipal user, Permission requiredPermission, IEnumerable<ContentTypeDefinition> contentTypeDefinitions, IContentManager contentManager)
         {

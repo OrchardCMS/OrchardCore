@@ -109,7 +109,7 @@ namespace OrchardCore.Search.Lucene
                     // Load the next batch of tasks.
                     batch = (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, BatchSize)).ToArray();
 
-                    if (!batch.Any())
+                    if (batch.Length == 0)
                     {
                         return;
                     }

@@ -20,8 +20,8 @@ namespace OrchardCore.Modules.Manifest
     public abstract class FeatureAttributeTests<TAttribute>
         where TAttribute : FeatureAttribute
     {
-        // TODO: TBD: in addition to ctors... should be able to still set properties in the same way...
-        // TODO: TBD: in effect the ctors are 'sugar' after a sort that provide some shorthand
+        // TODO: TBD: in addition to constructors... should be able to still set properties in the same way...
+        // TODO: TBD: in effect the constructors are 'sugar' after a sort that provide some shorthand
 
         /// <summary>
         /// Gets the OutputHelper for the tests.
@@ -95,7 +95,7 @@ namespace OrchardCore.Modules.Manifest
         {
             static Type ParameterlessCtorClassifier(int index, object arg) => typeof(object);
 
-            if (!args.Any() || classifier == null)
+            if (args.Length == 0 || classifier == null)
             {
                 classifier ??= ParameterlessCtorClassifier;
             }
@@ -341,7 +341,7 @@ namespace OrchardCore.Modules.Manifest
         /// <param name="feature"></param>
         protected virtual void VerifyDefault(TAttribute feature)
         {
-            Assert.False(feature.Dependencies.Any());
+            Assert.False(feature.Dependencies.Length > 0);
             Assert.False(feature.DefaultTenantOnly);
             Assert.False(feature.IsAlwaysEnabled);
             Assert.False(feature.Exists);

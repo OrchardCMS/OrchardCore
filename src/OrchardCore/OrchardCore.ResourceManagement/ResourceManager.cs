@@ -197,7 +197,7 @@ namespace OrchardCore.ResourceManagement
 
         /// <summary>
         /// Returns the upper bound value of a required version number.
-        /// For instance, 3.1.0 returns 3.1.1, 4 returns 5.0.0, 6.1 returns 6.2.0
+        /// For instance, 3.1.0 returns 3.1.1, 4 returns 5.0.0, 6.1 returns 6.2.0.
         /// </summary>
         private static Version GetUpperBoundVersion(string minimumVersion)
         {
@@ -225,7 +225,7 @@ namespace OrchardCore.ResourceManagement
 
         /// <summary>
         /// Returns the lower bound value of a required version number.
-        /// For instance, 3.1.0 returns 3.1.0, 4 returns 4.0.0, 6.1 returns 6.1.0
+        /// For instance, 3.1.0 returns 3.1.0, 4 returns 4.0.0, 6.1 returns 6.1.0.
         /// </summary>
         private static Version GetLowerBoundVersion(string minimumVersion)
         {
