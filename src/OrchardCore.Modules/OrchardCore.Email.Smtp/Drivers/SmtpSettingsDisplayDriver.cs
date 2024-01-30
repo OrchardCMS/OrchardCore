@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -19,24 +20,27 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpEmailSe
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IShellHost _shellHost;
     private readonly ShellSettings _shellSettings;
-    private readonly ISiteService _site;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
+    private readonly EmailSettings _emailSettings;
+    private readonly SmtpEmailSettings _smtpEmailSettings;
 
     public SmtpSettingsDisplayDriver(
         IDataProtectionProvider dataProtectionProvider,
         IShellHost shellHost,
         ShellSettings shellSettings,
-        ISiteService site,
         IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+        IAuthorizationService authorizationService,
+        IOptions<EmailSettings> emailSettings,
+        IOptions<SmtpEmailSettings> smtpEmailSettings)
     {
         _dataProtectionProvider = dataProtectionProvider;
         _shellHost = shellHost;
         _shellSettings = shellSettings;
-        _site = site;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
+        _emailSettings = emailSettings.Value;
+        _smtpEmailSettings = smtpEmailSettings.Value;
     }
 
     public override async Task<IDisplayResult> EditAsync(SmtpEmailSettings settings, BuildEditorContext context)
@@ -48,13 +52,13 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpEmailSe
             return null;
         }
 
-        var emailSettings = (await _site.GetSiteSettingsAsync()).As<EmailSettings>();
+        var defaultSender = _smtpEmailSettings.DefaultSender ?? _emailSettings.DefaultSender;
 
         var shapes = new List<IDisplayResult>
         {
             Initialize<SmtpEmailSettings>("SmtpEmailSettings_Edit", model =>
             {
-                model.DefaultSender = emailSettings.DefaultSender;
+                model.DefaultSender = defaultSender;
                 model.DeliveryMethod = settings.DeliveryMethod;
                 model.PickupDirectoryLocation = settings.PickupDirectoryLocation;
                 model.Host = settings.Host;
@@ -71,7 +75,7 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpEmailSe
             }).Location("Content:5").OnGroup(GroupId),
         };
 
-        if (emailSettings.DefaultSender != null)
+        if (defaultSender != null)
         {
             shapes.Add(Dynamic("SmtpEmailSettings_TestButton").Location("Actions").OnGroup(GroupId));
         }
