@@ -78,7 +78,7 @@ namespace OrchardCore.Apis.GraphQL
 
         private async Task ExecuteAsync(HttpContext context)
         {
-            GraphQLRequest request = null;
+            GraphQLNamedQueryRequest request = null;
 
             // c.f. https://graphql.org/learn/serving-over-http/#post-request
 
@@ -95,14 +95,15 @@ namespace OrchardCore.Apis.GraphQL
                         {
                             using var sr = new StreamReader(context.Request.Body);
 
-                            request = new GraphQLRequest
+                            request = new GraphQLNamedQueryRequest
                             {
                                 Query = await sr.ReadToEndAsync()
                             };
                         }
                         else
                         {
-                            request = await JsonSerializer.DeserializeAsync<GraphQLRequest>(context.Request.Body, _jsonSerializerOptions);
+
+                            request = await JsonSerializer.DeserializeAsync<GraphQLNamedQueryRequest>(context.Request.Body, _jsonSerializerOptions);
                         }
                     }
                     else
@@ -147,7 +148,7 @@ namespace OrchardCore.Apis.GraphQL
                 options.Schema = schema;
                 options.Query = queryToExecute;
                 options.OperationName = request.OperationName;
-                options.Variables = new GraphQLSerializer().Deserialize<Inputs>(request.Variables.GetString());
+                options.Variables = request.Variables;
                 options.UserContext = _settings.BuildUserContext?.Invoke(context);
                 options.ValidationRules = DocumentValidator.CoreRules
                     .Concat(context.RequestServices.GetServices<IValidationRule>())
@@ -172,7 +173,7 @@ namespace OrchardCore.Apis.GraphQL
             await _serializer.WriteAsync(context.Response.Body, result);
         }
 
-        private static GraphQLRequest CreateRequestFromQueryString(HttpContext context, bool validateQueryKey = false)
+        private GraphQLNamedQueryRequest CreateRequestFromQueryString(HttpContext context, bool validateQueryKey = false)
         {
             if (!context.Request.Query.ContainsKey("query"))
             {
@@ -184,14 +185,14 @@ namespace OrchardCore.Apis.GraphQL
                 return null;
             }
 
-            var request = new GraphQLRequest
+            var request = new GraphQLNamedQueryRequest
             {
                 Query = context.Request.Query["query"]
             };
 
             if (context.Request.Query.ContainsKey("variables"))
             {
-                request.Variables = JsonSerializer.Deserialize<JsonElement>(context.Request.Query["variables"], _jsonSerializerOptions);
+                request.Variables = JsonSerializer.Deserialize<Inputs>(context.Request.Query["variables"], _jsonSerializerOptions);
             }
 
             if (context.Request.Query.ContainsKey("operationName"))

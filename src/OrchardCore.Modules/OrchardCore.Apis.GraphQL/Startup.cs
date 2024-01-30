@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Execution;
@@ -36,7 +37,6 @@ namespace OrchardCore.Apis.GraphQL
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
-            services.AddSingleton<IGraphQLSerializer, GraphQLSerializer>();
             services.AddSingleton<IDataLoaderContextAccessor, DataLoaderContextAccessor>();
             services.AddSingleton<IDocumentExecutionListener, DataLoaderDocumentListener>();
 
@@ -53,8 +53,7 @@ namespace OrchardCore.Apis.GraphQL
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddTransient<INavigationProvider, AdminMenu>();
             services.AddSingleton<GraphQLMiddleware>();
-            services.AddGraphQL(builder => builder.AddSystemTextJson()
-                                                  .AddAutoClrMappings(false, false));
+            services.AddGraphQL(builder => builder.AddSystemTextJson());
 
             services.AddOptions<GraphQLSettings>().Configure<IShellConfiguration>((c, configuration) =>
             {
@@ -75,7 +74,7 @@ namespace OrchardCore.Apis.GraphQL
                     User = ctx.User,
                 };
                 c.ExposeExceptions = exposeExceptions;
-                c.MaxDepth = configuration.GetValue<int?>($"OrchardCore_Apis_GraphQL:{nameof(GraphQLSettings.MaxDepth)}") ?? 20;
+                c.MaxDepth = configuration.GetValue<int?>($"OrchardCore_Apis_GraphQL:{nameof(GraphQLSettings.MaxDepth)}") ?? 100;
                 c.MaxComplexity = configuration.GetValue<int?>($"OrchardCore_Apis_GraphQL:{nameof(GraphQLSettings.MaxComplexity)}");
                 c.FieldImpact = configuration.GetValue<double?>($"OrchardCore_Apis_GraphQL:{nameof(GraphQLSettings.FieldImpact)}");
                 c.MaxNumberOfResults = configuration.GetValue<int?>($"OrchardCore_Apis_GraphQL:{nameof(GraphQLSettings.MaxNumberOfResults)}") ?? 1000;
