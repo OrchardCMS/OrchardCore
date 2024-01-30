@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
@@ -71,10 +70,8 @@ namespace OrchardCore.ResourceManagement
 
         public ResourceDefinition SetUrl(string url, string urlDebug)
         {
-            if (string.IsNullOrEmpty(url))
-            {
-                ThrowArgumentNullException(nameof(url));
-            }
+            ArgumentException.ThrowIfNullOrEmpty(url);
+
             Url = url;
             if (urlDebug != null)
             {
@@ -100,10 +97,8 @@ namespace OrchardCore.ResourceManagement
 
         public ResourceDefinition SetCdnIntegrity(string cdnIntegrity, string cdnDebugIntegrity)
         {
-            if (string.IsNullOrEmpty(cdnIntegrity))
-            {
-                ThrowArgumentNullException(nameof(cdnIntegrity));
-            }
+            ArgumentException.ThrowIfNullOrEmpty(cdnIntegrity);
+
             CdnIntegrity = cdnIntegrity;
             if (cdnDebugIntegrity != null)
             {
@@ -114,10 +109,8 @@ namespace OrchardCore.ResourceManagement
 
         public ResourceDefinition SetCdn(string cdnUrl, string cdnUrlDebug, bool? cdnSupportsSsl)
         {
-            if (string.IsNullOrEmpty(cdnUrl))
-            {
-                ThrowArgumentNullException(nameof(cdnUrl));
-            }
+            ArgumentException.ThrowIfNullOrEmpty(cdnUrl);
+
             UrlCdn = cdnUrl;
             if (cdnUrlDebug != null)
             {
@@ -374,12 +367,6 @@ namespace OrchardCore.ResourceManagement
         public override int GetHashCode()
         {
             return HashCode.Combine(Name, Type);
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void ThrowArgumentNullException(string paramName)
-        {
-            throw new ArgumentNullException(paramName);
         }
     }
 }

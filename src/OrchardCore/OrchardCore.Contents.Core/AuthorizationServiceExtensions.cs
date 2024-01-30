@@ -14,25 +14,16 @@ namespace Microsoft.AspNetCore.Authorization
     {
         public static Task<bool> AuthorizeContentTypeAsync(this IAuthorizationService service, ClaimsPrincipal user, Permission requiredPermission, ContentTypeDefinition contentTypeDefinition, string owner = null)
         {
-            if (contentTypeDefinition == null)
-            {
-                throw new ArgumentNullException(nameof(contentTypeDefinition));
-            }
+            ArgumentNullException.ThrowIfNull(contentTypeDefinition);
 
             return service.AuthorizeContentTypeAsync(user, requiredPermission, contentTypeDefinition.Name, owner);
         }
 
         public static Task<bool> AuthorizeContentTypeAsync(this IAuthorizationService service, ClaimsPrincipal user, Permission requiredPermission, string contentType, string owner = null)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
-            if (requiredPermission == null)
-            {
-                throw new ArgumentNullException(nameof(requiredPermission));
-            }
+            ArgumentNullException.ThrowIfNull(requiredPermission);
 
             if (string.IsNullOrWhiteSpace(contentType))
             {

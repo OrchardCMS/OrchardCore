@@ -49,10 +49,7 @@ public class DbConnectionValidator : IDbConnectionValidator
 
     public async Task<DbConnectionValidatorResult> ValidateAsync(DbConnectionValidatorContext context)
     {
-        if (context == null)
-        {
-            throw new ArgumentNullException(nameof(context));
-        }
+        ArgumentNullException.ThrowIfNull(context);
 
         if (string.IsNullOrWhiteSpace(context.DatabaseProvider))
         {

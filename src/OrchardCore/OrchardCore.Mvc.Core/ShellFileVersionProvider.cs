@@ -39,10 +39,7 @@ namespace OrchardCore.Mvc
 
         public string AddFileVersionToPath(PathString requestPathBase, string path)
         {
-            if (path == null)
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
+            ArgumentNullException.ThrowIfNull(path);
 
             var resolvedPath = path;
 

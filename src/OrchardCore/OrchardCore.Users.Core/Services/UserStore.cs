@@ -75,10 +75,7 @@ namespace OrchardCore.Users.Services
 
         public async Task<IdentityResult> CreateAsync(IUser user, CancellationToken cancellationToken = default)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is not User newUser)
             {
@@ -134,10 +131,7 @@ namespace OrchardCore.Users.Services
 
         public async Task<IdentityResult> DeleteAsync(IUser user, CancellationToken cancellationToken = default)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             try
             {
@@ -175,10 +169,7 @@ namespace OrchardCore.Users.Services
 
         public Task<string> GetNormalizedUserNameAsync(IUser user, CancellationToken cancellationToken = default)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u)
             {
@@ -190,10 +181,7 @@ namespace OrchardCore.Users.Services
 
         public Task<string> GetUserIdAsync(IUser user, CancellationToken cancellationToken = default)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u)
             {
@@ -205,20 +193,14 @@ namespace OrchardCore.Users.Services
 
         public Task<string> GetUserNameAsync(IUser user, CancellationToken cancellationToken = default)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             return Task.FromResult(user.UserName);
         }
 
         public Task SetNormalizedUserNameAsync(IUser user, string normalizedName, CancellationToken cancellationToken = default)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u)
             {
@@ -230,10 +212,7 @@ namespace OrchardCore.Users.Services
 
         public Task SetUserNameAsync(IUser user, string userName, CancellationToken cancellationToken = default)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u)
             {
@@ -245,10 +224,7 @@ namespace OrchardCore.Users.Services
 
         public async Task<IdentityResult> UpdateAsync(IUser user, CancellationToken cancellationToken = default)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             try
             {
@@ -280,10 +256,7 @@ namespace OrchardCore.Users.Services
 
         public Task<string> GetPasswordHashAsync(IUser user, CancellationToken cancellationToken = default)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u)
             {
@@ -295,10 +268,7 @@ namespace OrchardCore.Users.Services
 
         public Task SetPasswordHashAsync(IUser user, string passwordHash, CancellationToken cancellationToken = default)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u)
             {
@@ -310,10 +280,7 @@ namespace OrchardCore.Users.Services
 
         public Task<bool> HasPasswordAsync(IUser user, CancellationToken cancellationToken = default)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u)
             {
@@ -329,10 +296,7 @@ namespace OrchardCore.Users.Services
 
         public Task SetSecurityStampAsync(IUser user, string stamp, CancellationToken cancellationToken = default)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u)
             {
@@ -344,10 +308,7 @@ namespace OrchardCore.Users.Services
 
         public Task<string> GetSecurityStampAsync(IUser user, CancellationToken cancellationToken = default)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u)
             {
@@ -363,10 +324,7 @@ namespace OrchardCore.Users.Services
 
         public Task SetEmailAsync(IUser user, string email, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u)
             {
@@ -378,10 +336,7 @@ namespace OrchardCore.Users.Services
 
         public Task<string> GetEmailAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u)
             {
@@ -393,10 +348,7 @@ namespace OrchardCore.Users.Services
 
         public Task<bool> GetEmailConfirmedAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u)
             {
@@ -408,10 +360,7 @@ namespace OrchardCore.Users.Services
 
         public Task SetEmailConfirmedAsync(IUser user, bool confirmed, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u)
             {
@@ -428,10 +377,7 @@ namespace OrchardCore.Users.Services
 
         public Task<string> GetNormalizedEmailAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u)
             {
@@ -443,10 +389,7 @@ namespace OrchardCore.Users.Services
 
         public Task SetNormalizedEmailAsync(IUser user, string normalizedEmail, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u)
             {
@@ -462,10 +405,7 @@ namespace OrchardCore.Users.Services
 
         public async Task AddToRoleAsync(IUser user, string normalizedRoleName, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u)
             {
@@ -483,10 +423,7 @@ namespace OrchardCore.Users.Services
 
         public async Task RemoveFromRoleAsync(IUser user, string normalizedRoleName, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u)
             {
@@ -504,10 +441,7 @@ namespace OrchardCore.Users.Services
 
         public Task<IList<string>> GetRolesAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u)
             {
@@ -519,10 +453,7 @@ namespace OrchardCore.Users.Services
 
         public Task<bool> IsInRoleAsync(IUser user, string normalizedRoleName, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (string.IsNullOrWhiteSpace(normalizedRoleName))
             {
@@ -539,10 +470,7 @@ namespace OrchardCore.Users.Services
 
         public async Task<IList<IUser>> GetUsersInRoleAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(normalizedRoleName))
-            {
-                throw new ArgumentNullException(nameof(normalizedRoleName));
-            }
+            ArgumentException.ThrowIfNullOrEmpty(normalizedRoleName);
 
             var users = await _session.Query<User, UserByRoleNameIndex>(u => u.RoleName == normalizedRoleName).ListAsync();
             return users == null ? [] : users.ToList<IUser>();
@@ -554,15 +482,9 @@ namespace OrchardCore.Users.Services
 
         public Task AddLoginAsync(IUser user, UserLoginInfo login, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
-            if (login == null)
-            {
-                throw new ArgumentNullException(nameof(login));
-            }
+            ArgumentNullException.ThrowIfNull(login);
 
             if (user is User u)
             {
@@ -584,10 +506,7 @@ namespace OrchardCore.Users.Services
 
         public Task<IList<UserLoginInfo>> GetLoginsAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u)
             {
@@ -599,10 +518,7 @@ namespace OrchardCore.Users.Services
 
         public Task RemoveLoginAsync(IUser user, string loginProvider, string providerKey, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u && u.LoginInfos != null)
             {
@@ -622,10 +538,7 @@ namespace OrchardCore.Users.Services
 
         public Task<IList<Claim>> GetClaimsAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is not User u)
             {
@@ -637,15 +550,9 @@ namespace OrchardCore.Users.Services
 
         public Task AddClaimsAsync(IUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
-            if (claims == null)
-            {
-                throw new ArgumentNullException(nameof(claims));
-            }
+            ArgumentNullException.ThrowIfNull(claims);
 
             if (user is User u)
             {
@@ -660,20 +567,11 @@ namespace OrchardCore.Users.Services
 
         public Task ReplaceClaimAsync(IUser user, Claim claim, Claim newClaim, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
-            if (claim == null)
-            {
-                throw new ArgumentNullException(nameof(claim));
-            }
+            ArgumentNullException.ThrowIfNull(claim);
 
-            if (newClaim == null)
-            {
-                throw new ArgumentNullException(nameof(newClaim));
-            }
+            ArgumentNullException.ThrowIfNull(newClaim);
 
             if (user is User u)
             {
@@ -689,15 +587,9 @@ namespace OrchardCore.Users.Services
 
         public Task RemoveClaimsAsync(IUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
-            if (claims == null)
-            {
-                throw new ArgumentNullException(nameof(claims));
-            }
+            ArgumentNullException.ThrowIfNull(claims);
 
             if (user is User u)
             {
@@ -715,10 +607,7 @@ namespace OrchardCore.Users.Services
 
         public async Task<IList<IUser>> GetUsersForClaimAsync(Claim claim, CancellationToken cancellationToken)
         {
-            if (claim == null)
-            {
-                throw new ArgumentNullException(nameof(claim));
-            }
+            ArgumentNullException.ThrowIfNull(claim);
 
             var users = await _session.Query<User, UserByClaimIndex>(uc => uc.ClaimType == claim.Type && uc.ClaimValue == claim.Value).ListAsync();
 
@@ -730,10 +619,7 @@ namespace OrchardCore.Users.Services
         #region IUserAuthenticationTokenStore
         public Task<string> GetTokenAsync(IUser user, string loginProvider, string name, CancellationToken cancellationToken = default)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (string.IsNullOrEmpty(loginProvider))
             {
@@ -758,10 +644,7 @@ namespace OrchardCore.Users.Services
 
         public Task RemoveTokenAsync(IUser user, string loginProvider, string name, CancellationToken cancellationToken = default)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (string.IsNullOrEmpty(loginProvider))
             {
@@ -784,10 +667,7 @@ namespace OrchardCore.Users.Services
 
         public Task SetTokenAsync(IUser user, string loginProvider, string name, string value, CancellationToken cancellationToken = default)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (string.IsNullOrEmpty(loginProvider))
             {
@@ -840,10 +720,7 @@ namespace OrchardCore.Users.Services
         #region IUserLockoutStore<IUser>
         public Task<int> GetAccessFailedCountAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u)
             {
@@ -855,10 +732,7 @@ namespace OrchardCore.Users.Services
 
         public Task<bool> GetLockoutEnabledAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u)
             {
@@ -870,10 +744,7 @@ namespace OrchardCore.Users.Services
 
         public Task<DateTimeOffset?> GetLockoutEndDateAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u && u.LockoutEndUtc.HasValue)
             {
@@ -885,10 +756,7 @@ namespace OrchardCore.Users.Services
 
         public Task<int> IncrementAccessFailedCountAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u)
             {
@@ -900,10 +768,7 @@ namespace OrchardCore.Users.Services
 
         public Task ResetAccessFailedCountAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u)
             {
@@ -915,10 +780,7 @@ namespace OrchardCore.Users.Services
 
         public Task SetLockoutEnabledAsync(IUser user, bool enabled, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u)
             {
@@ -930,10 +792,7 @@ namespace OrchardCore.Users.Services
 
         public Task SetLockoutEndDateAsync(IUser user, DateTimeOffset? lockoutEnd, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u)
             {
@@ -954,10 +813,7 @@ namespace OrchardCore.Users.Services
         #region IUserTwoFactorStore<IUser>
         public Task SetTwoFactorEnabledAsync(IUser user, bool enabled, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u)
             {
@@ -981,15 +837,8 @@ namespace OrchardCore.Users.Services
         #region IUserTwoFactorRecoveryCodeStore
         public Task ReplaceCodesAsync(IUser user, IEnumerable<string> recoveryCodes, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            if (recoveryCodes == null)
-            {
-                throw new ArgumentNullException(nameof(recoveryCodes));
-            }
+            ArgumentNullException.ThrowIfNull(user);
+            ArgumentNullException.ThrowIfNull(recoveryCodes);
 
             var mergedCodes = string.Join(";", recoveryCodes);
 
@@ -998,10 +847,7 @@ namespace OrchardCore.Users.Services
 
         public async Task<bool> RedeemCodeAsync(IUser user, string code, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (string.IsNullOrWhiteSpace(code))
             {
@@ -1023,10 +869,7 @@ namespace OrchardCore.Users.Services
 
         public async Task<int> CountCodesAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             var mergedCodes = (await GetTokenAsync(user, InternalLoginProvider, RecoveryCodeTokenName, cancellationToken)) ?? "";
             if (mergedCodes.Length > 0)
@@ -1063,10 +906,7 @@ namespace OrchardCore.Users.Services
         #region IUserPhoneNumberStore<IUser>
         public Task SetPhoneNumberAsync(IUser user, string phoneNumber, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u)
             {
@@ -1078,10 +918,7 @@ namespace OrchardCore.Users.Services
 
         public Task SetPhoneNumberConfirmedAsync(IUser user, bool confirmed, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u)
             {
@@ -1093,10 +930,7 @@ namespace OrchardCore.Users.Services
 
         public Task<string> GetPhoneNumberAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u)
             {
@@ -1108,10 +942,7 @@ namespace OrchardCore.Users.Services
 
         public Task<bool> GetPhoneNumberConfirmedAsync(IUser user, CancellationToken cancellationToken)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             if (user is User u)
             {
