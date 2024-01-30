@@ -25,7 +25,7 @@ public class EmailService : IEmailService
         _logger = logger;
     }
 
-    public async Task<EmailResult> SendAsync(MailMessage message, string deliveryMethodName = null)
+    public async Task<EmailResult> SendAsync(MailMessage message, string deliveryServiceName = null)
     {
         await _emailServiceEvents.InvokeAsync((e, message) => e.OnMessageSendingAsync(message), message, _logger);
 
@@ -34,7 +34,7 @@ public class EmailService : IEmailService
             return EmailResult.Failed([.. errors]);
         }
 
-        var emailDeliveryService = _emailDeliveryServiceResolver.Resolve(deliveryMethodName);
+        var emailDeliveryService = _emailDeliveryServiceResolver.Resolve(deliveryServiceName);
 
         var result = await emailDeliveryService.DeliverAsync(message);
 
