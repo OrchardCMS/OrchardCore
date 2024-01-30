@@ -67,7 +67,7 @@ public class Migrations : DataMigration
     {
         await SchemaBuilder.AlterIndexTableAsync<PublishLaterPartIndex>(table =>
         {
-            table.AddColumn<string>("ContentItemId", column => column.WithLength(26));
+            table.AddColumn<string>("ContentItemId");
             table.AddColumn<bool>("Published");
             table.AddColumn<bool>("Latest");
         });
