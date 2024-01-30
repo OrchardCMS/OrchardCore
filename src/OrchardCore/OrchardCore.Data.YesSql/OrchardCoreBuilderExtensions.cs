@@ -79,12 +79,7 @@ namespace Microsoft.Extensions.DependencyInjection
                             var databaseFolder = SqliteHelper.GetDatabaseFolder(shellOptions, shellSettings.Name);
                             Directory.CreateDirectory(databaseFolder);
 
-                            if (!string.IsNullOrWhiteSpace(shellSettings["DatabaseName"]))
-                            {
-                                sqliteOptions.SetDatabaseName(shellSettings["DatabaseName"]);
-                            }
-
-                            var connectionString = SqliteHelper.GetConnectionString(sqliteOptions, databaseFolder);
+                            var connectionString = SqliteHelper.GetConnectionString(sqliteOptions, databaseFolder, shellSettings["DatabaseName"]);
                             storeConfiguration
                                 .UseSqLite(connectionString, IsolationLevel.ReadUncommitted)
                                 .UseDefaultIdGenerator();

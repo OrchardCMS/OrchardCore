@@ -15,15 +15,5 @@ namespace OrchardCore.Data
         /// <see href="https://docs.microsoft.com/en-us/dotnet/standard/data/sqlite/connection-strings#pooling" />
         /// </summary>
         public bool UseConnectionPooling { get; set; } = true;
-
-        /// <summary>
-        /// Gets the database name.
-        /// </summary>
-        public string DatabaseName { get; private set; }
-
-        public void SetDatabaseName(string databaseName)
-        {
-            DatabaseName = databaseName;
-        }
     }
 }
