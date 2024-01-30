@@ -41,12 +41,10 @@ namespace OrchardCore.Facebook.Widgets.Drivers
 
         private async Task BuildViewModelAsync(FacebookPluginPartViewModel model, FacebookPluginPart part)
         {
-            if (model == null)
-            {
-                throw new ArgumentNullException(nameof(model));
-            }
+            ArgumentNullException.ThrowIfNull(model);
+            ArgumentNullException.ThrowIfNull(part);
 
-            model.FacebookPluginPart = part ?? throw new ArgumentNullException(nameof(part));
+            model.FacebookPluginPart = part;
             model.Settings = await GetFacebookPluginPartSettingsAsync(part);
             model.Liquid = part.Liquid;
             model.ContentItem = part.ContentItem;
@@ -64,10 +62,7 @@ namespace OrchardCore.Facebook.Widgets.Drivers
 
         private async Task<FacebookPluginPartSettings> GetFacebookPluginPartSettingsAsync(FacebookPluginPart part)
         {
-            if (part == null)
-            {
-                throw new ArgumentNullException(nameof(part));
-            }
+            ArgumentNullException.ThrowIfNull(part);
 
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
             var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(FacebookPluginPart)));

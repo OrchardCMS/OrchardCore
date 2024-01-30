@@ -34,10 +34,7 @@ namespace OrchardCore.Media.Services
 
             public void OnAuthorization(AuthorizationFilterContext context)
             {
-                if (context == null)
-                {
-                    throw new ArgumentNullException(nameof(context));
-                }
+                ArgumentNullException.ThrowIfNull(context);
 
                 var effectiveFormPolicy = context.FindEffectivePolicy<IRequestFormLimitsPolicy>();
                 if (effectiveFormPolicy == null || effectiveFormPolicy == this)

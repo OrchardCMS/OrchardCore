@@ -157,10 +157,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
         public bool IsHiddenByDefault(string contentType)
         {
-            if (string.IsNullOrEmpty(contentType))
-            {
-                throw new ArgumentNullException(nameof(contentType));
-            }
+            ArgumentException.ThrowIfNullOrEmpty(contentType);
 
             var contentTypeOption = ContentTypeOptions.FirstOrDefault(ctp => ctp.ContentType == contentType);
 
@@ -169,10 +166,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
         public bool ShouldHide(ContentTypeDefinition definition)
         {
-            if (definition == null)
-            {
-                throw new ArgumentNullException(nameof(definition));
-            }
+            ArgumentNullException.ThrowIfNull(definition);
 
             var settings = definition.GetSettings<GraphQLContentTypeSettings>();
 
