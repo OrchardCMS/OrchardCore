@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
+using OrchardCore.Json.Serialization;
 
 namespace YesSql.Serialization
 {
@@ -14,6 +15,7 @@ namespace YesSql.Serialization
         {
             _options = new(JOptions.Base);
             _options.Converters.Add(JsonDynamicConverter.Instance);
+            _options.Converters.Add(PathStringJsonConverter.Instance);
         }
 
         public DefaultJsonContentSerializer(IEnumerable<IJsonTypeInfoResolver> typeInfoResolvers)
@@ -25,6 +27,7 @@ namespace YesSql.Serialization
             }
 
             _options.Converters.Add(JsonDynamicConverter.Instance);
+            _options.Converters.Add(PathStringJsonConverter.Instance);
         }
 
         public DefaultJsonContentSerializer(JsonSerializerOptions options) => _options = options;

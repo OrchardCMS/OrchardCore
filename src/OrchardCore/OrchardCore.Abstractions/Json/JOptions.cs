@@ -1,6 +1,7 @@
 using System.Text.Encodings.Web;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using OrchardCore.Json.Serialization;
 
 namespace System.Text.Json;
 
@@ -32,6 +33,7 @@ public static class JOptions
     {
         Default = new JsonSerializerOptions(Base);
         Default.Converters.Add(new JsonDynamicConverter());
+        Default.Converters.Add(new PathStringJsonConverter());
 
         Indented = new JsonSerializerOptions(Default)
         {
