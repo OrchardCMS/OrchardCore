@@ -153,10 +153,7 @@ namespace OrchardCore.Users.Controllers
         {
             ViewData["ReturnUrl"] = returnUrl;
 
-            if (model == null)
-            {
-                throw new ArgumentNullException(nameof(model));
-            }
+            ArgumentNullException.ThrowIfNull(model);
 
             if (TryValidateModel(model) && ModelState.IsValid)
             {

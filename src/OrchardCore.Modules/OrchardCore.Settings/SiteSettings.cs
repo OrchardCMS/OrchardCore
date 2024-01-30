@@ -23,7 +23,7 @@ namespace OrchardCore.Settings
         public string SuperUser { get; set; }
         public bool UseCdn { get; set; }
         public string CdnBaseUrl { get; set; }
-        public RouteValueDictionary HomeRoute { get; set; } = new RouteValueDictionary();
+        public RouteValueDictionary HomeRoute { get; set; } = [];
         public bool AppendVersion { get; set; } = true;
         public CacheMode CacheMode { get; set; }
 

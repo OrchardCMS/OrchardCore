@@ -8,7 +8,7 @@ namespace OrchardCore.ContentFields.Settings
         public bool Required { get; set; }
         public bool Multiple { get; set; }
         public bool DisplayAllUsers { get; set; }
-        public RoleEntry[] Roles { get; set; } = Array.Empty<RoleEntry>();
+        public RoleEntry[] Roles { get; set; } = [];
     }
 
     public class RoleEntry

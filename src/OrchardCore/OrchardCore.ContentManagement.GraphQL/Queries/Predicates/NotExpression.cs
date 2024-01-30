@@ -8,7 +8,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         private readonly IPredicate _predicate;
 
         /// <summary>
-        /// Initialize a new instance of the <see cref="NotExpression" /> class for an <see cref="IPredicate" />
+        /// Initialize a new instance of the <see cref="NotExpression" /> class for an <see cref="IPredicate" />.
         /// </summary>
         /// <param name="predicate">The <see cref="IPredicate" /> to negate.</param>
         public NotExpression(IPredicate predicate)

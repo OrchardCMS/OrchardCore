@@ -66,7 +66,7 @@ namespace OrchardCore.DisplayManagement
                 _arguments = arguments.ToList();
                 _names = names.ToList();
 
-                _positional = Array.Empty<T>();
+                _positional = [];
 
                 if (_arguments.Count != _names.Count)
                 {

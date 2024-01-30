@@ -27,13 +27,13 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                     { '$', RequiredAttributeDescriptor.ValueComparisonMode.SuffixMatch },
                 };
 
-            private static readonly char[] _invalidPlainAttributeNameCharacters = { ' ', '\t', ',', RequiredAttributeWildcardSuffix };
+            private static readonly char[] _invalidPlainAttributeNameCharacters = [' ', '\t', ',', RequiredAttributeWildcardSuffix];
 
             private static readonly char[] _invalidCssAttributeNameCharacters = (new[] { ' ', '\t', ',', ']' })
                 .Concat(_cssValueComparisons.Keys)
                 .ToArray();
 
-            private static readonly char[] _invalidCssQuotelessValueCharacters = { ' ', '\t', ']' };
+            private static readonly char[] _invalidCssQuotelessValueCharacters = [' ', '\t', ']'];
 
             private int _index;
             private readonly string _requiredAttributes;

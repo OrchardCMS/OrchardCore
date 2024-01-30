@@ -15,7 +15,7 @@ namespace OrchardCore.Resources.Liquid
 {
     public class ScriptBlock
     {
-        private static readonly char[] _separators = new[] { ',', ' ' };
+        private static readonly char[] _separators = [',', ' '];
 
         public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
@@ -44,7 +44,7 @@ namespace OrchardCore.Resources.Liquid
                     case "depends_on": dependsOn = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                     case "version": version = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                     case "at": Enum.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(), ignoreCase: true, out at); break;
-                    default: (customAttributes ??= new Dictionary<string, string>())[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                    default: (customAttributes ??= [])[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                 }
             }
 

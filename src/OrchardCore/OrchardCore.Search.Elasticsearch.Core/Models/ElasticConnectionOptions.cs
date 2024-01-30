@@ -1,3 +1,5 @@
+using Nest;
+
 namespace OrchardCore.Search.Elasticsearch.Core.Models
 {
     public class ElasticConnectionOptions
@@ -13,12 +15,12 @@ namespace OrchardCore.Search.Elasticsearch.Core.Models
         public int[] Ports { get; set; }
 
         /// <summary>
-        /// The server connection type
+        /// The server connection type.
         /// </summary>
         public string ConnectionType { get; set; }
 
         /// <summary>
-        /// The Elasticsearch cloud service CloudId
+        /// The Elasticsearch cloud service CloudId.
         /// </summary>
         public string CloudId { get; set; }
 
@@ -38,13 +40,27 @@ namespace OrchardCore.Search.Elasticsearch.Core.Models
         public string CertificateFingerprint { get; set; }
 
         /// <summary>
-        /// Enables compatibility mode for Elasticsearch 8.x
+        /// Enables compatibility mode for Elasticsearch 8.x.
         /// </summary>
         public bool EnableApiVersioningHeader { get; set; } = false;
 
         /// <summary>
         /// Whether the configuration section exists.
         /// </summary>
-        public bool ConfigurationExists { get; set; }
+        private bool _fileConfigurationExists { get; set; }
+
+        private IConnectionSettingsValues _conntectionSettings;
+
+        public void SetFileConfigurationExists(bool fileConfigurationExists)
+            => _fileConfigurationExists = fileConfigurationExists;
+
+        public bool FileConfigurationExists()
+            => _fileConfigurationExists;
+
+        public void SetConnectionSettings(IConnectionSettingsValues settings)
+         => _conntectionSettings = settings;
+
+        public IConnectionSettingsValues GetConnectionSettings()
+            => _conntectionSettings;
     }
 }

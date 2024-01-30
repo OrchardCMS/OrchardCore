@@ -22,7 +22,7 @@ namespace OrchardCore.Environment.Commands
 
         public async Task ExecuteAsync(CommandParameters parameters)
         {
-            var matches = MatchCommands(parameters) ?? Enumerable.Empty<Match>();
+            var matches = MatchCommands(parameters) ?? [];
 
             if (matches.Count() == 1)
             {
@@ -48,7 +48,7 @@ namespace OrchardCore.Environment.Commands
             return _commandHandlers.SelectMany(x => _builder.Build(x.GetType()).Commands);
         }
 
-        private IEnumerable<Match> MatchCommands(CommandParameters parameters)
+        private List<Match> MatchCommands(CommandParameters parameters)
         {
             // Commands are matched with arguments. first argument
             // is the command others are arguments to the command.

@@ -11,9 +11,9 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Media.Azure.Storage",
     Name = "Azure Media Storage",
     Description = "Enables support for storing media files in Microsoft Azure Blob Storage.",
-    Dependencies = new[]
-    {
+    Dependencies =
+    [
         "OrchardCore.Media.Cache"
-    },
+    ],
     Category = "Hosting"
 )]
