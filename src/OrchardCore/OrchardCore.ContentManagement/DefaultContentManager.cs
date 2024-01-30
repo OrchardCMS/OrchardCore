@@ -88,11 +88,12 @@ namespace OrchardCore.ContentManagement
 
         public async Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, bool latest = false)
         {
+            ArgumentNullException.ThrowIfNull(contentItemIds);
+
             var itemIds = contentItemIds
-                ?.Where(id => id is not null)
+                .Where(id => id is not null)
                 .Distinct()
-                .ToArray()
-                ?? throw new ArgumentNullException(nameof(contentItemIds));
+                .ToArray();
 
             if (itemIds.Length == 0)
             {

@@ -44,7 +44,7 @@ namespace OrchardCore.Environment.Cache
         }
 
         /// <summary>
-        /// Defines a dimension to cache the shape for. For instance by using <code>"user"</code>
+        /// Defines a dimension to cache the shape for. For instance by using. <code>"user"</code>
         /// each user will get a different value.
         /// </summary>
         public CacheContext AddContext(params string[] contexts)

@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
@@ -16,7 +15,7 @@ namespace OrchardCore.Deployment.Remote
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
                 return Task.CompletedTask;
             }
@@ -25,12 +24,12 @@ namespace OrchardCore.Deployment.Remote
                 .Add(S["Configuration"], configuration => configuration
                     .Add(S["Import/Export"], import => import
                         .Add(S["Remote Instances"], S["Remote Instances"].PrefixPosition(), remote => remote
-                            .Action("Index", "RemoteInstance", new { area = "OrchardCore.Deployment.Remote" })
+                            .Action("Index", "RemoteInstance", "OrchardCore.Deployment.Remote")
                             .Permission(Permissions.ManageRemoteInstances)
                             .LocalNav()
                         )
                         .Add(S["Remote Clients"], S["Remote Clients"].PrefixPosition(), remote => remote
-                            .Action("Index", "RemoteClient", new { area = "OrchardCore.Deployment.Remote" })
+                            .Action("Index", "RemoteClient", "OrchardCore.Deployment.Remote")
                             .Permission(Permissions.ManageRemoteClients)
                             .LocalNav()
                         )

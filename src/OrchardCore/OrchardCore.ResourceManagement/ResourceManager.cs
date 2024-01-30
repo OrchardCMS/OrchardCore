@@ -42,15 +42,8 @@ namespace OrchardCore.ResourceManagement
 
         public RequireSettings RegisterResource(string resourceType, string resourceName)
         {
-            if (resourceType == null)
-            {
-                return ThrowArgumentNullException<RequireSettings>(nameof(resourceType));
-            }
-
-            if (resourceName == null)
-            {
-                return ThrowArgumentNullException<RequireSettings>(nameof(resourceName));
-            }
+            ArgumentNullException.ThrowIfNull(resourceType);
+            ArgumentNullException.ThrowIfNull(resourceName);
 
             var key = new ResourceTypeName(resourceType, resourceName);
             if (!_required.TryGetValue(key, out var settings))
@@ -68,15 +61,8 @@ namespace OrchardCore.ResourceManagement
 
         public RequireSettings RegisterUrl(string resourceType, string resourcePath, string resourceDebugPath)
         {
-            if (resourceType == null)
-            {
-                return ThrowArgumentNullException<RequireSettings>(nameof(resourceType));
-            }
-
-            if (resourcePath == null)
-            {
-                return ThrowArgumentNullException<RequireSettings>(nameof(resourcePath));
-            }
+            ArgumentNullException.ThrowIfNull(resourceType);
+            ArgumentNullException.ThrowIfNull(resourcePath);
 
             // ~/ ==> convert to absolute path (e.g. /orchard/..).
 
@@ -118,17 +104,8 @@ namespace OrchardCore.ResourceManagement
 
         public void NotRequired(string resourceType, string resourceName)
         {
-            if (resourceType == null)
-            {
-                ThrowArgumentNullException(nameof(resourceType));
-                return;
-            }
-
-            if (resourceName == null)
-            {
-                ThrowArgumentNullException(nameof(resourceName));
-                return;
-            }
+            ArgumentNullException.ThrowIfNull(resourceType);
+            ArgumentNullException.ThrowIfNull(resourceType);
 
             var key = new ResourceTypeName(resourceType, resourceName);
             _builtResources[resourceType] = null;
@@ -220,7 +197,7 @@ namespace OrchardCore.ResourceManagement
 
         /// <summary>
         /// Returns the upper bound value of a required version number.
-        /// For instance, 3.1.0 returns 3.1.1, 4 returns 5.0.0, 6.1 returns 6.2.0
+        /// For instance, 3.1.0 returns 3.1.1, 4 returns 5.0.0, 6.1 returns 6.2.0.
         /// </summary>
         private static Version GetUpperBoundVersion(string minimumVersion)
         {
@@ -248,7 +225,7 @@ namespace OrchardCore.ResourceManagement
 
         /// <summary>
         /// Returns the lower bound value of a required version number.
-        /// For instance, 3.1.0 returns 3.1.0, 4 returns 4.0.0, 6.1 returns 6.1.0
+        /// For instance, 3.1.0 returns 3.1.0, 4 returns 4.0.0, 6.1 returns 6.1.0.
         /// </summary>
         private static Version GetLowerBoundVersion(string minimumVersion)
         {
@@ -763,18 +740,6 @@ namespace OrchardCore.ResourceManagement
         private static class EmptyValueCollection<T>
         {
             public static readonly Dictionary<string, T>.ValueCollection Instance = new([]);
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void ThrowArgumentNullException(string paramName)
-        {
-            ThrowArgumentNullException<object>(paramName);
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static T ThrowArgumentNullException<T>(string paramName)
-        {
-            throw new ArgumentNullException(paramName);
         }
     }
 }

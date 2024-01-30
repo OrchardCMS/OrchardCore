@@ -257,7 +257,7 @@ namespace OrchardCore.Data.Migration
         }
 
         /// <summary>
-        /// Returns all the available IDataMigration instances for a specific module, and inject necessary builders
+        /// Returns all the available IDataMigration instances for a specific module, and inject necessary builders.
         /// </summary>
         private List<IDataMigration> GetDataMigrations(string featureId)
         {
@@ -269,7 +269,7 @@ namespace OrchardCore.Data.Migration
         }
 
         /// <summary>
-        /// Create a list of all available Update methods from a data migration class, indexed by the version number
+        /// Create a list of all available Update methods from a data migration class, indexed by the version number.
         /// </summary>
         private static Dictionary<int, MethodInfo> CreateUpgradeLookupTable(IDataMigration dataMigration)
         {
@@ -302,7 +302,7 @@ namespace OrchardCore.Data.Migration
         }
 
         /// <summary>
-        /// Returns the Create method from a data migration class if it's found
+        /// Returns the Create method from a data migration class if it's found.
         /// </summary>
         private static MethodInfo GetCreateMethod(IDataMigration dataMigration)
         {
@@ -316,7 +316,7 @@ namespace OrchardCore.Data.Migration
         }
 
         /// <summary>
-        /// Returns the CreateAsync method from a data migration class if it's found
+        /// Returns the CreateAsync method from a data migration class if it's found.
         /// </summary>
         private static MethodInfo GetCreateAsyncMethod(IDataMigration dataMigration)
         {
@@ -330,7 +330,7 @@ namespace OrchardCore.Data.Migration
         }
 
         /// <summary>
-        /// Returns the Uninstall method from a data migration class if it's found
+        /// Returns the Uninstall method from a data migration class if it's found.
         /// </summary>
         private static MethodInfo GetUninstallMethod(IDataMigration dataMigration)
         {
@@ -344,7 +344,7 @@ namespace OrchardCore.Data.Migration
         }
 
         /// <summary>
-        /// Returns the UninstallAsync method from a data migration class if it's found
+        /// Returns the UninstallAsync method from a data migration class if it's found.
         /// </summary>
         private static MethodInfo GetUninstallAsyncMethod(IDataMigration dataMigration)
         {

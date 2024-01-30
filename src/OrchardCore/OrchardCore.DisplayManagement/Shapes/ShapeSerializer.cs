@@ -10,7 +10,7 @@ namespace OrchardCore.DisplayManagement.Shapes
     /// Safely serializes a shape to Json.
     /// </summary>
     /// <remarks>
-    /// A new instance should be created for each <see cref="IShape"/>
+    /// A new instance should be created for each <see cref="IShape"/>.
     /// </remarks>
     public class ShapeSerializer
     {

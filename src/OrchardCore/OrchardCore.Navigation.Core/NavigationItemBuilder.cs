@@ -17,10 +17,7 @@ namespace OrchardCore.Navigation
 
         public NavigationItemBuilder(MenuItem existingItem)
         {
-            if (existingItem == null)
-            {
-                throw new ArgumentNullException(nameof(existingItem));
-            }
+            ArgumentNullException.ThrowIfNull(existingItem);
 
             _item = existingItem;
         }

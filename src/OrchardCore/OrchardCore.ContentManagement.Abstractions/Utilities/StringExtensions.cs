@@ -207,7 +207,7 @@ namespace OrchardCore.ContentManagement.Utilities
         }
 
         /// <summary>
-        /// Whether the char is a letter between A and Z or not
+        /// Whether the char is a letter between A and Z or not.
         /// </summary>
         public static bool IsLetter(this char c)
         {
@@ -325,15 +325,9 @@ namespace OrchardCore.ContentManagement.Utilities
                 return subject;
             }
 
-            if (from == null)
-            {
-                throw new ArgumentNullException(nameof(from));
-            }
+            ArgumentNullException.ThrowIfNull(from);
 
-            if (to == null)
-            {
-                throw new ArgumentNullException(nameof(to));
-            }
+            ArgumentNullException.ThrowIfNull(to);
 
             if (from.Length != to.Length)
             {
