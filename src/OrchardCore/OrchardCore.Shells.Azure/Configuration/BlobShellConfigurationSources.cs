@@ -61,7 +61,9 @@ namespace OrchardCore.Shells.Azure.Configuration
 
             var fileInfo = await _shellsFileStore.GetFileInfoAsync(appsettings);
 
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance
             IDictionary<string, string> configData;
+#pragma warning restore CA1859 // Use concrete types when possible for improved performance
             if (fileInfo != null)
             {
                 using var stream = await _shellsFileStore.GetFileStreamAsync(appsettings);

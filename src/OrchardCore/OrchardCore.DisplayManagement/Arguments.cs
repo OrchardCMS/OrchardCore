@@ -190,7 +190,7 @@ namespace OrchardCore.DisplayManagement
                     return pair.Key != null;
                 }
 
-                //TBD
+                // TBD
                 T IDictionary<string, T>.this[string key]
                 {
                     get

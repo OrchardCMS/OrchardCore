@@ -30,7 +30,7 @@ namespace OrchardCore.Security
                 && grantingNames.Contains(claim.Value));
         }
 
-        private void GetGrantingNamesInternal(Permission permission, HashSet<string> stack)
+        private static void GetGrantingNamesInternal(Permission permission, HashSet<string> stack)
         {
             // The given name is tested
             stack.Add(permission.Name);

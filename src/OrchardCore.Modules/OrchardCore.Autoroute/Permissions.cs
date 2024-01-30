@@ -9,7 +9,7 @@ namespace OrchardCore.Autoroute
         public static readonly Permission SetHomepage = new("SetHomepage", "Set homepage.");
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return Task.FromResult(GetPermissions());
+            return Task.FromResult<IEnumerable<Permission>>([SetHomepage]);
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -19,16 +19,8 @@ namespace OrchardCore.Autoroute
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = GetPermissions(),
+                    Permissions = [SetHomepage],
                 },
-            };
-        }
-
-        private static IEnumerable<Permission> GetPermissions()
-        {
-            return new[]
-            {
-                SetHomepage,
             };
         }
     }

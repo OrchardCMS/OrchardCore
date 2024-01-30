@@ -367,7 +367,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
         }
 
 
-        private static IResolveFieldContext CreateAnimalFieldContext(IServiceProvider services, string fieldName = null, bool collapsed = false)
+        private static ResolveFieldContext CreateAnimalFieldContext(IServiceProvider services, string fieldName = null, bool collapsed = false)
         {
             IGraphType where;
 
@@ -555,7 +555,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
     public class FakeServiceCollection : IServiceProvider, IDisposable
     {
-        private IServiceProvider _inner;
+        private ServiceProvider _inner;
         private IServiceCollection _services;
 
         public IServiceCollection Services => _services;
@@ -570,7 +570,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
         public void Populate(IServiceCollection services)
         {
             _services = services;
-            _services.AddSingleton<FakeServiceCollection>(this);
+            _services.AddSingleton(this);
         }
 
         public void Build()
