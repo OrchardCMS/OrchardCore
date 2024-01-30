@@ -11,12 +11,13 @@ namespace OrchardCore.ResourceManagement
         {
             var definition = new ResourceDefinition(this, resourceType, resourceName);
             var resources = GetResources(resourceType);
-            if (!resources.ContainsKey(resourceName))
+            if (!resources.TryGetValue(resourceName, out var value))
             {
-                resources[resourceName] = new List<ResourceDefinition>();
+                value = new List<ResourceDefinition>();
+                resources[resourceName] = value;
             }
 
-            resources[resourceName].Add(definition);
+            value.Add(definition);
             return definition;
         }
 
