@@ -633,7 +633,7 @@ namespace OrchardCore.Search.Elasticsearch
                 .Select(x => new SelectListItem { Text = x.Key, Value = x.Key });
         }
 
-        private IActionResult NotConfigured()
+        private ViewResult NotConfigured()
             => View("NotConfigured");
     }
 }

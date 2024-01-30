@@ -32,6 +32,8 @@ namespace OrchardCore.OpenId
 
     internal static class OpenIdApplicationExtensions
     {
+        internal static readonly string[] _separator = [" ", ","];
+
         public static async Task UpdateDescriptorFromSettings(this IOpenIdApplicationManager _applicationManager, OpenIdApplicationSettings model, object application = null)
         {
             var descriptor = new OpenIdApplicationDescriptor();
@@ -224,7 +226,7 @@ namespace OrchardCore.OpenId
 
             descriptor.PostLogoutRedirectUris.Clear();
             foreach (var uri in
-                (from uri in model.PostLogoutRedirectUris?.Split(new[] { " ", "," }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
+                (from uri in model.PostLogoutRedirectUris?.Split(_separator, StringSplitOptions.RemoveEmptyEntries) ?? []
                  select new Uri(uri, UriKind.Absolute)))
             {
                 descriptor.PostLogoutRedirectUris.Add(uri);
@@ -232,7 +234,7 @@ namespace OrchardCore.OpenId
 
             descriptor.RedirectUris.Clear();
             foreach (var uri in
-               (from uri in model.RedirectUris?.Split(new[] { " ", "," }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
+               (from uri in model.RedirectUris?.Split(_separator, StringSplitOptions.RemoveEmptyEntries) ?? []
                 select new Uri(uri, UriKind.Absolute)))
             {
                 descriptor.RedirectUris.Add(uri);

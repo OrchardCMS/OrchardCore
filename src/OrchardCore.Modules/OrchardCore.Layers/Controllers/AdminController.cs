@@ -340,7 +340,7 @@ namespace OrchardCore.Layers.Controllers
             // The state will be updated once the ambient session is committed.
             await _layerStateManager.UpdateAsync(new LayerState());
 
-            if (Request.Headers != null && Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            if (Request.Headers != null && Request.Headers.XRequestedWith == "XMLHttpRequest")
             {
                 return Ok();
             }
