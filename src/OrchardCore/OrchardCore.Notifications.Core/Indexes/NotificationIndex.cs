@@ -6,7 +6,7 @@ using YesSql.Indexes;
 
 namespace OrchardCore.Notifications.Indexes;
 
-public class NotificationIndex : MapIndex
+public partial class NotificationIndex : MapIndex
 {
     public string NotificationId { get; set; }
 

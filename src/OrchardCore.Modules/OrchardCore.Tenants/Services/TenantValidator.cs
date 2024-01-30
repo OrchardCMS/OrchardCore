@@ -11,12 +11,13 @@ using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Services
 {
-    public class TenantValidator : ITenantValidator
+    public partial class TenantValidator : ITenantValidator
     {
         private readonly IShellHost _shellHost;
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IFeatureProfilesService _featureProfilesService;
         private readonly IDbConnectionValidator _dbConnectionValidator;
+
         protected readonly IStringLocalizer S;
 
         public TenantValidator(
