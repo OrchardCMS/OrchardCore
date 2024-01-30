@@ -70,26 +70,29 @@ namespace OrchardCore.Configuration.KeyVault.Extensions
         {
             var keyVaultName = configuration["OrchardCore:OrchardCore_KeyVault_Azure:KeyVaultName"];
 
-            TimeSpan? reloadInterval = null;
-            if (double.TryParse(configuration["OrchardCore:OrchardCore_KeyVault_Azure:ReloadInterval"], out var interval))
+            if (string.IsNullOrEmpty(keyVaultName))
             {
-                reloadInterval = TimeSpan.FromSeconds(interval);
+                throw new Exception("The 'KeyVaultName' property is no configured. Please configure it by specifying the 'OrchardCore:OrchardCore_KeyVault_Azure:KeyVaultName' settings key.");
             }
 
-            var keyVaultEndpointUri = new Uri("https://" + keyVaultName + ".vault.azure.net");
+            if (!Uri.TryCreate($"https://{keyVaultName}.vault.azure.net", UriKind.Absolute, out var keyVaultEndpointUri))
+            {
+                throw new Exception("Invalid value used for 'KeyVaultName' property. Please provide a valid key-vault name using the 'OrchardCore:OrchardCore_KeyVault_Azure:KeyVaultName' settings key.");
+            }
+
             var configOptions = new AzureKeyVaultConfigurationOptions()
             {
                 Manager = new AzureKeyVaultSecretManager(),
-                ReloadInterval = reloadInterval,
             };
+
+            if (double.TryParse(configuration["OrchardCore:OrchardCore_KeyVault_Azure:ReloadInterval"], out var interval))
+            {
+                configOptions.ReloadInterval = TimeSpan.FromSeconds(interval);
+            }
 
             tokenCredential ??= new DefaultAzureCredential(includeInteractiveCredentials: true);
 
-            builder.AddAzureKeyVault(
-                keyVaultEndpointUri,
-                tokenCredential,
-                configOptions
-            );
+            builder.AddAzureKeyVault(keyVaultEndpointUri, tokenCredential, configOptions);
         }
     }
 }
