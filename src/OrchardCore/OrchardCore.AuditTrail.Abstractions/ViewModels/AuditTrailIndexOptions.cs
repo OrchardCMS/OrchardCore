@@ -16,14 +16,14 @@ namespace OrchardCore.AuditTrail.ViewModels
         public string Category { get; set; }
 
         /// <summary>
-        /// Event is a supported UI filter if a <see cref="CorrelationId"/> is provided from the route
+        /// Event is a supported UI filter if a <see cref="CorrelationId"/> is provided from the route.
         /// </summary>
         public string Event { get; set; }
         public string UserName { get; set; }
         public string CorrelationId { get; set; }
 
         /// <summary>
-        /// Marks a <see cref="CorrelationId"/> as provided from the route, rather than a filter
+        /// Marks a <see cref="CorrelationId"/> as provided from the route, rather than a filter.
         /// </summary>
         public bool CorrelationIdFromRoute { get; set; }
         public string Date { get; set; }

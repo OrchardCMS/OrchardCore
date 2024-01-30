@@ -12,7 +12,7 @@ namespace OrchardCore.DisplayManagement.Manifest
     public class ThemeAttribute : ModuleAttribute
     {
         /// <summary>
-        /// &quot;&quot;
+        /// &quot;&quot;.
         /// </summary>
         internal const string DefaultBaseTheme = "";
 
@@ -41,7 +41,7 @@ namespace OrchardCore.DisplayManagement.Manifest
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         /// <param name="alwaysEnabled">Whether feature is always enabled.
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
-        /// <see cref="!:https://semver.org">Semantic Versioning</see>
+        /// <see cref="!:https://semver.org">Semantic Versioning.</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
         /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
@@ -97,7 +97,7 @@ namespace OrchardCore.DisplayManagement.Manifest
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         /// <param name="alwaysEnabled">Whether feature is always enabled.
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
-        /// <see cref="!:https://semver.org">Semantic Versioning</see>
+        /// <see cref="!:https://semver.org">Semantic Versioning.</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
         /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
@@ -157,7 +157,7 @@ namespace OrchardCore.DisplayManagement.Manifest
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         /// <param name="alwaysEnabled">Whether feature is always enabled.
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
-        /// <see cref="!:https://semver.org">Semantic Versioning</see>
+        /// <see cref="!:https://semver.org">Semantic Versioning.</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
         /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.

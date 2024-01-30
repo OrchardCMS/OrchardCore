@@ -45,10 +45,7 @@ namespace OrchardCore.Localization.PortableObject
         {
             get
             {
-                if (name == null)
-                {
-                    throw new ArgumentNullException(nameof(name));
-                }
+                ArgumentNullException.ThrowIfNull(name);
 
                 var translation = GetTranslation(name, _context, CultureInfo.CurrentUICulture, null);
 
@@ -81,10 +78,7 @@ namespace OrchardCore.Localization.PortableObject
         /// <inheritdocs />
         public virtual (LocalizedString, object[]) GetTranslation(string name, params object[] arguments)
         {
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
+            ArgumentNullException.ThrowIfNull(name);
 
             // Check if a plural form is called, which is when the only argument is of type PluralizationArgument.
             if (arguments.Length == 1 && arguments[0] is PluralizationArgument pluralArgument)

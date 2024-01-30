@@ -43,7 +43,7 @@ namespace OrchardCore.Environment.Commands
                 .GetProperty(commandSwitch.Key, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase)
                 ?? throw new InvalidOperationException(S["Switch \"{0}\" was not found", commandSwitch.Key]);
 
-            if (!propertyInfo.GetCustomAttributes(typeof(OrchardSwitchAttribute), false).Any())
+            if (propertyInfo.GetCustomAttributes(typeof(OrchardSwitchAttribute), false).Length == 0)
             {
                 throw new InvalidOperationException(S["A property \"{0}\" exists but is not decorated with \"{1}\"", commandSwitch.Key, typeof(OrchardSwitchAttribute).Name]);
             }

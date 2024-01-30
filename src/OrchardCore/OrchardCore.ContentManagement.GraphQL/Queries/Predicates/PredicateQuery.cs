@@ -40,29 +40,17 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
 
         public void CreateAlias(string path, string alias)
         {
-            if (path == null)
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
+            ArgumentNullException.ThrowIfNull(path);
 
-            if (alias == null)
-            {
-                throw new ArgumentNullException(nameof(alias));
-            }
+            ArgumentNullException.ThrowIfNull(alias);
 
             _aliases[path] = alias;
         }
         public void CreateTableAlias(string path, string tableAlias)
         {
-            if (path == null)
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
+            ArgumentNullException.ThrowIfNull(path);
 
-            if (tableAlias == null)
-            {
-                throw new ArgumentNullException(nameof(tableAlias));
-            }
+            ArgumentNullException.ThrowIfNull(tableAlias);
 
             _tableAliases[path] = tableAlias;
         }
@@ -70,10 +58,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
 
         public void SearchUsedAlias(string propertyPath)
         {
-            if (propertyPath == null)
-            {
-                throw new ArgumentNullException(nameof(propertyPath));
-            }
+            ArgumentNullException.ThrowIfNull(propertyPath);
 
             // Check if there's an alias for the full path
             // aliasPart.Alias -> AliasFieldIndex.Alias
@@ -115,10 +100,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
 
         public string GetColumnName(string propertyPath)
         {
-            if (propertyPath == null)
-            {
-                throw new ArgumentNullException(nameof(propertyPath));
-            }
+            ArgumentNullException.ThrowIfNull(propertyPath);
 
             // Check if there's an alias for the full path
             // aliasPart.Alias -> AliasFieldIndex.Alias

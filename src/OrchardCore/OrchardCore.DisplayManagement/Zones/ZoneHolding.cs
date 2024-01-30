@@ -14,7 +14,7 @@ namespace OrchardCore.DisplayManagement.Zones;
 /// *
 /// Foo.Zones.Alpha :
 /// Foo.Zones["Alpha"]
-/// Foo.Alpha :same
+/// Foo.Alpha :same.
 ///
 /// </summary>
 public class ZoneHolding : Shape, IZoneHolding

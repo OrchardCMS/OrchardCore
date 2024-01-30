@@ -25,7 +25,7 @@ using OrchardCore.Setup.Events;
 namespace OrchardCore.Settings
 {
     /// <summary>
-    /// These services are registered on the tenant service collection
+    /// These services are registered on the tenant service collection.
     /// </summary>
     public class Startup : StartupBase
     {

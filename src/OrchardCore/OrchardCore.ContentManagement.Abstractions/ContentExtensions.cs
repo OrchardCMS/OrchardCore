@@ -26,7 +26,7 @@ namespace OrchardCore.ContentManagement
         /// <param name="contentElement">The <see cref="ContentElement"/>.</param>
         /// <param name="name">The name of the content element.</param>
         /// <typeparam name="TElement">The expected type of the content element.</typeparam>
-        /// <returns>The content element instance or <code>null</code> if it doesn't exist.</returns>
+        /// <returns>The content element instance or. <code>null</code> if it doesn't exist.</returns>
         public static TElement Get<TElement>(this ContentElement contentElement, string name) where TElement : ContentElement
         {
             var result = contentElement.Get(typeof(TElement), name);
@@ -60,7 +60,7 @@ namespace OrchardCore.ContentManagement
         /// <param name="contentElement">The <see cref="ContentElement"/>.</param>
         /// <param name="contentElementType">The expected type of the content element.</param>
         /// <param name="name">The name of the content element.</param>
-        /// <returns>The content element instance or <code>null</code> if it doesn't exist.</returns>
+        /// <returns>The content element instance or. <code>null</code> if it doesn't exist.</returns>
         public static ContentElement Get(this ContentElement contentElement, Type contentElementType, string name)
         {
             if (contentElement.Elements.TryGetValue(name, out var element))

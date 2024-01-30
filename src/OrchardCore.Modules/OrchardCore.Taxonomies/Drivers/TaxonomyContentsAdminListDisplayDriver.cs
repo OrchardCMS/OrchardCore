@@ -46,7 +46,7 @@ namespace OrchardCore.Taxonomies.Drivers
         {
             var settings = (await _siteService.GetSiteSettingsAsync()).As<TaxonomyContentsAdminListSettings>();
 
-            if (!settings.TaxonomyContentItemIds.Any())
+            if (settings.TaxonomyContentItemIds.Length == 0)
             {
                 return null;
             }
@@ -60,7 +60,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 var fieldTaxonomyContentItemIds = fieldDefinitions.Select(x => x.GetSettings<TaxonomyFieldSettings>().TaxonomyContentItemId);
                 taxonomyContentItemIds = taxonomyContentItemIds.Intersect(fieldTaxonomyContentItemIds).ToArray();
 
-                if (!taxonomyContentItemIds.Any())
+                if (taxonomyContentItemIds.Length == 0)
                 {
                     return null;
                 }
@@ -106,7 +106,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 position += 5;
             }
 
-            if (results.Any())
+            if (results.Count > 0)
             {
                 return Combine(results);
             }

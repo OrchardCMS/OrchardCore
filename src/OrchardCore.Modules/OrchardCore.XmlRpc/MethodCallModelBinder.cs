@@ -14,10 +14,7 @@ namespace OrchardCore.XmlRpc
     {
         public async Task BindModelAsync(ModelBindingContext bindingContext)
         {
-            if (bindingContext == null)
-            {
-                throw new ArgumentNullException(nameof(bindingContext));
-            }
+            ArgumentNullException.ThrowIfNull(bindingContext);
 
             if (bindingContext.ModelType == typeof(XRpcMethodCall))
             {
