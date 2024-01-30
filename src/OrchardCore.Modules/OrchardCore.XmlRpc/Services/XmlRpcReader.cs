@@ -15,7 +15,7 @@ namespace OrchardCore.XmlRpc.Services
         /// <summary>
         /// Provides the mapping function based on a type name.
         /// </summary>
-        private readonly IDictionary<string, Func<XElement, XRpcData>> _dispatch;
+        private readonly Dictionary<string, Func<XElement, XRpcData>> _dispatch;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="XmlRpcReader"/> class.

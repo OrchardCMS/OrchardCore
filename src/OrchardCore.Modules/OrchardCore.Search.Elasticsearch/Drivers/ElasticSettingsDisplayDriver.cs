@@ -77,7 +77,7 @@ public class ElasticSettingsDisplayDriver : SectionDisplayDriver<ISite, ElasticS
             return null;
         }
 
-        if (!_elasticConnectionOptions.IsFileConfigurationExists())
+        if (!_elasticConnectionOptions.FileConfigurationExists())
         {
             return null;
         }

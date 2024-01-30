@@ -16,7 +16,7 @@ namespace OrchardCore.ContentManagement
 
         public ContentPartFactory(IOptions<ContentOptions> contentOptions)
         {
-            _contentPartActivators = new Dictionary<string, ITypeActivator<ContentPart>>();
+            _contentPartActivators = [];
 
             // Check content options for configured parts.
             foreach (var partOption in contentOptions.Value.ContentPartOptions)

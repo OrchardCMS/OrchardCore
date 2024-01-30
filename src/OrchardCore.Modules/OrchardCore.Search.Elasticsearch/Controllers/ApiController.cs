@@ -92,7 +92,7 @@ namespace OrchardCore.Search.Elasticsearch
 
             var queryParameters = queryModel.Parameters != null ?
                 JsonConvert.DeserializeObject<Dictionary<string, object>>(queryModel.Parameters)
-                : new Dictionary<string, object>();
+                : [];
 
             var result = _elasticQuerySource.ExecuteQueryAsync(elasticQuery, queryParameters);
             return result;

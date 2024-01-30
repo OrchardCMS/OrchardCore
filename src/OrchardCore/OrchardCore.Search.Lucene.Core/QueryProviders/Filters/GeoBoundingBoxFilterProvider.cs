@@ -29,9 +29,9 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
 
             var ctx = SpatialContext.Geo;
 
-            var maxLevels = 11; //results in sub-meter precision for geohash
+            var maxLevels = 11; // results in sub-meter precision for geohash
 
-            //  This can also be constructed from SpatialPrefixTreeFactory
+            // This can also be constructed from SpatialPrefixTreeFactory
             SpatialPrefixTree grid = new GeohashPrefixTree(ctx, maxLevels);
 
             var geoPropertyName = first.Name;

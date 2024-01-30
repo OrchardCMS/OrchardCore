@@ -6,13 +6,13 @@ namespace OrchardCore.ContentManagement
 {
     /// <summary>
     /// Common traits of <see cref="ContentItem"/>, <see cref="ContentPart"/>
-    /// and <see cref="ContentField"/>
+    /// and <see cref="ContentField"/>.
     /// </summary>
     public class ContentElement : IContent
     {
         private Dictionary<string, ContentElement> _elements;
 
-        protected ContentElement() : this(new JObject())
+        protected ContentElement() : this([])
         {
         }
 
@@ -22,7 +22,7 @@ namespace OrchardCore.ContentManagement
         }
 
         [JsonIgnore]
-        protected internal Dictionary<string, ContentElement> Elements => _elements ??= new Dictionary<string, ContentElement>();
+        protected internal Dictionary<string, ContentElement> Elements => _elements ??= [];
 
         [JsonIgnore]
         public dynamic Content { get { return Data; } }

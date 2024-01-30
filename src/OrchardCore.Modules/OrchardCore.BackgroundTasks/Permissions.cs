@@ -10,7 +10,7 @@ namespace OrchardCore.BackgroundTasks
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return Task.FromResult(GetPermissions());
+            return Task.FromResult<IEnumerable<Permission>>([ManageBackgroundTasks]);
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -20,14 +20,9 @@ namespace OrchardCore.BackgroundTasks
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageBackgroundTasks },
+                    Permissions = [ManageBackgroundTasks],
                 }
             };
-        }
-
-        private static IEnumerable<Permission> GetPermissions()
-        {
-            return new[] { ManageBackgroundTasks };
         }
     }
 }

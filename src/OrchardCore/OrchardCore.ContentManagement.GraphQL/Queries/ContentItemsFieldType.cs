@@ -30,7 +30,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
         static ContentItemsFieldType()
         {
-            _contentItemProperties = new List<string>();
+            _contentItemProperties = [];
 
             foreach (var property in typeof(ContentItemIndex).GetProperties())
             {
@@ -214,10 +214,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
         private static IQuery<ContentItem, ContentItemIndex> FilterContentType(IQuery<ContentItem, ContentItemIndex> query, IResolveFieldContext context)
         {
-            if (context is null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
+            ArgumentNullException.ThrowIfNull(context);
 
             var contentType = ((ListGraphType)(context.FieldDefinition).ResolvedType).ResolvedType.Name;
             return query.Where(q => q.ContentType == contentType);

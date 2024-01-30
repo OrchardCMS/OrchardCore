@@ -30,9 +30,9 @@ namespace OrchardCore.Search.Elasticsearch.Core.Providers
 
         public async Task<IEnumerable<ContentPickerResult>> Search(ContentPickerSearchContext searchContext)
         {
-            if (!_elasticConnectionOptions.IsFileConfigurationExists())
+            if (!_elasticConnectionOptions.FileConfigurationExists())
             {
-                return Enumerable.Empty<ContentPickerResult>();
+                return [];
             }
 
             string indexName = null;
@@ -46,7 +46,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Providers
 
             if (indexName != null && !await _elasticIndexManager.ExistsAsync(indexName))
             {
-                return Enumerable.Empty<ContentPickerResult>();
+                return [];
             }
 
             var results = new List<ContentPickerResult>();

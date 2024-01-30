@@ -99,7 +99,7 @@ namespace OrchardCore.ContentFields.Drivers
             }
 
             field.ContentItemIds = viewModel.ContentItemIds == null
-                ? Array.Empty<string>() : viewModel.ContentItemIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                ? [] : viewModel.ContentItemIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
             var settings = context.PartFieldDefinition.GetSettings<ContentPickerFieldSettings>();
 

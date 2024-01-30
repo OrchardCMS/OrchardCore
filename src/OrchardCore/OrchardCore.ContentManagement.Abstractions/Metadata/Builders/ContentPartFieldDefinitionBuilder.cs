@@ -44,10 +44,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentPartFieldDefinitionBuilder WithSettings<T>(T settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var jObject = JObject.FromObject(settings, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
             _settings[typeof(T).Name] = jObject;
