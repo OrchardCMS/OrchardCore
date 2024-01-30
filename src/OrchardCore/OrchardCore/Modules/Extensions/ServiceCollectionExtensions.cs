@@ -78,10 +78,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddOrchardCore(this IServiceCollection services)
         {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
+            ArgumentNullException.ThrowIfNull(services);
 
             // If an instance of OrchardCoreBuilder exists reuse it,
             // so we can call AddOrchardCore several times.
@@ -217,7 +214,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Adds tenant level configuration to serve static files from modules
+        /// Adds tenant level configuration to serve static files from modules.
         /// </summary>
         private static void AddStaticFiles(OrchardCoreBuilder builder)
         {

@@ -128,7 +128,7 @@ namespace OrchardCore.Templates.Controllers
                 { _optionsSearch, model.Options.Search }
             });
 
-        public async Task<IActionResult> Create(bool adminTemplates = false, string returnUrl = null)
+        public async Task<IActionResult> Create(string name = null, bool adminTemplates = false, string returnUrl = null)
         {
             if (!adminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
             {
@@ -140,8 +140,14 @@ namespace OrchardCore.Templates.Controllers
                 return Forbid();
             }
 
+            var model = new TemplateViewModel
+            {
+                AdminTemplates = adminTemplates,
+                Name = name
+            };
+
             ViewData["ReturnUrl"] = returnUrl;
-            return View(new TemplateViewModel() { AdminTemplates = adminTemplates });
+            return View(model);
         }
 
         [HttpPost, ActionName(nameof(Create))]

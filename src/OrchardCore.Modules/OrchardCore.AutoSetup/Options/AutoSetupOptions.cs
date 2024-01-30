@@ -24,7 +24,7 @@ namespace OrchardCore.AutoSetup.Options
         /// <summary>
         /// Gets or sets the tenants to install.
         /// </summary>
-        public List<TenantSetupOptions> Tenants { get; set; } = new List<TenantSetupOptions>();
+        public List<TenantSetupOptions> Tenants { get; set; } = [];
 
         /// <summary>
         /// Whether the configuration section exists.

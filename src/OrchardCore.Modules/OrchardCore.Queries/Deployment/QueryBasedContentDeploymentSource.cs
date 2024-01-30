@@ -82,12 +82,12 @@ namespace OrchardCore.Queries.Deployment
         {
             try
             {
-                queryParameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters) ?? new();
+                queryParameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters) ?? [];
                 return true;
             }
             catch (JsonException)
             {
-                queryParameters = new();
+                queryParameters = [];
                 return false;
             }
         }

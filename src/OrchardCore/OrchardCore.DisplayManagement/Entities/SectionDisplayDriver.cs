@@ -126,5 +126,17 @@ namespace OrchardCore.DisplayManagement.Entities
                 ? property.ToObject<TSection>()
                 : new TSection();
         }
+
+        protected override void BuildPrefix(TModel model, string htmlFieldPrefix)
+        {
+            if (!string.IsNullOrEmpty(htmlFieldPrefix))
+            {
+                Prefix = $"{htmlFieldPrefix}.{typeof(TModel).Name}.{typeof(TSection).Name}";
+            }
+            else
+            {
+                Prefix = $"{typeof(TModel).Name}.{typeof(TSection).Name}";
+            }
+        }
     }
 }

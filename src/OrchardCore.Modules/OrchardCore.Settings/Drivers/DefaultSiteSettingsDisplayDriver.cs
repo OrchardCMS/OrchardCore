@@ -73,7 +73,7 @@ namespace OrchardCore.Settings.Drivers
                 site.ResourceDebugMode = model.ResourceDebugMode;
                 site.AppendVersion = model.AppendVersion;
                 site.CacheMode = model.CacheMode;
-                
+
                 if (model.PageSize.Value < 1)
                 {
                     context.Updater.ModelState.AddModelError(Prefix, nameof(model.PageSize), S["The page size must be greater than zero."]);

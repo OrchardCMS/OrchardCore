@@ -53,7 +53,8 @@ namespace OrchardCore.Search.Drivers
                 model.Placeholder = settings.Placeholder;
                 model.PageTitle = settings.PageTitle;
                 model.ProviderName = settings.ProviderName;
-            }).Location("Content:2").OnGroup(SearchConstants.SearchSettingsGroupId);
+            }).Location("Content:2")
+            .OnGroup(SearchConstants.SearchSettingsGroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(SearchSettings section, BuildEditorContext context)
@@ -81,16 +82,5 @@ namespace OrchardCore.Search.Drivers
 
             return await EditAsync(section, context);
         }
-
-        protected override void BuildPrefix(ISite model, string htmlFieldPrefix)
-        {
-            Prefix = typeof(SearchSettings).Name;
-
-            if (!string.IsNullOrEmpty(htmlFieldPrefix))
-            {
-                Prefix = htmlFieldPrefix + "." + Prefix;
-            }
-        }
-
     }
 }

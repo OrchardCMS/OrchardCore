@@ -160,9 +160,9 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
 
                 var parameters = context.GetArgument<string>("parameters");
 
-                var queryParameters = parameters != null ?
-                    JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                    : new Dictionary<string, object>();
+                    var queryParameters = parameters != null ?
+                        JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                        : [];
 
                 var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
 
@@ -201,9 +201,9 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
 
                 var parameters = context.GetArgument<string>("parameters");
 
-                var queryParameters = parameters != null ?
-                    JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                    : new Dictionary<string, object>();
+                    var queryParameters = parameters != null ?
+                        JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                        : [];
 
                 var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
 

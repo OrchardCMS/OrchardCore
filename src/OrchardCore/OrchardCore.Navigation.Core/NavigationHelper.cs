@@ -35,7 +35,7 @@ namespace OrchardCore.Navigation
         /// <param name="viewContext">The current <see cref="ViewContext"/>.</param>
         public static async Task PopulateMenuLevelAsync(dynamic shapeFactory, dynamic parentShape, dynamic menu, IEnumerable<MenuItem> menuItems, ViewContext viewContext)
         {
-            foreach (MenuItem menuItem in menuItems)
+            foreach (var menuItem in menuItems)
             {
                 dynamic menuItemShape = await BuildMenuItemShapeAsync(shapeFactory, parentShape, menu, menuItem, viewContext);
 
@@ -141,10 +141,10 @@ namespace OrchardCore.Navigation
         }
 
         /// <summary>
-        /// Traverses the menu and returns the selected item with the highest priority
+        /// Traverses the menu and returns the selected item with the highest priority.
         /// </summary>
         /// <param name="parentShape">The menu shape.</param>
-        /// <returns>The selected menu item shape</returns>
+        /// <returns>The selected menu item shape.</returns>
         private static dynamic GetHighestPrioritySelectedMenuItem(dynamic parentShape)
         {
             dynamic result = null;

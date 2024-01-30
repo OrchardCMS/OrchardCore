@@ -24,7 +24,7 @@ namespace OrchardCore.Data;
 
 public class DbConnectionValidator : IDbConnectionValidator
 {
-    private static readonly string[] _requiredDocumentTableColumns = new[] { "Id", "Type", "Content", "Version" };
+    private static readonly string[] _requiredDocumentTableColumns = ["Id", "Type", "Content", "Version"];
     private static readonly string _shellDescriptorTypeColumnValue = new TypeService()[typeof(ShellDescriptor)];
 
     private readonly IEnumerable<DatabaseProvider> _databaseProviders;
@@ -49,10 +49,7 @@ public class DbConnectionValidator : IDbConnectionValidator
 
     public async Task<DbConnectionValidatorResult> ValidateAsync(DbConnectionValidatorContext context)
     {
-        if (context == null)
-        {
-            throw new ArgumentNullException(nameof(context));
-        }
+        ArgumentNullException.ThrowIfNull(context);
 
         if (string.IsNullOrWhiteSpace(context.DatabaseProvider))
         {
@@ -164,7 +161,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         return DbConnectionValidatorResult.DocumentTableFound;
     }
 
-    private static ISqlBuilder GetSelectBuilderForDocumentTable(ISqlBuilder sqlBuilder, string documentTable, string schema)
+    private static SqlBuilder GetSelectBuilderForDocumentTable(SqlBuilder sqlBuilder, string documentTable, string schema)
     {
         sqlBuilder.Select();
         sqlBuilder.Selector("*");
@@ -174,7 +171,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         return sqlBuilder;
     }
 
-    private static ISqlBuilder GetSelectBuilderForShellDescriptorDocument(ISqlBuilder sqlBuilder, string documentTable, string schema)
+    private static SqlBuilder GetSelectBuilderForShellDescriptorDocument(SqlBuilder sqlBuilder, string documentTable, string schema)
     {
         sqlBuilder.Select();
         sqlBuilder.Selector("*");
@@ -209,7 +206,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         };
     }
 
-    private static ISqlBuilder GetSqlBuilder(ISqlDialect sqlDialect, string tablePrefix, string tableNameSeparator)
+    private static SqlBuilder GetSqlBuilder(ISqlDialect sqlDialect, string tablePrefix, string tableNameSeparator)
     {
         var prefix = string.Empty;
         if (!string.IsNullOrWhiteSpace(tablePrefix))

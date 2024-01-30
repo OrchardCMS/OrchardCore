@@ -66,7 +66,6 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
             model.HasAuthToken = !string.IsNullOrEmpty(settings.AuthToken);
         }).Location("Content:5#Twilio")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings))
-        .Prefix(Prefix)
         .OnGroup(SmsSettings.GroupId);
     }
 
@@ -149,15 +148,5 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
         }
 
         return Edit(settings);
-    }
-
-    protected override void BuildPrefix(ISite model, string htmlFieldPrefix)
-    {
-        Prefix = typeof(TwilioSettings).Name;
-
-        if (!string.IsNullOrEmpty(htmlFieldPrefix))
-        {
-            Prefix = htmlFieldPrefix + "." + Prefix;
-        }
     }
 }

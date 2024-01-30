@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Types;
@@ -37,7 +36,7 @@ namespace OrchardCore.ContentLocalization.GraphQL
             {
                 var contentItem = await contentLocalizationManager.GetContentItemAsync(context.Source.LocalizationSet, culture);
 
-                return contentItem != null ? new[] { contentItem } : Enumerable.Empty<ContentItem>();
+                return contentItem != null ? new[] { contentItem } : [];
             }
 
             return await contentLocalizationManager.GetItemsForSetAsync(context.Source.LocalizationSet);

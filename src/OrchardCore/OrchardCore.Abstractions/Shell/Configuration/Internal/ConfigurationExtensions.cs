@@ -38,7 +38,7 @@ public static class ConfigurationExtensions
                     throw new FormatException($"Can't use the numeric key '{child.Key}' inside an object.");
                 }
 
-                jArray ??= new JArray();
+                jArray ??= [];
                 if (index > jArray.Count)
                 {
                     // Inserting null values is useful to override arrays items,
@@ -65,7 +65,7 @@ public static class ConfigurationExtensions
                     throw new FormatException($"Can't use the non numeric key '{child.Key}' inside an array.");
                 }
 
-                jObject ??= new JObject();
+                jObject ??= [];
                 if (child.GetChildren().Any())
                 {
                     jObject.Add(child.Key, ToJToken(child));
@@ -77,7 +77,7 @@ public static class ConfigurationExtensions
             }
         }
 
-        return jArray as JToken ?? jObject ?? new JObject();
+        return jArray as JToken ?? jObject ?? [];
     }
 
     public static JObject ToJObject(this IDictionary<string, string> configurationData)
@@ -106,7 +106,7 @@ public static class ConfigurationExtensions
 
     public static async Task<string> ToStringAsync(this JObject jConfiguration, Formatting formatting = Formatting.Indented)
     {
-        jConfiguration ??= new JObject();
+        jConfiguration ??= [];
 
         using var sw = new StringWriter(CultureInfo.InvariantCulture);
         using var jw = new JsonTextWriter(sw) { Formatting = formatting };

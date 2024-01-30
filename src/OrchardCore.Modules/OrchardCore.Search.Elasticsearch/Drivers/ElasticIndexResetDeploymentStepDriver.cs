@@ -40,13 +40,13 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment
 
         public override async Task<IDisplayResult> UpdateAsync(ElasticIndexResetDeploymentStep resetIndexStep, IUpdateModel updater)
         {
-            resetIndexStep.Indices = Array.Empty<string>();
+            resetIndexStep.Indices = [];
 
             await updater.TryUpdateModelAsync(resetIndexStep, Prefix, step => step.Indices, step => step.IncludeAll);
 
             if (resetIndexStep.IncludeAll)
             {
-                resetIndexStep.Indices = Array.Empty<string>();
+                resetIndexStep.Indices = [];
             }
 
             return Edit(resetIndexStep);

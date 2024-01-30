@@ -24,28 +24,11 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentTypePartDefinitionBuilder WithSettings<T>(T settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var jObject = JObject.FromObject(settings, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
             _settings[typeof(T).Name] = jObject;
 
-            return this;
-        }
-
-        [Obsolete("Use WithSettings<T>. This will be removed in a future version.")]
-        public ContentTypePartDefinitionBuilder WithSetting(string name, string value)
-        {
-            _settings[name] = value;
-            return this;
-        }
-
-        [Obsolete("Use WithSettings<T>. This will be removed in a future version.")]
-        public ContentTypePartDefinitionBuilder WithSetting(string name, string[] values)
-        {
-            _settings[name] = new JArray(values);
             return this;
         }
 

@@ -122,7 +122,7 @@ namespace OrchardCore.Widgets.Drivers
 
                 if (!zonedContentItems.ContainsKey(zone))
                 {
-                    zonedContentItems.Add(zone, new List<ContentItem>());
+                    zonedContentItems.Add(zone, []);
                 }
 
                 zonedContentItems[zone].Add(contentItem);

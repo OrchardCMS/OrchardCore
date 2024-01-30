@@ -14,10 +14,16 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
     public class ShapePagerTag
     {
-        private static readonly HashSet<string> _properties = new()
-        {
-            "Id", "PreviousText", "NextText", "PreviousClass", "NextClass", "TagName", "ItemTagName"
-        };
+        private static readonly HashSet<string> _properties =
+        [
+            "Id",
+            "PreviousText",
+            "NextText",
+            "PreviousClass",
+            "NextClass",
+            "TagName",
+            "ItemTagName"
+        ];
 
         public static async ValueTask<Completion> WriteToAsync(ValueTuple<Expression, List<FilterArgument>> arguments, TextWriter _1, TextEncoder _2, TemplateContext context)
         {
