@@ -66,7 +66,7 @@ public partial class NotificationIndexProvider : IndexProvider<Notification>
             });
     }
 
-    private static readonly Regex _htmlRegex = GetRegex();
+    private static readonly Regex _htmlRegex = GetHtmlBlockRegex();
 
     public static string StripHTML(string html)
     {
@@ -74,5 +74,5 @@ public partial class NotificationIndexProvider : IndexProvider<Notification>
     }
 
     [GeneratedRegex("<.*?>", RegexOptions.Compiled)]
-    private static partial Regex GetRegex();
+    private static partial Regex GetHtmlBlockRegex();
 }

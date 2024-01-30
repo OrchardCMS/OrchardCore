@@ -19,9 +19,8 @@ namespace OrchardCore.Contents.Liquid
         /// <inheritdocs />
         public bool IsRecursive(ContentItem contentItem, int maxRecursions = 1)
         {
-            if (_recursions.TryGetValue(contentItem, out var value))
+            if (_recursions.TryGetValue(contentItem, out var counter))
             {
-                var counter = value;
                 if (maxRecursions < 1)
                 {
                     maxRecursions = 1;
