@@ -39,7 +39,7 @@ namespace OrchardCore.Modules
             }
         }
 
-        private IEnumerable<Module> GetModules()
+        private ConcurrentBag<Module> GetModules()
         {
             var modules = new ConcurrentBag<Module>
             {

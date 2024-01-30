@@ -91,7 +91,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// <returns><see cref="bool"/>.</returns>
         public async Task<bool> CreateIndexAsync(ElasticIndexSettings elasticIndexSettings)
         {
-            //Get Index name scoped by ShellName
+            // Get Index name scoped by ShellName
             if (await ExistsAsync(elasticIndexSettings.IndexName))
             {
                 return true;
@@ -411,7 +411,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 documents.Add(CreateElasticDocument(indexDocument));
             }
 
-            if (documents.Any())
+            if (documents.Count > 0)
             {
                 var descriptor = new BulkDescriptor();
 

@@ -377,7 +377,7 @@ namespace OrchardCore.Templates.Controllers
                         await _notifier.SuccessAsync(H["Templates successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
+                        return BadRequest();
                 }
             }
 

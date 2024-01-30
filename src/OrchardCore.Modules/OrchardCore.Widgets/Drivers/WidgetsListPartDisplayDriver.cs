@@ -120,12 +120,13 @@ namespace OrchardCore.Widgets.Drivers
 
                 var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: prefix);
 
-                if (!zonedContentItems.ContainsKey(zone))
+                if (!zonedContentItems.TryGetValue(zone, out var value))
                 {
-                    zonedContentItems.Add(zone, []);
+                    value = ([]);
+                    zonedContentItems.Add(zone, value);
                 }
 
-                zonedContentItems[zone].Add(contentItem);
+                value.Add(contentItem);
             }
 
             part.Widgets = zonedContentItems;

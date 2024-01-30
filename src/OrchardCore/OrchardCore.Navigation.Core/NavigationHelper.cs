@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,6 +10,14 @@ namespace OrchardCore.Navigation
 {
     public class NavigationHelper
     {
+        /// <summary>
+        /// Checks if the given name matches the value <see cref="NavigationConstants.AdminId"/>.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns>boolean.</returns>
+        public static bool IsAdminMenu(string name)
+            => NavigationConstants.AdminId == name;
+
         /// <summary>
         /// Populates the menu shapes.
         /// </summary>
