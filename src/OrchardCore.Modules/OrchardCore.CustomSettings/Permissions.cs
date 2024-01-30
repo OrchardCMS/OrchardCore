@@ -39,6 +39,7 @@ public class Permissions : IPermissionProvider
                 string.Format(_manageCustomSettings.Description, type.DisplayName),
                 _manageCustomSettings.ImpliedBy
             );
+    }
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
         => [];
