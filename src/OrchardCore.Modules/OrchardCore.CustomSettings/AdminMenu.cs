@@ -31,11 +31,16 @@ namespace OrchardCore.CustomSettings
 
             foreach (var type in await _customSettingsService.GetAllSettingsTypesAsync())
             {
-                var routeValues = _routeValues.GetOrAdd(type.Name, static value => new RouteValueDictionary()
+                if (!_routeValues.TryGetValue(type.Name, out var routeValues))
                 {
-                     { "area", "OrchardCore.Settings" },
-                     { "groupId", value },
-                });
+                    routeValues = new RouteValueDictionary()
+                    {
+                         { "area", "OrchardCore.Settings" },
+                         { "groupId", type.Name },
+                    };
+
+                    _routeValues[type.Name] = routeValues;
+                }
 
                 var htmlName = type.Name.HtmlClassify();
 
