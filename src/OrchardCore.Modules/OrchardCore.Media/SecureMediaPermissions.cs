@@ -108,7 +108,7 @@ namespace OrchardCore.Media
         }
 
         /// <summary>
-        /// Returns a dynamic permission for a secure folder, based on a global view content permission template-
+        /// Returns a dynamic permission for a secure folder, based on a global view content permission template.
         /// </summary>
         public static Permission ConvertToDynamicPermission(Permission permission)
         {
