@@ -9,18 +9,21 @@ public class Permissions : IPermissionProvider
     public static readonly Permission ManageAdminDashboard = new("ManageAdminDashboard", "Manage the Admin Dashboard");
     public static readonly Permission AccessAdminDashboard = new("AccessAdminDashboard", "Access the Admin Dashboard", new[] { ManageAdminDashboard });
 
-    private static readonly IEnumerable<Permission> _allPermissions =
+    private readonly IEnumerable<Permission> _allPermissions =
     [
         AccessAdminDashboard,
         ManageAdminDashboard,
     ];
 
-    private static readonly IEnumerable<Permission> _generalPermissions =
+    private readonly IEnumerable<Permission> _generalPermissions =
     [
         AccessAdminDashboard,
     ];
 
-    private static readonly IEnumerable<PermissionStereotype> _stereotypes =
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
     [
         new PermissionStereotype
         {
@@ -48,10 +51,4 @@ public class Permissions : IPermissionProvider
             Permissions = _generalPermissions,
         },
     ];
-
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
-
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => _stereotypes;
 }

@@ -8,12 +8,15 @@ public class GoogleAuthenticationPermissionProvider : IPermissionProvider
 {
     public static readonly Permission ManageGoogleAuthentication = Permissions.ManageGoogleAuthentication;
 
-    private readonly static IEnumerable<Permission> _allPermissions =
+    private readonly IEnumerable<Permission> _allPermissions =
     [
         ManageGoogleAuthentication,
     ];
 
-    private readonly static IEnumerable<PermissionStereotype> _stereotypes =
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+       => Task.FromResult(_allPermissions);
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
     [
         new PermissionStereotype
         {
@@ -21,11 +24,4 @@ public class GoogleAuthenticationPermissionProvider : IPermissionProvider
             Permissions = _allPermissions,
         },
     ];
-
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-       => Task.FromResult(_allPermissions);
-
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => _stereotypes;
 }
-

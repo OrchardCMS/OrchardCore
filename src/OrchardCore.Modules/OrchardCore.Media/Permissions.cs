@@ -14,7 +14,7 @@ public class Permissions : IPermissionProvider
     public static readonly Permission ManageMediaProfiles = new("ManageMediaProfiles", "Manage Media Profiles");
     public static readonly Permission ViewMediaOptions = new("ViewMediaOptions", "View Media Options");
 
-    private static readonly IEnumerable<Permission> _allPermissions =
+    private readonly IEnumerable<Permission> _allPermissions =
     [
         ManageMedia,
         ManageMediaFolder,
@@ -25,12 +25,15 @@ public class Permissions : IPermissionProvider
         ViewMediaOptions,
     ];
 
-    private static readonly IEnumerable<Permission> _generalPermissions =
+    private readonly IEnumerable<Permission> _generalPermissions =
     [
         ManageOwnMedia,
     ];
 
-    private static readonly IEnumerable<PermissionStereotype> _stereotypes =
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
     [
         new PermissionStereotype
         {
@@ -62,10 +65,4 @@ public class Permissions : IPermissionProvider
             Permissions = _generalPermissions,
         },
     ];
-
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
-
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => _stereotypes;
 }

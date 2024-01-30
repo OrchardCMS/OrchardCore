@@ -9,13 +9,16 @@ public class Permissions : IPermissionProvider
     public static readonly Permission ExecuteGraphQLMutations = CommonPermissions.ExecuteGraphQLMutations;
     public static readonly Permission ExecuteGraphQL = CommonPermissions.ExecuteGraphQL;
 
-    private static readonly IEnumerable<Permission> _allPermissions =
+    private readonly IEnumerable<Permission> _allPermissions =
     [
         ExecuteGraphQL,
         ExecuteGraphQLMutations,
     ];
 
-    private static readonly IEnumerable<PermissionStereotype> _stereotypes =
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
     [
         new PermissionStereotype
         {
@@ -26,10 +29,4 @@ public class Permissions : IPermissionProvider
             ],
         },
     ];
-
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
-
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => _stereotypes;
 }

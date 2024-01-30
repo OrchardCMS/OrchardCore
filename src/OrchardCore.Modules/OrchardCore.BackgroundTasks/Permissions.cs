@@ -8,12 +8,15 @@ public class Permissions : IPermissionProvider
 {
     public static readonly Permission ManageBackgroundTasks = new("ManageBackgroundTasks", "Manage background tasks");
 
-    private static readonly IEnumerable<Permission> _allPermissions =
+    private readonly IEnumerable<Permission> _allPermissions =
     [
         ManageBackgroundTasks,
     ];
 
-    private static readonly IEnumerable<PermissionStereotype> _allStereotypes =
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
     [
         new PermissionStereotype
         {
@@ -21,10 +24,4 @@ public class Permissions : IPermissionProvider
             Permissions = _allPermissions,
         },
     ];
-
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
-
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => _allStereotypes;
 }

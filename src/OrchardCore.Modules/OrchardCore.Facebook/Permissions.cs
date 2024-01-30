@@ -8,13 +8,15 @@ public class Permissions : IPermissionProvider
 {
     public static readonly Permission ManageFacebookApp = new("ManageFacebookApp", "View and edit the Facebook app.");
 
-
-    private static readonly IEnumerable<Permission> _allPermissions =
+    private readonly IEnumerable<Permission> _allPermissions =
     [
         ManageFacebookApp,
     ];
 
-    private static readonly IEnumerable<PermissionStereotype> _stereotypes =
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
     [
         new PermissionStereotype
         {
@@ -22,10 +24,4 @@ public class Permissions : IPermissionProvider
             Permissions = _allPermissions,
         },
     ];
-
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
-
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => _stereotypes;
 }

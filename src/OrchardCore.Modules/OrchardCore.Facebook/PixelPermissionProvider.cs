@@ -8,12 +8,15 @@ public class PixelPermissionProvider : IPermissionProvider
 {
     public static readonly Permission ManageFacebookPixelPermission = FacebookConstants.ManageFacebookPixelPermission;
 
-    private static readonly IEnumerable<Permission> _allPermissions =
+    private readonly IEnumerable<Permission> _allPermissions =
     [
         ManageFacebookPixelPermission,
     ];
 
-    private static readonly IEnumerable<PermissionStereotype> _stereotypes =
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
     [
         new PermissionStereotype
         {
@@ -21,10 +24,4 @@ public class PixelPermissionProvider : IPermissionProvider
             Permissions = _allPermissions,
         },
     ];
-
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
-
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => _stereotypes;
 }

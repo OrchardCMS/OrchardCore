@@ -10,26 +10,6 @@ public class Permissions : IPermissionProvider
     public static readonly Permission ManageElasticIndexes = ElasticsearchIndexPermissionHelper.ManageElasticIndexes;
     public static readonly Permission QueryElasticApi = new("QueryElasticsearchApi", "Query Elasticsearch Api", new[] { ManageElasticIndexes });
 
-    private static readonly IEnumerable<PermissionStereotype> _stereotypes =
-    [
-        new PermissionStereotype
-        {
-            Name = "Administrator",
-            Permissions =
-            [
-                ManageElasticIndexes
-            ],
-        },
-        new PermissionStereotype
-        {
-            Name = "Editor",
-            Permissions =
-            [
-                QueryElasticApi,
-            ],
-        },
-    ];
-
     private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
 
     public Permissions(ElasticIndexSettingsService elasticIndexSettingsService)
@@ -39,7 +19,7 @@ public class Permissions : IPermissionProvider
 
     public async Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        var permissions = new List<Permission>
+        var permissions = new List<Permission>()
         {
             ManageElasticIndexes,
             QueryElasticApi,
@@ -55,6 +35,23 @@ public class Permissions : IPermissionProvider
         return permissions;
     }
 
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => _stereotypes;
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
+    [
+        new PermissionStereotype
+        {
+            Name = "Administrator",
+            Permissions =
+            [
+                ManageElasticIndexes,
+            ],
+        },
+        new PermissionStereotype
+        {
+            Name = "Editor",
+            Permissions =
+            [
+                QueryElasticApi,
+            ],
+        },
+    ];
 }

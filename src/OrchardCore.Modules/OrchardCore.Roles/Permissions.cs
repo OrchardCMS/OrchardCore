@@ -13,7 +13,35 @@ public class Permissions : IPermissionProvider
     public static readonly Permission AssignRoles = CommonPermissions.AssignRoles;
     public static readonly Permission SiteOwner = StandardPermissions.SiteOwner;
 
-    private static readonly IEnumerable<PermissionStereotype> _stereotypes =
+    private readonly IRoleService _roleService;
+
+    public Permissions(IRoleService roleService)
+    {
+        _roleService = roleService;
+    }
+
+    public async Task<IEnumerable<Permission>> GetPermissionsAsync()
+    {
+        var roleNames = (await _roleService.GetRoleNamesAsync())
+            .Where(roleName => !RoleHelper.SystemRoleNames.Contains(roleName))
+            .ToList();
+
+        var list = new List<Permission>(roleNames.Count + 3)
+        {
+            ManageRoles,
+            AssignRoles,
+            SiteOwner,
+        };
+
+        foreach (var roleName in roleNames)
+        {
+            list.Add(CommonPermissions.CreatePermissionForAssignRole(roleName));
+        }
+
+        return list;
+    }
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
     [
         new PermissionStereotype
         {
@@ -25,34 +53,4 @@ public class Permissions : IPermissionProvider
             ],
         },
     ];
-
-    private readonly IRoleService _roleService;
-
-    public Permissions(IRoleService roleService)
-    {
-        _roleService = roleService;
-    }
-
-    public async Task<IEnumerable<Permission>> GetPermissionsAsync()
-    {
-        var list = new List<Permission>()
-        {
-            ManageRoles,
-            AssignRoles,
-            SiteOwner,
-        };
-
-        var roleNames = (await _roleService.GetRoleNamesAsync())
-            .Where(roleName => !RoleHelper.SystemRoleNames.Contains(roleName));
-
-        foreach (var roleName in roleNames)
-        {
-            list.Add(CommonPermissions.CreatePermissionForAssignRole(roleName));
-        }
-
-        return list;
-    }
-
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => _stereotypes;
 }

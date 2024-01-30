@@ -16,12 +16,15 @@ public class Permissions : IPermissionProvider
         ManageOwnUserProfile,
     ];
 
-    private static readonly IEnumerable<Permission> _generalPermissions =
+    private readonly IEnumerable<Permission> _generalPermissions =
     [
         ManageOwnUserProfile,
     ];
 
-    private static readonly IEnumerable<PermissionStereotype> _stereotypes =
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
     [
         new PermissionStereotype
         {
@@ -52,10 +55,4 @@ public class Permissions : IPermissionProvider
             Permissions = _generalPermissions,
         },
     ];
-
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
-
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => _stereotypes;
 }

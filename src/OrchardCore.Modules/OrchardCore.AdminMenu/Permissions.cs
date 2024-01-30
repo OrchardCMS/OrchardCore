@@ -12,12 +12,37 @@ public class Permissions : IPermissionProvider
 
     private static readonly Permission _viewAdminMenu = new("ViewAdminMenu_{0}", "View Admin Menu - {0}", new[] { ManageAdminMenu, ViewAdminMenuAll });
 
-    private static readonly IEnumerable<Permission> _generalPermissions =
+    private readonly IEnumerable<Permission> _generalPermissions =
     [
         ManageAdminMenu,
     ];
 
-    private static readonly IEnumerable<PermissionStereotype> _stereotypes =
+    private readonly IAdminMenuService _adminMenuService;
+
+    public Permissions(IAdminMenuService adminMenuService)
+    {
+        _adminMenuService = adminMenuService;
+    }
+
+    public async Task<IEnumerable<Permission>> GetPermissionsAsync()
+    {
+        var adminMenuItems = (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu;
+
+        var permissions = new List<Permission>(adminMenuItems.Count + 2)
+        {
+            ViewAdminMenuAll,
+            ManageAdminMenu,
+        };
+
+        foreach (var adminMenu in adminMenuItems)
+        {
+            permissions.Add(CreatePermissionForAdminMenu(adminMenu.Name));
+        }
+
+        return permissions;
+    }
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
     [
         new PermissionStereotype
         {
@@ -30,32 +55,6 @@ public class Permissions : IPermissionProvider
             Permissions = _generalPermissions,
         },
     ];
-
-    private readonly IAdminMenuService _adminMenuService;
-
-    public Permissions(IAdminMenuService adminMenuService)
-    {
-        _adminMenuService = adminMenuService;
-    }
-
-    public async Task<IEnumerable<Permission>> GetPermissionsAsync()
-    {
-        var permissions = new List<Permission>()
-        {
-            ViewAdminMenuAll,
-            ManageAdminMenu,
-        };
-
-        foreach (var adminMenu in (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu)
-        {
-            permissions.Add(CreatePermissionForAdminMenu(adminMenu.Name));
-        }
-
-        return permissions;
-    }
-
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => _stereotypes;
 
     public static Permission CreatePermissionForAdminMenu(string name)
         => new(

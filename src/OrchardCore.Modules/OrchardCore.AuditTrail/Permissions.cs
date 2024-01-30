@@ -9,13 +9,16 @@ public class Permissions : IPermissionProvider
     public static readonly Permission ViewAuditTrail = AuditTrailPermissions.ViewAuditTrail;
     public static readonly Permission ManageAuditTrailSettings = AuditTrailPermissions.ManageAuditTrailSettings;
 
-    private static readonly IEnumerable<Permission> _allPermissions =
+    private readonly IEnumerable<Permission> _allPermissions =
     [
         ViewAuditTrail,
         ManageAuditTrailSettings,
     ];
 
-    private static readonly IEnumerable<PermissionStereotype> _stereotypes =
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
     [
         new PermissionStereotype
         {
@@ -23,10 +26,4 @@ public class Permissions : IPermissionProvider
             Permissions = _allPermissions
         },
     ];
-
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
-
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => _stereotypes;
 }

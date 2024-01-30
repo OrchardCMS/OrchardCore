@@ -8,12 +8,12 @@ public class PermissionsAdminSettings : IPermissionProvider
 {
     public static readonly Permission ManageAdminSettings = new("ManageAdminSettings", "Manage Admin Settings");
 
-    private static readonly IEnumerable<Permission> _allPermissions =
+    private readonly IEnumerable<Permission> _allPermissions =
     [
         ManageAdminSettings,
     ];
 
-    private static readonly IEnumerable<PermissionStereotype> _stereotypes =
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
     [
         new PermissionStereotype
         {
@@ -23,8 +23,5 @@ public class PermissionsAdminSettings : IPermissionProvider
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
-    => Task.FromResult(_allPermissions);
-
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => _stereotypes;
+        => Task.FromResult(_allPermissions);
 }

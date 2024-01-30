@@ -27,12 +27,12 @@ public class Permissions : IPermissionProvider
     public static readonly Permission EditContentOwner = CommonPermissions.EditContentOwner;
     public static readonly Permission AccessContentApi = new("AccessContentApi", "Access content via the api");
 
-    private static readonly IEnumerable<Permission> _readerPermissions =
+    private readonly IEnumerable<Permission> _readerPermissions =
     [
         ViewContent,
     ];
 
-    private static readonly IEnumerable<Permission> _allPermissions =
+    private readonly IEnumerable<Permission> _allPermissions =
     [
         EditContent,
         EditOwnContent,
@@ -51,7 +51,10 @@ public class Permissions : IPermissionProvider
         EditContentOwner,
     ];
 
-    private static readonly IEnumerable<PermissionStereotype> _stereotypes =
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
     [
         new PermissionStereotype
         {
@@ -65,7 +68,7 @@ public class Permissions : IPermissionProvider
                 CloneContent,
                 AccessContentApi,
                 ListContent,
-                EditContentOwner
+                EditContentOwner,
             ],
         },
         new PermissionStereotype
@@ -114,10 +117,4 @@ public class Permissions : IPermissionProvider
             Permissions = _readerPermissions,
         },
     ];
-
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
-
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => _stereotypes;
 }

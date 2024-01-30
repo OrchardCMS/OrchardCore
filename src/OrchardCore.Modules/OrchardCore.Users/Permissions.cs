@@ -14,7 +14,7 @@ public class Permissions : IPermissionProvider
     public static readonly Permission EditUsers = CommonPermissions.EditUsers;
     public static readonly Permission DeleteUsers = CommonPermissions.DeleteUsers;
 
-    private static readonly IEnumerable<Permission> _allPermissions =
+    private readonly IEnumerable<Permission> _allPermissions =
     [
         ManageUsers,
         ViewUsers,
@@ -24,12 +24,15 @@ public class Permissions : IPermissionProvider
         DeleteUsers,
     ];
 
-    private static readonly IEnumerable<Permission> _generalPermissions =
+    private readonly IEnumerable<Permission> _generalPermissions =
     [
         EditOwnUser,
     ];
 
-    private static readonly IEnumerable<PermissionStereotype> _stereotypes =
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
     [
          new PermissionStereotype
          {
@@ -57,10 +60,4 @@ public class Permissions : IPermissionProvider
             Permissions = _generalPermissions,
         }
     ];
-
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
-
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => _stereotypes;
 }

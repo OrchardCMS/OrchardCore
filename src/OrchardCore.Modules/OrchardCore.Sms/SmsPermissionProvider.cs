@@ -8,12 +8,15 @@ public class SmsPermissionProvider : IPermissionProvider
 {
     public static readonly Permission ManageSmsSettings = SmsPermissions.ManageSmsSettings;
 
-    private static readonly IEnumerable<Permission> _allPermissions =
+    private readonly IEnumerable<Permission> _allPermissions =
     [
-        ManageSmsSettings
+        ManageSmsSettings,
     ];
 
-    private static readonly IEnumerable<PermissionStereotype> _stereotypes =
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
     [
         new PermissionStereotype
         {
@@ -21,10 +24,4 @@ public class SmsPermissionProvider : IPermissionProvider
             Permissions = _allPermissions,
         },
     ];
-
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
-
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => _stereotypes;
 }

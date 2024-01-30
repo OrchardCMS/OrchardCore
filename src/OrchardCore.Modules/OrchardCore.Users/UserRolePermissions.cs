@@ -10,18 +10,6 @@ public class UserRolePermissions : IPermissionProvider
 {
     public static readonly Permission AssignRoleToUsers = CommonPermissions.AssignRoleToUsers;
 
-    private static readonly IEnumerable<PermissionStereotype> _stereotypes =
-    [
-        new PermissionStereotype
-        {
-            Name = "Administrator",
-            Permissions =
-            [
-                AssignRoleToUsers
-            ],
-        },
-    ];
-
     private readonly IRoleService _roleService;
 
     public UserRolePermissions(IRoleService roleService)
@@ -31,7 +19,7 @@ public class UserRolePermissions : IPermissionProvider
 
     public async Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        var permissions = new List<Permission>
+        var permissions = new List<Permission>()
         {
             AssignRoleToUsers,
         };
@@ -52,6 +40,15 @@ public class UserRolePermissions : IPermissionProvider
         return permissions;
     }
 
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => _stereotypes;
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
+    [
+        new PermissionStereotype
+        {
+            Name = "Administrator",
+            Permissions =
+            [
+                AssignRoleToUsers,
+            ],
+        },
+    ];
 }

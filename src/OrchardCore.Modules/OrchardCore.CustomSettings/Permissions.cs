@@ -43,5 +43,5 @@ public class Permissions : IPermissionProvider
     }
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => Enumerable.Empty<PermissionStereotype>();
+        => [];
 }

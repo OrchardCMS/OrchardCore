@@ -11,23 +11,9 @@ public class Permissions : IPermissionProvider
 
     private static readonly Permission _executeApi = new("ExecuteApi_{0}", "Execute Api - {0}", new[] { ManageQueries, ExecuteApiAll });
 
-    private static readonly IEnumerable<Permission> _generalPermissions =
+    private readonly IEnumerable<Permission> _generalPermissions =
     [
         ManageQueries,
-    ];
-
-    private static readonly IEnumerable<PermissionStereotype> _stereotypes =
-    [
-        new PermissionStereotype
-        {
-            Name = "Administrator",
-            Permissions = _generalPermissions,
-        },
-        new PermissionStereotype
-        {
-            Name = "Editor",
-            Permissions = _generalPermissions,
-        },
     ];
 
     private readonly IQueryManager _queryManager;
@@ -53,8 +39,19 @@ public class Permissions : IPermissionProvider
         return list;
     }
 
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => _stereotypes;
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
+    [
+        new PermissionStereotype
+        {
+            Name = "Administrator",
+            Permissions = _generalPermissions,
+        },
+        new PermissionStereotype
+        {
+            Name = "Editor",
+            Permissions = _generalPermissions,
+        },
+    ];
 
     public static Permission CreatePermissionForQuery(string name)
         => new(

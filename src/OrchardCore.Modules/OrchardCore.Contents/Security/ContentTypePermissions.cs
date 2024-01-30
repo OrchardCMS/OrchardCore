@@ -36,5 +36,5 @@ public class ContentTypePermissions : IPermissionProvider
     }
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => Enumerable.Empty<PermissionStereotype>();
+        => [];
 }
