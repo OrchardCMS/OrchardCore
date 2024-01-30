@@ -82,7 +82,7 @@ namespace OrchardCore.ContentManagement.Records
         public async Task<int> UpdateFrom1Async()
         {
             await SchemaBuilder.AlterIndexTableAsync<ContentItemIndex>(table => table
-                .AddColumn<string>("ContentItemVersionId", column => column.NotNull().WithLength(26))
+                .AddColumn<string>("ContentItemVersionId", column => column.WithLength(26))
             );
 
             return 2;

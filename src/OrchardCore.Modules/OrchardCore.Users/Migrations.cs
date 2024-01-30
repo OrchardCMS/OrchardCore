@@ -118,7 +118,7 @@ namespace OrchardCore.Users
         public async Task<int> UpdateFrom4Async()
         {
             await SchemaBuilder.AlterIndexTableAsync<UserIndex>(table => table
-                .AddColumn<string>("UserId", column => column.NotNull()));
+                .AddColumn<string>("UserId"));
 
             return 5;
         }

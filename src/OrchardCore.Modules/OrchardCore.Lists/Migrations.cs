@@ -77,7 +77,7 @@ namespace OrchardCore.Lists
         public async Task<int> UpdateFrom3Async()
         {
             await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table
-                .AddColumn<string>("ContentItemId", column => column.NotNull().WithLength(26))
+                .AddColumn<string>("ContentItemId", column => column.WithLength(26))
             );
 
             await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table
