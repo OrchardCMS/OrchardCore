@@ -6,7 +6,7 @@ namespace OrchardCore.ContentManagement
 {
     /// <summary>
     /// Common traits of <see cref="ContentItem"/>, <see cref="ContentPart"/>
-    /// and <see cref="ContentField"/>
+    /// and <see cref="ContentField"/>.
     /// </summary>
     public class ContentElement : IContent
     {

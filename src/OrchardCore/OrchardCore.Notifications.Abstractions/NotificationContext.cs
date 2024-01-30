@@ -12,7 +12,7 @@ public class NotificationContext
     /// </summary>
     /// <param name="notificationMessage">The notification message.</param>
     /// <param name="notify">The notifiable object.</param>
-    /// <exception cref="ArgumentNullException">Occurs when <paramref name="notificationMessage"/> is <c>null</c>,</exception>
+    /// <exception cref="ArgumentNullException">Occurs when <paramref name="notificationMessage"/> is <c>null</c>,.</exception>
     public NotificationContext(INotificationMessage notificationMessage, object notify)
     {
         ArgumentNullException.ThrowIfNull(notificationMessage);

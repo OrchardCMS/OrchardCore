@@ -513,7 +513,7 @@ namespace OrchardCore.Workflows.Services
             // Apply Distinct() as two paths could block on the same activity.
             var blockingActivities = blocking.Distinct().ToList();
 
-            workflowContext.Status = blockingActivities.Any() || workflowContext.Workflow.BlockingActivities.Any() ? WorkflowStatus.Halted : WorkflowStatus.Finished;
+            workflowContext.Status = blockingActivities.Count > 0 || workflowContext.Workflow.BlockingActivities.Count > 0 ? WorkflowStatus.Halted : WorkflowStatus.Finished;
 
             foreach (var blockingActivity in blockingActivities)
             {

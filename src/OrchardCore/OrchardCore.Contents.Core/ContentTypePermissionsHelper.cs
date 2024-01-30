@@ -48,7 +48,7 @@ namespace OrchardCore.Contents.Security
         private static Dictionary<ValueTuple<string, string>, Permission> _permissionsByType = [];
 
         /// <summary>
-        /// Returns a dynamic permission for a content type, based on a global content permission template
+        /// Returns a dynamic permission for a content type, based on a global content permission template.
         /// </summary>
         public static Permission ConvertToDynamicPermission(Permission permission)
         {
@@ -61,7 +61,7 @@ namespace OrchardCore.Contents.Security
         }
 
         /// <summary>
-        /// Generates a permission dynamically for a content type
+        /// Generates a permission dynamically for a content type.
         /// </summary>
         public static Permission CreateDynamicPermission(Permission template, ContentTypeDefinition typeDefinition)
         {
@@ -78,7 +78,7 @@ namespace OrchardCore.Contents.Security
         }
 
         /// <summary>
-        /// Generates a permission dynamically for a content type, without a display name or category
+        /// Generates a permission dynamically for a content type, without a display name or category.
         /// </summary>
         public static Permission CreateDynamicPermission(Permission template, string contentType)
         {

@@ -126,7 +126,7 @@ namespace OrchardCore.ResourceManagement
         /// <summary>
         /// Sets the version of the resource.
         /// </summary>
-        /// <param name="version">The version to set, in the form of <code>major.minor[.build[.revision]]</code></param>
+        /// <param name="version">The version to set, in the form of. <code>major.minor[.build[.revision]]</code></param>
         public ResourceDefinition SetVersion(string version)
         {
             if (!System.Version.TryParse(version, out _))

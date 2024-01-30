@@ -12,7 +12,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
         public string IconClass { get; set; }
 
         /// <summary>
-        /// The names of the permissions required to view this admin menu node
+        /// The names of the permissions required to view this admin menu node.
         /// </summary>
         public string[] PermissionNames { get; set; } = [];
     }

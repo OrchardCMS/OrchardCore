@@ -16,6 +16,8 @@ namespace OrchardCore.Workflows.Http.Activities
 {
     public class HttpRequestTask : TaskActivity<HttpRequestTask>
     {
+        private static readonly string[] _separator = ["\r\n", "\n", "\r"];
+
         private static readonly Dictionary<int, string> _httpStatusCodeDictionary = new()
         {
             { 100, "Continue" },
@@ -203,7 +205,7 @@ namespace OrchardCore.Workflows.Http.Activities
             }
 
             return
-                from header in text.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim())
+                from header in text.Split(_separator, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim())
                 let pair = header.Split(':', 2)
                 where pair.Length == 2
                 select new KeyValuePair<string, string>(pair[0], pair[1]);

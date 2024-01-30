@@ -421,7 +421,7 @@ namespace OrchardCore.Mvc.Utilities
         private static ImmutableDictionary<string, string> _dashPascalCaseIndex = ImmutableDictionary<string, string>.Empty;
 
         /// <summary>
-        /// Converts a liquid attribute to pascal case
+        /// Converts a liquid attribute to pascal case.
         /// </summary>
         public static string ToPascalCaseUnderscore(this string attribute)
         {
