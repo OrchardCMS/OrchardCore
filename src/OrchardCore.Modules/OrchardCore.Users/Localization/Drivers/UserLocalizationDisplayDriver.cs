@@ -40,7 +40,12 @@ public class UserLocalizationDisplayDriver : SectionDisplayDriver<User, UserLoca
                     Value = culture
                 }).ToList();
 
-            cultureList.Insert(0, new SelectListItem(){ Text = S["Use site's culture"], Value = "none" });
+            cultureList.Insert(0, new SelectListItem() { Text = S["Use site's culture"], Value = "none" });
+
+            if (cultureList.Where(c => c.Value == "").Any())
+            {
+                cultureList.Where(c => c.Value == "").FirstOrDefault().Value = "invariant";
+            }
 
             model.SelectedCulture = section.Culture;
             model.CultureList = cultureList;

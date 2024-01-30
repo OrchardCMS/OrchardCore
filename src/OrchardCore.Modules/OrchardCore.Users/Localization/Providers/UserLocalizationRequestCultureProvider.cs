@@ -17,13 +17,13 @@ public class UserLocalizationRequestCultureProvider : RequestCultureProvider
             return NullProviderCultureResult;
         }
 
-        var userCulture = httpContext.User.GetCulture();
+        var userCulture = httpContext.User.GetCulture(); // String.Empty here means that it did not find the Culture Claim.
 
-        if (string.IsNullOrWhiteSpace(userCulture))
+        if (String.IsNullOrWhiteSpace(userCulture))
         {
             return NullProviderCultureResult;
         }
 
-        return Task.FromResult(new ProviderCultureResult(userCulture));
+        return Task.FromResult(new ProviderCultureResult(userCulture == "invariant" ? "" : userCulture));
     }
 }
