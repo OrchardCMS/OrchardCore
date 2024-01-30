@@ -30,7 +30,7 @@ namespace OrchardCore.Entities
             JsonNode value;
             if (entity.Properties.TryGetPropertyValue(name, out value))
             {
-                return value.Deserialize<T>();
+                return value.Deserialize<T>(JOptions.Default);
             }
 
             return new T();
