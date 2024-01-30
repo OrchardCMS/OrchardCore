@@ -28,7 +28,7 @@ public class UserLocalizationClaimsProvider : IUserClaimsProvider
 
             if (localizationSetting.Culture != "none")
             {
-                claims.AddClaim(new Claim(CultureClaimType, localizationSetting.Culture == "invariant" ? "" : localizationSetting.Culture));
+                claims.AddClaim(new Claim(CultureClaimType, localizationSetting.Culture == Constants.Invariant ? "" : localizationSetting.Culture));
             }
         }
 
