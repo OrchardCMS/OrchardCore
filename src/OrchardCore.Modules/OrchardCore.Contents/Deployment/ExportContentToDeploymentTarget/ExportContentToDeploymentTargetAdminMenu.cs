@@ -1,5 +1,5 @@
-using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
@@ -7,6 +7,12 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 {
     public class ExportContentToDeploymentTargetAdminMenu : INavigationProvider
     {
+        private static readonly RouteValueDictionary _routeValues = new()
+        {
+            { "area", "OrchardCore.Settings" },
+            { "groupId", ExportContentToDeploymentTargetSettingsDisplayDriver.GroupId },
+        };
+
         protected readonly IStringLocalizer S;
 
         public ExportContentToDeploymentTargetAdminMenu(IStringLocalizer<AdminMenu> localizer)
@@ -16,7 +22,7 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
                 return Task.CompletedTask;
             }
@@ -25,8 +31,8 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
                 .Add(S["Configuration"], configuration => configuration
                     .Add(S["Import/Export"], S["Import/Export"].PrefixPosition(), import => import
                         .Add(S["Settings"], settings => settings
-                            .Add(S["Export Target Settings"], S["Export Target Settings"].PrefixPosition(), deployment => deployment
-                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "ExportContentToDeploymentTarget" })
+                            .Add(S["Export Target Settings"], S["Export Target Settings"].PrefixPosition(), targetSettings => targetSettings
+                                .Action("Index", "Admin", _routeValues)
                                 .Permission(OrchardCore.Deployment.CommonPermissions.ManageDeploymentPlan)
                                 .LocalNav()
                             )
