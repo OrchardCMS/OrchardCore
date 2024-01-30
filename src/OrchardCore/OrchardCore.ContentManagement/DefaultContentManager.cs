@@ -598,15 +598,17 @@ namespace OrchardCore.ContentManagement
 
         public async Task CreateAsync(ContentItem contentItem, VersionOptions options)
         {
-            if (contentItem.Latest)
-            {
-                contentItem.Published = true;
-            }
+            contentItem.Published = true;
 
             // Draft flag on create is required for explicitly-published content items
             if (options.IsDraft)
             {
                 contentItem.Published = false;
+            }
+
+            if (string.IsNullOrEmpty(contentItem.ContentItemVersionId))
+            {
+                contentItem.ContentItemVersionId = _idGenerator.GenerateUniqueId(contentItem);
             }
 
             // Build a context with the initialized instance to create
