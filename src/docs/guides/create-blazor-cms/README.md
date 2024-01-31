@@ -1,6 +1,6 @@
 ## Introduction
 
-In this article you will learn how to use Orchard CMS as coupled CMS with .NET Blazor Application.
+In this article you will learn how to use Orchard CMS as decoupled CMS with .NET Blazor Application.
 
 ## Setting up the project
 
