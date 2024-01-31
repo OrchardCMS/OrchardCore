@@ -834,6 +834,8 @@ namespace OrchardCore.ContentManagement
                 await _session.SaveAsync(latestVersion);
             }
 
+            contentItem.Latest = true;
+
             await CreateAsync(contentItem, VersionOptions.Draft);
 
             await ReversedHandlers.InvokeAsync((handler, context) => handler.RestoredAsync(context), context, _logger);
