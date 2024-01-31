@@ -644,7 +644,7 @@ dotnet add ./OCBlazorLib/OCBlazorLib.csproj package OrchardCore.ContentManagemen
 @using OrchardCore.ContentManagement;
 @using OrchardCore.Settings;
 ```
-- From `Pages` folder, open `Content.razor` and edit `@page` route and to add alias to the route and add following `@using`.
+- From `Pages` folder, open `Content.razor` and edit `@page` route and add alias to the route and add following `@using` and `@inject`. Here we are injecting `IContentHandleManager` and `IContentManager`.  `IContentHandleManager` helps to retrieve content item id from alias and `IContentManager` helps retrieving content item using content item id.
 
 ```csharp
 @page "/content/{alias}"
