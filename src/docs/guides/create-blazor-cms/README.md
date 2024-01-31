@@ -142,7 +142,7 @@ dotnet sln add ./BlazorCms
 ```
 - Go to `Content` -> `Content Items` and Verify that the content item is created available as shown below image.
  
-![Content Item](./images/image-001.png)
+![Content Item](./images/image-001.PNG)
 
 ### Create Blazor App in Razor Class library.
 
