@@ -10,15 +10,7 @@ namespace OrchardCore.Indexing
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return Task.FromResult(GetPermissions());
-        }
-
-        private static IEnumerable<Permission> GetPermissions()
-        {
-            return new[]
-            {
-                ManageIndexes,
-            };
+            return Task.FromResult(_permissions);
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -28,9 +20,14 @@ namespace OrchardCore.Indexing
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageIndexes },
+                    Permissions = _permissions,
                 },
             };
         }
+
+        private readonly IEnumerable<Permission> _permissions =
+        [
+            ManageIndexes
+        ];
     }
 }

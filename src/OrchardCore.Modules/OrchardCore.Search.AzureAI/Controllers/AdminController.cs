@@ -493,7 +493,7 @@ public class AdminController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    private IActionResult NotConfigured()
+    private ViewResult NotConfigured()
         => View("NotConfigured");
 
     private static Task AsyncContentItemsAsync(string indexName)

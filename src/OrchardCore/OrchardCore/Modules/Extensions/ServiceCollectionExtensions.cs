@@ -442,8 +442,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.Configure<CookiePolicyOptions>(options =>
                 {
                     options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
-                    options.OnAppendCookie = cookieContext => CheckSameSiteBackwardsCompatiblity(cookieContext.Context, cookieContext.CookieOptions);
-                    options.OnDeleteCookie = cookieContext => CheckSameSiteBackwardsCompatiblity(cookieContext.Context, cookieContext.CookieOptions);
+                    options.OnAppendCookie = cookieContext => CheckSameSiteBackwardsCompatibility(cookieContext.Context, cookieContext.CookieOptions);
+                    options.OnDeleteCookie = cookieContext => CheckSameSiteBackwardsCompatibility(cookieContext.Context, cookieContext.CookieOptions);
                 });
             })
             .Configure(app =>
@@ -452,9 +452,9 @@ namespace Microsoft.Extensions.DependencyInjection
             });
         }
 
-        private static void CheckSameSiteBackwardsCompatiblity(HttpContext httpContext, CookieOptions options)
+        private static void CheckSameSiteBackwardsCompatibility(HttpContext httpContext, CookieOptions options)
         {
-            var userAgent = httpContext.Request.Headers["User-Agent"].ToString();
+            var userAgent = httpContext.Request.Headers.UserAgent.ToString();
 
             if (options.SameSite == SameSiteMode.None)
             {

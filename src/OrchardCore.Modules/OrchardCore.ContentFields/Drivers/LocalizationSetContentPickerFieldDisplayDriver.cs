@@ -69,7 +69,7 @@ namespace OrchardCore.ContentFields.Drivers
 
                     model.SelectedItems.Add(new VueMultiselectItemViewModel
                     {
-                        Id = kvp.Key, //localization set
+                        Id = kvp.Key, // localization set
                         DisplayText = contentItem.ToString(),
                         HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem)
                     });
