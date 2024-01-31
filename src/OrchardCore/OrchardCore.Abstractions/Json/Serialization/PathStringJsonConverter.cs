@@ -10,8 +10,28 @@ public class PathStringJsonConverter : JsonConverter<PathString>
     public static readonly PathStringJsonConverter Instance = new();
 
     public override PathString Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        => new(reader.GetString());
+    {
+        var result = reader.GetString();
+
+        if (string.IsNullOrEmpty(result))
+        {
+            return PathString.Empty;
+        }
+
+        if (!result.StartsWith('/'))
+        {
+            return new PathString('/' + result);
+        }
+
+        return new PathString(result);
+    }
 
     public override void Write(Utf8JsonWriter writer, PathString value, JsonSerializerOptions options)
-        => JsonSerializer.Serialize(writer, writer.ToString(), typeof(string), options);
+    {
+        // https://localhost:44300/blog1/Admin/Settings/general
+
+        JsonSerializer.Serialize(writer, value.ToString(), typeof(string), options);
+
+
+    }
 }
