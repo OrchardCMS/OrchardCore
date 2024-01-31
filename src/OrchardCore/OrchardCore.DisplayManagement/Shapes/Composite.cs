@@ -8,7 +8,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 {
     public class Composite : DynamicObject
     {
-        protected readonly Dictionary<string, object> _properties = new();
+        protected readonly Dictionary<string, object> _properties = [];
 
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {

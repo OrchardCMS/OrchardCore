@@ -6,6 +6,6 @@ using OrchardCore.Modules.Manifest;
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
     Description = "The auto setup module allows to automatically install the application / tenants",
-    Dependencies = new[] { "OrchardCore.Setup" },
+    Dependencies = ["OrchardCore.Setup"],
     Category = "Infrastructure"
 )]

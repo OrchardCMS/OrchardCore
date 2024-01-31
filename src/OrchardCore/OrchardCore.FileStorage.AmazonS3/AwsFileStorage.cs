@@ -69,7 +69,7 @@ public class AwsFileStore : IFileStore
             FetchOwner = false
         });
 
-        return awsDirectory.S3Objects.Any() ? new AwsDirectory(path, _clock.UtcNow) : null;
+        return awsDirectory.S3Objects.Count > 0 ? new AwsDirectory(path, _clock.UtcNow) : null;
     }
 
     public async IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentAsync(string path = null,
@@ -206,7 +206,7 @@ public class AwsFileStore : IFileStore
                 Prefix = this.Combine(_basePrefix, dstPath)
             });
 
-            if (listObjects.S3Objects.Any())
+            if (listObjects.S3Objects.Count > 0)
             {
                 throw new FileStoreException($"Cannot copy file '{srcPath}' because a file already exists in the new path '{dstPath}'.");
             }
@@ -261,7 +261,7 @@ public class AwsFileStore : IFileStore
                     Prefix = this.Combine(_basePrefix, path)
                 });
 
-                if (listObjects.S3Objects.Any())
+                if (listObjects.S3Objects.Count > 0)
                 {
                     throw new FileStoreException($"Cannot create file '{path}' because it already exists.");
                 }

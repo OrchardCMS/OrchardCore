@@ -11,7 +11,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
     [HtmlTargetElement("style", Attributes = AtAttributeName)]
     public class StyleTagHelper : TagHelper
     {
-        private static readonly char[] _splitSeparators = { ',', ' ' };
+        private static readonly char[] _splitSeparators = [',', ' '];
         private const string NameAttributeName = "asp-name";
         private const string SrcAttributeName = "asp-src";
         private const string AtAttributeName = "at";

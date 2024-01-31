@@ -53,7 +53,7 @@ namespace OrchardCore.Media.Drivers
 
         public override IDisplayResult Edit(MediaField field, BuildFieldEditorContext context)
         {
-            var itemPaths = field.Paths?.ToList().Select(p => new EditMediaFieldItemInfo { Path = p }).ToArray() ?? Array.Empty<EditMediaFieldItemInfo>();
+            var itemPaths = field.Paths?.ToList().Select(p => new EditMediaFieldItemInfo { Path = p }).ToArray() ?? [];
 
             return Initialize<EditMediaFieldViewModel>(GetEditorShapeType(context), model =>
             {
@@ -88,7 +88,7 @@ namespace OrchardCore.Media.Drivers
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
                 model.AllowMediaText = settings.AllowMediaText;
-                model.AllowedExtensions = settings.AllowedExtensions ?? Array.Empty<string>();
+                model.AllowedExtensions = settings.AllowedExtensions ?? [];
             });
         }
 
@@ -100,7 +100,7 @@ namespace OrchardCore.Media.Drivers
             {
                 // Deserializing an empty string doesn't return an array
                 var items = string.IsNullOrWhiteSpace(model.Paths)
-                    ? new List<EditMediaFieldItemInfo>()
+                    ? []
                     : JsonSerializer.Deserialize<List<EditMediaFieldItemInfo>>(model.Paths, _settings);
 
                 // If it's an attached media field editor the files are automatically handled by _attachedMediaFieldFileService.
@@ -118,7 +118,7 @@ namespace OrchardCore.Media.Drivers
                     }
                 }
 
-                field.Paths = items.Where(p => !p.IsRemoved).Select(p => p.Path).ToArray() ?? Array.Empty<string>();
+                field.Paths = items.Where(p => !p.IsRemoved).Select(p => p.Path).ToArray() ?? [];
 
                 var settings = context.PartFieldDefinition.GetSettings<MediaFieldSettings>();
 
@@ -151,7 +151,7 @@ namespace OrchardCore.Media.Drivers
                 }
                 else
                 {
-                    field.MediaTexts = Array.Empty<string>();
+                    field.MediaTexts = [];
                 }
 
                 if (settings.AllowAnchors)

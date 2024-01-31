@@ -12,7 +12,7 @@ public class TheAdminThemeOptions
     /// </summary>
     public string LimitedWidthWrapperClasses { get; set; } = "row";
 
-    //GroupWrapperClasses
+    // GroupWrapperClasses
     /// <summary>
     /// Space separated CSS classes used to control the width of input elements like numeric, date, etc.
     /// </summary>

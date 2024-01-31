@@ -24,7 +24,7 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
         private readonly IAuditTrailManager _auditTrailManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        private readonly HashSet<string> _restoring = new();
+        private readonly HashSet<string> _restoring = [];
 
         public AuditTrailContentHandler(
             YesSql.ISession session,

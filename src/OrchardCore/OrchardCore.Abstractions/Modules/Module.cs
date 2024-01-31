@@ -17,7 +17,7 @@ namespace OrchardCore.Modules
 
         private readonly string _baseNamespace;
         private readonly DateTimeOffset _lastModified;
-        private readonly Dictionary<string, IFileInfo> _fileInfos = new();
+        private readonly Dictionary<string, IFileInfo> _fileInfos = [];
 
         // TODO: MWP: trace back to usage, etc...
         // TODO: MWP: perhaps we filter up front so we are not discovering all this during ctor...
@@ -99,8 +99,8 @@ namespace OrchardCore.Modules
             else
             {
                 Name = Root = SubPath = string.Empty;
-                Assets = Enumerable.Empty<Asset>();
-                AssetPaths = Enumerable.Empty<string>();
+                Assets = [];
+                AssetPaths = [];
                 ModuleInfo = new ModuleAttribute();
             }
 

@@ -37,7 +37,7 @@ namespace OrchardCore.Contents.Security
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
         {
-            return Enumerable.Empty<PermissionStereotype>();
+            return [];
         }
     }
 }

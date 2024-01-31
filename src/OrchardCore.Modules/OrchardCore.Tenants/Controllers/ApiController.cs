@@ -122,7 +122,7 @@ namespace OrchardCore.Tenants.Controllers
                     shellSettings["DatabaseProvider"] = model.DatabaseProvider;
                     shellSettings["Secret"] = Guid.NewGuid().ToString();
                     shellSettings["RecipeName"] = model.RecipeName;
-                    shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
+                    shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? []);
 
                     await _shellHost.UpdateShellSettingsAsync(shellSettings);
                     var reloadedSettings = _shellHost.GetSettings(shellSettings.Name);
@@ -174,7 +174,7 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings["Category"] = model.Category;
                 shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
-                shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
+                shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? []);
 
                 if (shellSettings.IsUninitialized())
                 {

@@ -104,7 +104,7 @@ namespace OrchardCore.Localization.Drivers
 
                 var supportedCulture = JsonConvert.DeserializeObject<string[]>(model.SupportedCultures);
 
-                if (!supportedCulture.Any())
+                if (supportedCulture.Length == 0)
                 {
                     context.Updater.ModelState.AddModelError("SupportedCultures", S["A culture is required"]);
                 }

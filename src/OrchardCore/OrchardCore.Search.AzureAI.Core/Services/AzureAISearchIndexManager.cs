@@ -205,11 +205,11 @@ public class AzureAISearchIndexManager(
                 IsFilterable = true,
                 IsSortable = true,
             },
-            new SearchableField(DisplayTextAnalyzedKey, true)
+            new SearchableField(DisplayTextAnalyzedKey)
             {
                 AnalyzerName = settings.AnalyzerName,
             },
-            new SearchableField(FullTextKey, true)
+            new SearchableField(FullTextKey)
             {
                 AnalyzerName = settings.AnalyzerName,
             },

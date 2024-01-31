@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -11,7 +10,6 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Contents.Controllers;
 using OrchardCore.Contents.Security;
-using OrchardCore.Entities;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
@@ -20,6 +18,19 @@ namespace OrchardCore.Contents
 {
     public class AdminMenu : INavigationProvider
     {
+        private static readonly RouteValueDictionary _routeValues = new()
+        {
+            { "area", "OrchardCore.Contents" },
+            { "contentTypeId", string.Empty },
+        };
+
+        private static readonly RouteValueDictionary _adminListRouteValues = new()
+        {
+            { "area", "OrchardCore.Contents" },
+            { "controller", "Admin" },
+            { "Action", "List" },
+        };
+
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContentManager _contentManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -48,12 +59,12 @@ namespace OrchardCore.Contents
 
         public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            var context = _httpContextAccessor.HttpContext;
-
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
                 return;
             }
+
+            var context = _httpContextAccessor.HttpContext;
 
             var contentTypeDefinitions = (await _contentDefinitionManager.ListTypeDefinitionsAsync()).OrderBy(d => d.Name);
             var contentTypes = contentTypeDefinitions.Where(ctd => ctd.IsCreatable()).OrderBy(ctd => ctd.DisplayName);
@@ -67,7 +78,7 @@ namespace OrchardCore.Contents
                         contentItems.Permission(Permissions.ListContent);
                     }
 
-                    contentItems.Action(nameof(AdminController.List), typeof(AdminController).ControllerName(), new { area = "OrchardCore.Contents", contentTypeId = "" });
+                    contentItems.Action(nameof(AdminController.List), typeof(AdminController).ControllerName(), _routeValues);
                     contentItems.LocalNav();
                 });
             });
@@ -84,14 +95,9 @@ namespace OrchardCore.Contents
                         var ci = await _contentManager.NewAsync(contentTypeDefinition.Name);
                         var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci);
                         var createRouteValues = cim.CreateRouteValues;
-                        createRouteValues.Add("returnUrl", _linkGenerator.GetPathByRouteValues(context, "", new
-                        {
-                            area = "OrchardCore.Contents",
-                            controller = "Admin",
-                            action = "List"
-                        }));
+                        createRouteValues.Add("returnUrl", _linkGenerator.GetPathByRouteValues(context, string.Empty, _adminListRouteValues));
 
-                        if (createRouteValues.Any())
+                        if (createRouteValues.Count > 0)
                         {
                             newMenu.Add(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName), "5", item => item
                                 .Action(cim.CreateRouteValues["Action"] as string, cim.CreateRouteValues["Controller"] as string, cim.CreateRouteValues)

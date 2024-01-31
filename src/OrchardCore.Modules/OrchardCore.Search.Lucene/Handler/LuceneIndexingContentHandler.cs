@@ -18,7 +18,7 @@ namespace OrchardCore.Search.Lucene.Handlers
 {
     public class LuceneIndexingContentHandler : ContentHandlerBase
     {
-        private readonly List<ContentContextBase> _contexts = new();
+        private readonly List<ContentContextBase> _contexts = [];
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public LuceneIndexingContentHandler(IHttpContextAccessor httpContextAccessor)

@@ -9,7 +9,7 @@ namespace OrchardCore.ContentManagement.Metadata.Models
     {
         public string Name { get; protected set; }
 
-        private Dictionary<Type, object> _namedSettings = new();
+        private Dictionary<Type, object> _namedSettings = [];
 
         /// <summary>
         /// Do not access this property directly. Migrate to use GetSettings and PopulateSettings.
@@ -63,7 +63,7 @@ namespace OrchardCore.ContentManagement.Metadata.Models
             if (Settings.TryGetValue(typeName, out value))
             {
                 JsonConvert.PopulateObject(value.ToString(), target);
-                _namedSettings = new Dictionary<Type, object>();
+                _namedSettings = [];
             }
         }
     }

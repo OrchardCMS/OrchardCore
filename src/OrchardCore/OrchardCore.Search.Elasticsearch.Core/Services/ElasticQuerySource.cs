@@ -77,7 +77,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     }
                 }
 
-                //TODO : get ContentItemVersionId from docs.Fields
+                // TODO : get ContentItemVersionId from docs.Fields
             }
             else
             {
