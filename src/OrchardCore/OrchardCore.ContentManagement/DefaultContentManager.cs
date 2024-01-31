@@ -603,6 +603,7 @@ namespace OrchardCore.ContentManagement
             // Draft flag on create is required for explicitly-published content items
             if (options.IsDraft)
             {
+                contentItem.Latest = true;
                 contentItem.Published = false;
             }
 
@@ -833,9 +834,6 @@ namespace OrchardCore.ContentManagement
                 latestVersion.Latest = false;
                 await _session.SaveAsync(latestVersion);
             }
-
-            // Restored contentItem should always be set to be a draft
-            contentItem.Latest = true;
 
             await CreateAsync(contentItem, VersionOptions.Draft);
 
