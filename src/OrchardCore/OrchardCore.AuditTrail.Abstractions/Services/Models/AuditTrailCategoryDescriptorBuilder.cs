@@ -20,7 +20,7 @@ namespace OrchardCore.AuditTrail.Services.Models
 
         private readonly Type _localizerType;
         private readonly Func<IServiceProvider, LocalizedString> _localizedCategoryName;
-        private readonly Dictionary<string, AuditTrailEventDescriptor> _events = new();
+        private readonly Dictionary<string, AuditTrailEventDescriptor> _events = [];
 
         public AuditTrailCategoryDescriptorBuilder(string categoryName, Type localizerType, Func<IStringLocalizer, LocalizedString> localizedName)
         {

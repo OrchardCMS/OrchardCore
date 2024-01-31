@@ -16,7 +16,7 @@ namespace OrchardCore.Search.Lucene.Deployment
                 return Task.CompletedTask;
             }
 
-            var indicesToReset = luceneIndexResetStep.IncludeAll ? Array.Empty<string>() : luceneIndexResetStep.IndexNames;
+            var indicesToReset = luceneIndexResetStep.IncludeAll ? [] : luceneIndexResetStep.IndexNames;
 
             result.Steps.Add(new JObject(
                 new JProperty("name", "lucene-index-reset"),

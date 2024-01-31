@@ -67,7 +67,7 @@ namespace OrchardCore.ContentManagement
         /// </summary>
         /// <param name="contentItem">The <see cref="ContentItem"/>.</param>
         /// <typeparam name="TPart">The type of the content part.</typeparam>
-        /// <returns>The content part or <code>null</code> if it doesn't exist.</returns>
+        /// <returns>The content part or. <code>null</code> if it doesn't exist.</returns>
         public static TPart As<TPart>(this ContentItem contentItem) where TPart : ContentPart
             => contentItem.Get<TPart>(typeof(TPart).Name);
 

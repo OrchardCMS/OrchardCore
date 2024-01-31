@@ -6,7 +6,7 @@ using OrchardCore.Environment.Cache;
 namespace OrchardCore.DynamicCache.Models
 {
     /// <summary>
-    /// A serialiazable and deserializable model to represent a <see cref="CacheContext"/>
+    /// A serialiazable and deserializable model to represent a <see cref="CacheContext"/>.
     /// </summary>
     public class CacheContextModel
     {

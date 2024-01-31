@@ -367,7 +367,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
         }
 
 
-        private static IResolveFieldContext CreateAnimalFieldContext(IServiceProvider services, string fieldName = null, bool collapsed = false)
+        private static ResolveFieldContext CreateAnimalFieldContext(IServiceProvider services, string fieldName = null, bool collapsed = false)
         {
             IGraphType where;
 
@@ -388,13 +388,14 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 {
                     Name = "Inputs",
                     ResolvedType = new ListGraphType(new StringGraphType() { Name = "Animal" }),
-                    Arguments = new QueryArguments {
-                            new QueryArgument<WhereInputObjectGraphType> {
+                    Arguments = [
+                            new QueryArgument<WhereInputObjectGraphType>
+                            {
                                 Name = "where",
                                 Description = "filters the animals",
                                 ResolvedType = where
                             }
-                        }
+                        ]
                 },
                 RequestServices = services
             };
@@ -494,8 +495,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
     public class MultipleAliasIndexProvider : IIndexAliasProvider
     {
-        private static readonly IndexAlias[] _aliases = new[]
-        {
+        private static readonly IndexAlias[] _aliases =
+        [
             new IndexAlias
             {
                 Alias = "cats",
@@ -514,7 +515,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 Index = nameof(AnimalIndex),
                 IndexType = typeof(AnimalIndex)
             }
-        };
+        ];
 
         public IEnumerable<IndexAlias> GetAliases()
         {
@@ -524,8 +525,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
     public class MultipleIndexesIndexProvider : IIndexAliasProvider
     {
-        private static readonly IndexAlias[] _aliases = new[]
-        {
+        private static readonly IndexAlias[] _aliases =
+        [
             new IndexAlias
             {
                 Alias = "animals.name",
@@ -544,7 +545,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 Index = $"IsScary",
                 IndexType = typeof(AnimalTraitsIndex)
             }
-        };
+        ];
 
         public IEnumerable<IndexAlias> GetAliases()
         {
@@ -554,7 +555,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
     public class FakeServiceCollection : IServiceProvider, IDisposable
     {
-        private IServiceProvider _inner;
+        private ServiceProvider _inner;
         private IServiceCollection _services;
 
         public IServiceCollection Services => _services;
@@ -569,7 +570,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
         public void Populate(IServiceCollection services)
         {
             _services = services;
-            _services.AddSingleton<FakeServiceCollection>(this);
+            _services.AddSingleton(this);
         }
 
         public void Build()

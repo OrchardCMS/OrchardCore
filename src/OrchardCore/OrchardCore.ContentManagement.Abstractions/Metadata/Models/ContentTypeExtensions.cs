@@ -20,10 +20,7 @@ public static class ContentTypeExtensions
 
     public static bool StereotypeEquals(this ContentTypeDefinition contentTypeDefinition, string stereotype, StringComparison stringComparison)
     {
-        if (string.IsNullOrEmpty(stereotype))
-        {
-            throw new ArgumentNullException(nameof(stereotype));
-        }
+        ArgumentNullException.ThrowIfNull(stereotype);
 
         return contentTypeDefinition.TryGetStereotype(out var st)
             && string.Equals(st, stereotype, stringComparison);

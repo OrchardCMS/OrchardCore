@@ -70,13 +70,6 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
-        [Obsolete("Use WithSettings<T>. This will be removed in a future version.")]
-        public ContentTypeDefinitionBuilder WithSetting(string name, object value)
-        {
-            _settings[name] = JToken.FromObject(value);
-            return this;
-        }
-
         public ContentTypeDefinitionBuilder MergeSettings(JObject settings)
         {
             _settings.Merge(settings, ContentBuilderSettings.JsonMergeSettings);
@@ -101,10 +94,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentTypeDefinitionBuilder WithSettings<T>(T settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var jObject = JObject.FromObject(settings, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
             _settings[typeof(T).Name] = jObject;
@@ -140,7 +130,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
             else
             {
-                existingPart = new ContentTypePartDefinition(name, partDefinition, new JObject())
+                existingPart = new ContentTypePartDefinition(name, partDefinition, [])
                 {
                     ContentTypeDefinition = Current,
                 };

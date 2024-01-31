@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using OrchardCore.Search.AzureAI.Models;
 
 namespace OrchardCore.Search.AzureAI;
@@ -11,7 +11,7 @@ public class AzureAISearchIndexRebuildContext
 
     public AzureAISearchIndexRebuildContext(AzureAISearchIndexSettings settings, string indexFullName)
     {
-        ArgumentNullException.ThrowIfNull(nameof(settings));
+        ArgumentNullException.ThrowIfNull(settings);
 
         Settings = settings;
         IndexFullName = indexFullName;

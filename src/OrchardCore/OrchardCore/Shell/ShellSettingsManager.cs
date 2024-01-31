@@ -140,10 +140,7 @@ namespace OrchardCore.Environment.Shell
             {
                 await EnsureConfigurationAsync();
 
-                if (settings is null)
-                {
-                    throw new ArgumentNullException(nameof(settings));
-                }
+                ArgumentNullException.ThrowIfNull(settings);
 
                 var configuration = new ConfigurationBuilder()
                     .AddConfiguration(_configuration)
@@ -222,10 +219,7 @@ namespace OrchardCore.Environment.Shell
             {
                 await EnsureConfigurationAsync();
 
-                if (settings is null)
-                {
-                    throw new ArgumentNullException(nameof(settings));
-                }
+                ArgumentNullException.ThrowIfNull(settings);
 
                 await _tenantsSettingsSources.RemoveAsync(settings.Name);
 
@@ -256,7 +250,7 @@ namespace OrchardCore.Environment.Shell
                 .Where(p => p is EnvironmentVariablesConfigurationProvider ||
                             p is CommandLineConfigurationProvider)
                 .ToArray()
-                ?? Array.Empty<IConfigurationProvider>();
+                ?? [];
 
             var configurationBuilder = await new ConfigurationBuilder()
                 .AddConfiguration(_applicationConfiguration)

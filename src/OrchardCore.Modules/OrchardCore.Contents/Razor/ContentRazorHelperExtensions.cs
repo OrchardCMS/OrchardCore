@@ -16,8 +16,8 @@ public static class ContentRazorHelperExtensions
     /// </summary>
     /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="handle">The handle.</param>
-    /// <example>GetContentItemIdByHandleAsync("alias:carousel")</example>
-    /// <example>GetContentItemIdByHandleAsync("slug:myblog/my-blog-post")</example>
+    /// <example>GetContentItemIdByHandleAsync("alias:carousel").</example>
+    /// <example>GetContentItemIdByHandleAsync("slug:myblog/my-blog-post").</example>
     /// <returns>A content item id or <c>null</c> if it was not found.</returns>
     public static Task<string> GetContentItemIdByHandleAsync(this IOrchardHelper orchardHelper, string handle)
     {
@@ -31,8 +31,8 @@ public static class ContentRazorHelperExtensions
     /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="handle">The handle to load.</param>
     /// <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
-    /// <example>GetContentItemByHandleAsync("alias:carousel")</example>
-    /// <example>GetContentItemByHandleAsync("slug:myblog/my-blog-post", true)</example>
+    /// <example>GetContentItemByHandleAsync("alias:carousel").</example>
+    /// <example>GetContentItemByHandleAsync("slug:myblog/my-blog-post", true).</example>
     /// <returns>A content item with the specific name, or <c>null</c> if it doesn't exist.</returns>
     public static async Task<ContentItem> GetContentItemByHandleAsync(this IOrchardHelper orchardHelper, string handle, bool latest = false)
     {
@@ -47,7 +47,7 @@ public static class ContentRazorHelperExtensions
     /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="contentItemId">The content item id to load.</param>
     /// <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
-    /// <example>GetContentItemByIdAsync("4xxxxxxxxxxxxxxxx")</example>
+    /// <example>GetContentItemByIdAsync("4xxxxxxxxxxxxxxxx").</example>
     /// <returns>A content item with the specific id, or <c>null</c> if it doesn't exist.</returns>
     public static Task<ContentItem> GetContentItemByIdAsync(this IOrchardHelper orchardHelper, string contentItemId, bool latest = false)
     {
@@ -73,7 +73,7 @@ public static class ContentRazorHelperExtensions
     /// </summary>
     /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="contentItemVersionId">The content item version id to load.</param>
-    /// <example>GetContentItemByVersionIdAsync("4xxxxxxxxxxxxxxxx")</example>
+    /// <example>GetContentItemByVersionIdAsync("4xxxxxxxxxxxxxxxx").</example>
     /// <returns>A content item with the specific version id, or <c>null</c> if it doesn't exist.</returns>
     public static Task<ContentItem> GetContentItemByVersionIdAsync(this IOrchardHelper orchardHelper, string contentItemVersionId)
     {

@@ -357,7 +357,7 @@ namespace OrchardCore.Sitemaps.Controllers
                         await _notifier.SuccessAsync(H["Sitemap indices successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
+                        return BadRequest();
                 }
             }
 

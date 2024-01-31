@@ -1,8 +1,6 @@
 using System;
-using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Elasticsearch.Net;
 using GraphQL;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -39,7 +37,6 @@ namespace OrchardCore.Search.Elasticsearch
 {
     public class Startup : StartupBase
     {
-        private const string ConfigSectionName = "OrchardCore_Elasticsearch";
         private readonly AdminOptions _adminOptions;
         private readonly IShellConfiguration _shellConfiguration;
         private readonly ILogger<Startup> _logger;
@@ -55,21 +52,19 @@ namespace OrchardCore.Search.Elasticsearch
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            var configuration = _shellConfiguration.GetSection(ConfigSectionName);
-            var elasticConfiguration = configuration.Get<ElasticConnectionOptions>();
+            services.AddTransient<IConfigureOptions<ElasticConnectionOptions>, ElasticConnectionOptionsConfigurations>();
 
-            if (!CheckOptions(elasticConfiguration, _logger))
+            services.AddSingleton<IElasticClient>((sp) =>
             {
-                return;
-            }
+                var options = sp.GetRequiredService<IOptions<ElasticConnectionOptions>>().Value;
 
-            services.Configure<ElasticConnectionOptions>(o => o.ConfigurationExists = true);
-            var settings = GetConnectionSettings(elasticConfiguration);
-
-            services.AddSingleton<IElasticClient>(new ElasticClient(settings));
+                return new ElasticClient(options.GetConnectionSettings() ?? new ConnectionSettings());
+            });
 
             services.Configure<ElasticsearchOptions>(o =>
             {
+                var configuration = _shellConfiguration.GetSection(ElasticConnectionOptionsConfigurations.ConfigSectionName);
+
                 o.IndexPrefix = configuration.GetValue<string>(nameof(o.IndexPrefix));
 
                 var jsonNode = configuration.GetSection(nameof(o.Analyzers)).AsJsonNode();
@@ -107,30 +102,6 @@ namespace OrchardCore.Search.Elasticsearch
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IDisplayDriver<Query>, ElasticQueryDisplayDriver>();
-        }
-
-        private static ConnectionSettings GetConnectionSettings(ElasticConnectionOptions elasticConfiguration)
-        {
-            var pool = GetConnectionPool(elasticConfiguration);
-
-            var settings = new ConnectionSettings(pool);
-
-            if (elasticConfiguration.ConnectionType != "CloudConnectionPool" && !string.IsNullOrWhiteSpace(elasticConfiguration.Username) && !string.IsNullOrWhiteSpace(elasticConfiguration.Password))
-            {
-                settings.BasicAuthentication(elasticConfiguration.Username, elasticConfiguration.Password);
-            }
-
-            if (!string.IsNullOrWhiteSpace(elasticConfiguration.CertificateFingerprint))
-            {
-                settings.CertificateFingerprint(elasticConfiguration.CertificateFingerprint);
-            }
-
-            if (elasticConfiguration.EnableApiVersioningHeader)
-            {
-                settings.EnableApiVersioningHeader();
-            }
-
-            return settings;
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -178,69 +149,6 @@ namespace OrchardCore.Search.Elasticsearch
                 pattern: _adminOptions.AdminUrlPrefix + "/elasticsearch/SyncSettings",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.SyncSettings) }
             );
-        }
-
-        private static bool CheckOptions(ElasticConnectionOptions elasticConnectionOptions, ILogger logger)
-        {
-            if (elasticConnectionOptions == null)
-            {
-                logger.LogError("Elasticsearch is enabled but not active because the configuration is missing.");
-                return false;
-            }
-
-            var optionsAreValid = true;
-
-            if (string.IsNullOrWhiteSpace(elasticConnectionOptions.Url))
-            {
-                logger.LogError("Elasticsearch is enabled but not active because the 'Url' is missing or empty in application configuration.");
-                optionsAreValid = false;
-            }
-
-            if (elasticConnectionOptions.Ports?.Length == 0)
-            {
-                logger.LogError("Elasticsearch is enabled but not active because a port is missing in application configuration.");
-                optionsAreValid = false;
-            }
-
-            return optionsAreValid;
-        }
-
-        private static IConnectionPool GetConnectionPool(ElasticConnectionOptions elasticConfiguration)
-        {
-            var uris = elasticConfiguration.Ports.Select(port => new Uri($"{elasticConfiguration.Url}:{port}")).Distinct();
-            IConnectionPool pool = null;
-            switch (elasticConfiguration.ConnectionType)
-            {
-                case "SingleNodeConnectionPool":
-                    pool = new SingleNodeConnectionPool(uris.First());
-                    break;
-
-                case "CloudConnectionPool":
-                    if (!string.IsNullOrWhiteSpace(elasticConfiguration.Username) && !string.IsNullOrWhiteSpace(elasticConfiguration.Password) && !string.IsNullOrWhiteSpace(elasticConfiguration.CloudId))
-                    {
-                        var credentials = new BasicAuthenticationCredentials(elasticConfiguration.Username, elasticConfiguration.Password);
-                        pool = new CloudConnectionPool(elasticConfiguration.CloudId, credentials);
-                    }
-                    break;
-
-                case "StaticConnectionPool":
-                    pool = new StaticConnectionPool(uris);
-                    break;
-
-                case "SniffingConnectionPool":
-                    pool = new SniffingConnectionPool(uris);
-                    break;
-
-                case "StickyConnectionPool":
-                    pool = new StickyConnectionPool(uris);
-                    break;
-
-                default:
-                    pool = new SingleNodeConnectionPool(uris.First());
-                    break;
-            }
-
-            return pool;
         }
     }
 

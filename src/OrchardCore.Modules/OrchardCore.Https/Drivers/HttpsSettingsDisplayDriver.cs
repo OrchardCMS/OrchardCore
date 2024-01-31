@@ -15,7 +15,7 @@ namespace OrchardCore.Https.Drivers
 {
     public class HttpsSettingsDisplayDriver : SectionDisplayDriver<ISite, HttpsSettings>
     {
-        private const string SettingsGroupId = "Https";
+        public const string GroupId = "Https";
 
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
@@ -62,12 +62,12 @@ namespace OrchardCore.Https.Drivers
                                 (isHttpsRequest && !settings.RequireHttps
                                     ? _httpContextAccessor.HttpContext.Request.Host.Port
                                     : null);
-            }).Location("Content:2").OnGroup(SettingsGroupId);
+            }).Location("Content:2").OnGroup(GroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(HttpsSettings settings, BuildEditorContext context)
         {
-            if (context.GroupId == SettingsGroupId)
+            if (context.GroupId == GroupId)
             {
                 var user = _httpContextAccessor.HttpContext?.User;
                 if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageHttps))

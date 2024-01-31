@@ -354,7 +354,7 @@ namespace OrchardCore.Sitemaps.Controllers
                         await _notifier.SuccessAsync(H["Sitemaps successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
+                        return BadRequest();
                 }
             }
 

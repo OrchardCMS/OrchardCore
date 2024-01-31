@@ -25,7 +25,7 @@ namespace OrchardCore.Recipes.Services
         private readonly IEnumerable<IRecipeEventHandler> _recipeEventHandlers;
         private readonly ILogger _logger;
 
-        private readonly Dictionary<string, List<IGlobalMethodProvider>> _methodProviders = new();
+        private readonly Dictionary<string, List<IGlobalMethodProvider>> _methodProviders = [];
 
         public RecipeExecutor(
             IShellHost shellHost,
