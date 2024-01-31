@@ -575,7 +575,7 @@ namespace OrchardCore.Workflows.Controllers
             return activityShape;
         }
 
-        private async Task<string> ExportWorkflows(params int[] itemIds)
+        private async Task<string> ExportWorkflows(params long[] itemIds)
         {
             using var fileBuilder = new TemporaryFileBuilder();
             var archiveFileName = fileBuilder.Folder + ".zip";
