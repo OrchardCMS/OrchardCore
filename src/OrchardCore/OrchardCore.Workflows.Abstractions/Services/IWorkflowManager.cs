@@ -38,7 +38,7 @@ namespace OrchardCore.Workflows.Services
         /// <param name="isAlwaysCorrelated">
         /// If true, to be correlated a workflow instance only needs to be halted on an event activity of the related type, regardless the 'correlationId'. False by default.
         /// </param>
-        Task TriggerEventAsync(string name, IDictionary<string, object> input = null, string correlationId = null, bool isExclusive = false, bool isAlwaysCorrelated = false);
+        Task<IEnumerable<WorkflowExecutionContext>> TriggerEventAsync(string name, IDictionary<string, object> input = null, string correlationId = null, bool isExclusive = false, bool isAlwaysCorrelated = false);
 
         /// <summary>
         /// Starts a new workflow using the specified workflow definition.
@@ -72,7 +72,7 @@ namespace OrchardCore.Workflows.Services
 
     public static class WorkflowManagerExtensions
     {
-        public static Task TriggerEventAsync(this IWorkflowManager workflowManager, string name, object input = null, string correlationId = null)
+        public static Task<IEnumerable<WorkflowExecutionContext>> TriggerEventAsync(this IWorkflowManager workflowManager, string name, object input = null, string correlationId = null)
         {
             return workflowManager.TriggerEventAsync(name, new RouteValueDictionary(input), correlationId);
         }

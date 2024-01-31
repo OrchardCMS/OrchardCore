@@ -39,7 +39,7 @@ namespace OrchardCore.Alias
                         var session = context.Services.GetRequiredService<ISession>();
 
                         var contentItem = await session.Query<ContentItem, AliasPartIndex>(x =>
-                            x.Published && x.Alias.Equals(alias, System.StringComparison.InvariantCultureIgnoreCase))
+                            x.Published && x.Alias == alias.ToLowerInvariant())
                         .FirstOrDefaultAsync();
 
                         if (contentItem == null)

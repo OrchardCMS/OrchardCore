@@ -131,14 +131,16 @@ namespace OrchardCore.Workflows.Services
             return Task.FromResult(context);
         }
 
-        public async Task TriggerEventAsync(string name, IDictionary<string, object> input = null, string correlationId = null, bool isExclusive = false, bool isAlwaysCorrelated = false)
+        public async Task<IEnumerable<WorkflowExecutionContext>> TriggerEventAsync(string name, IDictionary<string, object> input = null, string correlationId = null, bool isExclusive = false, bool isAlwaysCorrelated = false)
         {
             var activity = _activityLibrary.GetActivityByName(name);
             if (activity == null)
             {
                 _logger.LogError("Activity '{ActivityName}' was not found", name);
-                return;
+                return Array.Empty<WorkflowExecutionContext>();
             }
+
+            var triggerdWorkflows = new List<WorkflowExecutionContext>();
 
             // Resume workflow instances halted on this kind of activity for the specified target.
             var haltedWorkflows = await _workflowStore.ListByActivityNameAsync(name, correlationId, isAlwaysCorrelated);
@@ -181,7 +183,8 @@ namespace OrchardCore.Workflows.Services
                 var blockingActivities = haltedWorkflow.BlockingActivities.Where(x => x.Name == name).ToArray();
                 foreach (var blockingActivity in blockingActivities)
                 {
-                    await ResumeWorkflowAsync(haltedWorkflow, blockingActivity, input);
+                    var context = await ResumeWorkflowAsync(haltedWorkflow, blockingActivity, input);
+                    triggerdWorkflows.Add(context);
                 }
             }
 
@@ -230,8 +233,10 @@ namespace OrchardCore.Workflows.Services
                 }
 
                 var startActivity = workflowType.Activities.First(x => x.IsStart && x.Name == name);
-                await StartWorkflowAsync(workflowType, startActivity, input, correlationId);
+                var context = await StartWorkflowAsync(workflowType, startActivity, input, correlationId);
+                triggerdWorkflows.Add(context);
             }
+            return triggerdWorkflows;
         }
 
         public async Task<WorkflowExecutionContext> ResumeWorkflowAsync(Workflow workflow, BlockingActivity awaitingActivity, IDictionary<string, object> input = null)

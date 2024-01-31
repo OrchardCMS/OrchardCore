@@ -34,6 +34,6 @@ namespace OrchardCore.Alias.Services
     internal class AliasPartContentHandleHelper
     {
         internal static Task<ContentItem> QueryAliasIndex(ISession session, string alias) =>
-            session.Query<ContentItem, AliasPartIndex>(x => x.Alias.Equals(alias, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefaultAsync();
+            session.Query<ContentItem, AliasPartIndex>(x => x.Alias == alias.ToLowerInvariant()).FirstOrDefaultAsync();
     }
 }
