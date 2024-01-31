@@ -8,11 +8,18 @@ namespace OrchardCore.OpenId
 {
     internal static class OpenIdExtensions
     {
+        internal static string GetUserIdentifier(this ClaimsIdentity identity)
+            => identity.FindFirst(Claims.Subject)?.Value ??
+               identity.FindFirst(ClaimTypes.NameIdentifier)?.Value ??
+               identity.FindFirst(ClaimTypes.Upn)?.Value ??
+               throw new InvalidOperationException("No suitable user identifier can be found in the identity.");
+
         internal static string GetUserIdentifier(this ClaimsPrincipal principal)
             => principal.FindFirst(Claims.Subject)?.Value ??
                principal.FindFirst(ClaimTypes.NameIdentifier)?.Value ??
                principal.FindFirst(ClaimTypes.Upn)?.Value ??
                throw new InvalidOperationException("No suitable user identifier can be found in the principal.");
+
         internal static string GetUserName(this ClaimsPrincipal principal)
             => principal.FindFirst(Claims.Name)?.Value ??
                principal.FindFirst(ClaimTypes.Name)?.Value ??
@@ -20,10 +27,7 @@ namespace OrchardCore.OpenId
 
         internal static async Task<bool> AnyAsync<T>(this IAsyncEnumerable<T> source)
         {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
+            ArgumentNullException.ThrowIfNull(source);
 
             await using var enumerator = source.GetAsyncEnumerator();
             return await enumerator.MoveNextAsync();
@@ -31,10 +35,7 @@ namespace OrchardCore.OpenId
 
         internal static Task<List<T>> ToListAsync<T>(this IAsyncEnumerable<T> source)
         {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
+            ArgumentNullException.ThrowIfNull(source);
 
             return ExecuteAsync();
 

@@ -6,6 +6,6 @@ using OrchardCore.Modules.Manifest;
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
     Description = "The content Preview module enables live content edition and content preview.",
-    Dependencies = new[] { "OrchardCore.Contents" },
+    Dependencies = ["OrchardCore.Contents"],
     Category = "Content Management"
 )]

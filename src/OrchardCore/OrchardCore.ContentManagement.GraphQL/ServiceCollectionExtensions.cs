@@ -26,7 +26,7 @@ namespace OrchardCore.ContentManagement.GraphQL
             services.AddScoped<IContentTypeBuilder, DynamicContentTypeBuilder>();
 
             services.AddOptions<GraphQLContentOptions>();
-
+            services.AddGraphQLFilterType<ContentItem, ContentItemFilters>();
             services.AddWhereInputIndexPropertyProvider<ContentItemIndex>();
 
             return services;
@@ -39,7 +39,7 @@ namespace OrchardCore.ContentManagement.GraphQL
         }
 
         /// <summary>
-        /// Registers a type providing custom filters for content item filters
+        /// Registers a type providing custom filters for content item filters.
         /// </summary>
         /// <typeparam name="TObjectTypeToFilter"></typeparam>
         /// <typeparam name="TFilterType"></typeparam>

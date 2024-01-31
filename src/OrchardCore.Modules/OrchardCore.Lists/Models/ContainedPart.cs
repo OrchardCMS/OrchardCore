@@ -13,6 +13,11 @@ namespace OrchardCore.Lists.Models
         public string ListContentItemId { get; set; }
 
         /// <summary>
+        /// The content type of the list owning this content item.
+        /// </summary>
+        public string ListContentType { get; set; }
+
+        /// <summary>
         /// The order of this content item in the list.
         /// </summary>
         public int Order { get; set; }

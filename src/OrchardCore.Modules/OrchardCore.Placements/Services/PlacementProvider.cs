@@ -56,7 +56,7 @@ namespace OrchardCore.Placements.Services
 
                         Func<ShapePlacementContext, bool> predicate = ctx => CheckFilter(ctx, placementRule);
 
-                        if (filters.Any())
+                        if (filters.Count > 0)
                         {
                             predicate = filters.Aggregate(predicate, BuildPredicate);
                         }
@@ -67,13 +67,10 @@ namespace OrchardCore.Placements.Services
                             continue;
                         }
 
-                        if (placement == null)
+                        placement ??= new PlacementInfo
                         {
-                            placement = new PlacementInfo
-                            {
-                                Source = "OrchardCore.Placements"
-                            };
-                        }
+                            Source = "OrchardCore.Placements",
+                        };
 
                         if (!string.IsNullOrEmpty(placementRule.Location))
                         {

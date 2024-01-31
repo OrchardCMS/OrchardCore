@@ -25,6 +25,33 @@ Enabling the `OrchardCore.Email` module will allow the user to set the following
 !!! note
     You must configure `ProxyHost` and `ProxyPort` if the SMTP server runs through a proxy server.
 
+## Email Settings Configuration
+
+The `OrchardCore.Email` module allows the user to use configuration values to override the settings configured from the admin area by calling the `ConfigureEmailSettings()` extension method on `OrchardCoreBuilder` when initializing the app.
+
+The following configuration values can be customized:
+
+```json
+    "OrchardCore_Email": {
+      "DefaultSender": "",
+      "DefaultSender": "Network",
+      "PickupDirectoryLocation": "",
+      "Host": "localhost",
+      "Port": 25,
+      // Uncomment if SMTP server runs through a proxy server
+      //"ProxyHost": "proxy.domain.com",
+      //"ProxyPort": 5050,
+      "EncryptionMethod": "SSLTLS",
+      "AutoSelectEncryption": false,
+      "UseDefaultCredentials": false,
+      "RequireCredentials": true,
+      "Username": "",
+      "Password": ""
+    }
+```
+
+For more information please refer to [Configuration](../../core/Configuration/README.md).
+
 ## Credits
 
 ### MailKit

@@ -6,11 +6,12 @@ using OrchardCore.Modules.Manifest;
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
     Description = "The Menu module provides menu management features.",
-    Dependencies = new[]
-    {
+    Dependencies =
+    [
         "OrchardCore.Contents",
         "OrchardCore.Title",
-        "OrchardCore.Alias"
-    },
+        "OrchardCore.Alias",
+        "OrchardCore.Recipes.Core",
+    ],
     Category = "Navigation"
 )]

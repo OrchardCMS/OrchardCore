@@ -70,7 +70,6 @@ You can find region endpoints in the [Official AWS S3 Documentation](https://doc
     The AWS team wants to encourage using profiles instead of embedding credentials directly into `appsettings.X.json` files where they would accidentally get checked into source control.
     If you have an option to use profiles or environment variables - you should use it instead of direct credentials.
 
-
 ## AWS S3 Bucket Configuration
 
 If `CreateBucket` was configured as `true` and `BucketName` follows official [Bucket naming rules](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html), then a new bucket will be created.
@@ -82,9 +81,11 @@ The new bucket will be created without [Access Control Lists](https://docs.aws.a
 4. Tick "Block all public access".
 
 ### S3 Bucket policies
+
 By default, AWS 3S Bucket has limitations for newly uploaded files. If you want media files to be available from the outside of AWS, you should set up your bucket permissions.
 
 The simplest way of doing it is to add a policy:
+
 ```json
 {
     "Version": "2012-10-17",
@@ -99,6 +100,7 @@ The simplest way of doing it is to add a policy:
     ]
 }
 ```
+
 After this policy will be added to your bucket permissions all newly added files will have Read permission and will be available from the outside of the Amazon Cloud.
 
 ## Templating Configuration

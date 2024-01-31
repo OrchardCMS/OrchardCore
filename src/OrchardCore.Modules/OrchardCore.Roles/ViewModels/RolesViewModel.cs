@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace OrchardCore.Roles.ViewModels
 {
     public class RolesViewModel
     {
-        public List<RoleEntry> RoleEntries { get; set; } = new List<RoleEntry>();
+        public List<RoleEntry> RoleEntries { get; set; } = [];
     }
 
     public class RoleEntry

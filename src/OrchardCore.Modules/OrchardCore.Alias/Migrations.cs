@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using OrchardCore.Alias.Indexes;
 using OrchardCore.Alias.Models;
 using OrchardCore.ContentManagement.Metadata;
@@ -9,30 +10,27 @@ namespace OrchardCore.Alias
 {
     public class Migrations : DataMigration
     {
-        private IContentDefinitionManager _contentDefinitionManager;
+        private readonly IContentDefinitionManager _contentDefinitionManager;
 
         public Migrations(IContentDefinitionManager contentDefinitionManager)
         {
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public int Create()
+        public async Task<int> CreateAsync()
         {
-            _contentDefinitionManager.AlterPartDefinition(nameof(AliasPart), builder => builder
+            await _contentDefinitionManager.AlterPartDefinitionAsync(nameof(AliasPart), builder => builder
                 .Attachable()
                 .WithDescription("Provides a way to define custom aliases for content items."));
 
-            // NOTE: The Alias Length has been upgraded from 64 characters to 767.
-            // For existing SQL databases update the AliasPartIndex tables Alias column length manually.
-            // INFO: The Alias Length is now of 740 chars, but this is only used on a new installation.
-            SchemaBuilder.CreateMapIndexTable<AliasPartIndex>(table => table
+            await SchemaBuilder.CreateMapIndexTableAsync<AliasPartIndex>(table => table
                 .Column<string>("Alias", col => col.WithLength(AliasPart.MaxAliasLength))
                 .Column<string>("ContentItemId", c => c.WithLength(26))
                 .Column<bool>("Latest", c => c.WithDefault(false))
                 .Column<bool>("Published", c => c.WithDefault(true))
             );
 
-            SchemaBuilder.AlterIndexTable<AliasPartIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<AliasPartIndex>(table => table
                 .CreateIndex("IDX_AliasPartIndex_DocumentId",
                     "DocumentId",
                     "Alias",
@@ -46,13 +44,13 @@ namespace OrchardCore.Alias
         }
 
         // This code can be removed in a later version as Latest and Published are alterations.
-        public int UpdateFrom1()
+        public async Task<int> UpdateFrom1Async()
         {
-            SchemaBuilder.AlterIndexTable<AliasPartIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<AliasPartIndex>(table => table
                 .AddColumn<bool>("Latest", c => c.WithDefault(false))
             );
 
-            SchemaBuilder.AlterIndexTable<AliasPartIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<AliasPartIndex>(table => table
                 .AddColumn<bool>("Published", c => c.WithDefault(true))
             );
 
@@ -60,11 +58,11 @@ namespace OrchardCore.Alias
         }
 
         // This code can be removed in a later version.
-        public int UpdateFrom2()
+        public async Task<int> UpdateFrom2Async()
         {
             // Can't be fully created on existing databases where the 'Alias' may be of 767 chars.
-            SchemaBuilder.AlterIndexTable<AliasPartIndex>(table => table
-                //.CreateIndex("IDX_AliasPartIndex_DocumentId",
+            await SchemaBuilder.AlterIndexTableAsync<AliasPartIndex>(table => table
+                // .CreateIndex("IDX_AliasPartIndex_DocumentId",
                 //    "DocumentId",
                 //    "Alias",
                 //    "ContentItemId",
@@ -80,11 +78,11 @@ namespace OrchardCore.Alias
         }
 
         // This code can be removed in a later version.
-        public int UpdateFrom3()
+        public async Task<int> UpdateFrom3Async()
         {
             // In the previous migration step, an index was not fully created,
             // but here, we can create a separate one for the missing columns.
-            SchemaBuilder.AlterIndexTable<AliasPartIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<AliasPartIndex>(table => table
                 .CreateIndex("IDX_AliasPartIndex_DocumentId_ContentItemId",
                     "DocumentId",
                     "ContentItemId",

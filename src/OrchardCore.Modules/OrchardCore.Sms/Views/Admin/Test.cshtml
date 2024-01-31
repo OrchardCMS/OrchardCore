@@ -1,0 +1,40 @@
+@using OrchardCore
+@using OrchardCore.Sms.ViewModels
+
+@model SmsTestViewModel
+
+@if (Model.Providers == null || Model.Providers.Count == 0)
+{
+    <div class="alert alert-danger" role="alert">
+        @T["No SMS providers are available. Enable at least one SMS provider feature."]
+    </div>
+
+    return;
+}
+
+<form method="post">
+
+    <div class="@Orchard.GetWrapperClasses()">
+        <label asp-for="Provider" class="@Orchard.GetLabelClasses()">@T["Provider"]</label>
+        <div class="@Orchard.GetEndClasses()">
+            <select class="form-select" asp-for="Provider" asp-items="Model.Providers">
+                <option value="">@T["Select a provider"]</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="PhoneNumber">
+        <label asp-for="PhoneNumber" class="@Orchard.GetLabelClasses()">@T["Phone Number"]</label>
+        <div class="@Orchard.GetEndClasses()">
+            <input asp-for="PhoneNumber" class="form-control" type="tel" />
+            <span>@T["Phone number must include a country code. For example, +1 for United States."]</span>
+        </div>
+    </div>
+
+    <div class="@Orchard.GetWrapperClasses()">
+        <div class="@Orchard.GetEndClasses(true)">
+            <button type="submit" class="btn btn-primary">@T["Send"]</button>
+        </div>
+    </div>
+
+</form>

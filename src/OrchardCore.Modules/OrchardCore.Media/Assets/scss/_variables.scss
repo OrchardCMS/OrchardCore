@@ -1,6 +1,5 @@
-@import "../../node_modules/bootstrap/scss/functions";
-@import "../../node_modules/bootstrap/scss/variables";
-
-// media-specific
-$media-border-content: 1px solid rgba(0, 0, 0, 0.1);
-$selected-background-color: lighten($primary, 45%);
+:root {
+    --oc-media-border-content: var(--bs-border-width, 1px) solid var(--bs-border-color, #ccc);
+    --oc-media-selected-background-color: var(--bs-primary);
+    --oc-media-color: var(--bs-body-color);
+}

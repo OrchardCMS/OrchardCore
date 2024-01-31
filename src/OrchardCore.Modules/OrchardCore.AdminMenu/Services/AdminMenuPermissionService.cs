@@ -24,7 +24,7 @@ namespace OrchardCore.AdminMenu.Services
                 return _permissions;
             }
 
-            _permissions = new List<Permission>();
+            _permissions = [];
 
             foreach (var permissionProvider in _permissionProviders)
             {

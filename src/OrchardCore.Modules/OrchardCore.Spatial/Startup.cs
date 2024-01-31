@@ -9,6 +9,7 @@ using OrchardCore.Modules;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Spatial.Drivers;
 using OrchardCore.Spatial.Fields;
+using OrchardCore.Spatial.Handlers;
 using OrchardCore.Spatial.Indexing;
 using OrchardCore.Spatial.ViewModels;
 
@@ -22,7 +23,9 @@ namespace OrchardCore.Spatial
 
             // Coordinate Field
             services.AddContentField<GeoPointField>()
-                .UseDisplayDriver<GeoPointFieldDisplayDriver>();
+                .UseDisplayDriver<GeoPointFieldDisplayDriver>()
+                .AddHandler<GeoPointFieldHandler>();
+
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, GeoPointFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, GeoPointFieldIndexHandler>();
 

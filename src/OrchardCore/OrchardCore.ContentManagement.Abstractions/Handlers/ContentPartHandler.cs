@@ -89,16 +89,32 @@ namespace OrchardCore.ContentManagement.Handlers
 
         Task IContentPartHandler.ValidatingAsync(ValidateContentContext context, ContentPart part)
         {
-            return part is TPart tpart
-                ? ValidatingAsync(context, tpart)
-                : Task.CompletedTask;
+            if (part is TPart tpart)
+            {
+                if (context is ValidateContentPartContext partContext)
+                {
+                    return ValidatingAsync(partContext, tpart);
+                }
+
+                return ValidatingAsync(context, tpart);
+            }
+
+            return Task.CompletedTask;
         }
 
         Task IContentPartHandler.ValidatedAsync(ValidateContentContext context, ContentPart part)
         {
-            return part is TPart tpart
-                ? ValidatedAsync(context, tpart)
-                : Task.CompletedTask;
+            if (part is TPart tpart)
+            {
+                if (context is ValidateContentPartContext partContext)
+                {
+                    return ValidatedAsync(partContext, tpart);
+                }
+
+                return ValidatedAsync(context, tpart);
+            }
+
+            return Task.CompletedTask;
         }
 
         Task IContentPartHandler.VersioningAsync(VersionContentContext context, ContentPart existing, ContentPart building)
@@ -193,32 +209,38 @@ namespace OrchardCore.ContentManagement.Handlers
             }
         }
 
-        public virtual Task ActivatedAsync(ActivatedContentContext context, TPart instance) => Task.CompletedTask;
-        public virtual Task ActivatingAsync(ActivatingContentContext context, TPart instance) => Task.CompletedTask;
-        public virtual Task InitializingAsync(InitializingContentContext context, TPart instance) => Task.CompletedTask;
-        public virtual Task InitializedAsync(InitializingContentContext context, TPart instance) => Task.CompletedTask;
-        public virtual Task CreatingAsync(CreateContentContext context, TPart instance) => Task.CompletedTask;
-        public virtual Task CreatedAsync(CreateContentContext context, TPart instance) => Task.CompletedTask;
-        public virtual Task LoadingAsync(LoadContentContext context, TPart instance) => Task.CompletedTask;
-        public virtual Task LoadedAsync(LoadContentContext context, TPart instance) => Task.CompletedTask;
-        public virtual Task ImportingAsync(ImportContentContext context, TPart instance) => Task.CompletedTask;
-        public virtual Task ImportedAsync(ImportContentContext context, TPart instance) => Task.CompletedTask;
-        public virtual Task UpdatingAsync(UpdateContentContext context, TPart instance) => Task.CompletedTask;
-        public virtual Task UpdatedAsync(UpdateContentContext context, TPart instance) => Task.CompletedTask;
-        public virtual Task ValidatingAsync(ValidateContentContext context, TPart instance) => Task.CompletedTask;
-        public virtual Task ValidatedAsync(ValidateContentContext context, TPart instance) => Task.CompletedTask;
+        public virtual Task ActivatedAsync(ActivatedContentContext context, TPart part) => Task.CompletedTask;
+        public virtual Task ActivatingAsync(ActivatingContentContext context, TPart part) => Task.CompletedTask;
+        public virtual Task InitializingAsync(InitializingContentContext context, TPart part) => Task.CompletedTask;
+        public virtual Task InitializedAsync(InitializingContentContext context, TPart part) => Task.CompletedTask;
+        public virtual Task CreatingAsync(CreateContentContext context, TPart part) => Task.CompletedTask;
+        public virtual Task CreatedAsync(CreateContentContext context, TPart part) => Task.CompletedTask;
+        public virtual Task LoadingAsync(LoadContentContext context, TPart part) => Task.CompletedTask;
+        public virtual Task LoadedAsync(LoadContentContext context, TPart part) => Task.CompletedTask;
+        public virtual Task ImportingAsync(ImportContentContext context, TPart part) => Task.CompletedTask;
+        public virtual Task ImportedAsync(ImportContentContext context, TPart part) => Task.CompletedTask;
+        public virtual Task UpdatingAsync(UpdateContentContext context, TPart part) => Task.CompletedTask;
+        public virtual Task UpdatedAsync(UpdateContentContext context, TPart part) => Task.CompletedTask;
+        public virtual Task ValidatingAsync(ValidateContentContext context, TPart part) => Task.CompletedTask;
+        public virtual Task ValidatedAsync(ValidateContentContext context, TPart part) => Task.CompletedTask;
         public virtual Task VersioningAsync(VersionContentContext context, TPart existing, TPart building) => Task.CompletedTask;
         public virtual Task VersionedAsync(VersionContentContext context, TPart existing, TPart building) => Task.CompletedTask;
-        public virtual Task DraftSavingAsync(SaveDraftContentContext context, TPart instance) => Task.CompletedTask;
-        public virtual Task DraftSavedAsync(SaveDraftContentContext context, TPart instance) => Task.CompletedTask;
-        public virtual Task PublishingAsync(PublishContentContext context, TPart instance) => Task.CompletedTask;
-        public virtual Task PublishedAsync(PublishContentContext context, TPart instance) => Task.CompletedTask;
-        public virtual Task UnpublishingAsync(PublishContentContext context, TPart instance) => Task.CompletedTask;
-        public virtual Task UnpublishedAsync(PublishContentContext context, TPart instance) => Task.CompletedTask;
-        public virtual Task RemovingAsync(RemoveContentContext context, TPart instance) => Task.CompletedTask;
-        public virtual Task RemovedAsync(RemoveContentContext context, TPart instance) => Task.CompletedTask;
+        public virtual Task DraftSavingAsync(SaveDraftContentContext context, TPart part) => Task.CompletedTask;
+        public virtual Task DraftSavedAsync(SaveDraftContentContext context, TPart part) => Task.CompletedTask;
+        public virtual Task PublishingAsync(PublishContentContext context, TPart part) => Task.CompletedTask;
+        public virtual Task PublishedAsync(PublishContentContext context, TPart part) => Task.CompletedTask;
+        public virtual Task UnpublishingAsync(PublishContentContext context, TPart part) => Task.CompletedTask;
+        public virtual Task UnpublishedAsync(PublishContentContext context, TPart part) => Task.CompletedTask;
+        public virtual Task RemovingAsync(RemoveContentContext context, TPart part) => Task.CompletedTask;
+        public virtual Task RemovedAsync(RemoveContentContext context, TPart part) => Task.CompletedTask;
         public virtual Task GetContentItemAspectAsync(ContentItemAspectContext context, TPart part) => Task.CompletedTask;
         public virtual Task CloningAsync(CloneContentContext context, TPart part) => Task.CompletedTask;
         public virtual Task ClonedAsync(CloneContentContext context, TPart part) => Task.CompletedTask;
+
+        protected virtual Task ValidatingAsync(ValidateContentPartContext context, TPart part)
+            => ValidatingAsync(context as ValidateContentContext, part);
+
+        protected virtual Task ValidatedAsync(ValidateContentPartContext context, TPart part)
+            => ValidatedAsync(context as ValidateContentContext, part);
     }
 }

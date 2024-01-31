@@ -8,7 +8,7 @@ namespace OrchardCore.Documents.Options
 {
     public class DocumentOptionsSetup : IConfigureNamedOptions<DocumentOptions>
     {
-        public static TimeSpan DefaultFailoverRetryLatency = TimeSpan.FromSeconds(30);
+        public static readonly TimeSpan DefaultFailoverRetryLatency = TimeSpan.FromSeconds(30);
 
         private readonly IShellConfiguration _shellConfiguration;
 
@@ -17,7 +17,7 @@ namespace OrchardCore.Documents.Options
             _shellConfiguration = shellConfiguration;
         }
 
-        public void Configure(DocumentOptions options) => Configure(String.Empty, options);
+        public void Configure(DocumentOptions options) => Configure(string.Empty, options);
 
         public void Configure(string name, DocumentOptions options)
         {

@@ -9,6 +9,11 @@ namespace OrchardCore.ContentManagement.Metadata.Models
             Name = name;
             PartDefinition = contentPartDefinition;
             Settings = settings;
+
+            foreach (var field in PartDefinition.Fields)
+            {
+                field.ContentTypePartDefinition = this;
+            }
         }
 
         public ContentPartDefinition PartDefinition { get; private set; }

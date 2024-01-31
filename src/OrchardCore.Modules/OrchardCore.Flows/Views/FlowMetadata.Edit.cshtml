@@ -3,20 +3,20 @@
 
 <div class="btn-group btn-group-sm" role="group">
     <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <i class="fa fa-align-@Model.Alignment.ToString().ToLowerInvariant()" aria-hidden="true" aria-hidden="true"></i>
+        <i class="fa-solid fa-align-@Model.Alignment.ToString().ToLowerInvariant()" aria-hidden="true" aria-hidden="true"></i>
     </button>
     <div class="dropdown-menu btn-group-toggle" data-bs-toggle="buttons">
         <label class="btn btn-secondary dropdown-item @(Model.Alignment == FlowAlignment.Left ? "active" : null)">
-            <input class="d-none" asp-for="Alignment" id="@Html.IdFor(x => x.Alignment)_Left" type="radio" autocomplete="off" value="Left"><i class="fa fa-align-left" aria-hidden="true"></i> @T["Left"]
+            <input class="d-none" asp-for="Alignment" id="@Html.IdFor(x => x.Alignment)_Left" type="radio" autocomplete="off" value="Left"><i class="fa-solid fa-align-left" aria-hidden="true"></i> @T["Left"]
         </label>
         <label class="btn btn-secondary dropdown-item @(Model.Alignment == FlowAlignment.Center ? "active" : null)">
-            <input class="d-none" asp-for="Alignment" id="@Html.IdFor(x => x.Alignment)_Center" type="radio" autocomplete="off" value="Center"><i class="fa fa-align-center" aria-hidden="true"></i> @T["Center"]
+            <input class="d-none" asp-for="Alignment" id="@Html.IdFor(x => x.Alignment)_Center" type="radio" autocomplete="off" value="Center"><i class="fa-solid fa-align-center" aria-hidden="true"></i> @T["Center"]
         </label>
         <label class="btn btn-secondary dropdown-item @(Model.Alignment == FlowAlignment.Right ? "active" : null)">
-            <input class="d-none" asp-for="Alignment" id="@Html.IdFor(x => x.Alignment)_Right" type="radio" autocomplete="off" value="Right"><i class="fa fa-align-right" aria-hidden="true"></i> @T["Right"]
+            <input class="d-none" asp-for="Alignment" id="@Html.IdFor(x => x.Alignment)_Right" type="radio" autocomplete="off" value="Right"><i class="fa-solid fa-align-right" aria-hidden="true"></i> @T["Right"]
         </label>
         <label class="btn btn-secondary dropdown-item @(Model.Alignment == FlowAlignment.Justify ? "active" : null)">
-            <input class="d-none" asp-for="Alignment" id="@Html.IdFor(x => x.Alignment)_Justify" type="radio" autocomplete="off" value="Justify"><i class="fa fa-align-justify" aria-hidden="true"></i> @T["Justify"]
+            <input class="d-none" asp-for="Alignment" id="@Html.IdFor(x => x.Alignment)_Justify" type="radio" autocomplete="off" value="Justify"><i class="fa-solid fa-align-justify" aria-hidden="true"></i> @T["Justify"]
         </label>
     </div>
 </div>

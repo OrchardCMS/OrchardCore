@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
@@ -7,20 +8,20 @@ namespace OrchardCore.Flows
 {
     public class Migrations : DataMigration
     {
-        private IContentDefinitionManager _contentDefinitionManager;
+        private readonly IContentDefinitionManager _contentDefinitionManager;
 
         public Migrations(IContentDefinitionManager contentDefinitionManager)
         {
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public int Create()
+        public async Task<int> CreateAsync()
         {
-            _contentDefinitionManager.AlterPartDefinition("FlowPart", builder => builder
+            await _contentDefinitionManager.AlterPartDefinitionAsync("FlowPart", builder => builder
                 .Attachable()
                 .WithDescription("Provides a customizable body for your content item where you can build a content structure with widgets."));
 
-            _contentDefinitionManager.AlterPartDefinition("BagPart", builder => builder
+            await _contentDefinitionManager.AlterPartDefinitionAsync("BagPart", builder => builder
                 .Attachable()
                 .Reusable()
                 .WithDescription("Provides a collection behavior for your content item where you can place other content items."));
@@ -30,9 +31,9 @@ namespace OrchardCore.Flows
         }
 
         // This code can be removed in a later version.
-        public int UpdateFrom1()
+        public async Task<int> UpdateFrom1Async()
         {
-            _contentDefinitionManager.AlterPartDefinition("BagPart", builder => builder
+            await _contentDefinitionManager.AlterPartDefinitionAsync("BagPart", builder => builder
                 .Attachable()
                 .Reusable()
                 .WithDescription("Provides a collection behavior for your content item where you can place other content items."));
@@ -42,9 +43,9 @@ namespace OrchardCore.Flows
 
         // Migrate PartSettings. This only needs to run on old content definition schemas.
         // This code can be removed in a later version.
-        public int UpdateFrom2()
+        public async Task<int> UpdateFrom2Async()
         {
-            _contentDefinitionManager.MigratePartSettings<BagPart, BagPartSettings>();
+            await _contentDefinitionManager.MigratePartSettingsAsync<BagPart, BagPartSettings>();
 
             return 3;
         }

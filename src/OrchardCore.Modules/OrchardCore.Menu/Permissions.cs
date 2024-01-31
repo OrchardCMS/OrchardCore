@@ -7,7 +7,7 @@ namespace OrchardCore.Menu
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageMenu = new Permission("ManageMenu", "Manage menus");
+        public static readonly Permission ManageMenu = new("ManageMenu", "Manage menus");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
@@ -21,8 +21,8 @@ namespace OrchardCore.Menu
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageMenu }
-                }
+                    Permissions = new[] { ManageMenu },
+                },
             };
         }
     }

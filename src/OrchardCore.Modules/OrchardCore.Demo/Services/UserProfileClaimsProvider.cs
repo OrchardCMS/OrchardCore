@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using GraphQL;
 using OrchardCore.Demo.Models;
+using OrchardCore.Entities;
 using OrchardCore.Users;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
@@ -14,15 +15,9 @@ namespace OrchardCore.Demo.Services
     {
         public Task GenerateAsync(IUser user, ClaimsIdentity claims)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
-            if (claims == null)
-            {
-                throw new ArgumentNullException(nameof(claims));
-            }
+            ArgumentNullException.ThrowIfNull(claims);
 
             var u = user as User;
             var profile = u.As<UserProfile>();

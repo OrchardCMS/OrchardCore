@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 
 namespace Microsoft.AspNetCore.Mvc
 {
@@ -10,7 +11,7 @@ namespace Microsoft.AspNetCore.Mvc
         /// Will return a challenge when the user is not authenticated.
         /// </summary>
         /// <param name="controller"></param>
-        /// <returns>The proper actionresult based upon if the user is authenticated</returns>
+        /// <returns>The proper actionresult based upon if the user is authenticated.</returns>
         public static ActionResult ChallengeOrForbid(this Controller controller)
             => controller.User?.Identity?.IsAuthenticated ?? false ? (ActionResult)controller.Forbid() : controller.Challenge();
 
@@ -23,12 +24,20 @@ namespace Microsoft.AspNetCore.Mvc
         /// </summary>
         /// <param name="controller"></param>
         /// <param name="authenticationSchemes">The authentication schemes to challenge.</param>
-        /// <returns>The proper actionresult based upon if the user is authenticated</returns>
+        /// <returns>The proper actionresult based upon if the user is authenticated.</returns>
         public static ActionResult ChallengeOrForbid(this Controller controller, params string[] authenticationSchemes)
             => controller.User?.Identity?.IsAuthenticated ?? false ? (ActionResult)controller.Forbid(authenticationSchemes) : controller.Challenge(authenticationSchemes);
 
         /// <summary>
-        /// Creates a <see cref="LocalRedirectResult"/> object that redirects to the specified local localUrl
+        /// Creates <see cref="ObjectResult"/> that produces a <see cref="HttpStatusCode.InternalServerError"/> response.
+        /// </summary>
+        /// <param name="controller">The <see cref="Controller"/>.</param>
+        /// <param name="value">An optional value to set on <see cref="ObjectResult"/>.</param>
+        public static ActionResult InternalServerError(this Controller controller, object value = null)
+            => controller.StatusCode((int)HttpStatusCode.InternalServerError, value);
+
+        /// <summary>
+        /// Creates a <see cref="LocalRedirectResult"/> object that redirects to the specified local localUrl.
         /// </summary>
         /// <param name="controller"></param>
         /// <param name="localUrl">The local URL to redirect to.</param>
@@ -45,7 +54,7 @@ namespace Microsoft.AspNetCore.Mvc
 
 
         /// <summary>
-        /// Creates a <see cref="RedirectResult"/> object that redirects to the specified url
+        /// Creates a <see cref="RedirectResult"/> object that redirects to the specified url.
         /// </summary>
         /// <param name="controller"></param>
         /// <param name="url">The URL to redirect to.</param>

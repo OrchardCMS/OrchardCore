@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -40,7 +39,7 @@ namespace OrchardCore.ContentFields.Controllers
 
         public async Task<IActionResult> SearchUsers(string part, string field, string contentType, string query)
         {
-            if (string.IsNullOrWhiteSpace(part) || String.IsNullOrWhiteSpace(field) || string.IsNullOrWhiteSpace(contentType))
+            if (string.IsNullOrWhiteSpace(part) || string.IsNullOrWhiteSpace(field) || string.IsNullOrWhiteSpace(contentType))
             {
                 return BadRequest("Part, field and contentType are required parameters");
             }
@@ -53,7 +52,7 @@ namespace OrchardCore.ContentFields.Controllers
                 return Forbid();
             }
 
-            var partFieldDefinition = _contentDefinitionManager.GetPartDefinition(part)?.Fields
+            var partFieldDefinition = (await _contentDefinitionManager.GetPartDefinitionAsync(part))?.Fields
                 .FirstOrDefault(f => f.Name == field);
 
             var fieldSettings = partFieldDefinition?.GetSettings<UserPickerFieldSettings>();

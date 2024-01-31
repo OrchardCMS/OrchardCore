@@ -11,6 +11,6 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Forms",
     Name = "Forms",
     Description = "Provides widgets and activities to implement forms.",
-    Dependencies = new[] { "OrchardCore.Widgets", "OrchardCore.Flows" },
+    Dependencies = ["OrchardCore.Widgets", "OrchardCore.Flows"],
     Category = "Content"
 )]
