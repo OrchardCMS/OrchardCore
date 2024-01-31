@@ -4,21 +4,19 @@ In this article you will learn how to use Orchard CMS as coupled CMS with .NET B
 
 ## Setting up the project
 
-### Prerequisite
+### Prerequisites
 
-You should,
-- have .NET 8 SDK installed.
-- Have Visual Studio 2022 or Visual Studio Code
+- .NET 8 SDK.
+- Visual Studio 2022 or Visual Studio Code.
 - Orchard Core's [code  generation templates](../../getting-started/templates/README.md)
 - Knowledge of [getting started with Orchard Core CMS](../../getting-started/README.md)
-- Be familiar with C# and HTML
-- Basic knowledge of orchard cms, e.g creating content definition, crating content, executing recipe.
-
+- Be familiar with C# and HTML.
+- Basic knowledge of Orchard Cms modules, e.g creating content definition, creating content, executing recipe.
 
 ### Create Orchard Core CMS Application
  
-- Create new Orchard Core CMS Application and setup the default site using `headless` recipe. Follow [create orchard cms application guide](https://docs.orchardcore.net/en/latest/docs/guides/create-cms-application/) to create new orchard core website.
-- Alternatively You can run following commands to create new orchard core application. 
+- Create new Orchard Core CMS Application and setup the default site using `headless` recipe. Follow [create orchard cms application guide](https://docs.orchardcore.net/en/latest/docs/guides/create-cms-application/) to create new Orchard Core website.
+- Alternatively, you can run the following commands to create a new Orchard Core application. 
 
 ```shell
 mkdir OCBlazor
@@ -27,21 +25,21 @@ dotnet new sln
 dotnet new occms -o BlazorCms
 dotnet sln add ./BlazorCms
 ```
-- Open `OcBlazor.sln` in Visual Studio 2022 and run the application. If you are using Visual Studio code, you can run application by running `dotnet run --project ./BlazorCms/BlazorCms.csproj
-`
-- Open browser and navigate to `https://localhost:5001` and complete setting up default site. In this guide we are using `Headless site`.
+
+- Open `OCBlazor.sln` in Visual Studio 2022 and run the application. If you are using Visual Studio Code, you can run application by running `dotnet run --project ./BlazorCms/BlazorCms.csproj`.
+- Open a browser, navigate to `https://localhost:5001` and complete setting up a default site. In this guide, we are using the `Headless site` recipe.
 
 ![Setup Default Orchard Core site](./images/image-002.PNG)
 
-- Once the setup is complete, login to CMS admin and create new  content type as following. (By navigating to `Content` -> `Content Definition` -> `Content Types`) 
+- Once the setup is complete, log in to the admin and create a new content type as following. (By navigating to `Content` -> `Content Definition` -> `Content Types`) 
     - Create 'MarkdownPage' content type.
     - Add Parts 
         - TitlePart
-        - Alias and
-        - MarkdownBody.
-- Create new content item and publish.
-- Alternatively you can import following recipe to create content definition and content item that we are using for this guide.
-- To import, login to administration, and Go to `Configuration` > `Import/Export` > JSON Import
+        - AliasPart
+        - MarkdownBodyPart.
+- Create a new content item and publish it.
+- Alternatively, you can import the following recipe to create content definition and content item that we are using for this guide.
+- To import the recipe, log in to administration, and go to `Configuration` > `Import/Export` > `JSON Import`
 ```json
 {
   "name": "",
@@ -140,21 +138,21 @@ dotnet sln add ./BlazorCms
   ]
 }
 ```
-- Go to `Content` -> `Content Items` and Verify that the content item is created available as shown below image.
+- Go to `Content` -> `Content Items` and verify that the content item is available as shown on the image below.
  
 ![Content Item](./images/image-001.PNG)
 
 ### Create Blazor App in Razor Class library.
 
-In this section we'll create .NET Blazor Application, as Razor Class library and later we'll reference it in Orchard Core Application.
+In this section we will create a .NET Blazor application, as Razor Class library and then, we will reference it in Orchard Core application.
 
 !!! note
 
-You can add `.razor` files in main Orchard Core Web application, however adding `.razor` file in Orchard Core modules are not supported. For this reason, and to have maximum reusability of your razor components, always use razor class library and add it as reference to your orchard core web project or orchard core module.
+You can add `.razor` files in main Orchard Core Web application, however adding `.razor` file in Orchard Core modules are not supported. For this reason, and to have maximum reusability of your razor components, always use razor class library and add it as reference to your Orchard Core Web project or Orchard Core module.
 
-- Create Razor class library project `OCBlazorLib.csproj` and add it to the solution `BlazorCms`. 
+- Create a Razor class library project `OCBlazorLib.csproj` and add it to the solution `BlazorCms`. 
 - Add the project's reference to your web application project.
-- You can run following commands to create new razor class library project.
+- You can run following commands to create a new Razor class library project.
 
 ```dotnetcli
 dotnet new razorclasslib -f net8.0 -o OCBlazorLib
@@ -162,11 +160,11 @@ dotnet sln add ./OCBlazorLib
 dotnet add ./BlazorCms/BlazorCms.csproj reference ./OCBlazorLib/OCBlazorLib.csproj
 ```
 
-Now, your project explorer should look like below image.
+Now, your project explorer should look like the image below.
 
 ![OCBlazor.sln Solution Explorer](./images/image-003.PNG)
 
-- We are using ASP.NET Core framework specific features in our class library so we need to add reference to `AspNetCore.App`. To achieve this, open and edit `OCBlazorLib.csproj` and add following `ItemGroup`
+- We are using ASP.NET Core Framework specific features in our class library so we need to add a reference to `AspNetCore.App`. To achieve this, edit `OCBlazorLib.csproj` and add the following `ItemGroup` section:
 
 ```xml
   <ItemGroup>
@@ -174,7 +172,7 @@ Now, your project explorer should look like below image.
   </ItemGroup>
 ```
 
-- Next, will be creating basic structure of our Blazor application that includes main App, Layout, NavMenu and router components in project `OCBlazorLib` 
+- Next, let's create the basic structure of our Blazor application that includes main App, Layout, NavMenu and router components in project `OCBlazorLib` 
 - Add  New Item ->  Razor component -> `App.razor`.
 - Add New Item -> Stylesheet -> `App.razor.css`
 - Update `App.razor`, `App.razor.css` and `_Imports.razor` with following code.
@@ -538,8 +536,7 @@ Now, your project explorer should look like below image.
         
     ```
 
-
--  Now create a router. Select `OCBlazorLib` project and Add new Item -> Razor component -> `Routes.razor` at same level as `App.razor` and add following code.
+- Now, let's create a router. Select `OCBlazorLib` project, add a new Item -> Razor component -> `Routes.razor` at same level as `App.razor` and add following code.
 
 ```razor
     <Router AppAssembly="typeof(App).Assembly">
@@ -552,9 +549,8 @@ Now, your project explorer should look like below image.
 
 Our blazor application's basic structure is finished. Now we are ready to create the page that will get the Orchard Core CMS content item and will render in Blazor app. 
 
-- Let's create new folder `Pages` and Add a home page. To add home page, Add New Item -> Razor Component -> `Home.razor`
-- Also create Content Page `Content.razor`. Replace the page content with following.
-
+- Let's create new folder `Pages` and add a home page. To add home page, Add New Item -> Razor Component -> `Home.razor`
+- Also create Content Page `Content.razor`. Replace the page content with following code:
 
 === "Home.razor"
 
@@ -585,11 +581,10 @@ Our blazor application's basic structure is finished. Now we are ready to create
         	{
         
         	}
-        }
-        
+        }        
     ```
 
-- Next we'll add link to our `/content` page in `NavMenu.razor`. Use following code add new NavLink in `NavMenu.razor` to our content page below `Home` link.
+- Next, let's add a link to our `/content` page in `NavMenu.razor`. Use the following code to add a new NavLink in `NavMenu.razor` to our content page below `Home` link.
 
 ```razor
      <div class="nav-item px-3">
@@ -603,7 +598,7 @@ Our blazor application's basic structure is finished. Now we are ready to create
  
 ### Serving Blazor App from Orchard Core CMS.
 
- Blazor application razor class library is not ready to be served by ASP.NET pipeline yet. To achieve this,  In `BlazorCms` project open `Program.cs` and replace all comments for `\\Orchard Specific Pipeline` with following code.
+The Blazor application razor class library is not ready to be served by ASP.NET pipeline yet. To achieve this, in `BlazorCms` project, open `Program.cs` and replace all comments for `\\Orchard Specific Pipeline` with the following code.
 
 ```cs
 builder.Services
@@ -624,20 +619,21 @@ builder.Services
      })
 ```
 
-Now, It's time to run our application. Once application is running, notice that the Blazor application is now served from `/` as Home page and you can access admin from `/admin` as shown below.
+Now, it's time to run our application. Once application is running, notice that the Blazor application is now served from `/` as Home page and you can access admin from `/admin` as shown below.
 
 ![Working Blazor App served from Orchard Core](./images/image-004.gif)
 
 ### Add Orchard Core CMS content to Blazor Page
 
-In our `OCBlazorLib` blazor Library project, Lets enrich our `/content` page to serve content from Orchard Core CMS. To achieve this,
+In our `OCBlazorLib` blazor Library project, Lets enrich our `/content` page to serve content from Orchard Core CMS. To achieve this, follow these steps:
 
-- In `OCBlazorLib.csproj` Add reference nuget package reference of `OrchardCore.ContentManagement`
+- In `OCBlazorLib.csproj` Add a nuget package reference to `OrchardCore.ContentManagement`
+- 
 ```dotnetcli
 dotnet add ./OCBlazorLib/OCBlazorLib.csproj package OrchardCore.ContentManagement --version 1.8.2
 ```
 
-- Add following `using` statements in `_Imports.razor`
+- Add the following `using` statements in `_Imports.razor`
 
 ```csharp
 @using OrchardCore;
@@ -654,8 +650,7 @@ dotnet add ./OCBlazorLib/OCBlazorLib.csproj package OrchardCore.ContentManagemen
 @inject ISiteService SiteService
 ```
 
-
-- Within `@code` section, Add property to access the alias defined in route parameter.
+- Within `@code` section, add a property to access the alias defined in route parameter.
 
 ```csharp
 [ParameterAttribute]
@@ -663,11 +658,13 @@ public string Alias { get; set; }
 ```
 
 - Also define following three properties in `@code` section.
+- 
 ```csharp
  protected ContentItem ContentItem { get; set; }
  protected string Markup { get; set; }
  protected ISite Site { get; set; }
 ```
+
 - Update `OnParametersSetAsync` with following code, to retrieve the content item using alias.
 
 ```csharp
@@ -679,7 +676,9 @@ protected override async Task OnParametersSetAsync()
     Markup = bodyAspect.Body.ToString();
 }
 ```
-- Lets get `SiteName` from Site settings on `OnInitializedAsync` with following code. 
+
+- Lets get `SiteName` from Site settings on `OnInitializedAsync` with following code.
+- 
 ```csharp
 protected override async Task OnInitializedAsync()
 {
@@ -687,9 +686,10 @@ protected override async Task OnInitializedAsync()
     await Task.Delay(500);
 }
 ```
+
 Notice that we are adding `Task.Delay(500);` to mimic long running task.
 
-- In razor markup replace `<h3>Content</h3>`  with following code to render `Markup` property.
+- In razor markup replace `<h3>Content</h3>` with following code to render `Markup` property.
 
 ```csharp
 @if (ContentItem == null)
@@ -705,7 +705,8 @@ else
 
 }
 ```
-- One last change, Update `NavLink` in `NavMenu.razor` to add alias of our content item. In our example, we are using sample content item created earlier with alias `orchard-core`. Update the `href` value for `Orchard Core` NavLink to `content/orchard-core`.
+
+- Finally, update `NavLink` in `NavMenu.razor` to add an alias of our content item. In our example, we are using sample content item created earlier with alias `orchard-core`. Update the `href` value for `Orchard Core` NavLink to `content/orchard-core`.
 
 ```razor
 <div class="nav-item px-3">
