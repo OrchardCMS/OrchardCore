@@ -115,8 +115,6 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     return contentField == null ? null : fieldDescriptor.FieldAccessor(contentField);
                 }),
             };
-
-            return fieldType;
         }
 
         private class FieldTypeDescriptor
