@@ -1,0 +1,28 @@
+{% zone "Header" %}
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    <header class="masthead" style="background-image: url('{{ "~/TheBlogTheme/assets/img/post-bg.jpg" | href }}')">
+        <div class="container position-relative px-4 px-lg-5">
+            <div class="row gx-4 gx-lg-5 justify-content-center">
+                <div class="col-md-10 col-lg-8 col-xl-7">
+                    <div class="site-heading">
+                        {% assign search = "Search" | t %}
+                        <h1>{% page_title search %}</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+{% endzone %}
+
+{{ Model.SearchForm | shape_render }}
+
+{% unless Model.SearchResults %}
+  {% if Model.Terms %}
+    {% helper "span", validation_for: "Terms", class: "alert alert-danger" %}
+  {% endif %}
+{% endunless %}
+
+{{ Model.SearchResults | shape_render }}
+
+{{ Model.Pager | shape_render }}

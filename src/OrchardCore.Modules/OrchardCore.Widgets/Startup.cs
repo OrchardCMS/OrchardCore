@@ -29,7 +29,7 @@ namespace OrchardCore.Widgets
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            //Add Widget Card Shapes
+            // Add Widget Card Shapes
             services.AddScoped<IShapeTableProvider, ContentCardShapes>();
             // Widgets List Part
             services.AddContentPart<WidgetsListPart>()
@@ -37,7 +37,7 @@ namespace OrchardCore.Widgets
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, WidgetsListPartSettingsDisplayDriver>();
             services.AddContentPart<WidgetMetadata>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

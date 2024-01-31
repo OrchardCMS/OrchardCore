@@ -14,9 +14,9 @@ namespace OrchardCore.Navigation
     {
         public MenuItem()
         {
-            Permissions = new List<Permission>();
-            Classes = new List<string>();
-            Items = new List<MenuItem>();
+            Permissions = [];
+            Classes = [];
+            Items = [];
             LinkToFirstChild = true;
         }
 

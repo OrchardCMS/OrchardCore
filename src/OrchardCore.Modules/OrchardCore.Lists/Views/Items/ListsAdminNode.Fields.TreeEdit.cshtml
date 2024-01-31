@@ -3,19 +3,19 @@
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.css" at="Head" depends-on="admin"></style>
 
 <script asp-name="vuejs" at="Foot"></script>
-<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.js" at="Foot" depends-on="admin"></script>
+<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.js" at="Foot" depends-on="jQuery"></script>
 
 <h5>@T["Lists"]</h5>
 
 <div class="row mb-4">
     <div class="col-xl-6">
         <div class="mb-3">
-            <label asp-for="ContentType"></label>
+            <label asp-for="ContentType" class="form-label"></label>
             <select asp-for="ContentType" asp-items="Model.ContentTypes" class="form-select"></select>
         </div>
 
         <div class="mb-3">
-            <label asp-for="IconForContentItems">@T["Icon for the content items"]</label>
+            <label asp-for="IconForContentItems" class="form-label">@T["Icon for the content items"]</label>
             <div class="btn-toolbar icon-toolbar" role="toolbar" aria-label="Icon Selector Toolbar">
 
                 <div class="btn-group input-group me-2" role="group" aria-label="Icon Selector">
@@ -37,7 +37,7 @@
                     <button type="button" class="btn btn-secondary remove-icon"
                             data-related-node="@Html.IdFor(m => m.IconForContentItems)">
                         <div style="pointer-events:none;">
-                            <i class="fa fa-trash" aria-hidden="true"></i>
+                            <i class="fa-solid fa-trash" aria-hidden="true"></i>
                         </div>
                     </button>
                 </div>
@@ -46,7 +46,7 @@
 
         <div class="mb-3 row add-parent-link-fieldset">
             <div class="col">
-                <label asp-for="AddContentTypeAsParent">
+                <label asp-for="AddContentTypeAsParent" class="form-label">
                     <input asp-for="AddContentTypeAsParent" class="add-parent-link-checkbox" />
                     @T["Add parent menu item"]
                 </label>
@@ -55,7 +55,7 @@
         </div>
         <div class="mb-3 row @(Model.AddContentTypeAsParent ? "" : "collapse") icon-picker-for-content-type">
             <div class="col">
-                <label asp-for="IconForParentLink">@T["Icon for the parent menu item"]</label>
+                <label asp-for="IconForParentLink" class="form-label">@T["Icon for the parent menu item"]</label>
                 <div class="btn-toolbar icon-toolbar" role="toolbar" aria-label="Icon Selector Toolbar">
 
                     <div class="btn-group input-group me-2" role="group" aria-label="Icon Selector">
@@ -77,7 +77,7 @@
                         <button type="button" class="btn btn-secondary remove-icon"
                                 data-related-node="@Html.IdFor(m => m.IconForParentLink)">
                             <div style="pointer-events:none;">
-                                <i class="fa fa-trash" aria-hidden="true"></i>
+                                <i class="fa-solid fa-trash" aria-hidden="true"></i>
                             </div>
                         </button>
                     </div>

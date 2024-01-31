@@ -8,7 +8,7 @@ namespace OrchardCore.Facebook
     public class Permissions : IPermissionProvider
     {
         public static readonly Permission ManageFacebookApp
-            = new Permission(nameof(ManageFacebookApp), "View and edit the Facebook app.");
+            = new("ManageFacebookApp", "View and edit the Facebook app.");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
@@ -22,7 +22,7 @@ namespace OrchardCore.Facebook
                 Name = "Administrator",
                 Permissions = new[]
                 {
-                    ManageFacebookApp
+                    ManageFacebookApp,
                 }
             };
         }

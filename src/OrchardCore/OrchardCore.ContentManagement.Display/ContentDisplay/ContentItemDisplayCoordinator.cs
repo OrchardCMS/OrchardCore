@@ -44,7 +44,7 @@ namespace OrchardCore.ContentManagement.Display
 
         public async Task BuildDisplayAsync(ContentItem contentItem, BuildDisplayContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
             if (contentTypeDefinition == null)
             {
@@ -67,8 +67,7 @@ namespace OrchardCore.ContentManagement.Display
                 }
             }
 
-            var settings = contentTypeDefinition?.GetSettings<ContentTypeSettings>();
-            var stereotype = settings?.Stereotype ?? String.Empty;
+            var hasStereotype = contentTypeDefinition.TryGetStereotype(out var stereotype);
 
             foreach (var contentTypePartDefinition in contentTypeDefinition.Parts)
             {
@@ -115,7 +114,7 @@ namespace OrchardCore.ContentManagement.Display
                     shapeResult.OnGroup(context.GroupId);
                     shapeResult.Displaying(ctx =>
                     {
-                        var displayTypes = new[] { String.Empty, "_" + ctx.Shape.Metadata.DisplayType };
+                        var displayTypes = new[] { string.Empty, "_" + ctx.Shape.Metadata.DisplayType };
 
                         foreach (var displayType in displayTypes)
                         {
@@ -126,7 +125,7 @@ namespace OrchardCore.ContentManagement.Display
                             // e.g. LandingPage-ServicePart, LandingPage-ServicePart.Summary
                             ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partTypeName}");
 
-                            if (!String.IsNullOrEmpty(stereotype))
+                            if (hasStereotype)
                             {
                                 // [Stereotype]_[DisplayType]__[PartType],
                                 // e.g. Widget-ServicePart
@@ -145,7 +144,7 @@ namespace OrchardCore.ContentManagement.Display
                             // e.g. Employee-Address1, Employee-Address2
                             ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partName}");
 
-                            if (!String.IsNullOrEmpty(stereotype))
+                            if (hasStereotype)
                             {
                                 // [Stereotype]_[DisplayType]__[PartType]__[PartName]
                                 // e.g. Widget-Services
@@ -195,7 +194,7 @@ namespace OrchardCore.ContentManagement.Display
 
         public async Task BuildEditorAsync(ContentItem contentItem, BuildEditorContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
             if (contentTypeDefinition == null)
             {
                 return;
@@ -286,7 +285,7 @@ namespace OrchardCore.ContentManagement.Display
 
         public async Task UpdateEditorAsync(ContentItem contentItem, UpdateEditorContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.LoadTypeDefinition(contentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(contentItem.ContentType);
             if (contentTypeDefinition == null)
                 return;
 

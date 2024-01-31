@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,17 +29,18 @@ namespace OrchardCore.Lists.GraphQL
                 .Description("the content items")
                 .Argument<IntGraphType, int>("first", "the first n elements (10 by default)", 10)
                 .Argument<IntGraphType, int>("skip", "the number of elements to skip", 0)
-                .ResolveAsync(async g =>
+                // Important to use ResolveLockedAsync to prevent concurrency error on database query, when using nested content items with List part
+                .ResolveLockedAsync(async g =>
                 {
-                    var serviceProvider = g.ResolveServiceProvider();
+                    var serviceProvider = g.RequestServices;
                     var session = serviceProvider.GetService<ISession>();
                     var accessor = serviceProvider.GetRequiredService<IDataLoaderContextAccessor>();
 
                     var dataLoader = accessor.Context.GetOrAddCollectionBatchLoader<string, ContentItem>("ContainedPublishedContentItems", x => LoadPublishedContentItemsForListAsync(x, session));
 
-                    return (await dataLoader.LoadAsync(g.Source.ContentItem.ContentItemId))
+                    return ((await dataLoader.LoadAsync(g.Source.ContentItem.ContentItemId).GetResultAsync())
                                 .Skip(g.GetArgument<int>("skip"))
-                                .Take(g.GetArgument<int>("first"));
+                                .Take(g.GetArgument<int>("first")));
                 });
         }
 

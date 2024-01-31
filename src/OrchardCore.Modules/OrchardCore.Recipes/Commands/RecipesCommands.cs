@@ -25,7 +25,7 @@ namespace OrchardCore.Recipes.Commands
             var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
             var recipes = recipeCollections.SelectMany(x => x).ToArray();
 
-            if (!recipes.Any())
+            if (recipes.Length == 0)
             {
                 await Context.Output.WriteLineAsync(S["No recipes found."]);
                 return;

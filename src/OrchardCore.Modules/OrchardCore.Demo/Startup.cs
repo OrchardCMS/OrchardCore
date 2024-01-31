@@ -93,7 +93,7 @@ namespace OrchardCore.Demo
             services.AddShapeAttributes<DemoShapeProvider>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IContentDisplayDriver, TestContentElementDisplayDriver>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddContentPart<TestContentPartA>();
             services.AddScoped<IUserClaimsProvider, UserProfileClaimsProvider>();
@@ -118,7 +118,7 @@ namespace OrchardCore.Demo
                 options.Conventions.AddAreaPageRoute("OrchardCore.Demo", "/Hello", "Hello");
 
                 // This declaration would define an home page
-                //options.Conventions.AddAreaPageRoute("OrchardCore.Demo", "/Hello", "");
+                // options.Conventions.AddAreaPageRoute("OrchardCore.Demo", "/Hello", "");
             });
 
             services.AddTagHelpers(typeof(BazTagHelper).Assembly);

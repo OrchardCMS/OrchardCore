@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Contents.Security
@@ -16,11 +16,11 @@ namespace OrchardCore.Contents.Security
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        public async Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
             // manage rights only for Securable types
-            var securableTypes = _contentDefinitionManager.ListTypeDefinitions()
-                .Where(ctd => ctd.GetSettings<ContentTypeSettings>().Securable);
+            var securableTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
+                .Where(ctd => ctd.IsSecurable());
 
             var result = new List<Permission>();
 
@@ -32,12 +32,12 @@ namespace OrchardCore.Contents.Security
                 }
             }
 
-            return Task.FromResult(result.AsEnumerable());
+            return result;
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
         {
-            return Enumerable.Empty<PermissionStereotype>();
+            return [];
         }
     }
 }

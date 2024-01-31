@@ -16,7 +16,7 @@ namespace OrchardCore.DisplayManagement.Liquid
     public class ModuleProjectLiquidFileProvider : IFileProvider
     {
         private static Dictionary<string, string> _paths;
-        private static readonly object _synLock = new object();
+        private static readonly object _synLock = new();
 
         public ModuleProjectLiquidFileProvider(IApplicationContext applicationContext)
         {
@@ -96,9 +96,6 @@ namespace OrchardCore.DisplayManagement.Liquid
             return NullChangeToken.Singleton;
         }
 
-        private string NormalizePath(string path)
-        {
-            return path.Replace('\\', '/').Trim('/');
-        }
+        private static string NormalizePath(string path) => path.Replace('\\', '/').Trim('/');
     }
 }

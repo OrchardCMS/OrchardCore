@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -69,7 +69,7 @@ public class AwsFileStore : IFileStore
             FetchOwner = false
         });
 
-        return awsDirectory.S3Objects.Any() ? new AwsDirectory(path, _clock.UtcNow) : null;
+        return awsDirectory.S3Objects.Count > 0 ? new AwsDirectory(path, _clock.UtcNow) : null;
     }
 
     public async IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentAsync(string path = null,
@@ -103,7 +103,7 @@ public class AwsFileStore : IFileStore
             var folderPath = awsFolderPath;
             if (!IsNullOrEmpty(_basePrefix))
             {
-                folderPath = folderPath.Substring(_basePrefix.Length - 1);
+                folderPath = folderPath[(_basePrefix.Length - 1)..];
             }
 
             folderPath = folderPath.TrimEnd('/');
@@ -164,7 +164,7 @@ public class AwsFileStore : IFileStore
         {
             BucketName = _options.BucketName,
             Objects = listObjectsResponse.S3Objects
-                .Select( key => new KeyVersion { Key = key.Key }).ToList()
+                .Select(metadata => new KeyVersion { Key = metadata.Key }).ToList()
         };
 
         var response = await _amazonS3Client.DeleteObjectsAsync(deleteObjectsRequest);
@@ -206,7 +206,7 @@ public class AwsFileStore : IFileStore
                 Prefix = this.Combine(_basePrefix, dstPath)
             });
 
-            if (listObjects.S3Objects.Any())
+            if (listObjects.S3Objects.Count > 0)
             {
                 throw new FileStoreException($"Cannot copy file '{srcPath}' because a file already exists in the new path '{dstPath}'.");
             }
@@ -261,7 +261,7 @@ public class AwsFileStore : IFileStore
                     Prefix = this.Combine(_basePrefix, path)
                 });
 
-                if (listObjects.S3Objects.Any())
+                if (listObjects.S3Objects.Count > 0)
                 {
                     throw new FileStoreException($"Cannot create file '{path}' because it already exists.");
                 }
@@ -287,7 +287,7 @@ public class AwsFileStore : IFileStore
         return path;
     }
 
-    private string NormalizePrefix(string prefix)
+    private static string NormalizePrefix(string prefix)
     {
         prefix = prefix.Trim('/') + '/';
         if (prefix.Length == 1)

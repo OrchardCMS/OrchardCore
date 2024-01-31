@@ -33,6 +33,7 @@ namespace OrchardCore.ContentFields.GraphQL.Types
             {
                 return ParseValue(str.Value);
             }
+
             return null;
         }
     }
@@ -43,8 +44,9 @@ namespace OrchardCore.ContentFields.GraphQL.Types
         {
             if (!string.IsNullOrEmpty(value) && value.Length > 2 && value.StartsWith('\"') && value.EndsWith('\"'))
             {
-                return value.Substring(1, value.Length - 2);
+                return value[1..^1];
             }
+
             return value;
         }
     }

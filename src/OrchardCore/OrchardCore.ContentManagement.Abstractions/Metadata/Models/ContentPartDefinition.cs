@@ -9,8 +9,8 @@ namespace OrchardCore.ContentManagement.Metadata.Models
         public ContentPartDefinition(string name)
         {
             Name = name;
-            Fields = Enumerable.Empty<ContentPartFieldDefinition>();
-            Settings = new JObject();
+            Fields = [];
+            Settings = [];
         }
 
         public ContentPartDefinition(string name, IEnumerable<ContentPartFieldDefinition> fields, JObject settings)

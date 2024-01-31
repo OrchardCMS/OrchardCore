@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OpenIddict.Abstractions;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
@@ -14,13 +15,11 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
-using OrchardCore.OpenId.Abstractions.Descriptors;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.ViewModels;
 using OrchardCore.Security.Services;
-using OrchardCore.Settings;
 
 namespace OrchardCore.OpenId.Controllers
 {
@@ -28,18 +27,19 @@ namespace OrchardCore.OpenId.Controllers
     public class ApplicationController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
-        private readonly ISiteService _siteService;
+        private readonly IShapeFactory _shapeFactory;
+        private readonly PagerOptions _pagerOptions;
         private readonly IOpenIdApplicationManager _applicationManager;
         private readonly IOpenIdScopeManager _scopeManager;
         private readonly INotifier _notifier;
         private readonly ShellDescriptor _shellDescriptor;
-        private readonly dynamic New;
+
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
 
         public ApplicationController(
             IShapeFactory shapeFactory,
-            ISiteService siteService,
+            IOptions<PagerOptions> pagerOptions,
             IStringLocalizer<ApplicationController> stringLocalizer,
             IAuthorizationService authorizationService,
             IOpenIdApplicationManager applicationManager,
@@ -48,8 +48,8 @@ namespace OrchardCore.OpenId.Controllers
             INotifier notifier,
             ShellDescriptor shellDescriptor)
         {
-            New = shapeFactory;
-            _siteService = siteService;
+            _shapeFactory = shapeFactory;
+            _pagerOptions = pagerOptions.Value;
             S = stringLocalizer;
             H = htmlLocalizer;
             _authorizationService = authorizationService;
@@ -66,13 +66,12 @@ namespace OrchardCore.OpenId.Controllers
                 return Forbid();
             }
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
             var count = await _applicationManager.CountAsync();
 
             var model = new OpenIdApplicationsIndexViewModel
             {
-                Pager = (await New.Pager(pager)).TotalItemCount(count)
+                Pager = await _shapeFactory.PagerAsync(pager, (int)count),
             };
 
             await foreach (var application in _applicationManager.ListAsync(pager.PageSize, pager.GetStartIndex()))

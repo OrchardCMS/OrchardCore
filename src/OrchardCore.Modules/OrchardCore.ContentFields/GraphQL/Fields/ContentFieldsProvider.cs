@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using Newtonsoft.Json.Linq;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.GraphQL.Types;
 using OrchardCore.ContentManagement;
@@ -12,7 +13,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
 {
     public class ContentFieldsProvider : IContentFieldProvider
     {
-        private static readonly Dictionary<string, FieldTypeDescriptor> ContentFieldTypeMappings = new Dictionary<string, FieldTypeDescriptor>
+        private static readonly Dictionary<string, FieldTypeDescriptor> _contentFieldTypeMappings = new()
         {
             {
                 nameof(BooleanField),
@@ -61,7 +62,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     Description = "Text field",
                     FieldType = typeof(StringGraphType),
                     UnderlyingType = typeof(TextField),
-                    FieldAccessor = field => field.Content.Text
+                    FieldAccessor = field => (string)field.Content.Text
                 }
             },
             {
@@ -81,16 +82,19 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     Description = "Multi text field",
                     FieldType = typeof(ListGraphType<StringGraphType>),
                     UnderlyingType = typeof(MultiTextField),
-                    FieldAccessor = field => field.Content.Values
+                    FieldAccessor = field => ((JArray)field.Content.Values)?.ToObject<string[]>()
                 }
             }
         };
 
         public FieldType GetField(ContentPartFieldDefinition field)
         {
-            if (!ContentFieldTypeMappings.ContainsKey(field.FieldDefinition.Name)) return null;
+            if (!_contentFieldTypeMappings.TryGetValue(field.FieldDefinition.Name, out var value))
+            {
+                return null;
+            }
 
-            var fieldDescriptor = ContentFieldTypeMappings[field.FieldDefinition.Name];
+            var fieldDescriptor = value;
             return new FieldType
             {
                 Name = field.Name,
@@ -100,21 +104,16 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                 {
                     // Check if part has been collapsed by trying to get the parent part.
                     var contentPart = context.Source.Get(typeof(ContentPart), field.PartDefinition.Name);
-                    if (contentPart == null)
-                    {
-                        // Part is not collapsed, access field directly.
-                        contentPart = context.Source;
-                    }
+
+                    // Part is not collapsed, access field directly.
+                    contentPart ??= context.Source;
 
                     var contentField = contentPart?.Get(fieldDescriptor.UnderlyingType, field.Name);
 
-                    if (contentField == null)
-                    {
-                        contentField = context.Source.Get(fieldDescriptor.UnderlyingType, field.Name);
-                    }
+                    contentField ??= context.Source.Get(fieldDescriptor.UnderlyingType, field.Name);
 
                     return contentField == null ? null : fieldDescriptor.FieldAccessor(contentField);
-                })
+                }),
             };
         }
 
