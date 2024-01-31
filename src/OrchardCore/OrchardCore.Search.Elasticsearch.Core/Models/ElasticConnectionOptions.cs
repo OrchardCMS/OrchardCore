@@ -15,12 +15,12 @@ namespace OrchardCore.Search.Elasticsearch.Core.Models
         public int[] Ports { get; set; }
 
         /// <summary>
-        /// The server connection type
+        /// The server connection type.
         /// </summary>
         public string ConnectionType { get; set; }
 
         /// <summary>
-        /// The Elasticsearch cloud service CloudId
+        /// The Elasticsearch cloud service CloudId.
         /// </summary>
         public string CloudId { get; set; }
 

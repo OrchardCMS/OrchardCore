@@ -124,7 +124,7 @@ public class SearchController : Controller
         {
             Index = viewModel.Index,
             Terms = viewModel.Terms,
-            ContentItemIds = searchResult.ContentItemIds ?? Enumerable.Empty<string>(),
+            ContentItemIds = searchResult.ContentItemIds ?? [],
             SearchService = searchService,
             TotalHits = searchResult.ContentItemIds?.Count ?? 0,
         };
@@ -146,7 +146,7 @@ public class SearchController : Controller
                 SearchResults = new SearchResultsViewModel()
                 {
                     Index = viewModel.Index,
-                    ContentItems = Enumerable.Empty<ContentItem>(),
+                    ContentItems = [],
                 },
             });
         }

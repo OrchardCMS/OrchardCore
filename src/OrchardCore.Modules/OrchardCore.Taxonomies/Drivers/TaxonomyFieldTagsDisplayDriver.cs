@@ -88,7 +88,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 field.TaxonomyContentItemId = settings.TaxonomyContentItemId;
 
                 field.TermContentItemIds = model.TermContentItemIds == null
-                    ? Array.Empty<string>() : model.TermContentItemIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                    ? [] : model.TermContentItemIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
                 if (settings.Required && field.TermContentItemIds.Length == 0)
                 {

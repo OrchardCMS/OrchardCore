@@ -36,10 +36,7 @@ namespace OrchardCore.Microsoft.Authentication.Services
 
         public async Task UpdateSettingsAsync(AzureADSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
             container.Alter<AzureADSettings>(nameof(AzureADSettings), aspect =>
@@ -55,10 +52,7 @@ namespace OrchardCore.Microsoft.Authentication.Services
 
         public IEnumerable<ValidationResult> ValidateSettings(AzureADSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             if (string.IsNullOrWhiteSpace(settings.DisplayName))
             {

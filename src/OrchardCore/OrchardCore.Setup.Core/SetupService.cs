@@ -120,14 +120,14 @@ namespace OrchardCore.Setup.Services
 
             // Features to enable for Setup.
             string[] coreFeatures =
-            {
+            [
                 _applicationName,
                 "OrchardCore.Features",
                 "OrchardCore.Scripting",
                 "OrchardCore.Recipes"
-            };
+            ];
 
-            context.EnabledFeatures = coreFeatures.Union(context.EnabledFeatures ?? Enumerable.Empty<string>()).Distinct().ToList();
+            context.EnabledFeatures = coreFeatures.Union(context.EnabledFeatures ?? []).Distinct().ToList();
 
             // Set shell state to "Initializing" so that subsequent HTTP requests are responded to with "Service Unavailable" while Orchard is setting up.
             context.ShellSettings.AsInitializing();

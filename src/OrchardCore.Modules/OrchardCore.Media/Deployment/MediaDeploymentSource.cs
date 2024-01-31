@@ -31,9 +31,9 @@ namespace OrchardCore.Media.Deployment
             }
             else
             {
-                paths = new List<string>(mediaStep.FilePaths ?? Array.Empty<string>()).ToAsyncEnumerable();
+                paths = new List<string>(mediaStep.FilePaths ?? []).ToAsyncEnumerable();
 
-                foreach (var directoryPath in mediaStep.DirectoryPaths ?? Array.Empty<string>())
+                foreach (var directoryPath in mediaStep.DirectoryPaths ?? [])
                 {
                     paths = paths.Concat(_mediaFileStore.GetDirectoryContentAsync(directoryPath, true).Where(e => !e.IsDirectory).Select(e => e.Path));
                 }

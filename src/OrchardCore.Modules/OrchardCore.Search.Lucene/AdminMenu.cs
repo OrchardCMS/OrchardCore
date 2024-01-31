@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
@@ -11,7 +10,7 @@ public class AdminMenu(IStringLocalizer<AdminMenu> localizer) : INavigationProvi
 
     public Task BuildNavigationAsync(string name, NavigationBuilder builder)
     {
-        if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+        if (!NavigationHelper.IsAdminMenu(name))
         {
             return Task.CompletedTask;
         }
@@ -21,19 +20,19 @@ public class AdminMenu(IStringLocalizer<AdminMenu> localizer) : INavigationProvi
                 .AddClass("search").Id("search")
                 .Add(S["Indexing"], S["Indexing"].PrefixPosition(), import => import
                     .Add(S["Lucene Indices"], S["Lucene Indices"].PrefixPosition(), indexes => indexes
-                        .Action("Index", "Admin", new { area = "OrchardCore.Search.Lucene" })
+                        .Action("Index", "Admin", "OrchardCore.Search.Lucene")
                         .Permission(Permissions.ManageLuceneIndexes)
                         .LocalNav()
                      )
                 )
-            .Add(S["Queries"], S["Queries"].PrefixPosition(), import => import
+                .Add(S["Queries"], S["Queries"].PrefixPosition(), import => import
                     .Add(S["Run Lucene Query"], S["Run Lucene Query"].PrefixPosition(), queries => queries
-                        .Action("Query", "Admin", new { area = "OrchardCore.Search.Lucene" })
+                        .Action("Query", "Admin", "OrchardCore.Search.Lucene")
                         .Permission(Permissions.ManageLuceneIndexes)
                         .LocalNav()
-                        )
                     )
-                );
+                )
+            );
 
         return Task.CompletedTask;
     }

@@ -73,12 +73,12 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
                         if (argument.Name.StartsWith("route_"))
                         {
-                            routeValues ??= new Dictionary<string, string>();
+                            routeValues ??= [];
                             routeValues[argument.Name[6..]] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
                         }
                         else
                         {
-                            customAttributes ??= new Dictionary<string, string>();
+                            customAttributes ??= [];
                             customAttributes[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
                         }
 
@@ -125,7 +125,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             if (area != null)
             {
                 // Unconditionally replace any value from asp-route-area.
-                localRouteValues ??= new RouteValueDictionary();
+                localRouteValues ??= [];
                 localRouteValues["area"] = area;
             }
 

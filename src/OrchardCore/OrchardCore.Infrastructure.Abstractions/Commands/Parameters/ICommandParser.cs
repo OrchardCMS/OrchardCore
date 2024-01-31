@@ -28,7 +28,7 @@ namespace OrchardCore.Environment.Commands.Parameters
             {
                 _commandLine = commandLine;
                 _stringBuilder = new StringBuilder();
-                _arguments = new List<string>();
+                _arguments = [];
             }
 
             public StringBuilder StringBuilder { get { return _stringBuilder; } }

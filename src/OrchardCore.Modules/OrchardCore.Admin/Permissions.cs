@@ -10,7 +10,7 @@ namespace OrchardCore.Admin
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return Task.FromResult(GetPermissions());
+            return Task.FromResult(_permissions);
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -20,37 +20,34 @@ namespace OrchardCore.Admin
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = GetPermissions(),
+                    Permissions = _permissions,
                 },
                 new PermissionStereotype
                 {
                     Name = "Editor",
-                    Permissions = GetPermissions(),
+                    Permissions = _permissions,
                 },
                 new PermissionStereotype
                 {
                     Name = "Moderator",
-                    Permissions = GetPermissions(),
+                    Permissions = _permissions,
                 },
                 new PermissionStereotype
                 {
                     Name = "Author",
-                    Permissions = GetPermissions(),
+                    Permissions = _permissions,
                 },
                 new PermissionStereotype
                 {
                     Name = "Contributor",
-                    Permissions = GetPermissions(),
+                    Permissions = _permissions,
                 }
             };
         }
 
-        private static IEnumerable<Permission> GetPermissions()
-        {
-            return new[]
-            {
-                AccessAdminPanel,
-            };
-        }
+        private readonly IEnumerable<Permission> _permissions =
+        [
+            AccessAdminPanel
+        ];
     }
 }

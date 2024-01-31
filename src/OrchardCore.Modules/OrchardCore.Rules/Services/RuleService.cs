@@ -23,7 +23,7 @@ namespace OrchardCore.Rules.Services
                 }
             }
 
-            if (rule.Conditions.Any())
+            if (rule.Conditions.Count > 0)
             {
                 return true;
             }

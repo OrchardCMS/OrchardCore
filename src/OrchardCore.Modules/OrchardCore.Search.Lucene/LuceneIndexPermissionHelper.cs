@@ -10,7 +10,7 @@ public class LuceneIndexPermissionHelper
 
     private static readonly Permission _indexPermissionTemplate = new("QueryLucene{0}Index", "Query Lucene {0} Index", new[] { ManageLuceneIndexes });
 
-    private static readonly Dictionary<string, Permission> _permissions = new();
+    private static readonly Dictionary<string, Permission> _permissions = [];
 
     public static Permission GetLuceneIndexPermission(string indexName)
     {

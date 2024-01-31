@@ -12,10 +12,7 @@ namespace OrchardCore.Modules.FileProviders
 
         public EmbeddedDirectoryContents(IEnumerable<IFileInfo> entries)
         {
-            if (entries == null)
-            {
-                throw new ArgumentNullException(nameof(entries));
-            }
+            ArgumentNullException.ThrowIfNull(entries);
 
             _entries = entries.ToList();
         }

@@ -26,7 +26,7 @@ namespace OrchardCore.Taxonomies.Indexing
     public class TaxonomyIndexProvider : IndexProvider<ContentItem>, IScopedIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly HashSet<string> _ignoredTypes = new();
+        private readonly HashSet<string> _ignoredTypes = [];
         private IContentDefinitionManager _contentDefinitionManager;
 
         public TaxonomyIndexProvider(IServiceProvider serviceProvider)
