@@ -1,10 +1,5 @@
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.Shortcodes.Providers;
 using OrchardCore.Shortcodes.Services;
-using Shortcodes;
-using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Shortcodes
 {
@@ -23,7 +18,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Shortcodes
             CultureInfo.CurrentUICulture = new CultureInfo(currentCulture);
 
             var localeProvider = new LocaleShortcodeProvider();
-            var processor = new ShortcodeService(new IShortcodeProvider[] { localeProvider }, Enumerable.Empty<IShortcodeContextProvider>());
+            var processor = new ShortcodeService(new IShortcodeProvider[] { localeProvider }, []);
             var processed = await processor.ProcessAsync(text);
 
             Assert.Equal(expected, processed);

@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>OrchardCore.Search.Lucene</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Lucene Core</Title>
+    <Description>$(OCCMSDescription)
+
+    Core Implementation for Lucene module.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Lucene.Net.QueryParser" />
+    <PackageReference Include="Lucene.Net.Spatial" />
+    <ProjectReference Include="..\OrchardCore.Queries.Abstractions\OrchardCore.Queries.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Search.Lucene.Abstractions\OrchardCore.Search.Lucene.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -23,7 +23,7 @@ namespace OrchardCore.Environment.Shell
         Task<IEnumerable<string>> LoadSettingsNamesAsync();
 
         /// <summary>
-        /// Retrieves the settings of a given tenant
+        /// Retrieves the settings of a given tenant.
         /// </summary>
         /// <returns>The shell settings.</returns>
         Task<ShellSettings> LoadSettingsAsync(string tenant);
@@ -33,5 +33,11 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         /// <param name="settings">The shell settings to store.</param>
         Task SaveSettingsAsync(ShellSettings settings);
+
+        /// <summary>
+        /// Removes shell settings from the storage.
+        /// </summary>
+        /// <param name="settings">The shell settings to remove.</param>
+        Task RemoveSettingsAsync(ShellSettings settings);
     }
 }

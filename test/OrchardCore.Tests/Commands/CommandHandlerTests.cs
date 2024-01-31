@@ -1,34 +1,28 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Localization;
-using Xunit;
 
 namespace OrchardCore.Tests.Commands
 {
     public class CommandsTests
     {
-        private ICommandHandler _handler;
+        private readonly StubCommandHandler _handler;
 
         public CommandsTests()
         {
             _handler = new StubCommandHandler();
         }
 
-        private CommandContext CreateCommandContext(string commandName)
+        private static CommandContext CreateCommandContext(string commandName)
         {
-            return CreateCommandContext(commandName, new Dictionary<string, string>(), new string[] { });
+            return CreateCommandContext(commandName, new Dictionary<string, string>(), []);
         }
 
-        private CommandContext CreateCommandContext(string commandName, IDictionary<string, string> switches)
+        private static CommandContext CreateCommandContext(string commandName, IDictionary<string, string> switches)
         {
-            return CreateCommandContext(commandName, switches, new string[] { });
+            return CreateCommandContext(commandName, switches, []);
         }
 
-        private CommandContext CreateCommandContext(string commandName, IDictionary<string, string> switches, string[] args)
+        private static CommandContext CreateCommandContext(string commandName, IDictionary<string, string> switches, string[] args)
         {
             var builder = new CommandHandlerDescriptorBuilder();
 
@@ -43,7 +37,7 @@ namespace OrchardCore.Tests.Commands
                 CommandDescriptor = commandDescriptor,
                 Arguments = args,
                 Input = new StringReader(string.Empty),
-                Output = new StringWriter()
+                Output = new StringWriter(),
             };
         }
 
@@ -58,7 +52,7 @@ namespace OrchardCore.Tests.Commands
         [Fact]
         public async Task TestNotExistingCommand()
         {
-            await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            await Assert.ThrowsAsync<InvalidOperationException>(async Task () =>
             {
                 var commandContext = CreateCommandContext("NoSuchCommand");
                 await _handler.ExecuteAsync(commandContext);
@@ -124,7 +118,7 @@ namespace OrchardCore.Tests.Commands
         {
             var switches = new Dictionary<string, string> { { "User", "OrchardUser" } };
             var commandContext = CreateCommandContext("Foo", switches);
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await _handler.ExecuteAsync(commandContext));
+            await Assert.ThrowsAsync<InvalidOperationException>(async Task () => await _handler.ExecuteAsync(commandContext));
         }
 
         [Fact]
@@ -140,13 +134,13 @@ namespace OrchardCore.Tests.Commands
         {
             var switches = new Dictionary<string, string> { { "ThisSwitchDoesNotExist", "Insignificant" } };
             var commandContext = CreateCommandContext("Foo", switches);
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await _handler.ExecuteAsync(commandContext));
+            await Assert.ThrowsAsync<InvalidOperationException>(async Task () => await _handler.ExecuteAsync(commandContext));
         }
 
         [Fact]
         public async Task TestCommandArgumentsArePassedCorrectly()
         {
-            var commandContext = CreateCommandContext("Concat", new Dictionary<string, string>(), new[] { "left to ", "right" });
+            var commandContext = CreateCommandContext("Concat", new Dictionary<string, string>(), ["left to ", "right"]);
             await _handler.ExecuteAsync(commandContext);
             Assert.Equal("left to right", commandContext.Output.ToString());
         }
@@ -154,7 +148,7 @@ namespace OrchardCore.Tests.Commands
         [Fact]
         public async Task TestCommandArgumentsArePassedCorrectlyWithAParamsParameters()
         {
-            var commandContext = CreateCommandContext("ConcatParams", new Dictionary<string, string>(), new[] { "left to ", "right" });
+            var commandContext = CreateCommandContext("ConcatParams", new Dictionary<string, string>(), ["left to ", "right"]);
             await _handler.ExecuteAsync(commandContext);
             Assert.Equal("left to right", commandContext.Output.ToString());
         }
@@ -172,7 +166,7 @@ namespace OrchardCore.Tests.Commands
         {
             var commandContext = CreateCommandContext("ConcatAllParams",
                 new Dictionary<string, string>(),
-                new[] { "left-", "center-", "right" });
+                ["left-", "center-", "right"]);
             await _handler.ExecuteAsync(commandContext);
             Assert.Equal("left-center-right", commandContext.Output.ToString());
         }
@@ -180,22 +174,22 @@ namespace OrchardCore.Tests.Commands
         [Fact]
         public async Task TestCommandParamsMismatchWithoutParamsNotEnoughArguments()
         {
-            var commandContext = CreateCommandContext("Concat", new Dictionary<string, string>(), new[] { "left to " });
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await _handler.ExecuteAsync(commandContext));
+            var commandContext = CreateCommandContext("Concat", new Dictionary<string, string>(), ["left to "]);
+            await Assert.ThrowsAsync<InvalidOperationException>(async Task () => await _handler.ExecuteAsync(commandContext));
         }
 
         [Fact]
         public async Task TestCommandParamsMismatchWithoutParamsTooManyArguments()
         {
-            var commandContext = CreateCommandContext("Foo", new Dictionary<string, string>(), new[] { "left to " });
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await _handler.ExecuteAsync(commandContext));
+            var commandContext = CreateCommandContext("Foo", new Dictionary<string, string>(), ["left to "]);
+            await Assert.ThrowsAsync<InvalidOperationException>(async Task () => await _handler.ExecuteAsync(commandContext));
         }
 
         [Fact]
         public async Task TestCommandParamsMismatchWithParamsButNotEnoughArguments()
         {
             var commandContext = CreateCommandContext("ConcatAllParams", new Dictionary<string, string>());
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await _handler.ExecuteAsync(commandContext));
+            await Assert.ThrowsAsync<InvalidOperationException>(async Task () => await _handler.ExecuteAsync(commandContext));
         }
     }
 
@@ -214,6 +208,7 @@ namespace OrchardCore.Tests.Commands
         [OrchardSwitch]
         public string User { get; set; }
 
+#pragma warning disable CA1822 // Mark members as static
         public string Foo()
         {
             return "Command Foo Executed";
@@ -229,7 +224,7 @@ namespace OrchardCore.Tests.Commands
         [CommandHelp("Baz help")]
         public string Baz()
         {
-            string trace = "Command Baz Called";
+            var trace = "Command Baz Called";
 
             if (Verbose)
             {
@@ -241,7 +236,7 @@ namespace OrchardCore.Tests.Commands
                 trace += " : Entering Level 2";
             }
 
-            if (!String.IsNullOrEmpty(User))
+            if (!string.IsNullOrEmpty(User))
             {
                 trace += " : current user is " + User;
             }
@@ -256,7 +251,7 @@ namespace OrchardCore.Tests.Commands
 
         public string ConcatParams(params string[] parameters)
         {
-            string concatenated = "";
+            var concatenated = "";
             foreach (var s in parameters)
             {
                 concatenated += s;
@@ -266,7 +261,7 @@ namespace OrchardCore.Tests.Commands
 
         public string ConcatAllParams(string leftmost, params string[] rest)
         {
-            string concatenated = leftmost;
+            var concatenated = leftmost;
             foreach (var s in rest)
             {
                 concatenated += s;
@@ -278,5 +273,6 @@ namespace OrchardCore.Tests.Commands
         {
             return;
         }
+#pragma warning restore CA1822 // Mark members as static
     }
 }

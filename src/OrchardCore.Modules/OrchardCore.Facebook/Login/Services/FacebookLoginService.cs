@@ -34,10 +34,7 @@ namespace OrchardCore.Facebook.Login.Services
 
         public async Task UpdateSettingsAsync(FacebookLoginSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
             container.Properties[nameof(FacebookLoginSettings)] = JObject.FromObject(settings);
@@ -46,10 +43,7 @@ namespace OrchardCore.Facebook.Login.Services
 
         public Task<IEnumerable<ValidationResult>> ValidateSettingsAsync(FacebookLoginSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var results = ImmutableArray.CreateBuilder<ValidationResult>();
             return Task.FromResult<IEnumerable<ValidationResult>>(results);

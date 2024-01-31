@@ -7,14 +7,17 @@
     TagBuilder tag = Tag(Model, "a");
 
     var url = linkMenuItemPart.Url;
-    if (url.StartsWith('/'))
+    if (url != null)
     {
-        url = '~' + url;
-    }
+        if (url.StartsWith('/'))
+        {
+            url = '~' + url;
+        }
 
-    if (url.StartsWith("~/", StringComparison.Ordinal))
-    {
-        url = Url.Content(linkMenuItemPart.Url);
+        if (url.StartsWith("~/", StringComparison.Ordinal))
+        {
+            url = Url.Content(linkMenuItemPart.Url);
+        }
     }
 
     tag.Attributes["href"] = url;

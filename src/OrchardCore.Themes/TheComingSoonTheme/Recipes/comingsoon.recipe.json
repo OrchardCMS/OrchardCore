@@ -68,6 +68,46 @@
       "site": "TheComingSoonTheme"
     },
     {
+      "name": "Roles",
+      "Roles": [
+        {
+          "Name": "Administrator",
+          "Description": "Administrator",
+          "Permissions": []
+        },
+        {
+          "Name": "Moderator",
+          "Description": "Moderator",
+          "Permissions": []
+        },
+        {
+          "Name": "Editor",
+          "Description": "Editor",
+          "Permissions": []
+        },
+        {
+          "Name": "Author",
+          "Description": "Author",
+          "Permissions": []
+        },
+        {
+          "Name": "Contributor",
+          "Description": "Contributor",
+          "Permissions": []
+        },
+        {
+          "Name": "Authenticated",
+          "Description": "Authenticated",
+          "Permissions": []
+        },
+        {
+          "Name": "Anonymous",
+          "Description": "Anonymous",
+          "Permissions": []
+        }
+      ]
+    },
+    {
       "name": "settings",
       "HomeRoute": {
         "Action": "Display",
@@ -349,7 +389,7 @@
                 "Author": "admin",
                 "SocialIcon": {
                   "IconClass": {
-                    "Text": "fab fa-twitter"
+                    "Text": "fab fa-x-twitter"
                   },
                   "Url": {
                     "Text": "https://twitter.com"
@@ -463,7 +503,7 @@
           },
           "FormPart": {
             "Action": "[js: getUrlPrefix('/workflows/invoke/' + encodeURI(createWorkflowToken(variables('workflowTypeId'), variables('workflowActivityId'))))]",
-            "Method": "POST"
+            "Method": "post"
           }
         }
       ]

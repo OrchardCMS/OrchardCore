@@ -2,15 +2,10 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Rules
 {
-    public interface IConditionEvaluator
-    {
-        ValueTask<bool> EvaluateAsync(Condition condition);
-    }
-
     public abstract class ConditionEvaluator<T> : IConditionEvaluator where T : Condition
     {
-        protected static ValueTask<bool> False => new ValueTask<bool>(false);
-        protected static ValueTask<bool> True => new ValueTask<bool>(true);
+        protected static ValueTask<bool> False => new(false);
+        protected static ValueTask<bool> True => new(true);
 
         ValueTask<bool> IConditionEvaluator.EvaluateAsync(Condition condition)
             => EvaluateAsync(condition as T);

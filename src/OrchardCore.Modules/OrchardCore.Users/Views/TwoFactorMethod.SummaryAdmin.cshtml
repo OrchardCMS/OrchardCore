@@ -1,0 +1,23 @@
+<div class="row mx-0 border-bottom">
+    <div class="col-auto d-flex align-items-center">
+        @if (Model.Icon != null)
+        {
+            @await DisplayAsync(Model.Icon)
+        }
+    </div>
+
+    <div class="col p-3">
+        @if (Model.Content != null)
+        {
+            @await DisplayAsync(Model.Content)
+        }
+    </div>
+
+    <div class="col-auto d-flex align-items-center">
+
+        @if (Model.Actions != null)
+        {
+            @await DisplayAsync(Model.Actions)
+        }
+    </div>
+</div>

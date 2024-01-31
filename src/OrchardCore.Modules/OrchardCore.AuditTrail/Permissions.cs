@@ -16,7 +16,7 @@ namespace OrchardCore.AuditTrail
                     Permissions = new[]
                     {
                         AuditTrailPermissions.ViewAuditTrail,
-                        AuditTrailPermissions.ManageAuditTrailSettings
+                        AuditTrailPermissions.ManageAuditTrailSettings,
                     }
                 },
             };
@@ -25,7 +25,7 @@ namespace OrchardCore.AuditTrail
             Task.FromResult(new[]
             {
                 AuditTrailPermissions.ViewAuditTrail,
-                AuditTrailPermissions.ManageAuditTrailSettings
+                AuditTrailPermissions.ManageAuditTrailSettings,
             }
             .AsEnumerable());
     }

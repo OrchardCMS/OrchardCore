@@ -11,8 +11,8 @@ namespace OrchardCore.OpenId.Recipes
         public string Type { get; set; }
         public string ConsentType { get; set; }
         public string ClientSecret { get; set; }
-        public RoleEntry[] RoleEntries { get; set; } = Array.Empty<RoleEntry>();
-        public ScopeEntry[] ScopeEntries { get; set; } = Array.Empty<ScopeEntry>();
+        public RoleEntry[] RoleEntries { get; set; } = [];
+        public ScopeEntry[] ScopeEntries { get; set; } = [];
         public bool AllowPasswordFlow { get; set; }
         public bool AllowClientCredentialsFlow { get; set; }
         public bool AllowAuthorizationCodeFlow { get; set; }
@@ -20,6 +20,9 @@ namespace OrchardCore.OpenId.Recipes
         public bool AllowHybridFlow { get; set; }
         public bool AllowImplicitFlow { get; set; }
         public bool AllowLogoutEndpoint { get; set; }
+        public bool AllowIntrospectionEndpoint { get; set; }
+        public bool AllowRevocationEndpoint { get; set; }
+        public bool RequireProofKeyForCodeExchange { get; set; }
 
         public class RoleEntry
         {

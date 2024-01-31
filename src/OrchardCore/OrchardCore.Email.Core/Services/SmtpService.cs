@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
@@ -21,11 +22,11 @@ namespace OrchardCore.Email.Services
     {
         private const string EmailExtension = ".eml";
 
-        private static readonly char[] EmailsSeparator = new char[] { ',', ';' };
+        private static readonly char[] _emailsSeparator = [',', ';'];
 
         private readonly SmtpSettings _options;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         /// <summary>
         /// Initializes a new instance of a <see cref="SmtpService"/>.
@@ -36,8 +37,7 @@ namespace OrchardCore.Email.Services
         public SmtpService(
             IOptions<SmtpSettings> options,
             ILogger<SmtpService> logger,
-            IStringLocalizer<SmtpService> stringLocalizer
-            )
+            IStringLocalizer<SmtpService> stringLocalizer)
         {
             _options = options.Value;
             _logger = logger;
@@ -62,18 +62,25 @@ namespace OrchardCore.Email.Services
             try
             {
                 // Set the MailMessage.From, to avoid the confusion between _options.DefaultSender (Author) and submitter (Sender)
-                var senderAddress = String.IsNullOrWhiteSpace(message.From)
+                var senderAddress = string.IsNullOrWhiteSpace(message.From)
                     ? _options.DefaultSender
                     : message.From;
 
-                if (!String.IsNullOrWhiteSpace(senderAddress))
+                if (!string.IsNullOrWhiteSpace(senderAddress))
                 {
                     message.From = senderAddress;
                 }
 
-                var mimeMessage = FromMailMessage(message);
+                var errors = new List<LocalizedString>();
 
-                if (mimeMessage.From.Count == 0 && mimeMessage.Cc.Count == 0 && mimeMessage.Bcc.Count == 0)
+                var mimeMessage = FromMailMessage(message, errors);
+
+                if (errors.Count > 0)
+                {
+                    return SmtpResult.Failed(errors.ToArray());
+                }
+
+                if (mimeMessage.To.Count == 0 && mimeMessage.Cc.Count == 0 && mimeMessage.Bcc.Count == 0)
                 {
                     return SmtpResult.Failed(S["The mail message should have at least one of these headers: To, Cc or Bcc."]);
                 }
@@ -84,7 +91,7 @@ namespace OrchardCore.Email.Services
                         response = await SendOnlineMessageAsync(mimeMessage);
                         break;
                     case SmtpDeliveryMethod.SpecifiedPickupDirectory:
-                        await SendOfflineMessage(mimeMessage, _options.PickupDirectoryLocation);
+                        await SendOfflineMessageAsync(mimeMessage, _options.PickupDirectoryLocation);
                         break;
                     default:
                         throw new NotSupportedException($"The '{_options.DeliveryMethod}' delivery method is not supported.");
@@ -94,7 +101,7 @@ namespace OrchardCore.Email.Services
             }
             catch (Exception ex)
             {
-                result = SmtpResult.Failed(S["An error occurred while sending an email: '{0}'", ex.Message]); 
+                result = SmtpResult.Failed(S["An error occurred while sending an email: '{0}'", ex.Message]);
             }
 
             result.Response = response;
@@ -102,48 +109,84 @@ namespace OrchardCore.Email.Services
             return result;
         }
 
-        private MimeMessage FromMailMessage(MailMessage message)
+        private MimeMessage FromMailMessage(MailMessage message, List<LocalizedString> errors)
         {
-            var submitterAddress = String.IsNullOrWhiteSpace(message.Sender)
+            var submitterAddress = string.IsNullOrWhiteSpace(message.Sender)
                 ? _options.DefaultSender
                 : message.Sender;
 
             var mimeMessage = new MimeMessage();
 
-            if (!String.IsNullOrEmpty(submitterAddress))
+            if (!string.IsNullOrEmpty(submitterAddress))
             {
-                mimeMessage.Sender = MailboxAddress.Parse(submitterAddress);
+                if (MailboxAddress.TryParse(submitterAddress, out var mailBox))
+                {
+                    mimeMessage.Sender = mailBox;
+
+                }
+                else
+                {
+                    errors.Add(S["Invalid email address: '{0}'", submitterAddress]);
+                }
             }
 
             if (!string.IsNullOrWhiteSpace(message.From))
             {
-                foreach (var address in message.From.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var address in message.From.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
                 {
-                    mimeMessage.From.Add(MailboxAddress.Parse(address));
+                    if (MailboxAddress.TryParse(address, out var mailBox))
+                    {
+                        mimeMessage.From.Add(mailBox);
+                    }
+                    else
+                    {
+                        errors.Add(S["Invalid email address: '{0}'", address]);
+                    }
                 }
             }
 
             if (!string.IsNullOrWhiteSpace(message.To))
             {
-                foreach (var address in message.To.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var address in message.To.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
                 {
-                    mimeMessage.To.Add(MailboxAddress.Parse(address));
+                    if (MailboxAddress.TryParse(address, out var mailBox))
+                    {
+                        mimeMessage.To.Add(mailBox);
+                    }
+                    else
+                    {
+                        errors.Add(S["Invalid email address: '{0}'", address]);
+                    }
                 }
             }
 
             if (!string.IsNullOrWhiteSpace(message.Cc))
             {
-                foreach (var address in message.Cc.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var address in message.Cc.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
                 {
-                    mimeMessage.Cc.Add(MailboxAddress.Parse(address));
+                    if (MailboxAddress.TryParse(address, out var mailBox))
+                    {
+                        mimeMessage.Cc.Add(mailBox);
+                    }
+                    else
+                    {
+                        errors.Add(S["Invalid email address: '{0}'", address]);
+                    }
                 }
             }
 
             if (!string.IsNullOrWhiteSpace(message.Bcc))
             {
-                foreach (var address in message.Bcc.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var address in message.Bcc.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
                 {
-                    mimeMessage.Bcc.Add(MailboxAddress.Parse(address));
+                    if (MailboxAddress.TryParse(address, out var mailBox))
+                    {
+                        mimeMessage.Bcc.Add(mailBox);
+                    }
+                    else
+                    {
+                        errors.Add(S["Invalid email address: '{0}'", address]);
+                    }
                 }
             }
 
@@ -156,9 +199,16 @@ namespace OrchardCore.Email.Services
             }
             else
             {
-                foreach (var address in message.ReplyTo.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var address in message.ReplyTo.Split(_emailsSeparator, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    mimeMessage.ReplyTo.Add(MailboxAddress.Parse(address));
+                    if (MailboxAddress.TryParse(address, out var mailBox))
+                    {
+                        mimeMessage.ReplyTo.Add(mailBox);
+                    }
+                    else
+                    {
+                        errors.Add(S["Invalid email address: '{0}'", address]);
+                    }
                 }
             }
 
@@ -166,14 +216,13 @@ namespace OrchardCore.Email.Services
 
             var body = new BodyBuilder();
 
-            if (message.IsBodyHtml)
+            if (message.IsHtmlBody)
             {
                 body.HtmlBody = message.Body;
             }
-
-            if (message.IsBodyText)
+            else
             {
-                body.TextBody = message.BodyText;
+                body.TextBody = message.Body;
             }
 
             foreach (var attachment in message.Attachments)
@@ -190,16 +239,79 @@ namespace OrchardCore.Email.Services
             return mimeMessage;
         }
 
+        protected virtual Task OnMessageSendingAsync(SmtpClient client, MimeMessage message) => Task.CompletedTask;
+
+        private async Task<string> SendOnlineMessageAsync(MimeMessage message)
+        {
+            var secureSocketOptions = SecureSocketOptions.Auto;
+
+            if (!_options.AutoSelectEncryption)
+            {
+                secureSocketOptions = _options.EncryptionMethod switch
+                {
+                    SmtpEncryptionMethod.None => SecureSocketOptions.None,
+                    SmtpEncryptionMethod.SslTls => SecureSocketOptions.SslOnConnect,
+                    SmtpEncryptionMethod.StartTls => SecureSocketOptions.StartTls,
+                    _ => SecureSocketOptions.Auto,
+                };
+            }
+
+            using var client = new SmtpClient();
+
+            client.ServerCertificateValidationCallback = CertificateValidationCallback;
+
+            await OnMessageSendingAsync(client, message);
+
+            await client.ConnectAsync(_options.Host, _options.Port, secureSocketOptions);
+
+            if (_options.RequireCredentials)
+            {
+                if (_options.UseDefaultCredentials)
+                {
+                    // There's no notion of 'UseDefaultCredentials' in MailKit, so empty credentials is passed in
+                    await client.AuthenticateAsync(string.Empty, string.Empty);
+                }
+                else if (!string.IsNullOrWhiteSpace(_options.UserName))
+                {
+                    await client.AuthenticateAsync(_options.UserName, _options.Password);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(_options.ProxyHost))
+            {
+                client.ProxyClient = new Socks5Client(_options.ProxyHost, _options.ProxyPort);
+            }
+
+            var response = await client.SendAsync(message);
+
+            await client.DisconnectAsync(true);
+
+            return response;
+        }
+
+        private static Task SendOfflineMessageAsync(MimeMessage message, string pickupDirectory)
+        {
+            var mailPath = Path.Combine(pickupDirectory, Guid.NewGuid().ToString() + EmailExtension);
+            return message.WriteToAsync(mailPath, CancellationToken.None);
+        }
+
         private bool CertificateValidationCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
-            if (sslPolicyErrors == SslPolicyErrors.None)
-                return true;
+            const string logErrorMessage = "SMTP Server's certificate {CertificateSubject} issued by {CertificateIssuer} " +
+                                           "with thumbprint {CertificateThumbprint} and expiration date {CertificateExpirationDate} " +
+                                           "is considered invalid with {SslPolicyErrors} policy errors";
 
-            _logger.LogError(string.Concat("SMTP Server's certificate {CertificateSubject} issued by {CertificateIssuer} ",
-                "with thumbprint {CertificateThumbprint} and expiration date {CertificateExpirationDate} ",
-                "is considered invalid with {SslPolicyErrors} policy errors"),
-                certificate.Subject, certificate.Issuer, certificate.GetCertHashString(),
-                certificate.GetExpirationDateString(), sslPolicyErrors);
+            if (sslPolicyErrors == SslPolicyErrors.None)
+            {
+                return true;
+            }
+
+            _logger.LogError(logErrorMessage,
+                certificate.Subject,
+                certificate.Issuer,
+                certificate.GetCertHashString(),
+                certificate.GetExpirationDateString(),
+                sslPolicyErrors);
 
             if (sslPolicyErrors.HasFlag(SslPolicyErrors.RemoteCertificateChainErrors) && chain?.ChainStatus != null)
             {
@@ -209,74 +321,7 @@ namespace OrchardCore.Email.Services
                 }
             }
 
-            return false;
-        }
-
-        protected virtual async Task OnMessageSendingAsync(SmtpClient client, MimeMessage message)
-        {
-            await Task.CompletedTask;
-        }
-
-        private async Task<string> SendOnlineMessageAsync(MimeMessage message)
-        {
-            var secureSocketOptions = SecureSocketOptions.Auto;
-
-            if (!_options.AutoSelectEncryption)
-            {
-                switch (_options.EncryptionMethod)
-                {
-                    case SmtpEncryptionMethod.None:
-                        secureSocketOptions = SecureSocketOptions.None;
-                        break;
-                    case SmtpEncryptionMethod.SSLTLS:
-                        secureSocketOptions = SecureSocketOptions.SslOnConnect;
-                        break;
-                    case SmtpEncryptionMethod.STARTTLS:
-                        secureSocketOptions = SecureSocketOptions.StartTls;
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            using (var client = new SmtpClient())
-            {
-                client.ServerCertificateValidationCallback = CertificateValidationCallback;
-
-                await OnMessageSendingAsync(client, message);
-
-                await client.ConnectAsync(_options.Host, _options.Port, secureSocketOptions);
-
-                if (_options.RequireCredentials)
-                {
-                    if (_options.UseDefaultCredentials)
-                    {
-                        // There's no notion of 'UseDefaultCredentials' in MailKit, so empty credentials is passed in
-                        await client.AuthenticateAsync(String.Empty, String.Empty);
-                    }
-                    else if (!String.IsNullOrWhiteSpace(_options.UserName))
-                    {
-                        await client.AuthenticateAsync(_options.UserName, _options.Password);
-                    }
-                }
-
-                if (!String.IsNullOrEmpty( _options.ProxyHost))
-                {
-                    client.ProxyClient = new Socks5Client(_options.ProxyHost, _options.ProxyPort);
-                }
-
-                var response = await client.SendAsync(message);
-
-                await client.DisconnectAsync(true);
-
-                return response;
-            }
-        }
-
-        private async Task SendOfflineMessage(MimeMessage message, string pickupDirectory)
-        {
-            var mailPath = Path.Combine(pickupDirectory, Guid.NewGuid().ToString() + EmailExtension);
-            await message.WriteToAsync(mailPath, CancellationToken.None);
+            return _options.IgnoreInvalidSslCertificate;
         }
     }
 }

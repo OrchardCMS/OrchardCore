@@ -9,7 +9,11 @@ namespace OrchardCore.Roles.ViewModels
     {
         public string Name { get; set; }
         public string RoleDescription { get; set; }
-        public IDictionary<string, IEnumerable<Permission>> RoleCategoryPermissions { get; set; }
+
+        [BindNever]
+        public IDictionary<PermissionGroupKey, IEnumerable<Permission>> RoleCategoryPermissions { get; set; }
+
+        [BindNever]
         public IEnumerable<string> EffectivePermissions { get; set; }
 
         [BindNever]

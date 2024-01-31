@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 
@@ -31,7 +27,7 @@ namespace OrchardCore.Tests.Stubs
 
         public IEnumerable<IFeatureInfo> GetFeatures()
         {
-            return Enumerable.Empty<IFeatureInfo>();
+            return [];
         }
 
         public IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad)

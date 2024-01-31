@@ -6,11 +6,11 @@ namespace OrchardCore.Admin
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission AccessAdminPanel = new Permission("AccessAdminPanel", "Access admin panel");
+        public static readonly Permission AccessAdminPanel = new("AccessAdminPanel", "Access admin panel");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return Task.FromResult(GetPermissions());
+            return Task.FromResult(_permissions);
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -20,33 +20,34 @@ namespace OrchardCore.Admin
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = GetPermissions()
+                    Permissions = _permissions,
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Editor",
-                    Permissions = GetPermissions()
+                    Permissions = _permissions,
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Moderator",
-                    Permissions = GetPermissions()
+                    Permissions = _permissions,
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Author",
-                    Permissions = GetPermissions()
+                    Permissions = _permissions,
                 },
-                new PermissionStereotype {
+                new PermissionStereotype
+                {
                     Name = "Contributor",
-                    Permissions = GetPermissions()
+                    Permissions = _permissions,
                 }
             };
         }
 
-        private IEnumerable<Permission> GetPermissions()
-        {
-            return new[]
-            {
-                AccessAdminPanel
-            };
-        }
+        private readonly IEnumerable<Permission> _permissions =
+        [
+            AccessAdminPanel
+        ];
     }
 }
