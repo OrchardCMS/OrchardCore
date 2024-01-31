@@ -177,7 +177,7 @@ Now, your project explorer should look like below image.
 - Next, will be creating basic structure of our Blazor application that includes main App, Layout, NavMenu and router components in project `OCBlazorLib` 
 - Add  New Item ->  Razor component -> `App.razor`.
 - Add New Item -> Stylesheet -> `App.razor.css`
-- Add following css code 
+- Update `App.razor`, `App.razor.css` and `_Imports.razor` with following code.
 
 === "App.razor"
 
@@ -404,7 +404,7 @@ Now, your project explorer should look like below image.
 
 - Let's create the navigation component. Add new file `NavMenu.razor` and `NavMenu.razor.css` in `Layout` folder and add following code.
 
-=== "NavMenu.razor.css"
+=== "NavMenu.razor"
 
     ```razor
         <div class="top-row ps-3 navbar navbar-dark">
