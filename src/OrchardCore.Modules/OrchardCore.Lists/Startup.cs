@@ -1,12 +1,11 @@
 using System;
-using System.Text.Json.Serialization;
 using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
-using OrchardCore.AdminMenu.Models;
+using OrchardCore.AdminMenu;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentLocalization.Models;
@@ -74,8 +73,7 @@ namespace OrchardCore.Lists
             services.AddScoped<IContentItemIndexHandler, ContainedPartContentIndexHandler>();
             services.AddScoped<IContainerService, ContainerService>();
 
-            // Allows to serialize 'AdminNode' derived types.
-            services.AddJsonDerivedTypeInfo<ListsAdminNode, AdminNode>();
+            services.AddAdminNode<ListsAdminNode>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
