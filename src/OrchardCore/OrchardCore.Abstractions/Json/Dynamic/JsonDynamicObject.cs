@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Text.Json.Nodes;
 using System.Text.Json.Settings;
 
-
 #nullable enable
 
 namespace System.Text.Json.Dynamic;

@@ -32,7 +32,7 @@ public static class JOptions
     static JOptions()
     {
         Default = new JsonSerializerOptions(Base);
-        Default.Converters.Add(new JsonDynamicConverter());
+        Default.Converters.Add(new DynamicJsonConverter());
         Default.Converters.Add(new PathStringJsonConverter());
 
         Indented = new JsonSerializerOptions(Default)

@@ -22,12 +22,12 @@ public class JsonDerivedTypeInfo<TDerived, TBase> : IJsonDerivedTypeInfo
         using var builder = ZString.CreateStringBuilder();
 
         // loop through the type name and filter out qualified assembly details from nested type names
-        bool writingAssemblyName = false;
-        bool skippingAssemblyDetails = false;
-        bool followBrackets = false;
-        for (int i = 0; i < fullyQualifiedTypeName.Length; i++)
+        var writingAssemblyName = false;
+        var skippingAssemblyDetails = false;
+        var followBrackets = false;
+        for (var i = 0; i < fullyQualifiedTypeName.Length; i++)
         {
-            char current = fullyQualifiedTypeName[i];
+            var current = fullyQualifiedTypeName[i];
             switch (current)
             {
                 case '[':

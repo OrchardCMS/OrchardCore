@@ -5,5 +5,6 @@ namespace System.Text.Json.Serialization;
 public interface IJsonDerivedTypeInfo
 {
     JsonDerivedType DerivedType { get; }
+
     Type BaseType { get; }
 }

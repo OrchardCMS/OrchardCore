@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace System.Text.Json.Serialization;
 
-public class JsonDynamicConverter : JsonConverter<object>
+public class DynamicJsonConverter : JsonConverter<object>
 {
-    public static readonly JsonDynamicConverter Instance = new();
+    public static readonly DynamicJsonConverter Instance = new();
 
     public override object? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

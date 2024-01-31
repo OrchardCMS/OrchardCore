@@ -18,20 +18,9 @@ public class PathStringJsonConverter : JsonConverter<PathString>
             return PathString.Empty;
         }
 
-        if (!result.StartsWith('/'))
-        {
-            return new PathString('/' + result);
-        }
-
         return new PathString(result);
     }
 
     public override void Write(Utf8JsonWriter writer, PathString value, JsonSerializerOptions options)
-    {
-        // https://localhost:44300/blog1/Admin/Settings/general
-
-        JsonSerializer.Serialize(writer, value.ToString(), typeof(string), options);
-
-
-    }
+        => JsonSerializer.Serialize(writer, value.ToString(), typeof(string), options);
 }

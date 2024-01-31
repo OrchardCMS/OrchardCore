@@ -14,7 +14,7 @@ namespace YesSql.Serialization
         public DefaultJsonContentSerializer()
         {
             _options = new(JOptions.Base);
-            _options.Converters.Add(JsonDynamicConverter.Instance);
+            _options.Converters.Add(System.Text.Json.Serialization.DynamicJsonConverter.Instance);
             _options.Converters.Add(PathStringJsonConverter.Instance);
         }
 
@@ -26,7 +26,7 @@ namespace YesSql.Serialization
                 _options.TypeInfoResolverChain.Add(resolver);
             }
 
-            _options.Converters.Add(JsonDynamicConverter.Instance);
+            _options.Converters.Add(System.Text.Json.Serialization.DynamicJsonConverter.Instance);
             _options.Converters.Add(PathStringJsonConverter.Instance);
         }
 

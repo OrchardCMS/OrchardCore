@@ -6,7 +6,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json.Nodes;
 
-
 #nullable enable
 
 namespace System.Text.Json.Dynamic;

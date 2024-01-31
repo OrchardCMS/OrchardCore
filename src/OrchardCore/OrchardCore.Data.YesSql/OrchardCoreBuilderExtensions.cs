@@ -181,7 +181,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             var typeInfoResolvers = sp.GetServices<IJsonTypeInfoResolver>().ToList();
             var derivedTypeInfos = sp.GetServices<IJsonDerivedTypeInfo>();
-            typeInfoResolvers.Add(new JsonPolymorphicResolver(derivedTypeInfos));
+            typeInfoResolvers.Add(new PolymorphicJsonTypeInfoResolver(derivedTypeInfos));
 
             var storeConfiguration = new YesSql.Configuration
             {

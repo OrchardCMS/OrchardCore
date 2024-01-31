@@ -5,11 +5,11 @@ using System.Text.Json.Serialization.Metadata;
 
 namespace System.Text.Json.Serialization;
 
-public class JsonPolymorphicResolver : DefaultJsonTypeInfoResolver
+public class PolymorphicJsonTypeInfoResolver : DefaultJsonTypeInfoResolver
 {
     private readonly FrozenDictionary<Type, JsonDerivedType[]> _derivedTypes;
 
-    public JsonPolymorphicResolver(IEnumerable<IJsonDerivedTypeInfo> derivedTypes)
+    public PolymorphicJsonTypeInfoResolver(IEnumerable<IJsonDerivedTypeInfo> derivedTypes)
     {
         _derivedTypes = derivedTypes
             .GroupBy(info => info.BaseType)
