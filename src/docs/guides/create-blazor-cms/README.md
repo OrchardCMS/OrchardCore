@@ -149,7 +149,8 @@ dotnet sln add ./BlazorCms
 In this section we'll create .NET Blazor Application, as Razor Class library and later we'll reference it in Orchard Core Application.
 
 !!! note
-You can add `.razor` files in main Orchard Core Web application, however adding `.razor` file in Orchard Core modules are not supported. For this reason, and to have maximum reusability of your razor components, always use razor class library and add reference to your orchard core web project or orchard core module. 
+
+You can add `.razor` files in main Orchard Core Web application, however adding `.razor` file in Orchard Core modules are not supported. For this reason, and to have maximum reusability of your razor components, always use razor class library and add it as reference to your orchard core web project or orchard core module.
 
 - Create Razor class library project `OCBlazorLib.csproj` and add it to the solution `BlazorCms`. 
 - Add the project's reference to your web application project.
@@ -165,7 +166,7 @@ Now, your project explorer should look like below image.
 
 ![OCBlazor.sln Solution Explorer](./images/image-003.PNG)
 
-- We are using ASP.NET Core framework specific features in our class library so we need to add reference to `AspNetCore.App`. To achieve this  open and edit `OCBlazorLib.csproj` and add following `ItemGroup`
+- We are using ASP.NET Core framework specific features in our class library so we need to add reference to `AspNetCore.App`. To achieve this, open and edit `OCBlazorLib.csproj` and add following `ItemGroup`
 
 ```xml
   <ItemGroup>
@@ -180,7 +181,7 @@ Now, your project explorer should look like below image.
 
 === "App.razor"
 
-    ```html
+    ```razor
         <!DOCTYPE html>
         <html lang="en">
             
