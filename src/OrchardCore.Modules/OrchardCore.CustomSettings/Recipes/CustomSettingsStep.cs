@@ -35,7 +35,7 @@ namespace OrchardCore.CustomSettings.Recipes
                     continue;
                 }
 
-                siteSettings.Properties[customSettings.Key] = customSettings.Value;
+                siteSettings.Properties[customSettings.Key] = customSettings.Value.DeepClone();
             }
 
             await _siteService.UpdateSiteSettingsAsync(siteSettings);
