@@ -2,30 +2,25 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Shortcodes;
+namespace OrchardCore.Google;
 
-public class Permissions : IPermissionProvider
+public class GoogleAnalyticsPermissionsProvider : IPermissionProvider
 {
-    public static readonly Permission ManageShortcodeTemplates = new("ManageShortcodeTemplates", "Manage shortcode templates", isSecurityCritical: true);
+    public static readonly Permission ManageGoogleAnalytics = Permissions.ManageGoogleAnalytics;
 
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        ManageShortcodeTemplates,
+        ManageGoogleAnalytics,
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
+       => Task.FromResult(_allPermissions);
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
     [
         new PermissionStereotype
         {
             Name = "Administrator",
-            Permissions = _allPermissions,
-        },
-        new PermissionStereotype
-        {
-            Name = "Editor",
             Permissions = _allPermissions,
         },
     ];
