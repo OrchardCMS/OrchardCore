@@ -197,6 +197,7 @@ nav:
       - Core Modules:
           - Audit Trail: docs/reference/modules/AuditTrail/README.md
           - Auto Setup: docs/reference/modules/AutoSetup/README.md
+          - Azure Email: docs/reference/modules/Email.Azure/README.md
           - Features: docs/reference/modules/Features/README.md
           - Contents: docs/reference/modules/Contents/README.md
           - Configuration: docs/reference/core/Configuration/README.md
@@ -229,6 +230,7 @@ nav:
           - Security: docs/reference/modules/Security/README.md
           - Setup: docs/reference/modules/Setup/README.md
           - Shells: docs/reference/core/Shells/README.md
+          - SMTP Email: docs/reference/modules/Email.Smtp/README.md
           - Tenants: docs/reference/modules/Tenants/README.md
           - Workflows: docs/reference/modules/Workflows/README.md
           - DataProtection (Azure Storage): docs/reference/modules/DataProtection.Azure/README.md
