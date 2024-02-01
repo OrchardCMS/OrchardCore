@@ -33,10 +33,12 @@ namespace OrchardCore.Email
                     .Add(S["Settings"], settings => settings
                        .Add(S["Email"], S["Email"].PrefixPosition(), entry => entry
                           .AddClass("email").Id("email")
-                          .Action("Index", "Admin", _routeValues)
-                          .Permission(Permissions.ManageEmailSettings)
-                          .LocalNav()
-                        )
+                          .Add(S["Email Settings"], S["Email Settings"].PrefixPosition(), entry => entry
+                            .Action("Index", "Admin", _routeValues)
+                            .Permission(Permissions.ManageEmailSettings)
+                            .LocalNav()
+                          )
+                       )
                     )
                 );
 
