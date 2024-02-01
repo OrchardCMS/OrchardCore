@@ -11,7 +11,7 @@ namespace OrchardCore.Email
         private static readonly RouteValueDictionary _routeValues = new()
         {
             { "area", "OrchardCore.Settings" },
-            { "groupId", SmtpSettingsDisplayDriver.GroupId },
+            { "groupId", EmailSettingsDisplayDriver.GroupId },
         };
 
         protected readonly IStringLocalizer S;
