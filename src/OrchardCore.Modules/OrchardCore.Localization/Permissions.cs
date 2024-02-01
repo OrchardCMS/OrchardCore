@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -10,32 +11,30 @@ namespace OrchardCore.Localization;
 /// </summary>
 public class Permissions : IPermissionProvider
 {
-    /// <summary>
-    /// Gets a permission for managing the cultures.
-    /// </summary>
-    public static readonly Permission ManageCultures = new("ManageCultures");
+    private static Lazy<Permission> _manageCultures;
 
     private readonly IStringLocalizer S;
-    private readonly IEnumerable<Permission> _allPermissions =
-    [
-        ManageCultures,
-    ];
 
     public Permissions(IStringLocalizer<Permissions> localizer)
     {
         S = localizer;
-        ManageCultures.Description = S["Manage supported culture"];
+        _manageCultures = new Lazy<Permission>(() => new("ManageCultures", S["Manage supported culture"]));
     }
 
+    /// <summary>
+    /// Gets a permission for managing the cultures.
+    /// </summary>
+    public static Permission ManageCultures => _manageCultures.Value;
+
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
-       => Task.FromResult(_allPermissions);
+       => Task.FromResult<IEnumerable<Permission>>(new[] { ManageCultures });
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
     [
         new PermissionStereotype
         {
             Name = "Administrator",
-            Permissions = _allPermissions,
-        },
+            Permissions = new [] { ManageCultures },
+        }
     ];
 }
