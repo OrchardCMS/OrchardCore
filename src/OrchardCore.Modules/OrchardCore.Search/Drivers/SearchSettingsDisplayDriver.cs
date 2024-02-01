@@ -53,7 +53,8 @@ namespace OrchardCore.Search.Drivers
                 model.Placeholder = settings.Placeholder;
                 model.PageTitle = settings.PageTitle;
                 model.ProviderName = settings.ProviderName;
-            }).Location("Content:2").OnGroup(SearchConstants.SearchSettingsGroupId);
+            }).Location("Content:2")
+            .OnGroup(SearchConstants.SearchSettingsGroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(SearchSettings section, BuildEditorContext context)

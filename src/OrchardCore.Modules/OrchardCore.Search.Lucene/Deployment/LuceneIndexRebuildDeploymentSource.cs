@@ -16,7 +16,7 @@ namespace OrchardCore.Search.Lucene.Deployment
                 return Task.CompletedTask;
             }
 
-            var indicesToRebuild = luceneIndexRebuildStep.IncludeAll ? Array.Empty<string>() : luceneIndexRebuildStep.IndexNames;
+            var indicesToRebuild = luceneIndexRebuildStep.IncludeAll ? [] : luceneIndexRebuildStep.IndexNames;
 
             result.Steps.Add(new JObject(
                 new JProperty("name", "lucene-index-rebuild"),

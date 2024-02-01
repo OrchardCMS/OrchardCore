@@ -61,10 +61,7 @@ namespace OrchardCore.OpenId.Services.Managers
         /// </returns>
         public virtual ValueTask<string> GetPhysicalIdAsync(TApplication application, CancellationToken cancellationToken = default)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             return Store is IOpenIdApplicationStore<TApplication> store ?
                 store.GetPhysicalIdAsync(application, cancellationToken) :
@@ -74,10 +71,7 @@ namespace OrchardCore.OpenId.Services.Managers
         public virtual async ValueTask<ImmutableArray<string>> GetRolesAsync(
             TApplication application, CancellationToken cancellationToken = default)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             if (Store is IOpenIdApplicationStore<TApplication> store)
             {
@@ -136,10 +130,7 @@ namespace OrchardCore.OpenId.Services.Managers
         public virtual async ValueTask SetRolesAsync(TApplication application,
             ImmutableArray<string> roles, CancellationToken cancellationToken = default)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             if (roles.Any(role => string.IsNullOrEmpty(role)))
             {
@@ -168,15 +159,9 @@ namespace OrchardCore.OpenId.Services.Managers
         public override async ValueTask PopulateAsync(TApplication application,
             OpenIddictApplicationDescriptor descriptor, CancellationToken cancellationToken = default)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
-            if (descriptor == null)
-            {
-                throw new ArgumentNullException(nameof(descriptor));
-            }
+            ArgumentNullException.ThrowIfNull(descriptor);
 
             // Note: this method MUST be called first before applying any change to the untyped
             // properties bag to ensure the base method doesn't override the added properties.
@@ -207,15 +192,9 @@ namespace OrchardCore.OpenId.Services.Managers
         public override async ValueTask PopulateAsync(OpenIddictApplicationDescriptor descriptor,
             TApplication application, CancellationToken cancellationToken = default)
         {
-            if (descriptor == null)
-            {
-                throw new ArgumentNullException(nameof(descriptor));
-            }
+            ArgumentNullException.ThrowIfNull(descriptor);
 
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             await base.PopulateAsync(descriptor, application, cancellationToken);
 
@@ -228,10 +207,7 @@ namespace OrchardCore.OpenId.Services.Managers
         public override IAsyncEnumerable<ValidationResult> ValidateAsync(
             TApplication application, CancellationToken cancellationToken = default)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             return ExecuteAsync();
 

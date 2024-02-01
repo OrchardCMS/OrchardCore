@@ -89,12 +89,12 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
 
         public FieldType GetField(ContentPartFieldDefinition field)
         {
-            if (!_contentFieldTypeMappings.ContainsKey(field.FieldDefinition.Name))
+            if (!_contentFieldTypeMappings.TryGetValue(field.FieldDefinition.Name, out var value))
             {
                 return null;
             }
 
-            var fieldDescriptor = _contentFieldTypeMappings[field.FieldDefinition.Name];
+            var fieldDescriptor = value;
             return new FieldType
             {
                 Name = field.Name,

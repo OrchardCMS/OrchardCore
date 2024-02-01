@@ -62,7 +62,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         public ContentPartDefinitionBuilder Named(string name)
         {
             Name = name;
-            
+
             return this;
         }
 
@@ -73,22 +73,14 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             {
                 _fields.Remove(existingField);
             }
-            
-            return this;
-        }
 
-        [Obsolete("Use WithSettings<T>. This will be removed in a future version.")]
-        public ContentPartDefinitionBuilder WithSetting(string name, string value)
-        {
-            _settings[name] = value;
-            
             return this;
         }
 
         public ContentPartDefinitionBuilder MergeSettings(JObject settings)
         {
             _settings.Merge(settings, ContentBuilderSettings.JsonMergeSettings);
-            
+
             return this;
         }
 
@@ -105,7 +97,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             var settingsToMerge = existingJObject.ToObject<T>();
             setting(settingsToMerge);
             _settings[typeof(T).Name] = JObject.FromObject(settingsToMerge, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
-            
+
             return this;
         }
 
@@ -137,21 +129,26 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
             else
             {
-                existingField = new ContentPartFieldDefinition(null, fieldName, new JObject());
+                existingField = new ContentPartFieldDefinition(null, fieldName, []);
             }
 
             var configurer = new FieldConfigurerImpl(existingField, _part);
 
             configuration(configurer);
 
-            if (string.IsNullOrEmpty(existingField.DisplayName()))
+            var fieldDefinition = configurer.Build();
+
+            var settings = fieldDefinition.GetSettings<ContentPartFieldSettings>();
+
+            if (string.IsNullOrEmpty(settings.DisplayName))
             {
                 // If there is no display name, let's use the field name by default.
-                configurer.WithDisplayName(fieldName);
+                settings.DisplayName = fieldName;
+                fieldDefinition.PopulateSettings(settings);
             }
-            
-            _fields.Add(configurer.Build());
-            
+
+            _fields.Add(fieldDefinition);
+
             return this;
         }
 
@@ -190,20 +187,25 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
             else
             {
-                existingField = new ContentPartFieldDefinition(null, fieldName, new JObject());
+                existingField = new ContentPartFieldDefinition(null, fieldName, []);
             }
 
             var configurer = new FieldConfigurerImpl(existingField, _part);
 
             await configurationAsync(configurer);
-            
-            if (string.IsNullOrEmpty(existingField.DisplayName()))
+
+            var fieldDefinition = configurer.Build();
+
+            var settings = fieldDefinition.GetSettings<ContentPartFieldSettings>();
+
+            if (string.IsNullOrEmpty(settings.DisplayName))
             {
                 // If there is no display name, let's use the field name by default.
-                configurer.WithDisplayName(fieldName);
+                settings.DisplayName = fieldName;
+                fieldDefinition.PopulateSettings(settings);
             }
 
-            _fields.Add(configurer.Build());
+            _fields.Add(fieldDefinition);
 
             return this;
         }

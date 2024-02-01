@@ -11,6 +11,6 @@ namespace OrchardCore.ContentFields.Settings
 
         [DefaultValue(true)]
         public bool DisplayAllUsers { get; set; } = true;
-        public string[] DisplayedRoles { get; set; } = Array.Empty<string>();
+        public string[] DisplayedRoles { get; set; } = [];
     }
 }

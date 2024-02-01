@@ -27,11 +27,11 @@ namespace OrchardCore.Media.ViewModels
         // Anchor points are an option that maybe applied to a media field through settings.
         public bool AllowAnchors { get; set; }
 
-        public Anchor[] Anchors { get; set; } = Array.Empty<Anchor>();
+        public Anchor[] Anchors { get; set; } = [];
 
-        public string[] AttachedFileNames { get; set; } = Array.Empty<string>();
+        public string[] AttachedFileNames { get; set; } = [];
 
-        public string[] AllowedExtensions { get; set; } = Array.Empty<string>();
+        public string[] AllowedExtensions { get; set; } = [];
     }
 
     public class EditMediaFieldItemInfo

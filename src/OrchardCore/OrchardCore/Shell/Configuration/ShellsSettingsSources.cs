@@ -37,10 +37,10 @@ namespace OrchardCore.Environment.Shell.Configuration
             }
             else
             {
-                tenantsSettings = new JObject();
+                tenantsSettings = [];
             }
 
-            var settings = tenantsSettings.GetValue(tenant) as JObject ?? new JObject();
+            var settings = tenantsSettings.GetValue(tenant) as JObject ?? [];
 
             foreach (var key in data.Keys)
             {

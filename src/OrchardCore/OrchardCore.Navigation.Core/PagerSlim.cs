@@ -31,12 +31,12 @@ namespace OrchardCore.Navigation
         public int PageSize { get; set; }
 
         /// <summary>
-        /// Gets or sets the the first element in the page or <code>null</code>  if none is specified.
+        /// Gets or sets the the first element in the page or. <code>null</code>  if none is specified.
         /// </summary>
         public string Before { get; set; }
 
         /// <summary>
-        /// Gets or sets the the last element in the page or <code>null</code>  if none is specified.
+        /// Gets or sets the the last element in the page or. <code>null</code>  if none is specified.
         /// </summary>
         public string After { get; set; }
     }
