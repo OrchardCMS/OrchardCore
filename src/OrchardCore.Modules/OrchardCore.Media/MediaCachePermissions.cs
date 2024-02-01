@@ -2,30 +2,25 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Shortcodes;
+namespace OrchardCore.Media;
 
-public class Permissions : IPermissionProvider
+public class MediaCachePermissions : IPermissionProvider
 {
-    public static readonly Permission ManageShortcodeTemplates = new("ManageShortcodeTemplates", "Manage shortcode templates", isSecurityCritical: true);
+    public static readonly Permission ManageAssetCache = new("ManageAssetCache", "Manage Asset Cache Folder");
 
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        ManageShortcodeTemplates,
+        ManageAssetCache,
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
+       => Task.FromResult(_allPermissions);
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
     [
         new PermissionStereotype
         {
             Name = "Administrator",
-            Permissions = _allPermissions,
-        },
-        new PermissionStereotype
-        {
-            Name = "Editor",
             Permissions = _allPermissions,
         },
     ];
