@@ -20,24 +20,34 @@ public class SmtpEmailSettingsConfiguration(
 
     public void Configure(SmtpEmailSettings options)
     {
+        var emailSettings = _site.GetSiteSettingsAsync()
+            .GetAwaiter()
+            .GetResult()
+            .As<EmailSettings>();
+
+        var smtpEmailSettings = _site.GetSiteSettingsAsync()
+            .GetAwaiter()
+            .GetResult()
+            .As<SmtpEmailSettings>();
+
+        var defaultSender = emailSettings.DefaultSender;
+
         var section = _shellConfiguration.GetSection("OrchardCore_Email_Smtp");
 
-        var emailSettings = _site.GetSiteSettingsAsync().GetAwaiter().GetResult().As<SmtpEmailSettings>();
-
-        options.DefaultSender = section.GetValue(nameof(options.DefaultSender), emailSettings.DefaultSender);
-        options.DeliveryMethod = section.GetValue(nameof(options.DeliveryMethod), emailSettings.DeliveryMethod);
-        options.PickupDirectoryLocation = section.GetValue(nameof(options.PickupDirectoryLocation), emailSettings.PickupDirectoryLocation);
-        options.Host = section.GetValue(nameof(options.Host), emailSettings.Host);
-        options.Port = section.GetValue(nameof(options.Port), emailSettings.Port);
-        options.ProxyHost = section.GetValue(nameof(options.ProxyHost), emailSettings.ProxyHost);
-        options.ProxyPort = section.GetValue(nameof(options.ProxyPort), emailSettings.ProxyPort);
-        options.EncryptionMethod = section.GetValue(nameof(options.EncryptionMethod), emailSettings.EncryptionMethod);
-        options.AutoSelectEncryption = section.GetValue(nameof(options.AutoSelectEncryption), emailSettings.AutoSelectEncryption);
-        options.RequireCredentials = section.GetValue(nameof(options.RequireCredentials), emailSettings.RequireCredentials);
-        options.UseDefaultCredentials = section.GetValue(nameof(options.UseDefaultCredentials), emailSettings.UseDefaultCredentials);
-        options.UserName = section.GetValue(nameof(options.UserName), emailSettings.UserName);
-        options.Password = section.GetValue(nameof(options.Password), emailSettings.Password);
-        options.IgnoreInvalidSslCertificate = section.GetValue(nameof(options.IgnoreInvalidSslCertificate), emailSettings.IgnoreInvalidSslCertificate);
+        options.DefaultSender = section.GetValue(nameof(options.DefaultSender), defaultSender);
+        options.DeliveryMethod = smtpEmailSettings.DeliveryMethod;
+        options.PickupDirectoryLocation = smtpEmailSettings.PickupDirectoryLocation;
+        options.Host =  smtpEmailSettings.Host;
+        options.Port = smtpEmailSettings.Port;
+        options.ProxyHost = smtpEmailSettings.ProxyHost;
+        options.ProxyPort = smtpEmailSettings.ProxyPort;
+        options.EncryptionMethod = smtpEmailSettings.EncryptionMethod;
+        options.AutoSelectEncryption =  smtpEmailSettings.AutoSelectEncryption;
+        options.RequireCredentials = smtpEmailSettings.RequireCredentials;
+        options.UseDefaultCredentials = smtpEmailSettings.UseDefaultCredentials;
+        options.UserName = smtpEmailSettings.UserName;
+        options.Password = smtpEmailSettings.Password;
+        options.IgnoreInvalidSslCertificate = smtpEmailSettings.IgnoreInvalidSslCertificate;
 
         // Decrypt the password
         if (!string.IsNullOrWhiteSpace(options.Password))
@@ -45,6 +55,7 @@ public class SmtpEmailSettingsConfiguration(
             try
             {
                 var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpEmailSettingsConfiguration));
+
                 options.Password = protector.Unprotect(options.Password);
             }
             catch

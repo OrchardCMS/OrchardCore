@@ -22,7 +22,6 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpEmailSe
     private readonly ShellSettings _shellSettings;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly EmailSettings _emailSettings;
     private readonly SmtpEmailSettings _smtpEmailSettings;
 
     public SmtpSettingsDisplayDriver(
@@ -39,7 +38,6 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpEmailSe
         _shellSettings = shellSettings;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
-        _emailSettings = emailSettings.Value;
         _smtpEmailSettings = smtpEmailSettings.Value;
     }
 
@@ -52,13 +50,13 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpEmailSe
             return null;
         }
 
-        var defaultSender = _smtpEmailSettings.DefaultSender ?? _emailSettings.DefaultSender;
+        //var defaultSender = _smtpEmailSettings.DefaultSender ?? _emailSettings.DefaultSender;
 
         var shapes = new List<IDisplayResult>
         {
             Initialize<SmtpEmailSettings>("SmtpEmailSettings_Edit", model =>
             {
-                model.DefaultSender = defaultSender;
+                model.DefaultSender = _smtpEmailSettings.DefaultSender;
                 model.DeliveryMethod = settings.DeliveryMethod;
                 model.PickupDirectoryLocation = settings.PickupDirectoryLocation;
                 model.Host = settings.Host;
@@ -75,7 +73,7 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpEmailSe
             }).Location("Content:5").OnGroup(GroupId),
         };
 
-        if (defaultSender != null)
+        if (_smtpEmailSettings.DefaultSender != null)
         {
             shapes.Add(Dynamic("SmtpEmailSettings_TestButton").Location("Actions").OnGroup(GroupId));
         }

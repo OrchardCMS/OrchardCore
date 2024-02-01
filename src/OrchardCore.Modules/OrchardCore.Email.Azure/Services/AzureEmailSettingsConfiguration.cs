@@ -13,11 +13,14 @@ public class AzureEmailSettingsConfiguration(IShellConfiguration shellConfigurat
 
     public void Configure(AzureEmailSettings options)
     {
+        var emailSettings = _site.GetSiteSettingsAsync()
+            .GetAwaiter()
+            .GetResult()
+            .As<EmailSettings>();
+
         var section = _shellConfiguration.GetSection("OrchardCore_Email_Azure");
 
-        var emailSettings = _site.GetSiteSettingsAsync().GetAwaiter().GetResult().As<EmailSettings>();
-
         options.DefaultSender = section.GetValue(nameof(options.DefaultSender), emailSettings.DefaultSender);
-        options.ConnectionString = section.GetValue(nameof(options.ConnectionString), string.Empty);
+        options.ConnectionString = section.GetValue<string>(nameof(options.ConnectionString));
     }
 }
