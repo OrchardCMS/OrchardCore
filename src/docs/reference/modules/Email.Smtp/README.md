@@ -51,6 +51,9 @@ The following configuration values can be customized:
 
 For more information please refer to [Configuration](../../core/Configuration/README.md).
 
+!!! note
+    You can use still use the old `OrchardCore_Email` section for backward compatibility, but we encourage every one to use `OrchardCore_Email_Smtp` section instead.
+
 ## Credits
 
 ### MailKit
