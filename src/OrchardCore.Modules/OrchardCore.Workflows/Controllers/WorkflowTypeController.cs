@@ -437,9 +437,11 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             var workflowType = await _workflowTypeStore.GetAsync(model.Id);
-            dynamic state = JObject.Parse(model.State);
+            var state = JObject.Parse(model.State);
             var currentActivities = workflowType.Activities.ToDictionary(x => x.ActivityId);
-            var postedActivities = ((IEnumerable<dynamic>)state.activities).ToDictionary(x => (string)x.id);
+            var activities = state["activities"] as JsonArray;
+
+            var postedActivities = JArray.FromObject(activities).ToDictionary(x => x["id"]?.ToString());
             var removedActivityIdsQuery =
                 from activityId in currentActivities.Keys
                 where !postedActivities.ContainsKey(activityId)
@@ -455,23 +457,26 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             // Update activities.
-            foreach (var activityState in state.activities)
+            foreach (var activityState in activities)
             {
-                var activity = currentActivities[(string)activityState.id];
-                activity.X = activityState.x;
-                activity.Y = activityState.y;
-                activity.IsStart = activityState.isStart;
+                var activity = currentActivities[activityState["id"].ToString()];
+                activity.X = (int)Convert.ToDecimal(activityState["x"].ToString());
+                activity.Y = (int)Convert.ToDecimal(activityState["y"].ToString());
+                activity.IsStart = Convert.ToBoolean(activityState["isStart"].ToString());
             }
 
             // Update transitions.
             workflowType.Transitions.Clear();
-            foreach (var transitionState in state.transitions)
+
+            var transitions = state["transitions"] as JsonArray;
+
+            foreach (var transitionState in transitions)
             {
                 workflowType.Transitions.Add(new Transition
                 {
-                    SourceActivityId = transitionState.sourceActivityId,
-                    DestinationActivityId = transitionState.destinationActivityId,
-                    SourceOutcomeName = transitionState.sourceOutcomeName,
+                    SourceActivityId = transitionState["sourceActivityId"]?.ToString(),
+                    DestinationActivityId = transitionState["destinationActivityId"]?.ToString(),
+                    SourceOutcomeName = transitionState["sourceOutcomeName"]?.ToString(),
                 });
             }
 
