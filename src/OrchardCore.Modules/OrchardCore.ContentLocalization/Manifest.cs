@@ -13,7 +13,7 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.ContentLocalization",
     Name = "Content Localization",
     Description = "Provides a part that allows to localize content items.",
-    Dependencies = new[] { "OrchardCore.ContentTypes", "OrchardCore.Localization" },
+    Dependencies = ["OrchardCore.ContentTypes", "OrchardCore.Localization"],
     Category = "Internationalization"
 )]
 
@@ -21,7 +21,7 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.ContentLocalization.ContentCulturePicker",
     Name = "Content Culture Picker",
     Description = "Provides a culture picker shape for the frontend.",
-    Dependencies = new[] { "OrchardCore.ContentLocalization", "OrchardCore.Autoroute" },
+    Dependencies = ["OrchardCore.ContentLocalization", "OrchardCore.Autoroute"],
     Category = "Internationalization"
 )]
 
@@ -29,6 +29,6 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.ContentLocalization.Sitemaps",
     Name = "Localized Content Item Sitemaps",
     Description = "Provides support for localized content item sitemaps.",
-    Dependencies = new[] { "OrchardCore.ContentLocalization", "OrchardCore.Sitemaps" },
+    Dependencies = ["OrchardCore.ContentLocalization", "OrchardCore.Sitemaps"],
     Category = "Internationalization"
 )]

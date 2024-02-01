@@ -42,35 +42,35 @@ namespace OrchardCore.Widgets.Controllers
 
             var cardCollectionType = nameof(WidgetsListPart);
 
-            //Create a Card Shape
+            // Create a Card Shape
             dynamic contentCard = await _shapeFactory.New.ContentCard(
-                //Updater is the controller for AJAX Requests
+                // Updater is the controller for AJAX Requests
                 Updater: _updateModelAccessor.ModelUpdater,
-                //Shape Specific
+                // Shape Specific
                 CollectionShapeType: cardCollectionType,
                 ContentItem: contentItem,
                 BuildEditor: true,
                 ParentContentType: parentContentType,
                 CollectionPartName: partName,
-                //WidgetListPart Specific
+                // WidgetListPart Specific
                 ZoneValue: zone,
-                //Card Specific Properties
+                // Card Specific Properties
                 TargetId: targetId,
                 Inline: true,
                 CanMove: true,
                 CanDelete: true,
-                //Input hidden
-                //Prefixes
+                // Input hidden
+                // Prefixes
                 PrefixValue: prefix,
                 PrefixesId: prefixesName.Replace('.', '_'),
                 PrefixesName: prefixesName,
-                //ContentTypes
+                // ContentTypes
                 ContentTypesId: contentTypesName.Replace('.', '_'),
                 ContentTypesName: contentTypesName,
-                //ContentItems
+                // ContentItems
                 ContentItemsId: contentItemsName.Replace('.', '_'),
                 ContentItemsName: contentItemsName,
-                //Zones
+                // Zones
                 ZonesId: zonesName.Replace('.', '_'),
                 ZonesName: zonesName
             );

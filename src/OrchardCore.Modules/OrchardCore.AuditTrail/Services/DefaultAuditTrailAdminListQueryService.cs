@@ -93,10 +93,11 @@ namespace OrchardCore.AuditTrail.Services
 
             var localNow = await _localClock.LocalNowAsync;
             var startOfWeek = CultureInfo.CurrentUICulture.DateTimeFormat.FirstDayOfWeek;
-            options.AuditTrailDates = new List<SelectListItem>()
-            {
+
+            options.AuditTrailDates =
+            [
                 new(S["Any date"], string.Empty, options.Date == string.Empty),
-            };
+            ];
 
             var dateTimeValue = ">@now-1";
             options.AuditTrailDates.Add(new SelectListItem(S["Last 24 hours"], dateTimeValue, options.Date == dateTimeValue));

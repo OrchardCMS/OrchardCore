@@ -8,7 +8,7 @@ namespace OrchardCore.ContentTypes.ViewModels
     {
         public EditTypeViewModel()
         {
-            Settings = new JObject();
+            Settings = [];
         }
 
         public EditTypeViewModel(ContentTypeDefinition contentTypeDefinition)

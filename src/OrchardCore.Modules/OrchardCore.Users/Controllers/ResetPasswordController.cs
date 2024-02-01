@@ -112,7 +112,7 @@ namespace OrchardCore.Users.Controllers
             }
             if (code == null)
             {
-                //"A code must be supplied for password reset.";
+                // "A code must be supplied for password reset.";
             }
             return View(new ResetPasswordViewModel { ResetToken = code });
         }

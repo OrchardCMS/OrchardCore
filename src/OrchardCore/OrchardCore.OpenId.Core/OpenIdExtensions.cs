@@ -18,10 +18,7 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static OpenIddictCoreBuilder AddOrchardMigrations(this OpenIddictCoreBuilder builder)
         {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
+            ArgumentNullException.ThrowIfNull(builder);
 
             builder.Services.TryAddEnumerable(
                 ServiceDescriptor.Scoped<IDataMigration, OpenIdMigrations>());
@@ -34,10 +31,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static OpenIddictCoreBuilder UseOrchardManagers(this OpenIddictCoreBuilder builder)
         {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
+            ArgumentNullException.ThrowIfNull(builder);
 
             builder.ReplaceApplicationManager(typeof(OpenIdApplicationManager<>))
                    .ReplaceAuthorizationManager(typeof(OpenIdAuthorizationManager<>))
@@ -56,10 +50,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static OpenIddictCoreBuilder UseYesSql(this OpenIddictCoreBuilder builder)
         {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
+            ArgumentNullException.ThrowIfNull(builder);
 
             // Since the YesSql stores may be used with databases performing case-insensitive or
             // culture-sensitive comparisons, ensure the additional filtering logic is enforced

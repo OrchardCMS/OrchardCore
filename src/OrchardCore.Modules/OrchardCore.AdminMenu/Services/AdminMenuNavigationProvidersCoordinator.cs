@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -39,12 +38,13 @@ namespace OrchardCore.AdminMenu.Services
         // todo: use a public constant for the string
         public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!string.Equals(name, "adminMenu", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(NavigationConstants.AdminMenuId, name))
             {
                 return;
             }
 
-            var trees = (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu.Where(m => m.Enabled && m.MenuItems.Count > 0);
+            var trees = (await _adminMenuService.GetAdminMenuListAsync())
+                .AdminMenu.Where(m => m.Enabled && m.MenuItems.Count > 0);
 
             foreach (var tree in trees)
             {

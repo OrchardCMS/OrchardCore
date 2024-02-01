@@ -132,7 +132,7 @@ namespace OrchardCore.Contents.AdminNodes
                 .ToList()
                 .Select(c => "icon-class-" + c)
                 .ToList()
-                ?? new List<string>();
+                ?? [];
         }
     }
 }

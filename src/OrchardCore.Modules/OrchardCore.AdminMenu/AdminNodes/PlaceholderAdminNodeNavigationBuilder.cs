@@ -36,7 +36,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
                 itemBuilder.Priority(node.Priority);
                 itemBuilder.Position(node.Position);
 
-                if (node.PermissionNames.Any())
+                if (node.PermissionNames.Length > 0)
                 {
                     var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
                     // Find the actual permissions and apply them to the menu.

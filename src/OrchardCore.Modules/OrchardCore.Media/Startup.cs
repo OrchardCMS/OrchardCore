@@ -434,7 +434,7 @@ namespace OrchardCore.Media
     <td>class, alt</td>
   </tr>
 </table>";
-                d.Categories = new string[] { "HTML Content", "Media" };
+                d.Categories = ["HTML Content", "Media"];
             });
 
             services.AddShortcode<AssetUrlShortcodeProvider>("asset_url", d =>
@@ -449,7 +449,7 @@ namespace OrchardCore.Media
     <td>width, height, mode</td>
   </tr>
 </table>";
-                d.Categories = new string[] { "HTML Content", "Media" };
+                d.Categories = ["HTML Content", "Media"];
             });
         }
     }

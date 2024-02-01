@@ -44,7 +44,7 @@ namespace OrchardCore.DisplayManagement.Zones
             var name = binder.Name;
 
             // NilBehavior.
-            if (!args.Any() && name != "ToString")
+            if (args.Length == 0 && name != "ToString")
             {
                 result = Nil.Instance;
                 return true;

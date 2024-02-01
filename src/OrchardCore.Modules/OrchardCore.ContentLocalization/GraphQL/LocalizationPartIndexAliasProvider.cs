@@ -6,15 +6,15 @@ namespace OrchardCore.ContentLocalization.GraphQL
 {
     public class LocalizationPartIndexAliasProvider : IIndexAliasProvider
     {
-        private static readonly IndexAlias[] _aliases = new[]
-        {
+        private static readonly IndexAlias[] _aliases =
+        [
             new IndexAlias
             {
                 Alias = "localizationPart",
                 Index = nameof(LocalizedContentItemIndex),
                 IndexType = typeof(LocalizedContentItemIndex)
             }
-        };
+        ];
 
         public IEnumerable<IndexAlias> GetAliases()
         {
