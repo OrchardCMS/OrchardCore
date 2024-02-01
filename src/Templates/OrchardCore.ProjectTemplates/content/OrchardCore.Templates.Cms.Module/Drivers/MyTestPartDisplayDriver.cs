@@ -44,7 +44,7 @@ namespace OrchardCore.Templates.Cms.Module.Drivers
             return Edit(model);
         }
 
-        private Task BuildViewModel(MyTestPartViewModel model, MyTestPart part, BuildPartDisplayContext context)
+        private static void BuildViewModel(MyTestPartViewModel model, MyTestPart part, BuildPartDisplayContext context)
         {
             var settings = context.TypePartDefinition.GetSettings<MyTestPartSettings>();
 
@@ -53,8 +53,6 @@ namespace OrchardCore.Templates.Cms.Module.Drivers
             model.Show = part.Show;
             model.MyTestPart = part;
             model.Settings = settings;
-
-            return Task.CompletedTask;
         }
     }
 }

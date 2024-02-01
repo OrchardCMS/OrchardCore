@@ -44,10 +44,7 @@ namespace OrchardCore.XmlRpc.Services
         /// <returns>The XML element.</returns>
         public XElement MapMethodResponse(XRpcMethodResponse rpcMethodResponse)
         {
-            if (rpcMethodResponse == null)
-            {
-                throw new ArgumentNullException(nameof(rpcMethodResponse));
-            }
+            ArgumentNullException.ThrowIfNull(rpcMethodResponse);
 
             // return a valid fault as per http://xmlrpc.scripting.com/spec.html
             if (rpcMethodResponse.Fault != null)
@@ -76,10 +73,7 @@ namespace OrchardCore.XmlRpc.Services
         /// <returns>The XML element.</returns>
         public XElement MapData(XRpcData rpcData)
         {
-            if (rpcData == null)
-            {
-                throw new ArgumentNullException(nameof(rpcData));
-            }
+            ArgumentNullException.ThrowIfNull(rpcData);
 
             return new XElement("param", MapValue(rpcData));
         }

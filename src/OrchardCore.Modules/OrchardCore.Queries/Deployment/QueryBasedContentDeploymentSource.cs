@@ -78,16 +78,16 @@ namespace OrchardCore.Queries.Deployment
             }
         }
 
-        private bool TryDeserializeParameters(string parameters, out Dictionary<string, object> queryParameters)
+        private static bool TryDeserializeParameters(string parameters, out Dictionary<string, object> queryParameters)
         {
             try
             {
-                queryParameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters) ?? new();
+                queryParameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters) ?? [];
                 return true;
             }
             catch (JsonException)
             {
-                queryParameters = new();
+                queryParameters = [];
                 return false;
             }
         }

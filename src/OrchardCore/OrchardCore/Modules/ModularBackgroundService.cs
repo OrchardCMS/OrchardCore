@@ -13,8 +13,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Builders;
-using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Settings;
 
@@ -22,14 +21,11 @@ namespace OrchardCore.Modules
 {
     internal class ModularBackgroundService : BackgroundService
     {
-        private static readonly TimeSpan PollingTime = TimeSpan.FromMinutes(1);
-        private static readonly TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);
+        private static readonly TimeSpan _pollingTime = TimeSpan.FromMinutes(1);
+        private static readonly TimeSpan _minIdleTime = TimeSpan.FromSeconds(10);
 
-        private readonly ConcurrentDictionary<string, BackgroundTaskScheduler> _schedulers =
-            new ConcurrentDictionary<string, BackgroundTaskScheduler>();
-
-        private readonly ConcurrentDictionary<string, IChangeToken> _changeTokens =
-            new ConcurrentDictionary<string, IChangeToken>();
+        private readonly ConcurrentDictionary<string, BackgroundTaskScheduler> _schedulers = new();
+        private readonly ConcurrentDictionary<string, IChangeToken> _changeTokens = new();
 
         private readonly IShellHost _shellHost;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -71,11 +67,11 @@ namespace OrchardCore.Modules
                 }
             }
 
-            while (GetRunningShells().Count() < 1)
+            while (GetRunningShells().Length == 0)
             {
                 try
                 {
-                    await Task.Delay(MinIdleTime, stoppingToken);
+                    await Task.Delay(_minIdleTime, stoppingToken);
                 }
                 catch (TaskCanceledException)
                 {
@@ -83,38 +79,41 @@ namespace OrchardCore.Modules
                 }
             }
 
-            var previousShells = Enumerable.Empty<ShellContext>();
-
+            var previousShells = Array.Empty<(string Tenant, long UtcTicks)>();
             while (!stoppingToken.IsCancellationRequested)
             {
+                // Init the delay first to be also waited on exception.
+                var pollingDelay = Task.Delay(_pollingTime, stoppingToken);
                 try
                 {
                     var runningShells = GetRunningShells();
                     await UpdateAsync(previousShells, runningShells, stoppingToken);
-                    previousShells = runningShells;
-
-                    var pollingDelay = Task.Delay(PollingTime, stoppingToken);
-
                     await RunAsync(runningShells, stoppingToken);
-                    await WaitAsync(pollingDelay, stoppingToken);
+                    previousShells = runningShells;
                 }
                 catch (Exception ex) when (!ex.IsFatal())
                 {
                     _logger.LogError(ex, "Error while executing '{ServiceName}'.", nameof(ModularBackgroundService));
                 }
+
+                await WaitAsync(pollingDelay, stoppingToken);
             }
         }
 
-        private async Task RunAsync(IEnumerable<ShellContext> runningShells, CancellationToken stoppingToken)
+        private async Task RunAsync(IEnumerable<(string Tenant, long UtcTicks)> runningShells, CancellationToken stoppingToken)
         {
-            await GetShellsToRun(runningShells).ForEachAsync(async shell =>
+            await GetShellsToRun(runningShells).ForEachAsync(async tenant =>
             {
-                var tenant = shell.Settings.Name;
+                // Check if the shell is still registered and running.
+                if (!_shellHost.TryGetShellContext(tenant, out var shell) || !shell.Settings.IsRunning())
+                {
+                    return;
+                }
 
-                var schedulers = GetSchedulersToRun(tenant);
-
+                // Create a new 'HttpContext' to be used in the background.
                 _httpContextAccessor.HttpContext = shell.CreateHttpContext();
 
+                var schedulers = GetSchedulersToRun(tenant);
                 foreach (var scheduler in schedulers)
                 {
                     if (stoppingToken.IsCancellationRequested)
@@ -122,21 +121,39 @@ namespace OrchardCore.Modules
                         break;
                     }
 
-                    var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
-
-                    if (!_options.ShellWarmup && shellScope.ShellContext.Pipeline == null)
+                    // Try to create a shell scope on this shell context.
+                    var (shellScope, success) = await _shellHost.TryGetScopeAsync(shell.Settings.Name);
+                    if (!success)
                     {
                         break;
                     }
 
-                    var distributedLock = shellScope.ShellContext.ServiceProvider.GetRequiredService<IDistributedLock>();
-
-                    // Try to acquire a lock before using the scope, so that a next process gets the last committed data.
-                    (var locker, var locked) = await distributedLock.TryAcquireBackgroundTaskLockAsync(scheduler.Settings);
-                    if (!locked)
+                    // Check if the shell has no pipeline and should not be warmed up.
+                    if (!_options.ShellWarmup && !shellScope.ShellContext.HasPipeline())
                     {
-                        _logger.LogInformation("Timeout to acquire a lock on background task '{TaskName}' on tenant '{TenantName}'.", scheduler.Name, tenant);
-                        return;
+                        await shellScope.TerminateShellAsync();
+                        break;
+                    }
+
+                    var locked = false;
+                    ILocker locker = null;
+                    try
+                    {
+                        // Try to acquire a lock before using the scope, so that a next process gets the last committed data.
+                        var distributedLock = shellScope.ShellContext.ServiceProvider.GetRequiredService<IDistributedLock>();
+                        (locker, locked) = await distributedLock.TryAcquireBackgroundTaskLockAsync(scheduler.Settings);
+                        if (!locked)
+                        {
+                            await shellScope.TerminateShellAsync();
+                            _logger.LogInformation("Timeout to acquire a lock on background task '{TaskName}' on tenant '{TenantName}'.", scheduler.Name, tenant);
+                            break;
+                        }
+                    }
+                    catch (Exception ex) when (!ex.IsFatal())
+                    {
+                        await shellScope.TerminateShellAsync();
+                        _logger.LogError(ex, "Failed to acquire a lock on background task '{TaskName}' on tenant '{TenantName}'.", scheduler.Name, tenant);
+                        break;
                     }
 
                     await using var acquiredLock = locker;
@@ -146,23 +163,42 @@ namespace OrchardCore.Modules
                         var taskName = scheduler.Name;
 
                         var task = scope.ServiceProvider.GetServices<IBackgroundTask>().GetTaskByName(taskName);
-
-                        if (task == null)
+                        if (task is null)
                         {
                             return;
                         }
 
                         var siteService = scope.ServiceProvider.GetService<ISiteService>();
-                        if (siteService != null)
+                        if (siteService is not null)
                         {
                             try
                             {
+                                // Use the base url, if defined, to override the 'Scheme', 'Host' and 'PathBase'.
                                 _httpContextAccessor.HttpContext.SetBaseUrl((await siteService.GetSiteSettingsAsync()).BaseUrl);
                             }
                             catch (Exception ex) when (!ex.IsFatal())
                             {
                                 _logger.LogError(ex, "Error while getting the base url from the site settings of the tenant '{TenantName}'.", tenant);
                             }
+                        }
+
+                        try
+                        {
+                            if (scheduler.Settings.UsePipeline)
+                            {
+                                if (!scope.ShellContext.HasPipeline())
+                                {
+                                    // Build the shell pipeline to configure endpoint data sources.
+                                    await scope.ShellContext.BuildPipelineAsync();
+                                }
+
+                                // Run the pipeline to make the 'HttpContext' aware of endpoints.
+                                await scope.ShellContext.Pipeline.Invoke(_httpContextAccessor.HttpContext);
+                            }
+                        }
+                        catch (Exception ex) when (!ex.IsFatal())
+                        {
+                            _logger.LogError(ex, "Error while running in the background the pipeline of tenant '{TenantName}'.", tenant);
                         }
 
                         var context = new BackgroundTaskEventContext(taskName, scope);
@@ -190,30 +226,47 @@ namespace OrchardCore.Modules
                         await handlers.InvokeAsync((handler, context, token) => handler.ExecutedAsync(context, token), context, stoppingToken, _logger);
                     });
                 }
+
+                // Clear the 'HttpContext' for this async flow.
+                _httpContextAccessor.HttpContext = null;
             });
         }
 
-        private async Task UpdateAsync(IEnumerable<ShellContext> previousShells, IEnumerable<ShellContext> runningShells, CancellationToken stoppingToken)
+        private async Task UpdateAsync(
+            (string Tenant, long UtcTicks)[] previousShells,
+            (string Tenant, long UtcTicks)[] runningShells, CancellationToken stoppingToken)
         {
             var referenceTime = DateTime.UtcNow;
 
-            await GetShellsToUpdate(previousShells, runningShells).ForEachAsync(async shell =>
+            await GetShellsToUpdate(previousShells, runningShells).ForEachAsync(async tenant =>
             {
-                var tenant = shell.Settings.Name;
-
                 if (stoppingToken.IsCancellationRequested)
                 {
                     return;
                 }
 
-                _httpContextAccessor.HttpContext = shell.CreateHttpContext();
-
-                var shellScope = await _shellHost.GetScopeAsync(shell.Settings);
-
-                if (!_options.ShellWarmup && shellScope.ShellContext.Pipeline == null)
+                // Check if the shell is still registered and running.
+                if (!_shellHost.TryGetShellContext(tenant, out var shell) || !shell.Settings.IsRunning())
                 {
                     return;
                 }
+
+                // Try to create a shell scope on this shell context.
+                var (shellScope, success) = await _shellHost.TryGetScopeAsync(shell.Settings.Name);
+                if (!success)
+                {
+                    return;
+                }
+
+                // Check if the shell has no pipeline and should not be warmed up.
+                if (!_options.ShellWarmup && !shellScope.ShellContext.HasPipeline())
+                {
+                    await shellScope.TerminateShellAsync();
+                    return;
+                }
+
+                // Create a new 'HttpContext' to be used in the background.
+                _httpContextAccessor.HttpContext = shell.CreateHttpContext();
 
                 await shellScope.UsingAsync(async scope =>
                 {
@@ -230,9 +283,8 @@ namespace OrchardCore.Modules
                     _changeTokens[tenant] = settingsProvider?.ChangeToken ?? NullChangeToken.Singleton;
 
                     ITimeZone timeZone = null;
-
                     var siteService = scope.ServiceProvider.GetService<ISiteService>();
-                    if (siteService != null)
+                    if (siteService is not null)
                     {
                         try
                         {
@@ -247,22 +299,20 @@ namespace OrchardCore.Modules
                     foreach (var task in tasks)
                     {
                         var taskName = task.GetTaskName();
-
-                        if (!_schedulers.TryGetValue(tenant + taskName, out var scheduler))
+                        var tenantTaskName = tenant + taskName;
+                        if (!_schedulers.TryGetValue(tenantTaskName, out var scheduler))
                         {
-                            _schedulers[tenant + taskName] = scheduler = new BackgroundTaskScheduler(tenant, taskName, referenceTime, _clock);
+                            _schedulers[tenantTaskName] = scheduler = new BackgroundTaskScheduler(tenant, taskName, referenceTime, _clock);
                         }
 
                         scheduler.TimeZone = timeZone;
-
                         if (!scheduler.Released && scheduler.Updated)
                         {
                             continue;
                         }
 
                         BackgroundTaskSettings settings = null;
-
-                        if (settingsProvider != null)
+                        if (settingsProvider is not null)
                         {
                             try
                             {
@@ -275,7 +325,6 @@ namespace OrchardCore.Modules
                         }
 
                         settings ??= task.GetDefaultSettings();
-
                         if (scheduler.Released || !scheduler.Settings.Schedule.Equals(settings.Schedule))
                         {
                             scheduler.ReferenceTime = referenceTime;
@@ -286,14 +335,17 @@ namespace OrchardCore.Modules
                         scheduler.Updated = true;
                     }
                 });
+
+                // Clear the 'HttpContext' for this async flow.
+                _httpContextAccessor.HttpContext = null;
             });
         }
 
-        private async Task WaitAsync(Task pollingDelay, CancellationToken stoppingToken)
+        private static async Task WaitAsync(Task pollingDelay, CancellationToken stoppingToken)
         {
             try
             {
-                await Task.Delay(MinIdleTime, stoppingToken);
+                await Task.Delay(_minIdleTime, stoppingToken);
                 await pollingDelay;
             }
             catch (OperationCanceledException)
@@ -301,51 +353,72 @@ namespace OrchardCore.Modules
             }
         }
 
-        private IEnumerable<ShellContext> GetRunningShells()
+        private (string Tenant, long UtcTicks)[] GetRunningShells() => _shellHost
+            .ListShellContexts()
+            .Where(shell => shell.Settings.IsRunning() && (_options.ShellWarmup || shell.HasPipeline()))
+            .Select(shell => (shell.Settings.Name, shell.UtcTicks))
+            .ToArray();
+
+        private string[] GetShellsToRun(IEnumerable<(string Tenant, long UtcTicks)> shells)
         {
-            return _shellHost.ListShellContexts().Where(s => s.Settings.State == TenantState.Running && (_options.ShellWarmup || s.Pipeline != null)).ToArray();
+            var tenantsToRun = _schedulers
+                .Where(scheduler => scheduler.Value.CanRun())
+                .Select(scheduler => scheduler.Value.Tenant)
+                .Distinct()
+                .ToArray();
+
+            return shells
+                .Select(shell => shell.Tenant)
+                .Where(tenant => tenantsToRun.Contains(tenant))
+                .ToArray();
         }
 
-        private IEnumerable<ShellContext> GetShellsToRun(IEnumerable<ShellContext> shells)
+        private string[] GetShellsToUpdate((string Tenant, long UtcTicks)[] previousShells, (string Tenant, long UtcTicks)[] runningShells)
         {
-            var tenantsToRun = _schedulers.Where(s => s.Value.CanRun()).Select(s => s.Value.Tenant).Distinct().ToArray();
-            return shells.Where(s => tenantsToRun.Contains(s.Settings.Name)).ToArray();
-        }
+            var previousTenants = previousShells.Select(shell => shell.Tenant);
 
-        private IEnumerable<ShellContext> GetShellsToUpdate(IEnumerable<ShellContext> previousShells, IEnumerable<ShellContext> runningShells)
-        {
-            var released = previousShells.Where(s => s.Released).Select(s => s.Settings.Name).ToArray();
-
-            if (released.Any())
+            var releasedTenants = new List<string>();
+            foreach (var (tenant, utcTicks) in previousShells)
             {
-                UpdateSchedulers(released, s => s.Released = true);
+                if (_shellHost.TryGetShellContext(tenant, out var existing) &&
+                    existing.UtcTicks == utcTicks &&
+                    !existing.Released)
+                {
+                    continue;
+                }
+
+                releasedTenants.Add(tenant);
             }
 
-            var changed = _changeTokens.Where(t => t.Value.HasChanged).Select(t => t.Key).ToArray();
-
-            if (changed.Any())
+            if (releasedTenants.Count > 0)
             {
-                UpdateSchedulers(changed, s => s.Updated = false);
+                UpdateSchedulers(releasedTenants.ToArray(), scheduler => scheduler.Released = true);
             }
 
-            var valid = previousShells.Select(s => s.Settings.Name).Except(released).Except(changed);
-            var tenantsToUpdate = runningShells.Select(s => s.Settings.Name).Except(valid).ToArray();
+            var changedTenants = _changeTokens.Where(token => token.Value.HasChanged).Select(token => token.Key).ToArray();
+            if (changedTenants.Length > 0)
+            {
+                UpdateSchedulers(changedTenants, scheduler => scheduler.Updated = false);
+            }
 
-            return runningShells.Where(s => tenantsToUpdate.Contains(s.Settings.Name)).ToArray();
+            var runningTenants = runningShells.Select(shell => shell.Tenant);
+            var validTenants = previousTenants.Except(releasedTenants).Except(changedTenants);
+            var tenantsToUpdate = runningTenants.Except(validTenants).ToArray();
+
+            return runningTenants.Where(tenant => tenantsToUpdate.Contains(tenant)).ToArray();
         }
 
-        private IEnumerable<BackgroundTaskScheduler> GetSchedulersToRun(string tenant)
-        {
-            return _schedulers.Where(s => s.Value.Tenant == tenant && s.Value.CanRun()).Select(s => s.Value).ToArray();
-        }
+        private BackgroundTaskScheduler[] GetSchedulersToRun(string tenant) => _schedulers
+            .Where(scheduler => scheduler.Value.Tenant == tenant && scheduler.Value.CanRun())
+            .Select(scheduler => scheduler.Value)
+            .ToArray();
 
-        private void UpdateSchedulers(IEnumerable<string> tenants, Action<BackgroundTaskScheduler> action)
+        private void UpdateSchedulers(string[] tenants, Action<BackgroundTaskScheduler> action)
         {
             var keys = _schedulers.Where(kv => tenants.Contains(kv.Value.Tenant)).Select(kv => kv.Key).ToArray();
-
             foreach (var key in keys)
             {
-                if (_schedulers.TryGetValue(key, out BackgroundTaskScheduler scheduler))
+                if (_schedulers.TryGetValue(key, out var scheduler))
                 {
                     action(scheduler);
                 }
@@ -357,12 +430,11 @@ namespace OrchardCore.Modules
             var validKeys = tasks.Select(task => tenant + task.GetTaskName()).ToArray();
 
             var keys = _schedulers.Where(kv => kv.Value.Tenant == tenant).Select(kv => kv.Key).ToArray();
-
             foreach (var key in keys)
             {
                 if (!validKeys.Contains(key))
                 {
-                    _schedulers.TryRemove(key, out var scheduler);
+                    _schedulers.TryRemove(key, out _);
                 }
             }
         }

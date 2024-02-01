@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using OrchardCore.AuditTrail.Indexes;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.Data.Migration;
@@ -8,9 +9,9 @@ namespace OrchardCore.AuditTrail
 {
     public class Migrations : DataMigration
     {
-        public int Create()
+        public async Task<int> CreateAsync()
         {
-            SchemaBuilder.CreateMapIndexTable<AuditTrailEventIndex>(table => table
+            await SchemaBuilder.CreateMapIndexTableAsync<AuditTrailEventIndex>(table => table
                 .Column<string>(nameof(AuditTrailEventIndex.EventId), column => column.WithLength(26))
                 .Column<string>(nameof(AuditTrailEventIndex.Category), column => column.WithLength(64))
                 .Column<string>(nameof(AuditTrailEventIndex.Name), column => column.WithLength(64))
@@ -20,16 +21,16 @@ namespace OrchardCore.AuditTrail
                 .Column<DateTime>(nameof(AuditTrailEventIndex.CreatedUtc), column => column.Nullable()),
                 collection: AuditTrailEvent.Collection);
 
-            SchemaBuilder.AlterIndexTable<AuditTrailEventIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<AuditTrailEventIndex>(table => table
                 .CreateIndex("IDX_AuditTrailEventIndex_DocumentId",
                     "DocumentId",
-                    nameof(AuditTrailEventIndex.EventId),
-                    nameof(AuditTrailEventIndex.Category),
-                    nameof(AuditTrailEventIndex.Name),
-                    nameof(AuditTrailEventIndex.CorrelationId),
-                    nameof(AuditTrailEventIndex.UserId),
-                    nameof(AuditTrailEventIndex.NormalizedUserName),
-                    nameof(AuditTrailEventIndex.CreatedUtc)
+                    "EventId",
+                    "Category",
+                    "Name",
+                    "CorrelationId",
+                    "UserId",
+                    "NormalizedUserName",
+                    "CreatedUtc"
                     ),
                 collection: AuditTrailEvent.Collection
             );

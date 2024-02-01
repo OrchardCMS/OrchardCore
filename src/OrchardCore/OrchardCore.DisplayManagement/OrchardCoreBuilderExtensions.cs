@@ -95,12 +95,14 @@ namespace Microsoft.Extensions.DependencyInjection
                     services.AddTagHelpers<ClearAlternatesTagHelper>();
                     services.AddTagHelpers<ClearClassesTagHelper>();
                     services.AddTagHelpers<ClearWrappersTagHelper>();
+                    services.AddTagHelpers<DateTimeTagHelper>();
                     services.AddTagHelpers<InputIsDisabledTagHelper>();
                     services.AddTagHelpers<RemoveAlternateTagHelper>();
                     services.AddTagHelpers<RemoveClassTagHelper>();
                     services.AddTagHelpers<RemoveWrapperTagHelper>();
                     services.AddTagHelpers<ShapeMetadataTagHelper>();
                     services.AddTagHelpers<ShapeTagHelper>();
+                    services.AddTagHelpers<TimeSpanTagHelper>();
                     services.AddTagHelpers<ValidationMessageTagHelper>();
                     services.AddTagHelpers<ZoneTagHelper>();
                 });

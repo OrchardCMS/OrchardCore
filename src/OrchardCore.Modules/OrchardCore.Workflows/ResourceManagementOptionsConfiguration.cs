@@ -5,7 +5,7 @@ namespace OrchardCore.Workflows
 {
     public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
     {
-        private static ResourceManifest _manifest;
+        private static readonly ResourceManifest _manifest;
 
         static ResourceManagementOptionsConfiguration()
         {

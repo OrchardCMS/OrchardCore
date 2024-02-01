@@ -14,7 +14,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly GraphQLContentOptions _contentOptions;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
         private readonly Dictionary<string, FieldType> _dynamicPartFields;
 
         public DynamicContentTypeBuilder(IHttpContextAccessor httpContextAccessor,
@@ -23,7 +23,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
         {
             _httpContextAccessor = httpContextAccessor;
             _contentOptions = contentOptionsAccessor.Value;
-            _dynamicPartFields = new Dictionary<string, FieldType>();
+            _dynamicPartFields = [];
 
             S = localizer;
         }
@@ -32,6 +32,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
         {
             var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
             var contentFieldProviders = serviceProvider.GetServices<IContentFieldProvider>().ToList();
+
+            if (_contentOptions.ShouldHide(contentTypeDefinition))
+            {
+                return;
+            }
 
             foreach (var part in contentTypeDefinition.Parts)
             {
@@ -44,6 +49,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 }
 
                 if (_contentOptions.ShouldSkip(part))
+                {
+                    continue;
+                }
+
+                if (!(part.PartDefinition.Fields.Any(field => contentFieldProviders.Any(fieldProvider => fieldProvider.GetField(field) != null))))
                 {
                     continue;
                 }

@@ -1,7 +1,3 @@
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.Tests.Stubs
@@ -13,7 +9,7 @@ namespace OrchardCore.Tests.Stubs
     public class MemoryFileBuilder
         : IFileBuilder
     {
-        public Dictionary<string, byte[]> VirtualFiles { get; private set; } = new Dictionary<string, byte[]>();
+        public Dictionary<string, byte[]> VirtualFiles { get; private set; } = [];
 
         public async Task SetFileAsync(string subpath, Stream stream)
         {

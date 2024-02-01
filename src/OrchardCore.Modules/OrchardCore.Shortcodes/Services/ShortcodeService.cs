@@ -19,10 +19,7 @@ namespace OrchardCore.Shortcodes.Services
 
         public ValueTask<string> ProcessAsync(string input, Context context = null)
         {
-            if (context == null)
-            {
-                context = new Context();
-            }
+            context ??= new Context();
 
             foreach (var contextProvider in _shortcodeContextProviders)
             {

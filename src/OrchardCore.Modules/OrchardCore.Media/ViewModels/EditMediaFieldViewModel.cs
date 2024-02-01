@@ -11,7 +11,9 @@ namespace OrchardCore.Media.ViewModels
         public string Paths { get; set; }
 
         public MediaField Field { get; set; }
+
         public ContentPart Part { get; set; }
+
         public ContentPartFieldDefinition PartFieldDefinition { get; set; }
 
         // This will be used by the uploader of an attached media field
@@ -19,16 +21,23 @@ namespace OrchardCore.Media.ViewModels
 
         // Media Text is an option that maybe applied to a media field through settings.
         public bool AllowMediaText { get; set; }
+
         public string MediaTexts { get; set; }
 
         // Anchor points are an option that maybe applied to a media field through settings.
         public bool AllowAnchors { get; set; }
-        public Anchor[] Anchors { get; set; } = Array.Empty<Anchor>();
+
+        public Anchor[] Anchors { get; set; } = [];
+
+        public string[] AttachedFileNames { get; set; } = [];
+
+        public string[] AllowedExtensions { get; set; } = [];
     }
 
     public class EditMediaFieldItemInfo
     {
         public string Path { get; set; }
+        public string AttachedFileName { get; set; }
 
         // It will be true if the media item is a new upload from a attached media field.
         public bool IsNew { get; set; }
@@ -37,7 +46,7 @@ namespace OrchardCore.Media.ViewModels
         public bool IsRemoved { get; set; }
 
         // Alt text is an option that maybe applied to a media field through settings.
-        public string MediaText { get; set; } = String.Empty;
+        public string MediaText { get; set; } = string.Empty;
         public Anchor Anchor { get; set; } = new Anchor();
     }
 }

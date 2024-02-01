@@ -5,7 +5,7 @@ namespace OrchardCore.Logging
 {
     public static class ApplicationBuilderExtensions
     {
-        [Obsolete]
+        [Obsolete("This method will be removed in a future version.", false)]
         public static IApplicationBuilder UseSerilogTenantNameLoggingMiddleware(this IApplicationBuilder builder)
         {
             return builder.UseMiddleware<SerilogTenantNameLoggingMiddleware>();

@@ -33,7 +33,6 @@ namespace OrchardCore.Liquid
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<ISlugService, SlugService>();
             services.AddScoped<ILiquidTemplateManager, LiquidTemplateManager>();
 
             services.Configure<TemplateOptions>(options =>
@@ -90,7 +89,7 @@ namespace OrchardCore.Liquid
                 .UseDisplayDriver<LiquidPartDisplayDriver>()
                 .AddHandler<LiquidPartHandler>();
 
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddDataMigration<Migrations>();
             services.AddScoped<IContentPartIndexHandler, LiquidPartIndexHandler>();
         }
     }

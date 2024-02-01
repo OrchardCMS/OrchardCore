@@ -26,10 +26,7 @@ namespace OrchardCore.Routing
 
         public IEnumerable<Endpoint> FindEndpoints(RouteValuesAddress address)
         {
-            if (address == null)
-            {
-                throw new ArgumentNullException(nameof(address));
-            }
+            ArgumentNullException.ThrowIfNull(address);
 
             // Run custom tenant schemes.
             foreach (var scheme in _schemes)
@@ -57,7 +54,7 @@ namespace OrchardCore.Routing
             }
 
             // Fallback to the default 'RouteValuesAddress' scheme.
-            return _defaultScheme?.FindEndpoints(address) ?? Enumerable.Empty<Endpoint>();
+            return _defaultScheme?.FindEndpoints(address) ?? [];
         }
     }
 }

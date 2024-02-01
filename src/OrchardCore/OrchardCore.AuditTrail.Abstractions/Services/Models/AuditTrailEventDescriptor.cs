@@ -25,13 +25,13 @@ namespace OrchardCore.AuditTrail.Services.Models
         public bool IsEnabledByDefault { get; }
         public bool IsMandatory { get; }
 
-        public static AuditTrailEventDescriptor Default(AuditTrailEvent auditTrailEvent)
-            => new AuditTrailEventDescriptor(
-                    auditTrailEvent.Name,
-                    auditTrailEvent.Category,
-                    (sp) => new LocalizedString(auditTrailEvent.Name, auditTrailEvent.Name),
-                    (sp) => new LocalizedString(auditTrailEvent.Category, auditTrailEvent.Category),
-                    (sp) => new LocalizedString(auditTrailEvent.Name, auditTrailEvent.Name)
-                );
+        public static AuditTrailEventDescriptor Default(AuditTrailEvent auditTrailEvent) =>
+            new(
+                auditTrailEvent.Name,
+                auditTrailEvent.Category,
+                (sp) => new LocalizedString(auditTrailEvent.Name, auditTrailEvent.Name),
+                (sp) => new LocalizedString(auditTrailEvent.Category, auditTrailEvent.Category),
+                (sp) => new LocalizedString(auditTrailEvent.Name, auditTrailEvent.Name)
+            );
     }
 }

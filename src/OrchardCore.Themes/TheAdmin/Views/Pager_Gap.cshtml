@@ -1,0 +1,11 @@
+﻿@using Microsoft.AspNetCore.Html
+
+@{
+    Model.Metadata.Alternates.Clear();
+    Model.Metadata.Type = "Pager_Link";
+    var value = new HtmlContentBuilder();
+    value.AppendHtml("<i class=\"fa-solid fa-ellipsis\"></i>");
+    Model.Value = value;
+}
+
+@await DisplayAsync(Model)
