@@ -6,12 +6,12 @@ namespace OrchardCore.Email.Services
     /// <summary>
     /// Represents the result of sending an email.
     /// </summary>
-    public class EmailResult
+    public class EmailResult : IEmailResult
     {
         /// <summary>
-        /// Returns an <see cref="EmailResult"/> indicating a successful email operation.
+        /// Returns an <see cref="IEmailResult"/> indicating a successful email operation.
         /// </summary>
-        public static EmailResult Success { get; } = new() { Succeeded = true };
+        public static IEmailResult Success { get; } = new EmailResult() { Succeeded = true };
 
         /// <summary>
         /// An <see cref="IEnumerable{LocalizedString}"/> containing an errors that occurred during the email operation.
@@ -27,6 +27,6 @@ namespace OrchardCore.Email.Services
         /// Creates an <see cref="EmailResult"/> indicating a failed email operation, with a list of errors if applicable.
         /// </summary>
         /// <param name="errors">An optional array of <see cref="LocalizedString"/> which caused the operation to fail.</param>
-        public static EmailResult Failed(params LocalizedString[] errors) => new() { Succeeded = false, Errors = errors };
+        public static IEmailResult Failed(params LocalizedString[] errors) => new EmailResult() { Succeeded = false, Errors = errors };
     }
 }

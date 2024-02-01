@@ -36,7 +36,7 @@ public class SmtpEmailDeliveryService : IEmailDeliveryService
 
     /// <inheritdoc/>
     /// <remarks>This method allows to send an email without setting <see cref="MailMessage.To"/> if <see cref="MailMessage.Cc"/> or <see cref="MailMessage.Bcc"/> is provided.</remarks>
-    public async Task<EmailResult> DeliverAsync(MailMessage message)
+    public async Task<IEmailResult> DeliverAsync(MailMessage message)
     {
         ArgumentNullException.ThrowIfNull(message);
 

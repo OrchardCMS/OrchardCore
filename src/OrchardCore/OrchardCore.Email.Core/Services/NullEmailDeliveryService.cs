@@ -15,7 +15,7 @@ public class NullEmailDeliveryService : IEmailDeliveryService
         S = stringLocalizer;
     }
 
-    public async Task<EmailResult> DeliverAsync(MailMessage message)
+    public async Task<IEmailResult> DeliverAsync(MailMessage message)
     {
         _logger.LogWarning("No email delivery service is configured. Please enable an actual implementation so email can be sent.");
 

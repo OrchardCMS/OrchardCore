@@ -95,7 +95,7 @@ public class AzureEmailDeliveryService : IEmailDeliveryService
         S = stringLocalizer;
     }
 
-    public async Task<EmailResult> DeliverAsync(MailMessage message)
+    public async Task<IEmailResult> DeliverAsync(MailMessage message)
     {
         ArgumentNullException.ThrowIfNull(message);
 
@@ -104,7 +104,7 @@ public class AzureEmailDeliveryService : IEmailDeliveryService
             return EmailResult.Failed(S["Azure Email settings must be configured before an email can be sent."]);
         }
 
-        EmailResult result;
+        IEmailResult result;
         var client = new EmailClient(_emailSettings.ConnectionString);
 
         try
@@ -134,7 +134,7 @@ public class AzureEmailDeliveryService : IEmailDeliveryService
         return result;
     }
 
-    private EmailMessage FromMailMessage(MailMessage message, out EmailResult result)
+    private EmailMessage FromMailMessage(MailMessage message, out IEmailResult result)
     {
         var recipients = message.GetRecipients();
 

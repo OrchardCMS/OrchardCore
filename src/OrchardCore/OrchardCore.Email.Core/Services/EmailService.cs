@@ -25,7 +25,7 @@ public class EmailService : IEmailService
         _logger = logger;
     }
 
-    public async Task<EmailResult> SendAsync(MailMessage message, string deliveryServiceName = null)
+    public async Task<IEmailResult> SendAsync(MailMessage message, string deliveryServiceName = null)
     {
         await _emailServiceEvents.InvokeAsync((e, message) => e.OnMessageSendingAsync(message), message, _logger);
 

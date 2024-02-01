@@ -4,5 +4,5 @@ namespace OrchardCore.Email.Services;
 
 public interface IEmailDeliveryService
 {
-    Task<EmailResult> DeliverAsync(MailMessage message);
+    Task<IEmailResult> DeliverAsync(MailMessage message);
 }
