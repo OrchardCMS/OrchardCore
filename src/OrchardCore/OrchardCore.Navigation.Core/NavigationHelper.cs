@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,6 +10,14 @@ namespace OrchardCore.Navigation
 {
     public class NavigationHelper
     {
+        /// <summary>
+        /// Checks if the given name matches the value <see cref="NavigationConstants.AdminId"/>.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns>boolean.</returns>
+        public static bool IsAdminMenu(string name)
+            => NavigationConstants.AdminId == name;
+
         /// <summary>
         /// Populates the menu shapes.
         /// </summary>
@@ -141,10 +148,10 @@ namespace OrchardCore.Navigation
         }
 
         /// <summary>
-        /// Traverses the menu and returns the selected item with the highest priority
+        /// Traverses the menu and returns the selected item with the highest priority.
         /// </summary>
         /// <param name="parentShape">The menu shape.</param>
-        /// <returns>The selected menu item shape</returns>
+        /// <returns>The selected menu item shape.</returns>
         private static dynamic GetHighestPrioritySelectedMenuItem(dynamic parentShape)
         {
             dynamic result = null;

@@ -24,7 +24,7 @@ namespace OrchardCore.Rules.Services
                 }
             }
 
-            if (condition.Conditions.Any())
+            if (condition.Conditions.Count > 0)
             {
                 return true;
             }

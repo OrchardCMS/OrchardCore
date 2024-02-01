@@ -94,10 +94,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentTypeDefinitionBuilder WithSettings<T>(T settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var jObject = JObject.FromObject(settings, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
             _settings[typeof(T).Name] = jObject;
@@ -133,7 +130,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
             else
             {
-                existingPart = new ContentTypePartDefinition(name, partDefinition, new JObject())
+                existingPart = new ContentTypePartDefinition(name, partDefinition, [])
                 {
                     ContentTypeDefinition = Current,
                 };

@@ -76,7 +76,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
                 if (settings.Unique && !string.IsNullOrEmpty(model.UniqueValue))
                 {
-                    field.TermContentItemIds = new[] { model.UniqueValue };
+                    field.TermContentItemIds = [model.UniqueValue];
                 }
 
                 if (settings.Required && field.TermContentItemIds.Length == 0)

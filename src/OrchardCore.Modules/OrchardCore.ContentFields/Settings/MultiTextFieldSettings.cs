@@ -7,7 +7,7 @@ namespace OrchardCore.ContentFields.Settings
     {
         public string Hint { get; set; }
         public bool Required { get; set; }
-        public MultiTextFieldValueOption[] Options { get; set; } = Array.Empty<MultiTextFieldValueOption>();
+        public MultiTextFieldValueOption[] Options { get; set; } = [];
     }
 
     public class MultiTextFieldValueOption

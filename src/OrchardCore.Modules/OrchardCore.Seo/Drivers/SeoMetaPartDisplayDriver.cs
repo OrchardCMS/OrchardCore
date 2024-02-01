@@ -101,7 +101,7 @@ namespace OrchardCore.Seo.Drivers
                     part.MetaRobots = partViewModel.MetaRobots;
 
                     part.CustomMetaTags = string.IsNullOrWhiteSpace(partViewModel.CustomMetaTags)
-                        ? Array.Empty<MetaEntry>()
+                        ? []
                         : JsonConvert.DeserializeObject<MetaEntry[]>(partViewModel.CustomMetaTags);
 
                     if (part.Canonical?.IndexOfAny(SeoMetaPart.InvalidCharactersForCanoncial) > -1 || part.Canonical?.IndexOf(' ') > -1)

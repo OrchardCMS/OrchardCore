@@ -20,7 +20,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment
                 return Task.CompletedTask;
             }
 
-            var indicesToReset = elasticIndexResetStep.IncludeAll ? Array.Empty<string>() : elasticIndexResetStep.Indices;
+            var indicesToReset = elasticIndexResetStep.IncludeAll ? [] : elasticIndexResetStep.Indices;
 
             result.Steps.Add(new JObject(
             new JProperty("name", "lucene-index-reset"),

@@ -14,7 +14,7 @@ namespace OrchardCore.Mvc.LocationExpander
         private static readonly string _pageSharedViewsPath = "/Pages/Shared/{0}" + RazorViewEngine.ViewExtension;
         private static readonly string _sharedViewsPath = "/Views/Shared/{0}" + RazorViewEngine.ViewExtension;
 
-        private static readonly string[] _razorExtensions = new[] { RazorViewEngine.ViewExtension };
+        private static readonly string[] _razorExtensions = [RazorViewEngine.ViewExtension];
         private const string CacheKey = "ModuleSharedViewLocations";
         private const string PageCacheKey = "ModulePageSharedViewLocations";
         private static List<IExtensionInfo> _modulesWithPageSharedViews;

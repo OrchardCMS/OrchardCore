@@ -44,9 +44,9 @@ namespace OrchardCore.Modules.Email.Workflows.Tests
                 _emptyDictionary,
                 _emptyDictionary,
                 _emptyDictionary,
-                new List<ExecutedActivity>(),
+                [],
                 default,
-                Enumerable.Empty<ActivityContext>());
+                []);
             var activityContext = Mock.Of<ActivityContext>();
 
             // Act

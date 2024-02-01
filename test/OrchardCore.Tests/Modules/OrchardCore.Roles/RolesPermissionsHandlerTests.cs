@@ -21,16 +21,18 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
                 new Role
                 {
                     RoleName = "Anonymous",
-                    RoleClaims = new List<RoleClaim> {
+                    RoleClaims =
+                    [
                         new() { ClaimType = Permission.ClaimType, ClaimValue = "AllowAnonymous" }
-                    }
+                    ]
                 },
                 new Role
                 {
                     RoleName = "Authenticated",
-                    RoleClaims = new List<RoleClaim> {
+                    RoleClaims =
+                    [
                         new() { ClaimType = Permission.ClaimType, ClaimValue = "AllowAuthenticated" }
-                    }
+                    ]
                 }
             );
 
@@ -45,7 +47,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
         public async Task DontRevokeExistingGrants()
         {
             // Arrange
-            var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission("Required"), new[] { "Other" }, true);
+            var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission("Required"), ["Other"], true);
 
             var permissionHandler = CreatePermissionHandler();
 
@@ -72,9 +74,10 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
                 new Role
                 {
                     RoleName = "Anonymous",
-                    RoleClaims = new List<RoleClaim> {
+                    RoleClaims =
+                    [
                         new() { ClaimType = Permission.ClaimType, ClaimValue = "Implicit2" }
-                    }
+                    ]
                 }
             );
 
@@ -97,16 +100,18 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
                 new Role
                 {
                     RoleName = "Anonymous",
-                    RoleClaims = new List<RoleClaim> {
+                    RoleClaims =
+                    [
                         new() { ClaimType = Permission.ClaimType, ClaimValue = "aLlOwAnOnYmOuS" }
-                    }
+                    ]
                 },
                 new Role
                 {
                     RoleName = "Authenticated",
-                    RoleClaims = new List<RoleClaim> {
+                    RoleClaims =
+                    [
                         new() { ClaimType = Permission.ClaimType, ClaimValue = "aLlOwAuThEnTiCaTeD" }
-                    }
+                    ]
                 }
             );
 

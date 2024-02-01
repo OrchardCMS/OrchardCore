@@ -79,7 +79,7 @@ namespace OrchardCore.Deployment
             return GetDeploymentPlans(deploymentPlans, deploymentPlanNames);
         }
 
-        private static IEnumerable<DeploymentPlan> GetDeploymentPlans(IDictionary<string, DeploymentPlan> deploymentPlans, params string[] deploymentPlanNames)
+        private static IEnumerable<DeploymentPlan> GetDeploymentPlans(Dictionary<string, DeploymentPlan> deploymentPlans, params string[] deploymentPlanNames)
         {
             foreach (var deploymentPlanName in deploymentPlanNames)
             {

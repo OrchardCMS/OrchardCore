@@ -6,7 +6,7 @@ namespace OrchardCore.Contents.Liquid
     public interface IContentItemRecursionHelper<T>
     {
         /// <summary>
-        /// Returns <see langword="True"/> when the <see cref="ContentItem"/> has already been evaluated during this request by the particular filter./>
+        /// Returns <see langword="True"/> when the <see cref="ContentItem"/> has already been evaluated during this request by the particular filter./>.
         /// </summary>
         bool IsRecursive(ContentItem contentItem, int maxRecursions = 1);
     }
@@ -14,14 +14,13 @@ namespace OrchardCore.Contents.Liquid
     /// <inheritdocs />
     public class ContentItemRecursionHelper<T> : IContentItemRecursionHelper<T>
     {
-        private readonly Dictionary<ContentItem, int> _recursions = new();
+        private readonly Dictionary<ContentItem, int> _recursions = [];
 
         /// <inheritdocs />
         public bool IsRecursive(ContentItem contentItem, int maxRecursions = 1)
         {
-            if (_recursions.ContainsKey(contentItem))
+            if (_recursions.TryGetValue(contentItem, out var counter))
             {
-                var counter = _recursions[contentItem];
                 if (maxRecursions < 1)
                 {
                     maxRecursions = 1;

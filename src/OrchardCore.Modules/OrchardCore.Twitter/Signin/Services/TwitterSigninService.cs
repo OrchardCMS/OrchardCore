@@ -30,10 +30,7 @@ namespace OrchardCore.Twitter.Signin.Services
 
         public async Task UpdateSettingsAsync(TwitterSigninSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
             container.Alter<TwitterSigninSettings>(nameof(TwitterSigninSettings), aspect =>

@@ -23,7 +23,7 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// The 'RequestUrlHost' string separators allowing to provide multiple hosts.
         /// </summary>
-        public static readonly char[] HostSeparators = new[] { ',', ' ' };
+        public static readonly char[] HostSeparators = [',', ' '];
 
         private readonly ShellConfiguration _settings;
         private readonly ShellConfiguration _configuration;
@@ -109,7 +109,7 @@ namespace OrchardCore.Environment.Shell
         [JsonIgnore]
         public string[] RequestUrlHosts => _settings["RequestUrlHost"]
             ?.Split(HostSeparators, StringSplitOptions.RemoveEmptyEntries)
-            ?? Array.Empty<string>();
+            ?? [];
 
         /// <summary>
         /// The tenant request url prefix.

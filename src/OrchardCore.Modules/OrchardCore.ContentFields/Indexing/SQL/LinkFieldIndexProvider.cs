@@ -27,7 +27,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
     public class LinkFieldIndexProvider : ContentFieldIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly HashSet<string> _ignoredTypes = new();
+        private readonly HashSet<string> _ignoredTypes = [];
         private IContentDefinitionManager _contentDefinitionManager;
 
         public LinkFieldIndexProvider(IServiceProvider serviceProvider)
