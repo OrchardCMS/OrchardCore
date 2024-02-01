@@ -9,7 +9,8 @@ public class NullEmailDeliveryServiceTests
     {
         // Arrange
         var logger = NullLogger<NullEmailDeliveryService>.Instance;
-        var emailDeliveryService = new NullEmailDeliveryService(logger);
+        var localizer = Mock.Of<IStringLocalizer<NullEmailDeliveryService>>();
+        var emailDeliveryService = new NullEmailDeliveryService(logger, localizer);
         var message = new MailMessage
         {
             To = "test@orchardcore.net",
@@ -21,6 +22,6 @@ public class NullEmailDeliveryServiceTests
         var result = await emailDeliveryService.DeliverAsync(message);
 
         // Assert
-        Assert.True(result.Succeeded);
+        Assert.False(result.Succeeded);
     }
 }
