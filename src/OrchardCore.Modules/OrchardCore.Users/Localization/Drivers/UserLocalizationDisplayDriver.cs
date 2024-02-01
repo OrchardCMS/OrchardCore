@@ -45,7 +45,7 @@ public class UserLocalizationDisplayDriver : SectionDisplayDriver<User, UserLoca
             // If Invariant Culture is installed as a supported culture we bind it to a different culture code than String.Empty.
             if (cultureList.Where(c => c.Value == "").Any())
             {
-                cultureList.Where(c => c.Value == "").FirstOrDefault().Value = Constants.Invariant;
+                cultureList.Where(c => c.Value == "").FirstOrDefault().Value = UserLocalizationConstants.Invariant;
             }
 
             model.SelectedCulture = section.Culture;

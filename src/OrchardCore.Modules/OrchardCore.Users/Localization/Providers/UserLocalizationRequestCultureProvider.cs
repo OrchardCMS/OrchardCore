@@ -24,6 +24,6 @@ public class UserLocalizationRequestCultureProvider : RequestCultureProvider
             return NullProviderCultureResult;
         }
 
-        return Task.FromResult(new ProviderCultureResult(userCulture == Constants.Invariant ? "" : userCulture));
+        return Task.FromResult(new ProviderCultureResult(userCulture == UserLocalizationConstants.Invariant ? "" : userCulture));
     }
 }
