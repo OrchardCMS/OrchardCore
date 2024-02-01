@@ -21,32 +21,25 @@ namespace OrchardCore.Recipes.RecipeSteps
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "Recipes", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "Recipes", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
 
             var step = context.Step.ToObject<InternalStep>();
-            var recipesDictionary = new Dictionary<string, IDictionary<string, RecipeDescriptor>>();
-            IList<RecipeDescriptor> innerRecipes = new List<RecipeDescriptor>();
 
+            var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(harvester => harvester.HarvestRecipesAsync()));
+            var recipes = recipeCollections.SelectMany(recipe => recipe).ToDictionary(recipe => recipe.Name);
+
+            var innerRecipes = new List<RecipeDescriptor>();
             foreach (var recipe in step.Values)
             {
-                IDictionary<string, RecipeDescriptor> recipes;
-
-                if (!recipesDictionary.TryGetValue(recipe.ExecutionId, out recipes))
+                if (!recipes.TryGetValue(recipe.Name, out var value))
                 {
-                    var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
-                    recipes = recipeCollections.SelectMany(x => x).ToDictionary(x => x.Name);
-                    recipesDictionary[recipe.ExecutionId] = recipes;
+                    throw new ArgumentException($"No recipe named '{recipe.Name}' was found.");
                 }
 
-                if (!recipes.ContainsKey(recipe.Name))
-                {
-                    throw new ArgumentException($"No recipe named '{recipe.Name}' was found in extension '{recipe.ExecutionId}'.");
-                }
-
-                innerRecipes.Add(recipes[recipe.Name]);
+                innerRecipes.Add(value);
             }
 
             context.InnerRecipes = innerRecipes;

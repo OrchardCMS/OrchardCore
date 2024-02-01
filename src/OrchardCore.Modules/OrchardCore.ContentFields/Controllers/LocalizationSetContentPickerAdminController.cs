@@ -53,7 +53,7 @@ namespace OrchardCore.ContentFields.Controllers
                 return BadRequest("Part and field are required parameters");
             }
 
-            var partFieldDefinition = _contentDefinitionManager.GetPartDefinition(part)?.Fields
+            var partFieldDefinition = (await _contentDefinitionManager.GetPartDefinitionAsync(part))?.Fields
                 .FirstOrDefault(f => f.Name == field);
 
             var fieldSettings = partFieldDefinition?.GetSettings<LocalizationSetContentPickerFieldSettings>();
@@ -83,7 +83,7 @@ namespace OrchardCore.ContentFields.Controllers
                 {
                     results.Add(new VueMultiselectItemViewModel
                     {
-                        Id = contentItem.Key, //localization set
+                        Id = contentItem.Key, // localization set
                         DisplayText = contentItem.Value.ToString(),
                         HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem.Value)
                     });

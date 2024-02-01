@@ -1,5 +1,7 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Options;
 using OrchardCore.ReCaptcha.ActionFilters.Detection;
 using OrchardCore.ReCaptcha.Configuration;
@@ -13,12 +15,28 @@ namespace OrchardCore.ReCaptcha.Core
     {
         public static IServiceCollection AddReCaptcha(this IServiceCollection services, Action<ReCaptchaSettings> configure = null)
         {
-            services.AddHttpClient<ReCaptchaClient>()
-                .AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(3, attempt => TimeSpan.FromSeconds(0.5 * attempt)));
+            // c.f. https://learn.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests
+            services.AddSingleton<ReCaptchaService>();
 
-            services.AddTransient<IDetectRobots, IpAddressRobotDetector>();
+            services
+                .AddHttpClient(nameof(ReCaptchaService))
+                .AddResilienceHandler("oc-handler", builder => builder
+                    .AddRetry(new HttpRetryStrategyOptions
+                    {
+                        Name = "oc-retry",
+                        MaxRetryAttempts = 3,
+                        OnRetry = attempt =>
+                        {
+                            attempt.RetryDelay.Add(TimeSpan.FromSeconds(0.5 * attempt.AttemptNumber));
+
+                            return ValueTask.CompletedTask;
+                        }
+                    })
+                );
+
+            services.AddSingleton<IDetectRobots, IPAddressRobotDetector>();
             services.AddTransient<IConfigureOptions<ReCaptchaSettings>, ReCaptchaSettingsConfiguration>();
-            services.AddTransient<ReCaptchaService>();
+
             services.AddTagHelpers<ReCaptchaTagHelper>();
 
             if (configure != null)

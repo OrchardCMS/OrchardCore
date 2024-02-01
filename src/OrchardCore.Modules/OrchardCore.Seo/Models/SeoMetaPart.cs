@@ -8,7 +8,7 @@ namespace OrchardCore.Seo.Models
 {
     public class SeoMetaPart : ContentPart
     {
-        public static char[] InvalidCharactersForCanoncial = "?#[]@!$&'()*+,;=<>\\|%".ToCharArray();
+        public static readonly char[] InvalidCharactersForCanoncial = "?#[]@!$&'()*+,;=<>\\|%".ToCharArray();
         public string PageTitle { get; set; }
 
         [DefaultValue(true)]
@@ -21,7 +21,7 @@ namespace OrchardCore.Seo.Models
         public string Canonical { get; set; }
 
         public string MetaRobots { get; set; }
-        public MetaEntry[] CustomMetaTags { get; set; } = Array.Empty<MetaEntry>();
+        public MetaEntry[] CustomMetaTags { get; set; } = [];
 
 
         public MediaField DefaultSocialImage { get; set; }

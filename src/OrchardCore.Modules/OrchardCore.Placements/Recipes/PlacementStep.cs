@@ -22,7 +22,7 @@ namespace OrchardCore.Placements.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "Placements", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "Placements", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }

@@ -9,11 +9,11 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.ReCaptcha.Workflows
 {
-    public class ValidateReCaptchaTask : TaskActivity
+    public class ValidateReCaptchaTask : TaskActivity<ValidateReCaptchaTask>
     {
         private readonly ReCaptchaService _reCaptchaService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public ValidateReCaptchaTask(
             ReCaptchaService reCaptchaService,
@@ -25,8 +25,6 @@ namespace OrchardCore.ReCaptcha.Workflows
             _updateModelAccessor = updateModelAccessor;
             S = localizer;
         }
-
-        public override string Name => nameof(ValidateReCaptchaTask);
 
         public override LocalizedString DisplayText => S["Validate ReCaptcha Task"];
 
@@ -47,10 +45,8 @@ namespace OrchardCore.ReCaptcha.Workflows
             {
                 var updater = _updateModelAccessor.ModelUpdater;
                 outcome = "Invalid";
-                if (updater != null)
-                {
-                    updater.ModelState.TryAddModelError(Constants.ReCaptchaServerResponseHeaderName, S["Captcha validation failed. Try again."]);
-                }
+
+                updater?.ModelState.TryAddModelError(Constants.ReCaptchaServerResponseHeaderName, S["Captcha validation failed. Try again."]);
             });
 
             return Outcomes("Done", outcome);

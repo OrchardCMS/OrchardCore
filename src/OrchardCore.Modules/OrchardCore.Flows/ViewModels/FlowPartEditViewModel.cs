@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -14,13 +15,14 @@ namespace OrchardCore.Flows.ViewModels
         // Prefixes and ContentTypes. Each value in Prefixes is a Guid that represents the unique
         // HtmlFieldPrefix value of its editor.
 
-        public string[] Prefixes { get; set; } = Array.Empty<string>();
-        public string[] ContentTypes { get; set; } = Array.Empty<string>();
-        public string[] ContentItems { get; set; } = Array.Empty<string>();
+        public string[] Prefixes { get; set; } = [];
+        public string[] ContentTypes { get; set; } = [];
+        public string[] ContentItems { get; set; } = [];
 
         [BindNever]
         public FlowPart FlowPart { get; set; }
 
+        [IgnoreDataMember]
         [BindNever]
         public IUpdateModel Updater { get; set; }
 

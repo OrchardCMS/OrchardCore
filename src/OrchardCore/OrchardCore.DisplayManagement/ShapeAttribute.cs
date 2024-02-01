@@ -2,6 +2,7 @@ using System;
 
 namespace OrchardCore.DisplayManagement
 {
+    [AttributeUsage(AttributeTargets.Method)]
     public class ShapeAttribute : Attribute
     {
         public ShapeAttribute()

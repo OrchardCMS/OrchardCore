@@ -21,13 +21,13 @@ namespace OrchardCore.Taxonomies.Drivers
 {
     public class TaxonomyFieldTagsDisplayDriver : ContentFieldDisplayDriver<TaxonomyField>
     {
-        private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
+        private static readonly JsonSerializerSettings _serializerSettings = new()
         {
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
         };
 
         private readonly IContentManager _contentManager;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public TaxonomyFieldTagsDisplayDriver(
             IContentManager contentManager,
@@ -68,7 +68,7 @@ namespace OrchardCore.Taxonomies.Drivers
                         IsLeaf = te.IsLeaf
                     });
 
-                    model.TagTermEntries = JsonConvert.SerializeObject(tagTermEntries, SerializerSettings);
+                    model.TagTermEntries = JsonConvert.SerializeObject(tagTermEntries, _serializerSettings);
                 }
 
                 model.Field = field;
@@ -88,7 +88,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 field.TaxonomyContentItemId = settings.TaxonomyContentItemId;
 
                 field.TermContentItemIds = model.TermContentItemIds == null
-                    ? Array.Empty<string>() : model.TermContentItemIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                    ? [] : model.TermContentItemIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
                 if (settings.Required && field.TermContentItemIds.Length == 0)
                 {

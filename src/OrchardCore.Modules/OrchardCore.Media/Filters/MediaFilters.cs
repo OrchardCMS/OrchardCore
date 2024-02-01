@@ -6,7 +6,7 @@ namespace OrchardCore.Media.Filters
 {
     public static class MediaFilters
     {
-        public static ValueTask<FluidValue> ImgTag(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public static ValueTask<FluidValue> ImgTag(FluidValue input, FilterArguments arguments, TemplateContext _)
         {
             var url = input.ToStringValue();
 

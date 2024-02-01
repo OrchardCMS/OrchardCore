@@ -21,17 +21,17 @@ namespace OrchardCore.Tenants.Services
         /// </summary>
         public Task<FeatureProfilesDocument> GetFeatureProfilesDocumentAsync() => _documentManager.GetOrCreateImmutableAsync();
 
-        public async Task RemoveFeatureProfileAsync(string name)
+        public async Task RemoveFeatureProfileAsync(string id)
         {
             var document = await LoadFeatureProfilesDocumentAsync();
-            document.FeatureProfiles.Remove(name);
+            document.FeatureProfiles.Remove(id);
             await _documentManager.UpdateAsync(document);
         }
 
-        public async Task UpdateFeatureProfileAsync(string name, FeatureProfile profile)
+        public async Task UpdateFeatureProfileAsync(string id, FeatureProfile profile)
         {
             var document = await LoadFeatureProfilesDocumentAsync();
-            document.FeatureProfiles[name.ToLower()] = profile;
+            document.FeatureProfiles[id] = profile;
             await _documentManager.UpdateAsync(document);
         }
     }

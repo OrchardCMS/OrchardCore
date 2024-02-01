@@ -19,7 +19,6 @@ using OrchardCore.AuditTrail.ViewModels;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
@@ -28,7 +27,6 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 using YesSql.Filters.Query;
-using YesSql.Indexes;
 
 namespace OrchardCore.AuditTrail
 {
@@ -49,15 +47,14 @@ namespace OrchardCore.AuditTrail
             services.AddScoped<IAuditTrailManager, AuditTrailManager>();
 
             services
-                .AddScoped<IDisplayManager<AuditTrailEvent>, DisplayManager<AuditTrailEvent>>()
                 .AddScoped<IDisplayDriver<AuditTrailEvent>, AuditTrailEventDisplayDriver>();
 
             services.AddSingleton<IAuditTrailIdGenerator, AuditTrailIdGenerator>();
 
             services.Configure<StoreCollectionOptions>(o => o.Collections.Add(AuditTrailEvent.Collection));
 
-            services.AddScoped<IDataMigration, Migrations>();
-            services.AddSingleton<IIndexProvider, AuditTrailEventIndexProvider>();
+            services.AddDataMigration<Migrations>();
+            services.AddIndexProvider<AuditTrailEventIndexProvider>();
             services.AddSingleton<IBackgroundTask, AuditTrailBackgroundTask>();
 
             services.AddScoped<IPermissionProvider, Permissions>();
@@ -67,8 +64,7 @@ namespace OrchardCore.AuditTrail
             services.AddScoped<IDisplayDriver<ISite>, AuditTrailSettingsDisplayDriver>();
             services.AddScoped<IDisplayDriver<ISite>, AuditTrailTrimmingSettingsDisplayDriver>();
 
-            services.AddScoped<IDisplayManager<AuditTrailIndexOptions>, DisplayManager<AuditTrailIndexOptions>>()
-                .AddScoped<IDisplayDriver<AuditTrailIndexOptions>, AuditTrailOptionsDisplayDriver>();
+            services.AddScoped<IDisplayDriver<AuditTrailIndexOptions>, AuditTrailOptionsDisplayDriver>();
 
             services.AddScoped<IAuditTrailAdminListQueryService, DefaultAuditTrailAdminListQueryService>();
 
@@ -95,7 +91,7 @@ namespace OrchardCore.AuditTrail
                 options
                     .ForSort("time-desc", b => b
                         .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderByDescending(i => i.CreatedUtc))
-                        .WithSelectListItem<Startup>((S, opt, model) => new SelectListItem(S["Newest"], opt.Value, model.Sort == String.Empty))
+                        .WithSelectListItem<Startup>((S, opt, model) => new SelectListItem(S["Newest"], opt.Value, model.Sort == string.Empty))
                         .AsDefault())
 
                     .ForSort("time-asc", b => b

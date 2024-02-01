@@ -9,7 +9,7 @@ namespace OrchardCore.Shortcodes.ViewModels
         public string Hint { get; set; }
         public string Usage { get; set; }
         public string DefaultValue { get; set; }
-        public string[] Categories { get; set; } = Array.Empty<string>();
+        public string[] Categories { get; set; } = [];
         public string SelectedCategories { get; set; }
     }
 }

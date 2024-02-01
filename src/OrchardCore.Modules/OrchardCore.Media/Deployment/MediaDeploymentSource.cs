@@ -18,7 +18,7 @@ namespace OrchardCore.Media.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            if (!(step is MediaDeploymentStep mediaStep))
+            if (step is not MediaDeploymentStep mediaStep)
             {
                 return;
             }
@@ -31,9 +31,9 @@ namespace OrchardCore.Media.Deployment
             }
             else
             {
-                paths = new List<string>(mediaStep.FilePaths ?? Array.Empty<string>()).ToAsyncEnumerable();
+                paths = new List<string>(mediaStep.FilePaths ?? []).ToAsyncEnumerable();
 
-                foreach (var directoryPath in mediaStep.DirectoryPaths ?? Array.Empty<string>())
+                foreach (var directoryPath in mediaStep.DirectoryPaths ?? [])
                 {
                     paths = paths.Concat(_mediaFileStore.GetDirectoryContentAsync(directoryPath, true).Where(e => !e.IsDirectory).Select(e => e.Path));
                 }

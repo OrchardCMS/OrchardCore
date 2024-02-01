@@ -53,10 +53,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         public static IServiceCollection AddDataAnnotationsPortableObjectLocalization(this IServiceCollection services)
         {
-            if (services is null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
+            ArgumentNullException.ThrowIfNull(services);
 
             services.AddSingleton<IConfigureOptions<MvcOptions>, LocalizedDataAnnotationsMvcOptions>();
 

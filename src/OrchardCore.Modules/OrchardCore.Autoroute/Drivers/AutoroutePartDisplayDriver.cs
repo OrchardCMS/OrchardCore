@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.Autoroute.Core.Indexes;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.Autoroute.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.ContentManagement.Records;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -27,7 +27,7 @@ namespace OrchardCore.Autoroute.Drivers
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly YesSql.ISession _session;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public AutoroutePartDisplayDriver(
             IOptions<AutorouteOptions> options,
@@ -114,7 +114,7 @@ namespace OrchardCore.Autoroute.Drivers
                 updater.ModelState.BindValidationResults(Prefix, model.ValidatePathFieldValue(S));
 
                 // This can only validate the path if the Autoroute is not managing content item routes or the path is absolute.
-                if (!String.IsNullOrEmpty(model.Path) && (!settings.ManageContainedItemRoutes || (settings.ManageContainedItemRoutes && model.Absolute)))
+                if (!string.IsNullOrEmpty(model.Path) && (!settings.ManageContainedItemRoutes || (settings.ManageContainedItemRoutes && model.Absolute)))
                 {
                     var path = model.Path.Trim('/');
                     var paths = new string[] { path, "/" + path, path + "/", "/" + path + "/" };

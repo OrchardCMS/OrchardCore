@@ -9,7 +9,7 @@ namespace OrchardCore.Workflows.Models
     /// </summary>
     public class Workflow
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// A unique identifier for this workflow.
@@ -26,7 +26,7 @@ namespace OrchardCore.Workflows.Models
         /// <summary>
         /// Serialized state of the workflow.
         /// </summary>
-        public JObject State { get; set; } = new JObject();
+        public JObject State { get; set; } = [];
 
         public WorkflowStatus Status { get; set; }
         public string FaultMessage { get; set; }

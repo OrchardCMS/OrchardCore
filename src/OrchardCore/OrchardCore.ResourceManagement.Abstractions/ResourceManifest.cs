@@ -5,18 +5,19 @@ namespace OrchardCore.ResourceManagement
 {
     public class ResourceManifest
     {
-        private readonly Dictionary<string, IDictionary<string, IList<ResourceDefinition>>> _resources = new Dictionary<string, IDictionary<string, IList<ResourceDefinition>>>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, IDictionary<string, IList<ResourceDefinition>>> _resources = new(StringComparer.OrdinalIgnoreCase);
 
         public virtual ResourceDefinition DefineResource(string resourceType, string resourceName)
         {
             var definition = new ResourceDefinition(this, resourceType, resourceName);
             var resources = GetResources(resourceType);
-            if (!resources.ContainsKey(resourceName))
+            if (!resources.TryGetValue(resourceName, out var value))
             {
-                resources[resourceName] = new List<ResourceDefinition>();
+                value = new List<ResourceDefinition>();
+                resources[resourceName] = value;
             }
 
-            resources[resourceName].Add(definition);
+            value.Add(definition);
             return definition;
         }
 

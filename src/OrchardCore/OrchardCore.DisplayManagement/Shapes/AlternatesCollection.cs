@@ -11,7 +11,7 @@ namespace OrchardCore.DisplayManagement.Shapes
     /// </summary>
     public class AlternatesCollection : IEnumerable<string>
     {
-        public static AlternatesCollection Empty = new AlternatesCollection();
+        public static readonly AlternatesCollection Empty = [];
 
         private KeyedAlternateCollection _collection;
 
@@ -31,10 +31,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public void Add(string alternate)
         {
-            if (alternate == null)
-            {
-                throw new ArgumentNullException(nameof(alternate));
-            }
+            ArgumentNullException.ThrowIfNull(alternate);
 
             EnsureCollection();
 
@@ -46,10 +43,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public void Remove(string alternate)
         {
-            if (alternate == null)
-            {
-                throw new ArgumentNullException(nameof(alternate));
-            }
+            ArgumentNullException.ThrowIfNull(alternate);
 
             if (_collection == null)
             {
@@ -71,10 +65,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public bool Contains(string alternate)
         {
-            if (alternate == null)
-            {
-                throw new ArgumentNullException(nameof(alternate));
-            }
+            ArgumentNullException.ThrowIfNull(alternate);
 
             if (_collection == null)
             {
@@ -93,10 +84,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public void AddRange(IEnumerable<string> alternates)
         {
-            if (alternates == null)
-            {
-                throw new ArgumentNullException(nameof(alternates));
-            }
+            ArgumentNullException.ThrowIfNull(alternates);
 
             if (alternates.Any())
             {
@@ -111,17 +99,14 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         private void EnsureCollection()
         {
-            if (_collection == null)
-            {
-                _collection = new KeyedAlternateCollection();
-            }
+            _collection ??= new KeyedAlternateCollection();
         }
 
         public IEnumerator<string> GetEnumerator()
         {
             if (_collection == null)
             {
-                return ((IEnumerable<string>)Array.Empty<string>()).GetEnumerator();
+                return ((IEnumerable<string>)[]).GetEnumerator();
             }
 
             return _collection.GetEnumerator();

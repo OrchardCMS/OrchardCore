@@ -10,13 +10,13 @@ namespace OrchardCore.ContentManagement
     /// </summary>
     public class ContentFieldFactory : ITypeActivatorFactory<ContentField>
     {
-        private readonly ITypeActivator<ContentField> ContentFieldActivator = new GenericTypeActivator<ContentField, ContentField>();
+        private readonly ITypeActivator<ContentField> _contentFieldActivator = new GenericTypeActivator<ContentField, ContentField>();
 
         private readonly Dictionary<string, ITypeActivator<ContentField>> _contentFieldActivators;
 
         public ContentFieldFactory(IOptions<ContentOptions> contentOptions)
         {
-            _contentFieldActivators = new Dictionary<string, ITypeActivator<ContentField>>();
+            _contentFieldActivators = [];
 
             // Check content options for configured fields.
             foreach (var fieldOption in contentOptions.Value.ContentFieldOptions)
@@ -35,7 +35,7 @@ namespace OrchardCore.ContentManagement
                 return activator;
             }
 
-            return ContentFieldActivator;
+            return _contentFieldActivator;
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,7 +9,6 @@ using OrchardCore.Abstractions.Setup;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using OrchardCore.Setup.Services;
@@ -96,6 +96,12 @@ namespace OrchardCore.Tenants.Workflows.Activities
             set => SetProperty(value);
         }
 
+        public WorkflowExpression<string> DatabaseSchema
+        {
+            get => GetProperty(() => new WorkflowExpression<string>());
+            set => SetProperty(value);
+        }
+
         public WorkflowExpression<string> RecipeName
         {
             get => GetProperty(() => new WorkflowExpression<string>());
@@ -109,7 +115,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            if (ShellScope.Context.Settings.Name != ShellHelper.DefaultShellName)
+            if (!ShellScope.Context.Settings.IsDefaultShell())
             {
                 return Outcomes("Failed");
             }
@@ -126,12 +132,12 @@ namespace OrchardCore.Tenants.Workflows.Activities
                 return Outcomes("Failed");
             }
 
-            if (shellSettings.State == TenantState.Running)
+            if (shellSettings.IsRunning())
             {
                 return Outcomes("Failed");
             }
 
-            if (shellSettings.State != TenantState.Uninitialized)
+            if (!shellSettings.IsUninitialized())
             {
                 return Outcomes("Failed");
             }
@@ -155,6 +161,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
             var databaseProvider = (await ExpressionEvaluator.EvaluateAsync(DatabaseProvider, workflowContext, null))?.Trim();
             var databaseConnectionString = (await ExpressionEvaluator.EvaluateAsync(DatabaseConnectionString, workflowContext, null))?.Trim();
             var databaseTablePrefix = (await ExpressionEvaluator.EvaluateAsync(DatabaseTablePrefix, workflowContext, null))?.Trim();
+            var databaseSchema = (await ExpressionEvaluator.EvaluateAsync(DatabaseSchema, workflowContext, null))?.Trim();
             var recipeName = (await ExpressionEvaluator.EvaluateAsync(RecipeName, workflowContext, null))?.Trim();
 
             if (string.IsNullOrEmpty(databaseProvider))
@@ -170,6 +177,11 @@ namespace OrchardCore.Tenants.Workflows.Activities
             if (string.IsNullOrEmpty(databaseTablePrefix))
             {
                 databaseTablePrefix = shellSettings["TablePrefix"];
+            }
+
+            if (string.IsNullOrWhiteSpace(databaseSchema))
+            {
+                databaseSchema = shellSettings["Schema"];
             }
 
             if (string.IsNullOrEmpty(recipeName))
@@ -196,13 +208,14 @@ namespace OrchardCore.Tenants.Workflows.Activities
                     { SetupConstants.DatabaseProvider, databaseProvider },
                     { SetupConstants.DatabaseConnectionString, databaseConnectionString },
                     { SetupConstants.DatabaseTablePrefix, databaseTablePrefix },
+                    { SetupConstants.DatabaseSchema, databaseSchema },
                 }
             };
 
             var executionId = await SetupService.SetupAsync(setupContext);
 
-            // Check if a component in the Setup failed
-            if (setupContext.Errors.Any())
+            // Check if a component in the Setup failed.
+            if (setupContext.Errors.Count > 0)
             {
                 var updater = _updateModelAccessor.ModelUpdater;
 

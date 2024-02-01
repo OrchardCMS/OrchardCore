@@ -1,2 +1,6 @@
 {% assign link = Model.ContentItem.Content.LinkMenuItemPart %}
-<a class="nav-link" href="{{ link.Url | href }}">{{ Model.ContentItem.DisplayText }}</a>
+<a class="nav-link" href="{{ link.Url | href }}"
+    {% if link.Url contains "#" %}
+        data-bs-target="{{ link.Url | split: '/' | last }}"
+    {% endif %}>
+{{ Model.ContentItem.DisplayText }}</a>

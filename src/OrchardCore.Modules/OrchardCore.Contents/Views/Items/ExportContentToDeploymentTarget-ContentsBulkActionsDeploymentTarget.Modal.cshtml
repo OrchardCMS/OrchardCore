@@ -6,26 +6,25 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="deployment-targets-bulk-title">@T["Available Targets"]</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="row">
+                    <div class="row row-cols-1 row-cols-md-2 g-2">
                         @foreach (var target in await DeploymentManager.GetDeploymentTargetsAsync())
                         {
                             var routeWithId = new RouteValueDictionary(target.Route);
                             routeWithId["id"] = Site.As<ExportContentToDeploymentTargetSettings>().ExportContentToDeploymentTargetPlanId;
                             var returnUrl = Context.Request.Query["returnUrl"];
                             routeWithId["returnUrl"] = FullRequestPath;
-                            <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-stretch card-item">
-                                <div class="card w-100 mb-3">
+                            
+                            <div class="col">
+                                <div class="card h-100 mb-3">
                                     <div class="card-body">
                                         <h4 class="card-title">@target.Name</h4>
                                         <p>@target.Description</p>
                                     </div>
-                                    <div class="card-footer text-muted text-xs-right">
-                                        <button type="button" class="export-to-deployment-target-bulk-actions text-white btn btn-primary btn-sm" data-dismiss="modal" data-target-url="@Url.RouteUrl(routeWithId)">@T["Select"]</button>
+                                    <div class="card-footer text-muted text-sm-end">
+                                        <button type="button" class="export-to-deployment-target-bulk-actions text-white btn btn-primary btn-sm" data-bs-dismiss="modal" data-target-url="@Url.RouteUrl(routeWithId)">@T["Select"]</button>
                                     </div>
                                 </div>
                             </div>
@@ -33,7 +32,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
                 </div>
             </div>
         </div>

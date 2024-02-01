@@ -143,7 +143,7 @@ namespace OrchardCore.Lists.Services
                             }
                         }
 
-                        _session.Save(contentItem);
+                        await _session.SaveAsync(contentItem);
                     }
 
                     i++;
@@ -157,10 +157,7 @@ namespace OrchardCore.Lists.Services
             PagerSlim pager,
             ContainedItemOptions containedItemOptions)
         {
-            if (containedItemOptions == null)
-            {
-                throw new ArgumentNullException(nameof(containedItemOptions));
-            }
+            ArgumentNullException.ThrowIfNull(containedItemOptions);
 
             IQuery<ContentItem> query = null;
             if (pager.Before != null)
@@ -373,7 +370,7 @@ namespace OrchardCore.Lists.Services
 
                     if (currentUserName != null)
                     {
-                        query.With<ContentItemIndex>(i => i.Owner == currentUserName);
+                        query.With<ContentItemIndex>(i => (i.Published || i.Latest) && i.Owner == currentUserName);
                     }
 
                     break;

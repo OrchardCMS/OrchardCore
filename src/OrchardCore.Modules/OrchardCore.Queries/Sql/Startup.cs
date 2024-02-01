@@ -8,7 +8,7 @@ using OrchardCore.Security.Permissions;
 namespace OrchardCore.Queries.Sql
 {
     /// <summary>
-    /// These services are registered on the tenant service collection
+    /// These services are registered on the tenant service collection.
     /// </summary>
     [Feature("OrchardCore.Queries.Sql")]
     public class Startup : StartupBase

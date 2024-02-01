@@ -14,7 +14,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
     public class ValidationMessageTagHelper : TagHelper
     {
         private const string ValidationForAttributeName = "asp-validation-class-for";
-        private const string HasValidationErrorClassName = "has-validation-error";
+        private const string HasValidationErrorClassName = "has-validation-error is-invalid";
         private readonly IHtmlHelper _htmlHelper;
 
         public ValidationMessageTagHelper(IHtmlHelper htmlHelper)
@@ -45,23 +45,17 @@ namespace OrchardCore.DisplayManagement.TagHelpers
         /// <remarks>Does nothing if <see cref="For"/> is <c>null</c>.</remarks>
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
+            ArgumentNullException.ThrowIfNull(context);
 
-            if (output == null)
-            {
-                throw new ArgumentNullException(nameof(output));
-            }
+            ArgumentNullException.ThrowIfNull(output);
 
             if (For != null)
             {
-                //contextualize IHtmlHelper
+                // contextualize IHtmlHelper
                 var viewContextAware = _htmlHelper as IViewContextAware;
                 viewContextAware?.Contextualize(ViewContext);
 
-                var fullName = _htmlHelper.GenerateIdFromName(For.Name);
+                var fullName = _htmlHelper.Name(For.Name);
 
                 if (ViewContext.ViewData.ModelState.TryGetValue(fullName, out var entry) && entry.Errors.Count > 0)
                 {

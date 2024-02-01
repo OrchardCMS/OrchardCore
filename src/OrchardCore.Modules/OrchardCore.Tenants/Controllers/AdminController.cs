@@ -9,17 +9,18 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.Data;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Routing;
-using OrchardCore.Settings;
 using OrchardCore.Tenants.Services;
 using OrchardCore.Tenants.ViewModels;
 
@@ -29,6 +30,7 @@ namespace OrchardCore.Tenants.Controllers
     {
         private readonly IShellHost _shellHost;
         private readonly IShellSettingsManager _shellSettingsManager;
+        private readonly IShellRemovalManager _shellRemovalManager;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly IAuthorizationService _authorizationService;
         private readonly ShellSettings _currentShellSettings;
@@ -37,16 +39,19 @@ namespace OrchardCore.Tenants.Controllers
         private readonly IDataProtectionProvider _dataProtectorProvider;
         private readonly IClock _clock;
         private readonly INotifier _notifier;
-        private readonly ISiteService _siteService;
         private readonly ITenantValidator _tenantValidator;
+        private readonly PagerOptions _pagerOptions;
+        private readonly TenantsOptions _tenantsOptions;
+        private readonly ILogger _logger;
+        private readonly IShapeFactory _shapeFactory;
 
-        private readonly dynamic New;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
 
         public AdminController(
             IShellHost shellHost,
             IShellSettingsManager shellSettingsManager,
+            IShellRemovalManager shellRemovalManager,
             IEnumerable<DatabaseProvider> databaseProviders,
             IAuthorizationService authorizationService,
             ShellSettings currentShellSettings,
@@ -55,14 +60,17 @@ namespace OrchardCore.Tenants.Controllers
             IDataProtectionProvider dataProtectorProvider,
             IClock clock,
             INotifier notifier,
-            ISiteService siteService,
             ITenantValidator tenantValidator,
+            IOptions<PagerOptions> pagerOptions,
+            IOptions<TenantsOptions> tenantsOptions,
+            ILogger<AdminController> logger,
             IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer)
         {
             _shellHost = shellHost;
             _shellSettingsManager = shellSettingsManager;
+            _shellRemovalManager = shellRemovalManager;
             _databaseProviders = databaseProviders;
             _authorizationService = authorizationService;
             _currentShellSettings = currentShellSettings;
@@ -71,10 +79,11 @@ namespace OrchardCore.Tenants.Controllers
             _dataProtectorProvider = dataProtectorProvider;
             _clock = clock;
             _notifier = notifier;
-            _siteService = siteService;
             _tenantValidator = tenantValidator;
-
-            New = shapeFactory;
+            _pagerOptions = pagerOptions.Value;
+            _tenantsOptions = tenantsOptions.Value;
+            _logger = logger;
+            _shapeFactory = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
@@ -94,29 +103,27 @@ namespace OrchardCore.Tenants.Controllers
             var allSettings = _shellHost.GetAllSettings().OrderBy(s => s.Name);
             var dataProtector = _dataProtectorProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
-            var entries = allSettings.Select(x =>
-                {
-                    var entry = new ShellSettingsEntry
-                    {
-                        Category = x["Category"],
-                        Description = x["Description"],
-                        Name = x.Name,
-                        ShellSettings = x,
-                        IsDefaultTenant = String.Equals(x.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase)
-                    };
+            var entries = allSettings.Select(settings =>
+               {
+                   var entry = new ShellSettingsEntry
+                   {
+                       Category = settings["Category"],
+                       Description = settings["Description"],
+                       Name = settings.Name,
+                       ShellSettings = settings,
+                   };
 
-                    if (x.State == TenantState.Uninitialized && !String.IsNullOrEmpty(x["Secret"]))
-                    {
-                        entry.Token = dataProtector.Protect(x["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
-                    }
+                   if (settings.IsUninitialized() && !string.IsNullOrEmpty(settings["Secret"]))
+                   {
+                       entry.Token = dataProtector.Protect(settings["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
+                   }
 
-                    return entry;
-                }).ToList();
+                   return entry;
+               }).ToList();
 
-            if (!String.IsNullOrWhiteSpace(options.Search))
+            if (!string.IsNullOrWhiteSpace(options.Search))
             {
                 entries = entries.Where(t => t.Name.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1 ||
                     (t.ShellSettings != null &&
@@ -124,37 +131,25 @@ namespace OrchardCore.Tenants.Controllers
                      (t.ShellSettings.RequestUrlPrefix != null && t.ShellSettings.RequestUrlPrefix.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1)))).ToList();
             }
 
-            if (!String.IsNullOrWhiteSpace(options.Category))
+            if (!string.IsNullOrWhiteSpace(options.Category))
             {
                 entries = entries.Where(t => t.Category?.Equals(options.Category, StringComparison.OrdinalIgnoreCase) == true).ToList();
             }
 
-            switch (options.Status)
+            entries = options.Status switch
             {
-                case TenantsState.Disabled:
-                    entries = entries.Where(t => t.ShellSettings.State == TenantState.Disabled).ToList();
-                    break;
-                case TenantsState.Running:
-                    entries = entries.Where(t => t.ShellSettings.State == TenantState.Running).ToList();
-                    break;
-                case TenantsState.Uninitialized:
-                    entries = entries.Where(t => t.ShellSettings.State == TenantState.Uninitialized).ToList();
-                    break;
-            }
+                TenantsState.Disabled => entries.Where(t => t.ShellSettings.IsDisabled()).ToList(),
+                TenantsState.Running => entries.Where(t => t.ShellSettings.IsRunning()).ToList(),
+                TenantsState.Uninitialized => entries.Where(t => t.ShellSettings.IsUninitialized()).ToList(),
+                _ => entries,
+            };
 
-            switch (options.OrderBy)
+            entries = options.OrderBy switch
             {
-                case TenantsOrder.Name:
-                    entries = entries.OrderBy(t => t.Name).ToList();
-                    break;
-                case TenantsOrder.State:
-                    entries = entries.OrderBy(t => t.ShellSettings?.State).ToList();
-                    break;
-                default:
-                    entries = entries.OrderByDescending(t => t.Name).ToList();
-                    break;
-            }
-            var count = entries.Count();
+                TenantsOrder.Name => entries.OrderBy(t => t.Name).ToList(),
+                TenantsOrder.State => entries.OrderBy(t => t.ShellSettings?.State).ToList(),
+                _ => entries.OrderByDescending(t => t.Name).ToList(),
+            };
 
             var results = entries
                 .Skip(pager.GetStartIndex())
@@ -162,12 +157,20 @@ namespace OrchardCore.Tenants.Controllers
 
             // Maintain previous route data when generating page links
             var routeData = new RouteData();
-            routeData.Values.Add("Options.Category", options.Category);
             routeData.Values.Add("Options.Status", options.Status);
-            routeData.Values.Add("Options.Search", options.Search);
             routeData.Values.Add("Options.OrderBy", options.OrderBy);
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
+            if (!string.IsNullOrEmpty(options.Category))
+            {
+                routeData.Values.TryAdd("Options.Category", options.Category);
+            }
+
+            if (!string.IsNullOrEmpty(options.Search))
+            {
+                routeData.Values.TryAdd("Options.Search", options.Search);
+            }
+
+            var pagerShape = await _shapeFactory.PagerAsync(pager, entries.Count, routeData);
 
             var model = new AdminIndexViewModel
             {
@@ -178,32 +181,35 @@ namespace OrchardCore.Tenants.Controllers
 
             // We populate the SelectLists
             model.Options.TenantsCategories = allSettings
-                .GroupBy(t => t["Category"])
-                .Where(t => !String.IsNullOrEmpty(t.Key))
-                .Select(t => new SelectListItem(t.Key, t.Key, String.Equals(options.Category, t.Key, StringComparison.OrdinalIgnoreCase)))
+                .GroupBy(settings => settings["Category"])
+                .Where(group => !string.IsNullOrEmpty(group.Key))
+                .Select(group => new SelectListItem(group.Key, group.Key, string.Equals(options.Category, group.Key, StringComparison.OrdinalIgnoreCase)))
                 .ToList();
 
             model.Options.TenantsCategories.Insert(0, new SelectListItem(
                 S["All"],
-                String.Empty,
-                selected: String.IsNullOrEmpty(options.Category)));
+                string.Empty,
+                selected: string.IsNullOrEmpty(options.Category)));
 
-            model.Options.TenantsStates = new List<SelectListItem>() {
+            model.Options.TenantsStates =
+            [
                 new SelectListItem() { Text = S["All states"], Value = nameof(TenantsState.All) },
                 new SelectListItem() { Text = S["Running"], Value = nameof(TenantsState.Running) },
                 new SelectListItem() { Text = S["Disabled"], Value = nameof(TenantsState.Disabled) },
                 new SelectListItem() { Text = S["Uninitialized"], Value = nameof(TenantsState.Uninitialized) }
-            };
+            ];
 
-            model.Options.TenantsSorts = new List<SelectListItem>() {
+            model.Options.TenantsSorts =
+            [
                 new SelectListItem() { Text = S["Name"], Value = nameof(TenantsOrder.Name) },
                 new SelectListItem() { Text = S["State"], Value = nameof(TenantsOrder.State) }
-            };
+            ];
 
-            model.Options.TenantsBulkAction = new List<SelectListItem>() {
+            model.Options.TenantsBulkAction =
+            [
                 new SelectListItem() { Text = S["Disable"], Value = nameof(TenantsBulkAction.Disable) },
-                new SelectListItem() { Text = S["Enable"], Value = nameof(TenantsBulkAction.Enable) }
-            };
+                new SelectListItem() { Text = S["Enable"], Value = nameof(TenantsBulkAction.Enable) },
+            ];
 
             return View(model);
         }
@@ -211,15 +217,14 @@ namespace OrchardCore.Tenants.Controllers
         [HttpPost, ActionName("Index")]
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(AdminIndexViewModel model)
-        {
-            return RedirectToAction("Index", new RouteValueDictionary {
+            => RedirectToAction("Index", new RouteValueDictionary
+            {
                 { "Options.Category", model.Options.Category },
                 { "Options.Status", model.Options.Status },
                 { "Options.OrderBy", model.Options.OrderBy },
                 { "Options.Search", model.Options.Search },
                 { "Options.TenantsStates", model.Options.TenantsStates }
             });
-        }
 
         [HttpPost]
         [FormValueRequired("submit.BulkAction")]
@@ -235,15 +240,16 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
+            if (model.BulkAction.ToString() == nameof(TenantsBulkAction.Remove) && !_tenantsOptions.TenantRemovalAllowed)
+            {
+                return Forbid();
+            }
+
             var allSettings = _shellHost.GetAllSettings();
 
-            foreach (var tenantName in model.TenantNames ?? Enumerable.Empty<string>())
+            foreach (var tenantName in model.TenantNames ?? [])
             {
-                var shellSettings = allSettings
-                    .Where(x => String.Equals(x.Name, tenantName, StringComparison.OrdinalIgnoreCase))
-                    .FirstOrDefault();
-
-                if (shellSettings == null)
+                if (!_shellHost.TryGetSettings(tenantName, out var shellSettings))
                 {
                     break;
                 }
@@ -251,31 +257,29 @@ namespace OrchardCore.Tenants.Controllers
                 switch (model.BulkAction.ToString())
                 {
                     case "Disable":
-                        if (String.Equals(shellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase))
+                        if (shellSettings.IsDefaultShell())
                         {
                             await _notifier.WarningAsync(H["You cannot disable the default tenant."]);
                         }
-                        else if (shellSettings.State != TenantState.Running)
+                        else if (!shellSettings.IsRunning())
                         {
                             await _notifier.WarningAsync(H["The tenant '{0}' is already disabled.", shellSettings.Name]);
                         }
                         else
                         {
-                            shellSettings.State = TenantState.Disabled;
-                            await _shellHost.UpdateShellSettingsAsync(shellSettings);
+                            await _shellHost.UpdateShellSettingsAsync(shellSettings.AsDisabled());
                         }
 
                         break;
 
                     case "Enable":
-                        if (shellSettings.State != TenantState.Disabled)
+                        if (!shellSettings.IsDisabled())
                         {
                             await _notifier.WarningAsync(H["The tenant '{0}' is already enabled.", shellSettings.Name]);
                         }
                         else
                         {
-                            shellSettings.State = TenantState.Running;
-                            await _shellHost.UpdateShellSettingsAsync(shellSettings);
+                            await _shellHost.UpdateShellSettingsAsync(shellSettings.AsRunning());
                         }
 
                         break;
@@ -300,28 +304,35 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-
             var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
             var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).OrderBy(r => r.DisplayName).ToArray();
 
             // Creates a default shell settings based on the configuration.
-            var shellSettings = _shellSettingsManager.CreateDefaultSettings();
+            using var shellSettings = _shellSettingsManager
+                .CreateDefaultSettings()
+                .AsUninitialized()
+                .AsDisposable();
 
-            var currentFeatureProfile = shellSettings["FeatureProfile"];
-
-            var featureProfiles = await GetFeatureProfilesAsync(currentFeatureProfile);
+            var currentFeatureProfiles = shellSettings.GetFeatureProfiles();
+            var featureProfiles = await GetFeatureProfilesAsync(currentFeatureProfiles);
 
             var model = new EditTenantViewModel
             {
                 Recipes = recipes,
                 RequestUrlHost = shellSettings.RequestUrlHost,
                 RequestUrlPrefix = shellSettings.RequestUrlPrefix,
-                TablePrefix = shellSettings["TablePrefix"],
                 RecipeName = shellSettings["RecipeName"],
-                FeatureProfile = currentFeatureProfile,
-                FeatureProfiles = featureProfiles
+                FeatureProfiles = currentFeatureProfiles,
+                FeatureProfilesItems = featureProfiles,
+                DatabaseProvider = shellSettings["DatabaseProvider"],
+                ConnectionString = shellSettings["ConnectionString"],
+                TablePrefix = shellSettings["TablePrefix"],
+                Schema = shellSettings["Schema"],
             };
-            SetConfigurationShellValues(model);
+
+            model.DatabaseConfigurationPreset =
+                !string.IsNullOrEmpty(model.ConnectionString) ||
+                !string.IsNullOrEmpty(model.DatabaseProvider);
 
             model.Recipes = recipes;
 
@@ -349,22 +360,24 @@ namespace OrchardCore.Tenants.Controllers
             if (ModelState.IsValid)
             {
                 // Creates a default shell settings based on the configuration.
-                var shellSettings = _shellSettingsManager.CreateDefaultSettings();
+                using var shellSettings = _shellSettingsManager
+                    .CreateDefaultSettings()
+                    .AsUninitialized()
+                    .AsDisposable();
 
                 shellSettings.Name = model.Name;
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
                 shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
-                shellSettings.State = TenantState.Uninitialized;
 
-                SetConfigurationShellValues(model);
                 shellSettings["Category"] = model.Category;
                 shellSettings["Description"] = model.Description;
                 shellSettings["ConnectionString"] = model.ConnectionString;
                 shellSettings["TablePrefix"] = model.TablePrefix;
+                shellSettings["Schema"] = model.Schema;
                 shellSettings["DatabaseProvider"] = model.DatabaseProvider;
                 shellSettings["Secret"] = Guid.NewGuid().ToString();
                 shellSettings["RecipeName"] = model.RecipeName;
-                shellSettings["FeatureProfile"] = model.FeatureProfile;
+                shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? []);
 
                 await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
@@ -374,7 +387,7 @@ namespace OrchardCore.Tenants.Controllers
             var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
             var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).OrderBy(r => r.DisplayName).ToArray();
             model.Recipes = recipes;
-            model.FeatureProfiles = await GetFeatureProfilesAsync(model.FeatureProfile);
+            model.FeatureProfilesItems = await GetFeatureProfilesAsync(model.FeatureProfiles);
 
             // If we got this far, something failed, redisplay form
             return View(model);
@@ -392,18 +405,14 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            var shellSettings = _shellHost.GetAllSettings()
-                .Where(x => String.Equals(x.Name, id, StringComparison.OrdinalIgnoreCase))
-                .FirstOrDefault();
-
-            if (shellSettings == null)
+            if (!_shellHost.TryGetSettings(id, out var shellSettings))
             {
                 return NotFound();
             }
 
-            var currentFeatureProfile = shellSettings["FeatureProfile"];
+            var currentFeatureProfiles = shellSettings.GetFeatureProfiles();
 
-            var featureProfiles = await GetFeatureProfilesAsync(currentFeatureProfile);
+            var featureProfiles = await GetFeatureProfilesAsync(currentFeatureProfiles);
 
             var model = new EditTenantViewModel
             {
@@ -412,13 +421,13 @@ namespace OrchardCore.Tenants.Controllers
                 Name = shellSettings.Name,
                 RequestUrlHost = shellSettings.RequestUrlHost,
                 RequestUrlPrefix = shellSettings.RequestUrlPrefix,
-                FeatureProfile = currentFeatureProfile,
-                FeatureProfiles = featureProfiles
+                FeatureProfiles = currentFeatureProfiles,
+                FeatureProfilesItems = featureProfiles
             };
 
             // The user can change the 'preset' database information only if the
             // tenant has not been initialized yet
-            if (shellSettings.State == TenantState.Uninitialized)
+            if (shellSettings.IsUninitialized())
             {
                 var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
                 var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).OrderBy(r => r.DisplayName).ToArray();
@@ -426,10 +435,10 @@ namespace OrchardCore.Tenants.Controllers
 
                 model.DatabaseProvider = shellSettings["DatabaseProvider"];
                 model.TablePrefix = shellSettings["TablePrefix"];
+                model.Schema = shellSettings["Schema"];
                 model.ConnectionString = shellSettings["ConnectionString"];
                 model.RecipeName = shellSettings["RecipeName"];
                 model.CanEditDatabasePresets = true;
-                SetConfigurationShellValues(model);
             }
 
             return View(model);
@@ -453,11 +462,7 @@ namespace OrchardCore.Tenants.Controllers
                 await ValidateViewModelAsync(model, false);
             }
 
-            var shellSettings = _shellHost.GetAllSettings()
-                .Where(x => String.Equals(x.Name, model.Name, StringComparison.OrdinalIgnoreCase))
-                .FirstOrDefault();
-
-            if (shellSettings == null)
+            if (!_shellHost.TryGetSettings(model.Name, out var shellSettings))
             {
                 return NotFound();
             }
@@ -468,15 +473,15 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings["Category"] = model.Category;
                 shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
-                shellSettings["FeatureProfile"] = model.FeatureProfile;
+                shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? []);
 
                 // The user can change the 'preset' database information only if the
                 // tenant has not been initialized yet
-                if (shellSettings.State == TenantState.Uninitialized)
+                if (shellSettings.IsUninitialized())
                 {
-                    SetConfigurationShellValues(model);
                     shellSettings["DatabaseProvider"] = model.DatabaseProvider;
                     shellSettings["TablePrefix"] = model.TablePrefix;
+                    shellSettings["Schema"] = model.Schema;
                     shellSettings["ConnectionString"] = model.ConnectionString;
                     shellSettings["RecipeName"] = model.RecipeName;
                     shellSettings["Secret"] = Guid.NewGuid().ToString();
@@ -487,24 +492,25 @@ namespace OrchardCore.Tenants.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            // If we got this far, something failed. Reinitialize the model and re-display form.
+
             // The user can change the 'preset' database information only if the
             // tenant has not been initialized yet
-            if (shellSettings.State == TenantState.Uninitialized)
+            if (shellSettings.IsUninitialized())
             {
                 model.DatabaseProvider = shellSettings["DatabaseProvider"];
                 model.TablePrefix = shellSettings["TablePrefix"];
+                model.Schema = shellSettings["Schema"];
                 model.ConnectionString = shellSettings["ConnectionString"];
                 model.RecipeName = shellSettings["RecipeName"];
                 model.CanEditDatabasePresets = true;
-                SetConfigurationShellValues(model);
             }
 
             var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
             var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).OrderBy(r => r.DisplayName).ToArray();
             model.Recipes = recipes;
-            model.FeatureProfiles = await GetFeatureProfilesAsync(model.FeatureProfile);
+            model.FeatureProfilesItems = await GetFeatureProfilesAsync(model.FeatureProfiles);
 
-            // If we got this far, something failed, redisplay form
             return View(model);
         }
 
@@ -521,29 +527,24 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            var shellSettings = _shellHost.GetAllSettings()
-                .Where(s => String.Equals(s.Name, id, StringComparison.OrdinalIgnoreCase))
-                .FirstOrDefault();
-
-            if (shellSettings == null)
+            if (!_shellHost.TryGetSettings(id, out var shellSettings))
             {
                 return NotFound();
             }
 
-            if (String.Equals(shellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase))
+            if (shellSettings.IsDefaultShell())
             {
                 await _notifier.ErrorAsync(H["You cannot disable the default tenant."]);
                 return RedirectToAction(nameof(Index));
             }
 
-            if (shellSettings.State != TenantState.Running)
+            if (!shellSettings.IsRunning())
             {
-                await _notifier.ErrorAsync(H["You can only disable an Enabled tenant."]);
+                await _notifier.ErrorAsync(H["You can only disable a Running tenant."]);
                 return RedirectToAction(nameof(Index));
             }
 
-            shellSettings.State = TenantState.Disabled;
-            await _shellHost.UpdateShellSettingsAsync(shellSettings);
+            await _shellHost.UpdateShellSettingsAsync(shellSettings.AsDisabled());
 
             return RedirectToAction(nameof(Index));
         }
@@ -561,22 +562,18 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            var shellSettings = _shellHost.GetAllSettings()
-                .Where(x => String.Equals(x.Name, id, StringComparison.OrdinalIgnoreCase))
-                .FirstOrDefault();
-
-            if (shellSettings == null)
+            if (!_shellHost.TryGetSettings(id, out var shellSettings))
             {
                 return NotFound();
             }
 
-            if (shellSettings.State != TenantState.Disabled)
+            if (!shellSettings.IsDisabled())
             {
                 await _notifier.ErrorAsync(H["You can only enable a Disabled tenant."]);
+                return RedirectToAction(nameof(Index));
             }
 
-            shellSettings.State = TenantState.Running;
-            await _shellHost.UpdateShellSettingsAsync(shellSettings);
+            await _shellHost.UpdateShellSettingsAsync(shellSettings.AsRunning());
 
             return RedirectToAction(nameof(Index));
         }
@@ -594,11 +591,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            var shellSettings = _shellHost.GetAllSettings()
-                .Where(x => String.Equals(x.Name, id, StringComparison.OrdinalIgnoreCase))
-                .FirstOrDefault();
-
-            if (shellSettings == null)
+            if (!_shellHost.TryGetSettings(id, out var shellSettings))
             {
                 return NotFound();
             }
@@ -614,42 +607,60 @@ namespace OrchardCore.Tenants.Controllers
             return Redirect(redirectUrl);
         }
 
-        private void SetConfigurationShellValues(EditTenantViewModel model)
+        [HttpPost]
+        public async Task<IActionResult> Remove(string id)
         {
-            var shellSettings = _shellSettingsManager.CreateDefaultSettings();
-            var configurationShellConnectionString = shellSettings["ConnectionString"];
-            var configurationDatabaseProvider = shellSettings["DatabaseProvider"];
-
-            model.DatabaseConfigurationPreset = !string.IsNullOrEmpty(configurationShellConnectionString) || !string.IsNullOrEmpty(configurationDatabaseProvider);
-
-            if (!string.IsNullOrEmpty(configurationShellConnectionString))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants) || !_tenantsOptions.TenantRemovalAllowed)
             {
-                model.ConnectionString = configurationShellConnectionString;
+                return Forbid();
             }
 
-            if (!string.IsNullOrEmpty(configurationDatabaseProvider))
+            if (!_currentShellSettings.IsDefaultShell())
             {
-                model.DatabaseProvider = configurationDatabaseProvider;
+                return Forbid();
             }
+
+            if (!_shellHost.TryGetSettings(id, out var shellSettings))
+            {
+                return NotFound();
+            }
+
+            if (!shellSettings.IsRemovable())
+            {
+                await _notifier.ErrorAsync(H["You can only remove a 'Disabled' or 'Uninitialized' tenant."]);
+                return RedirectToAction(nameof(Index));
+            }
+
+            var context = await _shellRemovalManager.RemoveAsync(shellSettings);
+            if (!context.Success)
+            {
+                await _notifier.ErrorAsync(H["An error occurred while removing the tenant '{0}'. {1}", id, context.ErrorMessage]);
+            }
+            else
+            {
+                if (_logger.IsEnabled(LogLevel.Warning))
+                {
+                    _logger.LogWarning("The tenant '{TenantName}' was removed.", shellSettings.Name);
+                }
+
+                await _notifier.SuccessAsync(H["The tenant '{0}' was removed, see the log file for more info.", shellSettings.Name]);
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
-        private async Task<List<SelectListItem>> GetFeatureProfilesAsync(string currentFeatureProfile)
+        private async Task<List<SelectListItem>> GetFeatureProfilesAsync(IEnumerable<string> currentFeatureProfiles)
         {
             var featureProfiles = (await _featureProfilesService.GetFeatureProfilesAsync())
-                .Select(x => new SelectListItem(x.Key, x.Key, String.Equals(x.Key, currentFeatureProfile, StringComparison.OrdinalIgnoreCase)))
+                .Select(x => new SelectListItem(x.Value.Name ?? x.Key, x.Key, currentFeatureProfiles != null && currentFeatureProfiles.Contains(x.Key)))
                 .ToList();
-
-            if (featureProfiles.Any())
-            {
-                featureProfiles.Insert(0, new SelectListItem(S["None"], String.Empty, currentFeatureProfile == String.Empty));
-            }
 
             return featureProfiles;
         }
 
-        private async Task ValidateViewModelAsync(EditTenantViewModel model, bool newTenant)
+        private async Task ValidateViewModelAsync(EditTenantViewModel model, bool isNewTenant)
         {
-            model.IsNewTenant = newTenant;
+            model.IsNewTenant = isNewTenant;
 
             ModelState.AddModelErrors(await _tenantValidator.ValidateAsync(model));
         }

@@ -61,10 +61,7 @@ namespace OrchardCore.OpenId.Services.Managers
         /// </returns>
         public virtual ValueTask<string> GetPhysicalIdAsync(TApplication application, CancellationToken cancellationToken = default)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             return Store is IOpenIdApplicationStore<TApplication> store ?
                 store.GetPhysicalIdAsync(application, cancellationToken) :
@@ -74,10 +71,7 @@ namespace OrchardCore.OpenId.Services.Managers
         public virtual async ValueTask<ImmutableArray<string>> GetRolesAsync(
             TApplication application, CancellationToken cancellationToken = default)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             if (Store is IOpenIdApplicationStore<TApplication> store)
             {
@@ -86,7 +80,7 @@ namespace OrchardCore.OpenId.Services.Managers
             else
             {
                 var properties = await Store.GetPropertiesAsync(application, cancellationToken);
-                if (properties.TryGetValue(OpenIdConstants.Properties.Roles, out JsonElement value))
+                if (properties.TryGetValue(OpenIdConstants.Properties.Roles, out var value))
                 {
                     var builder = ImmutableArray.CreateBuilder<string>();
 
@@ -98,7 +92,7 @@ namespace OrchardCore.OpenId.Services.Managers
                     return builder.ToImmutable();
                 }
 
-                return ImmutableArray.Create<string>();
+                return [];
             }
         }
 
@@ -136,10 +130,7 @@ namespace OrchardCore.OpenId.Services.Managers
         public virtual async ValueTask SetRolesAsync(TApplication application,
             ImmutableArray<string> roles, CancellationToken cancellationToken = default)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             if (roles.Any(role => string.IsNullOrEmpty(role)))
             {
@@ -153,11 +144,11 @@ namespace OrchardCore.OpenId.Services.Managers
             else
             {
                 var properties = await Store.GetPropertiesAsync(application, cancellationToken);
-                properties = properties.SetItem(OpenIdConstants.Properties.Roles, JsonSerializer.Deserialize<JsonElement>(
-                    JsonSerializer.Serialize(roles, new JsonSerializerOptions
+                properties = properties.SetItem(OpenIdConstants.Properties.Roles,
+                    JsonSerializer.SerializeToElement(roles, new JsonSerializerOptions
                     {
                         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-                    })));
+                    }));
 
                 await Store.SetPropertiesAsync(application, properties, cancellationToken);
             }
@@ -168,18 +159,18 @@ namespace OrchardCore.OpenId.Services.Managers
         public override async ValueTask PopulateAsync(TApplication application,
             OpenIddictApplicationDescriptor descriptor, CancellationToken cancellationToken = default)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
-            if (descriptor == null)
-            {
-                throw new ArgumentNullException(nameof(descriptor));
-            }
+            ArgumentNullException.ThrowIfNull(descriptor);
+
+            // Note: this method MUST be called first before applying any change to the untyped
+            // properties bag to ensure the base method doesn't override the added properties.
+            await base.PopulateAsync(application, descriptor, cancellationToken);
 
             if (descriptor is OpenIdApplicationDescriptor model)
             {
+                // If the underlying store is an Orchard implementation that natively supports roles,
+                // use the corresponding API. Otherwise, store the roles in the untyped properties bag.
                 if (Store is IOpenIdApplicationStore<TApplication> store)
                 {
                     await store.SetRolesAsync(application, model.Roles.ToImmutableArray(), cancellationToken);
@@ -187,47 +178,36 @@ namespace OrchardCore.OpenId.Services.Managers
                 else
                 {
                     var properties = await Store.GetPropertiesAsync(application, cancellationToken);
-                    properties = properties.SetItem(OpenIdConstants.Properties.Roles, JsonSerializer.Deserialize<JsonElement>(
-                        JsonSerializer.Serialize(model.Roles, new JsonSerializerOptions
+                    properties = properties.SetItem(OpenIdConstants.Properties.Roles,
+                        JsonSerializer.SerializeToElement(model.Roles, new JsonSerializerOptions
                         {
                             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-                        })));
+                        }));
 
                     await Store.SetPropertiesAsync(application, properties, cancellationToken);
                 }
             }
-
-            await base.PopulateAsync(application, descriptor, cancellationToken);
         }
 
         public override async ValueTask PopulateAsync(OpenIddictApplicationDescriptor descriptor,
             TApplication application, CancellationToken cancellationToken = default)
         {
-            if (descriptor == null)
-            {
-                throw new ArgumentNullException(nameof(descriptor));
-            }
+            ArgumentNullException.ThrowIfNull(descriptor);
 
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
+
+            await base.PopulateAsync(descriptor, application, cancellationToken);
 
             if (descriptor is OpenIdApplicationDescriptor model)
             {
                 model.Roles.UnionWith(await GetRolesAsync(application, cancellationToken));
             }
-
-            await base.PopulateAsync(descriptor, application, cancellationToken);
         }
 
         public override IAsyncEnumerable<ValidationResult> ValidateAsync(
             TApplication application, CancellationToken cancellationToken = default)
         {
-            if (application == null)
-            {
-                throw new ArgumentNullException(nameof(application));
-            }
+            ArgumentNullException.ThrowIfNull(application);
 
             return ExecuteAsync();
 

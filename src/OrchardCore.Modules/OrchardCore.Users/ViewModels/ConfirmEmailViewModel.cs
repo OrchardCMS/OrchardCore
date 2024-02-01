@@ -5,8 +5,8 @@ namespace OrchardCore.Users.ViewModels
     public class ConfirmEmailViewModel : ShapeViewModel
     {
         public ConfirmEmailViewModel()
+             : base("TemplateUserConfirmEmail")
         {
-            Metadata.Type = "TemplateUserConfirmEmail";
         }
 
         public IUser User { get; set; }
