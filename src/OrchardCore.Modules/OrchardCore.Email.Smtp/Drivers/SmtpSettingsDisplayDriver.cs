@@ -30,7 +30,6 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpEmailSe
         ShellSettings shellSettings,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IOptions<EmailSettings> emailSettings,
         IOptions<SmtpEmailSettings> smtpEmailSettings)
     {
         _dataProtectionProvider = dataProtectionProvider;
@@ -49,8 +48,6 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpEmailSe
         {
             return null;
         }
-
-        //var defaultSender = _smtpEmailSettings.DefaultSender ?? _emailSettings.DefaultSender;
 
         var shapes = new List<IDisplayResult>
         {
