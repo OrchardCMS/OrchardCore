@@ -163,7 +163,7 @@ namespace OrchardCore.Setup.Services
 
             if (shellSettings["DatabaseProvider"] == DatabaseProviderValue.Sqlite && string.IsNullOrEmpty(shellSettings["DatabaseName"]))
             {
-                shellSettings["DatabaseName"] = context.Properties.TryGetValue(SetupConstants.DatabaseName, out var dbName) ? dbName?.ToString() : "orchardcore.db";
+                shellSettings["DatabaseName"] = context.Properties.TryGetValue(SetupConstants.DatabaseName, out var dbName) ? dbName?.ToString() : "OrchardCore.db";
             }
 
             var validationContext = new DbConnectionValidatorContext(shellSettings);
