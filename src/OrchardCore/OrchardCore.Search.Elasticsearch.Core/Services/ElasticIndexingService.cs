@@ -75,16 +75,15 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 return;
             }
 
-            var indexSettingsList = (await _elasticIndexSettingsService.GetSettingsAsync()).ToList();
+            var indexSettingsList = await _elasticIndexSettingsService.GetSettingsAsync();
 
             if (indexNames != null && indexNames.Length > 0)
             {
                 indexSettingsList = indexSettingsList
-                    .Where(x => indexNames.Contains(x.IndexName, StringComparer.OrdinalIgnoreCase))
-                    .ToList();
+                    .Where(x => indexNames.Contains(x.IndexName, StringComparer.OrdinalIgnoreCase));
             }
 
-            if (indexSettingsList.Count == 0)
+            if (!indexSettingsList.Any())
             {
                 return;
             }
@@ -100,16 +99,16 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 allIndices.Add(indexSetting.IndexName, taskId);
             }
 
-            var tasks = new List<IndexingTask>();
+            IEnumerable<IndexingTask> tasks = [];
             var allContentTypes = indexSettingsList.SelectMany(x => x.IndexedContentTypes ?? []).Distinct().ToList();
             var readOnlySession = _store.CreateSession(withTracking: false);
 
             while (true)
             {
                 // Load the next batch of tasks.
-                tasks = (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, BatchSize)).ToList();
+                tasks = await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, BatchSize);
 
-                if (tasks.Count == 0)
+                if (!tasks.Any())
                 {
                     break;
                 }
