@@ -56,13 +56,13 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
         S = stringLocalizer;
     }
 
-    protected async Task SetRecoveryCodes(string[] codes, string userId)
+    protected async Task SetRecoveryCodesAsync(string[] codes, string userId)
     {
         var key = GetRecoveryCodesCacheKey(userId);
 
         var model = new ShowRecoveryCodesViewModel()
         {
-            RecoveryCodes = codes ?? Array.Empty<string>(),
+            RecoveryCodes = codes ?? [],
         };
 
         var data = JsonSerializer.SerializeToUtf8Bytes(model);
@@ -142,7 +142,9 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
             var twoFactorSettings = (await SiteService.GetSiteSettingsAsync()).As<TwoFactorLoginSettings>();
             var recoveryCodes = await UserManager.GenerateNewTwoFactorRecoveryCodesAsync(user, twoFactorSettings.NumberOfRecoveryCodesToGenerate);
 
-            await SetRecoveryCodes(recoveryCodes.ToArray(), await UserManager.GetUserIdAsync(user));
+            await SetRecoveryCodesAsync(recoveryCodes.ToArray(), await UserManager.GetUserIdAsync(user));
+
+            await Notifier.WarningAsync(H["New recovery codes were generated."]);
 
             return RedirectToAction(nameof(TwoFactorAuthenticationController.ShowRecoveryCodes), _twoFactorAuthenticationControllerName);
         }
@@ -167,7 +169,7 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
         => NotFound("Unable to load user.");
 
     protected static string StripToken(string code)
-        => code.Replace(" ", String.Empty).Replace("-", String.Empty);
+        => code.Replace(" ", string.Empty).Replace("-", string.Empty);
 
     protected static string GetRecoveryCodesCacheKey(string userId)
         => $"TwoFactorAuthenticationRecoveryCodes_{userId}";

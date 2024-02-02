@@ -49,8 +49,8 @@ namespace OrchardCore.Contents.AdminNodes
                 model.ContentTypes = listable.Select(x => new ContentTypeEntryViewModel
                 {
                     ContentTypeId = x.Name,
-                    IsChecked = treeNode.ContentTypes.Any(selected => String.Equals(selected.ContentTypeId, x.Name, StringComparison.OrdinalIgnoreCase)),
-                    IconClass = treeNode.ContentTypes.FirstOrDefault(selected => selected.ContentTypeId == x.Name)?.IconClass ?? String.Empty
+                    IsChecked = treeNode.ContentTypes.Any(selected => string.Equals(selected.ContentTypeId, x.Name, StringComparison.OrdinalIgnoreCase)),
+                    IconClass = treeNode.ContentTypes.FirstOrDefault(selected => selected.ContentTypeId == x.Name)?.IconClass ?? string.Empty
                 }).ToArray();
             }).Location("Content");
         }
@@ -58,7 +58,7 @@ namespace OrchardCore.Contents.AdminNodes
         public override async Task<IDisplayResult> UpdateAsync(ContentTypesAdminNode treeNode, IUpdateModel updater)
         {
             // Initializes the value to empty otherwise the model is not updated if no type is selected.
-            treeNode.ContentTypes = Array.Empty<ContentTypeEntry>();
+            treeNode.ContentTypes = [];
 
             var model = new ContentTypesAdminNodeViewModel();
 
@@ -82,7 +82,7 @@ namespace OrchardCore.Contents.AdminNodes
 
         private async Task<IEnumerable<ContentTypeDefinition>> GetListableContentTypeDefinitionsAsync()
         {
-            var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions();
+            var contentTypeDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
 
             var listableContentTypeDefinitions = new List<ContentTypeDefinition>();
 

@@ -51,15 +51,12 @@ namespace OrchardCore.ContentManagement.Display
 
         public async Task<IShape> BuildDisplayAsync(ContentItem contentItem, IUpdateModel updater, string displayType, string groupId)
         {
-            if (contentItem == null)
-            {
-                throw new ArgumentNullException(nameof(contentItem));
-            }
+            ArgumentNullException.ThrowIfNull(contentItem);
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType)
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType)
                 ?? throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");
 
-            var actualDisplayType = String.IsNullOrEmpty(displayType) ? "Detail" : displayType;
+            var actualDisplayType = string.IsNullOrEmpty(displayType) ? "Detail" : displayType;
             var hasStereotype = contentTypeDefinition.TryGetStereotype(out var stereotype);
 
             var actualShapeType = "Content";
@@ -123,12 +120,9 @@ namespace OrchardCore.ContentManagement.Display
 
         public async Task<IShape> BuildEditorAsync(ContentItem contentItem, IUpdateModel updater, bool isNew, string groupId, string htmlFieldPrefix)
         {
-            if (contentItem == null)
-            {
-                throw new ArgumentNullException(nameof(contentItem));
-            }
+            ArgumentNullException.ThrowIfNull(contentItem);
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType)
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType)
                 ?? throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");
 
             var hasStereotype = contentTypeDefinition.TryGetStereotype(out var stereotype);
@@ -174,12 +168,9 @@ namespace OrchardCore.ContentManagement.Display
 
         public async Task<IShape> UpdateEditorAsync(ContentItem contentItem, IUpdateModel updater, bool isNew, string groupId, string htmlFieldPrefix)
         {
-            if (contentItem == null)
-            {
-                throw new ArgumentNullException(nameof(contentItem));
-            }
+            ArgumentNullException.ThrowIfNull(contentItem);
 
-            var contentTypeDefinition = _contentDefinitionManager.LoadTypeDefinition(contentItem.ContentType)
+            var contentTypeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(contentItem.ContentType)
                 ?? throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");
 
             var hasStereotype = contentTypeDefinition.TryGetStereotype(out var stereotype);

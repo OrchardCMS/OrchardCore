@@ -18,10 +18,7 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static OpenIddictCoreBuilder AddOrchardMigrations(this OpenIddictCoreBuilder builder)
         {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
+            ArgumentNullException.ThrowIfNull(builder);
 
             builder.Services.TryAddEnumerable(
                 ServiceDescriptor.Scoped<IDataMigration, OpenIdMigrations>());
@@ -34,10 +31,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static OpenIddictCoreBuilder UseOrchardManagers(this OpenIddictCoreBuilder builder)
         {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
+            ArgumentNullException.ThrowIfNull(builder);
 
             builder.ReplaceApplicationManager(typeof(OpenIdApplicationManager<>))
                    .ReplaceAuthorizationManager(typeof(OpenIdAuthorizationManager<>))
@@ -46,24 +40,17 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // Register proxy delegates so that the Orchard managers can be directly
             // resolved from the DI using the non-generic, Orchard-specific interfaces.
-            builder.Services.TryAddScoped(provider => (IOpenIdApplicationManager)
-                provider.GetRequiredService<IOpenIddictApplicationManager>());
-            builder.Services.TryAddScoped(provider => (IOpenIdAuthorizationManager)
-                provider.GetRequiredService<IOpenIddictAuthorizationManager>());
-            builder.Services.TryAddScoped(provider => (IOpenIdScopeManager)
-                provider.GetRequiredService<IOpenIddictScopeManager>());
-            builder.Services.TryAddScoped(provider => (IOpenIdTokenManager)
-                provider.GetRequiredService<IOpenIddictTokenManager>());
+            builder.Services.TryAddScoped(provider => (IOpenIdApplicationManager)provider.GetRequiredService<IOpenIddictApplicationManager>());
+            builder.Services.TryAddScoped(provider => (IOpenIdAuthorizationManager)provider.GetRequiredService<IOpenIddictAuthorizationManager>());
+            builder.Services.TryAddScoped(provider => (IOpenIdScopeManager)provider.GetRequiredService<IOpenIddictScopeManager>());
+            builder.Services.TryAddScoped(provider => (IOpenIdTokenManager)provider.GetRequiredService<IOpenIddictTokenManager>());
 
             return builder;
         }
 
         public static OpenIddictCoreBuilder UseYesSql(this OpenIddictCoreBuilder builder)
         {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
+            ArgumentNullException.ThrowIfNull(builder);
 
             // Since the YesSql stores may be used with databases performing case-insensitive or
             // culture-sensitive comparisons, ensure the additional filtering logic is enforced

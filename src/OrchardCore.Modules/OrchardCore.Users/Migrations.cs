@@ -1,5 +1,9 @@
 using System;
+using System.Threading.Tasks;
+using Dapper;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Users.Indexes;
@@ -11,9 +15,9 @@ namespace OrchardCore.Users
 {
     public class Migrations : DataMigration
     {
-        public int Create()
+        public async Task<int> CreateAsync()
         {
-            SchemaBuilder.CreateMapIndexTable<UserIndex>(table => table
+            await SchemaBuilder.CreateMapIndexTableAsync<UserIndex>(table => table
                 .Column<string>("NormalizedUserName") // TODO These should have defaults. on SQL Server they will fall at 255. Exceptions are currently thrown if you go over that.
                 .Column<string>("NormalizedEmail")
                 .Column<bool>("IsEnabled", c => c.NotNull().WithDefault(true))
@@ -23,7 +27,7 @@ namespace OrchardCore.Users
                 .Column<string>("UserId")
             );
 
-            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<UserIndex>(table => table
                 .CreateIndex("IDX_UserIndex_DocumentId",
                     "DocumentId",
                     "UserId",
@@ -33,7 +37,7 @@ namespace OrchardCore.Users
                     )
             );
 
-            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<UserIndex>(table => table
                 .CreateIndex("IDX_UserIndex_Lockout",
                     "DocumentId",
                     "IsLockoutEnabled",
@@ -42,47 +46,47 @@ namespace OrchardCore.Users
                     )
             );
 
-            SchemaBuilder.CreateReduceIndexTable<UserByRoleNameIndex>(table => table
+            await SchemaBuilder.CreateReduceIndexTableAsync<UserByRoleNameIndex>(table => table
                .Column<string>("RoleName")
                .Column<int>("Count")
             );
 
-            SchemaBuilder.AlterIndexTable<UserByRoleNameIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<UserByRoleNameIndex>(table => table
                 .CreateIndex("IDX_UserByRoleNameIndex_RoleName",
                     "RoleName")
             );
 
-            SchemaBuilder.CreateMapIndexTable<UserByLoginInfoIndex>(table => table
+            await SchemaBuilder.CreateMapIndexTableAsync<UserByLoginInfoIndex>(table => table
                 .Column<string>("LoginProvider")
                 .Column<string>("ProviderKey"));
 
-            SchemaBuilder.AlterIndexTable<UserByLoginInfoIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<UserByLoginInfoIndex>(table => table
                 .CreateIndex("IDX_UserByLoginInfoIndex_DocumentId",
                     "DocumentId",
                     "LoginProvider",
                     "ProviderKey")
             );
 
-            SchemaBuilder.CreateMapIndexTable<UserByClaimIndex>(table => table
-               .Column<string>(nameof(UserByClaimIndex.ClaimType))
-               .Column<string>(nameof(UserByClaimIndex.ClaimValue)),
+            await SchemaBuilder.CreateMapIndexTableAsync<UserByClaimIndex>(table => table
+               .Column<string>("ClaimType")
+               .Column<string>("ClaimValue"),
                 null);
 
-            SchemaBuilder.AlterIndexTable<UserByClaimIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<UserByClaimIndex>(table => table
                 .CreateIndex("IDX_UserByClaimIndex_DocumentId",
                     "DocumentId",
-                    nameof(UserByClaimIndex.ClaimType),
-                    nameof(UserByClaimIndex.ClaimValue))
+                    "ClaimType",
+                    "ClaimValue")
             );
 
             // Shortcut other migration steps on new content definition schemas.
-            return 12;
+            return 13;
         }
 
         // This code can be removed in a later version.
-        public int UpdateFrom1()
+        public async Task<int> UpdateFrom1Async()
         {
-            SchemaBuilder.CreateMapIndexTable<UserByLoginInfoIndex>(table => table
+            await SchemaBuilder.CreateMapIndexTableAsync<UserByLoginInfoIndex>(table => table
                 .Column<string>("LoginProvider")
                 .Column<string>("ProviderKey"));
 
@@ -90,30 +94,30 @@ namespace OrchardCore.Users
         }
 
         // This code can be removed in a later version.
-        public int UpdateFrom2()
+        public async Task<int> UpdateFrom2Async()
         {
-            SchemaBuilder.CreateMapIndexTable<UserByClaimIndex>(table => table
-               .Column<string>(nameof(UserByClaimIndex.ClaimType))
-               .Column<string>(nameof(UserByClaimIndex.ClaimValue)),
+            await SchemaBuilder.CreateMapIndexTableAsync<UserByClaimIndex>(table => table
+               .Column<string>("ClaimType")
+               .Column<string>("ClaimValue"),
                 null);
 
             return 3;
         }
 
         // This code can be removed in a later version.
-        public int UpdateFrom3()
+        public async Task<int> UpdateFrom3Async()
         {
-            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                .AddColumn<bool>(nameof(UserIndex.IsEnabled), c => c.NotNull().WithDefault(true)));
+            await SchemaBuilder.AlterIndexTableAsync<UserIndex>(table => table
+                .AddColumn<bool>("IsEnabled", c => c.NotNull().WithDefault(true)));
 
             return 4;
         }
 
         // UserId database migration.
         // This code can be removed in a later version.
-        public int UpdateFrom4()
+        public async Task<int> UpdateFrom4Async()
         {
-            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<UserIndex>(table => table
                 .AddColumn<string>("UserId"));
 
             return 5;
@@ -127,7 +131,7 @@ namespace OrchardCore.Users
         public int UpdateFrom5()
 #pragma warning restore CA1822 // Mark members as static
         {
-            // Defer this until after the subsequent migrations have succeded as the schema has changed.
+            // Defer this until after the subsequent migrations have succeeded as the schema has changed.
             ShellScope.AddDeferredTask(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
@@ -135,7 +139,7 @@ namespace OrchardCore.Users
                 foreach (var user in users)
                 {
                     user.UserId = user.UserName;
-                    session.Save(user);
+                    await session.SaveAsync(user);
                 }
             });
 
@@ -157,7 +161,7 @@ namespace OrchardCore.Users
         public int UpdateFrom7()
 #pragma warning restore CA1822 // Mark members as static
         {
-            // Defer this until after the subsequent migrations have succeded as the schema has changed.
+            // Defer this until after the subsequent migrations have succeeded as the schema has changed.
             ShellScope.AddDeferredTask(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
@@ -166,7 +170,7 @@ namespace OrchardCore.Users
                 {
                     user.UserName = user.UserName.Replace('@', '+');
                     user.NormalizedUserName = user.NormalizedUserName.Replace('@', '+');
-                    session.Save(user);
+                    await session.SaveAsync(user);
                 }
             });
 
@@ -174,9 +178,9 @@ namespace OrchardCore.Users
         }
 
         // This code can be removed in a later version.
-        public int UpdateFrom8()
+        public async Task<int> UpdateFrom8Async()
         {
-            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<UserIndex>(table => table
                 .CreateIndex("IDX_UserIndex_DocumentId",
                     "DocumentId",
                     "UserId",
@@ -185,27 +189,27 @@ namespace OrchardCore.Users
                     "IsEnabled")
             );
 
-            SchemaBuilder.AlterIndexTable<UserByLoginInfoIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<UserByLoginInfoIndex>(table => table
                 .CreateIndex("IDX_UserByLoginInfoIndex_DocumentId",
                     "DocumentId",
                     "LoginProvider",
                     "ProviderKey")
             );
 
-            SchemaBuilder.AlterIndexTable<UserByClaimIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<UserByClaimIndex>(table => table
                 .CreateIndex("IDX_UserByClaimIndex_DocumentId",
                     "DocumentId",
-                    nameof(UserByClaimIndex.ClaimType),
-                    nameof(UserByClaimIndex.ClaimValue))
+                    "ClaimType",
+                    "ClaimValue")
             );
 
             return 9;
         }
 
         // This code can be removed in a later version.
-        public int UpdateFrom9()
+        public async Task<int> UpdateFrom9Async()
         {
-            SchemaBuilder.AlterIndexTable<UserByRoleNameIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<UserByRoleNameIndex>(table => table
                 .CreateIndex("IDX_UserByRoleNameIndex_RoleName",
                     "RoleName")
             );
@@ -213,23 +217,23 @@ namespace OrchardCore.Users
             return 10;
         }
 
-        public int UpdateFrom10()
+        public async Task<int> UpdateFrom10Async()
         {
-            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                .AddColumn<bool>(nameof(UserIndex.IsLockoutEnabled), c => c.NotNull().WithDefault(false)));
+            await SchemaBuilder.AlterIndexTableAsync<UserIndex>(table => table
+                .AddColumn<bool>("IsLockoutEnabled", c => c.NotNull().WithDefault(false)));
 
-            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                .AddColumn<DateTime?>(nameof(UserIndex.LockoutEndUtc), c => c.Nullable()));
+            await SchemaBuilder.AlterIndexTableAsync<UserIndex>(table => table
+                .AddColumn<DateTime?>("LockoutEndUtc", c => c.Nullable()));
 
-            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                .AddColumn<int>(nameof(UserIndex.AccessFailedCount), c => c.NotNull().WithDefault(0)));
+            await SchemaBuilder.AlterIndexTableAsync<UserIndex>(table => table
+                .AddColumn<int>("AccessFailedCount", c => c.NotNull().WithDefault(0)));
 
             return 11;
         }
 
-        public int UpdateFrom11()
+        public async Task<int> UpdateFrom11Async()
         {
-            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<UserIndex>(table => table
                 .CreateIndex("IDX_UserIndex_Lockout",
                     "DocumentId",
                     "IsLockoutEnabled",
@@ -239,6 +243,48 @@ namespace OrchardCore.Users
             );
 
             return 12;
+        }
+
+        public int UpdateFrom12()
+        {
+            ShellScope.AddDeferredTask(async scope =>
+            {
+                var session = scope.ServiceProvider.GetRequiredService<ISession>();
+                var dbConnectionAccessor = scope.ServiceProvider.GetService<IDbConnectionAccessor>();
+                var logger = scope.ServiceProvider.GetService<ILogger<Migrations>>();
+                var tablePrefix = session.Store.Configuration.TablePrefix;
+                var documentTableName = session.Store.Configuration.TableNameConvention.GetDocumentTable();
+                var table = $"{session.Store.Configuration.TablePrefix}{documentTableName}";
+
+                logger.LogDebug("Updating User Settings");
+
+                await using var connection = dbConnectionAccessor.CreateConnection();
+                await connection.OpenAsync();
+                await using var transaction = await connection.BeginTransactionAsync(session.Store.Configuration.IsolationLevel);
+                var dialect = session.Store.Configuration.SqlDialect;
+
+                try
+                {
+                    var quotedTableName = dialect.QuoteForTableName(table, session.Store.Configuration.Schema);
+                    var quotedContentColumnName = dialect.QuoteForColumnName("Content");
+                    var quotedTypeColumnName = dialect.QuoteForColumnName("Type");
+
+                    var updateCmd = $"UPDATE {quotedTableName} SET {quotedContentColumnName} = REPLACE({quotedContentColumnName}, 'OrchardCore.Users.Models.LoginSettings, OrchardCore.Users', 'OrchardCore.Users.Models.LoginSettings, OrchardCore.Users.Core') WHERE {quotedTypeColumnName} = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions'";
+
+                    await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
+
+                    await transaction.CommitAsync();
+                }
+                catch (Exception e)
+                {
+                    await transaction.RollbackAsync();
+                    logger.LogError(e, "An error occurred while updating User Settings");
+
+                    throw;
+                }
+            });
+
+            return 13;
         }
     }
 }

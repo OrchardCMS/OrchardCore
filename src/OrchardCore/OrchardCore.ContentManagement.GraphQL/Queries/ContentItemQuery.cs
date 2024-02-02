@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Resolvers;
@@ -24,7 +23,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             S = localizer;
         }
 
-        public Task<string> GetIdentifierAsync() => Task.FromResult(String.Empty);
+        public Task<string> GetIdentifierAsync() => Task.FromResult(string.Empty);
 
         public Task BuildAsync(ISchema schema)
         {

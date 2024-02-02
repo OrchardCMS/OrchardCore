@@ -15,15 +15,15 @@ namespace OrchardCore.Tests.Routing
             // Setup
             var shellContext = CreateShellContext();
 
-            await shellContext.CreateScope().UsingAsync(scope =>
+            await (await shellContext.CreateScopeAsync()).UsingAsync(scope =>
             {
                 var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
 
                 // Act
                 var initialEntries = new List<AutorouteEntry>()
                 {
-                    new AutorouteEntry("container", "container-path"),
-                    new AutorouteEntry("container", "contained-path", "contained")
+                    new("container", "container-path"),
+                    new("container", "contained-path", "contained")
                 };
 
                 entries.AddEntries(initialEntries);
@@ -31,7 +31,7 @@ namespace OrchardCore.Tests.Routing
                 return Task.CompletedTask;
             });
 
-            await shellContext.CreateScope().UsingAsync(async scope =>
+            await (await shellContext.CreateScopeAsync()).UsingAsync(async scope =>
             {
                 var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
 
@@ -49,15 +49,15 @@ namespace OrchardCore.Tests.Routing
             // Setup
             var shellContext = CreateShellContext();
 
-            await shellContext.CreateScope().UsingAsync(scope =>
+            await (await shellContext.CreateScopeAsync()).UsingAsync(scope =>
             {
                 var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
 
                 // Act
                 var initialEntries = new List<AutorouteEntry>()
                 {
-                    new AutorouteEntry("container", "container-path"),
-                    new AutorouteEntry("container", "contained-path", "contained")
+                    new("container", "container-path"),
+                    new("container", "contained-path", "contained")
                 };
 
                 entries.AddEntries(initialEntries);
@@ -65,7 +65,7 @@ namespace OrchardCore.Tests.Routing
                 return Task.CompletedTask;
             });
 
-            await shellContext.CreateScope().UsingAsync(async scope =>
+            await (await shellContext.CreateScopeAsync()).UsingAsync(async scope =>
             {
                 var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
 
@@ -83,15 +83,15 @@ namespace OrchardCore.Tests.Routing
             // Setup
             var shellContext = CreateShellContext();
 
-            await shellContext.CreateScope().UsingAsync(scope =>
+            await (await shellContext.CreateScopeAsync()).UsingAsync(scope =>
             {
                 var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
 
                 // Act
                 var initialEntries = new List<AutorouteEntry>()
                 {
-                    new AutorouteEntry("container", "container-path"),
-                    new AutorouteEntry("container", "contained-path", "contained")
+                    new("container", "container-path"),
+                    new("container", "contained-path", "contained")
                 };
 
                 entries.AddEntries(initialEntries);
@@ -101,7 +101,7 @@ namespace OrchardCore.Tests.Routing
                 return Task.CompletedTask;
             });
 
-            await shellContext.CreateScope().UsingAsync(async scope =>
+            await (await shellContext.CreateScopeAsync()).UsingAsync(async scope =>
             {
                 var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
 
@@ -118,24 +118,24 @@ namespace OrchardCore.Tests.Routing
             // Setup
             var shellContext = CreateShellContext();
 
-            await shellContext.CreateScope().UsingAsync(scope =>
+            await (await shellContext.CreateScopeAsync()).UsingAsync(scope =>
             {
                 var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
 
                 // Act
                 var initialEntries = new List<AutorouteEntry>()
                 {
-                    new AutorouteEntry("container", "container-path"),
-                    new AutorouteEntry("container", "contained-path1", "contained1"),
-                    new AutorouteEntry("container", "contained-path2", "contained2")
+                    new("container", "container-path"),
+                    new("container", "contained-path1", "contained1"),
+                    new("container", "contained-path2", "contained2")
                 };
 
                 entries.AddEntries(initialEntries);
 
                 var updatedEntries = new List<AutorouteEntry>()
                 {
-                    new AutorouteEntry("container", "container-path"),
-                    new AutorouteEntry("container", "contained-path1", "contained1")
+                    new("container", "container-path"),
+                    new("container", "contained-path1", "contained1")
                 };
 
                 entries.AddEntries(updatedEntries);
@@ -143,7 +143,7 @@ namespace OrchardCore.Tests.Routing
                 return Task.CompletedTask;
             });
 
-            await shellContext.CreateScope().UsingAsync(async scope =>
+            await (await shellContext.CreateScopeAsync()).UsingAsync(async scope =>
             {
                 var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
 
@@ -160,23 +160,23 @@ namespace OrchardCore.Tests.Routing
             // Setup
             var shellContext = CreateShellContext();
 
-            await shellContext.CreateScope().UsingAsync(scope =>
+            await (await shellContext.CreateScopeAsync()).UsingAsync(scope =>
             {
                 var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
 
                 // Act
                 var initialEntries = new List<AutorouteEntry>()
                 {
-                    new AutorouteEntry("container", "container-path"),
-                    new AutorouteEntry("container", "contained-path-old", "contained")
+                    new("container", "container-path"),
+                    new("container", "contained-path-old", "contained")
                 };
 
                 entries.AddEntries(initialEntries);
 
                 var updatedEntries = new List<AutorouteEntry>()
                 {
-                    new AutorouteEntry("container", "container-path"),
-                    new AutorouteEntry("container", "contained-path-new", "contained")
+                    new("container", "container-path"),
+                    new("container", "contained-path-new", "contained")
                 };
 
                 entries.AddEntries(updatedEntries);
@@ -184,7 +184,7 @@ namespace OrchardCore.Tests.Routing
                 return Task.CompletedTask;
             });
 
-            await shellContext.CreateScope().UsingAsync(async scope =>
+            await (await shellContext.CreateScopeAsync()).UsingAsync(async scope =>
             {
                 var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
 
@@ -201,7 +201,7 @@ namespace OrchardCore.Tests.Routing
             // Setup
             var shellContext = CreateShellContext();
 
-            await shellContext.CreateScope().UsingAsync(scope =>
+            await (await shellContext.CreateScopeAsync()).UsingAsync(scope =>
             {
                 var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
 
@@ -213,7 +213,7 @@ namespace OrchardCore.Tests.Routing
                 return Task.CompletedTask;
             });
 
-            await shellContext.CreateScope().UsingAsync(async scope =>
+            await (await shellContext.CreateScopeAsync()).UsingAsync(async scope =>
             {
                 var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
 
@@ -233,7 +233,7 @@ namespace OrchardCore.Tests.Routing
             };
         }
 
-        private static IServiceProvider CreateServiceProvider()
+        private static ServiceProvider CreateServiceProvider()
         {
             var services = new ServiceCollection();
             services.AddSingleton<IStubAutorouteEntries, StubAutorouteEntries>();

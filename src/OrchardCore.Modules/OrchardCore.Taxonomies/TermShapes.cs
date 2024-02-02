@@ -1,21 +1,22 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Utilities;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Taxonomies.Models;
 using OrchardCore.Taxonomies.ViewModels;
 
 namespace OrchardCore.Taxonomies
 {
-    public class TermShapes : IShapeTableProvider
+    public class TermShapes : ShapeTableProvider
     {
-        public void Discover(ShapeTableBuilder builder)
+        public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
         {
             // Add standard alternates to a TermPart because it is rendered by a content display driver not a part display driver.
             builder.Describe("TermPart")
@@ -24,7 +25,7 @@ namespace OrchardCore.Taxonomies
                     var viewModel = context.Shape as TermPartViewModel;
 
                     var contentType = viewModel?.ContentItem?.ContentType;
-                    var displayTypes = new[] { "", "_" + context.Shape.Metadata.DisplayType };
+                    var displayTypes = new[] { string.Empty, "_" + context.Shape.Metadata.DisplayType };
 
                     // [ShapeType]_[DisplayType], e.g. TermPart.Summary, TermPart.Detail.
                     context.Shape.Metadata.Alternates.Add($"TermPart_{context.Shape.Metadata.DisplayType}");
@@ -42,7 +43,7 @@ namespace OrchardCore.Taxonomies
                     var termShape = context.Shape;
                     var identifier = termShape.GetProperty<string>("TaxonomyContentItemId") ?? termShape.GetProperty<string>("Alias");
 
-                    if (String.IsNullOrEmpty(identifier))
+                    if (string.IsNullOrEmpty(identifier))
                     {
                         return;
                     }
@@ -86,19 +87,19 @@ namespace OrchardCore.Taxonomies
                     var level = 0;
                     List<ContentItem> termItems = null;
                     var termContentItemId = termShape.GetProperty<string>("TermContentItemId");
-                    if (!String.IsNullOrEmpty(termContentItemId))
+                    if (!string.IsNullOrEmpty(termContentItemId))
                     {
-                        level = FindTerm(taxonomyContentItem.Content.TaxonomyPart.Terms as JArray, termContentItemId, level, out var termContentItem);
+                        level = FindTerm((JsonArray)taxonomyContentItem.Content.TaxonomyPart.Terms, termContentItemId, level, out var termContentItem);
 
                         if (termContentItem == null)
                         {
                             return;
                         }
 
-                        termItems = new List<ContentItem>
-                        {
+                        termItems =
+                        [
                             termContentItem
-                        };
+                        ];
                     }
                     else
                     {
@@ -112,7 +113,7 @@ namespace OrchardCore.Taxonomies
 
                     var differentiator = FormatName(termShape.GetProperty<string>("TaxonomyName"));
 
-                    if (!String.IsNullOrEmpty(differentiator))
+                    if (!string.IsNullOrEmpty(differentiator))
                     {
                         // Term__[Differentiator] e.g. Term-Categories, Term-Tags.
                         termShape.Metadata.Alternates.Add("Term__" + differentiator);
@@ -122,7 +123,7 @@ namespace OrchardCore.Taxonomies
 
                     termShape.Classes.Add(("term-" + taxonomyPart.TermContentType).HtmlClassify());
 
-                    var encodedContentType = EncodeAlternateElement(taxonomyPart.TermContentType);
+                    var encodedContentType = taxonomyPart.TermContentType.EncodeAlternateElement();
                     // Term__[ContentType] e.g. Term-Category, Term-Tag.
                     termShape.Metadata.Alternates.Add("Term__" + encodedContentType);
 
@@ -132,7 +133,7 @@ namespace OrchardCore.Taxonomies
                     foreach (var termContentItem in termItems)
                     {
                         ContentItem[] childTerms = null;
-                        if (termContentItem.Content.Terms is JArray termsArray)
+                        if (((JsonObject)termContentItem.Content)["Terms"] is JsonArray termsArray)
                         {
                             childTerms = termsArray.ToObject<ContentItem[]>();
                         }
@@ -142,7 +143,7 @@ namespace OrchardCore.Taxonomies
                             Level = level,
                             Term = termShape,
                             TermContentItem = termContentItem,
-                            Terms = childTerms ?? Array.Empty<ContentItem>(),
+                            Terms = childTerms ?? [],
                             TaxonomyContentItem = taxonomyContentItem
                         }));
 
@@ -170,7 +171,7 @@ namespace OrchardCore.Taxonomies
                         foreach (var termContentItem in termItem.GetProperty<ContentItem[]>("Terms"))
                         {
                             ContentItem[] childTerms = null;
-                            if (termContentItem.Content.Terms is JArray termsArray)
+                            if (((JsonObject)termContentItem.Content)["Terms"] is JsonArray termsArray)
                             {
                                 childTerms = termsArray.ToObject<ContentItem[]>();
                             }
@@ -180,7 +181,7 @@ namespace OrchardCore.Taxonomies
                                 TaxonomyContentItem = taxonomyContentItem,
                                 TermContentItem = termContentItem,
                                 Term = termShape,
-                                Terms = childTerms ?? Array.Empty<ContentItem>()
+                                Terms = childTerms ?? []
                             }));
 
                             shape.Metadata.Differentiator = differentiator;
@@ -190,7 +191,7 @@ namespace OrchardCore.Taxonomies
                         }
                     }
 
-                    var encodedContentType = EncodeAlternateElement(taxonomyPart.TermContentType);
+                    var encodedContentType = taxonomyPart.TermContentType.EncodeAlternateElement();
 
                     // TermItem__level__[level] e.g. TermItem-level-2.
                     termItem.Metadata.Alternates.Add("TermItem__level__" + level);
@@ -200,7 +201,7 @@ namespace OrchardCore.Taxonomies
                     termItem.Metadata.Alternates.Add("TermItem__" + encodedContentType);
                     termItem.Metadata.Alternates.Add("TermItem__" + encodedContentType + "__level__" + level);
 
-                    if (!String.IsNullOrEmpty(differentiator))
+                    if (!string.IsNullOrEmpty(differentiator))
                     {
                         // TermItem__[Differentiator] e.g. TermItem-Categories, TermItem-Travel.
                         // TermItem__[Differentiator]__level__[level] e.g. TermItem-Categories-level-2.
@@ -223,7 +224,7 @@ namespace OrchardCore.Taxonomies
 
                     var termContentItem = termItem.GetProperty<ContentItem>("TermContentItem");
 
-                    var encodedContentType = EncodeAlternateElement(termContentItem.ContentItem.ContentType);
+                    var encodedContentType = termContentItem.ContentItem.ContentType.EncodeAlternateElement();
 
                     termItem.Metadata.Alternates.Add("TermContentItem__level__" + level);
 
@@ -232,7 +233,7 @@ namespace OrchardCore.Taxonomies
                     termItem.Metadata.Alternates.Add("TermContentItem__" + encodedContentType);
                     termItem.Metadata.Alternates.Add("TermContentItem__" + encodedContentType + "__level__" + level);
 
-                    if (!String.IsNullOrEmpty(differentiator))
+                    if (!string.IsNullOrEmpty(differentiator))
                     {
                         // TermContentItem__[Differentiator] e.g. TermContentItem-Categories.
                         termItem.Metadata.Alternates.Add("TermContentItem__" + differentiator);
@@ -245,21 +246,22 @@ namespace OrchardCore.Taxonomies
                         termItem.Metadata.Alternates.Add("TermContentItem__" + differentiator + "__" + encodedContentType + "__level__" + level);
                     }
                 });
+
+            return ValueTask.CompletedTask;
         }
 
-        private int FindTerm(JArray termsArray, string termContentItemId, int level, out ContentItem contentItem)
+        private int FindTerm(JsonArray termsArray, string termContentItemId, int level, out ContentItem contentItem)
         {
-            foreach (var term in termsArray.Cast<JObject>())
+            foreach (var term in termsArray.Cast<JsonObject>())
             {
-                var contentItemId = term.GetValue("ContentItemId").ToString();
-
+                var contentItemId = term["ContentItemId"]?.ToString();
                 if (contentItemId == termContentItemId)
                 {
                     contentItem = term.ToObject<ContentItem>();
                     return level;
                 }
 
-                if (term.GetValue("Terms") is JArray children)
+                if (term["Terms"] is JsonArray children)
                 {
                     level += 1;
                     level = FindTerm(children, termContentItemId, level, out var foundContentItem);
@@ -277,21 +279,11 @@ namespace OrchardCore.Taxonomies
         }
 
         /// <summary>
-        /// Encodes dashed and dots so that they don't conflict in filenames.
-        /// </summary>
-        /// <param name="alternateElement"></param>
-        /// <returns></returns>
-        private static string EncodeAlternateElement(string alternateElement)
-        {
-            return alternateElement.Replace("-", "__").Replace('.', '_');
-        }
-
-        /// <summary>
         /// Converts "foo-ba r" to "FooBaR".
         /// </summary>
         private static string FormatName(string name)
         {
-            if (String.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
             {
                 return null;
             }
@@ -303,7 +295,7 @@ namespace OrchardCore.Taxonomies
             {
                 var c = name[i];
 
-                if (c == '-' || Char.IsWhiteSpace(c))
+                if (c == '-' || char.IsWhiteSpace(c))
                 {
                     nextIsUpper = true;
                     continue;

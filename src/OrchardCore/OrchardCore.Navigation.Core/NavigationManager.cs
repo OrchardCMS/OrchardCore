@@ -87,7 +87,7 @@ namespace OrchardCore.Navigation
                     var cursor = items[j];
 
                     // A match is found, add all its items to the source.
-                    if (String.Equals(cursor.Text.Name, source.Text.Name, StringComparison.OrdinalIgnoreCase))
+                    if (string.Equals(cursor.Text.Name, source.Text.Name, StringComparison.OrdinalIgnoreCase))
                     {
                         merged = true;
                         foreach (var child in cursor.Items)
@@ -183,7 +183,7 @@ namespace OrchardCore.Navigation
                 return _urlHelper.RouteUrl(new UrlRouteContext { Values = routeValueDictionary });
             }
 
-            if (String.IsNullOrEmpty(menuItemUrl))
+            if (string.IsNullOrEmpty(menuItemUrl))
             {
                 return "#";
             }
@@ -216,7 +216,7 @@ namespace OrchardCore.Navigation
                 {
                     filtered.Add(item);
                 }
-                else if (!item.Permissions.Any())
+                else if (item.Permissions.Count == 0)
                 {
                     filtered.Add(item);
                 }
@@ -249,7 +249,7 @@ namespace OrchardCore.Navigation
         /// <summary>
         /// Retains only menu items with an Href, or that have child items with an Href.
         /// </summary>
-        private List<MenuItem> Reduce(IEnumerable<MenuItem> items)
+        private static List<MenuItem> Reduce(IEnumerable<MenuItem> items)
         {
             var filtered = items.ToList();
             foreach (var item in items)

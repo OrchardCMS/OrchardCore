@@ -17,7 +17,7 @@ namespace OrchardCore.Modules
 
         private readonly string _baseNamespace;
         private readonly DateTimeOffset _lastModified;
-        private readonly Dictionary<string, IFileInfo> _fileInfos = new();
+        private readonly Dictionary<string, IFileInfo> _fileInfos = [];
 
         // TODO: MWP: trace back to usage, etc...
         // TODO: MWP: perhaps we filter up front so we are not discovering all this during ctor...
@@ -29,7 +29,7 @@ namespace OrchardCore.Modules
         /// <param name="isApplication">Whether the Module may be considered to be the &quot;Application&quot;.</param>
         public Module(string assemblyName, bool isApplication = false)
         {
-            if (!String.IsNullOrWhiteSpace(assemblyName))
+            if (!string.IsNullOrWhiteSpace(assemblyName))
             {
                 Assembly = Assembly.Load(new AssemblyName(assemblyName));
 
@@ -98,16 +98,16 @@ namespace OrchardCore.Modules
             }
             else
             {
-                Name = Root = SubPath = String.Empty;
-                Assets = Enumerable.Empty<Asset>();
-                AssetPaths = Enumerable.Empty<string>();
+                Name = Root = SubPath = string.Empty;
+                Assets = [];
+                AssetPaths = [];
                 ModuleInfo = new ModuleAttribute();
             }
 
             _baseNamespace = Name + '.';
             _lastModified = DateTimeOffset.UtcNow;
 
-            if (!String.IsNullOrEmpty(Assembly?.Location))
+            if (!string.IsNullOrEmpty(Assembly?.Location))
             {
                 try
                 {

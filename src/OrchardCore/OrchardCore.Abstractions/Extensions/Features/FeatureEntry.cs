@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace OrchardCore.Environment.Extensions.Features
 {
@@ -18,6 +17,6 @@ namespace OrchardCore.Environment.Extensions.Features
         }
 
         public IFeatureInfo FeatureInfo { get; }
-        public IEnumerable<Type> ExportedTypes { get; } = Enumerable.Empty<Type>();
+        public IEnumerable<Type> ExportedTypes { get; } = [];
     }
 }

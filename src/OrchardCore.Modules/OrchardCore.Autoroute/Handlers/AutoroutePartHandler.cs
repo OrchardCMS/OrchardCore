@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
+using System.Text.Json.Settings;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
@@ -8,7 +10,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Autoroute.Core.Indexes;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.Autoroute.ViewModels;
@@ -64,20 +65,20 @@ namespace OrchardCore.Autoroute.Handlers
 
         public override async Task PublishedAsync(PublishContentContext context, AutoroutePart part)
         {
-            if (!String.IsNullOrWhiteSpace(part.Path))
+            if (!string.IsNullOrWhiteSpace(part.Path))
             {
                 if (part.RouteContainedItems)
                 {
                     _contentManager ??= _serviceProvider.GetRequiredService<IContentManager>();
                     var containedAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(context.PublishingItem);
-                    await CheckContainedHomeRouteAsync(part.ContentItem.ContentItemId, containedAspect, context.PublishingItem.Content);
+                    await CheckContainedHomeRouteAsync(part.ContentItem.ContentItemId, containedAspect, (JsonObject)context.PublishingItem.Content);
                 }
 
                 // Update entries from the index table after the session is committed.
                 await _entries.UpdateEntriesAsync();
             }
 
-            if (!String.IsNullOrWhiteSpace(part.Path) && !part.Disabled && part.SetHomepage)
+            if (!string.IsNullOrWhiteSpace(part.Path) && !part.Disabled && part.SetHomepage)
             {
                 await SetHomeRouteAsync(part, homeRoute =>
                 {
@@ -92,7 +93,7 @@ namespace OrchardCore.Autoroute.Handlers
 
         public override async Task UnpublishedAsync(PublishContentContext context, AutoroutePart part)
         {
-            if (!String.IsNullOrWhiteSpace(part.Path))
+            if (!string.IsNullOrWhiteSpace(part.Path))
             {
                 // Update entries from the index table after the session is committed.
                 await _entries.UpdateEntriesAsync();
@@ -104,7 +105,7 @@ namespace OrchardCore.Autoroute.Handlers
 
         public override async Task RemovedAsync(RemoveContentContext context, AutoroutePart part)
         {
-            if (!String.IsNullOrWhiteSpace(part.Path) && context.NoActiveVersionLeft)
+            if (!string.IsNullOrWhiteSpace(part.Path) && context.NoActiveVersionLeft)
             {
                 // Update entries from the index table after the session is committed.
                 await _entries.UpdateEntriesAsync();
@@ -117,7 +118,7 @@ namespace OrchardCore.Autoroute.Handlers
         public override async Task ValidatingAsync(ValidateContentContext context, AutoroutePart part)
         {
             // Only validate the path if it's not empty.
-            if (String.IsNullOrWhiteSpace(part.Path))
+            if (string.IsNullOrWhiteSpace(part.Path))
             {
                 return;
             }
@@ -152,10 +153,10 @@ namespace OrchardCore.Autoroute.Handlers
 
         public override Task GetContentItemAspectAsync(ContentItemAspectContext context, AutoroutePart part)
         {
-            return context.ForAsync<RouteHandlerAspect>(aspect =>
+            return context.ForAsync<RouteHandlerAspect>(async aspect =>
             {
-                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-                var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "AutoroutePart"));
+                var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
+                var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "AutoroutePart"));
                 var settings = contentTypePartDefinition.GetSettings<AutoroutePartSettings>();
                 if (settings.ManageContainedItemRoutes)
                 {
@@ -163,8 +164,6 @@ namespace OrchardCore.Autoroute.Handlers
                     aspect.Absolute = part.Absolute;
                     aspect.Disabled = part.Disabled;
                 }
-
-                return Task.CompletedTask;
             });
         }
 
@@ -172,7 +171,7 @@ namespace OrchardCore.Autoroute.Handlers
         {
             var site = await _siteService.LoadSiteSettingsAsync();
 
-            site.HomeRoute ??= new RouteValueDictionary();
+            site.HomeRoute ??= [];
 
             var homeRoute = site.HomeRoute;
 
@@ -195,13 +194,13 @@ namespace OrchardCore.Autoroute.Handlers
             return _tagCache.RemoveTagAsync($"slug:{part.Path}");
         }
 
-        private async Task CheckContainedHomeRouteAsync(string containerContentItemId, ContainedContentItemsAspect containedAspect, JObject content)
+        private async Task CheckContainedHomeRouteAsync(string containerContentItemId, ContainedContentItemsAspect containedAspect, JsonObject content)
         {
             foreach (var accessor in containedAspect.Accessors)
             {
                 var jItems = accessor.Invoke(content);
 
-                foreach (var jItem in jItems.Cast<JObject>())
+                foreach (var jItem in jItems.Cast<JsonObject>())
                 {
                     var contentItem = jItem.ToObject<ContentItem>();
                     var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem);
@@ -215,7 +214,7 @@ namespace OrchardCore.Autoroute.Handlers
                             await SetHomeRouteAsync(autoroutePart, homeRoute =>
                             {
                                 homeRoute[_options.ContentItemIdKey] = containerContentItemId;
-                                homeRoute[_options.JsonPathKey] = jItem.Path;
+                                homeRoute[_options.JsonPathKey] = jItem.GetNormalizedPath();
                             });
 
                             break;
@@ -228,7 +227,7 @@ namespace OrchardCore.Autoroute.Handlers
         private async Task GenerateContainedPathsFromPatternAsync(ContentItem contentItem, AutoroutePart part)
         {
             // Validate contained content item routes if container has valid path.
-            if (String.IsNullOrWhiteSpace(part.Path) || !part.RouteContainedItems)
+            if (string.IsNullOrWhiteSpace(part.Path) || !part.RouteContainedItems)
             {
                 return;
             }
@@ -238,18 +237,18 @@ namespace OrchardCore.Autoroute.Handlers
 
             // Build the entries for this content item to evaluate for duplicates.
             var entries = new List<AutorouteEntry>();
-            await PopulateContainedContentItemRoutesAsync(entries, part.ContentItem.ContentItemId, containedAspect, contentItem.Content, part.Path);
+            await PopulateContainedContentItemRoutesAsync(entries, part.ContentItem.ContentItemId, containedAspect, (JsonObject)contentItem.Content, part.Path);
 
-            await ValidateContainedContentItemRoutesAsync(entries, part.ContentItem.ContentItemId, containedAspect, contentItem.Content, part.Path);
+            await ValidateContainedContentItemRoutesAsync(entries, part.ContentItem.ContentItemId, containedAspect, (JsonObject)contentItem.Content, part.Path);
         }
 
-        private async Task PopulateContainedContentItemRoutesAsync(List<AutorouteEntry> entries, string containerContentItemId, ContainedContentItemsAspect containedContentItemsAspect, JObject content, string basePath)
+        private async Task PopulateContainedContentItemRoutesAsync(List<AutorouteEntry> entries, string containerContentItemId, ContainedContentItemsAspect containedContentItemsAspect, JsonObject content, string basePath)
         {
             foreach (var accessor in containedContentItemsAspect.Accessors)
             {
                 var jItems = accessor.Invoke(content);
 
-                foreach (var jItem in jItems.Cast<JObject>())
+                foreach (var jItem in jItems.Cast<JsonObject>())
                 {
                     var contentItem = jItem.ToObject<ContentItem>();
                     var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem);
@@ -262,7 +261,7 @@ namespace OrchardCore.Autoroute.Handlers
                             path = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path.TrimStart('/');
                         }
 
-                        entries.Add(new AutorouteEntry(containerContentItemId, path, contentItem.ContentItemId, jItem.Path)
+                        entries.Add(new AutorouteEntry(containerContentItemId, path, contentItem.ContentItemId, jItem.GetNormalizedPath())
                         {
                             DocumentId = contentItem.Id
                         });
@@ -275,13 +274,13 @@ namespace OrchardCore.Autoroute.Handlers
             }
         }
 
-        private async Task ValidateContainedContentItemRoutesAsync(List<AutorouteEntry> entries, string containerContentItemId, ContainedContentItemsAspect containedContentItemsAspect, JObject content, string basePath)
+        private async Task ValidateContainedContentItemRoutesAsync(List<AutorouteEntry> entries, string containerContentItemId, ContainedContentItemsAspect containedContentItemsAspect, JsonObject content, string basePath)
         {
             foreach (var accessor in containedContentItemsAspect.Accessors)
             {
                 var jItems = accessor.Invoke(content);
 
-                foreach (var jItem in jItems.Cast<JObject>())
+                foreach (var jItem in jItems.Cast<JsonObject>())
                 {
                     var contentItem = jItem.ToObject<ContentItem>();
                     var containedAutoroutePart = contentItem.As<AutoroutePart>();
@@ -299,7 +298,7 @@ namespace OrchardCore.Autoroute.Handlers
                             containedAutoroutePart.Apply();
 
                             // Merge because we have disconnected the content item from it's json owner.
-                            jItem.Merge(contentItem.Content, new JsonMergeSettings
+                            jItem.Merge((JsonObject)contentItem.Content, new JsonMergeSettings
                             {
                                 MergeArrayHandling = MergeArrayHandling.Replace,
                                 MergeNullValueHandling = MergeNullValueHandling.Merge
@@ -317,7 +316,7 @@ namespace OrchardCore.Autoroute.Handlers
                                 containedAutoroutePart.Apply();
 
                                 // Merge because we have disconnected the content item from it's json owner.
-                                jItem.Merge(contentItem.Content, new JsonMergeSettings
+                                jItem.Merge((JsonObject)contentItem.Content, new JsonMergeSettings
                                 {
                                     MergeArrayHandling = MergeArrayHandling.Replace,
                                     MergeNullValueHandling = MergeNullValueHandling.Merge
@@ -337,7 +336,7 @@ namespace OrchardCore.Autoroute.Handlers
 
         private static bool IsRelativePathUnique(List<AutorouteEntry> entries, string path, AutoroutePart context)
         {
-            var result = !entries.Any(e => context.ContentItem.ContentItemId != e.ContainedContentItemId && String.Equals(e.Path.Trim('/'), path.Trim('/'), StringComparison.OrdinalIgnoreCase));
+            var result = !entries.Any(e => context.ContentItem.ContentItemId != e.ContainedContentItemId && string.Equals(e.Path.Trim('/'), path.Trim('/'), StringComparison.OrdinalIgnoreCase));
             return result;
         }
 
@@ -347,7 +346,7 @@ namespace OrchardCore.Autoroute.Handlers
             var unversionedPath = path;
 
             var versionSeparatorPosition = path.LastIndexOf('-');
-            if (versionSeparatorPosition > -1 && Int32.TryParse(path[versionSeparatorPosition..].TrimStart('-'), out version))
+            if (versionSeparatorPosition > -1 && int.TryParse(path[versionSeparatorPosition..].TrimStart('-'), out version))
             {
                 unversionedPath = path[..versionSeparatorPosition];
             }
@@ -375,14 +374,14 @@ namespace OrchardCore.Autoroute.Handlers
         private async Task GenerateContainerPathFromPatternAsync(AutoroutePart part)
         {
             // Compute the Path only if it's empty.
-            if (!String.IsNullOrWhiteSpace(part.Path))
+            if (!string.IsNullOrWhiteSpace(part.Path))
             {
                 return;
             }
 
-            var pattern = GetPattern(part);
+            var pattern = await GetPatternAsync(part);
 
-            if (!String.IsNullOrEmpty(pattern))
+            if (!string.IsNullOrEmpty(pattern))
             {
                 var model = new AutoroutePartViewModel()
                 {
@@ -403,7 +402,7 @@ namespace OrchardCore.Autoroute.Handlers
                         new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) });
                 }
 
-                part.Path = part.Path.Replace("\r", String.Empty).Replace("\n", String.Empty);
+                part.Path = part.Path.Replace("\r", string.Empty).Replace("\n", string.Empty);
 
                 if (part.Path?.Length > AutoroutePart.MaxPathLength)
                 {
@@ -422,10 +421,10 @@ namespace OrchardCore.Autoroute.Handlers
         /// <summary>
         /// Get the pattern from the AutoroutePartSettings property for its type.
         /// </summary>
-        private string GetPattern(AutoroutePart part)
+        private async Task<string> GetPatternAsync(AutoroutePart part)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(AutoroutePart)));
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(AutoroutePart)));
             var pattern = contentTypePartDefinition.GetSettings<AutoroutePartSettings>().Pattern;
 
             return pattern;
@@ -437,7 +436,7 @@ namespace OrchardCore.Autoroute.Handlers
             var unversionedPath = path;
 
             var versionSeparatorPosition = path.LastIndexOf('-');
-            if (versionSeparatorPosition > -1 && Int32.TryParse(path[versionSeparatorPosition..].TrimStart('-'), out version))
+            if (versionSeparatorPosition > -1 && int.TryParse(path[versionSeparatorPosition..].TrimStart('-'), out version))
             {
                 unversionedPath = path[..versionSeparatorPosition];
             }

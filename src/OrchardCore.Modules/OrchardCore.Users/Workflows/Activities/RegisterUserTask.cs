@@ -18,7 +18,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Users.Workflows.Activities
 {
-    public class RegisterUserTask : TaskActivity
+    public class RegisterUserTask : TaskActivity<RegisterUserTask>
     {
         private readonly IUserService _userService;
         private readonly UserManager<IUser> _userManager;
@@ -48,9 +48,6 @@ namespace OrchardCore.Users.Workflows.Activities
             S = localizer;
             _htmlEncoder = htmlEncoder;
         }
-
-        // The technical name of the activity. Activities on a workflow definition reference this name.
-        public override string Name => nameof(RegisterUserTask);
 
         public override LocalizedString DisplayText => S["Register User Task"];
 
@@ -98,14 +95,14 @@ namespace OrchardCore.Users.Workflows.Activities
             {
                 form = _httpContextAccessor.HttpContext.Request.Form;
                 email = form["Email"];
-                isValid = !String.IsNullOrWhiteSpace(email);
+                isValid = !string.IsNullOrWhiteSpace(email);
             }
             var outcome = isValid ? "Valid" : "Invalid";
 
             if (isValid)
             {
                 var userName = form["UserName"];
-                if (String.IsNullOrWhiteSpace(userName))
+                if (string.IsNullOrWhiteSpace(userName))
                 {
                     userName = email.Replace('@', '+');
                 }

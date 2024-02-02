@@ -36,10 +36,7 @@ namespace OrchardCore.Twitter.Services
 
         public async Task UpdateSettingsAsync(TwitterSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
             container.Alter<TwitterSettings>(nameof(TwitterSettings), aspect =>
@@ -55,27 +52,24 @@ namespace OrchardCore.Twitter.Services
 
         public IEnumerable<ValidationResult> ValidateSettings(TwitterSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
-            if (String.IsNullOrWhiteSpace(settings.ConsumerKey))
+            if (string.IsNullOrWhiteSpace(settings.ConsumerKey))
             {
                 yield return new ValidationResult(S["ConsumerKey is required"], new string[] { nameof(settings.ConsumerKey) });
             }
 
-            if (String.IsNullOrWhiteSpace(settings.ConsumerSecret))
+            if (string.IsNullOrWhiteSpace(settings.ConsumerSecret))
             {
                 yield return new ValidationResult(S["ConsumerSecret is required"], new string[] { nameof(settings.ConsumerSecret) });
             }
 
-            if (String.IsNullOrWhiteSpace(settings.AccessToken))
+            if (string.IsNullOrWhiteSpace(settings.AccessToken))
             {
                 yield return new ValidationResult(S["Access Token is required"], new string[] { nameof(settings.AccessToken) });
             }
 
-            if (String.IsNullOrWhiteSpace(settings.AccessTokenSecret))
+            if (string.IsNullOrWhiteSpace(settings.AccessTokenSecret))
             {
                 yield return new ValidationResult(S["Access Token Secret is required"], new string[] { nameof(settings.AccessTokenSecret) });
             }

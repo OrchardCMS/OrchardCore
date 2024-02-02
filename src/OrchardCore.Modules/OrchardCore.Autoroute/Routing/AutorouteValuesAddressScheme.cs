@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
@@ -25,11 +24,11 @@ namespace OrchardCore.Autoroute.Routing
         {
             if (address.AmbientValues == null || address.ExplicitValues == null)
             {
-                return Enumerable.Empty<Endpoint>();
+                return [];
             }
 
             // Try to get the contained item first, then the container content item
-            string contentItemId = address.ExplicitValues[_options.ContainedContentItemIdKey]?.ToString();
+            var contentItemId = address.ExplicitValues[_options.ContainedContentItemIdKey]?.ToString();
             if (string.IsNullOrEmpty(contentItemId))
             {
                 contentItemId = address.ExplicitValues[_options.ContentItemIdKey]?.ToString();
@@ -37,14 +36,14 @@ namespace OrchardCore.Autoroute.Routing
 
             if (string.IsNullOrEmpty(contentItemId))
             {
-                return Enumerable.Empty<Endpoint>();
+                return [];
             }
 
             (var found, var autorouteEntry) = _entries.TryGetEntryByContentItemIdAsync(contentItemId).GetAwaiter().GetResult();
 
             if (!found)
             {
-                return Enumerable.Empty<Endpoint>();
+                return [];
             }
 
             if (Match(address.ExplicitValues))
@@ -58,7 +57,7 @@ namespace OrchardCore.Autoroute.Routing
                 {
                     foreach (var entry in address.ExplicitValues)
                     {
-                        if (String.Equals(entry.Key, _options.ContentItemIdKey, StringComparison.OrdinalIgnoreCase))
+                        if (string.Equals(entry.Key, _options.ContentItemIdKey, StringComparison.OrdinalIgnoreCase))
                         {
                             continue;
                         }
@@ -82,14 +81,14 @@ namespace OrchardCore.Autoroute.Routing
                 return new[] { endpoint };
             }
 
-            return Enumerable.Empty<Endpoint>();
+            return [];
         }
 
         private bool Match(RouteValueDictionary explicitValues)
         {
             foreach (var entry in _options.GlobalRouteValues)
             {
-                if (!String.Equals(explicitValues[entry.Key]?.ToString(), entry.Value?.ToString(), StringComparison.OrdinalIgnoreCase))
+                if (!string.Equals(explicitValues[entry.Key]?.ToString(), entry.Value?.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
                     return false;
                 }

@@ -15,7 +15,7 @@ else
 {
     <div class="row">
         <div class="mb-3 col-sm-6">
-            <label asp-for="ExportContentToDeploymentTargetPlanId">@T["Deployment Plan"]</label>
+            <label asp-for="ExportContentToDeploymentTargetPlanId" class="form-label">@T["Deployment Plan"]</label>
             <select asp-for="ExportContentToDeploymentTargetPlanId" class="form-select">
                 @foreach (var exportContentToDeploymentTargetPlan in exportContentToDeploymentTargetPlans)
                 {

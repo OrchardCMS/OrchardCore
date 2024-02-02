@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.AdminMenu;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -217,6 +218,9 @@ namespace OrchardCore.Contents
             });
 
             services.AddTransient<IContentsAdminListFilterProvider, DefaultContentsAdminListFilterProvider>();
+
+            // Allows to serialize 'AdminNode' derived types.
+            services.AddAdminNode<ContentTypesAdminNode>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -317,14 +321,8 @@ namespace OrchardCore.Contents
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, AllContentDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllContentDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllContentDeploymentStepDriver>();
-
-            services.AddTransient<IDeploymentSource, ContentDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ContentDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, ContentDeploymentStepDriver>();
-
+            services.AddDeployment<AllContentDeploymentSource, AllContentDeploymentStep, AllContentDeploymentStepDriver>();
+            services.AddDeployment<ContentDeploymentSource, ContentDeploymentStep, ContentDeploymentStepDriver>();
             services.AddSiteSettingsPropertyDeploymentStep<ContentAuditTrailSettings, DeploymentStartup>(S => S["Content Audit Trail settings"], S => S["Exports the content audit trail settings."]);
         }
     }

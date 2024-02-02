@@ -46,7 +46,7 @@ namespace OrchardCore.Taxonomies.Settings
             {
                 DisplayText = x.DisplayText,
                 ContentItemId = x.ContentItemId,
-                IsChecked = settings.TaxonomyContentItemIds.Any(id => String.Equals(x.ContentItemId, id, StringComparison.OrdinalIgnoreCase))
+                IsChecked = settings.TaxonomyContentItemIds.Any(id => string.Equals(x.ContentItemId, id, StringComparison.OrdinalIgnoreCase))
             }).ToArray();
 
             return Initialize<TaxonomyContentsAdminListSettingsViewModel>("TaxonomyContentsAdminListSettings_Edit", model =>

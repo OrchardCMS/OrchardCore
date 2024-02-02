@@ -26,7 +26,7 @@ public class ListNotificationOptions
     public int StartIndex { get; set; }
 
     [BindNever]
-    public int NotficationsItemsCount { get; set; }
+    public int NotificationsCount { get; set; }
 
     [BindNever]
     public int TotalItemCount { get; set; }
@@ -44,5 +44,5 @@ public class ListNotificationOptions
     public List<SelectListItem> Sorts { get; set; }
 
     [BindNever]
-    public RouteValueDictionary RouteValues { get; set; } = new RouteValueDictionary();
+    public RouteValueDictionary RouteValues { get; set; } = [];
 }

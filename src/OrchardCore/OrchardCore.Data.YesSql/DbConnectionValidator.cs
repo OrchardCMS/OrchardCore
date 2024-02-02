@@ -24,7 +24,7 @@ namespace OrchardCore.Data;
 
 public class DbConnectionValidator : IDbConnectionValidator
 {
-    private static readonly string[] _requiredDocumentTableColumns = new[] { "Id", "Type", "Content", "Version" };
+    private static readonly string[] _requiredDocumentTableColumns = ["Id", "Type", "Content", "Version"];
     private static readonly string _shellDescriptorTypeColumnValue = new TypeService()[typeof(ShellDescriptor)];
 
     private readonly IEnumerable<DatabaseProvider> _databaseProviders;
@@ -49,12 +49,9 @@ public class DbConnectionValidator : IDbConnectionValidator
 
     public async Task<DbConnectionValidatorResult> ValidateAsync(DbConnectionValidatorContext context)
     {
-        if (context == null)
-        {
-            throw new ArgumentNullException(nameof(context));
-        }
+        ArgumentNullException.ThrowIfNull(context);
 
-        if (String.IsNullOrWhiteSpace(context.DatabaseProvider))
+        if (string.IsNullOrWhiteSpace(context.DatabaseProvider))
         {
             return DbConnectionValidatorResult.NoProvider;
         }
@@ -76,14 +73,14 @@ public class DbConnectionValidator : IDbConnectionValidator
             connectionString = SqliteHelper.GetConnectionString(_sqliteOptions, _shellOptions, context.ShellName);
         }
 
-        if (String.IsNullOrWhiteSpace(connectionString))
+        if (string.IsNullOrWhiteSpace(connectionString))
         {
             return DbConnectionValidatorResult.InvalidConnection;
         }
 
         var factory = GetFactory(context.DatabaseProvider, connectionString);
 
-        using var connection = factory.CreateConnection();
+        await using var connection = factory.CreateConnection();
 
         // Prevent from creating an empty locked 'Sqlite' file.
         if (provider.Value == DatabaseProviderValue.Sqlite &&
@@ -102,6 +99,12 @@ public class DbConnectionValidator : IDbConnectionValidator
             if (provider.Value != DatabaseProviderValue.Sqlite)
             {
                 _logger.LogWarning(ex, "Unable to validate connection string.");
+
+                if (ex is SqlException sqlException
+                    && sqlException.InnerException?.Message == "The certificate chain was issued by an authority that is not trusted.")
+                {
+                    return DbConnectionValidatorResult.InvalidCertificate;
+                }
 
                 return DbConnectionValidatorResult.InvalidConnection;
             }
@@ -164,7 +167,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         return DbConnectionValidatorResult.DocumentTableFound;
     }
 
-    private static ISqlBuilder GetSelectBuilderForDocumentTable(ISqlBuilder sqlBuilder, string documentTable, string schema)
+    private static SqlBuilder GetSelectBuilderForDocumentTable(SqlBuilder sqlBuilder, string documentTable, string schema)
     {
         sqlBuilder.Select();
         sqlBuilder.Selector("*");
@@ -174,7 +177,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         return sqlBuilder;
     }
 
-    private static ISqlBuilder GetSelectBuilderForShellDescriptorDocument(ISqlBuilder sqlBuilder, string documentTable, string schema)
+    private static SqlBuilder GetSelectBuilderForShellDescriptorDocument(SqlBuilder sqlBuilder, string documentTable, string schema)
     {
         sqlBuilder.Select();
         sqlBuilder.Selector("*");
@@ -209,10 +212,10 @@ public class DbConnectionValidator : IDbConnectionValidator
         };
     }
 
-    private static ISqlBuilder GetSqlBuilder(ISqlDialect sqlDialect, string tablePrefix, string tableNameSeparator)
+    private static SqlBuilder GetSqlBuilder(ISqlDialect sqlDialect, string tablePrefix, string tableNameSeparator)
     {
-        var prefix = String.Empty;
-        if (!String.IsNullOrWhiteSpace(tablePrefix))
+        var prefix = string.Empty;
+        if (!string.IsNullOrWhiteSpace(tablePrefix))
         {
             prefix = tablePrefix.Trim() + tableNameSeparator;
         }

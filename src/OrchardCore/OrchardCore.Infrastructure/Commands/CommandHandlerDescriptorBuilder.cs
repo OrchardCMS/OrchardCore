@@ -39,22 +39,22 @@ namespace OrchardCore.Environment.Commands
         private static string GetCommandHelpText(MethodInfo methodInfo)
         {
             var attributes = methodInfo.GetCustomAttributes(typeof(CommandHelpAttribute), false/*inherit*/);
-            if (attributes != null && attributes.Any())
+            if (attributes != null && attributes.Length > 0)
             {
                 return attributes.Cast<CommandHelpAttribute>().Single().HelpText;
             }
-            return String.Empty;
+            return string.Empty;
         }
 
         private static string[] GetCommandNames(MethodInfo methodInfo)
         {
             var attributes = methodInfo.GetCustomAttributes(typeof(CommandNameAttribute), false/*inherit*/);
-            if (attributes != null && attributes.Any())
+            if (attributes != null && attributes.Length > 0)
             {
                 return attributes.Cast<CommandNameAttribute>().Single().Commands;
             }
 
-            return new[] { methodInfo.Name };
+            return [methodInfo.Name];
         }
     }
 }

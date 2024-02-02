@@ -2,6 +2,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email;
 using OrchardCore.Settings;
+using OrchardCore.Tests.Utilities;
 using OrchardCore.Users;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Events;
@@ -133,15 +134,12 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 .Returns<string>(e =>
                 {
                     var user = users.SingleOrDefault(u => (u as User).Email == e);
-
                     return Task.FromResult(user);
                 });
 
-            var mockSiteService = Mock.Of<ISiteService>(ss =>
-                ss.GetSiteSettingsAsync() == Task.FromResult(
-                    Mock.Of<ISite>(s => s.Properties == JObject.FromObject(new { RegistrationSettings = registrationSettings }))
-                    )
-            );
+            var mockSite = SiteMockHelper.GetSite(registrationSettings);
+
+            var mockSiteService = Mock.Of<ISiteService>(ss => ss.GetSiteSettingsAsync() == Task.FromResult(mockSite.Object));
             var mockSmtpService = Mock.Of<ISmtpService>(x => x.SendAsync(It.IsAny<MailMessage>()) == Task.FromResult(SmtpResult.Success));
             var mockStringLocalizer = new Mock<IStringLocalizer<RegistrationController>>();
             mockStringLocalizer.Setup(l => l[It.IsAny<string>()])
@@ -188,7 +186,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 .Returns(mockSiteService);
             mockServiceProvider
                 .Setup(x => x.GetService(typeof(IEnumerable<IRegistrationFormEvents>)))
-                .Returns(Enumerable.Empty<IRegistrationFormEvents>());
+                .Returns(Array.Empty<IRegistrationFormEvents>());
             mockServiceProvider
                 .Setup(x => x.GetService(typeof(IUserService)))
                 .Returns(userService.Object);

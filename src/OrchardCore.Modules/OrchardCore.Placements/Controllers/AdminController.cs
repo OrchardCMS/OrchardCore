@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,8 +12,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy;
 using OrchardCore.DisplayManagement.Notify;
@@ -24,14 +24,17 @@ namespace OrchardCore.Placements.Controllers
 {
     public class AdminController : Controller
     {
+        private const string _optionsSearch = "Options.Search";
+
         private readonly ILogger _logger;
         private readonly IAuthorizationService _authorizationService;
         private readonly PlacementsManager _placementsManager;
         private readonly INotifier _notifier;
+        private readonly IShapeFactory _shapeFactory;
         private readonly PagerOptions _pagerOptions;
+
         protected readonly IHtmlLocalizer H;
         protected readonly IStringLocalizer S;
-        protected readonly dynamic New;
 
         public AdminController(
             ILogger<AdminController> logger,
@@ -47,9 +50,9 @@ namespace OrchardCore.Placements.Controllers
             _authorizationService = authorizationService;
             _placementsManager = placementsManager;
             _notifier = notifier;
+            _shapeFactory = shapeFactory;
             _pagerOptions = pagerOptions.Value;
 
-            New = shapeFactory;
             H = htmlLocalizer;
             S = stringLocalizer;
         }
@@ -70,7 +73,7 @@ namespace OrchardCore.Placements.Controllers
                 ShapeType = entry.Key
             }).ToList();
 
-            if (!String.IsNullOrWhiteSpace(options.Search))
+            if (!string.IsNullOrWhiteSpace(options.Search))
             {
                 shapeList = shapeList.Where(x => x.ShapeType.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
@@ -81,7 +84,15 @@ namespace OrchardCore.Placements.Controllers
                 .Skip(pager.GetStartIndex())
                 .Take(pager.PageSize).ToList();
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
+            // Maintain previous route data when generating page links.
+            var routeData = new RouteData();
+
+            if (!string.IsNullOrEmpty(options.Search))
+            {
+                routeData.Values.TryAdd(_optionsSearch, options.Search);
+            }
+
+            var pagerShape = await _shapeFactory.PagerAsync(pager, count, routeData);
 
             var model = new ListShapePlacementsViewModel
             {
@@ -90,21 +101,21 @@ namespace OrchardCore.Placements.Controllers
                 Options = options,
             };
 
-            model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
-            };
+            model.Options.ContentsBulkAction =
+            [
+                new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
+            ];
 
-            return View("Index", model);
+            return View(model);
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(ListShapePlacementsViewModel model)
-        {
-            return RedirectToAction(nameof(Index), new RouteValueDictionary {
-                { "Options.Search", model.Options.Search }
+            => RedirectToAction(nameof(Index), new RouteValueDictionary
+            {
+                { _optionsSearch, model.Options.Search }
             });
-        }
 
         public async Task<IActionResult> Create(string suggestion, string returnUrl = null)
         {
@@ -113,17 +124,17 @@ namespace OrchardCore.Placements.Controllers
                 return Forbid();
             }
 
-            var template = new PlacementNode[] { new PlacementNode() };
+            var template = new PlacementNode[] { new() };
 
             var viewModel = new EditShapePlacementViewModel
             {
                 Creating = true,
                 ShapeType = suggestion,
-                Nodes = JsonConvert.SerializeObject(template, Formatting.Indented)
+                Nodes = JConvert.SerializeObject(template, JOptions.Indented)
             };
 
             ViewData["ReturnUrl"] = returnUrl;
-            return View("Edit", viewModel);
+            return View(nameof(Edit), viewModel);
         }
 
         public async Task<IActionResult> Edit(string shapeType, string displayType = null, string contentType = null, string contentPart = null, string differentiator = null, string returnUrl = null)
@@ -133,22 +144,24 @@ namespace OrchardCore.Placements.Controllers
                 return Forbid();
             }
 
-            var placementNodes = (await _placementsManager.GetShapePlacementsAsync(shapeType))?.ToList() ?? new List<PlacementNode>();
+            var placementNodes = (await _placementsManager.GetShapePlacementsAsync(shapeType))?.ToList() ?? [];
 
-            if (!placementNodes.Any() || ShouldCreateNode(placementNodes, displayType, contentType, contentPart, differentiator))
+            if (placementNodes.Count == 0 || ShouldCreateNode(placementNodes, displayType, contentType, contentPart, differentiator))
             {
                 var generatedNode = new PlacementNode
                 {
                     DisplayType = displayType,
                     Differentiator = differentiator
                 };
-                if (!String.IsNullOrEmpty(contentType))
+
+                if (!string.IsNullOrEmpty(contentType))
                 {
-                    generatedNode.Filters.Add("contentType", new JArray(contentType));
+                    generatedNode.Filters.Add("contentType", new JsonArray(contentType));
                 }
-                if (!String.IsNullOrEmpty(contentPart))
+
+                if (!string.IsNullOrEmpty(contentPart))
                 {
-                    generatedNode.Filters.Add("contentPart", new JArray(contentPart));
+                    generatedNode.Filters.Add("contentPart", new JsonArray(contentPart));
                 }
 
                 placementNodes.Add(generatedNode);
@@ -157,14 +170,14 @@ namespace OrchardCore.Placements.Controllers
             var viewModel = new EditShapePlacementViewModel
             {
                 ShapeType = shapeType,
-                Nodes = JsonConvert.SerializeObject(placementNodes, Formatting.Indented)
+                Nodes = JConvert.SerializeObject(placementNodes, JOptions.Indented)
             };
 
             ViewData["ReturnUrl"] = returnUrl;
             return View(viewModel);
         }
 
-        [HttpPost, ActionName("Edit")]
+        [HttpPost, ActionName(nameof(Edit))]
         public async Task<IActionResult> Edit(EditShapePlacementViewModel viewModel, string submit, string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManagePlacements))
@@ -183,7 +196,7 @@ namespace OrchardCore.Placements.Controllers
 
             try
             {
-                var placementNodes = JsonConvert.DeserializeObject<PlacementNode[]>(viewModel.Nodes)
+                var placementNodes = JConvert.DeserializeObject<PlacementNode[]>(viewModel.Nodes)
                     ?? Enumerable.Empty<PlacementNode>();
 
                 // Remove empty nodes.
@@ -209,7 +222,7 @@ namespace OrchardCore.Placements.Controllers
                     await _notifier.SuccessAsync(H["The \"{0}\" placement has been deleted.", viewModel.ShapeType]);
                 }
             }
-            catch (JsonReaderException jsonException)
+            catch (JsonException jsonException)
             {
                 await _notifier.ErrorAsync(H["An error occurred while parsing the placement<br/>{0}", jsonException.Message]);
                 return View(viewModel);
@@ -229,7 +242,7 @@ namespace OrchardCore.Placements.Controllers
             return View(viewModel);
         }
 
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName(nameof(Delete))]
         public async Task<IActionResult> Delete(string shapeType, string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManagePlacements))
@@ -243,9 +256,9 @@ namespace OrchardCore.Placements.Controllers
             return RedirectToReturnUrlOrIndex(returnUrl);
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.BulkAction")]
-        public async Task<ActionResult> IndexPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
+        public async Task<ActionResult> IndexPost(ContentOptions options, IEnumerable<string> itemIds)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManagePlacements))
             {
@@ -266,7 +279,7 @@ namespace OrchardCore.Placements.Controllers
                         await _notifier.SuccessAsync(H["Placements successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
+                        throw new ArgumentOutOfRangeException(options.BulkAction.ToString(), "Invalid bulk action.");
                 }
             }
 
@@ -275,7 +288,7 @@ namespace OrchardCore.Placements.Controllers
 
         private IActionResult RedirectToReturnUrlOrIndex(string returnUrl)
         {
-            if ((String.IsNullOrEmpty(returnUrl) == false) && (Url.IsLocalUrl(returnUrl)))
+            if ((string.IsNullOrEmpty(returnUrl) == false) && (Url.IsLocalUrl(returnUrl)))
             {
                 return this.Redirect(returnUrl, true);
             }
@@ -287,39 +300,40 @@ namespace OrchardCore.Placements.Controllers
 
         private static bool ShouldCreateNode(IEnumerable<PlacementNode> nodes, string displayType, string contentType, string contentPart, string differentiator)
         {
-            if (String.IsNullOrEmpty(displayType) && String.IsNullOrEmpty(differentiator))
+            if (string.IsNullOrEmpty(displayType) && string.IsNullOrEmpty(differentiator))
             {
                 return false;
             }
             else
             {
                 return !nodes.Any(node =>
-                    (String.IsNullOrEmpty(displayType) || node.DisplayType == displayType) &&
-                    (String.IsNullOrEmpty(contentType) || (node.Filters.ContainsKey("contentType") && FilterEquals(node.Filters["contentType"], contentType))) &&
-                    (String.IsNullOrEmpty(contentPart) || (node.Filters.ContainsKey("contentPart") && FilterEquals(node.Filters["contentPart"], contentPart))) &&
-                    (String.IsNullOrEmpty(differentiator) || node.Differentiator == differentiator));
+                    (string.IsNullOrEmpty(displayType) || node.DisplayType == displayType) &&
+                    (string.IsNullOrEmpty(contentType) || (node.Filters.ContainsKey("contentType") && FilterEquals(node.Filters["contentType"], contentType))) &&
+                    (string.IsNullOrEmpty(contentPart) || (node.Filters.ContainsKey("contentPart") && FilterEquals(node.Filters["contentPart"], contentPart))) &&
+                    (string.IsNullOrEmpty(differentiator) || node.Differentiator == differentiator));
             }
         }
 
         private static bool IsEmpty(PlacementNode node)
         {
-            return String.IsNullOrEmpty(node.Location)
-                && String.IsNullOrEmpty(node.ShapeType)
+            return string.IsNullOrEmpty(node.Location)
+                && string.IsNullOrEmpty(node.ShapeType)
                 && (node.Alternates == null || node.Alternates.Length == 0)
                 && (node.Wrappers == null || node.Wrappers.Length == 0);
         }
 
 
-        private static bool FilterEquals(JToken token, string value)
+        private static bool FilterEquals(object node, string value)
         {
-            if (token is JArray)
+            var jsonNode = JNode.FromObject(node);
+            if (jsonNode is JsonArray jsonArray)
             {
-                var tokenValues = token.Values<string>();
+                var tokenValues = jsonArray.Values<string>();
                 return tokenValues.Count() == 1 && tokenValues.First() == value;
             }
             else
             {
-                return token.Value<string>() == value;
+                return jsonNode.Value<string>() == value;
             }
         }
     }

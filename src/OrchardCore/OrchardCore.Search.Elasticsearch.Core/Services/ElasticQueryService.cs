@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -38,7 +37,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
             try
             {
-                var deserializedSearchRequest = _elasticClient.RequestResponseSerializer.Deserialize<SearchRequest>(new MemoryStream(Encoding.UTF8.GetBytes(query)));
+                using var stream = new MemoryStream(Encoding.UTF8.GetBytes(query));
+                var deserializedSearchRequest = _elasticClient.RequestResponseSerializer.Deserialize<SearchRequest>(stream);
 
                 var searchRequest = new SearchRequest(_indexPrefix + indexName)
                 {
@@ -47,7 +47,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     Size = deserializedSearchRequest.Size,
                     Fields = deserializedSearchRequest.Fields,
                     Sort = deserializedSearchRequest.Sort,
-                    Source = deserializedSearchRequest.Source
+                    Source = deserializedSearchRequest.Source,
                 };
 
                 var searchResponse = await _elasticClient.SearchAsync<Dictionary<string, object>>(searchRequest);
@@ -71,7 +71,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 if (searchResponse.IsValid)
                 {
                     elasticTopDocs.Count = searchResponse.Total;
-                    elasticTopDocs.TopDocs = searchResponse.Documents.ToList();
+                    elasticTopDocs.TopDocs = [.. searchResponse.Documents];
                     elasticTopDocs.Fields = hits;
                 }
                 else

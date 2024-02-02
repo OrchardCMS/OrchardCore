@@ -39,7 +39,7 @@ public class LinkFieldHandler : ContentFieldHandler<LinkField>
         var settings = context.ContentPartFieldDefinition.GetSettings<LinkFieldSettings>();
 
         var urlToValidate = field.Url;
-        if (!String.IsNullOrEmpty(urlToValidate))
+        if (!string.IsNullOrEmpty(urlToValidate))
         {
             var indexAnchor = urlToValidate.IndexOf('#');
             if (indexAnchor > -1)
@@ -57,11 +57,11 @@ public class LinkFieldHandler : ContentFieldHandler<LinkField>
         }
 
         // Validate Url
-        if (settings.Required && String.IsNullOrWhiteSpace(field.Url))
+        if (settings.Required && string.IsNullOrWhiteSpace(field.Url))
         {
             context.Fail(S["The url is required for {0}.", context.ContentPartFieldDefinition.DisplayName()], nameof(field.Url));
         }
-        else if (!String.IsNullOrWhiteSpace(field.Url))
+        else if (!string.IsNullOrWhiteSpace(field.Url))
         {
             if (!Uri.IsWellFormedUriString(urlToValidate, UriKind.RelativeOrAbsolute))
             {
@@ -71,18 +71,18 @@ public class LinkFieldHandler : ContentFieldHandler<LinkField>
             {
                 var link = $"<a href=\"{_htmlencoder.Encode(urlToValidate)}\"></a>";
 
-                if (!String.Equals(link, _htmlSanitizerService.Sanitize(link), StringComparison.OrdinalIgnoreCase))
+                if (!string.Equals(link, _htmlSanitizerService.Sanitize(link), StringComparison.OrdinalIgnoreCase))
                 {
                     context.Fail(S["{0} is an invalid url.", field.Url], nameof(field.Url));
                 }
             }
         }
 
-        if (settings.LinkTextMode == LinkTextMode.Required && String.IsNullOrWhiteSpace(field.Text))
+        if (settings.LinkTextMode == LinkTextMode.Required && string.IsNullOrWhiteSpace(field.Text))
         {
             context.Fail(S["The link text is required for {0}.", context.ContentPartFieldDefinition.DisplayName()], nameof(field.Text));
         }
-        else if (settings.LinkTextMode == LinkTextMode.Static && String.IsNullOrWhiteSpace(settings.DefaultText))
+        else if (settings.LinkTextMode == LinkTextMode.Static && string.IsNullOrWhiteSpace(settings.DefaultText))
         {
             context.Fail(S["The text default value is required for {0}.", context.ContentPartFieldDefinition.DisplayName()], nameof(field.Text));
         }

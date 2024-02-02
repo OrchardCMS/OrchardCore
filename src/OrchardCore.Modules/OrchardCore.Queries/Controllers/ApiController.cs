@@ -1,12 +1,10 @@
 using System.Text;
 using System.IO;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using System;
-
 
 namespace OrchardCore.Queries.Controllers
 {
@@ -47,18 +45,15 @@ namespace OrchardCore.Queries.Controllers
                 return NotFound();
             }
 
-            if (Request.Method == "POST")
+            if (Request.Method == "POST" && string.IsNullOrEmpty(parameters))
             {
-                if (String.IsNullOrEmpty(parameters))
-                {
-                    using var reader = new StreamReader(Request.Body, Encoding.UTF8);
-                    parameters = await reader.ReadToEndAsync();
-                }
+                  using var reader = new StreamReader(Request.Body, Encoding.UTF8);
+                  parameters = await reader.ReadToEndAsync();
             }
 
             var queryParameters = !String.IsNullOrEmpty(parameters) ?
-                JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                : new Dictionary<string, object>();
+                JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                : [];
 
             var result = await _queryManager.ExecuteQueryAsync(query, queryParameters);
             return new ObjectResult(result);

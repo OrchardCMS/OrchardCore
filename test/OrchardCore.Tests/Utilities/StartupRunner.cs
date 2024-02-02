@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Localization;
-
 namespace OrchardCore.Tests
 {
     internal static class StartupRunner
