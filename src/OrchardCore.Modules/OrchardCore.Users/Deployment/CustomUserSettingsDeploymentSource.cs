@@ -1,6 +1,6 @@
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
@@ -32,26 +32,30 @@ public class CustomUserSettingsDeploymentSource : IDeploymentSource
             : (await _customUserSettingsService.GetSettingsTypesAsync(customUserSettingsStep.SettingsTypeNames)).ToList();
 
         // Todo: check permissions for each settings type
-        var userData = new JArray();
+        var userData = new JsonArray();
         var allUsers = await _session.Query<User>().ListAsync();
 
         foreach (var user in allUsers)
         {
-            var userSettingsData = new JArray();
+            var userSettingsData = new JsonArray();
             foreach (var settingsType in settingsTypes)
             {
                 var userSetting = await _customUserSettingsService.GetSettingsAsync(user, settingsType);
                 userSettingsData.Add(JObject.FromObject(userSetting));
             }
 
-            userData.Add(new JObject(
-                new JProperty("userId", user.UserId),
-                new JProperty("user-custom-user-settings", userSettingsData)));
+            userData.Add(new JsonObject
+            {
+                ["userId"] = user.UserId,
+                ["user-custom-user-settings"] = userSettingsData,
+            });
         }
 
         // Adding custom user settings
-        result.Steps.Add(new JObject(
-            new JProperty("name", "custom-user-settings"),
-            new JProperty("custom-user-settings", userData)));
+        result.Steps.Add(new JsonObject
+        {
+            ["name"] = "custom-user-settings",
+            ["custom-user-settings"] = userData,
+        });
     }
 }

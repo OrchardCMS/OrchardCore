@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using OrchardCore.Data.Documents;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Models;

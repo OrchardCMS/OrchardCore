@@ -1,8 +1,7 @@
 using System;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -13,12 +12,6 @@ namespace OrchardCore.Forms.Drivers
 {
     public class SelectPartDisplayDriver : ContentPartDisplayDriver<SelectPart>
     {
-        private static readonly JsonSerializerSettings _serializerSettings = new()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            Formatting = Formatting.Indented,
-        };
-
         protected readonly IStringLocalizer S;
 
         public SelectPartDisplayDriver(IStringLocalizer<SelectPartDisplayDriver> stringLocalizer)
@@ -35,7 +28,7 @@ namespace OrchardCore.Forms.Drivers
         {
             return Initialize<SelectPartEditViewModel>("SelectPart_Fields_Edit", m =>
             {
-                m.Options = JsonConvert.SerializeObject(part.Options ?? [], _serializerSettings);
+                m.Options = JConvert.SerializeObject(part.Options ?? [], JOptions.CamelCaseIndented);
                 m.DefaultValue = part.DefaultValue;
                 m.Editor = part.Editor;
             });
@@ -53,7 +46,7 @@ namespace OrchardCore.Forms.Drivers
                     part.Editor = viewModel.Editor;
                     part.Options = string.IsNullOrWhiteSpace(viewModel.Options)
                         ? []
-                        : JsonConvert.DeserializeObject<SelectOption[]>(viewModel.Options);
+                        : JConvert.DeserializeObject<SelectOption[]>(viewModel.Options);
                 }
                 catch
                 {

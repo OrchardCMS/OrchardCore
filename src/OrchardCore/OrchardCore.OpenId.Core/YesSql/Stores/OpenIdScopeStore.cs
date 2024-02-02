@@ -4,11 +4,10 @@ using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OpenIddict.Abstractions;
 using OrchardCore.OpenId.Abstractions.Stores;
 using OrchardCore.OpenId.YesSql.Indexes;
@@ -204,7 +203,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
             }
 
             return new ValueTask<ImmutableDictionary<string, JsonElement>>(
-                JsonSerializer.Deserialize<ImmutableDictionary<string, JsonElement>>(scope.Properties.ToString()));
+                JConvert.DeserializeObject<ImmutableDictionary<string, JsonElement>>(scope.Properties.ToString()));
         }
 
         /// <inheritdoc/>
@@ -307,11 +306,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 return default;
             }
 
-            scope.Properties = JObject.Parse(JsonSerializer.Serialize(properties, new JsonSerializerOptions
-            {
-                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                WriteIndented = false
-            }));
+            scope.Properties = JObject.Parse(JConvert.SerializeObject(properties, JOptions.UnsafeRelaxedJsonEscaping));
 
             return default;
         }

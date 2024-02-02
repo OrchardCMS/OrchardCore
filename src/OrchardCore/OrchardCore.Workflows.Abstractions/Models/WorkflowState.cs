@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 
 namespace OrchardCore.Workflows.Models
 {
@@ -32,7 +32,7 @@ namespace OrchardCore.Workflows.Models
         /// <summary>
         /// A dictionary of activity states. Each entry contains runtime state for a particular activity.
         /// </summary>
-        public IDictionary<string, JObject> ActivityStates { get; set; } = new Dictionary<string, JObject>();
+        public IDictionary<string, JsonObject> ActivityStates { get; set; } = new Dictionary<string, JsonObject>();
 
         /// <summary>
         /// The list of executed activities.

@@ -234,7 +234,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                         {
                             if (analyzerProperty.Value is JsonArray)
                             {
-                                var values = JsonSerializer.Deserialize<string[]>(analyzerProperty.Value);
+                                var values = analyzerProperty.Value.Values<string>().ToArray();
 
                                 property.SetValue(analyzer, new StopWords(values));
                             }
@@ -242,15 +242,15 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                             continue;
                         }
 
-                        if (analyzerProperty.Value is JsonArray)
+                        if (analyzerProperty.Value is JsonArray jsonArray)
                         {
-                            var values = JsonSerializer.Deserialize<string[]>(analyzerProperty.Value);
+                            var values = jsonArray.Values<string>().ToArray();
 
                             property.SetValue(analyzer, values);
                         }
                         else
                         {
-                            var value = JsonSerializer.Deserialize(analyzerProperty.Value, property.PropertyType);
+                            var value = JNode.ToObject(analyzerProperty.Value, property.PropertyType);
 
                             property.SetValue(analyzer, value);
                         }
