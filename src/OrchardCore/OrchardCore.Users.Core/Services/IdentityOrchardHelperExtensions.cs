@@ -64,9 +64,7 @@ public static class IdentityOrchardHelperExtensions
     }
 
     public static Task<bool> IsAuthenticatedAsync(this IOrchardHelper helper)
-    {
-        return Task.FromResult((helper.HttpContext.User?.Identity?.IsAuthenticated) ?? false);
-    }
+        => Task.FromResult((helper.HttpContext.User?.Identity?.IsAuthenticated) ?? false);
 
     public static async Task<T> UserAsync<T>(this IOrchardHelper helper)
         where T : class, IUser
@@ -75,9 +73,6 @@ public static class IdentityOrchardHelperExtensions
     }
 
     public static async Task<string> UserIdAsync(this IOrchardHelper helper)
-    {
-        var claim = await helper.ClaimAsync(ClaimTypes.NameIdentifier);
-
-        return (claim?.Value) ?? helper.HttpContext.User?.Identity?.Name;
-    }
+        => User.Identity.Name;
+    
 }
