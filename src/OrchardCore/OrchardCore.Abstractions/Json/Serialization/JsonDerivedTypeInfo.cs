@@ -6,13 +6,16 @@ namespace System.Text.Json.Serialization;
 public class JsonDerivedTypeInfo<TDerived, TBase> : IJsonDerivedTypeInfo
         where TDerived : class where TBase : class
 {
-    public JsonDerivedType DerivedType => new(typeof(TDerived), CreateTypeDiscriminator<TDerived>());
+
+    private static readonly JsonDerivedType _instance = new(typeof(TDerived), CreateTypeDiscriminator<TDerived>());
+
+    public JsonDerivedType DerivedType => _instance;
 
     public Type BaseType => typeof(TBase);
 
     internal static string CreateTypeDiscriminator<T>()
     {
-        string fullyQualifiedTypeName = typeof(T).AssemblyQualifiedName;
+        var fullyQualifiedTypeName = typeof(T).AssemblyQualifiedName;
         fullyQualifiedTypeName = RemoveAssemblyDetails(fullyQualifiedTypeName);
         return fullyQualifiedTypeName;
     }

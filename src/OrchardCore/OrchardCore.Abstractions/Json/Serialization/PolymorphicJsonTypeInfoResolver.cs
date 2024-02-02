@@ -1,21 +1,15 @@
-using System.Collections.Frozen;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Serialization.Metadata;
+using OrchardCore.Json;
 
 namespace System.Text.Json.Serialization;
 
 public class PolymorphicJsonTypeInfoResolver : DefaultJsonTypeInfoResolver
 {
-    private readonly FrozenDictionary<Type, JsonDerivedType[]> _derivedTypes;
+    private readonly JsonDerivedTypesOptions _derivedTypesOptions;
 
-    public PolymorphicJsonTypeInfoResolver(IEnumerable<IJsonDerivedTypeInfo> derivedTypes)
+    public PolymorphicJsonTypeInfoResolver(JsonDerivedTypesOptions derivedTypesOptions)
     {
-        _derivedTypes = derivedTypes
-            .GroupBy(info => info.BaseType)
-            .ToFrozenDictionary(
-                group => group.First().BaseType,
-                group => group.Select(info => info.DerivedType).ToArray());
+        _derivedTypesOptions = derivedTypesOptions;
     }
 
     public override JsonTypeInfo GetTypeInfo(Type type, JsonSerializerOptions options)
@@ -24,7 +18,7 @@ public class PolymorphicJsonTypeInfoResolver : DefaultJsonTypeInfoResolver
 
         // If there is not derived type to add to this type, return the standard one.
 
-        if (!_derivedTypes.TryGetValue(jsonTypeInfo.Type, out var jsonDerivedTypes))
+        if (!_derivedTypesOptions.TryGetDerivedTypes(jsonTypeInfo.Type, out var jsonDerivedTypes))
         {
             return jsonTypeInfo;
         }
@@ -41,7 +35,7 @@ public class PolymorphicJsonTypeInfoResolver : DefaultJsonTypeInfoResolver
 
         foreach (var derivedType in jsonDerivedTypes)
         {
-            jsonTypeInfo.PolymorphismOptions.DerivedTypes.Add(derivedType);
+            jsonTypeInfo.PolymorphismOptions.DerivedTypes.Add(derivedType.DerivedType);
         }
 
         // We don't need to cache the result since the serializer does that already.

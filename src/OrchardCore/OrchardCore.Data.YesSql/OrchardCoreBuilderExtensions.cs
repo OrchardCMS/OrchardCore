@@ -14,6 +14,7 @@ using OrchardCore.Data.YesSql;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Removing;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Json;
 using OrchardCore.Modules;
 using YesSql;
 using YesSql.Indexes;
@@ -180,8 +181,8 @@ namespace Microsoft.Extensions.DependencyInjection
             var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
 
             var typeInfoResolvers = sp.GetServices<IJsonTypeInfoResolver>().ToList();
-            var derivedTypeInfos = sp.GetServices<IJsonDerivedTypeInfo>();
-            typeInfoResolvers.Add(new PolymorphicJsonTypeInfoResolver(derivedTypeInfos));
+            var derivedTypesOptions = sp.GetService<IOptions<JsonDerivedTypesOptions>>();
+            typeInfoResolvers.Add(new PolymorphicJsonTypeInfoResolver(derivedTypesOptions.Value));
 
             var storeConfiguration = new YesSql.Configuration
             {
