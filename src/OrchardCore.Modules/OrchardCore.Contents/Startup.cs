@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.AdminMenu;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -217,6 +218,9 @@ namespace OrchardCore.Contents
             });
 
             services.AddTransient<IContentsAdminListFilterProvider, DefaultContentsAdminListFilterProvider>();
+
+            // Allows to serialize 'AdminNode' derived types.
+            services.AddAdminNode<ContentTypesAdminNode>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

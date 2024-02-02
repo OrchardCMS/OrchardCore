@@ -1,6 +1,6 @@
 using System;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Records;
 using OrchardCore.Recipes.Events;
 using OrchardCore.Recipes.Models;
@@ -34,10 +34,10 @@ namespace OrchardCore.ContentTypes
                     {
                         if (partDefinition.Settings != null)
                         {
-                            if (partDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingPartSettings) &&
+                            if (partDefinition.Settings.TryGetPropertyValue("ContentIndexSettings", out var existingPartSettings) &&
                                 !partDefinition.Settings.ContainsKey("LuceneContentIndexSettings"))
                             {
-                                partDefinition.Settings.Add(new JProperty("LuceneContentIndexSettings", existingPartSettings));
+                                partDefinition.Settings.Add("LuceneContentIndexSettings", existingPartSettings);
                             }
 
                             partDefinition.Settings.Remove("ContentIndexSettings");
@@ -49,10 +49,10 @@ namespace OrchardCore.ContentTypes
                 {
                     if (partDefinition.Settings != null)
                     {
-                        if (partDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingPartSettings) &&
+                        if (partDefinition.Settings.TryGetPropertyValue("ContentIndexSettings", out var existingPartSettings) &&
                             !partDefinition.Settings.ContainsKey("LuceneContentIndexSettings"))
                         {
-                            partDefinition.Settings.Add(new JProperty("LuceneContentIndexSettings", existingPartSettings));
+                            partDefinition.Settings.Add("LuceneContentIndexSettings", existingPartSettings);
                         }
 
                         partDefinition.Settings.Remove("ContentIndexSettings");
@@ -61,10 +61,10 @@ namespace OrchardCore.ContentTypes
                         {
                             if (fieldDefinition.Settings != null)
                             {
-                                if (fieldDefinition.Settings.TryGetValue("ContentIndexSettings", out var existingFieldSettings) &&
+                                if (fieldDefinition.Settings.TryGetPropertyValue("ContentIndexSettings", out var existingFieldSettings) &&
                                     !fieldDefinition.Settings.ContainsKey("LuceneContentIndexSettings"))
                                 {
-                                    fieldDefinition.Settings.Add(new JProperty("LuceneContentIndexSettings", existingFieldSettings));
+                                    fieldDefinition.Settings.Add("LuceneContentIndexSettings", existingFieldSettings);
                                 }
 
                                 fieldDefinition.Settings.Remove("ContentIndexSettings");

@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
@@ -22,6 +23,7 @@ namespace OrchardCore.Settings.Deployment
             });
 
             services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<TModel>());
+            services.AddJsonDerivedTypeInfo<SiteSettingsPropertyDeploymentStep<TModel>, DeploymentStep>();
         }
     }
 }

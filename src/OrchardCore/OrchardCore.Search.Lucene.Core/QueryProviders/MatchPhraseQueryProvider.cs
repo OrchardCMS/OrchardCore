@@ -1,41 +1,43 @@
 using System;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Search.Lucene.QueryProviders
 {
     public class MatchPhraseQueryProvider : ILuceneQueryProvider
     {
-        public Query CreateQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JObject query)
+        public Query CreateQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JsonObject query)
         {
             if (type != "match_phrase")
             {
                 return null;
             }
 
-            var first = query.Properties().First();
+            var first = query.First();
 
             var phraseQuery = new PhraseQuery();
-            JToken value;
+            JsonNode value;
 
-            switch (first.Value.Type)
+            switch (first.Value.GetValueKind())
             {
-                case JTokenType.String:
+                case JsonValueKind.String:
                     value = first.Value;
                     break;
-                case JTokenType.Object:
-                    var obj = (JObject)first.Value;
 
-                    if (!obj.TryGetValue("value", out value))
+                case JsonValueKind.Object:
+                    var obj = first.Value.AsObject();
+
+                    if (!obj.TryGetPropertyValue("value", out value))
                     {
                         throw new ArgumentException("Missing value in match phrase query");
                     }
 
                     // TODO: read "analyzer" property
 
-                    if (obj.TryGetValue("slop", out var slop))
+                    if (obj.TryGetPropertyValue("slop", out var slop))
                     {
                         phraseQuery.Slop = slop.Value<int>();
                     }
@@ -44,9 +46,9 @@ namespace OrchardCore.Search.Lucene.QueryProviders
                 default: throw new ArgumentException("Invalid wildcard query");
             }
 
-            foreach (var term in LuceneQueryService.Tokenize(first.Name, value.Value<string>(), context.DefaultAnalyzer))
+            foreach (var term in LuceneQueryService.Tokenize(first.Key, value.Value<string>(), context.DefaultAnalyzer))
             {
-                phraseQuery.Add(new Term(first.Name, term));
+                phraseQuery.Add(new Term(first.Key, term));
             }
 
             return phraseQuery;

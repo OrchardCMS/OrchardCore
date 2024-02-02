@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -37,7 +37,7 @@ namespace OrchardCore.Queries.Recipes
 
             var model = context.Step.ToObject<QueryStepModel>();
 
-            foreach (var token in model.Queries.Cast<JObject>())
+            foreach (var token in model.Queries.Cast<JsonObject>())
             {
                 var sourceName = token[nameof(Query.Source)].ToString();
                 var sample = _querySources.FirstOrDefault(x => x.Name == sourceName)?.Create();
@@ -57,6 +57,6 @@ namespace OrchardCore.Queries.Recipes
 
     public class QueryStepModel
     {
-        public JArray Queries { get; set; }
+        public JsonArray Queries { get; set; }
     }
 }

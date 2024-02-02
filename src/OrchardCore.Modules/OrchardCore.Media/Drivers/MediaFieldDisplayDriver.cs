@@ -21,11 +21,6 @@ namespace OrchardCore.Media.Drivers
 {
     public class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaField>
     {
-        private static readonly JsonSerializerOptions _settings = new()
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        };
-
         private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;
         protected readonly IStringLocalizer S;
         private readonly ILogger _logger;
@@ -82,7 +77,7 @@ namespace OrchardCore.Media.Drivers
                     }
                 }
 
-                model.Paths = JsonSerializer.Serialize(itemPaths, _settings);
+                model.Paths = JConvert.SerializeObject(itemPaths, JOptions.CamelCase);
                 model.TempUploadFolder = _attachedMediaFieldFileService.MediaFieldsTempSubFolder;
                 model.Field = field;
                 model.Part = context.ContentPart;
@@ -101,7 +96,7 @@ namespace OrchardCore.Media.Drivers
                 // Deserializing an empty string doesn't return an array
                 var items = string.IsNullOrWhiteSpace(model.Paths)
                     ? []
-                    : JsonSerializer.Deserialize<List<EditMediaFieldItemInfo>>(model.Paths, _settings);
+                    : JConvert.DeserializeObject<List<EditMediaFieldItemInfo>>(model.Paths, JOptions.CamelCase);
 
                 // If it's an attached media field editor the files are automatically handled by _attachedMediaFieldFileService.
                 if (string.Equals(context.PartFieldDefinition.Editor(), "Attached", StringComparison.OrdinalIgnoreCase))

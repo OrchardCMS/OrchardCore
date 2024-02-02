@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Apis.GraphQL.Resolvers;
@@ -73,7 +74,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 versionOption = GetVersionOption(context.GetArgument<PublicationStatusEnum>("status"));
             }
 
-            JObject where = null;
+            JsonObject where = null;
             if (context.HasArgument("where"))
             {
                 // 'context.Arguments[].Value' is never null in GraphQL.NET 4.
@@ -112,7 +113,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
         private IQuery<ContentItem> FilterWhereArguments(
             IQuery<ContentItem, ContentItemIndex> query,
-            JObject where,
+            JsonObject where,
             IResolveFieldContext fieldContext,
             ISession session)
         {
@@ -238,37 +239,37 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             return query;
         }
 
-        private void BuildWhereExpressions(JToken where, Junction expressions, string tableAlias, IResolveFieldContext fieldContext, IDictionary<string, string> indexAliases)
+        private void BuildWhereExpressions(JsonNode where, Junction expressions, string tableAlias, IResolveFieldContext fieldContext, IDictionary<string, string> indexAliases)
         {
-            if (where is JArray array)
+            if (where is JsonArray array)
             {
-                foreach (var child in array.Children())
+                foreach (var child in array)
                 {
-                    if (child is JObject whereObject)
+                    if (child is JsonObject whereObject)
                     {
                         BuildExpressionsInternal(whereObject, expressions, tableAlias, fieldContext, indexAliases);
                     }
                 }
             }
-            else if (where is JObject whereObject)
+            else if (where is JsonObject whereObject)
             {
                 BuildExpressionsInternal(whereObject, expressions, tableAlias, fieldContext, indexAliases);
             }
         }
 
-        private void BuildExpressionsInternal(JObject where, Junction expressions, string tableAlias, IResolveFieldContext fieldContext, IDictionary<string, string> indexAliases)
+        private void BuildExpressionsInternal(JsonObject where, Junction expressions, string tableAlias, IResolveFieldContext fieldContext, IDictionary<string, string> indexAliases)
         {
-            foreach (var entry in where.Properties())
+            foreach (var entry in where)
             {
                 // New typed arguments return default null values.
-                if (entry.Value.Type == JTokenType.Undefined || entry.Value.Type == JTokenType.Null)
+                if (entry.Value.GetValueKind() == JsonValueKind.Undefined || entry.Value.GetValueKind() == JsonValueKind.Null)
                 {
                     continue;
                 }
 
                 IPredicate expression = null;
 
-                var values = entry.Name.Split('_', 2);
+                var values = entry.Key.Split('_', 2);
 
                 // Gets the full path name without the comparison e.g. aliasPart.alias, not aliasPart.alias_contains.
                 var property = values[0];
@@ -318,7 +319,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                         BuildWhereExpressions(entry.Value, (Junction)expression, tableAlias, fieldContext, indexAliases);
                         expression = Expression.Not(expression);
                     }
-                    else if (entry.HasValues && entry.Value.Type == JTokenType.Object)
+                    else if (entry.Value.HasValues() && entry.Value.GetValueKind() == JsonValueKind.Object)
                     {
                         // Loop through the part's properties, passing the name of the part as the table tableAlias.
                         // This tableAlias can then be used with the table alias to index mappings to join with the correct table.
@@ -371,13 +372,13 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 {
                     var thenBy = false;
 
-                    foreach (var property in orderByArguments.Properties())
+                    foreach (var property in orderByArguments)
                     {
                         var direction = (OrderByDirection)property.Value.Value<int>();
 
                         Expression<Func<ContentItemIndex, object>> selector = null;
 
-                        switch (property.Name)
+                        switch (property.Key)
                         {
                             case "contentItemId": selector = x => x.ContentItemId; break;
                             case "contentItemVersionId": selector = x => x.ContentItemVersionId; break;

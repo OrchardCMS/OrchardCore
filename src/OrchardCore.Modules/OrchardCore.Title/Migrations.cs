@@ -1,8 +1,8 @@
-using System;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -61,7 +61,7 @@ namespace OrchardCore.Title
                 foreach (var contentItemVersion in contentItemVersions)
                 {
                     if (string.IsNullOrEmpty(contentItemVersion.DisplayText)
-                        && UpdateTitle(contentItemVersion.Content))
+                        && UpdateTitle((JsonObject)contentItemVersion.Content))
                     {
                         await _session.SaveAsync(contentItemVersion);
                         _logger.LogInformation("A content item version's Title was upgraded: {ContentItemVersionId}", contentItemVersion.ContentItemVersionId);
@@ -73,11 +73,11 @@ namespace OrchardCore.Title
                 await _session.SaveChangesAsync();
             }
 
-            static bool UpdateTitle(JToken content)
+            static bool UpdateTitle(JsonNode content)
             {
                 var changed = false;
 
-                if (content.Type == JTokenType.Object)
+                if (content.GetValueKind() == JsonValueKind.Object)
                 {
                     var title = content["TitlePart"]?["Title"]?.Value<string>();
 
@@ -86,11 +86,19 @@ namespace OrchardCore.Title
                         content["DisplayText"] = title;
                         changed = true;
                     }
-                }
 
-                foreach (var token in content)
+                    foreach (var node in content.AsObject())
+                    {
+                        changed = UpdateTitle(node.Value) || changed;
+                    }
+                }
+                else if (content.GetValueKind() == JsonValueKind.Array)
                 {
-                    changed = UpdateTitle(token) || changed;
+
+                    foreach (var node in content.AsArray())
+                    {
+                        changed = UpdateTitle(node) || changed;
+                    }
                 }
 
                 return changed;

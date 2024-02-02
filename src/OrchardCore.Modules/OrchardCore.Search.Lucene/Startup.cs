@@ -1,4 +1,6 @@
 using System;
+using System.Text.Json.Serialization;
+using Fluid;
 using Lucene.Net.Analysis.Standard;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -71,6 +73,10 @@ namespace OrchardCore.Search.Lucene
             services.AddRecipeExecutionStep<LuceneIndexStep>();
             services.AddRecipeExecutionStep<LuceneIndexRebuildStep>();
             services.AddRecipeExecutionStep<LuceneIndexResetStep>();
+            services.AddScoped<IAuthorizationHandler, LuceneAuthorizationHandler>();
+
+            // Allows to serialize 'LuceneQuery' from its base type.
+            services.AddJsonDerivedTypeInfo<LuceneQuery, Query>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

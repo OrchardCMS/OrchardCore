@@ -1,8 +1,8 @@
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace OrchardCore.Queries.Controllers
 {
@@ -44,7 +44,7 @@ namespace OrchardCore.Queries.Controllers
             }
 
             var queryParameters = parameters != null ?
-                JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                 : [];
 
             var result = await _queryManager.ExecuteQueryAsync(query, queryParameters);
