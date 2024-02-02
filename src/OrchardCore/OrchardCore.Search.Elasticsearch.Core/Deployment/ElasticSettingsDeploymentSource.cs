@@ -1,5 +1,5 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 
@@ -26,10 +26,11 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment
             var elasticSettings = await _elasticIndexingService.GetElasticSettingsAsync();
 
             // Adding Elasticsearch settings
-            result.Steps.Add(new JObject(
-                new JProperty("name", "Settings"),
-                new JProperty("ElasticSettings", JObject.FromObject(elasticSettings))
-            ));
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "Settings",
+                ["ElasticSettings"] = JObject.FromObject(elasticSettings),
+            });
         }
     }
 }

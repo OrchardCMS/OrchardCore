@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.AdminMenu.Models

@@ -1,8 +1,7 @@
 using System;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -30,11 +29,11 @@ namespace OrchardCore.AdminMenu.Recipes
 
             var model = context.Step.ToObject<AdminMenuStepModel>();
 
-            var serializer = new JsonSerializer() { TypeNameHandling = TypeNameHandling.Auto };
+            // var serializer = new JsonSerializer() { TypeNameHandling = TypeNameHandling.Auto };
 
-            foreach (var token in model.Data.Cast<JObject>())
+            foreach (var token in model.Data.Cast<JsonObject>())
             {
-                var adminMenu = token.ToObject<Models.AdminMenu>(serializer);
+                var adminMenu = token.ToObject<Models.AdminMenu>(/*serializer*/);
 
                 // When the id is not supplied generate an id, otherwise replace the menu if it exists, or create a new menu.
                 if (string.IsNullOrEmpty(adminMenu.Id))
@@ -51,6 +50,6 @@ namespace OrchardCore.AdminMenu.Recipes
 
     public class AdminMenuStepModel
     {
-        public JArray Data { get; set; }
+        public JsonArray Data { get; set; }
     }
 }
