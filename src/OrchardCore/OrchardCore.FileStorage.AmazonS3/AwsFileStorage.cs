@@ -160,8 +160,8 @@ public class AwsFileStore : IFileStore
             Prefix = NormalizePrefix(this.Combine(_basePrefix, path))
         });
 
-        if(listObjectsResponse.S3Objects.Count > 0)
-        { 
+        if (listObjectsResponse.S3Objects.Count > 0)
+        {
             var deleteObjectsRequest = new DeleteObjectsRequest
             {
                 BucketName = _options.BucketName,
