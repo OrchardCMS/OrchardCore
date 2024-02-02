@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Utilities;
 
@@ -13,7 +13,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         private string _name;
         private string _displayName;
         private readonly IList<ContentTypePartDefinition> _parts;
-        private readonly JObject _settings;
+        private readonly JsonObject _settings;
 
         public ContentTypeDefinition Current { get; }
 
@@ -36,7 +36,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
                 _name = existing.Name;
                 _displayName = existing.DisplayName;
                 _parts = existing.Parts.ToList();
-                _settings = new JObject(existing.Settings);
+                _settings = existing.Settings.Clone();
             }
         }
 
@@ -70,7 +70,14 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
-        public ContentTypeDefinitionBuilder MergeSettings(JObject settings)
+        [Obsolete("Use WithSettings<T>. This will be removed in a future version.")]
+        public ContentTypeDefinitionBuilder WithSetting(string name, object value)
+        {
+            _settings[name] = JNode.FromObject(value);
+            return this;
+        }
+
+        public ContentTypeDefinitionBuilder MergeSettings(JsonObject settings)
         {
             _settings.Merge(settings, ContentBuilderSettings.JsonMergeSettings);
             return this;
@@ -78,7 +85,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentTypeDefinitionBuilder MergeSettings<T>(Action<T> setting) where T : class, new()
         {
-            var existingJObject = _settings[typeof(T).Name] as JObject;
+            var existingJObject = _settings[typeof(T).Name] as JsonObject;
             // If existing settings do not exist, create.
             if (existingJObject == null)
             {

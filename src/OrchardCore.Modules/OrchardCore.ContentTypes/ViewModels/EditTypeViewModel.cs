@@ -1,5 +1,5 @@
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentTypes.ViewModels
@@ -25,7 +25,7 @@ namespace OrchardCore.ContentTypes.ViewModels
         public string[] OrderedPartNames { get; set; }
 
         [BindNever]
-        public JObject Settings { get; set; }
+        public JsonObject Settings { get; set; }
 
         [BindNever]
         public ContentTypeDefinition TypeDefinition { get; set; }
