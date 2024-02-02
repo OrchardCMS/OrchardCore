@@ -177,18 +177,9 @@ public class DbConnectionValidator : IDbConnectionValidator
             sqlBuilder.WhereAnd($"Type = '{_shellDescriptorTypeColumnValue}'");
         }
 
-        return sqlBuilder.ToString();
-    }
-
-    private static SqlBuilder GetSelectBuilderForShellDescriptorDocument(SqlBuilder sqlBuilder, string documentTable, string schema)
-    {
-        sqlBuilder.Select();
-        sqlBuilder.Selector("*");
-        sqlBuilder.Table(documentTable, alias: null, schema);
-        sqlBuilder.WhereAnd($"Type = '{_shellDescriptorTypeColumnValue}'");
         sqlBuilder.Take("1");
 
-        return sqlBuilder;
+        return sqlBuilder.ToString();
     }
 
     private static (IConnectionFactory connectionFactory, ISqlDialect sqlDialect) GetFactoryAndSqlDialect(
