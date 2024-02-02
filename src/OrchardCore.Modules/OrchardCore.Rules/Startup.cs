@@ -83,24 +83,28 @@ namespace OrchardCore.Rules
                 .AddCondition<ContentTypeCondition, ContentTypeConditionEvaluatorDriver, ConditionFactory<ContentTypeCondition>>()
                 .AddScoped<IContentDisplayDriver>(sp => sp.GetRequiredService<ContentTypeConditionEvaluatorDriver>());
 
-            // Allows to serialize 'Condition' derived types.
+            // Allows to serialize 'Condition' derived types for List<Condition> Layer.LayerRule
+            services.AddJsonDerivedTypeInfo<AllConditionGroup, Condition>();
+            services.AddJsonDerivedTypeInfo<AnyConditionGroup, Condition>();
             services.AddJsonDerivedTypeInfo<BooleanCondition, Condition>();
             services.AddJsonDerivedTypeInfo<ContentTypeCondition, Condition>();
             services.AddJsonDerivedTypeInfo<CultureCondition, Condition>();
             services.AddJsonDerivedTypeInfo<HomepageCondition, Condition>();
             services.AddJsonDerivedTypeInfo<IsAnonymousCondition, Condition>();
-
             services.AddJsonDerivedTypeInfo<IsAuthenticatedCondition, Condition>();
             services.AddJsonDerivedTypeInfo<JavascriptCondition, Condition>();
             services.AddJsonDerivedTypeInfo<RoleCondition, Condition>();
             services.AddJsonDerivedTypeInfo<UrlCondition, Condition>();
-            services.AddJsonDerivedTypeInfo<ConditionGroup, Condition>();
 
-            // Allows to serialize 'ConditionGroup' derived types.
-            services.AddJsonDerivedTypeInfo<Rule, ConditionGroup>();
-            services.AddJsonDerivedTypeInfo<DisplayTextConditionGroup, ConditionGroup>();
-            services.AddJsonDerivedTypeInfo<AllConditionGroup, DisplayTextConditionGroup>();
-            services.AddJsonDerivedTypeInfo<AnyConditionGroup, DisplayTextConditionGroup>();
+            // Allows to serialize 'ConditionOperator' derived types
+            services.AddJsonDerivedTypeInfo<StringEqualsOperator, ConditionOperator>();
+            services.AddJsonDerivedTypeInfo<StringNotEqualsOperator, ConditionOperator>();
+            services.AddJsonDerivedTypeInfo<StringStartsWithOperator, ConditionOperator>();
+            services.AddJsonDerivedTypeInfo<StringNotStartsWithOperator, ConditionOperator>();
+            services.AddJsonDerivedTypeInfo<StringEndsWithOperator, ConditionOperator>();
+            services.AddJsonDerivedTypeInfo<StringNotEndsWithOperator, ConditionOperator>();
+            services.AddJsonDerivedTypeInfo<StringContainsOperator, ConditionOperator>();
+            services.AddJsonDerivedTypeInfo<StringNotContainsOperator, ConditionOperator>();
         }
     }
 }
