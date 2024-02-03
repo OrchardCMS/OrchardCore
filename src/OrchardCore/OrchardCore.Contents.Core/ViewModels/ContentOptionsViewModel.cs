@@ -46,7 +46,7 @@ namespace OrchardCore.Contents.ViewModels
         public int TotalItemCount { get; set; }
 
         [BindNever]
-        public RouteValueDictionary RouteValues { get; set; } = new RouteValueDictionary();
+        public RouteValueDictionary RouteValues { get; set; } = [];
 
         #endregion
 

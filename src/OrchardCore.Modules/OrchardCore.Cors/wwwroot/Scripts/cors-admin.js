@@ -17,7 +17,6 @@ var optionsList = Vue.component('options-list', {
         var noDuplicates = $.inArray(value.toLowerCase(), this.options.map(function (o) {
           return o.toLowerCase();
         })) < 0;
-
         if (noDuplicates) {
           this.options.push(value);
         }
@@ -82,7 +81,6 @@ var corsApp = new Vue({
           return p.IsDefaultPolicy = false;
         });
       }
-
       if (policy.OriginalName) {
         var policyIndex = this.policies.findIndex(function (oldPolicy) {
           return oldPolicy.Name === policy.OriginalName;
@@ -91,7 +89,6 @@ var corsApp = new Vue({
       } else {
         this.policies.push(policy);
       }
-
       this.save();
       this.back();
     },
@@ -103,25 +100,26 @@ var corsApp = new Vue({
       this.selectedPolicy = null;
     },
     searchBox: function searchBox() {
-      var searchBox = $('#search-box'); // On Enter, edit the item if there is a single one
+      var searchBox = $('#search-box');
 
+      // On Enter, edit the item if there is a single one
       searchBox.keypress(function (event) {
         if (event.which == 13) {
           // Edit the item if there is a single filtered element
           var visible = $('#corsAdmin > ul > li:visible');
-
           if (visible.length == 1) {
             window.location = visible.find('.edit').attr('href');
           }
-
           return false;
         }
-      }); // On each keypress filter the list
+      });
 
+      // On each keypress filter the list
       searchBox.keyup(function (e) {
         var search = $(this).val().toLowerCase();
-        var elementsToFilter = $("[data-filter-value]"); // On ESC, clear the search box and display all
+        var elementsToFilter = $("[data-filter-value]");
 
+        // On ESC, clear the search box and display all
         if (e.keyCode == 27 || search == '') {
           searchBox.val('');
           elementsToFilter.toggle(true);
@@ -132,12 +130,12 @@ var corsApp = new Vue({
             var text = $(this).data('filter-value').toLowerCase();
             var found = text.indexOf(search) > -1;
             $(this).toggle(found);
-
             if (found) {
               intVisible++;
             }
-          }); // We display an alert if a search is not found
+          });
 
+          // We display an alert if a search is not found
           if (intVisible == 0) {
             $('#list-alert').removeClass("d-none");
           } else {

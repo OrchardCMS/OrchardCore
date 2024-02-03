@@ -1,0 +1,8 @@
+[
+  {
+    "inputs": [
+      "Assets/js/notification-manager.js"
+    ],
+    "output": "wwwroot/Scripts/notification-manager.js"
+  }
+]

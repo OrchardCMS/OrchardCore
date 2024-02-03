@@ -46,11 +46,9 @@ namespace OrchardCore.Rules.Drivers
             if (await updater.TryUpdateModelAsync(model, Prefix))
             {
                 condition.Value = model.Value;
-                if (!String.IsNullOrEmpty(model.SelectedOperation) && _options.Factories.TryGetValue(model.SelectedOperation, out var factory))
+                if (!string.IsNullOrEmpty(model.SelectedOperation) && _options.Factories.TryGetValue(model.SelectedOperation, out var factory))
                 {
-                    condition.Operation = factory.Create() as StringOperator;
-                    // Set to default.
-                    condition.Operation.CaseSensitive = false;
+                    condition.Operation = factory.Create();
                 }
             }
 

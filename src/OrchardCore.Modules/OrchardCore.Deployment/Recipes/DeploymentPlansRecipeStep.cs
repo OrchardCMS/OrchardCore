@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -27,7 +27,7 @@ namespace OrchardCore.Deployment.Recipes
 
         public Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "deployment", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "deployment", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }
@@ -68,7 +68,7 @@ namespace OrchardCore.Deployment.Recipes
                 var prefix = "No changes have been made. The following types of deployment plans cannot be added:";
                 var suffix = "Please ensure that the related features are enabled to add these types of deployment plans.";
 
-                throw new InvalidOperationException($"{prefix} {String.Join(", ", unknownTypes)}. {suffix}");
+                throw new InvalidOperationException($"{prefix} {string.Join(", ", unknownTypes)}. {suffix}");
             }
 
             return _deploymentPlanService.CreateOrUpdateDeploymentPlansAsync(deploymentPlans);
@@ -90,7 +90,7 @@ namespace OrchardCore.Deployment.Recipes
         {
             public string Type { get; set; }
 
-            public JObject Step { get; set; }
+            public JsonObject Step { get; set; }
         }
     }
 }

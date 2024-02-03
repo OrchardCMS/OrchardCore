@@ -1,11 +1,12 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Dapper;
 using Fluid;
 using Fluid.Values;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Data;
 using OrchardCore.Liquid;
@@ -47,49 +48,38 @@ namespace OrchardCore.Queries.Sql
             var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(sqlQuery.Template, NullEncoder.Default,
                 parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
 
-            var connection = _dbConnectionAccessor.CreateConnection();
             var dialect = _session.Store.Configuration.SqlDialect;
 
-            if (!SqlParser.TryParse(tokenizedQuery, dialect, _session.Store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
+            if (!SqlParser.TryParse(tokenizedQuery, _session.Store.Configuration.Schema, dialect, _session.Store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
             {
-                sqlQueryResults.Items = new object[0];
-                connection.Dispose();
+                sqlQueryResults.Items = Array.Empty<object>();
+
                 return sqlQueryResults;
             }
 
+            await using var connection = _dbConnectionAccessor.CreateConnection();
+
+            await connection.OpenAsync();
+
             if (sqlQuery.ReturnDocuments)
             {
-                IEnumerable<int> documentIds;
+                IEnumerable<long> documentIds;
 
-                using (connection)
-                {
-                    await connection.OpenAsync();
-
-                    using (var transaction = connection.BeginTransaction(_session.Store.Configuration.IsolationLevel))
-                    {
-                        documentIds = await connection.QueryAsync<int>(rawQuery, parameters, transaction);
-                    }
-                }
+                using var transaction = await connection.BeginTransactionAsync(_session.Store.Configuration.IsolationLevel);
+                documentIds = await connection.QueryAsync<long>(rawQuery, parameters, transaction);
 
                 sqlQueryResults.Items = await _session.GetAsync<ContentItem>(documentIds.ToArray());
+
                 return sqlQueryResults;
             }
             else
             {
                 IEnumerable<dynamic> queryResults;
 
-                using (connection)
-                {
-                    await connection.OpenAsync();
+                using var transaction = await connection.BeginTransactionAsync(_session.Store.Configuration.IsolationLevel);
+                queryResults = await connection.QueryAsync(rawQuery, parameters, transaction);
 
-                    using (var transaction = connection.BeginTransaction(_session.Store.Configuration.IsolationLevel))
-                    {
-                        queryResults = await connection.QueryAsync(rawQuery, parameters, transaction);
-                    }
-                }
-
-                var results = new List<JObject>();
-
+                var results = new List<JsonObject>();
                 foreach (var document in queryResults)
                 {
                     results.Add(JObject.FromObject(document));

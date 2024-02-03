@@ -1,5 +1,5 @@
 using System;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace OrchardCore.ContentManagement
 {
@@ -17,7 +17,7 @@ namespace OrchardCore.ContentManagement
         /// <summary>
         /// The primary key in the database.
         /// </summary>
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// The logical identifier of the content item across versions.

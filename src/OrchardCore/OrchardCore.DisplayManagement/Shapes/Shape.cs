@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using Newtonsoft.Json;
 using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.DisplayManagement.Shapes
@@ -22,17 +22,17 @@ namespace OrchardCore.DisplayManagement.Shapes
         public string TagName { get; set; }
 
         private List<string> _classes;
-        public IList<string> Classes => _classes ??= new List<string>();
+        public IList<string> Classes => _classes ??= [];
 
         private Dictionary<string, string> _attributes;
-        public IDictionary<string, string> Attributes => _attributes ??= new Dictionary<string, string>();
+        public IDictionary<string, string> Attributes => _attributes ??= [];
 
         private List<IPositioned> _items;
         public IReadOnlyList<IPositioned> Items
         {
             get
             {
-                _items ??= new List<IPositioned>();
+                _items ??= [];
 
                 if (!_sorted)
                 {
@@ -59,14 +59,11 @@ namespace OrchardCore.DisplayManagement.Shapes
                 return new ValueTask<IShape>(this);
             }
 
-            if (position == null)
-            {
-                position = "";
-            }
+            position ??= "";
 
             _sorted = false;
 
-            _items ??= new List<IPositioned>();
+            _items ??= [];
 
             if (item is IHtmlContent)
             {
@@ -192,10 +189,13 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
         {
-            // In case AddAsync() is called on a dynamic object, to prevent Copmosite from seing it as a property assignment
+            // In case AddAsync() is called on a dynamic object, to prevent Composite from seing it as a property assignment.
             if (binder.Name == "AddAsync")
             {
-                result = AddAsync(args.Length > 0 ? args[0] : null, args.Length > 1 ? args[1].ToString() : "");
+                result =
+                    AddAsync(args.Length > 0 ? args[0] : null, args.Length > 1 ? args[1].ToString() : "")
+                    .AsTask();
+
                 return true;
             }
 
@@ -211,13 +211,10 @@ namespace OrchardCore.DisplayManagement.Shapes
         {
             if (!base.TryGetMemberImpl(name, out result) || (null == result))
             {
-                // Try to get a Named shape
+                // Try to get a Named shape.
                 result = Named(name);
 
-                if (result == null)
-                {
-                    result = NormalizedNamed(name.Replace("__", "-"));
-                }
+                result ??= NormalizedNamed(name.Replace("__", "-"));
             }
 
             return true;
@@ -225,7 +222,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         protected override bool TrySetMemberImpl(string name, object value)
         {
-            // We set the Shape real properties for Razor
+            // We set the Shape real properties for Razor.
 
             if (name == "Id")
             {
@@ -251,7 +248,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
                 if (value is string stringValue)
                 {
-                    attributes = JsonConvert.DeserializeObject<Dictionary<string, string>>(stringValue);
+                    attributes = JConvert.DeserializeObject<Dictionary<string, string>>(stringValue);
 
                     foreach (var attribute in attributes)
                     {

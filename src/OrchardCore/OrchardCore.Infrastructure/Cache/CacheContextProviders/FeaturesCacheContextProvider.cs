@@ -22,7 +22,7 @@ namespace OrchardCore.Environment.Cache.CacheContextProviders
         {
             if (contexts.Any(ctx => string.Equals(ctx, "features", StringComparison.OrdinalIgnoreCase)))
             {
-                // Add a hash of the enabled features
+                // Add a hash of the enabled features.
                 var hash = await _featureHash.GetFeatureHashAsync();
                 entries.Add(new CacheContextEntry("features", hash.ToString(CultureInfo.InvariantCulture)));
             }
@@ -30,7 +30,7 @@ namespace OrchardCore.Environment.Cache.CacheContextProviders
             {
                 foreach (var context in contexts.Where(ctx => ctx.StartsWith(FeaturesPrefix, StringComparison.OrdinalIgnoreCase)))
                 {
-                    var featureName = context.Substring(FeaturesPrefix.Length);
+                    var featureName = context[FeaturesPrefix.Length..];
                     var hash = await _featureHash.GetFeatureHashAsync(featureName);
 
                     entries.Add(new CacheContextEntry("features", hash.ToString(CultureInfo.InvariantCulture)));

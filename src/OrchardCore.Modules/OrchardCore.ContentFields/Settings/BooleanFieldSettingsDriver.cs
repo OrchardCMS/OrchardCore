@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -10,7 +11,14 @@ namespace OrchardCore.ContentFields.Settings
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<BooleanFieldSettings>("BooleanFieldSettings_Edit", model => partFieldDefinition.PopulateSettings(model))
+            return Initialize<BooleanFieldSettings>("BooleanFieldSettings_Edit", model =>
+            {
+                var settings = partFieldDefinition.Settings.ToObject<BooleanFieldSettings>();
+
+                model.Hint = settings.Hint;
+                model.Label = settings.Label;
+                model.DefaultValue = settings.DefaultValue;
+            })
                 .Location("Content");
         }
 

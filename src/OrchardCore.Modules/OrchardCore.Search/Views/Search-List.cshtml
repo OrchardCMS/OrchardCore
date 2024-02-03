@@ -1,0 +1,12 @@
+@model SearchIndexViewModel
+@inject IContentItemDisplayManager DisplayManager
+
+<h1>@Model.PageTitle</h1>
+
+@await DisplayAsync(Model.SearchForm)
+@await DisplayAsync(Model.SearchResults)
+@await DisplayAsync(Model.Pager)
+@if (!ViewData.ModelState.IsValid)
+{
+    <span class="alert alert-danger" asp-validation-for="Terms"></span>
+}

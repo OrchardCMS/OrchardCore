@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using GraphQL.Builders;
 using GraphQL.Types;
 using OrchardCore.Security.Permissions;
@@ -8,7 +7,7 @@ namespace OrchardCore.Apis.GraphQL
 {
     public static class PermissionsExtensions
     {
-        private static readonly string MetaDataKey = "Permissions";
+        private const string MetaDataKey = "Permissions";
 
         public static void RequirePermission(this IProvideMetadata type, Permission permission, object resource = null)
         {
@@ -18,7 +17,7 @@ namespace OrchardCore.Apis.GraphQL
 
                 if (permissions == null)
                 {
-                    type.Metadata[MetaDataKey] = permissions = new List<GraphQLPermissionContext>();
+                    type.Metadata[MetaDataKey] = permissions = [];
                 }
 
                 permissions.Add(new GraphQLPermissionContext(permission, resource));
@@ -33,7 +32,7 @@ namespace OrchardCore.Apis.GraphQL
 
         public static IEnumerable<GraphQLPermissionContext> GetPermissions(this IProvideMetadata type)
         {
-            return type?.GetMetadata<List<GraphQLPermissionContext>>(MetaDataKey) ?? Enumerable.Empty<GraphQLPermissionContext>();
+            return type?.GetMetadata<List<GraphQLPermissionContext>>(MetaDataKey) ?? [];
         }
 
         public static bool HasPermissions(this IProvideMetadata type)

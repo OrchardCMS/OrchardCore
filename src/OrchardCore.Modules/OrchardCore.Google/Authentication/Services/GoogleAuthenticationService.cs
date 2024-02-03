@@ -1,21 +1,25 @@
 using System;
-using System.Collections.Immutable;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Entities;
 using OrchardCore.Google.Authentication.Settings;
-using OrchardCore.Google.Authentication.ViewModels;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Google.Authentication.Services
 {
-    public class GoogleAuthenticationService
+    public class GoogleAuthenticationService : IGoogleAuthenticationService
     {
         private readonly ISiteService _siteService;
+        protected readonly IStringLocalizer S;
 
-        public GoogleAuthenticationService(ISiteService siteService)
+        public GoogleAuthenticationService(
+            ISiteService siteService,
+            IStringLocalizer<GoogleAuthenticationService> stringLocalizer)
         {
             _siteService = siteService;
+            S = stringLocalizer;
         }
 
         public async Task<GoogleAuthenticationSettings> GetSettingsAsync()
@@ -32,10 +36,7 @@ namespace OrchardCore.Google.Authentication.Services
 
         public async Task UpdateSettingsAsync(GoogleAuthenticationSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
             container.Alter<GoogleAuthenticationSettings>(nameof(GoogleAuthenticationSettings), aspect =>
@@ -48,17 +49,29 @@ namespace OrchardCore.Google.Authentication.Services
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 
-        public bool CheckSettings(GoogleAuthenticationSettings settings)
+        public IEnumerable<ValidationResult> ValidateSettings(GoogleAuthenticationSettings settings)
         {
-            var obj = new GoogleAuthenticationSettingsViewModel()
-            {
-                ClientID = settings.ClientID,
-                CallbackPath = settings.CallbackPath,
-                ClientSecret = settings.ClientSecret
-            };
+            ArgumentNullException.ThrowIfNull(settings);
 
-            var vc = new ValidationContext(obj);
-            return Validator.TryValidateObject(obj, vc, ImmutableArray.CreateBuilder<ValidationResult>());
+            var results = new List<ValidationResult>();
+
+            if (string.IsNullOrEmpty(settings.ClientID))
+            {
+                results.Add(new ValidationResult(S["The Client ID is required."], new[]
+                {
+                    nameof(settings.ClientID)
+                }));
+            }
+
+            if (string.IsNullOrEmpty(settings.ClientSecret))
+            {
+                results.Add(new ValidationResult(S["The Client Secret is required."], new[]
+                {
+                    nameof(settings.ClientSecret)
+                }));
+            }
+
+            return results;
         }
     }
 }

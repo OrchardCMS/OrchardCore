@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -10,7 +11,18 @@ namespace OrchardCore.ContentFields.Settings
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<NumericFieldSettings>("NumericFieldSettings_Edit", model => partFieldDefinition.PopulateSettings(model))
+            return Initialize<NumericFieldSettings>("NumericFieldSettings_Edit", model =>
+            {
+                var settings = partFieldDefinition.Settings.ToObject<NumericFieldSettings>();
+
+                model.Hint = settings.Hint;
+                model.Required = settings.Required;
+                model.Scale = settings.Scale;
+                model.Minimum = settings.Minimum;
+                model.Maximum = settings.Maximum;
+                model.Placeholder = settings.Placeholder;
+                model.DefaultValue = settings.DefaultValue;
+            })
                 .Location("Content");
         }
 

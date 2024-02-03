@@ -10,11 +10,11 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.ContentTypes.RecipeSteps;
 using OrchardCore.ContentTypes.Services;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
+using OrchardCore.Recipes.Events;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.ContentTypes
@@ -47,6 +47,8 @@ namespace OrchardCore.ContentTypes
             services.AddRecipeExecutionStep<ContentDefinitionStep>();
             services.AddRecipeExecutionStep<ReplaceContentDefinitionStep>();
             services.AddRecipeExecutionStep<DeleteContentDefinitionStep>();
+
+            services.AddTransient<IRecipeEventHandler, LuceneRecipeEventHandler>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -137,17 +139,9 @@ namespace OrchardCore.ContentTypes
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, ContentDefinitionDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ContentDefinitionDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, ContentDefinitionDeploymentStepDriver>();
-
-            services.AddTransient<IDeploymentSource, ReplaceContentDefinitionDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ReplaceContentDefinitionDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, ReplaceContentDefinitionDeploymentStepDriver>();
-
-            services.AddTransient<IDeploymentSource, DeleteContentDefinitionDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<DeleteContentDefinitionDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, DeleteContentDefinitionDeploymentStepDriver>();
+            services.AddDeployment<ContentDefinitionDeploymentSource, ContentDefinitionDeploymentStep, ContentDefinitionDeploymentStepDriver>();
+            services.AddDeployment<ReplaceContentDefinitionDeploymentSource, ReplaceContentDefinitionDeploymentStep, ReplaceContentDefinitionDeploymentStepDriver>();
+            services.AddDeployment<DeleteContentDefinitionDeploymentSource, DeleteContentDefinitionDeploymentStep, DeleteContentDefinitionDeploymentStepDriver>();
         }
     }
 }

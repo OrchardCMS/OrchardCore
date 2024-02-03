@@ -1,10 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Models;
 using OrchardCore.Liquid;
@@ -52,7 +51,7 @@ namespace OrchardCore.Contents.Liquid
                 }
 
                 // When returning segments separate them so multiple segments are indexed individually.
-                return new ArrayValue(aspects.SelectMany(x => x.Segments).Where(x => !String.IsNullOrEmpty(x)).Select(x => new StringValue(x + ' ')));
+                return new ArrayValue(aspects.SelectMany(x => x.Segments).Where(x => !string.IsNullOrEmpty(x)).Select(x => new StringValue(x + ' ')));
             }
             else
             {
@@ -66,7 +65,7 @@ namespace OrchardCore.Contents.Liquid
                 var fullTextAspect = await _contentManager.PopulateAspectAsync<FullTextAspect>(contentItem);
 
                 // Remove empty strings as display text is often unused in contained content items.
-                return new ArrayValue(fullTextAspect.Segments.Where(x => !String.IsNullOrEmpty(x)).Select(x => new StringValue(x)));
+                return new ArrayValue(fullTextAspect.Segments.Where(x => !string.IsNullOrEmpty(x)).Select(x => new StringValue(x)));
             }
         }
 
@@ -74,11 +73,11 @@ namespace OrchardCore.Contents.Liquid
         {
             var obj = input.ToObjectValue();
 
-            if (!(obj is ContentItem contentItem))
+            if (obj is not ContentItem contentItem)
             {
                 contentItem = null;
 
-                if (obj is JObject jObject)
+                if (obj is JsonObject jObject)
                 {
                     contentItem = jObject.ToObject<ContentItem>();
                     // If input is a 'JObject' but which not represents a 'ContentItem',

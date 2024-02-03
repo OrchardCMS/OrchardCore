@@ -14,10 +14,13 @@ using YesSql;
 
 namespace OrchardCore.ArchiveLater.Services;
 
-[BackgroundTask(Schedule = "* * * * *", Description = "Archives content items when their scheduled archive date time arrives.")]
+[BackgroundTask(
+    Title = "Content Items Archiver",
+    Schedule = "* * * * *",
+    Description = "Archives content items when their scheduled archive date time arrives.")]
 public class ScheduledArchivingBackgroundTask : IBackgroundTask
 {
-    private readonly ILogger<ScheduledArchivingBackgroundTask> _logger;
+    private readonly ILogger _logger;
     private readonly IClock _clock;
 
     public ScheduledArchivingBackgroundTask(ILogger<ScheduledArchivingBackgroundTask> logger, IClock clock)
@@ -48,6 +51,7 @@ public class ScheduledArchivingBackgroundTask : IBackgroundTask
             if (part != null)
             {
                 part.ScheduledArchiveUtc = null;
+                part.Apply();
             }
 
             _logger.LogDebug("Archiving scheduled content item {ContentItemId}.", contentItem.ContentItemId);

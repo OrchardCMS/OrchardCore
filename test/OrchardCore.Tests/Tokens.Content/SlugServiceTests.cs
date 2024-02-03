@@ -1,11 +1,10 @@
-using OrchardCore.Liquid.Services;
-using Xunit;
+using OrchardCore.Modules.Services;
 
 namespace OrchardCore.Tests.Tokens.Content
 {
     public class SlugServiceTests
     {
-        private SlugService _slugService;
+        private readonly SlugService _slugService;
 
         public SlugServiceTests()
         {

@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.Facebook.Login.Services;
 using OrchardCore.Facebook.Login.Settings;
@@ -21,7 +22,7 @@ namespace OrchardCore.Facebook.Login.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, nameof(FacebookLoginSettings), StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, nameof(FacebookLoginSettings), StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }

@@ -18,7 +18,7 @@ namespace OrchardCore.ContentManagement.Cache
 
         public async Task PopulateContextEntriesAsync(IEnumerable<string> contexts, List<CacheContextEntry> entries)
         {
-            if (contexts.Any(ctx => String.Equals(ctx, "types", StringComparison.OrdinalIgnoreCase)))
+            if (contexts.Any(ctx => string.Equals(ctx, "types", StringComparison.OrdinalIgnoreCase)))
             {
                 var identifier = await _contentDefinitionManager.GetIdentifierAsync();
                 entries.Add(new CacheContextEntry("types", identifier));

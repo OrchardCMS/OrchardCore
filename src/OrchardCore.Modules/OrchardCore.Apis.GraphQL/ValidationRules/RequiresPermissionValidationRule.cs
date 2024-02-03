@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,7 +6,6 @@ using GraphQL.Language.AST;
 using GraphQL.Types;
 using GraphQL.Validation;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Apis.GraphQL.ValidationRules
@@ -16,12 +14,14 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
     {
         public static readonly string ErrorCode = "Unauthorized";
         private readonly IAuthorizationService _authorizationService;
-        private readonly IStringLocalizer<RequiresPermissionValidationRule> S;
+        protected readonly IStringLocalizer S;
 
-        public RequiresPermissionValidationRule(IAuthorizationService authorizationService, IStringLocalizer<RequiresPermissionValidationRule> s)
+        public RequiresPermissionValidationRule(
+            IAuthorizationService authorizationService,
+            IStringLocalizer<RequiresPermissionValidationRule> localizer)
         {
             _authorizationService = authorizationService;
-            S = s;
+            S = localizer;
         }
 
         public async Task<INodeVisitor> ValidateAsync(ValidationContext validationContext)
@@ -71,34 +71,41 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
 
         private async Task AuthorizeNodePermissionAsync(INode node, IFieldType fieldType, ValidationContext validationContext, GraphQLUserContext userContext)
         {
-            if (!fieldType.HasPermissions())
+            var permissions = fieldType?.GetPermissions();
+
+            if (permissions == null)
             {
                 return;
             }
 
-            var permissions = fieldType?.GetPermissions() ?? Enumerable.Empty<GraphQLPermissionContext>();
+            var totalPermissions = permissions.Count();
 
-            if (permissions.Count() == 1)
+            if (totalPermissions == 0)
+            {
+                return;
+            }
+
+            if (totalPermissions == 1)
             {
                 var permission = permissions.First();
                 // small optimization for the single policy - no 'new List<>()', no 'await Task.WhenAll()'
-                var authorizationResult = await _authorizationService.AuthorizeAsync(userContext.User, permission.Permission, permission.Resource);
-                if (!authorizationResult)
+                if (!await _authorizationService.AuthorizeAsync(userContext.User, permission.Permission, permission.Resource))
+                {
                     AddPermissionValidationError(validationContext, node, fieldType.Name);
+                }
             }
             else
             {
-                var tasks = new List<Task<bool>>(permissions.Count());
+                var tasks = new List<Task<bool>>();
 
                 foreach (var permission in permissions)
                 {
-                    var task = _authorizationService.AuthorizeAsync(userContext.User, permission.Permission, permission.Resource);
-                    tasks.Add(task);
+                    tasks.Add(_authorizationService.AuthorizeAsync(userContext.User, permission.Permission, permission.Resource));
                 }
 
                 var authorizationResults = await Task.WhenAll(tasks);
 
-                if (authorizationResults.Any(x => !true))
+                if (authorizationResults.Any(isAuthorized => !isAuthorized))
                 {
                     AddPermissionValidationError(validationContext, node, fieldType.Name);
                 }

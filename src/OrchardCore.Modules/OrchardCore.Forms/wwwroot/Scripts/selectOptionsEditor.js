@@ -5,8 +5,8 @@
 
 selectOptionsEditor = function () {
   var initilize = function initilize(elemId, optionsData, defaultValue) {
-    var keyId = 1; //Add Key ID
-
+    var keyId = 1;
+    //Add Key ID
     optionsData = optionsData.map(function (x) {
       x.key = keyId;
       keyId++;
@@ -50,7 +50,6 @@ selectOptionsEditor = function () {
           set: function set(val) {
             var isSelected = this.IsSelected;
             this.option.value = val;
-
             if (isSelected) {
               this.$emit("set-default", this.option);
             } else {
@@ -65,7 +64,6 @@ selectOptionsEditor = function () {
           set: function set(val) {
             var isSelected = this.IsSelected;
             this.option.text = val;
-
             if (isSelected) {
               this.$emit("set-default", this.option);
             } else {
@@ -151,7 +149,6 @@ selectOptionsEditor = function () {
         optionsFormattedList: function optionsFormattedList(newval) {
           try {
             var parsed = JSON.parse(newval);
-
             if (!!newval && parsed instanceof Array) {
               this.jsonOptions = parsed;
               this.isValid = true;
@@ -206,7 +203,6 @@ selectOptionsEditor = function () {
               this.state.defaultValue = opt.text;
             }
           }
-
           this.debouncePreview();
         },
         addOption: function addOption() {
@@ -221,7 +217,6 @@ selectOptionsEditor = function () {
           var index = this.state.options.findIndex(function (c) {
             return c.key == opt.key;
           });
-
           if (index > -1) {
             this.state.options.splice(index, 1);
             this.debouncePreview();
@@ -254,31 +249,24 @@ selectOptionsEditor = function () {
         }
       }
     });
-
     function IsNullOrWhiteSpace(str) {
       return str == null || str.match(/^ *$/) !== null;
     }
   };
-
   var initilizeElement = function initilizeElement(id, options, value) {
     var wrapper = document.getElementById(id);
-
     if (wrapper != null) {
       initilize(id, options, value);
     }
   };
-
   var initilizeFieldType = function initilizeFieldType(wrapper) {
     var selectMenus = wrapper.getElementsByClassName('field-type-select-menu');
-
     for (var i = 0; i < selectMenus.length; i++) {
       var selectMenu = selectMenus[i];
       selectMenu.addEventListener('change', function (e) {
         var visibleForInputContainers = wrapper.getElementsByClassName('show-for-input');
-
         for (var _i = 0; _i < visibleForInputContainers.length; _i++) {
           var container = visibleForInputContainers[_i];
-
           if (e.target.value == 'reset' || e.target.value == 'submit' || e.target.value == 'hidden') {
             container.classList.add('d-none');
           } else {
@@ -289,26 +277,21 @@ selectOptionsEditor = function () {
       selectMenu.dispatchEvent(new Event('change'));
     }
   };
-
   return {
     initilizeElement: initilizeElement,
     initilizeFieldType: initilizeFieldType
   };
 }();
-
 document.addEventListener('DOMContentLoaded', function () {
   var wrappers = document.getElementsByName('select-part-properties-wrapper');
-
   for (var i = 0; i < wrappers.length; i++) {
     var wrapper = wrappers[i];
     var fieldWrapper = wrapper.querySelector('.field-options-wrapper');
-
     if (fieldWrapper != null) {
       var initialDefaultValue = fieldWrapper.querySelector('.field-options-wrapper-initial-default-value');
       var initialOptions = fieldWrapper.querySelector('.field-options-wrapper-initial-options');
       selectOptionsEditor.initilizeElement(fieldWrapper.Id, initialOptions.innerHTML, initialDefaultValue.value);
     }
   }
-
   selectOptionsEditor.initilizeFieldType(document);
 });

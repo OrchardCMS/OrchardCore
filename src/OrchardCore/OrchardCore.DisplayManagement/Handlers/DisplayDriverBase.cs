@@ -144,14 +144,8 @@ namespace OrchardCore.DisplayManagement.Handlers
                 .Prefix(Prefix);
         }
 
-        public CombinedResult Combine(params IDisplayResult[] results)
-        {
-            return new CombinedResult(results);
-        }
+        public static CombinedResult Combine(params IDisplayResult[] results) => new(results);
 
-        public CombinedResult Combine(IEnumerable<IDisplayResult> results)
-        {
-            return new CombinedResult(results);
-        }
+        public static CombinedResult Combine(IEnumerable<IDisplayResult> results) => new(results);
     }
 }

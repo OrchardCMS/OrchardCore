@@ -17,10 +17,7 @@ namespace OrchardCore.Navigation
 
         public NavigationItemBuilder(MenuItem existingItem)
         {
-            if (existingItem == null)
-            {
-                throw new ArgumentNullException(nameof(existingItem));
-            }
+            ArgumentNullException.ThrowIfNull(existingItem);
 
             _item = existingItem;
         }
@@ -114,7 +111,7 @@ namespace OrchardCore.Navigation
         public override List<MenuItem> Build()
         {
             _item.Items = base.Build();
-            return new List<MenuItem> { _item };
+            return [_item];
         }
 
         public NavigationItemBuilder Action(RouteValueDictionary values)
@@ -146,18 +143,27 @@ namespace OrchardCore.Navigation
 
         public NavigationItemBuilder Action(string actionName, string controllerName, string areaName)
         {
-            return Action(actionName, controllerName, areaName, new RouteValueDictionary());
+            return Action(actionName, controllerName, areaName, []);
         }
 
         public NavigationItemBuilder Action(string actionName, string controllerName, string areaName, RouteValueDictionary values)
         {
             _item.RouteValues = new RouteValueDictionary(values);
             if (!string.IsNullOrEmpty(actionName))
+            {
                 _item.RouteValues["action"] = actionName;
+            }
+
             if (!string.IsNullOrEmpty(controllerName))
+            {
                 _item.RouteValues["controller"] = controllerName;
+            }
+
             if (!string.IsNullOrEmpty(areaName))
+            {
                 _item.RouteValues["area"] = areaName;
+            }
+
             return this;
         }
     }

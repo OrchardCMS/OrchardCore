@@ -6,7 +6,7 @@ using Microsoft.Extensions.FileProviders;
 namespace OrchardCore.Scripting.Files
 {
     /// <summary>
-    /// Provides
+    /// Provides.
     /// </summary>
     public class FilesScriptEngine : IScriptingEngine
     {
@@ -19,50 +19,39 @@ namespace OrchardCore.Scripting.Files
 
         public object Evaluate(IScriptingScope scope, string script)
         {
-            if (scope == null)
-            {
-                throw new ArgumentNullException(nameof(scope));
-            }
+            ArgumentNullException.ThrowIfNull(scope);
 
-            if (!(scope is FilesScriptScope fileScope))
+            if (scope is not FilesScriptScope fileScope)
             {
                 throw new ArgumentException($"Expected a scope of type {nameof(FilesScriptScope)}", nameof(scope));
             }
 
             if (script.StartsWith("text('", StringComparison.Ordinal) && script.EndsWith("')", StringComparison.Ordinal))
             {
-                var filePath = script.Substring(6, script.Length - 8);
+                var filePath = script[6..^2];
                 var fileInfo = fileScope.FileProvider.GetRelativeFileInfo(fileScope.BasePath, filePath);
                 if (!fileInfo.Exists)
                 {
                     throw new FileNotFoundException(filePath);
                 }
 
-                using (var fileStream = fileInfo.CreateReadStream())
-                {
-                    using (var streamReader = new StreamReader(fileStream))
-                    {
-                        return streamReader.ReadToEnd();
-                    }
-                }
+                using var fileStream = fileInfo.CreateReadStream();
+                using var streamReader = new StreamReader(fileStream);
+                return streamReader.ReadToEnd();
             }
             else if (script.StartsWith("base64('", StringComparison.Ordinal) && script.EndsWith("')", StringComparison.Ordinal))
             {
-                var filePath = script.Substring(8, script.Length - 10);
+                var filePath = script[8..^2];
                 var fileInfo = fileScope.FileProvider.GetRelativeFileInfo(fileScope.BasePath, filePath);
                 if (!fileInfo.Exists)
                 {
                     throw new FileNotFoundException(filePath);
                 }
 
-                using (var fileStream = fileInfo.CreateReadStream())
-                {
-                    using (var ms = new MemoryStream())
-                    {
-                        fileStream.CopyTo(ms);
-                        return Convert.ToBase64String(ms.ToArray());
-                    }
-                }
+                using var fileStream = fileInfo.CreateReadStream();
+                using var ms = new MemoryStream();
+                fileStream.CopyTo(ms);
+                return Convert.ToBase64String(ms.ToArray());
             }
             else
             {
