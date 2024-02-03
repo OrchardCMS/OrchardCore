@@ -179,25 +179,25 @@ public class AzureEmailDeliveryService : IEmailDeliveryService
 
         foreach (var attachment in message.Attachments)
         {
-            // Stream must not be null, otherwise it would try to get the filesystem path
-            if (attachment.Stream != null)
+            if (attachment.Stream == null)
             {
-                var extension = Path.GetExtension(attachment.Filename);
+                continue;
+            }
+            var extension = Path.GetExtension(attachment.Filename);
 
-                if (_allowedMimeTypes.TryGetValue(extension, out var contentType))
-                {
-                    var data = new byte[attachment.Stream.Length];
+            if (_allowedMimeTypes.TryGetValue(extension, out var contentType))
+            {
+                var data = new byte[attachment.Stream.Length];
 
-                    attachment.Stream.Read(data, 0, (int)attachment.Stream.Length);
+                attachment.Stream.Read(data, 0, (int)attachment.Stream.Length);
 
-                    emailMessage.Attachments.Add(new EmailAttachment(attachment.Filename, contentType, new BinaryData(data)));
-                }
-                else
-                {
-                    result = EmailResult.Failed(S["Unable to attach the file named '{0}' since its type is not supported.", attachment.Filename]);
+                emailMessage.Attachments.Add(new EmailAttachment(attachment.Filename, contentType, new BinaryData(data)));
+            }
+            else
+            {
+                result = EmailResult.Failed(S["Unable to attach the file named '{0}' since its type is not supported.", attachment.Filename]);
 
-                    _logger.LogWarning("The MIME type for the attachment '{attachment}' is not supported.", attachment.Filename);
-                }
+                _logger.LogWarning("The MIME type for the attachment '{attachment}' is not supported.", attachment.Filename);
             }
         }
 

@@ -87,26 +87,28 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpEmailSe
             return null;
         }
 
-        if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
+        if (!context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
         {
-            await context.Updater.TryUpdateModelAsync(section, Prefix);
-
-            var previousPassword = section.Password;
-            // Restore password if the input is empty, meaning that it has not been reset.
-            if (string.IsNullOrWhiteSpace(section.Password))
-            {
-                section.Password = previousPassword;
-            }
-            else
-            {
-                // Encrypt the password.
-                var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpEmailSettingsConfiguration));
-                section.Password = protector.Protect(section.Password);
-            }
-
-            // Release the tenant to apply the settings.
-            await _shellHost.ReleaseShellContextAsync(_shellSettings);
+            return null;
         }
+
+        await context.Updater.TryUpdateModelAsync(section, Prefix);
+
+        var previousPassword = section.Password;
+        // Restore password if the input is empty, meaning that it has not been reset.
+        if (string.IsNullOrWhiteSpace(section.Password))
+        {
+            section.Password = previousPassword;
+        }
+        else
+        {
+            // Encrypt the password.
+            var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpEmailSettingsConfiguration));
+            section.Password = protector.Protect(section.Password);
+        }
+
+        // Release the tenant to apply the settings.
+        await _shellHost.ReleaseShellContextAsync(_shellSettings);
 
         return await EditAsync(section, context);
     }

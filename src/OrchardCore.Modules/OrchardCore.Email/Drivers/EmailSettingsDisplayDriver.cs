@@ -60,13 +60,15 @@ namespace OrchardCore.Email.Drivers
                 return null;
             }
 
-            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
+            if (!context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
             {
-                await context.Updater.TryUpdateModelAsync(section, Prefix);
-
-                // Release the tenant to apply the settings.
-                await _shellHost.ReleaseShellContextAsync(_shellSettings);
+                return null;
             }
+
+            await context.Updater.TryUpdateModelAsync(section, Prefix);
+
+            // Release the tenant to apply the settings.
+            await _shellHost.ReleaseShellContextAsync(_shellSettings);
 
             return await EditAsync(section, context);
         }
