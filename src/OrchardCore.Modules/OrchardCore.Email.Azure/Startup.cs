@@ -32,8 +32,6 @@ public class Startup : StartupBase
         _configuration = configuration;
     }
 
-    public override int Order => 10;
-
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IPermissionProvider, Permissions>();
