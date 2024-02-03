@@ -18,10 +18,7 @@ namespace OrchardCore.Roles.ViewComponents
 
         public async Task<IViewComponentResult> InvokeAsync(IEnumerable<string> selectedRoles, string htmlName, IEnumerable<string> except = null)
         {
-            if (selectedRoles == null)
-            {
-                selectedRoles = new string[0];
-            }
+            selectedRoles ??= Array.Empty<string>();
 
             var roleSelections = await BuildRoleSelectionsAsync(selectedRoles, except);
 

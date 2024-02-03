@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
 using OrchardCore.Facebook.Settings;
 using OrchardCore.Settings;
@@ -13,7 +13,7 @@ namespace OrchardCore.Facebook.Services
     public class FacebookService : IFacebookService
     {
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public FacebookService(
             ISiteService siteService,
@@ -31,22 +31,16 @@ namespace OrchardCore.Facebook.Services
 
         public async Task UpdateSettingsAsync(FacebookSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
             container.Properties[nameof(FacebookSettings)] = JObject.FromObject(settings);
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 
-        public Task<IEnumerable<ValidationResult>> ValidateSettingsAsync(FacebookSettings settings)
+        public IEnumerable<ValidationResult> ValidateSettings(FacebookSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var results = new List<ValidationResult>();
 
@@ -54,7 +48,7 @@ namespace OrchardCore.Facebook.Services
             {
                 results.Add(new ValidationResult(S["The AppId is required."], new[]
                 {
-                    nameof(settings.AppId)
+                    nameof(settings.AppId),
                 }));
             }
 
@@ -62,11 +56,11 @@ namespace OrchardCore.Facebook.Services
             {
                 results.Add(new ValidationResult(S["The App Secret is required."], new[]
                 {
-                    nameof(settings.AppSecret)
+                    nameof(settings.AppSecret),
                 }));
             }
 
-            return Task.FromResult<IEnumerable<ValidationResult>>(results);
+            return results;
         }
     }
 }

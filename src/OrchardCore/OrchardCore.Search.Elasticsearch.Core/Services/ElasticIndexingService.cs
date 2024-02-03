@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
@@ -23,11 +24,13 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
     public class ElasticIndexingService
     {
         private const int BatchSize = 100;
+
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
         private readonly ElasticIndexManager _indexManager;
         private readonly IIndexingTaskManager _indexingTaskManager;
+        private readonly ElasticConnectionOptions _elasticConnectionOptions;
         private readonly ISiteService _siteService;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILogger _logger;
@@ -38,6 +41,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             ElasticIndexSettingsService elasticIndexSettingsService,
             ElasticIndexManager indexManager,
             IIndexingTaskManager indexingTaskManager,
+            IOptions<ElasticConnectionOptions> elasticConnectionOptions,
             ISiteService siteService,
             IContentDefinitionManager contentDefinitionManager,
             ILogger<ElasticIndexingService> logger)
@@ -47,6 +51,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             _elasticIndexSettingsService = elasticIndexSettingsService;
             _indexManager = indexManager;
             _indexingTaskManager = indexingTaskManager;
+            _elasticConnectionOptions = elasticConnectionOptions.Value;
             _siteService = siteService;
             _contentDefinitionManager = contentDefinitionManager;
             _logger = logger;
@@ -54,11 +59,16 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
         public async Task ProcessContentItemsAsync(string indexName = default)
         {
+            if (!_elasticConnectionOptions.FileConfigurationExists())
+            {
+                return;
+            }
+
             var allIndices = new Dictionary<string, long>();
-            var lastTaskId = Int32.MaxValue;
+            var lastTaskId = long.MaxValue;
             IEnumerable<ElasticIndexSettings> indexSettingsList = null;
 
-            if (String.IsNullOrEmpty(indexName))
+            if (string.IsNullOrEmpty(indexName))
             {
                 indexSettingsList = await _elasticIndexSettingsService.GetSettingsAsync();
 
@@ -67,7 +77,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     return;
                 }
 
-                // Find the lowest task id to process
+                // Find the lowest task id to process.
                 foreach (var indexSetting in indexSettingsList)
                 {
                     var taskId = await _indexManager.GetLastTaskId(indexSetting.IndexName);
@@ -100,15 +110,15 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
             do
             {
-                // Create a scope for the content manager
+                // Create a scope for the content manager.
                 var shellScope = await _shellHost.GetScopeAsync(_shellSettings);
 
                 await shellScope.UsingAsync(async scope =>
                 {
-                    // Load the next batch of tasks
+                    // Load the next batch of tasks.
                     batch = (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, BatchSize)).ToArray();
 
-                    if (!batch.Any())
+                    if (batch.Length == 0)
                     {
                         return;
                     }
@@ -116,26 +126,23 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
                     var indexHandlers = scope.ServiceProvider.GetServices<IContentItemIndexHandler>();
 
-                    // Pre-load all content items to prevent SELECT N+1
+                    // Pre-load all content items to prevent SELECT N+1.
                     var updatedContentItemIds = batch
                         .Where(x => x.Type == IndexingTaskTypes.Update)
                         .Select(x => x.ContentItemId)
                         .ToArray();
 
-                    var allPublished = new Dictionary<string, ContentItem>();
-                    var allLatest = new Dictionary<string, ContentItem>();
-
                     var allPublishedContentItems = await contentManager.GetAsync(updatedContentItemIds);
-                    allPublished = allPublishedContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId, v => v);
-                    var allLatestContentItems = await contentManager.GetAsync(updatedContentItemIds, latest: true);
-                    allLatest = allLatestContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemVersionId, v => v);
+                    var allPublished = allPublishedContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId);
+                    var allLatestContentItems = await contentManager.GetAsync(updatedContentItemIds, VersionOptions.Latest);
+                    var allLatest = allLatestContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemVersionId);
 
-                    // Group all DocumentIndex by index to batch update them
+                    // Group all DocumentIndex by index to batch update them.
                     var updatedDocumentsByIndex = new Dictionary<string, List<DocumentIndex>>();
 
                     foreach (var index in allIndices)
                     {
-                        updatedDocumentsByIndex[index.Key] = new List<DocumentIndex>();
+                        updatedDocumentsByIndex[index.Key] = [];
                     }
 
                     if (indexName != null)
@@ -185,18 +192,18 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                                 var context = !settings.IndexLatest ? publishedIndexContext : latestIndexContext;
 
-                                //We index only if we actually found a content item in the database
+                                // We index only if we actually found a content item in the database.
                                 if (context == null)
                                 {
-                                    //TODO purge these content items from IndexingTask table
+                                    // TODO purge these content items from IndexingTask table.
                                     continue;
                                 }
 
                                 var cultureAspect = await contentManager.PopulateAspectAsync<CultureAspect>(context.ContentItem);
                                 var culture = cultureAspect.HasCulture ? cultureAspect.Culture.Name : null;
-                                var ignoreIndexedCulture = settings.Culture == "any" ? false : culture != settings.Culture;
+                                var ignoreIndexedCulture = settings.Culture != "any" && culture != settings.Culture;
 
-                                // Ignore if the content item content type or culture is not indexed in this index
+                                // Ignore if the content item content type or culture is not indexed in this index.
                                 if (!settings.IndexedContentTypes.Contains(context.ContentItem.ContentType) || ignoreIndexedCulture)
                                 {
                                     continue;
@@ -207,20 +214,20 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                         }
                     }
 
-                    // Delete all the existing documents
+                    // Delete all the existing documents.
                     foreach (var index in updatedDocumentsByIndex)
                     {
                         var deletedDocuments = updatedDocumentsByIndex[index.Key].Select(x => x.ContentItemId);
                         await _indexManager.DeleteDocumentsAsync(index.Key, deletedDocuments);
                     }
 
-                    // Submits all the new documents to the index
+                    // Submits all the new documents to the index.
                     foreach (var index in updatedDocumentsByIndex)
                     {
                         await _indexManager.StoreDocumentsAsync(index.Key, updatedDocumentsByIndex[index.Key]);
                     }
 
-                    // Update task ids
+                    // Update task ids.
                     lastTaskId = batch.Last().Id;
 
                     foreach (var indexStatus in allIndices)
@@ -230,13 +237,13 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                             await _indexManager.SetLastTaskId(indexStatus.Key, lastTaskId);
                         }
                     }
-                    
+
                 }, activateShell: false);
             } while (batch.Length == BatchSize);
         }
 
         /// <summary>
-        /// Creates a new index
+        /// Creates a new index.
         /// </summary>
         public async Task CreateIndexAsync(ElasticIndexSettings elasticIndexSettings)
         {
@@ -245,24 +252,22 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         }
 
         /// <summary>
-        /// Update an existing index
+        /// Update an existing index.
         /// </summary>
         public Task UpdateIndexAsync(ElasticIndexSettings elasticIndexSettings)
-        {
-            return _elasticIndexSettingsService.UpdateIndexAsync(elasticIndexSettings);
-        }
+            => _elasticIndexSettingsService.UpdateIndexAsync(elasticIndexSettings);
 
         /// <summary>
-        /// Deletes permanently an index
+        /// Deletes permanently an index.
         /// </summary>
         public async Task<bool> DeleteIndexAsync(string indexName)
         {
-            //Delete the Elasticsearch Index first
+            // Delete the Elasticsearch Index first.
             var result = await _indexManager.DeleteIndex(indexName);
 
             if (result)
             {
-                //Now delete it's setting
+                // Now delete it's setting.
                 await _elasticIndexSettingsService.DeleteIndexAsync(indexName);
             }
 
@@ -296,70 +301,66 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             {
                 return siteSettings.As<ElasticSettings>();
             }
-            else
-            {
-                return new ElasticSettings();
-            }
+
+            return new ElasticSettings();
         }
 
         /// <summary>
         /// Synchronizes Elasticsearch content index settings with Lucene ones.
         /// </summary>
-        public Task SyncSettings()
+        public async Task SyncSettings()
         {
-            var contentTypeDefinitions = _contentDefinitionManager.LoadTypeDefinitions();
+            var contentTypeDefinitions = await _contentDefinitionManager.LoadTypeDefinitionsAsync();
 
             foreach (var contentTypeDefinition in contentTypeDefinitions)
             {
                 foreach (var partDefinition in contentTypeDefinition.Parts)
                 {
-                    _contentDefinitionManager.AlterPartDefinition(partDefinition.Name, partBuilder =>
+                    await _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, partBuilder =>
                     {
-                        if (partDefinition.Settings.TryGetValue("LuceneContentIndexSettings", out var existingPartSettings))
+                        if (partDefinition.Settings.TryGetPropertyValue("LuceneContentIndexSettings", out var existingPartSettings))
                         {
                             var included = existingPartSettings["Included"];
 
-                            if (included != null && (bool)included)
+                            if (included is not null && (bool)included)
                             {
-                                partDefinition.Settings.Add(new JProperty(nameof(ElasticContentIndexSettings), JToken.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>())));
+                                partDefinition.Settings.Add(nameof(ElasticContentIndexSettings), JNode.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>()));
                             }
                         }
                     });
                 }
             }
 
-            var partDefinitions = _contentDefinitionManager.LoadPartDefinitions();
+            var partDefinitions = await _contentDefinitionManager.LoadPartDefinitionsAsync();
 
             foreach (var partDefinition in partDefinitions)
             {
-                _contentDefinitionManager.AlterPartDefinition(partDefinition.Name, partBuilder =>
+                await _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, partBuilder =>
                 {
-                    if (partDefinition.Settings.TryGetValue("LuceneContentIndexSettings", out var existingPartSettings))
+                    if (partDefinition.Settings.TryGetPropertyValue("LuceneContentIndexSettings", out var existingPartSettings))
                     {
                         var included = existingPartSettings["Included"];
 
                         if (included != null && (bool)included)
                         {
-                            partDefinition.Settings.Add(new JProperty(nameof(ElasticContentIndexSettings), JToken.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>())));
+                            partDefinition.Settings.Add(nameof(ElasticContentIndexSettings), JNode.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>()));
                         }
                     }
 
                     foreach (var fieldDefinition in partDefinition.Fields)
                     {
-                        if (fieldDefinition.Settings.TryGetValue("LuceneContentIndexSettings", out var existingFieldSettings))
+                        if (fieldDefinition.Settings.TryGetPropertyValue("LuceneContentIndexSettings", out var existingFieldSettings))
                         {
                             var included = existingFieldSettings["Included"];
 
                             if (included != null && (bool)included)
                             {
-                                fieldDefinition.Settings.Add(new JProperty(nameof(ElasticContentIndexSettings), JToken.FromObject(existingFieldSettings.ToObject<ElasticContentIndexSettings>())));
+                                fieldDefinition.Settings.Add(nameof(ElasticContentIndexSettings), JNode.FromObject(existingFieldSettings.ToObject<ElasticContentIndexSettings>()));
                             }
                         }
                     }
                 });
             }
-
-            return Task.CompletedTask;
         }
     }
 }

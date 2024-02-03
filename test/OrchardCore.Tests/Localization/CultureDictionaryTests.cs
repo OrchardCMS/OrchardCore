@@ -1,7 +1,4 @@
-using System.Collections.Generic;
-using System.Linq;
 using OrchardCore.Localization;
-using Xunit;
 
 namespace OrchardCore.Tests.Localization
 {
@@ -64,8 +61,8 @@ namespace OrchardCore.Tests.Localization
             var dictionary = new CultureDictionary("ar", PluralizationRule.Arabic);
             dictionary.MergeTranslations(new List<CultureDictionaryRecord>
             {
-                new CultureDictionaryRecord("Hello", "مرحبا"),
-                new CultureDictionaryRecord("Bye", "مع السلامة")
+                new("Hello", "مرحبا"),
+                new("Bye", "مع السلامة")
             });
 
             // Act & Assert

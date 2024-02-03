@@ -1,14 +1,19 @@
-using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
-using OrchardCore.Search.Drivers;
 
 namespace OrchardCore.Search
 {
     public class AdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer S;
+        private static readonly RouteValueDictionary _routeValues = new()
+        {
+            { "area", "OrchardCore.Settings" },
+            { "groupId", SearchConstants.SearchSettingsGroupId },
+        };
+
+        protected readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
@@ -17,7 +22,7 @@ namespace OrchardCore.Search
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
                 return Task.CompletedTask;
             }
@@ -25,12 +30,12 @@ namespace OrchardCore.Search
             builder
                 .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
                     .AddClass("search").Id("search")
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["Search"], S["Search"].PrefixPosition(), entry => entry
-                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SearchSettingsDisplayDriver.GroupId })
-                             .Permission(Permissions.ManageSearchSettings)
-                             .LocalNav()
-                        )));
+                    .Add(S["Settings"], S["Settings"].PrefixPosition(), settings => settings
+                        .Action("Index", "Admin", _routeValues)
+                        .Permission(Permissions.ManageSearchSettings)
+                        .LocalNav()
+                    )
+                );
 
             return Task.CompletedTask;
         }

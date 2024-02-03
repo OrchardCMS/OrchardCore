@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.Extensions.Hosting;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Mvc
 {
@@ -47,8 +46,7 @@ namespace OrchardCore.Mvc
 
                 if (blueprint != null)
                 {
-                    if (blueprint.Extension.Id == _hostingEnvironment.ApplicationName &&
-                        _shellSettings.State != TenantState.Running)
+                    if (blueprint.Extension.Id == _hostingEnvironment.ApplicationName && !_shellSettings.IsRunning())
                     {
                         // Don't serve any action of the application'module which is enabled during a setup.
                         foreach (var action in controller.Actions)

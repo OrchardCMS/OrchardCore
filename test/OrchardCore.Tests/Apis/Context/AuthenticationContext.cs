@@ -1,10 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Principal;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
@@ -41,7 +34,7 @@ namespace OrchardCore.Tests.Apis.Context
 
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
         {
-            var permissions = (_permissionsContext.AuthorizedPermissions ?? Enumerable.Empty<Permission>()).ToList();
+            var permissions = (_permissionsContext.AuthorizedPermissions ?? []).ToList();
 
             if (!_permissionsContext.UsePermissionsContext)
             {
@@ -98,7 +91,7 @@ namespace OrchardCore.Tests.Apis.Context
 
     public class PermissionsContext
     {
-        public IEnumerable<Permission> AuthorizedPermissions { get; set; } = Enumerable.Empty<Permission>();
+        public IEnumerable<Permission> AuthorizedPermissions { get; set; } = [];
 
         public bool UsePermissionsContext { get; set; } = false;
     }

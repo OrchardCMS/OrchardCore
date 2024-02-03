@@ -20,19 +20,19 @@
                     value: '48px'
                 }
             },
-            sl: {
-                fontsize: 'Velikost pisave',
+            az: {
+                fontsize: 'Şrift həcmi',
                 fontsizes: {
-                    'x-small': 'Ekstra majhna',
-                    'small': 'Majhna',
-                    'medium': 'Navadno',
-                    'large': 'Velika',
-                    'x-large': 'Ekstra velika',
-                    'custom': 'Poljubna'
+                    'x-small': 'Daha kiçik',
+                    'small': 'Kiçik',
+                    'medium': 'Normal',
+                    'large': 'Böyük',
+                    'x-large': 'Daha böyük',
+                    'custom': 'Fərdi həcm'
                 },
                 fontCustomSize: {
-                    title: 'Poljubna velikost pisave',
-                    label: 'Velikost pisave',
+                    title: 'Fərdi şrift həcmi',
+                    label: 'Şrift həcmi',
                     value: '48px'
                 }
             },
@@ -49,6 +49,22 @@
                 fontCustomSize: {
                     title: 'Карыстальніцкі Памер Шрыфта',
                     label: 'Памер Шрыфта',
+                    value: '48px'
+                }
+            },
+            ca: {
+                fontsize: 'Mida de la lletra',
+                fontsizes: {
+                    'x-small': 'Molt petita',
+                    'small': 'Petita',
+                    'medium': 'Normal',
+                    'large': 'Gran',
+                    'x-large': 'Molt Gran',
+                    'custom': 'Personalitzada'
+                },
+                fontCustomSize: {
+                    title: 'Mida de lletra personalitzada',
+                    label: 'Mida de lletra',
                     value: '48px'
                 }
             },
@@ -220,6 +236,22 @@
                 fontCustomSize: {
                     title: 'Пользовательский Размер Шрифта',
                     label: 'Размер Шрифта',
+                    value: '48px'
+                }
+            },
+            sl: {
+                fontsize: 'Velikost pisave',
+                fontsizes: {
+                    'x-small': 'Ekstra majhna',
+                    'small': 'Majhna',
+                    'medium': 'Navadno',
+                    'large': 'Velika',
+                    'x-large': 'Ekstra velika',
+                    'custom': 'Poljubna'
+                },
+                fontCustomSize: {
+                    title: 'Poljubna velikost pisave',
+                    label: 'Velikost pisave',
                     value: '48px'
                 }
             },

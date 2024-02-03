@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,15 +8,10 @@ namespace OrchardCore.Shortcodes.Services
     public class ShortcodeOptionsDescriptorProvider : IShortcodeDescriptorProvider
     {
         private readonly ShortcodeOptions _options;
-        private readonly IServiceProvider _serviceProvider;
 
-        public ShortcodeOptionsDescriptorProvider(
-            IOptions<ShortcodeOptions> options,
-            IServiceProvider serviceProvider
-            )
+        public ShortcodeOptionsDescriptorProvider(IOptions<ShortcodeOptions> options)
         {
             _options = options.Value;
-            _serviceProvider = serviceProvider;
         }
 
         public Task<IEnumerable<ShortcodeDescriptor>> DiscoverAsync() =>

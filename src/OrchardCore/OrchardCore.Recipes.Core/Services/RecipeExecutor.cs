@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Runtime.ExceptionServices;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
@@ -25,7 +24,7 @@ namespace OrchardCore.Recipes.Services
         private readonly IEnumerable<IRecipeEventHandler> _recipeEventHandlers;
         private readonly ILogger _logger;
 
-        private readonly Dictionary<string, List<IGlobalMethodProvider>> _methodProviders = new Dictionary<string, List<IGlobalMethodProvider>>();
+        private readonly Dictionary<string, List<IGlobalMethodProvider>> _methodProviders = [];
 
         public RecipeExecutor(
             IShellHost shellHost,
@@ -53,80 +52,78 @@ namespace OrchardCore.Recipes.Services
 
                 var result = new RecipeResult { ExecutionId = executionId };
 
-                using (var stream = recipeDescriptor.RecipeFileInfo.CreateReadStream())
+                await using (var stream = recipeDescriptor.RecipeFileInfo.CreateReadStream())
                 {
-                    using var file = new StreamReader(stream);
-                    using var reader = new JsonTextReader(file);
-
-                    // Go to Steps, then iterate.
-                    while (await reader.ReadAsync())
+                    using var doc = await JsonDocument.ParseAsync(stream, JOptions.Document, cancellationToken);
+                    if (doc.RootElement.ValueKind != JsonValueKind.Object)
                     {
-                        if (reader.Path == "variables")
+                        throw new FormatException($"Top-level JSON element must be an object. Instead, '{doc.RootElement.ValueKind}' was found.");
+                    }
+
+                    foreach (var property in doc.RootElement.EnumerateObject())
+                    {
+                        if (property.Name == "variables")
                         {
-                            await reader.ReadAsync();
-
-                            var variables = await JObject.LoadAsync(reader);
-
+                            var variables = JsonObject.Create(property.Value);
                             methodProviders.Add(new VariablesMethodProvider(variables, methodProviders));
                         }
 
-                        if (reader.Path == "steps" && reader.TokenType == JsonToken.StartArray)
+                        // Go to Steps, then iterate.
+                        if (property.Name == "steps" && property.Value.ValueKind == JsonValueKind.Array)
                         {
-                            while (await reader.ReadAsync() && reader.Depth > 1)
+                            foreach (var step in property.Value.EnumerateArray())
                             {
-                                if (reader.Depth == 2)
+                                var child = JsonObject.Create(step);
+
+                                var recipeStep = new RecipeExecutionContext
                                 {
-                                    var child = await JObject.LoadAsync(reader);
+                                    Name = child.Value<string>("name"),
+                                    Step = child,
+                                    ExecutionId = executionId,
+                                    Environment = environment,
+                                    RecipeDescriptor = recipeDescriptor
+                                };
 
-                                    var recipeStep = new RecipeExecutionContext
+                                if (cancellationToken.IsCancellationRequested)
+                                {
+                                    _logger.LogError("Recipe interrupted by cancellation token.");
+                                    return null;
+                                }
+
+                                var stepResult = new RecipeStepResult { StepName = recipeStep.Name };
+                                result.Steps.Add(stepResult);
+
+                                ExceptionDispatchInfo capturedException = null;
+                                try
+                                {
+                                    await ExecuteStepAsync(recipeStep);
+                                    stepResult.IsSuccessful = true;
+                                }
+                                catch (Exception e)
+                                {
+                                    stepResult.IsSuccessful = false;
+                                    stepResult.ErrorMessage = e.ToString();
+
+                                    // Because we can't do some async processing the in catch or finally
+                                    // blocks, we store the exception to throw it later.
+
+                                    capturedException = ExceptionDispatchInfo.Capture(e);
+                                }
+
+                                stepResult.IsCompleted = true;
+
+                                if (stepResult.IsSuccessful == false)
+                                {
+                                    capturedException.Throw();
+                                }
+
+                                if (recipeStep.InnerRecipes != null)
+                                {
+                                    foreach (var descriptor in recipeStep.InnerRecipes)
                                     {
-                                        Name = child.Value<string>("name"),
-                                        Step = child,
-                                        ExecutionId = executionId,
-                                        Environment = environment,
-                                        RecipeDescriptor = recipeDescriptor
-                                    };
-
-                                    if (cancellationToken.IsCancellationRequested)
-                                    {
-                                        _logger.LogError("Recipe interrupted by cancellation token.");
-                                        return null;
-                                    }
-
-                                    var stepResult = new RecipeStepResult { StepName = recipeStep.Name };
-                                    result.Steps.Add(stepResult);
-
-                                    ExceptionDispatchInfo capturedException = null;
-                                    try
-                                    {
-                                        await ExecuteStepAsync(recipeStep);
-                                        stepResult.IsSuccessful = true;
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        stepResult.IsSuccessful = false;
-                                        stepResult.ErrorMessage = e.ToString();
-
-                                        // Because we can't do some async processing the in catch or finally
-                                        // blocks, we store the exception to throw it later.
-
-                                        capturedException = ExceptionDispatchInfo.Capture(e);
-                                    }
-
-                                    stepResult.IsCompleted = true;
-
-                                    if (stepResult.IsSuccessful == false)
-                                    {
-                                        capturedException.Throw();
-                                    }
-
-                                    if (recipeStep.InnerRecipes != null)
-                                    {
-                                        foreach (var descriptor in recipeStep.InnerRecipes)
-                                        {
-                                            var innerExecutionId = Guid.NewGuid().ToString();
-                                            await ExecuteAsync(innerExecutionId, descriptor, environment, cancellationToken);
-                                        }
+                                        var innerExecutionId = Guid.NewGuid().ToString();
+                                        descriptor.RequireNewScope = recipeDescriptor.RequireNewScope;
+                                        await ExecuteAsync(innerExecutionId, descriptor, environment, cancellationToken);
                                     }
                                 }
                             }
@@ -161,7 +158,7 @@ namespace OrchardCore.Recipes.Services
                 var recipeStepHandlers = scope.ServiceProvider.GetServices<IRecipeStepHandler>();
                 var scriptingManager = scope.ServiceProvider.GetRequiredService<IScriptingManager>();
 
-                // Substitutes the script elements by their actual values
+                // Substitutes the script elements by their actual values.
                 EvaluateJsonTree(scriptingManager, recipeStep, recipeStep.Step);
 
                 if (_logger.IsEnabled(LogLevel.Information))
@@ -188,35 +185,52 @@ namespace OrchardCore.Recipes.Services
         /// <summary>
         /// Traverse all the nodes of the json document and replaces their value if they are scripted.
         /// </summary>
-        private void EvaluateJsonTree(IScriptingManager scriptingManager, RecipeExecutionContext context, JToken node)
+        private JsonNode EvaluateJsonTree(IScriptingManager scriptingManager, RecipeExecutionContext context, JsonNode node)
         {
-            switch (node.Type)
+            if (node is null)
             {
-                case JTokenType.Array:
-                    var array = (JArray)node;
+                return null;
+            }
+
+            switch (node.GetValueKind())
+            {
+                case JsonValueKind.Array:
+                    var array = node.AsArray();
                     for (var i = 0; i < array.Count; i++)
                     {
-                        EvaluateJsonTree(scriptingManager, context, array[i]);
+                        var item = EvaluateJsonTree(scriptingManager, context, array[i]);
+                        if (item is JsonValue && item != array[i])
+                        {
+                            array[i] = item;
+                        }
                     }
 
                     break;
-                case JTokenType.Object:
-                    foreach (var property in (JObject)node)
+
+                case JsonValueKind.Object:
+                    var properties = node.AsObject();
+                    foreach (var property in properties.ToArray())
                     {
-                        EvaluateJsonTree(scriptingManager, context, property.Value);
+                        var newProperty = EvaluateJsonTree(scriptingManager, context, property.Value);
+                        if (newProperty is JsonValue && newProperty != property.Value)
+                        {
+                            properties[property.Key] = newProperty;
+                        }
                     }
 
                     break;
-                case JTokenType.String:
+
+                case JsonValueKind.String:
                     const char scriptSeparator = ':';
                     var value = node.Value<string>();
 
-                    // Evaluate the expression while the result is another expression
+                    // Evaluate the expression while the result is another expression.
                     while (value.StartsWith('[') && value.EndsWith(']'))
                     {
                         var scriptSeparatorIndex = value.IndexOf(scriptSeparator);
-                        // Only remove brackets if this is a valid script expression, e.g. '[js:xxx]', or '[file:xxx]'
-                        if (!(scriptSeparatorIndex > -1 && value[1..scriptSeparatorIndex].All(c => Char.IsLetter(c))))
+
+                        // Only remove brackets if this is a valid script expression, e.g. '[js:xxx]', or '[file:xxx]'.
+                        if (!(scriptSeparatorIndex > -1 && value[1..scriptSeparatorIndex].All(c => char.IsLetter(c))))
                         {
                             break;
                         }
@@ -229,12 +243,14 @@ namespace OrchardCore.Recipes.Services
                             context.RecipeDescriptor.BasePath,
                             _methodProviders[context.ExecutionId])
                             ?? "").ToString();
-
-                        ((JValue)node).Value = value;
                     }
+
+                    node = JsonValue.Create<string>(value);
 
                     break;
             }
+
+            return node;
         }
     }
 }

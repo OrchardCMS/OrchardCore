@@ -1,0 +1,29 @@
+@model OrchardCore.Users.Models.AuthenticatorAppLoginSettings
+
+<fieldset>
+    <legend>@T["Authenticator App Settings"]</legend>
+    <div class="mb-3" asp-validation-class-for="UseEmailAsAuthenticatorDisplayName">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="UseEmailAsAuthenticatorDisplayName" />
+            <span asp-validation-for="UseEmailAsAuthenticatorDisplayName"></span>
+            <label class="form-check-label" asp-for="UseEmailAsAuthenticatorDisplayName">@T["Show email address in the app"]</label>
+            <span class="hint dashed">@T["When selected, the users will see their email address in the authenticatior app. Otherwise, the username will be displayed."]</span>
+        </div>
+    </div>
+
+    @*
+    // A possible issue in Identity prevents from validation token that are not 6 in length.
+    // If this limitation is lifted, the following line can be removed.
+    // For more info read https://github.com/dotnet/aspnetcore/issues/48317
+
+    <div class="mb-3" asp-validation-class-for="TokenLength">
+    <label class="form-check-label" asp-for="TokenLength">@T["Token Length"]</label>
+    <select asp-for="TokenLength" class="form-select">
+    <option value="6">@T["Six digits"]</option>
+    <option value="8">@T["Eight digits"]</option>
+    </select>
+    <span asp-validation-for="TokenLength"></span>
+    <span class="hint dashed">@T["The length token length that the authenticator app should generate. Default is 6."]</span>
+    </div>
+    *@
+</fieldset>

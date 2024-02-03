@@ -25,7 +25,7 @@ namespace OrchardCore.Users.Controllers
         private readonly ISiteService _siteService;
         private readonly IEnumerable<IPasswordRecoveryFormEvents> _passwordRecoveryFormEvents;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public ResetPasswordController(
             IUserService userService,
@@ -112,7 +112,7 @@ namespace OrchardCore.Users.Controllers
             }
             if (code == null)
             {
-                //"A code must be supplied for password reset.";
+                // "A code must be supplied for password reset.";
             }
             return View(new ResetPasswordViewModel { ResetToken = code });
         }

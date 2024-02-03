@@ -1,9 +1,4 @@
-using System;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using Moq;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 using OrchardCore.Deployment;
 using OrchardCore.OpenId.Deployment;
 using OrchardCore.OpenId.Recipes;
@@ -11,14 +6,12 @@ using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Tests.Stubs;
-using Xunit;
-using static OrchardCore.OpenId.Settings.OpenIdServerSettings;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
 {
     public class OpenIdServerDeploymentSourceTests
     {
-        private static OpenIdServerSettings CreateSettings(string authority, TokenFormat tokenFormat, bool initializeAllProperties)
+        private static OpenIdServerSettings CreateSettings(string authority, OpenIdServerSettings.TokenFormat tokenFormat, bool initializeAllProperties)
         {
             var result = new OpenIdServerSettings
             {
@@ -80,10 +73,10 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             // Arrange
             var recipeFile = "Recipe.json";
 
-            var expectedSettings = CreateSettings("https://deploy.localhost", TokenFormat.JsonWebToken, true);
+            var expectedSettings = CreateSettings("https://deploy.localhost", OpenIdServerSettings.TokenFormat.JsonWebToken, true);
             var deployServerServiceMock = CreateServerServiceWithSettingsMock(expectedSettings);
 
-            var actualSettings = CreateSettings("https://recipe.localhost", TokenFormat.DataProtection, false);
+            var actualSettings = CreateSettings("https://recipe.localhost", OpenIdServerSettings.TokenFormat.DataProtection, false);
             var recipeServerServiceMock = CreateServerServiceWithSettingsMock(actualSettings);
 
             var settingsProperties = typeof(OpenIdServerSettings)
@@ -106,7 +99,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             await deploymentSource.ProcessDeploymentStepAsync(new OpenIdServerDeploymentStep(), result);
             await result.FinalizeAsync();
 
-            var deploy = JObject.Parse(
+            var deploy = JsonNode.Parse(
                 fileBuilder.GetFileContents(
                     recipeFile,
                     Encoding.UTF8));
@@ -114,8 +107,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             var recipeContext = new RecipeExecutionContext
             {
                 RecipeDescriptor = descriptor,
-                Name = deploy.Property("steps").Value.First.Value<string>("name"),
-                Step = (JObject)deploy.Property("steps").Value.First,
+                Name = deploy["steps"][0].Value<string>("name"),
+                Step = (JsonObject)deploy["steps"][0],
             };
 
             var recipeStep = new OpenIdServerSettingsStep(recipeServerServiceMock.Object);

@@ -3,7 +3,7 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
@@ -31,9 +31,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     var newOpts = {
       hint: getHints
     };
-    if (options) for (var prop in options) {
-      newOpts[prop] = options[prop];
-    }
+    if (options) for (var prop in options) newOpts[prop] = options[prop];
     return cm.showHint(newOpts);
   };
   CodeMirror.defineExtension("showHint", function (options) {
@@ -46,9 +44,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     if (this.somethingSelected()) {
       if (!options.hint.supportsSelection) return;
       // Don't try with cross-line selections
-      for (var i = 0; i < selections.length; i++) {
-        if (selections[i].head.line != selections[i].anchor.line) return;
-      }
+      for (var i = 0; i < selections.length; i++) if (selections[i].head.line != selections[i].anchor.line) return;
     }
     if (this.state.completionActive) this.state.completionActive.close();
     var completion = this.state.completionActive = new Completion(this, options);
@@ -152,15 +148,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
   function parseOptions(cm, pos, options) {
     var editor = cm.options.hintOptions;
     var out = {};
-    for (var prop in defaultOptions) {
-      out[prop] = defaultOptions[prop];
-    }
-    if (editor) for (var prop in editor) {
-      if (editor[prop] !== undefined) out[prop] = editor[prop];
-    }
-    if (options) for (var prop in options) {
-      if (options[prop] !== undefined) out[prop] = options[prop];
-    }
+    for (var prop in defaultOptions) out[prop] = defaultOptions[prop];
+    if (editor) for (var prop in editor) if (editor[prop] !== undefined) out[prop] = editor[prop];
+    if (options) for (var prop in options) if (options[prop] !== undefined) out[prop] = options[prop];
     if (out.hint.resolve) out.hint = out.hint.resolve(cm, pos);
     return out;
   }
@@ -211,13 +201,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       else if (baseMap.hasOwnProperty(val)) bound = baseMap[val];else bound = val;
       ourMap[key] = bound;
     }
-    if (custom) for (var key in custom) {
-      if (custom.hasOwnProperty(key)) addBinding(key, custom[key]);
-    }
+    if (custom) for (var key in custom) if (custom.hasOwnProperty(key)) addBinding(key, custom[key]);
     var extra = completion.options.extraKeys;
-    if (extra) for (var key in extra) {
-      if (extra.hasOwnProperty(key)) addBinding(key, extra[key]);
-    }
+    if (extra) for (var key in extra) if (extra.hasOwnProperty(key)) addBinding(key, extra[key]);
     return ourMap;
   }
   function getHintElement(hintsElement, el) {
@@ -317,9 +303,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       }
       hints.style.left = (left = Math.max(pos.left - overlapX - offsetLeft, 0)) + "px";
     }
-    if (scrolls) for (var node = hints.firstChild; node; node = node.nextSibling) {
-      node.style.paddingRight = cm.display.nativeBarWidth + "px";
-    }
+    if (scrolls) for (var node = hints.firstChild; node; node = node.nextSibling) node.style.paddingRight = cm.display.nativeBarWidth + "px";
     cm.addKeyMap(this.keyMap = buildKeyMap(completion, {
       moveFocus: function moveFocus(n, avoidWrap) {
         widget.changeActive(widget.selectedHint + n, avoidWrap);
@@ -454,9 +438,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
   function applicableHelpers(cm, helpers) {
     if (!cm.somethingSelected()) return helpers;
     var result = [];
-    for (var i = 0; i < helpers.length; i++) {
-      if (helpers[i].supportsSelection) result.push(helpers[i]);
-    }
+    for (var i = 0; i < helpers.length; i++) if (helpers[i].supportsSelection) result.push(helpers[i]);
     return result;
   }
   function fetchHints(hint, cm, options, callback) {

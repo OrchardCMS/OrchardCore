@@ -1,10 +1,14 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using OrchardCore.Users.Services;
+using OrchardCore.Data;
+using OrchardCore.Roles.Services;
+using OrchardCore.Security;
+using OrchardCore.Security.Services;
 using OrchardCore.Users;
-using OrchardCore.Users.Indexes;
-using YesSql.Indexes;
+using OrchardCore.Users.Events;
 using OrchardCore.Users.Handlers;
+using OrchardCore.Users.Indexes;
+using OrchardCore.Users.Services;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -27,16 +31,29 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddScoped<IUserSecurityStampStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
             services.TryAddScoped<IUserLoginStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
             services.TryAddScoped<IUserClaimStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
+            services.TryAddScoped<IUserTwoFactorStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
+            services.TryAddScoped<IUserTwoFactorRecoveryCodeStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
+            services.TryAddScoped<IUserAuthenticatorKeyStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
             services.TryAddScoped<IUserAuthenticationTokenStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
+            services.TryAddScoped<IUserPhoneNumberStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
 
-            services.AddSingleton<IIndexProvider, UserIndexProvider>();
-            services.AddSingleton<IIndexProvider, UserByRoleNameIndexProvider>();
-            services.AddSingleton<IIndexProvider, UserByLoginInfoIndexProvider>();
-            services.AddSingleton<IIndexProvider, UserByClaimIndexProvider>();
+            services.AddScoped<NullRoleStore>();
+            services.TryAddScoped<IRoleClaimStore<IRole>>(sp => sp.GetRequiredService<NullRoleStore>());
+            services.TryAddScoped<IRoleStore<IRole>>(sp => sp.GetRequiredService<NullRoleStore>());
+
+            services.TryAddScoped<RoleManager<IRole>>();
+            services.TryAddScoped<IRoleService, RoleService>();
+
+            services.AddIndexProvider<UserIndexProvider>();
+            services.AddIndexProvider<UserByLoginInfoIndexProvider>();
+            services.AddIndexProvider<UserByClaimIndexProvider>();
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserClaimsPrincipalFactory<IUser>, DefaultUserClaimsPrincipalProviderFactory>();
             services.AddScoped<IUserEventHandler, UserDisabledEventHandler>();
+
+            services.AddScoped<ITwoFactorAuthenticationHandler, DefaultTwoFactorAuthenticationHandler>();
+            services.AddScoped<ITwoFactorAuthenticationHandlerCoordinator, DefaultTwoFactorAuthenticationHandlerCoordinator>();
 
             return services;
         }

@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Shell;
@@ -9,7 +8,7 @@ namespace OrchardCore.Tenants
     public class FeatureProfilesAdminMenu : INavigationProvider
     {
         private readonly ShellSettings _shellSettings;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public FeatureProfilesAdminMenu(IStringLocalizer<FeatureProfilesAdminMenu> localizer, ShellSettings shellSettings)
         {
@@ -19,7 +18,7 @@ namespace OrchardCore.Tenants
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
                 return Task.CompletedTask;
             }
@@ -31,10 +30,10 @@ namespace OrchardCore.Tenants
             }
 
             builder
-                .Add(S["Configuration"], configuration => configuration
-                    .AddClass("menu-configuration").Id("configuration")
-                    .Add(S["Tenant Feature Profiles"], S["Tenant Feature Profiles"].PrefixPosition(), featureProfiles => featureProfiles
-                        .Action("Index", "FeatureProfiles", new { area = "OrchardCore.Tenants" })
+                .Add(S["Multi-Tenancy"], tenancy => tenancy
+                    .AddClass("menu-multitenancy")
+                    .Add(S["Feature Profiles"], S["Feature Profiles"].PrefixPosition(), featureProfiles => featureProfiles
+                        .Action("Index", "FeatureProfiles", "OrchardCore.Tenants")
                         .Permission(Permissions.ManageTenantFeatureProfiles)
                         .LocalNav()
                     )

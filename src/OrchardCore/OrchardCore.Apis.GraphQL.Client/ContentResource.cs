@@ -1,30 +1,32 @@
 using System;
 using System.Net.Http;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Apis.GraphQL.Client
 {
     public class ContentResource
     {
-        private HttpClient _client;
+        private readonly HttpClient _client;
 
         public ContentResource(HttpClient client)
         {
             _client = client;
         }
 
-        public async Task<JObject> Query(string contentType, Action<ContentTypeQueryResourceBuilder> builder)
+        public async Task<JsonObject> Query(string contentType, Action<ContentTypeQueryResourceBuilder> builder)
         {
             var contentTypeBuilder = new ContentTypeQueryResourceBuilder(contentType);
             builder(contentTypeBuilder);
 
-            var requestJson = new JObject(
-                new JProperty("query", @"query { " + contentTypeBuilder.Build() + " }")
-                );
+            var requestJson = new JsonObject
+            {
+                ["query"] = @"query { " + contentTypeBuilder.Build() + " }",
+            };
 
             var response = await _client
-                .PostJsonAsync("api/graphql", requestJson.ToString());
+                .PostJsonAsync("api/graphql", requestJson.ToJsonString(JOptions.Default));
 
             if (!response.IsSuccessStatusCode && response.StatusCode != System.Net.HttpStatusCode.Unauthorized)
             {
@@ -34,13 +36,14 @@ namespace OrchardCore.Apis.GraphQL.Client
             return JObject.Parse(await response.Content.ReadAsStringAsync());
         }
 
-        public async Task<JObject> Query(string body)
+        public async Task<JsonObject> Query(string body)
         {
-            var requestJson = new JObject(
-                new JProperty("query", @"query { " + body + " }")
-                );
+            var requestJson = new JsonObject
+            {
+                ["query"] = @"query { " + body + " }",
+            };
 
-            var response = await _client.PostJsonAsync("api/graphql", requestJson.ToString());
+            var response = await _client.PostJsonAsync("api/graphql", requestJson.ToJsonString(JOptions.Default));
 
             if (!response.IsSuccessStatusCode)
             {
@@ -50,13 +53,14 @@ namespace OrchardCore.Apis.GraphQL.Client
             return JObject.Parse(await response.Content.ReadAsStringAsync());
         }
 
-        public async Task<JObject> NamedQueryExecute(string name)
+        public async Task<JsonObject> NamedQueryExecute(string name)
         {
-            var requestJson = new JObject(
-                new JProperty("namedquery", name)
-                );
+            var requestJson = new JsonObject
+            {
+                ["namedquery"] = name,
+            };
 
-            var response = await _client.PostJsonAsync("api/graphql", requestJson.ToString());
+            var response = await _client.PostJsonAsync("api/graphql", requestJson.ToJsonString(JOptions.Default));
 
             if (!response.IsSuccessStatusCode)
             {

@@ -1,7 +1,7 @@
 using System;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -31,7 +31,7 @@ namespace OrchardCore.Deployment.Steps
 }
 ";
 
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public JsonRecipeDeploymentStepDriver(IStringLocalizer<JsonRecipeDeploymentStepDriver> stringLocalizer)
         {

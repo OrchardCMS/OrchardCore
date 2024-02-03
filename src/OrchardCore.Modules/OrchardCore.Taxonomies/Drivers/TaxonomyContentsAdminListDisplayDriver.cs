@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Cysharp.Text;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Contents.ViewModels;
@@ -28,7 +28,7 @@ namespace OrchardCore.Taxonomies.Drivers
         private readonly ISiteService _siteService;
         private readonly IContentManager _contentManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public TaxonomyContentsAdminListDisplayDriver(
             ISiteService siteService,
@@ -46,21 +46,21 @@ namespace OrchardCore.Taxonomies.Drivers
         {
             var settings = (await _siteService.GetSiteSettingsAsync()).As<TaxonomyContentsAdminListSettings>();
 
-            if (!settings.TaxonomyContentItemIds.Any())
+            if (settings.TaxonomyContentItemIds.Length == 0)
             {
                 return null;
             }
 
             var taxonomyContentItemIds = settings.TaxonomyContentItemIds;
-            if (!String.IsNullOrEmpty(model.SelectedContentType))
+            if (!string.IsNullOrEmpty(model.SelectedContentType))
             {
-                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.SelectedContentType);
+                var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(model.SelectedContentType);
                 var fieldDefinitions = contentTypeDefinition
                     .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(TaxonomyField)));
                 var fieldTaxonomyContentItemIds = fieldDefinitions.Select(x => x.GetSettings<TaxonomyFieldSettings>().TaxonomyContentItemId);
                 taxonomyContentItemIds = taxonomyContentItemIds.Intersect(fieldTaxonomyContentItemIds).ToArray();
 
-                if (!taxonomyContentItemIds.Any())
+                if (taxonomyContentItemIds.Length == 0)
                 {
                     return null;
                 }
@@ -80,8 +80,8 @@ namespace OrchardCore.Taxonomies.Drivers
                         PopulateTermEntries(termEntries, taxonomy.As<TaxonomyPart>().Terms, 0);
                         var terms = new List<SelectListItem>
                             {
-                                new SelectListItem { Text = S["Clear filter"], Value = ""  },
-                                new SelectListItem { Text = S["Show all"], Value = "Taxonomy:" + taxonomy.ContentItemId }
+                                new() { Text = S["Clear filter"], Value = ""  },
+                                new() { Text = S["Show all"], Value = "Taxonomy:" + taxonomy.ContentItemId }
                             };
 
                         foreach (var term in termEntries)
@@ -106,7 +106,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 position += 5;
             }
 
-            if (results.Any())
+            if (results.Count > 0)
             {
                 return Combine(results);
             }
@@ -122,7 +122,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 var viewModel = new TaxonomyContentsAdminFilterViewModel();
                 if (await updater.TryUpdateModelAsync(viewModel, "Taxonomy" + contentItemId))
                 {
-                    if (!String.IsNullOrEmpty(viewModel.SelectedContentItemId))
+                    if (!string.IsNullOrEmpty(viewModel.SelectedContentItemId))
                     {
                         model.RouteValues.TryAdd("Taxonomy" + contentItemId + ".SelectedContentItemId", viewModel.SelectedContentItemId);
                     }
@@ -138,7 +138,7 @@ namespace OrchardCore.Taxonomies.Drivers
             {
                 var children = Array.Empty<ContentItem>();
 
-                if (contentItem.Content.Terms is JArray termsArray)
+                if (((JsonObject)contentItem.Content)["Terms"] is JsonArray termsArray)
                 {
                     children = termsArray.ToObject<ContentItem[]>();
                 }

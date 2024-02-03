@@ -1,26 +1,20 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
+using System.Text.Json.Nodes;
 using GraphQL;
 using GraphQL.Conversion;
 using GraphQL.SystemTextJson;
 using GraphQL.Types;
 using GraphQL.Validation;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.ValidationRules;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Tests.Apis.Context;
-using Xunit;
 
 namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
 {
     public class RequiresPermissionValidationRuleTests
     {
-        internal readonly static Dictionary<string, Permission> _permissions = new Dictionary<string, Permission> {
+        internal readonly static Dictionary<string, Permission> _permissions = new()
+        {
             { "permissionOne",  new Permission("TestPermissionOne", "TestPermissionOne") },
             { "permissionTwo",  new Permission("TestPermissionTwo", "TestPermissionTwo") }
         };
@@ -41,7 +35,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
             Assert.Null(executionResult.Errors);
 
             var writer = new DocumentWriter();
-            var result = JObject.Parse(await writer.WriteToStringAsync(executionResult));
+            var result = JsonObject.Parse(await writer.WriteToStringAsync(executionResult));
 
             Assert.Equal("Fantastic Fox Hates Permissions", result["data"]["test"]["noPermissions"].ToString());
         }
@@ -51,7 +45,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
         [InlineData("permissionTwo", "Fantastic Fox Loves Permission Two")]
         public async Task FieldsWithRequirePermissionsShouldResolveWhenUserHasPermissions(string fieldName, string expectedFieldValue)
         {
-            var options = BuildExecutionOptions($"query {{ test {{{ fieldName }}} }}",
+            var options = BuildExecutionOptions($"query {{ test {{{fieldName}}} }}",
                             new PermissionsContext
                             {
                                 UsePermissionsContext = true,
@@ -108,7 +102,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
             Assert.Equal("Fantastic Fox Loves Multiple Permissions", result["data"]["test"]["permissionMultiple"].ToString());
         }
 
-        private ExecutionOptions BuildExecutionOptions(string query, PermissionsContext permissionsContext)
+        private static ExecutionOptions BuildExecutionOptions(string query, PermissionsContext permissionsContext)
         {
             var services = new ServiceCollection();
             services.AddAuthorization();

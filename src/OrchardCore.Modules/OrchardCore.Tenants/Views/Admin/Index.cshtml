@@ -1,14 +1,15 @@
 @model AdminIndexViewModel
-@using Microsoft.AspNetCore.Http
-@using OrchardCore.DisplayManagement
-@using OrchardCore.Environment.Shell
-@using OrchardCore.Environment.Shell.Models
+
+@using Microsoft.Extensions.Options
+
+@inject IOptions<TenantsOptions> TenantsOptions
+
 @{
     int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
     int endIndex = startIndex + Model.ShellSettingsEntries.Count - 1;
 }
 
-<script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
+<script asp-name="bootstrap-select" depends-on="bootstrap" at="Foot"></script>
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Tenants"])</h1></zone>
 
@@ -17,12 +18,12 @@
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
     <input name="BulkAction" type="hidden" />
 
-    <div class="card bg-primary mb-3 position-sticky action-bar">
+    <div class="card text-bg-theme mb-3 position-sticky action-bar">
         <div class="card-body">
             <div class="row gx-3">
                 <div class="col">
                     <div class="has-search">
-                        <i class="fa fa-search form-control-feedback" aria-hidden="true"></i>
+                        <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
                         <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
                     </div>
                 </div>
@@ -33,7 +34,7 @@
         </div>
     </div>
     <ul class="list-group with-checkbox">
-        <li class="list-group-item bg-primary">
+        <li class="list-group-item text-bg-theme">
             <div class="row gx-3">
                 <div class="col text-nowrap">
                     <div class="form-check my-1">
@@ -51,6 +52,11 @@
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bulk-action-menu-button">
                             @foreach (var item in Model.Options.TenantsBulkAction)
                             {
+                                @if (item.Value == nameof(TenantsBulkAction.Remove) && !TenantsOptions.Value.TenantRemovalAllowed)
+                                {
+                                    continue;
+                                }
+
                                 <li><a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a></li>
                             }
                         </ul>

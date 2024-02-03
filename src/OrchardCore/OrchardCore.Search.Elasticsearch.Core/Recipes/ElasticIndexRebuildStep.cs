@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.BackgroundJobs;
@@ -17,7 +18,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
     {
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "elastic-index-rebuild", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "elastic-index-rebuild", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
@@ -26,7 +27,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
 
             if (model != null && (model.IncludeAll || model.Indices.Length > 0))
             {
-                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("elastic-index-rebuild", async scope => {
+                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("elastic-index-rebuild", async scope =>
+                {
 
                     var elasticIndexingService = scope.ServiceProvider.GetService<ElasticIndexingService>();
                     var elasticIndexSettingsService = scope.ServiceProvider.GetService<ElasticIndexSettingsService>();
@@ -40,7 +42,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
 
                         if (elasticIndexSettings != null)
                         {
-                            if (!await elasticIndexManager.Exists(indexName))
+                            if (!await elasticIndexManager.ExistsAsync(indexName))
                             {
                                 await elasticIndexingService.CreateIndexAsync(elasticIndexSettings);
                             }

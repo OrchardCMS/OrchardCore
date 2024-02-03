@@ -1,7 +1,6 @@
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
-using Xunit;
 
 namespace OrchardCore.Tests.Data
 {
@@ -61,8 +60,7 @@ namespace OrchardCore.Tests.Data
             contentItem.Merge(newContentItem);
 
             // Test
-            var content = (JObject)contentItem.Content;
-            Assert.False(content.ContainsKey(nameof(contentItem.DisplayText)));
+            Assert.False(contentItem.Content.ContainsKey(nameof(contentItem.DisplayText)));
         }
 
         [Fact]
@@ -83,8 +81,7 @@ namespace OrchardCore.Tests.Data
             contentItem.Merge(newContentItem);
 
             // Test
-            var content = (JObject)contentItem.Content;
-            Assert.False(content.ContainsKey(nameof(contentItem.DisplayText)));
+            Assert.False(contentItem.Content.ContainsKey(nameof(contentItem.DisplayText)));
         }
 
         [Fact]

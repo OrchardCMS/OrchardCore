@@ -11,11 +11,11 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Http.Activities
 {
-    public class HttpRedirectTask : TaskActivity
+    public class HttpRedirectTask : TaskActivity<HttpRedirectTask>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public HttpRedirectTask(
             IStringLocalizer<HttpRedirectTask> localizer,
@@ -27,8 +27,6 @@ namespace OrchardCore.Workflows.Http.Activities
             _httpContextAccessor = httpContextAccessor;
             _expressionEvaluator = expressionEvaluator;
         }
-
-        public override string Name => nameof(HttpRedirectTask);
 
         public override LocalizedString DisplayText => S["Http Redirect Task"];
 

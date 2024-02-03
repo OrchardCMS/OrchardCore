@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.BackgroundJobs;
@@ -15,7 +16,7 @@ namespace OrchardCore.Search.Lucene.Recipes
     {
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "lucene-index-reset", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "lucene-index-reset", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
@@ -24,7 +25,8 @@ namespace OrchardCore.Search.Lucene.Recipes
 
             if (model.IncludeAll || model.Indices.Length > 0)
             {
-                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("lucene-index-reset", async (scope) => {
+                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("lucene-index-reset", async (scope) =>
+                {
                     var luceneIndexSettingsService = scope.ServiceProvider.GetRequiredService<LuceneIndexSettingsService>();
                     var luceneIndexingService = scope.ServiceProvider.GetRequiredService<LuceneIndexingService>();
                     var luceneIndexManager = scope.ServiceProvider.GetRequiredService<LuceneIndexManager>();
@@ -54,7 +56,7 @@ namespace OrchardCore.Search.Lucene.Recipes
         private class LuceneIndexResetStepModel
         {
             public bool IncludeAll { get; set; } = false;
-            public string[] Indices { get; set; } = Array.Empty<string>();
+            public string[] Indices { get; set; } = [];
         }
     }
 }

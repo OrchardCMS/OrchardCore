@@ -15,5 +15,42 @@ namespace OrchardCore.Localization
 
         /// <inheritdocs />
         public IStringLocalizer Create(string baseName, string location) => NullStringLocalizer.Instance;
+
+        internal class NullLocalizer : IStringLocalizer
+        {
+            private static readonly PluralizationRuleDelegate _defaultPluralRule = n => (n == 1) ? 0 : 1;
+
+            public static NullLocalizer Instance { get; } = new NullLocalizer();
+
+            public LocalizedString this[string name] => new(name, name, false);
+
+            public LocalizedString this[string name, params object[] arguments]
+            {
+                get
+                {
+                    var translation = name;
+
+                    if (arguments.Length == 1 && arguments[0] is PluralizationArgument pluralArgument)
+                    {
+                        translation = pluralArgument.Forms[_defaultPluralRule(pluralArgument.Count)];
+
+                        arguments = new object[pluralArgument.Arguments.Length + 1];
+                        arguments[0] = pluralArgument.Count;
+                        Array.Copy(pluralArgument.Arguments, 0, arguments, 1, pluralArgument.Arguments.Length);
+                    }
+
+                    translation = string.Format(translation, arguments);
+
+                    return new LocalizedString(name, translation, false);
+                }
+            }
+
+            public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
+                => [];
+
+            public LocalizedString GetString(string name) => this[name];
+
+            public LocalizedString GetString(string name, params object[] arguments) => this[name, arguments];
+        }
     }
 }

@@ -15,7 +15,7 @@ using OrchardCore.Recipes.Services;
 namespace OrchardCore.Recipes
 {
     /// <summary>
-    /// These services are registered on the tenant service collection
+    /// These services are registered on the tenant service collection.
     /// </summary>
     public class Startup : StartupBase
     {
@@ -28,8 +28,6 @@ namespace OrchardCore.Recipes
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddRecipes();
-
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddRecipeExecutionStep<CommandStep>();
@@ -55,6 +53,15 @@ namespace OrchardCore.Recipes
                 pattern: _adminOptions.AdminUrlPrefix + "/Recipes/Execute",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Execute) }
             );
+        }
+    }
+
+    [Feature("OrchardCore.Recipes.Core")]
+    public class RecipesCoreStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddRecipes();
         }
     }
 }

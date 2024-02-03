@@ -1,10 +1,5 @@
-using System.Collections.Generic;
-using System.Reflection;
-using System.Threading.Tasks;
-using Microsoft.Extensions.FileProviders;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
-using Xunit;
 
 namespace OrchardCore.Tests.Apis.Context
 {
@@ -18,10 +13,10 @@ namespace OrchardCore.Tests.Apis.Context
         }
 
         public Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync()
-            => HarvestRecipesAsync(new[]
-            {
+            => HarvestRecipesAsync(
+            [
                 "Apis/Lucene/Recipes/luceneQueryTest.json"
-            });
+            ]);
 
         private async Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync(string[] paths)
         {
@@ -39,7 +34,7 @@ namespace OrchardCore.Tests.Apis.Context
 
             foreach (var fileInfo in fileInfos)
             {
-                var descriptor = await _recipeReader.GetRecipeDescriptor(fileInfo.PhysicalPath, fileInfo, testAssemblyFileProvider);
+                var descriptor = await _recipeReader.GetRecipeDescriptorAsync(fileInfo.PhysicalPath, fileInfo, testAssemblyFileProvider);
                 recipeDescriptors.Add(descriptor);
             }
 
