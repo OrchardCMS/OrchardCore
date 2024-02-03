@@ -78,9 +78,9 @@ namespace OrchardCore.DisplayManagement.Implementation
             {
                 if (shape is PositionWrapper wrapper)
                 {
-                    while (wrapper.Value is PositionWrapper)
+                    while (wrapper.Value is PositionWrapper wrapperValue)
                     {
-                        wrapper = (PositionWrapper)wrapper.Value;
+                        wrapper = wrapperValue;
                     }
 
                     return Task.FromResult(wrapper.Value);
