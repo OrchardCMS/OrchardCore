@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
@@ -9,24 +8,20 @@ public class Permissions : IPermissionProvider
 {
     public static readonly Permission ViewAzureEmailOptions = new(nameof(ViewAzureEmailOptions), "View Azure Email Options");
 
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-    {
-        return Task.FromResult(new[]
-        {
-            ViewAzureEmailOptions,
-        }
-        .AsEnumerable());
-    }
+    private readonly IEnumerable<Permission> _allPermissions =
+    [
+        ViewAzureEmailOptions,
+    ];
 
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-    {
-        return new[]
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
+    [
+        new PermissionStereotype
         {
-            new PermissionStereotype
-            {
-                Name = "Administrator",
-                Permissions = new[] { ViewAzureEmailOptions },
-            },
-        };
-    }
+            Name = "Administrator",
+            Permissions = _allPermissions,
+        },
+    ];
 }

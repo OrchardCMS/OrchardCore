@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
@@ -7,6 +8,11 @@ namespace OrchardCore.Email.Azure;
 
 public class AdminMenu : INavigationProvider
 {
+    private static readonly RouteValueDictionary _routeValues = new()
+    {
+        { "area", "OrchardCore.Email.Azure" }
+    };
+
     protected readonly IStringLocalizer S;
 
     public AdminMenu(IStringLocalizer<AdminMenu> localizer)
@@ -24,13 +30,16 @@ public class AdminMenu : INavigationProvider
         builder
             .Add(S["Configuration"], configuration => configuration
                 .Add(S["Settings"], settings => settings
-                    .Add(S["Email"], S["Email"].PrefixPosition(), email => email
+                    .Add(S["Email"], S["Email"].PrefixPosition(), entry => entry
                         .AddClass("email").Id("email")
-                        .Add(S["Azure Email Settings"], S["Azure Email Settings"].PrefixPosition(), options => options
-                            .Action("Options", "Admin", new { area = "OrchardCore.Email.Azure" })
+                        .Add(S["Azure Email Settings"], S["Azure Email Settings"].PrefixPosition(), entry => entry
+                            .Action("Options", "Admin", _routeValues)
                             .Permission(Permissions.ViewAzureEmailOptions)
-                            .LocalNav())
-            )));
+                            .LocalNav()
+                        )
+                    )
+                )
+            );
 
         return Task.CompletedTask;
     }

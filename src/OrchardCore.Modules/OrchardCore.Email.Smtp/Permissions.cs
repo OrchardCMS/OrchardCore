@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
@@ -7,26 +6,22 @@ namespace OrchardCore.Email;
 
 public class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageSmtpEmailSettings = new("ManageSmtpEmailSettings", "Manage SMTP Email Settings");
+    public static readonly Permission ManageSmtpEmailSettings = new(nameof(ManageSmtpEmailSettings), "Manage SMTP Email Settings");
+
+    private readonly IEnumerable<Permission> _allPermissions =
+    [
+        ManageSmtpEmailSettings,
+    ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
-    {
-        return Task.FromResult(new[]
-        {
-            ManageSmtpEmailSettings,
-        }
-        .AsEnumerable());
-    }
+        => Task.FromResult(_allPermissions);
 
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-    {
-        return new[]
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
+    [
+        new PermissionStereotype
         {
-            new PermissionStereotype
-            {
-                Name = "Administrator",
-                Permissions = new[] { ManageSmtpEmailSettings },
-            },
-        };
-    }
+            Name = "Administrator",
+            Permissions = _allPermissions,
+        },
+    ];
 }
