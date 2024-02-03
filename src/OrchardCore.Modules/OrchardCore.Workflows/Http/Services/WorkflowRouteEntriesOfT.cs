@@ -60,7 +60,7 @@ namespace OrchardCore.Workflows.Http.Services
         {
             foreach (var group in entries.GroupBy(x => x.WorkflowId))
             {
-                document.Entries[group.Key] = group.ToList();
+                document.Entries[group.Key] = group.ToArray();
             }
         }
 

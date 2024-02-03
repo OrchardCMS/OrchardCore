@@ -89,7 +89,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
 
             shellDescriptor.Features = features
                 .Concat(missingDependencies)
-                .ToList();
+                .ToArray();
 
             return _shellDescriptor = shellDescriptor;
         }

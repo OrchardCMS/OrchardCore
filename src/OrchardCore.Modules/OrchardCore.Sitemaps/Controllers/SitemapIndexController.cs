@@ -83,8 +83,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             var results = sitemaps
                 .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize)
-                .ToList();
+                .Take(pager.PageSize);
 
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();

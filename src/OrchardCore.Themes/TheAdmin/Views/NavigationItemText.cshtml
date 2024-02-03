@@ -6,7 +6,6 @@
 
     //extract icon classes from Model.Classes
     var iconClasses = ((IEnumerable<string>)Model.Classes)
-                    .ToList()
                     .Where(c => c.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
                     .Select(c => c.Substring(prefix.Length));
 

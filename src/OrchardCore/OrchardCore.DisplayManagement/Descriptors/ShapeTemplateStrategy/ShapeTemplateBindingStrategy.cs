@@ -48,8 +48,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 {
                     harvester,
                     subPaths = harvester.SubPaths()
-                })
-                .ToList();
+                });
 
             var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
             var enabledFeatureIds = enabledFeatures.Select(f => f.Id).ToList();
@@ -85,8 +84,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
                         inViewsFolder: true, inDepth: false).ToArray();
 
                     return new { harvesterInfo.harvester, subPath, filePaths };
-                }))
-                .ToList();
+                }));
 
                 _logger.LogInformation("Done discovering candidate views filenames");
 

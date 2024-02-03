@@ -28,7 +28,7 @@ namespace OrchardCore.Demo.Controllers
                     DueDate = m.DueDate,
                     IsCompleted = m.IsCompleted,
                 })
-                .ToList();
+                .ToArray();
 
             return View(list);
         }

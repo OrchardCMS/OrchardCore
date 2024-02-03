@@ -38,7 +38,7 @@ namespace OrchardCore.Environment.Shell.Descriptor.Settings
                 {
                     Features = _shellFeatures
                         .Concat(missingDependencies)
-                        .ToList()
+                        .ToArray()
                 };
             }
 

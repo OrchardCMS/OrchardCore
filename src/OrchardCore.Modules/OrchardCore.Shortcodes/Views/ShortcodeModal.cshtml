@@ -13,8 +13,7 @@ and call @await DisplayAsync(await New.ShortcodeModal()) from the fields view
     var categories = shortcodeDescriptors
         .SelectMany(shortcodeDescriptor => shortcodeDescriptor.Categories ?? Enumerable.Empty<string>())
         .Distinct(StringComparer.OrdinalIgnoreCase)
-        .OrderBy(category => category)
-        .ToList();
+        .OrderBy(category => category);
 
     var jShortcodes = JsonConvert.SerializeObject(shortcodeDescriptors.Select(d => new { name = d.Name, categories = d.Categories }));
     var jCategories = JsonConvert.SerializeObject(categories);

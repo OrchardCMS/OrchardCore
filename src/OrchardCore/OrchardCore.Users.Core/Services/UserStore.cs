@@ -595,7 +595,7 @@ namespace OrchardCore.Users.Services
             {
                 foreach (var claim in claims)
                 {
-                    foreach (var userClaim in u.UserClaims.Where(uc => uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type).ToList())
+                    foreach (var userClaim in u.UserClaims.Where(uc => uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type))
                     {
                         u.UserClaims.Remove(userClaim);
                     }
@@ -611,7 +611,7 @@ namespace OrchardCore.Users.Services
 
             var users = await _session.Query<User, UserByClaimIndex>(uc => uc.ClaimType == claim.Type && uc.ClaimValue == claim.Value).ListAsync();
 
-            return users.Cast<IUser>().ToList();
+            return users.Cast<IUser>().ToArray();
         }
 
         #endregion IUserClaimStore<IUser>

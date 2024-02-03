@@ -92,7 +92,8 @@ namespace OrchardCore.Templates.Controllers
 
             templates = templates.OrderBy(x => x.Key)
                 .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize).ToList();
+                .Take(pager.PageSize)
+                .ToList();
 
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();
@@ -105,7 +106,7 @@ namespace OrchardCore.Templates.Controllers
             var pagerShape = await _shapeFactory.PagerAsync(pager, count, routeData);
             var model = new TemplateIndexViewModel
             {
-                Templates = templates.Select(x => new TemplateEntry { Name = x.Key, Template = x.Value }).ToList(),
+                Templates = templates.Select(x => new TemplateEntry { Name = x.Key, Template = x.Value }).ToArray(),
                 Options = options,
                 Pager = pagerShape
             };

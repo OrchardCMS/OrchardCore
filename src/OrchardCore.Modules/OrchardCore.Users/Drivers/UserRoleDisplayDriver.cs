@@ -145,10 +145,10 @@ namespace OrchardCore.Users.Drivers
                             var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole))
                                 .Cast<User>()
                                 .Where(user => user.IsEnabled)
-                                .ToList();
+                                .ToArray();
 
                             // Make sure we always have at least one enabled administrator account.
-                            if (enabledUsersOfAdminRole.Count == 1 && user.UserId == enabledUsersOfAdminRole.First().UserId)
+                            if (enabledUsersOfAdminRole.Length == 1 && user.UserId == enabledUsersOfAdminRole.First().UserId)
                             {
                                 await _notifier.WarningAsync(H[$"Cannot remove {AdministratorRole} role from the only enabled administrator."]);
 

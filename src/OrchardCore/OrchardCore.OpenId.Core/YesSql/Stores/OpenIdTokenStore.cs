@@ -347,9 +347,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
                              token.AuthorizationId.IsNotIn<OpenIdAuthorizationIndex>(
                                 authorization => authorization.AuthorizationId,
                                 authorization => authorization.Status == Statuses.Valid) ||
-                             token.ExpirationDate < DateTime.UtcNow), collection: OpenIdCollection).Take(100).ListAsync()).ToList();
+                             token.ExpirationDate < DateTime.UtcNow), collection: OpenIdCollection).Take(100).ListAsync()).ToArray();
 
-                if (tokens.Count is 0)
+                if (tokens.Length is 0)
                 {
                     break;
                 }
@@ -371,7 +371,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
                     continue;
                 }
 
-                result += tokens.Count;
+                result += tokens.Length;
             }
 
             if (exceptions != null)
@@ -392,9 +392,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             var tokens = (await _session.Query<TToken, OpenIdTokenIndex>(
-                token => token.AuthorizationId == identifier, collection: OpenIdCollection).ListAsync()).ToList();
+                token => token.AuthorizationId == identifier, collection: OpenIdCollection).ListAsync()).ToArray();
 
-            if (tokens.Count is 0)
+            if (tokens.Length is 0)
             {
                 return 0;
             }
@@ -408,7 +408,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             await _session.SaveChangesAsync();
 
-            return tokens.Count;
+            return tokens.Length;
         }
 
         /// <inheritdoc/>

@@ -53,7 +53,7 @@ namespace OrchardCore.Media.Drivers
 
         public override IDisplayResult Edit(MediaField field, BuildFieldEditorContext context)
         {
-            var itemPaths = field.Paths?.ToList().Select(p => new EditMediaFieldItemInfo { Path = p }).ToArray() ?? [];
+            var itemPaths = field.Paths?.Select(p => new EditMediaFieldItemInfo { Path = p }).ToArray() ?? [];
 
             return Initialize<EditMediaFieldViewModel>(GetEditorShapeType(context), model =>
             {

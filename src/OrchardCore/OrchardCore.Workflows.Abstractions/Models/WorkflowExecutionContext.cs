@@ -87,12 +87,12 @@ namespace OrchardCore.Workflows.Models
 
         public IEnumerable<Transition> GetInboundTransitions(string activityId)
         {
-            return WorkflowType.Transitions.Where(x => x.DestinationActivityId == activityId).ToList();
+            return WorkflowType.Transitions.Where(x => x.DestinationActivityId == activityId).ToArray();
         }
 
         public IEnumerable<Transition> GetOutboundTransitions(string activityId)
         {
-            return WorkflowType.Transitions.Where(x => x.SourceActivityId == activityId).ToList();
+            return WorkflowType.Transitions.Where(x => x.SourceActivityId == activityId).ToArray();
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace OrchardCore.Workflows.Models
         /// </summary>
         public IEnumerable<string> GetInboundActivityPath(string activityId)
         {
-            return GetInboundActivityPathInternal(activityId, activityId).Distinct().ToList();
+            return GetInboundActivityPathInternal(activityId, activityId).Distinct().ToArray();
         }
 
         private IEnumerable<string> GetInboundActivityPathInternal(string activityId, string startingPointActivityId)

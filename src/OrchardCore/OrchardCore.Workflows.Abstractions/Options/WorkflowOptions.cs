@@ -17,8 +17,11 @@ namespace OrchardCore.Workflows.Options
         /// </summary>
         private Dictionary<Type, ActivityRegistration> ActivityDictionary { get; }
 
-        public IEnumerable<Type> ActivityTypes => ActivityDictionary.Values.Select(x => x.ActivityType).ToList().AsReadOnly();
-        public IEnumerable<Type> ActivityDisplayDriverTypes => ActivityDictionary.Values.SelectMany(x => x.DriverTypes).ToList().AsReadOnly();
+        public IEnumerable<Type> ActivityTypes
+            => ActivityDictionary.Values.Select(x => x.ActivityType).ToArray();
+
+        public IEnumerable<Type> ActivityDisplayDriverTypes
+            => ActivityDictionary.Values.SelectMany(x => x.DriverTypes).ToArray();
 
         public WorkflowOptions RegisterActivity(Type activityType, Type driverType = null)
         {

@@ -312,9 +312,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
                                      authorization.AuthorizationId.IsNotIn<OpenIdTokenIndex>(
                                          token => token.AuthorizationId,
                                          token => token.Id != 0))),
-                    collection: OpenIdCollection).Take(100).ListAsync()).ToList();
+                    collection: OpenIdCollection).Take(100).ListAsync()).ToArray();
 
-                if (authorizations.Count is 0)
+                if (authorizations.Length is 0)
                 {
                     break;
                 }
@@ -336,7 +336,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
                     continue;
                 }
 
-                result += authorizations.Count;
+                result += authorizations.Length;
             }
 
             if (exceptions != null)

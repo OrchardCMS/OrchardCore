@@ -156,7 +156,7 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
     {
         var providers = await UserManager.GetValidTwoFactorProvidersAsync(user);
 
-        return providers.Intersect(TwoFactorOptions.Providers).ToList();
+        return providers.Intersect(TwoFactorOptions.Providers).ToArray();
     }
 
     protected IActionResult RedirectToTwoFactorIndex()

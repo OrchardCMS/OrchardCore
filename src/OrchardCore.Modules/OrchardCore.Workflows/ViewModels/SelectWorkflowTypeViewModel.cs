@@ -27,7 +27,7 @@ namespace OrchardCore.Workflows.ViewModels
                     WorkflowType = x
                 })
                 .OrderBy(x => x.WorkflowType.Name)
-                .ToList();
+                .ToArray();
 
             return selections;
         }

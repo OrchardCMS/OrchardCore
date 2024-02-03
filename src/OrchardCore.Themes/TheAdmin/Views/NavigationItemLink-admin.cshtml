@@ -18,12 +18,11 @@
 
     // Extract classes that are not icons from Model.Classes
     var notIconClasses = ((IEnumerable<string>)Model.Classes)
-                    .ToList()
                     .Where(c => !c.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
 
     if (notIconClasses.Count() > 0)
     {
-        tag.Attributes["class"] = string.Join(" ", notIconClasses);
+        tag.Attributes["class"] = string.Join(' ', notIconClasses);
     }
 
     tag.AddCssClass("item-label d-flex");

@@ -98,8 +98,8 @@
 }
 @if (Model.Fields.Any())
 {
-    var fields = Model.Fields.SelectMany(d => d.Distinct()).ToList();
-    var fieldNames = fields.OrderBy(x => x.Key).Select(d => d.Key).Distinct().ToList();
+    var fields = Model.Fields.SelectMany(d => d.Distinct()).ToArray();
+    var fieldNames = fields.OrderBy(x => x.Key).Select(d => d.Key).Distinct().ToArray();
 
     <div class="mt-3">
         <p><span class="text-muted">@T["The results displayed in this table are coming from the field(s) data."]</span></p>
@@ -124,7 +124,7 @@
                     <tr>
                         <th scope="row">@(row++)</th>
 
-                        @for (int i = 0; i < fieldNames.Count; i++)
+                        @for (int i = 0; i < fieldNames.Length; i++)
                         {
                             var hitValues = (string[])hit.FirstOrDefault(x => x.Key == fieldNames[i]).Value;
 

@@ -25,7 +25,7 @@ public class NotificationMethodProviderAccessor : INotificationMethodProviderAcc
         {
             var notificationPart = user.As<UserNotificationPreferencesPart>();
 
-            var selectedMethods = ((notificationPart?.Methods) ?? []).ToList();
+            var selectedMethods = (notificationPart?.Methods ?? []).ToList();
             var optout = notificationPart.Optout ?? [];
 
             var methods = _notificationMethodProviders.Where(provider => !optout.Contains(provider.Method));
@@ -35,7 +35,7 @@ public class NotificationMethodProviderAccessor : INotificationMethodProviderAcc
                     // Priority matters to honor user preferences.
                     .OrderBy(provider => selectedMethods.IndexOf(provider.Method))
                     .ThenBy(provider => provider.Name.ToString())
-                    .ToList());
+                    .ToArray());
             }
 
             return Task.FromResult<IEnumerable<INotificationMethodProvider>>(methods.OrderBy(provider => provider.Name.ToString()).ToList());

@@ -99,7 +99,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
         {
             var workflows = await _workflowStore.ListByActivityNameAsync(nameof(UserTaskEvent), contentItemId);
             var user = _httpContextAccessor.HttpContext.User;
-            var userRoles = user.Claims.Where(x => x.Type == ClaimTypes.Role).Select(x => x.Value).ToList();
+            var userRoles = user.Claims.Where(x => x.Type == ClaimTypes.Role).Select(x => x.Value).ToArray();
             var actionsQuery =
                 from workflow in workflows
                 let workflowState = workflow.State.ToObject<WorkflowState>()
@@ -108,7 +108,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
                 from action in GetUserTaskActions(workflowState, blockingActivity.ActivityId, userRoles)
                 select action;
 
-            return actionsQuery.Distinct().ToList();
+            return actionsQuery.Distinct().ToArray();
         }
 
         private IEnumerable<string> GetUserTaskActions(WorkflowState workflowState, string activityId, IEnumerable<string> userRoles)

@@ -52,7 +52,7 @@ namespace OrchardCore.Queries.Services
 
         public async Task<IEnumerable<Query>> ListQueriesAsync()
         {
-            return (await GetDocumentAsync()).Queries.Values.ToList();
+            return (await GetDocumentAsync()).Queries.Values;
         }
 
         public async Task SaveQueryAsync(string name, Query query)

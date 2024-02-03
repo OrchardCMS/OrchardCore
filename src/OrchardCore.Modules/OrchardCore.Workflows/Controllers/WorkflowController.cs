@@ -130,7 +130,7 @@ namespace OrchardCore.Workflows.Controllers
             var viewModel = new WorkflowIndexViewModel
             {
                 WorkflowType = workflowType,
-                Workflows = workflows.Select(x => new WorkflowEntry { Workflow = x, Id = x.Id }).ToList(),
+                Workflows = workflows.Select(x => new WorkflowEntry { Workflow = x, Id = x.Id }).ToArray(),
                 Options = model.Options,
                 Pager = pagerShape,
                 ReturnUrl = returnUrl,

@@ -52,11 +52,11 @@ namespace OrchardCore.Placements.Services
 
                     foreach (var placementRule in shapePlacements)
                     {
-                        var filters = placementRule.Filters.ToList();
+                        var filters = placementRule.Filters.ToArray();
 
                         Func<ShapePlacementContext, bool> predicate = ctx => CheckFilter(ctx, placementRule);
 
-                        if (filters.Count > 0)
+                        if (filters.Length > 0)
                         {
                             predicate = filters.Aggregate(predicate, BuildPredicate);
                         }

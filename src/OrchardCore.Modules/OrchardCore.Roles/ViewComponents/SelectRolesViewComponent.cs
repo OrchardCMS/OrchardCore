@@ -46,7 +46,7 @@ namespace OrchardCore.Roles.ViewComponents
                 Item = x
             })
             .OrderBy(x => x.Item)
-            .ToList();
+            .ToArray();
         }
     }
 

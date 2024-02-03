@@ -48,7 +48,8 @@ namespace OrchardCore.Modules
                     ?? new ModuleAttribute() { Name = assemblyName };
 
                 var features = Assembly.GetCustomAttributes<Manifest.FeatureAttribute>()
-                    .Where(f => f is not ModuleAttribute).ToList();
+                    .Where(f => f is not ModuleAttribute)
+                    .ToList();
 
                 if (isApplication)
                 {

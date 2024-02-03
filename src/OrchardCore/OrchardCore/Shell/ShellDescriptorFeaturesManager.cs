@@ -61,7 +61,7 @@ namespace OrchardCore.Environment.Shell
                 .Union(byDependencyOnlyFeaturesToDisable)
                 .Distinct()
                 .Reverse()
-                .ToList();
+                .ToArray();
 
             foreach (var feature in allFeaturesToDisable)
             {
@@ -79,7 +79,7 @@ namespace OrchardCore.Environment.Shell
                 .Where(feature => !feature.EnabledByDependencyOnly)
                 .SelectMany(feature => GetFeaturesToEnable(feature, enabledFeatureIds, force))
                 .Distinct()
-                .ToList();
+                .ToArray();
 
             foreach (var feature in allFeaturesToEnable)
             {
@@ -93,7 +93,7 @@ namespace OrchardCore.Environment.Shell
 
             var allFeaturesToInstall = allFeaturesToEnable
                 .Where(f => !installedFeatureIds.Contains(f.Id))
-                .ToList();
+                .ToArray();
 
             foreach (var feature in allFeaturesToInstall)
             {
@@ -105,12 +105,12 @@ namespace OrchardCore.Environment.Shell
                 await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.InstallingAsync(featureInfo), feature, _logger);
             }
 
-            if (allFeaturesToEnable.Count > 0)
+            if (allFeaturesToEnable.Length > 0)
             {
                 enabledFeatureIds.UnionWith(allFeaturesToEnable.Select(f => f.Id));
             }
 
-            if (allFeaturesToDisable.Count > 0 || allFeaturesToEnable.Count > 0)
+            if (allFeaturesToDisable.Length > 0 || allFeaturesToEnable.Length > 0)
             {
                 await _shellDescriptorManager.UpdateShellDescriptorAsync(
                     shellDescriptor.SerialNumber,
@@ -168,9 +168,9 @@ namespace OrchardCore.Environment.Shell
             var featuresToEnable = _extensionManager
                 .GetFeatureDependencies(featureInfo.Id)
                 .Where(f => !enabledFeatureIds.Contains(f.Id))
-                .ToList();
+                .ToArray();
 
-            if (featuresToEnable.Count > 1 && !force)
+            if (featuresToEnable.Length > 1 && !force)
             {
                 if (_logger.IsEnabled(LogLevel.Warning))
                 {
@@ -190,14 +190,14 @@ namespace OrchardCore.Environment.Shell
         /// <param name="enabledFeatureIds">The list of feature ids which are currently enabled.</param>
         /// <param name="force">Boolean parameter indicating if the feature should disable it's dependents.</param>
         /// <returns>An enumeration of the features to enable, empty if 'force' = true and a dependent is enabled.</returns>
-        private List<IFeatureInfo> GetFeaturesToDisable(IFeatureInfo featureInfo, IEnumerable<string> enabledFeatureIds, bool force)
+        private IFeatureInfo[] GetFeaturesToDisable(IFeatureInfo featureInfo, IEnumerable<string> enabledFeatureIds, bool force)
         {
             var featuresToDisable = _extensionManager
                 .GetDependentFeatures(featureInfo.Id)
                 .Where(f => enabledFeatureIds.Contains(f.Id))
-                .ToList();
+                .ToArray();
 
-            if (featuresToDisable.Count > 1 && !force)
+            if (featuresToDisable.Length > 1 && !force)
             {
                 if (_logger.IsEnabled(LogLevel.Warning))
                 {

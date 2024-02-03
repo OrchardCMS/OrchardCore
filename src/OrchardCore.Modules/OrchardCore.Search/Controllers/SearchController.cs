@@ -203,8 +203,7 @@ public class SearchController : Controller
             {
                 Index = viewModel.Index,
                 ContentItems = containedItems.OrderBy(x => searchResult.ContentItemIds.IndexOf(x.ContentItemId))
-                .Take(pager.PageSize)
-                .ToList(),
+                .Take(pager.PageSize),
             },
             Pager = await _shapeFactory.PagerSlimAsync(pager, new Dictionary<string, string>()
             {

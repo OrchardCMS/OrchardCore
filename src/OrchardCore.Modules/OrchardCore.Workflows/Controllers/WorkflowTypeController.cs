@@ -426,7 +426,7 @@ namespace OrchardCore.Workflows.Controllers
                     }),
                 ActivityThumbnailShapes = activityThumbnailShapes,
                 ActivityDesignShapes = activityDesignShapes,
-                ActivityCategories = _activityLibrary.ListCategories().ToList(),
+                ActivityCategories = _activityLibrary.ListCategories().ToArray(),
                 LocalId = newLocalId,
                 LoadLocalState = !string.IsNullOrWhiteSpace(localId),
                 WorkflowCount = workflowCount,
@@ -451,10 +451,9 @@ namespace OrchardCore.Workflows.Controllers
                 from activityId in currentActivities.Keys
                 where !postedActivities.ContainsKey(activityId)
                 select activityId;
-            var removedActivityIds = removedActivityIdsQuery.ToList();
 
             // Remove any orphans (activities deleted on the client).
-            foreach (var activityId in removedActivityIds)
+            foreach (var activityId in removedActivityIdsQuery)
             {
                 var activityToRemove = currentActivities[activityId];
                 workflowType.Activities.Remove(activityToRemove);

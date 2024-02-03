@@ -79,7 +79,7 @@ namespace OrchardCore.Workflows.Http.Filters
 
             if (workflowEntries.Any())
             {
-                var workflowIds = workflowEntries.Select(x => x.WorkflowId).ToList();
+                var workflowIds = workflowEntries.Select(x => x.WorkflowId);
                 var workflows = (await _workflowStore.GetAsync(workflowIds)).ToDictionary(x => x.WorkflowId);
                 var correlationId = routeValues.GetValue<string>("correlationid");
 

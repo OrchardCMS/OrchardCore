@@ -22,7 +22,7 @@ namespace OrchardCore.Contents.Workflows.Drivers
         {
             model.AvailableContentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
                 .Select(x => new SelectListItem { Text = x.DisplayName, Value = x.Name })
-                .ToList();
+                .ToArray();
 
             model.ContentItemIdExpression = activity.Content.Expression;
             model.ContentProperties = activity.ContentProperties.Expression;

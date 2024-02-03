@@ -39,10 +39,10 @@ public class Startup : Modules.StartupBase
         services.AddTransient<IConfigureOptions<AwsStorageOptions>, AwsStorageOptionsConfiguration>();
 
         var storeOptions = new AwsStorageOptions().BindConfiguration(_configuration, _logger);
-        var validationErrors = storeOptions.Validate().ToList();
+        var validationErrors = storeOptions.Validate();
         var stringBuilder = new StringBuilder();
 
-        if (validationErrors.Count > 0)
+        if (validationErrors.Any())
         {
             foreach (var error in validationErrors)
             {

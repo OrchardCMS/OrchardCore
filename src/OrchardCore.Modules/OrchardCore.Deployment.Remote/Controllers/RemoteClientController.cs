@@ -239,14 +239,13 @@ namespace OrchardCore.Deployment.Remote.Controllers
             if (itemIds?.Count() > 0)
             {
                 var remoteClients = (await _remoteClientService.GetRemoteClientListAsync()).RemoteClients;
-                var checkedContentItems = remoteClients.Where(x => itemIds.Contains(x.Id)).ToList();
 
                 switch (options.BulkAction)
                 {
                     case ContentsBulkAction.None:
                         break;
                     case ContentsBulkAction.Remove:
-                        foreach (var item in checkedContentItems)
+                        foreach (var item in remoteClients.Where(x => itemIds.Contains(x.Id)))
                         {
                             await _remoteClientService.DeleteRemoteClientAsync(item.Id);
                         }
