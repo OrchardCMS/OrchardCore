@@ -1,9 +1,15 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace OrchardCore.Email.ViewModels
 {
-    public class SmtpSettingsViewModel
+    public class EmailTestViewModel
     {
+        [Required]
+        public string Provider { get; set; }
+
         [Required(AllowEmptyStrings = false)]
         public string To { get; set; }
 
@@ -19,5 +25,8 @@ namespace OrchardCore.Email.ViewModels
         public string Subject { get; set; }
 
         public string Body { get; set; }
+
+        [BindNever]
+        public IList<SelectListItem> Providers { get; set; }
     }
 }

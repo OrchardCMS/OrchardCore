@@ -27,21 +27,23 @@ namespace OrchardCore.Email
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<IDisplayDriver<ISite>, SmtpSettingsDisplayDriver>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddEmailServices()
+                .AddScoped<IDisplayDriver<ISite>, EmailSettingsDisplayDriver>()
+                .AddScoped<IPermissionProvider, Permissions>()
+                .AddScoped<INavigationProvider, AdminMenu>()
+                .AddTransient<IConfigureOptions<SmtpSettings>, SmtpSettingsConfiguration>();
 
-            services.AddTransient<IConfigureOptions<SmtpSettings>, SmtpSettingsConfiguration>();
-            services.AddScoped<ISmtpService, SmtpService>();
+            services.AddSmtpEmailProvider()
+                .AddScoped<IDisplayDriver<ISite>, SmtpSettingsDisplayDriver>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaControllerRoute(
-                name: "EmailIndex",
+                name: "EmailTest",
                 areaName: "OrchardCore.Email",
-                pattern: _adminOptions.AdminUrlPrefix + "/Email/Index",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Index) }
+                pattern: _adminOptions.AdminUrlPrefix + "/Email/Test",
+                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Test) }
             );
         }
     }

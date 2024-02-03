@@ -1,9 +1,25 @@
-@model OrchardCore.Email.ViewModels.SmtpSettingsViewModel
+@model OrchardCore.Email.ViewModels.EmailTestViewModel
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Settings"])</h1></zone>
 
-<form asp-action="Index" asp-controller="Admin" asp-area="OrchardCore.Email" method="post" class="no-multisubmit">
+@if (Model.Providers == null || Model.Providers.Count == 0)
+{
+    <div class="alert alert-danger" role="alert">
+        @T["No Email providers are available. Enable at least one Email provider feature."]
+    </div>
+
+    return;
+}
+
+<form method="post" class="no-multisubmit">
     @Html.ValidationSummary()
+
+    <div class="mb-3">
+        <label asp-for="Provider" class="form-label">@T["Provider"]</label>
+        <select class="form-select" asp-for="Provider" asp-items="Model.Providers">
+            <option value="">@T["Select a provider"]</option>
+        </select>
+    </div>
 
     <div class="mb-3">
         <div class="mb-3" asp-validation-class-for="To">

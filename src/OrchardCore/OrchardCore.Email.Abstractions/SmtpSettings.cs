@@ -11,6 +11,8 @@ namespace OrchardCore.Email
     /// </summary>
     public class SmtpSettings : IValidatableObject
     {
+        public bool IsEnabled { get; set; }
+
         /// <summary>
         /// Gets or sets the default sender mail.
         /// </summary>

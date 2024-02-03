@@ -1,10 +1,13 @@
-using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Email.Drivers;
+using OrchardCore.Email.Core.Services;
 using OrchardCore.Email.ViewModels;
 
 namespace OrchardCore.Email.Controllers
@@ -13,45 +16,62 @@ namespace OrchardCore.Email.Controllers
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
-        private readonly ISmtpService _smtpService;
+        private readonly EmailProviderOptions _providerOptions;
+        private readonly IEmailProviderResolver _providerResolver;
+
         protected readonly IHtmlLocalizer H;
+        protected readonly IStringLocalizer S;
 
         public AdminController(
-            IHtmlLocalizer<AdminController> h,
             IAuthorizationService authorizationService,
             INotifier notifier,
-            ISmtpService smtpService)
+            IOptions<EmailProviderOptions> providerOptions,
+            IEmailProviderResolver providerResolver,
+            IHtmlLocalizer<AdminController> htmlLocalizer,
+            IStringLocalizer<AdminController> stringLocalizer)
         {
-            H = h;
             _authorizationService = authorizationService;
             _notifier = notifier;
-            _smtpService = smtpService;
+            _providerOptions = providerOptions.Value;
+            _providerResolver = providerResolver;
+            H = htmlLocalizer;
+            S = stringLocalizer;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Test()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageEmailSettings))
             {
                 return Forbid();
             }
 
-            return View();
+            var model = new EmailTestViewModel();
+
+            PopulateModel(model);
+
+            return View(model);
         }
 
-        [HttpPost, ActionName(nameof(Index))]
-        public async Task<IActionResult> IndexPost(SmtpSettingsViewModel model)
+        [HttpPost]
+        public async Task<IActionResult> Test(EmailTestViewModel model)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageEmailSettings))
             {
                 return Forbid();
+            }
+
+            var provider = await _providerResolver.GetAsync(model.Provider);
+
+            if (provider is null)
+            {
+                ModelState.AddModelError(nameof(model.Provider), S["Please select a valid provider."]);
             }
 
             if (ModelState.IsValid)
             {
-                var message = CreateMessageFromViewModel(model);
+                var message = GetMessage(model);
 
-                var result = await _smtpService.SendAsync(message);
+                var result = await provider.SendAsync(message);
 
                 if (!result.Succeeded)
                 {
@@ -64,14 +84,14 @@ namespace OrchardCore.Email.Controllers
                 {
                     await _notifier.SuccessAsync(H["Message sent successfully."]);
 
-                    return Redirect(Url.Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SmtpSettingsDisplayDriver.GroupId }));
+                    return Redirect(Url.Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = EmailSettings.GroupId }));
                 }
             }
 
             return View(model);
         }
 
-        private static MailMessage CreateMessageFromViewModel(SmtpSettingsViewModel testSettings)
+        private static MailMessage GetMessage(EmailTestViewModel testSettings)
         {
             var message = new MailMessage
             {
@@ -97,6 +117,15 @@ namespace OrchardCore.Email.Controllers
             }
 
             return message;
+        }
+
+        private void PopulateModel(EmailTestViewModel model)
+        {
+            model.Providers = _providerOptions.Providers
+                .Where(entry => entry.Value.IsEnabled)
+                .Select(entry => new SelectListItem(entry.Key, entry.Key))
+                .OrderBy(item => item.Text)
+                .ToArray();
         }
     }
 }
