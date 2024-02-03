@@ -9,7 +9,8 @@ public class EmailMessageValidator : IEmailMessageValidator
 {
     private readonly IEmailAddressValidator _emailAddressValidator;
     private readonly EmailSettings _emailSettings;
-    private readonly IStringLocalizer S;
+
+    protected readonly IStringLocalizer S;
 
     public EmailMessageValidator(IEmailAddressValidator emailAddressValidator,
         IOptions<EmailSettings> options,

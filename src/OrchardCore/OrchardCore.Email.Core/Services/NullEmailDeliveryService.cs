@@ -7,7 +7,8 @@ namespace OrchardCore.Email.Services;
 public class NullEmailDeliveryService : IEmailDeliveryService
 {
     private readonly ILogger _logger;
-    private readonly IStringLocalizer S;
+
+    protected readonly IStringLocalizer S;
 
     public NullEmailDeliveryService(ILogger<NullEmailDeliveryService> logger, IStringLocalizer<NullEmailDeliveryService> stringLocalizer)
     {

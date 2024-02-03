@@ -21,8 +21,9 @@ public class SmtpEmailDeliveryService : IEmailDeliveryService
     private const string EmailExtension = ".eml";
 
     private readonly SmtpEmailSettings _emailSettings;
-    private readonly IStringLocalizer S;
     private readonly ILogger _logger;
+
+    protected readonly IStringLocalizer S;
 
     public SmtpEmailDeliveryService(
         IOptions<SmtpEmailSettings> options,

@@ -82,8 +82,9 @@ public class AzureEmailDeliveryService : IEmailDeliveryService
     };
 
     private readonly AzureEmailSettings _emailSettings;
-    private readonly IStringLocalizer S;
     private readonly ILogger _logger;
+
+    protected readonly IStringLocalizer S;
 
     public AzureEmailDeliveryService(
         IOptions<AzureEmailSettings> options,
