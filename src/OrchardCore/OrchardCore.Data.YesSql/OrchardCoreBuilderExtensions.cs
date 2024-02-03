@@ -85,7 +85,7 @@ namespace Microsoft.Extensions.DependencyInjection
                             Directory.CreateDirectory(databaseFolder);
 
                             // Only allow creating a file DB when a tenant is in the Initializing state
-                            var connectionString = SqliteHelper.GetConnectionString(sqliteOptions, databaseFolder, shellSettings.State == TenantState.Initializing, shellSettings["DatabaseName"]);
+                            var connectionString = SqliteHelper.GetConnectionString(sqliteOptions, databaseFolder, shellSettings["DatabaseName"], shellSettings.State == TenantState.Initializing);
 
                             storeConfiguration
                                 .UseSqLite(connectionString, IsolationLevel.ReadUncommitted)

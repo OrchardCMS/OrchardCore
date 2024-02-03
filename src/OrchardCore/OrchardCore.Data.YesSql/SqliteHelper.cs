@@ -6,10 +6,10 @@ namespace OrchardCore.Data;
 
 public static class SqliteHelper
 {
-    public static string GetConnectionString(SqliteOptions sqliteOptions, ShellOptions shellOptions, string shellName, bool createFile, string databaseName = "")
-        => GetConnectionString(sqliteOptions, GetDatabaseFolder(shellOptions, shellName), createFile, databaseName);
+    public static string GetConnectionString(SqliteOptions sqliteOptions, ShellOptions shellOptions, string shellName, string databaseName = "", bool createFile = false)
+        => GetConnectionString(sqliteOptions, GetDatabaseFolder(shellOptions, shellName), databaseName, createFile);
 
-    public static string GetConnectionString(SqliteOptions sqliteOptions, string databaseFolder, bool createFile, string databaseName = "")
+    public static string GetConnectionString(SqliteOptions sqliteOptions, string databaseFolder,  string databaseName = "", bool createFile = false)
     {
         if (string.IsNullOrEmpty(databaseName))
         {
