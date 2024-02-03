@@ -16,7 +16,7 @@ public static class OrchardCoreBuilderExtensions
 
             if (configurationSection.Value == null)
             {
-                // Fall back to the old configuration section
+                // Fall back to the old configuration section.
                 configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_Email");
 
                 var logger = serviceProvider.GetRequiredService<ILogger<SmtpEmailSettingsConfiguration>>();
