@@ -50,7 +50,19 @@ namespace OrchardCore.DisplayManagement.Implementation
             // Check if the shape is pre-rendered.
             if (shape is IHtmlContent htmlContent)
             {
-                return htmlContent;
+                if (htmlContent is PositionWrapper wrapper)
+                {
+                    while (wrapper.Value is PositionWrapper)
+                    {
+                        wrapper = (PositionWrapper)wrapper.Value;
+                    }
+
+                    return wrapper.Value;
+                }
+                else
+                {
+                    return htmlContent;
+                }
             }
 
             var shapeMetadata = shape.Metadata;

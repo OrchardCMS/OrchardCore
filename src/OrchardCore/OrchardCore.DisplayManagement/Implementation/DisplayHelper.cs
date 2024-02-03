@@ -4,6 +4,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace OrchardCore.DisplayManagement.Implementation
 {
@@ -75,7 +76,19 @@ namespace OrchardCore.DisplayManagement.Implementation
             // Check if the shape is pre-rendered.
             if (shape is IHtmlContent htmlContent)
             {
-                return Task.FromResult(htmlContent);
+                if (shape is PositionWrapper wrapper)
+                {
+                    while(wrapper.Value is PositionWrapper)
+                    {
+                        wrapper = (PositionWrapper) wrapper.Value;
+                    }
+                    
+                    return Task.FromResult(wrapper.Value);
+                }
+                else
+                {
+                    return Task.FromResult(htmlContent);
+                }
             }
 
             var context = new DisplayContext

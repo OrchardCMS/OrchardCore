@@ -41,6 +41,14 @@ namespace OrchardCore.DisplayManagement
             Position = position;
         }
 
+        internal IHtmlContent Value
+        {
+            get
+            {
+                return _value;
+            }
+        }
+
         public void WriteTo(TextWriter writer, HtmlEncoder encoder)
         {
             _value.WriteTo(writer, encoder);
