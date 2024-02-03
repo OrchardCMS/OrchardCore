@@ -37,7 +37,7 @@
 
         if (li.Attributes.Where(a => a.Key == "id").Count() > 0)
         {
-            figure.Attributes["aria-labelledby"] = li.Attributes["id"] ;
+            figure.Attributes["aria-labelledby"] = li.Attributes["id"];
             figCaption.Attributes["id"] = li.Attributes["id"];
             li.Attributes["id"] = null;
         }
