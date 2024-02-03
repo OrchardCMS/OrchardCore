@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -109,10 +109,10 @@ namespace OrchardCore.CustomSettings.Services
 
         public async Task<ContentItem> GetSettingsAsync(ISite site, ContentTypeDefinition settingsType, Action isNew = null)
         {
-            JToken property;
+            JsonNode property;
             ContentItem contentItem;
 
-            if (site.Properties.TryGetValue(settingsType.Name, out property))
+            if (site.Properties.TryGetPropertyValue(settingsType.Name, out property))
             {
                 var existing = property.ToObject<ContentItem>();
 

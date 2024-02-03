@@ -16,7 +16,7 @@ using OrchardCore.Liquid;
 namespace OrchardCore.Contents.Handlers
 {
     /// <summary>
-    /// Provides the content for FullTextAspect based on FullTextAspectSettings
+    /// Provides the content for FullTextAspect based on FullTextAspectSettings.
     /// </summary>
     public class FullTextAspectContentHandler : ContentHandlerBase
     {

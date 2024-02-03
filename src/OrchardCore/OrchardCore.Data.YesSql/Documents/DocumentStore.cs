@@ -12,10 +12,10 @@ namespace OrchardCore.Data.Documents
     {
         private readonly ISession _session;
 
-        private readonly Dictionary<Type, object> _loaded = new();
+        private readonly Dictionary<Type, object> _loaded = [];
 
-        private readonly List<Type> _afterCommitsSuccess = new();
-        private readonly List<Type> _afterCommitsFailure = new();
+        private readonly List<Type> _afterCommitsSuccess = [];
+        private readonly List<Type> _afterCommitsFailure = [];
 
         private DocumentStoreCommitSuccessDelegate _afterCommitSuccess;
         private DocumentStoreCommitFailureDelegate _afterCommitFailure;

@@ -1,7 +1,7 @@
 using System;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Recipes.Models;
@@ -45,6 +45,6 @@ namespace OrchardCore.Contents.Recipes
 
     public class ContentStepModel
     {
-        public JArray Data { get; set; }
+        public JsonArray Data { get; set; }
     }
 }

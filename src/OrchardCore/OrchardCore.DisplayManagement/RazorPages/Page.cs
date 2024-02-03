@@ -226,10 +226,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
         {
             // We can replace the base implementation as it can't be called on a view that is not an actual MVC Layout.
 
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
+            ArgumentNullException.ThrowIfNull(name);
 
             return ThemeLayout.Zones.IsNotEmpty(name);
         }
@@ -240,10 +237,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
         /// <param name="name">The name of the zone to render.</param>
         public Task<IHtmlContent> RenderSectionAsync(string name)
         {
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
+            ArgumentNullException.ThrowIfNull(name);
 
             return RenderSectionAsync(name, required: true);
         }
@@ -255,10 +249,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
         /// <param name="required">Whether the zone is required or not.</param>
         public Task<IHtmlContent> RenderSectionAsync(string name, bool required)
         {
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
+            ArgumentNullException.ThrowIfNull(name);
 
             var zone = ThemeLayout.Zones[name];
 

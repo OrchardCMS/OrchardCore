@@ -30,8 +30,8 @@ namespace OrchardCore.Users.Services
         /// <summary>
         /// Change a user email.
         /// </summary>
-        /// <param name="user">The user</param>
-        /// <param name="newEmail">The new email</param>
+        /// <param name="user">The user.</param>
+        /// <param name="newEmail">The new email.</param>
         /// <param name="reportError">The error reported in case failure happened during the creation process.</param>
         /// <returns>Returns <c>true</c> if the email has been changed, otherwise <c>false</c>.</returns>
         Task<bool> ChangeEmailAsync(IUser user, string newEmail, Action<string, string> reportError);
@@ -39,9 +39,9 @@ namespace OrchardCore.Users.Services
         /// <summary>
         /// Change a user password.
         /// </summary>
-        /// <param name="user">The user</param>
-        /// <param name="currentPassword">The current password</param>
-        /// <param name="newPassword">The new password</param>
+        /// <param name="user">The user.</param>
+        /// <param name="currentPassword">The current password.</param>
+        /// <param name="newPassword">The new password.</param>
         /// <param name="reportError"></param>
         /// <returns>Returns <c>true</c> if the password has been changed, otherwise <c>false</c>.</returns>
         Task<bool> ChangePasswordAsync(IUser user, string currentPassword, string newPassword, Action<string, string> reportError);

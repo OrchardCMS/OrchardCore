@@ -12,7 +12,7 @@ namespace OrchardCore.Queries.Sql
             NonGrammarTerminals.Add(lineComment);
             var number = new NumberLiteral("number");
             var string_literal = new StringLiteral("string", "'", StringOptions.AllowsDoubledQuote);
-            var Id_simple = TerminalFactory.CreateSqlExtIdentifier(this, "id_simple"); //covers normal identifiers (abc) and quoted id's ([abc d], "abc d")
+            var Id_simple = TerminalFactory.CreateSqlExtIdentifier(this, "id_simple"); // covers normal identifiers (abc) and quoted id's ([abc d], "abc d")
             var comma = ToTerm(",");
             var dot = ToTerm(".");
 #pragma warning disable IDE0059 // Unnecessary assignment of a value

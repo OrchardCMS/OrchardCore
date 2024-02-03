@@ -1,5 +1,5 @@
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
 using OrchardCore.Workflows.Abstractions.Converters;
 
 namespace OrchardCore.Workflows.Abstractions.Models

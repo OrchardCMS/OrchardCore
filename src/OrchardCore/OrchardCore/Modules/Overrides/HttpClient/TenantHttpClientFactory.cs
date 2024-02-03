@@ -37,7 +37,7 @@ namespace Microsoft.Extensions.Http
         // 10 distinct named clients * expiry time >= 1s = approximate cleanup queue of 100 items
         //
         // This seems frequent enough. We also rely on GC occurring to actually trigger disposal.
-        private readonly TimeSpan DefaultCleanupInterval = TimeSpan.FromSeconds(10);
+        private readonly TimeSpan _defaultCleanupInterval = TimeSpan.FromSeconds(10);
 
         // We use a new timer for each regular cleanup cycle, protected with a lock. Note that this scheme
         // doesn't give us anything to dispose, as the timer is started/stopped as needed.
@@ -223,7 +223,7 @@ namespace Microsoft.Extensions.Http
 
             // The timer callback should be the only one removing from the active collection. If we can't find
             // our entry in the collection, then this is a bug.
-            var removed = _activeHandlers.TryRemove(active.Name, out Lazy<ActiveHandlerTrackingEntry>? found);
+            var removed = _activeHandlers.TryRemove(active.Name, out var found);
             Debug.Assert(removed, "Entry not found. We should always be able to remove the entry");
             Debug.Assert(object.ReferenceEquals(active, found!.Value), "Different entry found. The entry should not have been replaced");
 
@@ -252,7 +252,7 @@ namespace Microsoft.Extensions.Http
         {
             lock (_cleanupTimerLock)
             {
-                _cleanupTimer ??= NonCapturingTimer.Create(_cleanupCallback, this, DefaultCleanupInterval, Timeout.InfiniteTimeSpan);
+                _cleanupTimer ??= NonCapturingTimer.Create(_cleanupCallback, this, _defaultCleanupInterval, Timeout.InfiniteTimeSpan);
             }
         }
 
@@ -306,7 +306,7 @@ namespace Microsoft.Extensions.Http
                 for (var i = 0; i < initialCount; i++)
                 {
                     // Since we're the only one removing from _expired, TryDequeue must always succeed.
-                    _expiredHandlers.TryDequeue(out ExpiredHandlerTrackingEntry? entry);
+                    _expiredHandlers.TryDequeue(out var entry);
                     Debug.Assert(entry != null, "Entry was null, we should always get an entry back from TryDequeue");
 
                     // OC: Also check if disposed.
@@ -377,10 +377,10 @@ namespace Microsoft.Extensions.Http
         {
             public static class EventIds
             {
-                public static readonly EventId CleanupCycleStart = new EventId(100, "CleanupCycleStart");
-                public static readonly EventId CleanupCycleEnd = new EventId(101, "CleanupCycleEnd");
-                public static readonly EventId CleanupItemFailed = new EventId(102, "CleanupItemFailed");
-                public static readonly EventId HandlerExpired = new EventId(103, "HandlerExpired");
+                public static readonly EventId CleanupCycleStart = new(100, "CleanupCycleStart");
+                public static readonly EventId CleanupCycleEnd = new(101, "CleanupCycleEnd");
+                public static readonly EventId CleanupItemFailed = new(102, "CleanupItemFailed");
+                public static readonly EventId HandlerExpired = new(103, "HandlerExpired");
             }
 
             private static readonly Action<ILogger, int, Exception?> _cleanupCycleStart = LoggerMessage.Define<int>(
@@ -406,7 +406,7 @@ namespace Microsoft.Extensions.Http
 
             public static void CleanupCycleStart(Lazy<ILogger> loggerLazy, int initialCount)
             {
-                if (TryGetLogger(loggerLazy, out ILogger? logger))
+                if (TryGetLogger(loggerLazy, out var logger))
                 {
                     _cleanupCycleStart(logger, initialCount, null);
                 }
@@ -414,7 +414,7 @@ namespace Microsoft.Extensions.Http
 
             public static void CleanupCycleEnd(Lazy<ILogger> loggerLazy, TimeSpan duration, int disposedCount, int finalCount)
             {
-                if (TryGetLogger(loggerLazy, out ILogger? logger))
+                if (TryGetLogger(loggerLazy, out var logger))
                 {
                     _cleanupCycleEnd(logger, duration.TotalMilliseconds, disposedCount, finalCount, null);
                 }
@@ -422,7 +422,7 @@ namespace Microsoft.Extensions.Http
 
             public static void CleanupItemFailed(Lazy<ILogger> loggerLazy, string clientName, Exception exception)
             {
-                if (TryGetLogger(loggerLazy, out ILogger? logger))
+                if (TryGetLogger(loggerLazy, out var logger))
                 {
                     _cleanupItemFailed(logger, clientName, exception);
                 }
@@ -430,7 +430,7 @@ namespace Microsoft.Extensions.Http
 
             public static void HandlerExpired(Lazy<ILogger> loggerLazy, string clientName, TimeSpan lifetime)
             {
-                if (TryGetLogger(loggerLazy, out ILogger? logger))
+                if (TryGetLogger(loggerLazy, out var logger))
                 {
                     _handlerExpired(logger, lifetime.TotalMilliseconds, clientName, null);
                 }

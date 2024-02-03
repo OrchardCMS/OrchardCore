@@ -4,10 +4,10 @@ using System.Collections.Immutable;
 using System.Globalization;
 using System.Net;
 using System.Text;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using Cysharp.Text;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Mvc.Utilities
 {
@@ -360,15 +360,9 @@ namespace OrchardCore.Mvc.Utilities
                 return subject;
             }
 
-            if (from == null)
-            {
-                throw new ArgumentNullException(nameof(from));
-            }
+            ArgumentNullException.ThrowIfNull(from);
 
-            if (to == null)
-            {
-                throw new ArgumentNullException(nameof(to));
-            }
+            ArgumentNullException.ThrowIfNull(to);
 
             if (from.Length != to.Length)
             {
@@ -386,9 +380,9 @@ namespace OrchardCore.Mvc.Utilities
             for (var i = 0; i < subject.Length; i++)
             {
                 var current = subject[i];
-                if (map.ContainsKey(current))
+                if (map.TryGetValue(current, out var value))
                 {
-                    result[i] = map[current];
+                    result[i] = value;
                 }
                 else
                 {
@@ -427,7 +421,7 @@ namespace OrchardCore.Mvc.Utilities
         private static ImmutableDictionary<string, string> _dashPascalCaseIndex = ImmutableDictionary<string, string>.Empty;
 
         /// <summary>
-        /// Converts a liquid attribute to pascal case
+        /// Converts a liquid attribute to pascal case.
         /// </summary>
         public static string ToPascalCaseUnderscore(this string attribute)
         {
@@ -511,7 +505,7 @@ namespace OrchardCore.Mvc.Utilities
         {
             try
             {
-                JToken.Parse(json);
+                JsonNode.Parse(json);
                 return true;
             }
             catch
