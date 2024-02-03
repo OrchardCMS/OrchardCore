@@ -2,5 +2,5 @@ namespace OrchardCore.Email;
 
 public static class EmailConstants
 {
-    public static readonly string NullEmailDeliveryServiceName = "null";
+    public const string NullEmailDeliveryServiceName = "null";
 }
