@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
 using OrchardCore.XmlRpc.Models;
@@ -27,10 +28,10 @@ namespace OrchardCore.XmlRpc.Services
                     { typeof(bool), p => new XElement("boolean", (bool)p.Value ? "1" : "0") },
                     { typeof(string), p => new XElement("string", p.Value) },
                     { typeof(double), p => new XElement("double", (double)p.Value) },
-                    { typeof(DateTime), p => new XElement("dateTime.iso8601", ((DateTime)p.Value).ToString("yyyyMMddTHH:mm:ssZ")) },
-                    { typeof(DateTime?), p => new XElement("dateTime.iso8601", ((DateTime?)p.Value).Value.ToString("yyyyMMddTHH:mm:ssZ")) },
-                    { typeof(DateTimeOffset), p => new XElement("dateTime.iso8601", ((DateTimeOffset)p.Value).ToString("yyyyMMddTHH:mm:ssZ")) },
-                    { typeof(DateTimeOffset?), p => new XElement("dateTime.iso8601", ((DateTimeOffset?)p.Value).Value.ToString("yyyyMMddTHH:mm:ssZ")) },
+                    { typeof(DateTime), p => new XElement("dateTime.iso8601", ((DateTime)p.Value).ToString("yyyyMMddTHH:mm:ssZ", CultureInfo.InvariantCulture)) },
+                    { typeof(DateTime?), p => new XElement("dateTime.iso8601", ((DateTime?)p.Value).Value.ToString("yyyyMMddTHH:mm:ssZ", CultureInfo.InvariantCulture)) },
+                    { typeof(DateTimeOffset), p => new XElement("dateTime.iso8601", ((DateTimeOffset)p.Value).ToString("yyyyMMddTHH:mm:ssZ", CultureInfo.InvariantCulture)) },
+                    { typeof(DateTimeOffset?), p => new XElement("dateTime.iso8601", ((DateTimeOffset?)p.Value).Value.ToString("yyyyMMddTHH:mm:ssZ", CultureInfo.InvariantCulture)) },
                     { typeof(byte[]), p => new XElement("base64", Convert.ToBase64String((byte[])p.Value)) },
                     { typeof(XRpcStruct), p => MapStruct((XRpcStruct)p.Value) },
                     { typeof(XRpcArray), p => MapArray((XRpcArray)p.Value) },

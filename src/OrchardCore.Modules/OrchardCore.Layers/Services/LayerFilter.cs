@@ -15,7 +15,6 @@ using OrchardCore.Layers.Handlers;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.ViewModels;
 using OrchardCore.Mvc.Utilities;
-using OrchardCore.Rules;
 using OrchardCore.Rules.Services;
 
 namespace OrchardCore.Layers.Services

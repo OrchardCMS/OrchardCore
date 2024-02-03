@@ -1,6 +1,6 @@
 using System;
+using System.Text.Json;
 using Microsoft.AspNetCore.DataProtection;
-using Newtonsoft.Json;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Workflows.Services
@@ -20,7 +20,7 @@ namespace OrchardCore.Workflows.Services
 
         public string CreateToken<T>(T payload, TimeSpan lifetime)
         {
-            var json = JsonConvert.SerializeObject(payload);
+            var json = JConvert.SerializeObject(payload);
 
             return _dataProtector.Protect(json, _clock.UtcNow.Add(lifetime));
         }
@@ -35,7 +35,7 @@ namespace OrchardCore.Workflows.Services
 
                 if (_clock.UtcNow < expiration.ToUniversalTime())
                 {
-                    payload = JsonConvert.DeserializeObject<T>(json);
+                    payload = JConvert.DeserializeObject<T>(json);
                     return true;
                 }
             }

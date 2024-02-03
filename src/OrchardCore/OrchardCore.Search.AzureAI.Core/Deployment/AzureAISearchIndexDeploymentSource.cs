@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.Search.AzureAI.Models;
 using OrchardCore.Search.AzureAI.Services;
@@ -21,7 +21,7 @@ public class AzureAISearchIndexDeploymentSource(AzureAISearchIndexSettingsServic
 
         var indexSettings = await _indexSettingsService.GetSettingsAsync();
 
-        var data = new JArray();
+        var data = new JsonArray();
         var indicesToAdd = settingsStep.IncludeAll ? indexSettings.Select(x => x.IndexName).ToArray() : settingsStep.IndexNames;
 
         foreach (var index in indexSettings)
@@ -37,9 +37,10 @@ public class AzureAISearchIndexDeploymentSource(AzureAISearchIndexSettingsServic
             }
         }
 
-        result.Steps.Add(new JObject(
-            new JProperty("name", nameof(AzureAISearchIndexSettings)),
-            new JProperty("Indices", data)
-        ));
+        result.Steps.Add(new JsonObject
+        {
+            ["name"] = nameof(AzureAISearchIndexSettings),
+            ["Indices"] = data,
+        });
     }
 }

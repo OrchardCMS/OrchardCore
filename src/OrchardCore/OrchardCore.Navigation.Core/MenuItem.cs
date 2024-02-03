@@ -1,7 +1,7 @@
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Navigation

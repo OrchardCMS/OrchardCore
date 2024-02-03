@@ -1,14 +1,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
-using OrchardCore.Environment.Shell.Configuration.Internal;
 using OrchardCore.Shells.Azure.Services;
 
 namespace OrchardCore.Shells.Azure.Configuration
@@ -57,24 +56,21 @@ namespace OrchardCore.Shells.Azure.Configuration
 
         public async Task SaveAsync(string tenant, IDictionary<string, string> data)
         {
-            JObject tenantsSettings;
+            JsonObject tenantsSettings;
 
             var fileInfo = await _shellsFileStore.GetFileInfoAsync(TenantsBlobName);
 
             if (fileInfo != null)
             {
                 using var stream = await _shellsFileStore.GetFileStreamAsync(TenantsBlobName);
-                using var streamReader = new StreamReader(stream);
-                using var jsonReader = new JsonTextReader(streamReader);
-                tenantsSettings = await JObject.LoadAsync(jsonReader);
+                tenantsSettings = await JObject.LoadAsync(stream);
             }
             else
             {
                 tenantsSettings = [];
             }
 
-            var settings = tenantsSettings.GetValue(tenant) as JObject ?? [];
-
+            var settings = tenantsSettings[tenant] as JsonObject ?? [];
             foreach (var key in data.Keys)
             {
                 if (data[key] != null)
@@ -89,7 +85,7 @@ namespace OrchardCore.Shells.Azure.Configuration
 
             tenantsSettings[tenant] = settings;
 
-            var tenantsSettingsString = await tenantsSettings.ToStringAsync(Formatting.None);
+            var tenantsSettingsString = tenantsSettings.ToJsonString(JOptions.Default);
             using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(tenantsSettingsString));
 
             await _shellsFileStore.CreateFileFromStreamAsync(TenantsBlobName, memoryStream);
@@ -101,17 +97,15 @@ namespace OrchardCore.Shells.Azure.Configuration
 
             if (fileInfo != null)
             {
-                JObject tenantsSettings;
+                JsonObject tenantsSettings;
                 using (var stream = await _shellsFileStore.GetFileStreamAsync(TenantsBlobName))
                 {
-                    using var streamReader = new StreamReader(stream);
-                    using var reader = new JsonTextReader(streamReader);
-                    tenantsSettings = await JObject.LoadAsync(reader);
+                    tenantsSettings = await JObject.LoadAsync(stream);
                 }
 
                 tenantsSettings.Remove(tenant);
 
-                var tenantsSettingsString = await tenantsSettings.ToStringAsync(Formatting.None);
+                var tenantsSettingsString = tenantsSettings.ToJsonString(JOptions.Default);
                 using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(tenantsSettingsString));
 
                 await _shellsFileStore.CreateFileFromStreamAsync(TenantsBlobName, memoryStream);

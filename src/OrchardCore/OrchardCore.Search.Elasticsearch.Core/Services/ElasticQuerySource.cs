@@ -1,12 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Encodings.Web;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Liquid;
@@ -81,11 +80,12 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             }
             else
             {
-                var results = new List<JObject>();
+                var results = new List<JsonObject>();
 
                 foreach (var document in docs.TopDocs)
                 {
-                    results.Add(new JObject(document.Select(x => new JProperty(x.Key, x.Value.ToString()))));
+                    results.Add(new JsonObject(document.Select(x =>
+                        KeyValuePair.Create(x.Key, (JsonNode)JsonValue.Create(x.Value.ToString())))));
                 }
 
                 elasticQueryResults.Items = results;

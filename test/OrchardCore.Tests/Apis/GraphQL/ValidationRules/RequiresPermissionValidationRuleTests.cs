@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using GraphQL;
 using GraphQL.Conversion;
 using GraphQL.SystemTextJson;
@@ -34,7 +35,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
             Assert.Null(executionResult.Errors);
 
             var writer = new DocumentWriter();
-            var result = JObject.Parse(await writer.WriteToStringAsync(executionResult));
+            var result = JsonObject.Parse(await writer.WriteToStringAsync(executionResult));
 
             Assert.Equal("Fantastic Fox Hates Permissions", result["data"]["test"]["noPermissions"].ToString());
         }

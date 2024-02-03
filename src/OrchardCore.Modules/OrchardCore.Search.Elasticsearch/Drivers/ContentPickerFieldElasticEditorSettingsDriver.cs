@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
@@ -21,9 +22,13 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
         {
             return Initialize<ContentPickerFieldElasticEditorSettings>("ContentPickerFieldElasticEditorSettings_Edit", async model =>
             {
-                partFieldDefinition.PopulateSettings(model);
+                var settings = partFieldDefinition.Settings.ToObject<ContentPickerFieldElasticEditorSettings>();
+
+                model.Index = settings.Index;
+
                 model.Indices = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
-            }).Location("Editor");
+            })
+                .Location("Editor");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
