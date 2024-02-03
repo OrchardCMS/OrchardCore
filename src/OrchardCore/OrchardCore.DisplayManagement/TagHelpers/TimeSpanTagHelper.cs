@@ -24,7 +24,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
 
         [HtmlAttributeName(OriginAttribute)]
         public DateTime? Origin { set; get; }
-        
+
         public async override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
             var shapeType = "TimeSpan";

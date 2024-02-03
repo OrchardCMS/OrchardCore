@@ -9,11 +9,11 @@ namespace OrchardCore.Localization
     /// </summary>
     public interface ILocalizationService
     {
-        private static readonly CultureInfo[] _cultureAliases = new[]
-        {
+        private static readonly CultureInfo[] _cultureAliases =
+        [
             CultureInfo.GetCultureInfo("zh-CN"),
             CultureInfo.GetCultureInfo("zh-TW")
-        };
+        ];
 
         /// <summary>
         /// Returns the default culture of the site.

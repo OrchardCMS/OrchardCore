@@ -20,7 +20,7 @@ namespace OrchardCore.Environment.Shell
 
         public ValueTask<bool> IsFeatureValidAsync(string id)
         {
-            var features = _extensionManager.GetFeatures(new[] { id });
+            var features = _extensionManager.GetFeatures([id]);
             if (!features.Any())
             {
                 return new ValueTask<bool>(false);

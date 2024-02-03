@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace OrchardCore.Environment.Cache
 {
@@ -45,12 +44,12 @@ namespace OrchardCore.Environment.Cache
         }
 
         /// <summary>
-        /// Defines a dimension to cache the shape for. For instance by using <code>"user"</code>
+        /// Defines a dimension to cache the shape for. For instance by using. <code>"user"</code>
         /// each user will get a different value.
         /// </summary>
         public CacheContext AddContext(params string[] contexts)
         {
-            _contexts ??= new HashSet<string>();
+            _contexts ??= [];
 
             foreach (var context in contexts)
             {
@@ -72,7 +71,7 @@ namespace OrchardCore.Environment.Cache
 
         public CacheContext AddTag(params string[] tags)
         {
-            _tags ??= new HashSet<string>();
+            _tags ??= [];
 
             foreach (var tag in tags)
             {
@@ -90,8 +89,8 @@ namespace OrchardCore.Environment.Cache
         }
 
         public string CacheId { get; }
-        public ICollection<string> Contexts => (ICollection<string>)_contexts ?? Array.Empty<string>();
-        public IEnumerable<string> Tags => _tags ?? Enumerable.Empty<string>();
+        public ICollection<string> Contexts => (ICollection<string>)_contexts ?? [];
+        public IEnumerable<string> Tags => _tags ?? [];
         public DateTimeOffset? ExpiresOn { get; private set; }
         public TimeSpan? ExpiresAfter { get; private set; }
         public TimeSpan? ExpiresSliding { get; private set; }

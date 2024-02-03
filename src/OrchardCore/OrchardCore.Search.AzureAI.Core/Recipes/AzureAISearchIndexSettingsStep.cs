@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Nodes;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,14 +34,14 @@ public class AzureAISearchIndexSettingsStep(
             return;
         }
 
-        if (context.Step["Indices"] is null)
+        if (context.Step["Indices"] is not JsonArray indexes)
         {
             return;
         }
 
         var indexNames = new List<string>();
 
-        foreach (var index in context.Step["Indices"])
+        foreach (var index in indexes)
         {
             var indexSettings = index.ToObject<AzureAISearchIndexSettings>();
 

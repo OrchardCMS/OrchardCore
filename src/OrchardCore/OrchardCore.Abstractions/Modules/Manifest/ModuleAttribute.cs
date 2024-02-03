@@ -11,24 +11,12 @@ namespace OrchardCore.Modules.Manifest
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]
     public class ModuleAttribute : FeatureAttribute
     {
-        /// <summary>
-        /// &quot;&quot;
-        /// </summary>
         internal const string DefaultAuthor = "";
 
-        /// <summary>
-        /// &quot;&quot;
-        /// </summary>
         internal const string DefaultWebsiteUrl = "";
 
-        /// <summary>
-        /// &quot;0.0&quot;
-        /// </summary>
         internal const string DefaultVersionZero = "0.0";
 
-        /// <summary>
-        /// &quot;&quot;
-        /// </summary>
         internal const string DefaultTags = "";
 
         /// <summary>
@@ -55,7 +43,7 @@ namespace OrchardCore.Modules.Manifest
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         /// <param name="alwaysEnabled">Whether feature is always enabled.
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
-        /// <see cref="!:https://semver.org">Semantic Versioning</see>
+        /// <see cref="!:https://semver.org">Semantic Versioning.</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
         /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
@@ -108,7 +96,7 @@ namespace OrchardCore.Modules.Manifest
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         /// <param name="alwaysEnabled">Whether feature is always enabled.
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
-        /// <see cref="!:https://semver.org">Semantic Versioning</see>
+        /// <see cref="!:https://semver.org">Semantic Versioning.</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
         /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
@@ -164,7 +152,7 @@ namespace OrchardCore.Modules.Manifest
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         /// <param name="alwaysEnabled">Whether feature is always enabled.
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
-        /// <see cref="!:https://semver.org">Semantic Versioning</see>
+        /// <see cref="!:https://semver.org">Semantic Versioning.</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
         /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
@@ -223,7 +211,7 @@ namespace OrchardCore.Modules.Manifest
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         /// <param name="alwaysEnabled">Whether feature is always enabled.
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
-        /// <see cref="!:https://semver.org">Semantic Versioning</see>
+        /// <see cref="!:https://semver.org">Semantic Versioning.</see>
         /// <remarks>At least <paramref name="author" /> expected herein to differentiate with
         /// parameterless ctor.</remarks>
         /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
@@ -325,7 +313,7 @@ namespace OrchardCore.Modules.Manifest
         /// <summary>
         /// Gets or sets the Semantic Version string.
         /// </summary>
-        /// <see cref="!:https://semver.org">Semantic Versioning</see>
+        /// <see cref="!:https://semver.org">Semantic Versioning.</see>
         /// <see cref="DefaultVersionZero" />
         public virtual string Version
         {

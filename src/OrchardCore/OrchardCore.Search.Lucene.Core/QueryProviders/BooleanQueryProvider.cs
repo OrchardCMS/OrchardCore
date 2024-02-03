@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Lucene.Net.Search;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Search.Lucene.QueryProviders.Filters;
 
 namespace OrchardCore.Search.Lucene.QueryProviders
@@ -16,7 +17,7 @@ namespace OrchardCore.Search.Lucene.QueryProviders
             _filters = filters;
         }
 
-        public Query CreateQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JObject query)
+        public Query CreateQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JsonObject query)
         {
             if (type != "bool")
             {
@@ -25,12 +26,12 @@ namespace OrchardCore.Search.Lucene.QueryProviders
 
             var boolQuery = new BooleanQuery();
 
-            foreach (var property in query.Properties())
+            foreach (var property in query)
             {
                 var occur = Occur.MUST;
-                bool isProps = false;
+                var isProps = false;
 
-                switch (property.Name.ToLowerInvariant())
+                switch (property.Key.ToLowerInvariant())
                 {
                     case "must":
                         occur = Occur.MUST;
@@ -52,24 +53,24 @@ namespace OrchardCore.Search.Lucene.QueryProviders
                         break;
                     case "filter":
                         return CreateFilteredQuery(builder, context, boolQuery, property.Value);
-                    default: throw new ArgumentException($"Invalid property '{property.Name}' in boolean query");
+                    default: throw new ArgumentException($"Invalid property '{property.Key}' in boolean query");
                 }
 
                 if (!isProps)
                 {
-                    switch (property.Value.Type)
+                    switch (property.Value.GetValueKind())
                     {
-                        case JTokenType.Object:
-                            boolQuery.Add(builder.CreateQueryFragment(context, (JObject)property.Value), occur);
+                        case JsonValueKind.Object:
+                            boolQuery.Add(builder.CreateQueryFragment(context, property.Value.AsObject()), occur);
                             break;
-                        case JTokenType.Array:
-                            foreach (var item in ((JArray)property.Value))
+                        case JsonValueKind.Array:
+                            foreach (var item in property.Value.AsArray())
                             {
-                                if (item.Type != JTokenType.Object)
+                                if (item.GetValueKind() != JsonValueKind.Object)
                                 {
                                     throw new ArgumentException($"Invalid value in boolean query");
                                 }
-                                boolQuery.Add(builder.CreateQueryFragment(context, (JObject)item), occur);
+                                boolQuery.Add(builder.CreateQueryFragment(context, item.AsObject()), occur);
                             }
                             break;
                         default: throw new ArgumentException($"Invalid value in boolean query");
@@ -80,19 +81,19 @@ namespace OrchardCore.Search.Lucene.QueryProviders
             return boolQuery;
         }
 
-        private Query CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, Query query, JToken filter)
+        private Query CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, Query query, JsonNode filter)
         {
             Query filteredQuery = null;
-            var queryObj = filter as JObject;
+            var queryObj = filter.AsObject();
 
-            switch (filter.Type)
+            switch (filter.GetValueKind())
             {
-                case JTokenType.Object:
-                    var first = queryObj.Properties().First();
+                case JsonValueKind.Object:
+                    var first = queryObj.First();
 
                     foreach (var queryProvider in _filters)
                     {
-                        filteredQuery = queryProvider.CreateFilteredQuery(builder, context, first.Name, first.Value, query);
+                        filteredQuery = queryProvider.CreateFilteredQuery(builder, context, first.Key, first.Value, query);
 
                         if (filteredQuery != null)
                         {
@@ -100,14 +101,14 @@ namespace OrchardCore.Search.Lucene.QueryProviders
                         }
                     }
                     break;
-                case JTokenType.Array:
-                    foreach (var item in ((JArray)filter))
+                case JsonValueKind.Array:
+                    foreach (var item in filter.AsArray())
                     {
-                        var firstQuery = item.First() as JProperty;
+                        var firstQuery = item.AsObject().First();
 
                         foreach (var queryProvider in _filters)
                         {
-                            filteredQuery = queryProvider.CreateFilteredQuery(builder, context, firstQuery.Name, firstQuery.Value, query);
+                            filteredQuery = queryProvider.CreateFilteredQuery(builder, context, firstQuery.Key, firstQuery.Value, query);
 
                             if (filteredQuery != null)
                             {

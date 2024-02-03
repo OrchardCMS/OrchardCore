@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
@@ -8,6 +7,14 @@ namespace OrchardCore.Menu
 {
     public class AdminMenu : INavigationProvider
     {
+        private static readonly RouteValueDictionary _routeValues = new()
+        {
+            { "contentTypeId", "Menu" },
+            { "Area", "OrchardCore.Contents" },
+            { "Options.SelectedContentType", "Menu" },
+            { "Options.CanCreateSelectedContentType", true }
+        };
+
         protected readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
@@ -17,25 +24,19 @@ namespace OrchardCore.Menu
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
                 return Task.CompletedTask;
             }
 
-            var rvd = new RouteValueDictionary
-            {
-                { "contentTypeId", "Menu" },
-                { "Area", "OrchardCore.Contents" },
-                { "Options.SelectedContentType", "Menu" },
-                { "Options.CanCreateSelectedContentType", true }
-            };
-
-            builder.Add(S["Content"], design => design
+            builder
+                .Add(S["Content"], design => design
                     .Add(S["Menus"], S["Menus"].PrefixPosition(), menus => menus
                         .Permission(Permissions.ManageMenu)
-                        .Action("List", "Admin", rvd)
+                        .Action("List", "Admin", _routeValues)
                         .LocalNav()
-                        ));
+                    )
+                );
 
             return Task.CompletedTask;
         }
