@@ -21,7 +21,7 @@ public static class OrchardCoreBuilderExtensions
 
                 var logger = serviceProvider.GetRequiredService<ILogger<SmtpEmailSettingsConfiguration>>();
 
-                logger.LogWarning($"The {nameof(SmtpEmailSettings)} configuration section has been renamed to OrchardCore_Email_Smtp. Please update your configuration.");
+                logger.LogWarning("The {name} configuration section has been renamed to OrchardCore_Email_Smtp. Please update your configuration.", nameof(SmtpEmailSettings));
             }
 
             tenantServices.PostConfigure<SmtpEmailSettings>(settings => configurationSection.Bind(settings));
