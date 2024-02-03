@@ -100,7 +100,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             }
 
             IEnumerable<IndexingTask> tasks = [];
-            var allContentTypes = indexSettingsList.SelectMany(x => x.IndexedContentTypes ?? []).Distinct().ToList();
+            var allContentTypes = indexSettingsList.SelectMany(x => x.IndexedContentTypes ?? []).Distinct();
             var readOnlySession = _store.CreateSession(withTracking: false);
 
             while (true)
