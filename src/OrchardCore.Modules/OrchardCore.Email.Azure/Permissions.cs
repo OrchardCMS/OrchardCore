@@ -6,7 +6,7 @@ namespace OrchardCore.Email.Azure;
 
 public class Permissions : IPermissionProvider
 {
-    public static readonly Permission ViewAzureEmailOptions = new(nameof(ViewAzureEmailOptions), "View Azure Email Options");
+    public static readonly Permission ViewAzureEmailOptions = new("ViewAzureEmailOptions", "View Azure Email Options");
 
     private readonly IEnumerable<Permission> _allPermissions =
     [
