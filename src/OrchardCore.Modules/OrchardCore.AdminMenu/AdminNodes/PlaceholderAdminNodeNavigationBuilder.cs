@@ -20,7 +20,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
             _logger = logger;
         }
 
-        public string Name => typeof(PlaceholderAdminNode).Name;
+        public string Name => nameof(PlaceholderAdminNode);
 
         public Task BuildNavigationAsync(MenuItem menuItem, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
         {
