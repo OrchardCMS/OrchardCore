@@ -32,7 +32,7 @@ namespace OrchardCore.Localization
         {
             services.AddScoped<IDisplayDriver<ISite>, LocalizationSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IPermissionProvider, Permissions>();
+            services.AddScoped<IPermissionProvider, PermissionProvider>();
             services.AddScoped<ILocalizationService, LocalizationService>();
 
             services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization").

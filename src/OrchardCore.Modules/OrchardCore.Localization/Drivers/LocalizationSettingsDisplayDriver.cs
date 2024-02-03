@@ -61,7 +61,7 @@ namespace OrchardCore.Localization.Drivers
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageCultures))
+            if (!await _authorizationService.AuthorizeAsync(user, PermissionProvider.Permissions.ManageCultures))
             {
                 return null;
             }
@@ -91,7 +91,7 @@ namespace OrchardCore.Localization.Drivers
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageCultures))
+            if (!await _authorizationService.AuthorizeAsync(user, PermissionProvider.Permissions.ManageCultures))
             {
                 return null;
             }

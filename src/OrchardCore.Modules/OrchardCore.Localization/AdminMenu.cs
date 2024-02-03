@@ -46,7 +46,7 @@ namespace OrchardCore.Localization
                                 .AddClass("cultures")
                                 .Id("cultures")
                                 .Action("Index", "Admin", _routeValues)
-                                .Permission(Permissions.ManageCultures)
+                                .Permission(PermissionProvider.Permissions.ManageCultures)
                                 .LocalNav()
                             )
                         )
