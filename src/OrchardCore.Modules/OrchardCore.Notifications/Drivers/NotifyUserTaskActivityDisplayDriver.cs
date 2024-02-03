@@ -14,7 +14,7 @@ public class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewModel> : Ac
     where TActivity : NotifyUserTaskActivity
     where TEditViewModel : NotifyUserTaskActivityViewModel, new()
 {
-    protected virtual string EditShapeType => $"{typeof(NotifyUserTaskActivity).Name}_Fields_Edit";
+    protected virtual string EditShapeType => $"{nameof(NotifyUserTaskActivity)}_Fields_Edit";
 
     public override IDisplayResult Edit(TActivity model)
     {
