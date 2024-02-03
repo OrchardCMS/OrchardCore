@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Nodes;
 
 namespace OrchardCore.ContentManagement.Metadata.Models
@@ -16,7 +15,7 @@ namespace OrchardCore.ContentManagement.Metadata.Models
         public ContentPartDefinition(string name, IEnumerable<ContentPartFieldDefinition> fields, JsonObject settings)
         {
             Name = name;
-            Fields = fields
+            Fields = fields;
             Settings = settings.Clone();
 
             foreach (var field in Fields)
