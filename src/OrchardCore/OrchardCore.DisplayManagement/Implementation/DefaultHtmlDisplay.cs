@@ -59,10 +59,8 @@ namespace OrchardCore.DisplayManagement.Implementation
 
                     return wrapper.Value;
                 }
-                else
-                {
-                    return htmlContent;
-                }
+
+                return htmlContent;
             }
 
             var shapeMetadata = shape.Metadata;

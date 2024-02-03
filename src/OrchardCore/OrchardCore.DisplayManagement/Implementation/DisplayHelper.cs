@@ -78,17 +78,15 @@ namespace OrchardCore.DisplayManagement.Implementation
             {
                 if (shape is PositionWrapper wrapper)
                 {
-                    while(wrapper.Value is PositionWrapper)
+                    while (wrapper.Value is PositionWrapper)
                     {
-                        wrapper = (PositionWrapper) wrapper.Value;
+                        wrapper = (PositionWrapper)wrapper.Value;
                     }
-                    
+
                     return Task.FromResult(wrapper.Value);
                 }
-                else
-                {
-                    return Task.FromResult(htmlContent);
-                }
+
+                return Task.FromResult(htmlContent);
             }
 
             var context = new DisplayContext
