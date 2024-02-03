@@ -106,7 +106,6 @@ public class AzureEmailDeliveryService : IEmailDeliveryService
         }
 
         IEmailResult result;
-        var client = new EmailClient(_emailSettings.ConnectionString);
 
         try
         {
@@ -121,6 +120,7 @@ public class AzureEmailDeliveryService : IEmailDeliveryService
 
             var emailMessage = FromMailMessage(message, out result);
 
+            var client = new EmailClient(_emailSettings.ConnectionString);
             await client.SendAsync(WaitUntil.Completed, emailMessage);
 
             result = EmailResult.Success;

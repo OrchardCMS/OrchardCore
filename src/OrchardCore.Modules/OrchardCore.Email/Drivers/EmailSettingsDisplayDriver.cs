@@ -9,68 +9,67 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Email.Drivers
+namespace OrchardCore.Email.Drivers;
+
+public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSettings>
 {
-    public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSettings>
+    public const string GroupId = "email";
+    private readonly IShellHost _shellHost;
+    private readonly ShellSettings _shellSettings;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAuthorizationService _authorizationService;
+
+    public EmailSettingsDisplayDriver(
+        IShellHost shellHost,
+        ShellSettings shellSettings,
+        IHttpContextAccessor httpContextAccessor,
+        IAuthorizationService authorizationService)
     {
-        public const string GroupId = "email";
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IAuthorizationService _authorizationService;
+        _shellHost = shellHost;
+        _shellSettings = shellSettings;
+        _httpContextAccessor = httpContextAccessor;
+        _authorizationService = authorizationService;
+    }
 
-        public EmailSettingsDisplayDriver(
-            IShellHost shellHost,
-            ShellSettings shellSettings,
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+    public override async Task<IDisplayResult> EditAsync(EmailSettings settings, BuildEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageEmailSettings))
         {
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
-            _httpContextAccessor = httpContextAccessor;
-            _authorizationService = authorizationService;
+            return null;
         }
 
-        public override async Task<IDisplayResult> EditAsync(EmailSettings settings, BuildEditorContext context)
+        var shapes = new List<IDisplayResult>
         {
-            var user = _httpContextAccessor.HttpContext?.User;
-
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageEmailSettings))
+            Initialize<EmailSettings>("EmailSettings_Edit", model =>
             {
-                return null;
-            }
+                model.DefaultSender = settings.DefaultSender;
+            }).Location("Content:5").OnGroup(GroupId),
+        };
 
-            var shapes = new List<IDisplayResult>
-            {
-                Initialize<EmailSettings>("EmailSettings_Edit", model =>
-                {
-                    model.DefaultSender = settings.DefaultSender;
-                }).Location("Content:5").OnGroup(GroupId),
-            };
+        return Combine(shapes);
+    }
 
-            return Combine(shapes);
+    public override async Task<IDisplayResult> UpdateAsync(EmailSettings section, BuildEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageEmailSettings))
+        {
+            return null;
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(EmailSettings section, BuildEditorContext context)
+        if (!context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
         {
-            var user = _httpContextAccessor.HttpContext?.User;
-
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageEmailSettings))
-            {
-                return null;
-            }
-
-            if (!context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
-            {
-                return null;
-            }
-
-            await context.Updater.TryUpdateModelAsync(section, Prefix);
-
-            // Release the tenant to apply the settings.
-            await _shellHost.ReleaseShellContextAsync(_shellSettings);
-
-            return await EditAsync(section, context);
+            return null;
         }
+
+        await context.Updater.TryUpdateModelAsync(section, Prefix);
+
+        // Release the tenant to apply the settings.
+        await _shellHost.ReleaseShellContextAsync(_shellSettings);
+
+        return await EditAsync(section, context);
     }
 }
