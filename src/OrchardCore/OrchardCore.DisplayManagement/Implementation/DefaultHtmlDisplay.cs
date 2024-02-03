@@ -91,7 +91,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                     await shapeDescriptor.DisplayingAsync.InvokeAsync((action, displayContext) => action(displayContext), displayContext, _logger);
 
                     // Copy all binding sources (all templates for this shape) in order to use them as Localization scopes.
-                    shapeMetadata.BindingSources = shapeDescriptor.BindingSources.Where(x => x != null).ToList();
+                    shapeMetadata.BindingSources = shapeDescriptor.BindingSources.Where(x => x != null).ToArray();
                     if (!shapeMetadata.BindingSources.Any())
                     {
                         shapeMetadata.BindingSources.Add(shapeDescriptor.BindingSource);

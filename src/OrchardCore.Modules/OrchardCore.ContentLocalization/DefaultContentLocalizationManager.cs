@@ -160,7 +160,7 @@ namespace OrchardCore.ContentLocalization
         /// OR null if nothing found.
         /// </summary>
         /// <returns>List of ContentItemId.</returns>
-        private static List<LocalizedContentItemIndex> GetSingleContentItemIdPerSet(IEnumerable<LocalizedContentItemIndex> indexValues, string currentCulture, string defaultCulture)
+        private static LocalizedContentItemIndex[] GetSingleContentItemIdPerSet(IEnumerable<LocalizedContentItemIndex> indexValues, string currentCulture, string defaultCulture)
         {
             return indexValues.GroupBy(l => l.LocalizationSet).Select(set =>
             {
@@ -182,7 +182,7 @@ namespace OrchardCore.ContentLocalization
                 }
 
                 return null;
-            }).OfType<LocalizedContentItemIndex>().ToList();
+            }).OfType<LocalizedContentItemIndex>().ToArray();
         }
     }
 }

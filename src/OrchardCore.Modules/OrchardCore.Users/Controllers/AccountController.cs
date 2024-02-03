@@ -670,7 +670,7 @@ namespace OrchardCore.Users.Controllers
             var model = new ExternalLoginsViewModel { CurrentLogins = await _userManager.GetLoginsAsync(user) };
             model.OtherLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync())
                 .Where(auth => model.CurrentLogins.All(ul => auth.Name != ul.LoginProvider))
-                .ToList();
+                .ToArray();
             model.ShowRemoveButton = await _userManager.HasPasswordAsync(user) || model.CurrentLogins.Count > 1;
             // model.StatusMessage = StatusMessage;
 
@@ -750,7 +750,7 @@ namespace OrchardCore.Users.Controllers
             }
 
             // Remove External Authentication Tokens.
-            foreach (var item in u.UserTokens.Where(c => c.LoginProvider == model.LoginProvider).ToList())
+            foreach (var item in u.UserTokens.Where(c => c.LoginProvider == model.LoginProvider))
             {
                 if (!(await _userManager.RemoveAuthenticationTokenAsync(user, model.LoginProvider, item.Name)).Succeeded)
                 {

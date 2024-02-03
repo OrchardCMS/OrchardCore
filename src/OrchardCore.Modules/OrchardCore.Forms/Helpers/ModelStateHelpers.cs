@@ -15,7 +15,7 @@ namespace OrchardCore.Forms.Helpers
                 Key = x.Key,
                 AttemptedValue = x.Value.AttemptedValue,
                 RawValue = x.Value.RawValue,
-                ErrorMessages = x.Value.Errors.Select(err => err.ErrorMessage).ToList(),
+                ErrorMessages = x.Value.Errors.Select(err => err.ErrorMessage).ToArray(),
             });
 
             return JsonConvert.SerializeObject(errorList);

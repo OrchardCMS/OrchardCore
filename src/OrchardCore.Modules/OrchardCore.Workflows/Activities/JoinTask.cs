@@ -60,8 +60,8 @@ namespace OrchardCore.Workflows.Activities
                     if (done)
                     {
                         // Remove any inbound blocking activities.
-                        var ancestorActivityIds = workflowContext.GetInboundActivityPath(activityContext.ActivityRecord.ActivityId).ToList();
-                        var blockingActivities = workflowContext.Workflow.BlockingActivities.Where(x => ancestorActivityIds.Contains(x.ActivityId)).ToList();
+                        var ancestorActivityIds = workflowContext.GetInboundActivityPath(activityContext.ActivityRecord.ActivityId).ToArray();
+                        var blockingActivities = workflowContext.Workflow.BlockingActivities.Where(x => ancestorActivityIds.Contains(x.ActivityId));
 
                         foreach (var blockingActivity in blockingActivities)
                         {
@@ -90,13 +90,11 @@ namespace OrchardCore.Workflows.Activities
                 where destinationActivity.Activity.Name == Name
                 select transition;
 
-            var inboundTransitions = inboundTransitionsQuery.ToList();
-
-            foreach (var inboundTransition in inboundTransitions)
+            foreach (var inboundTransition in inboundTransitionsQuery)
             {
                 var mergeActivity = (JoinTask)workflowContext.GetActivity(inboundTransition.DestinationActivityId).Activity;
                 var branches = mergeActivity.Branches;
-                mergeActivity.Branches = branches.Union(new[] { GetTransitionKey(inboundTransition) }).Distinct().ToList();
+                mergeActivity.Branches = branches.Union(new[] { GetTransitionKey(inboundTransition) }).Distinct().ToArray();
             }
 
             return Task.CompletedTask;

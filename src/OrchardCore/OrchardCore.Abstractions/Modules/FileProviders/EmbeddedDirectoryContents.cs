@@ -14,12 +14,12 @@ namespace OrchardCore.Modules.FileProviders
         {
             ArgumentNullException.ThrowIfNull(entries);
 
-            _entries = entries.ToList();
+            _entries = entries.ToArray();
         }
 
         public bool Exists
         {
-            get { return _entries.Any(); }
+            get { return _entries.Count > 0; }
         }
 
         public IEnumerator<IFileInfo> GetEnumerator()

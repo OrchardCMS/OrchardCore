@@ -73,18 +73,18 @@ namespace OrchardCore.Shortcodes.Controllers
             var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
             var shortcodeTemplatesDocument = await _shortcodeTemplatesManager.GetShortcodeTemplatesDocumentAsync();
 
-            var shortcodeTemplates = shortcodeTemplatesDocument.ShortcodeTemplates.ToList();
+            var shortcodeTemplates = shortcodeTemplatesDocument.ShortcodeTemplates.ToArray();
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                shortcodeTemplates = shortcodeTemplates.Where(x => x.Key.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
+                shortcodeTemplates = shortcodeTemplates.Where(x => x.Key.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToArray();
             }
 
-            var count = shortcodeTemplates.Count;
+            var count = shortcodeTemplates.Length;
 
             shortcodeTemplates = shortcodeTemplates.OrderBy(x => x.Key)
                 .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize).ToList();
+                .Take(pager.PageSize).ToArray();
 
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();
@@ -98,7 +98,7 @@ namespace OrchardCore.Shortcodes.Controllers
 
             var model = new ShortcodeTemplateIndexViewModel
             {
-                ShortcodeTemplates = shortcodeTemplates.Select(x => new ShortcodeTemplateEntry { Name = x.Key, ShortcodeTemplate = x.Value }).ToList(),
+                ShortcodeTemplates = shortcodeTemplates.Select(x => new ShortcodeTemplateEntry { Name = x.Key, ShortcodeTemplate = x.Value }).ToArray(),
                 Options = options,
                 Pager = pagerShape
             };

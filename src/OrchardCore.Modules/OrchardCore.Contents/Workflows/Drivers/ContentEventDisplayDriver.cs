@@ -30,7 +30,7 @@ namespace OrchardCore.Contents.Workflows.Drivers
             var viewModel = new TViewModel();
             if (await updater.TryUpdateModelAsync(viewModel, Prefix, x => x.SelectedContentTypeNames))
             {
-                model.ContentTypeFilter = (await FilterContentTypesQueryAsync(viewModel.SelectedContentTypeNames)).ToList();
+                model.ContentTypeFilter = (await FilterContentTypesQueryAsync(viewModel.SelectedContentTypeNames)).ToArray();
             }
             return Edit(model);
         }
@@ -42,7 +42,7 @@ namespace OrchardCore.Contents.Workflows.Drivers
                 Factory($"{typeof(TActivity).Name}_Fields_Design", async ctx =>
                 {
                     var contentTypeDefinitions = (await ContentDefinitionManager.ListTypeDefinitionsAsync()).ToDictionary(x => x.Name);
-                    var selectedContentTypeDefinitions = activity.ContentTypeFilter.Select(x => contentTypeDefinitions[x]).ToList();
+                    var selectedContentTypeDefinitions = activity.ContentTypeFilter.Select(x => contentTypeDefinitions[x]).ToArray();
 
                     var shape = new ContentEventViewModel<TActivity>
                     {

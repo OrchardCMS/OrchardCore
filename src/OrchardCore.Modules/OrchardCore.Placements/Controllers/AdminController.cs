@@ -71,18 +71,18 @@ namespace OrchardCore.Placements.Controllers
             var shapeList = shapeTypes.Select(entry => new ShapePlacementViewModel
             {
                 ShapeType = entry.Key
-            }).ToList();
+            });
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                shapeList = shapeList.Where(x => x.ShapeType.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
+                shapeList = shapeList.Where(x => x.ShapeType.Contains(options.Search, StringComparison.OrdinalIgnoreCase));
             }
 
-            var count = shapeList.Count;
+            var count = shapeList.Count();
 
             shapeList = shapeList.OrderBy(x => x.ShapeType)
                 .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize).ToList();
+                .Take(pager.PageSize);
 
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();
@@ -96,7 +96,7 @@ namespace OrchardCore.Placements.Controllers
 
             var model = new ListShapePlacementsViewModel
             {
-                ShapePlacements = shapeList,
+                ShapePlacements = shapeList.ToArray(),
                 Pager = pagerShape,
                 Options = options,
             };

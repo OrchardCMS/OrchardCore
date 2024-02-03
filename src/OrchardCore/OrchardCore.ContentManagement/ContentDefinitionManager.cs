@@ -40,7 +40,7 @@ namespace OrchardCore.ContentManagement
         {
             var document = await _contentDefinitionStore.LoadContentDefinitionAsync();
 
-            return document.ContentTypeDefinitionRecords.Select(type => LoadTypeDefinition(document, type.Name)).ToList();
+            return document.ContentTypeDefinitionRecords.Select(type => LoadTypeDefinition(document, type.Name));
         }
 
         public async Task<IEnumerable<ContentTypeDefinition>> ListTypeDefinitionsAsync()
@@ -49,14 +49,14 @@ namespace OrchardCore.ContentManagement
 
             CheckDocumentIdentifier(document);
 
-            return document.ContentTypeDefinitionRecords.Select(type => GetTypeDefinition(document, type.Name)).ToList();
+            return document.ContentTypeDefinitionRecords.Select(type => GetTypeDefinition(document, type.Name));
         }
 
         public async Task<IEnumerable<ContentPartDefinition>> LoadPartDefinitionsAsync()
         {
             var document = await _contentDefinitionStore.LoadContentDefinitionAsync();
 
-            return document.ContentPartDefinitionRecords.Select(part => LoadPartDefinition(document, part.Name)).ToList();
+            return document.ContentPartDefinitionRecords.Select(part => LoadPartDefinition(document, part.Name));
         }
 
         public async Task<IEnumerable<ContentPartDefinition>> ListPartDefinitionsAsync()
@@ -65,7 +65,7 @@ namespace OrchardCore.ContentManagement
 
             CheckDocumentIdentifier(document);
 
-            return document.ContentPartDefinitionRecords.Select(part => GetPartDefinition(document, part.Name)).ToList();
+            return document.ContentPartDefinitionRecords.Select(part => GetPartDefinition(document, part.Name));
         }
 
         public async Task<ContentTypeDefinition> LoadTypeDefinitionAsync(string name)
@@ -142,7 +142,7 @@ namespace OrchardCore.ContentManagement
 
             // Remove parts from current types.
             var typeDefinitions = document.ContentTypeDefinitionRecords
-                .Select(type => LoadTypeDefinition(document, type.Name)).ToList();
+                .Select(type => LoadTypeDefinition(document, type.Name));
 
             var typesWithPart = typeDefinitions
                 .Where(typeDefinition => typeDefinition.Parts
@@ -252,8 +252,7 @@ namespace OrchardCore.ContentManagement
 
             var toRemove = record.ContentTypePartDefinitionRecords
                 .Where(typePartDefinitionRecord => !model.Parts
-                    .Any(typePart => typePart.Name.EqualsOrdinalIgnoreCase(typePartDefinitionRecord.Name)))
-                .ToList();
+                    .Any(typePart => typePart.Name.EqualsOrdinalIgnoreCase(typePartDefinitionRecord.Name)));
 
             foreach (var remove in toRemove)
             {
@@ -290,8 +289,7 @@ namespace OrchardCore.ContentManagement
 
             var toRemove = record.ContentPartFieldDefinitionRecords
                 .Where(partFieldDefinitionRecord => !model.Fields
-                    .Any(partField => partField.Name.EqualsOrdinalIgnoreCase(partFieldDefinitionRecord.Name)))
-                .ToList();
+                    .Any(partField => partField.Name.EqualsOrdinalIgnoreCase(partFieldDefinitionRecord.Name)));
 
             foreach (var remove in toRemove)
             {

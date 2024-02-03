@@ -590,9 +590,9 @@ namespace OrchardCore.ContentTypes.Controllers
                 return Forbid();
             }
 
-            var fields = (await _contentDefinitionService.GetFieldsAsync()).ToList();
+            var fields = await _contentDefinitionService.GetFieldsAsync();
 
-            if (fields.Count == 0)
+            if (!fields.Any())
             {
                 await _notifier.WarningAsync(H["There are no fields."]);
 
@@ -631,7 +631,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            var fields = (await _contentDefinitionService.GetFieldsAsync()).ToList();
+            var fields = await _contentDefinitionService.GetFieldsAsync();
 
             if (!fields.Any(field => string.Equals(field.Name, viewModel.FieldTypeName, StringComparison.OrdinalIgnoreCase)))
             {
@@ -676,7 +676,7 @@ namespace OrchardCore.ContentTypes.Controllers
             if (!ModelState.IsValid)
             {
                 viewModel.Part = partDefinition;
-                viewModel.Fields = (await _contentDefinitionService.GetFieldsAsync()).Select(x => x.Name).OrderBy(x => x).ToList();
+                viewModel.Fields = fields.Select(x => x.Name).OrderBy(x => x).ToList();
 
                 await _documentStore.CancelAsync();
 

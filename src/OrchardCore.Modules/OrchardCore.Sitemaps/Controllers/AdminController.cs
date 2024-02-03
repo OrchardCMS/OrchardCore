@@ -89,8 +89,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             var results = sitemaps
                 .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize)
-                .ToList();
+                .Take(pager.PageSize);
 
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();
@@ -102,7 +101,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             var model = new ListSitemapViewModel
             {
-                Sitemaps = results.Select(sm => new SitemapListEntry { SitemapId = sm.SitemapId, Name = sm.Name, Enabled = sm.Enabled }).ToList(),
+                Sitemaps = results.Select(sm => new SitemapListEntry { SitemapId = sm.SitemapId, Name = sm.Name, Enabled = sm.Enabled }).ToArray(),
                 Options = options,
                 Pager = await _shapeFactory.PagerAsync(pager, count, routeData)
             };

@@ -112,22 +112,20 @@ namespace OrchardCore.Search.Elasticsearch
             }
 
             var indexes = (await _elasticIndexSettingsService.GetSettingsAsync())
-                .Select(i => new IndexViewModel { Name = i.IndexName })
-                .ToList();
+                .Select(i => new IndexViewModel { Name = i.IndexName });
 
-            var totalIndexes = indexes.Count;
+            var totalIndexes = indexes.Count();
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                indexes = indexes.Where(q => q.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
+                indexes = indexes.Where(q => q.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase));
             }
 
             indexes = indexes
                 .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize)
-                .ToList();
+                .Take(pager.PageSize);
 
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();

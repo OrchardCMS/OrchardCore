@@ -91,7 +91,7 @@ namespace OrchardCore.Contents.Controllers
         {
             var contentTypeDefinitions = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
                 .OrderBy(ctd => ctd.DisplayName)
-                .ToList();
+                .ToArray();
 
             if (!await _authorizationService.AuthorizeContentTypeDefinitionsAsync(User, CommonPermissions.ListContent, contentTypeDefinitions, _contentManager))
             {

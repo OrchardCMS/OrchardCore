@@ -121,39 +121,40 @@ namespace OrchardCore.Tenants.Controllers
                    }
 
                    return entry;
-               }).ToList();
+               });
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
                 entries = entries.Where(t => t.Name.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1 ||
                     (t.ShellSettings != null &&
                      ((t.ShellSettings.RequestUrlHost != null && t.ShellSettings.RequestUrlHost.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1) ||
-                     (t.ShellSettings.RequestUrlPrefix != null && t.ShellSettings.RequestUrlPrefix.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1)))).ToList();
+                     (t.ShellSettings.RequestUrlPrefix != null && t.ShellSettings.RequestUrlPrefix.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1))));
             }
 
             if (!string.IsNullOrWhiteSpace(options.Category))
             {
-                entries = entries.Where(t => t.Category?.Equals(options.Category, StringComparison.OrdinalIgnoreCase) == true).ToList();
+                entries = entries.Where(t => t.Category?.Equals(options.Category, StringComparison.OrdinalIgnoreCase) == true);
             }
 
             entries = options.Status switch
             {
-                TenantsState.Disabled => entries.Where(t => t.ShellSettings.IsDisabled()).ToList(),
-                TenantsState.Running => entries.Where(t => t.ShellSettings.IsRunning()).ToList(),
-                TenantsState.Uninitialized => entries.Where(t => t.ShellSettings.IsUninitialized()).ToList(),
+                TenantsState.Disabled => entries.Where(t => t.ShellSettings.IsDisabled()),
+                TenantsState.Running => entries.Where(t => t.ShellSettings.IsRunning()),
+                TenantsState.Uninitialized => entries.Where(t => t.ShellSettings.IsUninitialized()),
                 _ => entries,
             };
 
             entries = options.OrderBy switch
             {
-                TenantsOrder.Name => entries.OrderBy(t => t.Name).ToList(),
-                TenantsOrder.State => entries.OrderBy(t => t.ShellSettings?.State).ToList(),
-                _ => entries.OrderByDescending(t => t.Name).ToList(),
+                TenantsOrder.Name => entries.OrderBy(t => t.Name),
+                TenantsOrder.State => entries.OrderBy(t => t.ShellSettings?.State),
+                _ => entries.OrderByDescending(t => t.Name),
             };
 
             var results = entries
                 .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize).ToList();
+                .Take(pager.PageSize)
+                .ToList();
 
             // Maintain previous route data when generating page links
             var routeData = new RouteData();
@@ -170,7 +171,7 @@ namespace OrchardCore.Tenants.Controllers
                 routeData.Values.TryAdd("Options.Search", options.Search);
             }
 
-            var pagerShape = await _shapeFactory.PagerAsync(pager, entries.Count, routeData);
+            var pagerShape = await _shapeFactory.PagerAsync(pager, entries.Count(), routeData);
 
             var model = new AdminIndexViewModel
             {

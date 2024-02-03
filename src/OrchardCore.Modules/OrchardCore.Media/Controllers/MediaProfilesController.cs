@@ -67,19 +67,19 @@ namespace OrchardCore.Media.Controllers
             var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
             var mediaProfilesDocument = await _mediaProfilesManager.GetMediaProfilesDocumentAsync();
-            var mediaProfiles = mediaProfilesDocument.MediaProfiles.ToList();
+            var mediaProfiles = mediaProfilesDocument.MediaProfiles.ToArray();
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                mediaProfiles = mediaProfiles.Where(x => x.Key.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
+                mediaProfiles = mediaProfiles.Where(x => x.Key.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToArray();
             }
 
-            var count = mediaProfiles.Count;
+            var count = mediaProfiles.Length;
 
             mediaProfiles = mediaProfiles.OrderBy(x => x.Key)
                 .Skip(pager.GetStartIndex())
                 .Take(pager.PageSize)
-                .ToList();
+                .ToArray();
 
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();
@@ -93,7 +93,7 @@ namespace OrchardCore.Media.Controllers
 
             var model = new MediaProfileIndexViewModel
             {
-                MediaProfiles = mediaProfiles.Select(x => new MediaProfileEntry { Name = x.Key, MediaProfile = x.Value }).ToList(),
+                MediaProfiles = mediaProfiles.Select(x => new MediaProfileEntry { Name = x.Key, MediaProfile = x.Value }).ToArray(),
                 Pager = pagerShape
             };
 

@@ -112,20 +112,18 @@ namespace OrchardCore.Lists.AdminNodes
             }
         }
 
-        private async Task<List<ContentItem>> GetContentItemsAsync()
+        private async Task<IEnumerable<ContentItem>> GetContentItemsAsync()
         {
             return (await _session.Query<ContentItem, ContentItemIndex>()
                 .With<ContentItemIndex>(x => x.Latest && x.ContentType == _node.ContentType)
                 .Take(MaxItemsInNode)
                 .ListAsync())
-                .OrderBy(x => x.DisplayText)
-                .ToList();
+                .OrderBy(x => x.DisplayText);
         }
 
         private static List<string> AddPrefixToClasses(string unprefixed)
         {
             return unprefixed?.Split(' ')
-                .ToList()
                 .Select(c => "icon-class-" + c)
                 .ToList()
                 ?? [];

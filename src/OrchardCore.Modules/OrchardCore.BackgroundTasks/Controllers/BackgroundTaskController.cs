@@ -111,7 +111,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 new SelectListItem(S["Disabled"], "disabled")
             ];
 
-            var taskItems = items.ToList();
+            var taskItems = items;
             var routeData = new RouteData();
 
             if (!string.IsNullOrEmpty(options.Search))
@@ -125,11 +125,11 @@ namespace OrchardCore.BackgroundTasks.Controllers
             }
 
             var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
-            var pagerShape = await _shapeFactory.PagerAsync(pager, taskItems.Count, routeData);
+            var pagerShape = await _shapeFactory.PagerAsync(pager, taskItems.Count(), routeData);
 
             var model = new BackgroundTaskIndexViewModel
             {
-                Tasks = taskItems.OrderBy(entry => entry.Title).Skip(pager.GetStartIndex()).Take(pager.PageSize).ToList(),
+                Tasks = taskItems.OrderBy(entry => entry.Title).Skip(pager.GetStartIndex()).Take(pager.PageSize).ToArray(),
                 Pager = pagerShape,
                 Options = options,
             };

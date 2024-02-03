@@ -67,18 +67,18 @@ namespace OrchardCore.Tenants.Controllers
             var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
             var featureProfilesDocument = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();
 
-            var featureProfiles = featureProfilesDocument.FeatureProfiles.ToList();
+            var featureProfiles = featureProfilesDocument.FeatureProfiles.ToArray();
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                featureProfiles = featureProfiles.Where(x => x.Key.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
+                featureProfiles = featureProfiles.Where(x => x.Key.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToArray();
             }
 
-            var count = featureProfiles.Count;
+            var count = featureProfiles.Length;
 
             featureProfiles = featureProfiles.OrderBy(x => x.Key)
                 .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize).ToList();
+                .Take(pager.PageSize).ToArray();
 
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();

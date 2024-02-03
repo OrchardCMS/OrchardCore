@@ -86,7 +86,7 @@ namespace OrchardCore.Data.Migration
                 return ((GetCreateMethod(dataMigration) ?? GetCreateAsyncMethod(dataMigration)) != null);
             });
 
-            return outOfDateMigrations.Select(m => _typeFeatureProvider.GetFeatureForDependency(m.GetType()).Id).ToList();
+            return outOfDateMigrations.Select(m => _typeFeatureProvider.GetFeatureForDependency(m.GetType()).Id);
         }
 
         public async Task Uninstall(string feature)
@@ -259,11 +259,11 @@ namespace OrchardCore.Data.Migration
         /// <summary>
         /// Returns all the available IDataMigration instances for a specific module, and inject necessary builders.
         /// </summary>
-        private List<IDataMigration> GetDataMigrations(string featureId)
+        private IDataMigration[] GetDataMigrations(string featureId)
         {
             var migrations = _dataMigrations
                     .Where(dm => _typeFeatureProvider.GetFeatureForDependency(dm.GetType()).Id == featureId)
-                    .ToList();
+                    .ToArray();
 
             return migrations;
         }

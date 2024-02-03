@@ -25,8 +25,8 @@ namespace OrchardCore.Environment.Extensions.Features
             var featuresInfos = new List<IFeatureInfo>();
 
             // Features and Dependencies live within this section
-            var features = manifestInfo.ModuleInfo.Features.ToList();
-            if (features.Count > 0)
+            var features = manifestInfo.ModuleInfo.Features;
+            if (features.Any())
             {
                 foreach (var feature in features)
                 {

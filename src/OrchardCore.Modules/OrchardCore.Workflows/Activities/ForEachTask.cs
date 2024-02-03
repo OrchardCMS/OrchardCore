@@ -66,8 +66,8 @@ namespace OrchardCore.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var items = (await _scriptEvaluator.EvaluateAsync(Enumerable, workflowContext)).ToList();
-            var count = items.Count;
+            var items = (await _scriptEvaluator.EvaluateAsync(Enumerable, workflowContext)).ToArray();
+            var count = items.Length;
 
             if (Index < count)
             {

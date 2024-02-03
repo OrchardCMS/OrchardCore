@@ -1,4 +1,3 @@
-using System;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -80,7 +79,7 @@ namespace OrchardCore.ContentLocalization.Drivers
                       Culture = CultureInfo.GetCultureInfo(culture),
                       ContentItemId = alreadyTranslated.FirstOrDefault(c => c.As<LocalizationPart>()?.Culture == culture)?.ContentItemId,
                   };
-              }).ToList();
+              }).ToArray();
 
             // Content items that have been translated but the culture was removed from the settings page
             var deletedCultureTranslations = alreadyTranslated.Where(c => c.As<LocalizationPart>()?.Culture != model.Culture).Select(ci =>
@@ -96,9 +95,9 @@ namespace OrchardCore.ContentLocalization.Drivers
                     Culture = CultureInfo.GetCultureInfo(culture),
                     ContentItemId = ci?.ContentItemId
                 };
-            }).OfType<LocalizationLinksViewModel>().ToList();
+            }).OfType<LocalizationLinksViewModel>();
 
-            model.ContentItemCultures = currentCultures.Concat(deletedCultureTranslations).ToList();
+            model.ContentItemCultures = currentCultures.Concat(deletedCultureTranslations).ToArray();
         }
     }
 }

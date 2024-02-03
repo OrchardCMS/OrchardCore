@@ -89,22 +89,21 @@ public class AdminController : Controller
         }
 
         var indexes = (await _indexSettingsService.GetSettingsAsync())
-            .Select(i => new IndexViewModel { Name = i.IndexName })
-            .ToList();
-
-        var totalIndexes = indexes.Count;
+            .Select(i => new IndexViewModel { Name = i.IndexName });
 
         if (!string.IsNullOrWhiteSpace(options.Search))
         {
-            indexes = indexes.Where(q => q.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
+            indexes = indexes.Where(q => q.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase));
         }
+
+        var totalIndexes = indexes.Count();
 
         var siteSettings = await _siteService.GetSiteSettingsAsync();
         var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
         indexes = indexes
             .Skip(pager.GetStartIndex())
-            .Take(pager.PageSize).ToList();
+            .Take(pager.PageSize);
 
         // Maintain previous route data when generating page links.
         var routeData = new RouteData();

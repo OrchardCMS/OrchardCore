@@ -8,12 +8,12 @@ namespace OrchardCore.Modules
 {
     public class AssemblyAttributeModuleNamesProvider : IModuleNamesProvider
     {
-        private readonly List<string> _moduleNames;
+        private readonly string[] _moduleNames;
 
         public AssemblyAttributeModuleNamesProvider(IHostEnvironment hostingEnvironment)
         {
             var assembly = Assembly.Load(new AssemblyName(hostingEnvironment.ApplicationName));
-            _moduleNames = assembly.GetCustomAttributes<ModuleNameAttribute>().Select(m => m.Name).ToList();
+            _moduleNames = assembly.GetCustomAttributes<ModuleNameAttribute>().Select(m => m.Name).ToArray();
         }
 
         public IEnumerable<string> GetModuleNames()

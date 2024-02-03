@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
@@ -28,8 +27,8 @@ public class CustomUserSettingsDeploymentSource : IDeploymentSource
         }
 
         var settingsTypes = customUserSettingsStep.IncludeAll
-            ? (await _customUserSettingsService.GetAllSettingsTypesAsync()).ToList()
-            : (await _customUserSettingsService.GetSettingsTypesAsync(customUserSettingsStep.SettingsTypeNames)).ToList();
+            ? await _customUserSettingsService.GetAllSettingsTypesAsync()
+            : await _customUserSettingsService.GetSettingsTypesAsync(customUserSettingsStep.SettingsTypeNames);
 
         // Todo: check permissions for each settings type
         var userData = new JArray();

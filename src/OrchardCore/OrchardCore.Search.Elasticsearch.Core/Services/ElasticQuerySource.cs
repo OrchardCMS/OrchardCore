@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Encodings.Web;
@@ -61,9 +60,9 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 elasticQueryResults.Items = new List<ContentItem>();
 
                 // Load corresponding content item versions
-                var topDocs = docs.TopDocs.Where(x => x != null).ToList();
+                var topDocs = docs.TopDocs.Where(x => x != null);
 
-                if (topDocs.Count > 0)
+                if (topDocs.Any())
                 {
                     var indexedContentItemVersionIds = topDocs.Select(x => x.GetValueOrDefault("ContentItemVersionId").ToString()).ToArray();
                     var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync();

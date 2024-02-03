@@ -116,8 +116,7 @@ namespace OrchardCore.Search.Lucene.Controllers
 
             results = results
                 .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize)
-                .ToList();
+                .Take(pager.PageSize);
 
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();
@@ -416,7 +415,7 @@ namespace OrchardCore.Search.Lucene.Controllers
 
                     if (luceneTopDocs != null)
                     {
-                        model.Documents = luceneTopDocs.TopDocs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)).ToList();
+                        model.Documents = luceneTopDocs.TopDocs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc));
                         model.Count = luceneTopDocs.Count;
                     }
                 }

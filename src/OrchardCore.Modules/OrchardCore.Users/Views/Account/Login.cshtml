@@ -12,7 +12,7 @@
 
     var userCanRegister = (await SiteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersCanRegister == UserRegistrationType.AllowRegistration;
     var allowResetPassword = (await SiteService.GetSiteSettingsAsync()).As<ResetPasswordSettings>().AllowResetPassword;
-    var loginProviders = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+    var loginProviders = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToArray();
     var disableLocalLogin = (await SiteService.GetSiteSettingsAsync()).As<LoginSettings>().DisableLocalLogin;
 }
 
@@ -28,7 +28,7 @@
 
     @if (!disableLocalLogin)
     {
-        <div class="col-md-6 @(loginProviders.Count == 0 ? "offset-md-3" : string.Empty)">
+        <div class="col-md-6 @(loginProviders.Length == 0 ? "offset-md-3" : string.Empty)">
             <form asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="auth-form no-multisubmit">
                 <h1 class="fs-4">@T["Log in"]</h1>
                 <hr />
@@ -68,7 +68,7 @@
             </form>
         </div>
     }
-    @if (loginProviders.Count > 0)
+    @if (loginProviders.Length > 0)
     {
         <div class="col-md-6 @(disableLocalLogin ? "offset-md-3" : string.Empty)">
             <section>

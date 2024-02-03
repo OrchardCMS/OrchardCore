@@ -11,7 +11,7 @@
     var selectedDisplayNames = allContentTypes
         .Where(x => isSelected(x, selectedContentTypes))
         .Select(x => x.DisplayName)
-        .ToList();
+        .ToArray();
 
     bool isSelected(ContentTypeDefinition ctd, ContentTypeEntry[] selectedList)
     {
@@ -27,7 +27,7 @@
     }
     else
     {
-        @if (selectedDisplayNames.Count > 0)
+        @if (selectedDisplayNames.Length > 0)
         {
             foreach (var displayName in selectedDisplayNames)
             {

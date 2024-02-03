@@ -129,7 +129,6 @@ namespace OrchardCore.Contents.AdminNodes
         private static List<string> AddPrefixToClasses(string unprefixed)
         {
             return unprefixed?.Split(' ')
-                .ToList()
                 .Select(c => "icon-class-" + c)
                 .ToList()
                 ?? [];

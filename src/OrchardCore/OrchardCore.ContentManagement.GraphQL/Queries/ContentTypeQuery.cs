@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
@@ -45,7 +44,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
 
             var contentDefinitionManager = serviceProvider.GetService<IContentDefinitionManager>();
-            var contentTypeBuilders = serviceProvider.GetServices<IContentTypeBuilder>().ToList();
+            var contentTypeBuilders = serviceProvider.GetServices<IContentTypeBuilder>();
 
             foreach (var typeDefinition in await contentDefinitionManager.ListTypeDefinitionsAsync())
             {

@@ -104,7 +104,7 @@ namespace OrchardCore.Deployment.Controllers
 
             var model = new DeploymentPlanIndexViewModel
             {
-                DeploymentPlans = results.Select(x => new DeploymentPlanEntry { DeploymentPlan = x }).ToList(),
+                DeploymentPlans = results.Select(x => new DeploymentPlanEntry { DeploymentPlan = x }).ToArray(),
                 Options = options,
                 Pager = pagerShape
             };

@@ -28,7 +28,7 @@ namespace OrchardCore.Environment.Extensions
         private readonly IFeaturesProvider _featuresProvider;
 
         private Dictionary<string, ExtensionEntry> _extensions;
-        private List<IExtensionInfo> _extensionsInfos;
+        private IExtensionInfo[] _extensionsInfos;
         private Dictionary<string, FeatureEntry> _features;
         private IFeatureInfo[] _featureInfos;
 
@@ -372,7 +372,7 @@ namespace OrchardCore.Environment.Extensions
                 _extensionsInfos = _featureInfos
                     .Where(f => f.Id == f.Extension.Features.First().Id)
                     .Select(f => f.Extension)
-                    .ToList();
+                    .ToArray();
 
                 _extensions = _extensionsInfos.ToDictionary(e => e.Id, e => loadedExtensions[e.Id]);
 

@@ -34,7 +34,7 @@ namespace OrchardCore.Tests.Apis.Context
 
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
         {
-            var permissions = (_permissionsContext.AuthorizedPermissions ?? []).ToList();
+            var permissions = _permissionsContext.AuthorizedPermissions ?? [];
 
             if (!_permissionsContext.UsePermissionsContext)
             {

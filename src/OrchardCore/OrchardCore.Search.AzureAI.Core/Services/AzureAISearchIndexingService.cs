@@ -47,7 +47,7 @@ public class AzureAISearchIndexingService
     public async Task ProcessContentItemsAsync(params string[] indexNames)
     {
         var lastTaskId = long.MaxValue;
-        var indexSettings = new List<AzureAISearchIndexSettings>();
+        IEnumerable<AzureAISearchIndexSettings> indexSettings = [];
         var indexesDocument = await _azureAISearchIndexSettingsService.LoadDocumentAsync();
 
         if (indexNames == null || indexNames.Length == 0)
@@ -57,11 +57,10 @@ public class AzureAISearchIndexingService
         else
         {
             indexSettings = indexesDocument.IndexSettings.Where(x => indexNames.Contains(x.Key, StringComparer.OrdinalIgnoreCase))
-                .Select(x => x.Value)
-                .ToList();
+                .Select(x => x.Value);
         }
 
-        if (indexSettings.Count == 0)
+        if (!indexSettings.Any())
         {
             return;
         }
@@ -73,22 +72,17 @@ public class AzureAISearchIndexingService
             lastTaskId = Math.Min(lastTaskId, taskId);
         }
 
-        if (indexSettings.Count == 0)
-        {
-            return;
-        }
+        IEnumerable<IndexingTask> tasks = [];
 
-        var tasks = new List<IndexingTask>();
-
-        var allContentTypes = indexSettings.SelectMany(x => x.IndexedContentTypes ?? []).Distinct().ToList();
+        var allContentTypes = indexSettings.SelectMany(x => x.IndexedContentTypes ?? []).Distinct().ToArray();
         var readOnlySession = _store.CreateSession(withTracking: false);
 
-        while (tasks.Count <= _batchSize)
+        while (true)
         {
             // Load the next batch of tasks.
-            tasks = (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, _batchSize)).ToList();
+            tasks = await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, _batchSize);
 
-            if (tasks.Count == 0)
+            if (!tasks.Any())
             {
                 break;
             }

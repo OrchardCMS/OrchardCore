@@ -31,7 +31,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
         public void Build(FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
         {
             var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
-            var contentFieldProviders = serviceProvider.GetServices<IContentFieldProvider>().ToList();
+            var contentFieldProviders = serviceProvider.GetServices<IContentFieldProvider>().ToArray();
 
             if (_contentOptions.ShouldHide(contentTypeDefinition))
             {

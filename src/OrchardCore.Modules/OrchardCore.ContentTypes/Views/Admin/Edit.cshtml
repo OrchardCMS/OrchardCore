@@ -31,9 +31,9 @@
             });
     }
 
-    var partDefinitions = sorted.OrderBy(x => x.Order).Select(x => (ContentTypePartDefinition)x.Part).ToList();
+    var partDefinitions = sorted.OrderBy(x => x.Order).Select(x => (ContentTypePartDefinition)x.Part).ToArray();
 
-    var fieldDefinitions = new List<ContentPartFieldDefinition>();
+    var fieldDefinitions = Array.Empty<ContentPartFieldDefinition>();
 
     if (typePart?.PartDefinition?.Fields != null)
     {
@@ -41,10 +41,10 @@
         .Select(field => new { Field = field, Order = int.Parse(field.GetSettings<ContentPartFieldSettings>().Position ?? "0") })
         .OrderBy(x => x.Order)
         .Select(x => x.Field)
-        .ToList();
+        .ToArray();
     }
 
-    var fields = (await ContentDefinitionService.GetFieldsAsync()).ToList();
+    var fields = (await ContentDefinitionService.GetFieldsAsync()).ToArray();
 }
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Content Type - {0}", Model.TypeDefinition.DisplayName])</h1></zone>
@@ -63,7 +63,7 @@
 
     @await DisplayAsync(Model.Editor)
 
-    @if (fieldDefinitions.Count > 0 || fields.Count > 0)
+    @if (fieldDefinitions.Length > 0 || fields.Length > 0)
     {
         <div class="mb-3">
             <h3>@T["Fields"]</h3>
@@ -97,7 +97,7 @@
             </ul>
         </div>
 
-        @if (fields.Count > 0)
+        @if (fields.Length > 0)
         {
             <div class="mb-3">
                 <a asp-route-action="AddFieldTo" asp-route-id="@Model.TypeDefinition.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>

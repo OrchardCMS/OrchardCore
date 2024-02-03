@@ -13,7 +13,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             Name = part.Name;
 
             var serviceProvider = httpContextAccessor.HttpContext.RequestServices;
-            var contentFieldProviders = serviceProvider.GetServices<IContentFieldProvider>().ToList();
+            var contentFieldProviders = serviceProvider.GetServices<IContentFieldProvider>().ToArray();
 
             foreach (var field in part.PartDefinition.Fields)
             {

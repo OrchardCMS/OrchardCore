@@ -77,8 +77,7 @@ namespace OrchardCore.Queries.Controllers
 
             var results = queries
                 .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize)
-                .ToList();
+                .Take(pager.PageSize);
 
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();
@@ -93,7 +92,7 @@ namespace OrchardCore.Queries.Controllers
                 Queries = new List<QueryEntry>(),
                 Options = options,
                 Pager = await _shapeFactory.PagerAsync(pager, queries.Count(), routeData),
-                QuerySourceNames = _querySources.Select(x => x.Name).ToList()
+                QuerySourceNames = _querySources.Select(x => x.Name)
             };
 
             foreach (var query in results)

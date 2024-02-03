@@ -53,7 +53,7 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
             model.SearchFields = string.Join(", ", settings.DefaultSearchFields ?? []);
             model.SearchIndexes = (await _indexSettingsService.GetSettingsAsync())
             .Select(x => new SelectListItem(x.IndexName, x.IndexName))
-            .ToList();
+            .ToArray();
         }).Location("Content:2#Azure AI Search;5")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
         .OnGroup(SearchConstants.SearchSettingsGroupId);
@@ -117,8 +117,8 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
             return true;
         }
 
-        var combine = a.Intersect(b).ToList();
+        var totalCombined = a.Intersect(b).Count();
 
-        return combine.Count == a.Length && combine.Count == b.Length;
+        return totalCombined == a.Length && totalCombined == b.Length;
     }
 }

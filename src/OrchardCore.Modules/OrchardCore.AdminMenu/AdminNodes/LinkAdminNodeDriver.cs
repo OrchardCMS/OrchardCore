@@ -43,13 +43,13 @@ namespace OrchardCore.AdminMenu.AdminNodes
                     {
                         Name = p.Name,
                         DisplayText = p.Description
-                    }).ToList();
+                    }).ToArray();
                 model.AllItems = permissions
                     .Select(p => new PermissionViewModel
                     {
                         Name = p.Name,
                         DisplayText = p.Description
-                    }).ToList();
+                    }).ToArray();
             }).Location("Content");
         }
 

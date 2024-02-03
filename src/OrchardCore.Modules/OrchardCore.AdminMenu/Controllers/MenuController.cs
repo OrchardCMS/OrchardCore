@@ -81,8 +81,7 @@ namespace OrchardCore.AdminMenu.Controllers
             {
                 results = adminMenuList
                 .Skip(startIndex)
-                .Take(pageSize)
-                .ToList();
+                .Take(pageSize);
             }
             catch (Exception ex)
             {
@@ -102,7 +101,7 @@ namespace OrchardCore.AdminMenu.Controllers
 
             var model = new AdminMenuListViewModel
             {
-                AdminMenu = results.Select(x => new AdminMenuEntry { AdminMenu = x }).ToList(),
+                AdminMenu = results.Select(x => new AdminMenuEntry { AdminMenu = x }).ToArray(),
                 Options = options,
                 Pager = pagerShape,
             };

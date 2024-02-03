@@ -22,10 +22,9 @@
 
 <form asp-action="Recipes">
     @{
-        var recipeGroups = Model.GroupBy(f => f.Feature).ToList();
         if (Model.Any())
         {
-            foreach (var recipeGroup in recipeGroups)
+            foreach (var recipeGroup in Model.GroupBy(f => f.Feature))
             {
                 var groupName = recipeGroup.Key;
 

@@ -28,12 +28,12 @@ namespace OrchardCore.Features.Recipes.Executors
 
             var step = context.Step.ToObject<FeatureStepModel>();
 
-            var features = (await _shellFeaturesManager.GetAvailableFeaturesAsync());
+            var features = await _shellFeaturesManager.GetAvailableFeaturesAsync();
 
-            var featuresToDisable = features.Where(x => step.Disable?.Contains(x.Id) == true).ToList();
-            var featuresToEnable = features.Where(x => step.Enable?.Contains(x.Id) == true).ToList();
+            var featuresToDisable = features.Where(x => step.Disable?.Contains(x.Id) == true);
+            var featuresToEnable = features.Where(x => step.Enable?.Contains(x.Id) == true);
 
-            if (featuresToDisable.Count > 0 || featuresToEnable.Count > 0)
+            if (featuresToDisable.Any() || featuresToEnable.Any())
             {
                 await _shellFeaturesManager.UpdateFeaturesAsync(featuresToDisable, featuresToEnable, true);
             }

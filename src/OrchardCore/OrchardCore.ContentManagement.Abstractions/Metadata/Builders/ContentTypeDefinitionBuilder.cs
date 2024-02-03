@@ -35,7 +35,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             {
                 _name = existing.Name;
                 _displayName = existing.DisplayName;
-                _parts = existing.Parts.ToList();
+                _parts = existing.Parts.ToArray();
                 _settings = new JObject(existing.Settings);
             }
         }

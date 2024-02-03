@@ -13,6 +13,6 @@ namespace OrchardCore.Workflows.Http.ViewModels
         // TODO: Add support for arbitrary route values.
 
         private readonly IList<string> _availableHttpMethods = new[] { "GET", "POST", "PUT", "DELETE", "OPTIONS" };
-        public IList<SelectListItem> AvailableHttpMethods => _availableHttpMethods.Select(x => new SelectListItem { Text = x, Value = x }).ToList();
+        public IList<SelectListItem> AvailableHttpMethods => _availableHttpMethods.Select(x => new SelectListItem { Text = x, Value = x }).ToArray();
     }
 }

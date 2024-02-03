@@ -43,11 +43,11 @@ namespace OrchardCore.DisplayManagement.Shapes
             }
 
             // Prevent multiple enumerations.
-            var items = Items.ToList();
+            var items = Items.ToArray();
 
             // var itemDisplayOutputs = Items.Select(item => Display(item)).Where(output => !string.IsNullOrWhiteSpace(output.ToHtmlString())).ToList();
-            var count = items.Count;
-            if (count < 1)
+            var count = items.Length;
+            if (count == 0)
             {
                 return HtmlString.Empty;
             }

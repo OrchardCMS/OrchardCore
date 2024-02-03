@@ -65,8 +65,8 @@ public class FeatureService
                 IsEnabled = enabledFeatures.Contains(moduleFeatureInfo),
                 EnabledByDependencyOnly = moduleFeatureInfo.EnabledByDependencyOnly,
                 IsAlwaysEnabled = alwaysEnabledFeatures.Contains(moduleFeatureInfo),
-                EnabledDependentFeatures = dependentFeatures.Where(x => x.Id != moduleFeatureInfo.Id && enabledFeatures.Contains(x)).ToList(),
-                FeatureDependencies = featureDependencies.Where(d => d.Id != moduleFeatureInfo.Id).ToList()
+                EnabledDependentFeatures = dependentFeatures.Where(x => x.Id != moduleFeatureInfo.Id && enabledFeatures.Contains(x)),
+                FeatureDependencies = featureDependencies.Where(d => d.Id != moduleFeatureInfo.Id),
             };
 
             moduleFeatures.Add(moduleFeature);

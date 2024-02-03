@@ -21,7 +21,7 @@ namespace OrchardCore.Contents.Workflows.Drivers
         {
             model.AvailableContentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
                 .Select(x => new SelectListItem { Text = x.DisplayName, Value = x.Name })
-                .ToList();
+                .ToArray();
 
             model.ContentType = activity.ContentType;
             model.Publish = activity.Publish;

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.ContentManagement.Metadata.Models
@@ -11,7 +10,7 @@ namespace OrchardCore.ContentManagement.Metadata.Models
         {
             Name = name;
             DisplayName = displayName;
-            Parts = parts.ToList();
+            Parts = parts;
             Settings = new JObject(settings);
 
             foreach (var part in Parts)

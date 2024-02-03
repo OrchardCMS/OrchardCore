@@ -7,8 +7,7 @@
     var categories = shortcodeDescriptors
         .SelectMany(shortcodeDescriptor => shortcodeDescriptor.Categories ?? Enumerable.Empty<string>())
         .Distinct(StringComparer.OrdinalIgnoreCase)
-        .OrderBy(category => category)
-        .ToList();
+        .OrderBy(category => category);
 
     var jCategories = JsonConvert.SerializeObject(categories);
     var jSelectedCategories = JsonConvert.SerializeObject(Model.Categories);

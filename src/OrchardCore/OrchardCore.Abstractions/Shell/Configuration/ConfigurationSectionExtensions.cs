@@ -33,9 +33,9 @@ namespace OrchardCore.Environment.Shell.Configuration
                 return JsonValue.Create(configurationSection.Value);
             }
 
-            var children = configuration.GetChildren().ToList();
+            var children = configuration.GetChildren().ToArray();
 
-            if (children.Count == 0)
+            if (children.Length == 0)
             {
                 return JsonValue.Create<string>(null);
             }

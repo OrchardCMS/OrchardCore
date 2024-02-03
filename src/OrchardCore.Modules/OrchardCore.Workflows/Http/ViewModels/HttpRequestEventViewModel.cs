@@ -27,6 +27,6 @@ namespace OrchardCore.Workflows.Http.ViewModels
         public string FormLocationKey { get; set; }
 
         public static IList<SelectListItem> GetAvailableHttpMethods()
-            => _availableHttpMethods.Select(x => new SelectListItem { Text = x, Value = x }).ToList();
+            => _availableHttpMethods.Select(x => new SelectListItem { Text = x, Value = x }).ToArray();
     }
 }

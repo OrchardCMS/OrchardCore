@@ -13,10 +13,12 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         }
 
         private List<ContentFieldDisplayDriverOption> _displayModeDrivers;
-        public IReadOnlyList<ContentFieldDisplayDriverOption> DisplayModeDrivers => _displayModeDrivers ??= _fieldDisplayDrivers.Where(d => d.DisplayMode != null).ToList();
+        public IReadOnlyList<ContentFieldDisplayDriverOption> DisplayModeDrivers
+            => _displayModeDrivers ??= _fieldDisplayDrivers.Where(d => d.DisplayMode != null).ToList();
 
         private List<ContentFieldDisplayDriverOption> _editorDrivers;
-        public IReadOnlyList<ContentFieldDisplayDriverOption> EditorDrivers => _editorDrivers ??= _fieldDisplayDrivers.Where(d => d.Editor != null).ToList();
+        public IReadOnlyList<ContentFieldDisplayDriverOption> EditorDrivers
+            => _editorDrivers ??= _fieldDisplayDrivers.Where(d => d.Editor != null).ToList();
 
         internal void ForDisplayMode(Type displayDriverType, Func<string, bool> predicate)
         {

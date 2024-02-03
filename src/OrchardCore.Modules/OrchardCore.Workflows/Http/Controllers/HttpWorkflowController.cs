@@ -230,9 +230,8 @@ namespace OrchardCore.Workflows.Http.Controllers
             if (!string.IsNullOrWhiteSpace(payload.WorkflowId))
             {
                 var workflow = await _workflowStore.GetAsync(payload.WorkflowId);
-                var signalActivities = workflow?.BlockingActivities.Where(x => x.Name == SignalEvent.EventName).ToList();
 
-                if (signalActivities == null)
+                if (workflow == null)
                 {
                     return NotFound();
                 }
@@ -249,7 +248,7 @@ namespace OrchardCore.Workflows.Http.Controllers
                     {
                         // The workflow could be blocking on multiple Signal activities, but only the activity with the provided signal name
                         // will be executed as SignalEvent checks for the provided "Signal" input.
-                        signalActivities = workflow.BlockingActivities.Where(x => x.Name == SignalEvent.EventName).ToList();
+                        var signalActivities = workflow.BlockingActivities.Where(x => x.Name == SignalEvent.EventName);
                         foreach (var signalActivity in signalActivities)
                         {
                             await _workflowManager.ResumeWorkflowAsync(workflow, signalActivity, input);

@@ -20,7 +20,7 @@ namespace OrchardCore.Workflows.Services
         public ActivityLibrary(IOptions<WorkflowOptions> workflowOptions, IServiceProvider serviceProvider, ILogger<ActivityLibrary> logger)
         {
             _activityDictionary = new Lazy<IDictionary<string, IActivity>>(() => workflowOptions.Value.ActivityTypes.Where(x => !x.IsAbstract).Select(x => serviceProvider.CreateInstance<IActivity>(x)).OrderBy(x => x.Name).ToDictionary(x => x.Name));
-            _activityCategories = new Lazy<IList<LocalizedString>>(() => _activityDictionary.Value.Values.OrderBy(x => x.Category.Value).Select(x => x.Category).Distinct(new LocalizedStringComparer()).ToList());
+            _activityCategories = new Lazy<IList<LocalizedString>>(() => _activityDictionary.Value.Values.OrderBy(x => x.Category.Value).Select(x => x.Category).Distinct(new LocalizedStringComparer()).ToArray());
             _serviceProvider = serviceProvider;
             _logger = logger;
         }
@@ -58,7 +58,7 @@ namespace OrchardCore.Workflows.Services
 
         public IEnumerable<IActivity> InstantiateActivities(IEnumerable<string> activityNames)
         {
-            var activityNameList = activityNames.ToList();
+            var activityNameList = activityNames.ToArray();
             foreach (var activitySample in ActivityDictionary.Values.Where(x => activityNameList.Contains(x.Name)))
             {
                 yield return InstantiateActivity(activitySample.GetType());

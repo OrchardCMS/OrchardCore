@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -52,7 +51,7 @@ namespace OrchardCore.Environment.Shell.Descriptor.Settings
                 {
                     Features = features
                         .Concat(missingDependencies)
-                        .ToList()
+                        .ToArray()
                 };
             }
 

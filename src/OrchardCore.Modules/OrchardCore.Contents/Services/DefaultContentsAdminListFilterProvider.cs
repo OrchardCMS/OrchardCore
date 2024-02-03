@@ -213,13 +213,12 @@ namespace OrchardCore.Contents.Services
                         {
                             var contentTypeDefinitionNames = (await contentDefinitionManager.ListTypeDefinitionsAsync())
                                 .Where(definition => definition.StereotypeEquals(stereotype, StringComparison.OrdinalIgnoreCase))
-                                .Select(definition => definition.Name)
-                                .ToList();
+                                .Select(definition => definition.Name);
 
                             // We display a specific type even if it's not listable so that admin pages
                             // can reuse the content list page for specific types.
 
-                            if (contentTypeDefinitionNames.Count > 0)
+                            if (contentTypeDefinitionNames.Any())
                             {
                                 var user = httpContextAccessor.HttpContext.User;
                                 var userNameIdentifier = user?.FindFirstValue(ClaimTypes.NameIdentifier);

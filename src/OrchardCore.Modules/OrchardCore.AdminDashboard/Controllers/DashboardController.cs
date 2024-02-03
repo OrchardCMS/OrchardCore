@@ -149,7 +149,7 @@ namespace OrchardCore.AdminDashboard.Controllers
                 return Unauthorized();
             }
 
-            var contentItemIds = parts.Select(i => i.ContentItemId).ToList();
+            var contentItemIds = parts.Select(i => i.ContentItemId);
 
             // Load the latest version first if any.
             var latestItems = await _contentManager.GetAsync(contentItemIds, VersionOptions.Latest);

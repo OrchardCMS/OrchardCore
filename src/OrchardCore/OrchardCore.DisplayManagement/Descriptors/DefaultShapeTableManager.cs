@@ -109,8 +109,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
                         shapeType: group.Key,
                         alterationKeys: group.Select(kv => kv.Key),
                         descriptors: _shapeDescriptors
-                    ))
-                    .ToList();
+                    )).ToArray();
 
                 shapeTable = new ShapeTable
                 (

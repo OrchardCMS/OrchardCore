@@ -50,8 +50,7 @@ namespace OrchardCore.Layers.Services
             return allWidgets
                 .Select(x => x.As<LayerMetadata>())
                 .Where(x => x != null)
-                .OrderBy(x => x.Position)
-                .ToList();
+                .OrderBy(x => x.Position);
         }
 
         /// <summary>

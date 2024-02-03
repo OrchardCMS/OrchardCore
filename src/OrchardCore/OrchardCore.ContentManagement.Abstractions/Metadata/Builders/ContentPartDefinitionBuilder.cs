@@ -34,7 +34,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             else
             {
                 Name = existing.Name;
-                _fields = existing.Fields.ToList();
+                _fields = existing.Fields.ToArray();
                 _settings = new JObject(existing.Settings);
             }
         }

@@ -138,7 +138,7 @@ namespace OrchardCore.ContentTypes.Services
         {
             // First remove all attached parts.
             var typeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(name);
-            var partDefinitions = typeDefinition.Parts.ToList();
+            var partDefinitions = typeDefinition.Parts;
             foreach (var partDefinition in partDefinitions)
             {
                 await RemovePartFromTypeAsync(partDefinition.PartDefinition.Name, name);
@@ -196,8 +196,7 @@ namespace OrchardCore.ContentTypes.Services
                 ? []
                 : _contentPartTypes
                         .Where(cpd => !userContentParts.ContainsKey(cpd.Name))
-                        .Select(cpi => new EditPartViewModel { Name = cpi.Name, DisplayName = cpi.Name })
-                    .ToList();
+                        .Select(cpi => new EditPartViewModel { Name = cpi.Name, DisplayName = cpi.Name });
 
             // Order by display name.
             return codeDefinedParts
@@ -221,8 +220,7 @@ namespace OrchardCore.ContentTypes.Services
                 ? []
                 : _contentPartTypes
                         .Where(cpd => !userContentParts.ContainsKey(cpd.Name))
-                        .Select(cpi => new EditPartViewModel { Name = cpi.Name, DisplayName = cpi.Name })
-                    .ToList();
+                        .Select(cpi => new EditPartViewModel { Name = cpi.Name, DisplayName = cpi.Name });
 
             // Order by display name.
             return codeDefinedParts
@@ -461,11 +459,11 @@ namespace OrchardCore.ContentTypes.Services
                     return displayName;
                 }
 
-                fieldDefinitions = typePart.PartDefinition.Fields.ToList();
+                fieldDefinitions = typePart.PartDefinition.Fields;
             }
             else
             {
-                fieldDefinitions = part.Fields.ToList();
+                fieldDefinitions = part.Fields;
             }
 
             while (fieldDefinitions.Any(x => string.Equals(displayName.Trim(), x.Name.Trim(), StringComparison.OrdinalIgnoreCase)))
