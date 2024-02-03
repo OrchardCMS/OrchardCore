@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy;
 using OrchardCore.DisplayManagement.Handlers;
@@ -100,7 +99,7 @@ namespace OrchardCore.Placements.Services
             private static bool CheckFilter(ShapePlacementContext ctx, PlacementNode filter) => ShapePlacementParsingStrategy.CheckFilter(ctx, filter);
 
             private Func<ShapePlacementContext, bool> BuildPredicate(Func<ShapePlacementContext, bool> predicate,
-                  KeyValuePair<string, JToken> term)
+                  KeyValuePair<string, object> term)
             {
                 return ShapePlacementParsingStrategy.BuildPredicate(predicate, term, _placementNodeFilterProviders);
             }

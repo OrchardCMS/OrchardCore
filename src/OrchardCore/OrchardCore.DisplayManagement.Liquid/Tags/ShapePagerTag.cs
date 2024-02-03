@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Values;
-using Newtonsoft.Json;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Mvc.Utilities;
 
@@ -98,7 +98,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
                         if (attributes.Type == FluidValues.String)
                         {
-                            var values = JsonConvert.DeserializeObject<Dictionary<string, string>>(attributes.ToStringValue());
+                            var values = JConvert.DeserializeObject<Dictionary<string, string>>(attributes.ToStringValue());
                             foreach (var value in values)
                             {
                                 objectValue.Attributes.TryAdd(value.Key, value.Value);
@@ -112,7 +112,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
                         if (itemAttributes.Type == FluidValues.String)
                         {
-                            var values = JsonConvert.DeserializeObject<Dictionary<string, string>>(itemAttributes.ToStringValue());
+                            var values = JConvert.DeserializeObject<Dictionary<string, string>>(itemAttributes.ToStringValue());
                             foreach (var value in values)
                             {
                                 objectValue.ItemAttributes.TryAdd(value.Key, value.Value);

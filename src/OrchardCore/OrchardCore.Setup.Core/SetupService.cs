@@ -178,6 +178,9 @@ namespace OrchardCore.Setup.Services
                 case DbConnectionValidatorResult.InvalidConnection:
                     context.Errors.Add(string.Empty, S["The provided connection string is invalid or server is unreachable."]);
                     break;
+                case DbConnectionValidatorResult.InvalidCertificate:
+                    context.Errors.Add(string.Empty, S["The security certificate on the server is from a non-trusted source (the certificate issuing authority isn't listed as a trusted authority in Trusted Root Certification Authorities on the client machine). In a development environment, you have the option to use the '{0}' parameter in your connection string to bypass the validation performed by the certificate authority.", "TrustServerCertificate=True"]);
+                    break;
                 case DbConnectionValidatorResult.DocumentTableFound:
                     context.Errors.Add(string.Empty, S["The provided database, table prefix and schema are already in use."]);
                     break;

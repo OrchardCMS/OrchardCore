@@ -9,8 +9,8 @@
         .Distinct(StringComparer.OrdinalIgnoreCase)
         .OrderBy(category => category);
 
-    var jCategories = JsonConvert.SerializeObject(categories);
-    var jSelectedCategories = JsonConvert.SerializeObject(Model.Categories);
+    var jCategories = JConvert.SerializeObject(categories);
+    var jSelectedCategories = JConvert.SerializeObject(Model.Categories);
 }
 
 <style asp-name="codemirror"></style>

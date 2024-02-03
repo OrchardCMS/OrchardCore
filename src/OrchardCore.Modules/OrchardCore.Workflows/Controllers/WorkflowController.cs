@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,8 +10,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -212,13 +211,12 @@ namespace OrchardCore.Workflows.Controllers
                 workflowType.Transitions,
             };
 
-            var jsonSerializerSettings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
             var viewModel = new WorkflowViewModel
             {
                 Workflow = workflow,
                 WorkflowType = workflowType,
-                WorkflowTypeJson = JsonConvert.SerializeObject(workflowTypeData, Formatting.None, jsonSerializerSettings),
-                WorkflowJson = JsonConvert.SerializeObject(workflow, Formatting.Indented, jsonSerializerSettings),
+                WorkflowTypeJson = JConvert.SerializeObject(workflowTypeData, JOptions.CamelCase),
+                WorkflowJson = JConvert.SerializeObject(workflow, JOptions.CamelCaseIndented),
                 ActivityDesignShapes = activityDesignShapes,
             };
 

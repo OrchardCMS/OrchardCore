@@ -1,18 +1,18 @@
 using System.Linq;
+using System.Text.Json.Nodes;
 using Lucene.Net.Queries.Function;
 using Lucene.Net.Search;
 using Lucene.Net.Spatial.Prefix;
 using Lucene.Net.Spatial.Prefix.Tree;
 using Lucene.Net.Spatial.Queries;
 using Lucene.Net.Spatial.Util;
-using Newtonsoft.Json.Linq;
 using Spatial4n.Context;
 
 namespace OrchardCore.Search.Lucene.QueryProviders.Filters
 {
     public class GeoBoundingBoxFilterProvider : ILuceneBooleanFilterProvider
     {
-        public FilteredQuery CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JToken filter, Query toFilter)
+        public FilteredQuery CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JsonNode filter, Query toFilter)
         {
             if (type != "geo_bounding_box")
             {
@@ -24,8 +24,8 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
                 return null;
             }
 
-            var queryObj = filter as JObject;
-            var first = queryObj.Properties().First();
+            var queryObj = filter.AsObject();
+            var first = queryObj.First();
 
             var ctx = SpatialContext.Geo;
 
@@ -34,13 +34,13 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
             // This can also be constructed from SpatialPrefixTreeFactory
             SpatialPrefixTree grid = new GeohashPrefixTree(ctx, maxLevels);
 
-            var geoPropertyName = first.Name;
+            var geoPropertyName = first.Key;
             var strategy = new RecursivePrefixTreeStrategy(grid, geoPropertyName);
 
-            var boundingBox = (JObject)first.Value;
+            var boundingBox = first.Value.AsObject();
 
-            var topLeftProperty = boundingBox["top_left"] as JObject;
-            var bottomRightProperty = boundingBox["bottom_right"] as JObject;
+            var topLeftProperty = boundingBox["top_left"].AsObject();
+            var bottomRightProperty = boundingBox["bottom_right"].AsObject();
 
             if (topLeftProperty == null || bottomRightProperty == null)
             {

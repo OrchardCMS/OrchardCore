@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Workflows.Services
@@ -24,7 +24,7 @@ namespace OrchardCore.Workflows.Services
         /// </summary>
         /// <param name="activityRecord"></param>
         /// <param name="properties"></param>
-        Task<ActivityContext> CreateActivityExecutionContextAsync(ActivityRecord activityRecord, JObject properties);
+        Task<ActivityContext> CreateActivityExecutionContextAsync(ActivityRecord activityRecord, JsonObject properties);
 
         /// <summary>
         /// Triggers a specific <see cref="OrchardCore.Workflows.Activities.IEvent"/>.

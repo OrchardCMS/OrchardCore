@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
@@ -318,13 +318,13 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 {
                     await _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, partBuilder =>
                     {
-                        if (partDefinition.Settings.TryGetValue("LuceneContentIndexSettings", out var existingPartSettings))
+                        if (partDefinition.Settings.TryGetPropertyValue("LuceneContentIndexSettings", out var existingPartSettings))
                         {
                             var included = existingPartSettings["Included"];
 
-                            if (included != null && (bool)included)
+                            if (included is not null && (bool)included)
                             {
-                                partDefinition.Settings.Add(new JProperty(nameof(ElasticContentIndexSettings), JToken.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>())));
+                                partDefinition.Settings.Add(nameof(ElasticContentIndexSettings), JNode.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>()));
                             }
                         }
                     });
@@ -337,25 +337,25 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             {
                 await _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, partBuilder =>
                 {
-                    if (partDefinition.Settings.TryGetValue("LuceneContentIndexSettings", out var existingPartSettings))
+                    if (partDefinition.Settings.TryGetPropertyValue("LuceneContentIndexSettings", out var existingPartSettings))
                     {
                         var included = existingPartSettings["Included"];
 
                         if (included != null && (bool)included)
                         {
-                            partDefinition.Settings.Add(new JProperty(nameof(ElasticContentIndexSettings), JToken.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>())));
+                            partDefinition.Settings.Add(nameof(ElasticContentIndexSettings), JNode.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>()));
                         }
                     }
 
                     foreach (var fieldDefinition in partDefinition.Fields)
                     {
-                        if (fieldDefinition.Settings.TryGetValue("LuceneContentIndexSettings", out var existingFieldSettings))
+                        if (fieldDefinition.Settings.TryGetPropertyValue("LuceneContentIndexSettings", out var existingFieldSettings))
                         {
                             var included = existingFieldSettings["Included"];
 
                             if (included != null && (bool)included)
                             {
-                                fieldDefinition.Settings.Add(new JProperty(nameof(ElasticContentIndexSettings), JToken.FromObject(existingFieldSettings.ToObject<ElasticContentIndexSettings>())));
+                                fieldDefinition.Settings.Add(nameof(ElasticContentIndexSettings), JNode.FromObject(existingFieldSettings.ToObject<ElasticContentIndexSettings>()));
                             }
                         }
                     }

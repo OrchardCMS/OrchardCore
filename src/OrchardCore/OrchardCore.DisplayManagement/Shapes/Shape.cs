@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using Newtonsoft.Json;
 using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.DisplayManagement.Shapes
@@ -248,7 +248,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
                 if (value is string stringValue)
                 {
-                    attributes = JsonConvert.DeserializeObject<Dictionary<string, string>>(stringValue);
+                    attributes = JConvert.DeserializeObject<Dictionary<string, string>>(stringValue);
 
                     foreach (var attribute in attributes)
                     {

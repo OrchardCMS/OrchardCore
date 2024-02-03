@@ -40,11 +40,11 @@ namespace OrchardCore.Users.Handlers
         /// <summary>
         /// Gets the roles to be added to the user roles.
         /// </summary>
-        public List<string> RolesToAdd { get; } = [];
+        public List<string> RolesToAdd { get; init; } = [];
 
         /// <summary>
         /// Gets the roles to be removed from the user roles.
         /// </summary>
-        public List<string> RolesToRemove { get; } = [];
+        public List<string> RolesToRemove { get; init; } = [];
     }
 }

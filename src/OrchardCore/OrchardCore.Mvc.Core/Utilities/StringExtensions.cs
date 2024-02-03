@@ -4,10 +4,10 @@ using System.Collections.Immutable;
 using System.Globalization;
 using System.Net;
 using System.Text;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using Cysharp.Text;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Mvc.Utilities
 {
@@ -505,7 +505,7 @@ namespace OrchardCore.Mvc.Utilities
         {
             try
             {
-                JToken.Parse(json);
+                JsonNode.Parse(json);
                 return true;
             }
             catch

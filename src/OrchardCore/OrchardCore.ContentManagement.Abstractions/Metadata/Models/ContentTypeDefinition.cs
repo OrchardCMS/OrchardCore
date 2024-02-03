@@ -1,17 +1,18 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json.Linq;
+using System.Linq;
+using System.Text.Json.Nodes;
 
 namespace OrchardCore.ContentManagement.Metadata.Models
 {
     public class ContentTypeDefinition : ContentDefinition
     {
-        public ContentTypeDefinition(string name, string displayName, IEnumerable<ContentTypePartDefinition> parts, JObject settings)
+        public ContentTypeDefinition(string name, string displayName, IEnumerable<ContentTypePartDefinition> parts, JsonObject settings)
         {
             Name = name;
             DisplayName = displayName;
             Parts = parts;
-            Settings = new JObject(settings);
+            Settings = settings.Clone();
 
             foreach (var part in Parts)
             {

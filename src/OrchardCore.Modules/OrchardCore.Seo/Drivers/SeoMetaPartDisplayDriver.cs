@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -17,12 +16,6 @@ namespace OrchardCore.Seo.Drivers
 {
     public class SeoMetaPartDisplayDriver : ContentPartDisplayDriver<SeoMetaPart>
     {
-        private static readonly JsonSerializerSettings _serializerSettings = new()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            Formatting = Formatting.Indented,
-        };
-
         protected readonly IStringLocalizer S;
 
         public SeoMetaPartDisplayDriver(IStringLocalizer<SeoMetaPartDisplayDriver> stringLocalizer)
@@ -44,7 +37,7 @@ namespace OrchardCore.Seo.Drivers
                     model.MetaKeywords = part.MetaKeywords;
                     model.Canonical = part.Canonical;
                     model.MetaRobots = part.MetaRobots;
-                    model.CustomMetaTags = JsonConvert.SerializeObject(part.CustomMetaTags, _serializerSettings);
+                    model.CustomMetaTags = JConvert.SerializeObject(part.CustomMetaTags, JOptions.CamelCaseIndented);
                     model.SeoMetaPart = part;
                     model.Settings = settings;
                 }).Location("Parts#SEO;50"),
@@ -102,7 +95,7 @@ namespace OrchardCore.Seo.Drivers
 
                     part.CustomMetaTags = string.IsNullOrWhiteSpace(partViewModel.CustomMetaTags)
                         ? []
-                        : JsonConvert.DeserializeObject<MetaEntry[]>(partViewModel.CustomMetaTags);
+                        : JConvert.DeserializeObject<MetaEntry[]>(partViewModel.CustomMetaTags);
 
                     if (part.Canonical?.IndexOfAny(SeoMetaPart.InvalidCharactersForCanoncial) > -1 || part.Canonical?.IndexOf(' ') > -1)
                     {
