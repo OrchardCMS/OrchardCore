@@ -11,6 +11,8 @@ namespace OrchardCore.DisplayManagement
     public class PositionWrapper : IHtmlContent, IPositioned, IShape
     {
         private readonly IHtmlContent _value;
+        internal IHtmlContent Value => _value;
+
         public string Position { get; set; }
 
         public ShapeMetadata Metadata { get; set; } = new ShapeMetadata();
@@ -39,14 +41,6 @@ namespace OrchardCore.DisplayManagement
         {
             _value = new HtmlContentString(value);
             Position = position;
-        }
-
-        internal IHtmlContent Value
-        {
-            get
-            {
-                return _value;
-            }
         }
 
         public void WriteTo(TextWriter writer, HtmlEncoder encoder)
