@@ -7,6 +7,7 @@ namespace OrchardCore.Email;
 public static class MailMessageExtensions
 {
     private static readonly char[] _emailsSeparator = [',', ';'];
+
     public static MailMessageRecipients GetRecipients(this MailMessage message)
     {
         var recipients = new MailMessageRecipients();

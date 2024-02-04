@@ -74,11 +74,9 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
         {
             var hasFileConnectionString = !string.IsNullOrWhiteSpace(azureEmailOptions?.ConnectionString);
 
-            if (settings.IsSet)
-            {
-                model.IsEnabled = settings.IsEnabled;
-            }
-            else
+            model.IsEnabled = settings.IsEnabled;
+
+            if (!settings.IsSet)
             {
                 model.IsEnabled = hasFileConnectionString && !string.IsNullOrWhiteSpace(azureEmailOptions?.DefaultSender);
             };

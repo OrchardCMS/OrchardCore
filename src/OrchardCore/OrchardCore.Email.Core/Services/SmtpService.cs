@@ -15,6 +15,7 @@ public class SmtpService : ISmtpService
         _emailProviderResolver = emailProviderResolver;
     }
 
+#pragma warning disable IDE0058
     public async Task<SmtpResult> SendAsync(MailMessage message)
     {
         var provider = await _emailProviderResolver.GetAsync(SmtpEmailProvider.TechnicalName);
@@ -28,4 +29,6 @@ public class SmtpService : ISmtpService
 
         return SmtpResult.Failed(result.Errors.ToArray());
     }
+#pragma warning restore IDE0058
+
 }
