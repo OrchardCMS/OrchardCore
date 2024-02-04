@@ -18,8 +18,11 @@ namespace OrchardCore.DisplayManagement.Liquid
         /// <param name="applicationContext"><see cref="IApplicationContext"/> for the application.</param>
         public LiquidViewOptionsSetup(IHostEnvironment hostingEnvironment, IApplicationContext applicationContext)
         {
-            _hostingEnvironment = hostingEnvironment ?? throw new ArgumentNullException(nameof(hostingEnvironment));
-            _applicationContext = applicationContext ?? throw new ArgumentNullException(nameof(applicationContext));
+            ArgumentNullException.ThrowIfNull(hostingEnvironment);
+            ArgumentNullException.ThrowIfNull(applicationContext);
+
+            _hostingEnvironment = hostingEnvironment;
+            _applicationContext = applicationContext;
         }
 
         public void Configure(LiquidViewOptions options)

@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Apis.GraphQL.Resolvers;
@@ -21,20 +22,20 @@ using Expression = OrchardCore.ContentManagement.GraphQL.Queries.Predicates.Expr
 namespace OrchardCore.ContentManagement.GraphQL.Queries
 {
     /// <summary>
-    /// This type is used by <see cref="ContentTypeQuery"/> to represent a query on a content type
+    /// This type is used by <see cref="ContentTypeQuery"/> to represent a query on a content type.
     /// </summary>
     public class ContentItemsFieldType : FieldType
     {
-        private static readonly List<string> ContentItemProperties;
+        private static readonly List<string> _contentItemProperties;
         private readonly int _defaultNumberOfItems;
 
         static ContentItemsFieldType()
         {
-            ContentItemProperties = new List<string>();
+            _contentItemProperties = [];
 
             foreach (var property in typeof(ContentItemIndex).GetProperties())
             {
-                ContentItemProperties.Add(property.Name);
+                _contentItemProperties.Add(property.Name);
             }
         }
 
@@ -73,10 +74,10 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 versionOption = GetVersionOption(context.GetArgument<PublicationStatusEnum>("status"));
             }
 
-            JObject where = null;
+            JsonObject where = null;
             if (context.HasArgument("where"))
             {
-                // context.Arguments[].Value is never null in GraphQL.NET 4
+                // 'context.Arguments[].Value' is never null in GraphQL.NET 4.
                 where = JObject.FromObject(context.Arguments["where"].Value);
             }
 
@@ -112,7 +113,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
         private IQuery<ContentItem> FilterWhereArguments(
             IQuery<ContentItem, ContentItemIndex> query,
-            JObject where,
+            JsonObject where,
             IResolveFieldContext fieldContext,
             ISession session)
         {
@@ -121,17 +122,17 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 return query;
             }
 
-            string defaultTableAlias = query.GetTypeAlias(typeof(ContentItemIndex));
+            var defaultTableAlias = query.GetTypeAlias(typeof(ContentItemIndex));
 
             IPredicateQuery predicateQuery = new PredicateQuery(
                 configuration: session.Store.Configuration,
                 propertyProviders: fieldContext.RequestServices.GetServices<IIndexPropertyProvider>());
 
-            // Create the default table alias
+            // Create the default table alias.
             predicateQuery.CreateAlias("", nameof(ContentItemIndex));
             predicateQuery.CreateTableAlias(nameof(ContentItemIndex), defaultTableAlias);
 
-            // Add all provided table alias to the current predicate query
+            // Add all provided table alias to the current predicate query.
             var providers = fieldContext.RequestServices.GetServices<IIndexAliasProvider>();
             var indexes = new Dictionary<string, IndexAlias>(StringComparer.OrdinalIgnoreCase);
             var indexAliases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -153,16 +154,15 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             BuildWhereExpressions(where, expressions, null, fieldContext, indexAliases);
             expressions.SearchUsedAlias(predicateQuery);
 
-            // Add all Indexes that were used in the predicate query
-
+            // Add all Indexes that were used in the predicate query.
             IQuery<ContentItem> contentQuery = query;
             foreach (var usedAlias in predicateQuery.GetUsedAliases())
             {
-                if (indexes.ContainsKey(usedAlias))
+                if (indexes.TryGetValue(usedAlias, out var indexAlias))
                 {
-                    contentQuery = contentQuery.With(indexes[usedAlias].IndexType);
-                    var tableAlias = query.GetTypeAlias(indexes[usedAlias].IndexType);
-                    predicateQuery.CreateTableAlias(indexes[usedAlias].Index, tableAlias);
+                    contentQuery = contentQuery.With(indexAlias.IndexType);
+                    var tableAlias = query.GetTypeAlias(indexAlias.IndexType);
+                    predicateQuery.CreateTableAlias(indexAlias.Index, tableAlias);
                 }
             }
 
@@ -171,7 +171,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             query = query.Where(whereSqlClause);
 
-            // Add all parameters that were used in the predicate query
+            // Add all parameters that were used in the predicate query.
             foreach (var parameter in predicateQuery.Parameters)
             {
                 query = query.WithParameter(parameter.Key, parameter.Value);
@@ -201,24 +201,21 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             return contentItemsQuery;
         }
 
-        private VersionOptions GetVersionOption(PublicationStatusEnum status)
+        private static VersionOptions GetVersionOption(PublicationStatusEnum status)
         {
-            switch (status)
+            return status switch
             {
-                case PublicationStatusEnum.Published: return VersionOptions.Published;
-                case PublicationStatusEnum.Draft: return VersionOptions.Draft;
-                case PublicationStatusEnum.Latest: return VersionOptions.Latest;
-                case PublicationStatusEnum.All: return VersionOptions.AllVersions;
-                default: return VersionOptions.Published;
-            }
+                PublicationStatusEnum.Published => VersionOptions.Published,
+                PublicationStatusEnum.Draft => VersionOptions.Draft,
+                PublicationStatusEnum.Latest => VersionOptions.Latest,
+                PublicationStatusEnum.All => VersionOptions.AllVersions,
+                _ => VersionOptions.Published,
+            };
         }
 
         private static IQuery<ContentItem, ContentItemIndex> FilterContentType(IQuery<ContentItem, ContentItemIndex> query, IResolveFieldContext context)
         {
-            if (context is null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
+            ArgumentNullException.ThrowIfNull(context);
 
             var contentType = ((ListGraphType)(context.FieldDefinition).ResolvedType).ResolvedType.Name;
             return query.Where(q => q.ContentType == contentType);
@@ -242,42 +239,42 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             return query;
         }
 
-        private void BuildWhereExpressions(JToken where, Junction expressions, string tableAlias, IResolveFieldContext fieldContext, IDictionary<string, string> indexAliases)
+        private void BuildWhereExpressions(JsonNode where, Junction expressions, string tableAlias, IResolveFieldContext fieldContext, IDictionary<string, string> indexAliases)
         {
-            if (where is JArray array)
+            if (where is JsonArray array)
             {
-                foreach (var child in array.Children())
+                foreach (var child in array)
                 {
-                    if (child is JObject whereObject)
+                    if (child is JsonObject whereObject)
                     {
                         BuildExpressionsInternal(whereObject, expressions, tableAlias, fieldContext, indexAliases);
                     }
                 }
             }
-            else if (where is JObject whereObject)
+            else if (where is JsonObject whereObject)
             {
                 BuildExpressionsInternal(whereObject, expressions, tableAlias, fieldContext, indexAliases);
             }
         }
 
-        private void BuildExpressionsInternal(JObject where, Junction expressions, string tableAlias, IResolveFieldContext fieldContext, IDictionary<string, string> indexAliases)
+        private void BuildExpressionsInternal(JsonObject where, Junction expressions, string tableAlias, IResolveFieldContext fieldContext, IDictionary<string, string> indexAliases)
         {
-            foreach (var entry in where.Properties())
+            foreach (var entry in where)
             {
-                // new typed arguments return default null values
-                if (entry.Value.Type == JTokenType.Undefined || entry.Value.Type == JTokenType.Null)
+                // New typed arguments return default null values.
+                if (entry.Value.GetValueKind() == JsonValueKind.Undefined || entry.Value.GetValueKind() == JsonValueKind.Null)
                 {
                     continue;
                 }
 
                 IPredicate expression = null;
 
-                var values = entry.Name.Split('_', 2);
+                var values = entry.Key.Split('_', 2);
 
                 // Gets the full path name without the comparison e.g. aliasPart.alias, not aliasPart.alias_contains.
                 var property = values[0];
 
-                // figure out table aliases for collapsed parts and ones with the part suffix removed by the dsl
+                // Figure out table aliases for collapsed parts and ones with the part suffix removed by the dsl.
                 if (tableAlias == null || !tableAlias.EndsWith("Part", StringComparison.OrdinalIgnoreCase))
                 {
                     var whereArgument = fieldContext?.FieldDefinition.Arguments.FirstOrDefault(x => x.Name == "where");
@@ -322,7 +319,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                         BuildWhereExpressions(entry.Value, (Junction)expression, tableAlias, fieldContext, indexAliases);
                         expression = Expression.Not(expression);
                     }
-                    else if (entry.HasValues && entry.Value.Type == JTokenType.Object)
+                    else if (entry.Value.HasValues() && entry.Value.GetValueKind() == JsonValueKind.Object)
                     {
                         // Loop through the part's properties, passing the name of the part as the table tableAlias.
                         // This tableAlias can then be used with the table alias to index mappings to join with the correct table.
@@ -338,24 +335,23 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 {
                     var value = entry.Value.ToObject<object>();
 
-                    switch (values[1])
+                    expression = values[1] switch
                     {
-                        case "not": expression = Expression.Not(Expression.Equal(property, value)); break;
-                        case "gt": expression = Expression.GreaterThan(property, value); break;
-                        case "gte": expression = Expression.GreaterThanOrEqual(property, value); break;
-                        case "lt": expression = Expression.LessThan(property, value); break;
-                        case "lte": expression = Expression.LessThanOrEqual(property, value); break;
-                        case "contains": expression = Expression.Like(property, (string)value, MatchOptions.Contains); break;
-                        case "not_contains": expression = Expression.Not(Expression.Like(property, (string)value, MatchOptions.Contains)); break;
-                        case "starts_with": expression = Expression.Like(property, (string)value, MatchOptions.StartsWith); break;
-                        case "not_starts_with": expression = Expression.Not(Expression.Like(property, (string)value, MatchOptions.StartsWith)); break;
-                        case "ends_with": expression = Expression.Like(property, (string)value, MatchOptions.EndsWith); break;
-                        case "not_ends_with": expression = Expression.Not(Expression.Like(property, (string)value, MatchOptions.EndsWith)); break;
-                        case "in": expression = Expression.In(property, entry.Value.ToObject<object[]>()); break;
-                        case "not_in": expression = Expression.Not(Expression.In(property, entry.Value.ToObject<object[]>())); break;
-
-                        default: expression = Expression.Equal(property, value); break;
-                    }
+                        "not" => Expression.Not(Expression.Equal(property, value)),
+                        "gt" => Expression.GreaterThan(property, value),
+                        "gte" => Expression.GreaterThanOrEqual(property, value),
+                        "lt" => Expression.LessThan(property, value),
+                        "lte" => Expression.LessThanOrEqual(property, value),
+                        "contains" => Expression.Like(property, (string)value, MatchOptions.Contains),
+                        "not_contains" => Expression.Not(Expression.Like(property, (string)value, MatchOptions.Contains)),
+                        "starts_with" => Expression.Like(property, (string)value, MatchOptions.StartsWith),
+                        "not_starts_with" => Expression.Not(Expression.Like(property, (string)value, MatchOptions.StartsWith)),
+                        "ends_with" => Expression.Like(property, (string)value, MatchOptions.EndsWith),
+                        "not_ends_with" => Expression.Not(Expression.Like(property, (string)value, MatchOptions.EndsWith)),
+                        "in" => Expression.In(property, entry.Value.ToObject<object[]>()),
+                        "not_in" => Expression.Not(Expression.In(property, entry.Value.ToObject<object[]>())),
+                        _ => Expression.Equal(property, value),
+                    };
                 }
 
                 if (expression != null)
@@ -365,7 +361,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             }
         }
 
-        private IQuery<ContentItem, ContentItemIndex> OrderBy(IQuery<ContentItem, ContentItemIndex> query,
+        private static IQuery<ContentItem, ContentItemIndex> OrderBy(IQuery<ContentItem, ContentItemIndex> query,
             IResolveFieldContext context)
         {
             if (context.HasPopulatedArgument("orderBy"))
@@ -376,13 +372,13 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 {
                     var thenBy = false;
 
-                    foreach (var property in orderByArguments.Properties())
+                    foreach (var property in orderByArguments)
                     {
                         var direction = (OrderByDirection)property.Value.Value<int>();
 
                         Expression<Func<ContentItemIndex, object>> selector = null;
 
-                        switch (property.Name)
+                        switch (property.Key)
                         {
                             case "contentItemId": selector = x => x.ContentItemId; break;
                             case "contentItemVersionId": selector = x => x.ContentItemVersionId; break;

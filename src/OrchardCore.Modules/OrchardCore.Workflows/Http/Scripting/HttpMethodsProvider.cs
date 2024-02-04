@@ -2,14 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Scripting;
 
@@ -33,7 +33,7 @@ namespace OrchardCore.Workflows.Http.Scripting
             _httpContextMethod = new GlobalMethod
             {
                 Name = "httpContext",
-                Method = serviceProvider => (Func<HttpContext>)(() => httpContextAccessor.HttpContext)
+                Method = serviceProvider => (Func<HttpContext>)(() => httpContextAccessor.HttpContext),
             };
 
             _queryStringMethod = new GlobalMethod
@@ -66,13 +66,13 @@ namespace OrchardCore.Workflows.Http.Scripting
                         result = null;
                     }
                     return result;
-                })
+                }),
             };
 
             _responseWriteMethod = new GlobalMethod
             {
                 Name = "responseWrite",
-                Method = serviceProvider => (Action<string>)(text => httpContextAccessor.HttpContext.Response.WriteAsync(text).GetAwaiter().GetResult())
+                Method = serviceProvider => (Action<string>)(text => httpContextAccessor.HttpContext.Response.WriteAsync(text).GetAwaiter().GetResult()),
             };
 
             _absoluteUrlMethod = new GlobalMethod
@@ -83,7 +83,7 @@ namespace OrchardCore.Workflows.Http.Scripting
                     var urlHelperFactory = serviceProvider.GetRequiredService<IUrlHelperFactory>();
                     var urlHelper = urlHelperFactory.GetUrlHelper(new ActionContext(httpContextAccessor.HttpContext, new RouteData(), new ActionDescriptor()));
                     return urlHelper.ToAbsoluteUrl(relativePath);
-                })
+                }),
             };
 
             _readBodyMethod = new GlobalMethod
@@ -91,12 +91,11 @@ namespace OrchardCore.Workflows.Http.Scripting
                 Name = "readBody",
                 Method = serviceProvider => (Func<string>)(() =>
                 {
-                    using (var sr = new StreamReader(httpContextAccessor.HttpContext.Request.Body))
-                    {
-                        // Async read of the request body is mandatory.
-                        return sr.ReadToEndAsync().GetAwaiter().GetResult();
-                    }
-                })
+                    using var sr = new StreamReader(httpContextAccessor.HttpContext.Request.Body);
+
+                    // Async read of the request body is mandatory.
+                    return sr.ReadToEndAsync().GetAwaiter().GetResult();
+                }),
             };
 
             _requestFormMethod = new GlobalMethod
@@ -125,21 +124,21 @@ namespace OrchardCore.Workflows.Http.Scripting
                         result = null;
                     }
                     return result;
-                })
+                }),
             };
 
             // This should be deprecated
             _queryStringAsJsonMethod = new GlobalMethod
             {
                 Name = "queryStringAsJson",
-                Method = serviceProvider => _deserializeRequestDataMethod.Method.Invoke(serviceProvider)
+                Method = serviceProvider => _deserializeRequestDataMethod.Method.Invoke(serviceProvider),
             };
 
             // This should be deprecated
             _requestFormAsJsonMethod = new GlobalMethod
             {
                 Name = "requestFormAsJson",
-                Method = serviceProvider => _deserializeRequestDataMethod.Method.Invoke(serviceProvider)
+                Method = serviceProvider => _deserializeRequestDataMethod.Method.Invoke(serviceProvider),
             };
 
             _deserializeRequestDataMethod = new GlobalMethod
@@ -184,7 +183,7 @@ namespace OrchardCore.Workflows.Http.Scripting
 
                                 try
                                 {
-                                    result = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                                    result = JConvert.DeserializeObject<Dictionary<string, object>>(json);
                                 }
                                 catch
                                 {
@@ -215,7 +214,7 @@ namespace OrchardCore.Workflows.Http.Scripting
                     }
 
                     return result;
-                })
+                }),
             };
         }
 
@@ -223,7 +222,7 @@ namespace OrchardCore.Workflows.Http.Scripting
         {
             try
             {
-                JToken token = JObject.Parse(json);
+                var token = JObject.Parse(json);
                 return true;
             }
             catch

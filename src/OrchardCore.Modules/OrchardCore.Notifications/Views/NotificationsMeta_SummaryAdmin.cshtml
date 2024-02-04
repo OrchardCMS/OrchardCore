@@ -4,5 +4,5 @@
 @using System.Globalization
 
 <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@await DisplayAsync(await New.DateTime(Utc: Model.Notification.CreatedUtc, Format: "g"))">
-    <i class="fa fa-calendar text-secondary" aria-hidden="true"></i> <time datetime="@Model.Notification.CreatedUtc.ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture)">@await DisplayAsync(await New.Timespan(Utc: Model.Notification.CreatedUtc))</time>
+    <i class="fa-solid fa-calendar text-secondary" aria-hidden="true"></i> <time datetime="@Model.Notification.CreatedUtc.ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture)">@await DisplayAsync(await New.Timespan(Utc: Model.Notification.CreatedUtc))</time>
 </span>

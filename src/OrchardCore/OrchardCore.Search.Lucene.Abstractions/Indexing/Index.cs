@@ -25,6 +25,6 @@ namespace OrchardCore.Search.Lucene.Indexing
         /// <summary>
         /// Gets the list of types to index indexed by name.
         /// </summary>
-        public Dictionary<string, Mapping> Mappings { get; } = new Dictionary<string, Mapping>();
+        public Dictionary<string, Mapping> Mappings { get; init; } = [];
     }
 }

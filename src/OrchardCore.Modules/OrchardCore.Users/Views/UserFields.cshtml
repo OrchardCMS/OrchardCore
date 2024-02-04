@@ -3,7 +3,7 @@
 <h5 class="float-start">@Model.User.UserName <span class="hint dashed">@Model.User.Email</span></h5>
 @if (!Model.User.IsEnabled)
 {
-    <span class="badge bg-danger ms-2" title="@T["Disabled"]">
-        <i class="fas fa-user-alt-slash" aria-hidden="true"></i> @T["Disabled"]
+    <span class="badge text-bg-danger ms-2" title="@T["Disabled"]">
+        <i class="fa-solid fa-user-alt-slash" aria-hidden="true"></i> @T["Disabled"]
     </span>
 }

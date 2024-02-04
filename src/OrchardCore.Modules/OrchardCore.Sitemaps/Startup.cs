@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +17,8 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Routing;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Seo;
+using OrchardCore.Settings;
 using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Cache;
 using OrchardCore.Sitemaps.Controllers;
@@ -89,6 +92,10 @@ namespace OrchardCore.Sitemaps
             services.AddScoped<ISitemapSourceFactory, SitemapSourceFactory<CustomPathSitemapSource>>();
 
             services.AddRecipeExecutionStep<SitemapsStep>();
+
+            // Allows to serialize 'SitemapType' derived types.
+            services.AddJsonDerivedTypeInfo<Sitemap, SitemapType>();
+            services.AddJsonDerivedTypeInfo<SitemapIndex, SitemapType>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -245,13 +252,21 @@ namespace OrchardCore.Sitemaps
     }
 
     [RequireFeatures("OrchardCore.Deployment", "OrchardCore.Sitemaps")]
-    public class SitemapsDeployementStartup : StartupBase
+    public class SitemapsDeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, AllSitemapsDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllSitemapsDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllSitemapsDeploymentStepDriver>();
+            services.AddDeployment<AllSitemapsDeploymentSource, AllSitemapsDeploymentStep, AllSitemapsDeploymentStepDriver>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Seo")]
+    public class SeoStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IRobotsProvider, SitemapsRobotsProvider>();
+            services.AddScoped<IDisplayDriver<ISite>, SitemapsRobotsSettingsDisplayDriver>();
         }
     }
 }

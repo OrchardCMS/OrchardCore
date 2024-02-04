@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Users.Workflows.Activities
 {
-    public class RegisterUserTask : TaskActivity
+    public class RegisterUserTask : TaskActivity<RegisterUserTask>
     {
         private readonly IUserService _userService;
         private readonly UserManager<IUser> _userManager;
@@ -25,7 +26,7 @@ namespace OrchardCore.Users.Workflows.Activities
         private readonly LinkGenerator _linkGenerator;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
         private readonly HtmlEncoder _htmlEncoder;
 
         public RegisterUserTask(
@@ -47,9 +48,6 @@ namespace OrchardCore.Users.Workflows.Activities
             S = localizer;
             _htmlEncoder = htmlEncoder;
         }
-
-        // The technical name of the activity. Activities on a workflow definition reference this name.
-        public override string Name => nameof(RegisterUserTask);
 
         public override LocalizedString DisplayText => S["Register User Task"];
 
@@ -90,7 +88,7 @@ namespace OrchardCore.Users.Workflows.Activities
         // This is the heart of the activity and actually performs the work to be done.
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            bool isValid = false;
+            var isValid = false;
             IFormCollection form = null;
             string email = null;
             if (_httpContextAccessor.HttpContext != null)
@@ -141,17 +139,14 @@ namespace OrchardCore.Users.Workflows.Activities
                         To = email,
                         Subject = subject,
                         Body = body,
-                        IsBodyHtml = true
+                        IsHtmlBody = true
                     };
                     var smtpService = _httpContextAccessor.HttpContext.RequestServices.GetService<ISmtpService>();
 
                     if (smtpService == null)
                     {
                         var updater = _updateModelAccessor.ModelUpdater;
-                        if (updater != null)
-                        {
-                            updater.ModelState.TryAddModelError("", S["No email service is available"]);
-                        }
+                        updater?.ModelState.TryAddModelError("", S["No email service is available"]);
                         outcome = "Invalid";
                     }
                     else

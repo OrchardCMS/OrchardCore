@@ -3,26 +3,24 @@ using System.Threading.Tasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor.Models;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Shells.Database.Configuration;
 
 namespace OrchardCore.Shells.Database.Extensions
 {
     public static class DatabaseShellContextFactoryExtensions
     {
-        internal static Task<ShellContext> GetDatabaseContextAsync(this IShellContextFactory shellContextFactory, DatabaseShellsStorageOptions options)
+        internal static Task<ShellContext> GetDatabaseContextAsync(
+            this IShellContextFactory shellContextFactory, DatabaseShellsStorageOptions options)
         {
-            if (options.DatabaseProvider == null)
+            if (options.DatabaseProvider is null)
             {
-                throw new ArgumentNullException(nameof(options.DatabaseProvider),
-                    "The 'OrchardCore.Shells.Database' configuration section should define a 'DatabaseProvider'");
+                throw new InvalidOperationException("The 'OrchardCore.Shells.Database' configuration section should define a 'DatabaseProvider'");
             }
 
             var settings = new ShellSettings()
-            {
-                Name = ShellHelper.DefaultShellName,
-                State = TenantState.Running
-            };
+                .AsDefaultShell()
+                .AsDisposable()
+                .AsRunning();
 
             settings["DatabaseProvider"] = options.DatabaseProvider;
             settings["ConnectionString"] = options.ConnectionString;

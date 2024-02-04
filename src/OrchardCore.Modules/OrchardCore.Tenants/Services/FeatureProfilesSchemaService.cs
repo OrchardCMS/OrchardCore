@@ -1,18 +1,17 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using NJsonSchema;
 using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Tenants.Services
 {
     /// <summary>
-    /// Generates a json schema for a <see cref="FeatureRule"/>
+    /// Generates a json schema for a <see cref="FeatureRule"/>.
     /// </summary>
     public class FeatureProfilesSchemaService : IFeatureProfilesSchemaService
     {
         private readonly FeatureProfilesRuleOptions _featureProfilesRuleOptions;
-        private IHostEnvironment _hostEnvironment;
+        private readonly IHostEnvironment _hostEnvironment;
 
         public FeatureProfilesSchemaService(
             IOptions<FeatureProfilesRuleOptions> options,
@@ -49,7 +48,7 @@ namespace OrchardCore.Tenants.Services
 
             if (_hostEnvironment.IsDevelopment())
             {
-                return schema.ToJson(Formatting.Indented);
+                return schema.ToJson();
             }
 
             return schema.ToJson();

@@ -1,9 +1,10 @@
-using System;
+using System.Linq;
+using System.Text.Json.Nodes;
+using System.Text.Json.Settings;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
@@ -23,7 +24,7 @@ namespace OrchardCore.Menu.Controllers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public AdminController(
@@ -48,7 +49,7 @@ namespace OrchardCore.Menu.Controllers
 
         public async Task<IActionResult> Create(string id, string menuContentItemId, string menuItemId)
         {
-            if (String.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrWhiteSpace(id))
             {
                 return NotFound();
             }
@@ -79,7 +80,7 @@ namespace OrchardCore.Menu.Controllers
 
             ContentItem menu;
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Menu");
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Menu");
 
             if (!contentTypeDefinition.IsDraftable())
             {
@@ -109,27 +110,28 @@ namespace OrchardCore.Menu.Controllers
 
             if (menuItemId == null)
             {
-                // Use the menu as the parent if no target is specified
+                // Use the menu as the parent if no target is specified.
                 menu.Alter<MenuItemsListPart>(part => part.MenuItems.Add(contentItem));
             }
             else
             {
-                // Look for the target menu item in the hierarchy
-                var parentMenuItem = FindMenuItem(menu.Content, menuItemId);
+                // Look for the target menu item in the hierarchy.
+                var parentMenuItem = FindMenuItem((JsonObject)menu.Content, menuItemId);
 
-                // Couldn't find targeted menu item
+                // Couldn't find targeted menu item.
                 if (parentMenuItem == null)
                 {
                     return NotFound();
                 }
 
-                var menuItems = parentMenuItem?.MenuItemsListPart?.MenuItems as JArray;
+                var menuItems = (JsonArray)parentMenuItem["MenuItemsListPart"]?["MenuItems"];
 
                 if (menuItems == null)
                 {
-                    parentMenuItem["MenuItemsListPart"] = new JObject(
-                        new JProperty("MenuItems", menuItems = new JArray())
-                        );
+                    parentMenuItem["MenuItemsListPart"] = new JsonObject
+                    {
+                        ["MenuItems"] = menuItems = [],
+                    };
                 }
 
                 menuItems.Add(JObject.FromObject(contentItem));
@@ -154,10 +156,10 @@ namespace OrchardCore.Menu.Controllers
                 return Forbid();
             }
 
-            // Look for the target menu item in the hierarchy
-            JObject menuItem = FindMenuItem(menu.Content, menuItemId);
+            // Look for the target menu item in the hierarchy.
+            var menuItem = FindMenuItem((JsonObject)menu.Content, menuItemId);
 
-            // Couldn't find targeted menu item
+            // Couldn't find targeted menu item.
             if (menuItem == null)
             {
                 return NotFound();
@@ -184,7 +186,7 @@ namespace OrchardCore.Menu.Controllers
 
             ContentItem menu;
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Menu");
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Menu");
 
             if (!contentTypeDefinition.IsDraftable())
             {
@@ -200,8 +202,8 @@ namespace OrchardCore.Menu.Controllers
                 return NotFound();
             }
 
-            // Look for the target menu item in the hierarchy
-            JObject menuItem = FindMenuItem(menu.Content, menuItemId);
+            // Look for the target menu item in the hierarchy.
+            var menuItem = FindMenuItem((JsonObject)menu.Content, menuItemId);
 
             // Couldn't find targeted menu item
             if (menuItem == null)
@@ -226,13 +228,13 @@ namespace OrchardCore.Menu.Controllers
                 return View(model);
             }
 
-            menuItem.Merge(contentItem.Content, new JsonMergeSettings
+            menuItem.Merge((JsonObject)contentItem.Content, new JsonMergeSettings
             {
                 MergeArrayHandling = MergeArrayHandling.Replace,
                 MergeNullValueHandling = MergeNullValueHandling.Merge
             });
 
-            // Merge doesn't copy the properties
+            // Merge doesn't copy the properties.
             menuItem[nameof(ContentItem.DisplayText)] = contentItem.DisplayText;
 
             await _contentManager.SaveDraftAsync(menu);
@@ -250,7 +252,7 @@ namespace OrchardCore.Menu.Controllers
 
             ContentItem menu;
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Menu");
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Menu");
 
             if (!contentTypeDefinition.IsDraftable())
             {
@@ -266,16 +268,16 @@ namespace OrchardCore.Menu.Controllers
                 return NotFound();
             }
 
-            // Look for the target menu item in the hierarchy
-            var menuItem = FindMenuItem(menu.Content, menuItemId);
+            // Look for the target menu item in the hierarchy.
+            var menuItem = FindMenuItem((JsonObject)menu.Content, menuItemId);
 
-            // Couldn't find targeted menu item
+            // Couldn't find targeted menu item.
             if (menuItem == null)
             {
                 return NotFound();
             }
 
-            menuItem.Remove();
+            menu.Content.Remove(menuItemId);
 
             await _contentManager.SaveDraftAsync(menu);
 
@@ -284,25 +286,24 @@ namespace OrchardCore.Menu.Controllers
             return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = menuContentItemId });
         }
 
-        private JObject FindMenuItem(JObject contentItem, string menuItemId)
+        private JsonObject FindMenuItem(JsonObject contentItem, string menuItemId)
         {
             if (contentItem["ContentItemId"]?.Value<string>() == menuItemId)
             {
                 return contentItem;
             }
 
-            if (contentItem.GetValue("MenuItemsListPart") == null)
+            if (contentItem["MenuItemsListPart"] is null)
             {
                 return null;
             }
 
-            var menuItems = (JArray)contentItem["MenuItemsListPart"]["MenuItems"];
+            var menuItems = (JsonArray)contentItem["MenuItemsListPart"]["MenuItems"];
 
-            JObject result;
-
-            foreach (JObject menuItem in menuItems)
+            JsonObject result;
+            foreach (var menuItem in menuItems.Cast<JsonObject>())
             {
-                // Search in inner menu items
+                // Search in inner menu items.
                 result = FindMenuItem(menuItem, menuItemId);
 
                 if (result != null)

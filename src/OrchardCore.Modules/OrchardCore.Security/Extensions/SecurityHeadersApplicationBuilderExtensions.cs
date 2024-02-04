@@ -8,15 +8,15 @@ namespace Microsoft.AspNetCore.Builder
     {
         public static IApplicationBuilder UseSecurityHeaders(this IApplicationBuilder app)
         {
-            ArgumentNullException.ThrowIfNull(app, nameof(app));
+            ArgumentNullException.ThrowIfNull(app);
 
             return app.UseSecurityHeaders(new SecurityHeadersOptions());
         }
 
         public static IApplicationBuilder UseSecurityHeaders(this IApplicationBuilder app, SecurityHeadersOptions options)
         {
-            ArgumentNullException.ThrowIfNull(app, nameof(app));
-            ArgumentNullException.ThrowIfNull(options, nameof(options));
+            ArgumentNullException.ThrowIfNull(app);
+            ArgumentNullException.ThrowIfNull(options);
 
             app.UseMiddleware<SecurityHeadersMiddleware>(options);
 
@@ -25,8 +25,8 @@ namespace Microsoft.AspNetCore.Builder
 
         public static IApplicationBuilder UseSecurityHeaders(this IApplicationBuilder app, Action<SecurityHeadersOptions> optionsAction)
         {
-            ArgumentNullException.ThrowIfNull(app, nameof(app));
-            ArgumentNullException.ThrowIfNull(optionsAction, nameof(optionsAction));
+            ArgumentNullException.ThrowIfNull(app);
+            ArgumentNullException.ThrowIfNull(optionsAction);
 
             var options = new SecurityHeadersOptions();
 

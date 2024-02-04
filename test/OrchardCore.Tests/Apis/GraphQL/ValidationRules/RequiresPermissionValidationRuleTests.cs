@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using GraphQL;
 using GraphQL.Conversion;
 using GraphQL.SystemTextJson;
@@ -12,7 +13,8 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
 {
     public class RequiresPermissionValidationRuleTests
     {
-        internal readonly static Dictionary<string, Permission> _permissions = new Dictionary<string, Permission> {
+        internal readonly static Dictionary<string, Permission> _permissions = new()
+        {
             { "permissionOne",  new Permission("TestPermissionOne", "TestPermissionOne") },
             { "permissionTwo",  new Permission("TestPermissionTwo", "TestPermissionTwo") }
         };
@@ -33,7 +35,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
             Assert.Null(executionResult.Errors);
 
             var writer = new DocumentWriter();
-            var result = JObject.Parse(await writer.WriteToStringAsync(executionResult));
+            var result = JsonObject.Parse(await writer.WriteToStringAsync(executionResult));
 
             Assert.Equal("Fantastic Fox Hates Permissions", result["data"]["test"]["noPermissions"].ToString());
         }
@@ -100,7 +102,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
             Assert.Equal("Fantastic Fox Loves Multiple Permissions", result["data"]["test"]["permissionMultiple"].ToString());
         }
 
-        private ExecutionOptions BuildExecutionOptions(string query, PermissionsContext permissionsContext)
+        private static ExecutionOptions BuildExecutionOptions(string query, PermissionsContext permissionsContext)
         {
             var services = new ServiceCollection();
             services.AddAuthorization();

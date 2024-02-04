@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
@@ -20,14 +21,14 @@ namespace OrchardCore.Deployment.Remote.Controllers
     [Admin]
     public class ExportRemoteInstanceController : Controller
     {
-        private static readonly HttpClient _httpClient = new HttpClient();
+        private static readonly HttpClient _httpClient = new();
 
         private readonly IDeploymentManager _deploymentManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
         private readonly RemoteInstanceService _service;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer H;
+        protected readonly IHtmlLocalizer H;
 
         public ExportRemoteInstanceController(
             IAuthorizationService authorizationService,
@@ -46,7 +47,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Execute(int id, string remoteInstanceId, string returnUrl)
+        public async Task<IActionResult> Execute(long id, string remoteInstanceId, string returnUrl)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.Export))
             {

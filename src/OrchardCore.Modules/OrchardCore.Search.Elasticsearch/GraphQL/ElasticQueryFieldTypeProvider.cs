@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Resolvers;
 using OrchardCore.ContentManagement.GraphQL.Queries;
@@ -20,7 +20,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
     public class ElasticQueryFieldTypeProvider : ISchemaBuilder
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ILogger<ElasticQueryFieldTypeProvider> _logger;
+        private readonly ILogger _logger;
 
         public ElasticQueryFieldTypeProvider(IHttpContextAccessor httpContextAccessor, ILogger<ElasticQueryFieldTypeProvider> logger)
         {
@@ -42,7 +42,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
 
             foreach (var query in queries.OfType<ElasticQuery>())
             {
-                if (String.IsNullOrWhiteSpace(query.Schema))
+                if (string.IsNullOrWhiteSpace(query.Schema))
                     continue;
 
                 var name = query.Name;
@@ -83,23 +83,23 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
             }
         }
 
-        private FieldType BuildSchemaBasedFieldType(ElasticQuery query, JToken querySchema, string fieldTypeName)
+        private static FieldType BuildSchemaBasedFieldType(ElasticQuery query, JsonNode querySchema, string fieldTypeName)
         {
-            var properties = querySchema["properties"];
+            var properties = querySchema["properties"].AsObject();
 
             if (properties == null)
             {
                 return null;
             }
 
-            var typetype = new ObjectGraphType<JObject>
+            var typetype = new ObjectGraphType<JsonObject>
             {
                 Name = fieldTypeName
             };
 
-            foreach (JProperty child in properties.Children())
+            foreach (var child in properties)
             {
-                var name = child.Name;
+                var name = child.Key;
                 var nameLower = name.Replace('.', '_');
                 var type = child.Value["type"].ToString();
                 var description = child.Value["description"]?.ToString();
@@ -149,19 +149,19 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
                     var parameters = context.GetArgument<string>("parameters");
 
                     var queryParameters = parameters != null ?
-                        JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                        : new Dictionary<string, object>();
+                        JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                        : [];
 
                     var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
                     return result.Items;
                 }),
-                Type = typeof(ListGraphType<ObjectGraphType<JObject>>)
+                Type = typeof(ListGraphType<ObjectGraphType<JsonObject>>)
             };
 
             return fieldType;
         }
 
-        private FieldType BuildContentTypeFieldType(ISchema schema, string contentType, ElasticQuery query, string fieldTypeName)
+        private static FieldType BuildContentTypeFieldType(ISchema schema, string contentType, ElasticQuery query, string fieldTypeName)
         {
             var typetype = schema.Query.Fields.OfType<ContentItemsFieldType>().FirstOrDefault(x => x.Name == contentType);
 
@@ -187,8 +187,8 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
                     var parameters = context.GetArgument<string>("parameters");
 
                     var queryParameters = parameters != null ?
-                        JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                        : new Dictionary<string, object>();
+                        JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                        : [];
 
                     var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
                     return result.Items;

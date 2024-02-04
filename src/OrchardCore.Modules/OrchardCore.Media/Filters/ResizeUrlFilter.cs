@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Liquid;
 using OrchardCore.Media.Fields;
 using OrchardCore.Media.Services;
@@ -30,10 +30,10 @@ namespace OrchardCore.Media.Filters
         {
             var url = input.ToStringValue();
 
-            IDictionary<string, string> queryStringParams = null;
-
             // Profile is a named argument only.
             var profile = arguments["profile"];
+
+            IDictionary<string, string> queryStringParams;
 
             if (!profile.IsNil())
             {
@@ -54,7 +54,8 @@ namespace OrchardCore.Media.Filters
             {
                 queryStringParams = new Dictionary<string, string>();
 
-                var useNamed = arguments.Names.Any(); // Never mix named and indexed arguments as this leads to unpredictable results
+                // Never mix named and indexed arguments as this leads to unpredictable results.
+                var useNamed = arguments.Names.Any();
 
                 var width = useNamed ? arguments["width"] : arguments.At(0);
                 var height = useNamed ? arguments["height"] : arguments.At(1);
@@ -109,11 +110,11 @@ namespace OrchardCore.Media.Filters
             {
                 var obj = anchorValue.ToObjectValue();
 
-                if (!(obj is Anchor anchor))
+                if (obj is not Anchor anchor)
                 {
                     anchor = null;
 
-                    if (obj is JObject jObject)
+                    if (obj is JsonObject jObject)
                     {
                         anchor = jObject.ToObject<Anchor>();
                     }

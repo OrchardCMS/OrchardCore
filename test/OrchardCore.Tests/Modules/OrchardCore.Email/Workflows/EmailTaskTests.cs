@@ -8,7 +8,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email.Workflows
 {
     public class EmailTaskTests
     {
-        private static readonly IDictionary<string, object> EmptyDictionary = new Dictionary<string, object>();
+        private static readonly IDictionary<string, object> _emptyDictionary = new Dictionary<string, object>();
+
         [Fact]
         public async Task ExecuteTask_WhenToAndCcAndBccAreNotSet_ShouldFails()
         {
@@ -27,12 +28,12 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email.Workflows
             var executionContext = new WorkflowExecutionContext(
                 new WorkflowType(),
                 new Workflow(),
-                EmptyDictionary,
-                EmptyDictionary,
-                EmptyDictionary,
-                new List<ExecutedActivity>(),
+                _emptyDictionary,
+                _emptyDictionary,
+                _emptyDictionary,
+                [],
                 default,
-                Enumerable.Empty<ActivityContext>());
+                []);
             var activityContext = Mock.Of<ActivityContext>();
 
             // Act

@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -5,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Localization;
@@ -26,25 +26,28 @@ namespace OrchardCore.ReCaptcha.TagHelpers
         private readonly ReCaptchaSettings _settings;
         private readonly ILogger _logger;
         private readonly ILocalizationService _localizationService;
-        private readonly IStringLocalizer S;
 
-        public ReCaptchaTagHelper(IOptions<ReCaptchaSettings> optionsAccessor, IResourceManager resourceManager, ILocalizationService localizationService, IHttpContextAccessor httpContextAccessor, ILogger<ReCaptchaTagHelper> logger, IStringLocalizer<ReCaptchaTagHelper> localizer)
+        public ReCaptchaTagHelper(
+            IOptions<ReCaptchaSettings> optionsAccessor,
+            IResourceManager resourceManager,
+            ILocalizationService localizationService,
+            IHttpContextAccessor httpContextAccessor,
+            ILogger<ReCaptchaTagHelper> logger)
         {
             _resourceManager = resourceManager;
             _httpContextAccessor = httpContextAccessor;
             _settings = optionsAccessor.Value;
             Mode = ReCaptchaMode.PreventRobots;
-            _logger = logger;
             _localizationService = localizationService;
-            S = localizer;
+            _logger = logger;
         }
 
         [HtmlAttributeName("mode")]
         public ReCaptchaMode Mode { get; set; }
 
         /// <summary>
-        /// The two letter ISO code of the language the captcha should be displayed in
-        /// When left blank it will fall back to the default OrchardCore language
+        /// The two letter ISO code of the language the captcha should be displayed in.
+        /// When left blank it will fall back to the default OrchardCore language.
         /// </summary>
         [HtmlAttributeName("language")]
         public string Language { get; set; }
@@ -88,7 +91,9 @@ namespace OrchardCore.ReCaptcha.TagHelpers
             CultureInfo culture = null;
 
             if (string.IsNullOrWhiteSpace(language))
+            {
                 language = await _localizationService.GetDefaultCultureAsync();
+            }
 
             try
             {
@@ -96,7 +101,7 @@ namespace OrchardCore.ReCaptcha.TagHelpers
             }
             catch (CultureNotFoundException)
             {
-                _logger.LogWarning(S["Language with name {0} not found", language]);
+                _logger.LogWarning("Language with name {LanguageName} not found.", language);
             }
 
             return culture;

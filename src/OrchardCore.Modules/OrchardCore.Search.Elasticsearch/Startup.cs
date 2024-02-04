@@ -1,7 +1,7 @@
 using System;
-using System.Linq;
-using Elasticsearch.Net;
-using Fluid;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using GraphQL;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -30,7 +30,6 @@ using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.Drivers;
 using OrchardCore.Search.Elasticsearch.Services;
 using OrchardCore.Search.Lucene.Handler;
-using OrchardCore.Search.ViewModels;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 
@@ -38,7 +37,6 @@ namespace OrchardCore.Search.Elasticsearch
 {
     public class Startup : StartupBase
     {
-        private const string ConfigSectionName = "OrchardCore_Elasticsearch";
         private readonly AdminOptions _adminOptions;
         private readonly IShellConfiguration _shellConfiguration;
         private readonly ILogger<Startup> _logger;
@@ -54,109 +52,65 @@ namespace OrchardCore.Search.Elasticsearch
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            var configuration = _shellConfiguration.GetSection(ConfigSectionName);
-            var elasticConfiguration = configuration.Get<ElasticConnectionOptions>();
+            services.AddTransient<IConfigureOptions<ElasticConnectionOptions>, ElasticConnectionOptionsConfigurations>();
 
-            if (CheckOptions(elasticConfiguration, _logger))
+            services.AddSingleton<IElasticClient>((sp) =>
             {
-                services.Configure<ElasticConnectionOptions>(o => o.ConfigurationExists = true);
+                var options = sp.GetRequiredService<IOptions<ElasticConnectionOptions>>().Value;
 
-                IConnectionPool pool = null;
-                var uris = elasticConfiguration.Ports.Select(port => new Uri($"{elasticConfiguration.Url}:{port}")).Distinct();
+                return new ElasticClient(options.GetConnectionSettings() ?? new ConnectionSettings());
+            });
 
-                switch (elasticConfiguration.ConnectionType)
+            services.Configure<ElasticsearchOptions>(o =>
+            {
+                var configuration = _shellConfiguration.GetSection(ElasticConnectionOptionsConfigurations.ConfigSectionName);
+
+                o.IndexPrefix = configuration.GetValue<string>(nameof(o.IndexPrefix));
+
+                var jsonNode = configuration.GetSection(nameof(o.Analyzers)).AsJsonNode();
+                var jsonElement = JsonSerializer.Deserialize<JsonElement>(jsonNode);
+
+                var analyzersObject = JsonObject.Create(jsonElement, new JsonNodeOptions()
                 {
-                    case "SingleNodeConnectionPool":
-                        pool = new SingleNodeConnectionPool(uris.First());
-                        break;
+                    PropertyNameCaseInsensitive = true,
+                });
 
-                    case "CloudConnectionPool":
-                        BasicAuthenticationCredentials credentials = null;
-
-                        if (!String.IsNullOrWhiteSpace(elasticConfiguration.Username) && !String.IsNullOrWhiteSpace(elasticConfiguration.Password) && !String.IsNullOrWhiteSpace(elasticConfiguration.CloudId))
-                        {
-                            credentials = new BasicAuthenticationCredentials(elasticConfiguration.Username, elasticConfiguration.Password);
-                            pool = new CloudConnectionPool(elasticConfiguration.CloudId, credentials);
-                        }
-                        break;
-
-                    case "StaticConnectionPool":
-                        pool = new StaticConnectionPool(uris);
-                        break;
-
-                    case "SniffingConnectionPool":
-                        pool = new SniffingConnectionPool(uris);
-                        break;
-
-                    case "StickyConnectionPool":
-                        pool = new StickyConnectionPool(uris);
-                        break;
-
-                    default:
-                        pool = new SingleNodeConnectionPool(uris.First());
-                        break;
-                }
-
-                var settings = new ConnectionSettings(pool).ThrowExceptions();
-
-                if (elasticConfiguration.ConnectionType != "CloudConnectionPool" && !String.IsNullOrWhiteSpace(elasticConfiguration.Username) && !String.IsNullOrWhiteSpace(elasticConfiguration.Password))
+                if (analyzersObject != null)
                 {
-                    settings.BasicAuthentication(elasticConfiguration.Username, elasticConfiguration.Password);
-                }
+                    o.IndexPrefix = configuration.GetValue<string>(nameof(o.IndexPrefix));
 
-                if (!String.IsNullOrWhiteSpace(elasticConfiguration.CertificateFingerprint))
-                {
-                    settings.CertificateFingerprint(elasticConfiguration.CertificateFingerprint);
-                }
-
-                if (elasticConfiguration.EnableApiVersioningHeader)
-                {
-                    settings.EnableApiVersioningHeader();
-                }
-
-                var client = new ElasticClient(settings);
-                services.AddSingleton<IElasticClient>(client);
-                services.Configure<ElasticOptions>(o =>
-                    o.Analyzers.Add(new ElasticAnalyzer(ElasticSettings.StandardAnalyzer, new StandardAnalyzer())));
-
-                try
-                {
-                    var response = client.Ping();
-
-                    services.Configure<TemplateOptions>(o =>
+                    if (jsonNode is JsonObject jAnalyzers)
                     {
-                        o.MemberAccessStrategy.Register<SearchIndexViewModel>();
-                        o.MemberAccessStrategy.Register<SearchFormViewModel>();
-                        o.MemberAccessStrategy.Register<SearchResultsViewModel>();
-                    });
+                        foreach (var analyzer in jAnalyzers)
+                        {
+                            if (analyzer.Value is not JsonObject jAnalyzer)
+                            {
+                                continue;
+                            }
 
-                    services.AddElasticServices();
-                    services.AddScoped<IPermissionProvider, Permissions>();
-                    services.AddScoped<INavigationProvider, AdminMenu>();
-                    services.AddScoped<IDisplayDriver<ISite>, ElasticSettingsDisplayDriver>();
-                    services.AddScoped<IDisplayDriver<Query>, ElasticQueryDisplayDriver>();
-                    services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
-                    services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
-                    services.AddScoped<ElasticsearchService>();
-                    services.AddScoped<ISearchService>(sp => sp.GetRequiredService<ElasticsearchService>());
-                    services.AddScoped<IAuthorizationHandler, ElasticsearchAuthorizationHandler>();
+                            o.Analyzers.Add(analyzer.Key, jAnalyzer);
+                        }
+                    }
                 }
-                catch (Exception ex)
+
+                if (o.Analyzers.Count == 0)
                 {
-                    _logger.LogError(ex, "Elasticsearch is enabled but not active because the connection failed.");
+                    // When no analyzers are configured, we'll define a default analyzer.
+                    o.Analyzers.Add(ElasticsearchConstants.DefaultAnalyzer, new JsonObject
+                    {
+                        ["type"] = "standard",
+                    });
                 }
-            }
+            });
+
+            services.AddElasticServices();
+            services.AddScoped<IPermissionProvider, Permissions>();
+            services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddScoped<IDisplayDriver<Query>, ElasticQueryDisplayDriver>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var options = serviceProvider.GetRequiredService<IOptions<ElasticConnectionOptions>>().Value;
-
-            if (!options.ConfigurationExists)
-            {
-                return;
-            }
-
             var adminControllerName = typeof(AdminController).ControllerName();
 
             routes.MapAreaControllerRoute(
@@ -201,30 +155,16 @@ namespace OrchardCore.Search.Elasticsearch
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.SyncSettings) }
             );
         }
+    }
 
-        private static bool CheckOptions(ElasticConnectionOptions elasticConnectionOptions, ILogger logger)
+    [RequireFeatures("OrchardCore.Search")]
+    public class SearchStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
         {
-            var optionsAreValid = true;
-
-            if (elasticConnectionOptions == null)
-            {
-                logger.LogError("Elasticsearch is enabled but not active because the configuration is missing.");
-                return false;
-            }
-
-            if (String.IsNullOrWhiteSpace(elasticConnectionOptions.Url))
-            {
-                logger.LogError("Elasticsearch is enabled but not active because the 'Url' is missing or empty in application configuration.");
-                optionsAreValid = false;
-            }
-
-            if (elasticConnectionOptions.Ports.Length == 0)
-            {
-                logger.LogError("Elasticsearch is enabled but not active because a port is missing in application configuration.");
-                optionsAreValid = false;
-            }
-
-            return optionsAreValid;
+            services.AddScoped<ISearchService, ElasticsearchService>();
+            services.AddScoped<IDisplayDriver<ISite>, ElasticSettingsDisplayDriver>();
+            services.AddScoped<IAuthorizationHandler, ElasticsearchAuthorizationHandler>();
         }
     }
 
@@ -233,24 +173,10 @@ namespace OrchardCore.Search.Elasticsearch
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            if (services.Any(d => d.ImplementationType == typeof(ElasticsearchService)))
-            {
-                services.AddTransient<IDeploymentSource, ElasticIndexDeploymentSource>();
-                services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ElasticIndexDeploymentStep>());
-                services.AddScoped<IDisplayDriver<DeploymentStep>, ElasticIndexDeploymentStepDriver>();
-
-                services.AddTransient<IDeploymentSource, ElasticSettingsDeploymentSource>();
-                services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ElasticSettingsDeploymentStep>());
-                services.AddScoped<IDisplayDriver<DeploymentStep>, ElasticSettingsDeploymentStepDriver>();
-
-                services.AddTransient<IDeploymentSource, ElasticIndexRebuildDeploymentSource>();
-                services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ElasticIndexRebuildDeploymentStep>());
-                services.AddScoped<IDisplayDriver<DeploymentStep>, ElasticIndexRebuildDeploymentStepDriver>();
-
-                services.AddTransient<IDeploymentSource, ElasticIndexResetDeploymentSource>();
-                services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ElasticIndexResetDeploymentStep>());
-                services.AddScoped<IDisplayDriver<DeploymentStep>, ElasticIndexResetDeploymentStepDriver>();
-            }
+            services.AddDeployment<ElasticIndexDeploymentSource, ElasticIndexDeploymentStep, ElasticIndexDeploymentStepDriver>();
+            services.AddDeployment<ElasticSettingsDeploymentSource, ElasticSettingsDeploymentStep, ElasticSettingsDeploymentStepDriver>();
+            services.AddDeployment<ElasticIndexRebuildDeploymentSource, ElasticIndexRebuildDeploymentStep, ElasticIndexRebuildDeploymentStepDriver>();
+            services.AddDeployment<ElasticIndexResetDeploymentSource, ElasticIndexResetDeploymentStep, ElasticIndexResetDeploymentStepDriver>();
         }
     }
 
@@ -259,10 +185,7 @@ namespace OrchardCore.Search.Elasticsearch
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            if (services.Any(d => d.ImplementationType == typeof(ElasticsearchService)))
-            {
-                services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
-            }
+            services.AddSingleton<IBackgroundTask, IndexingBackgroundTask>();
         }
     }
 
@@ -271,12 +194,19 @@ namespace OrchardCore.Search.Elasticsearch
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            if (services.Any(d => d.ImplementationType == typeof(ElasticsearchService)))
-            {
-                services.AddScoped<IContentPickerResultProvider, ElasticContentPickerResultProvider>();
-                services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldElasticEditorSettingsDriver>();
-                services.AddShapeAttributes<ElasticContentPickerShapeProvider>();
-            }
+            services.AddScoped<IContentPickerResultProvider, ElasticContentPickerResultProvider>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldElasticEditorSettingsDriver>();
+            services.AddShapeAttributes<ElasticContentPickerShapeProvider>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.ContentTypes")]
+    public class ContentTypesStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
         }
     }
 }

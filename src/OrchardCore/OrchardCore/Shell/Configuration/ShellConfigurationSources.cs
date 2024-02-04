@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using OrchardCore.Environment.Shell.Configuration.Internal;
 
 namespace OrchardCore.Environment.Shell.Configuration
 {
@@ -24,9 +24,7 @@ namespace OrchardCore.Environment.Shell.Configuration
 
         public Task AddSourcesAsync(string tenant, IConfigurationBuilder builder)
         {
-            builder
-                .AddJsonFile(Path.Combine(_container, tenant, "appsettings.json"), optional: true);
-
+            builder.AddTenantJsonFile(Path.Combine(_container, tenant, "appsettings.json"), optional: true);
             return Task.CompletedTask;
         }
 
@@ -35,43 +33,33 @@ namespace OrchardCore.Environment.Shell.Configuration
             var tenantFolder = Path.Combine(_container, tenant);
             var appsettings = Path.Combine(tenantFolder, "appsettings.json");
 
-            JObject config;
+            IDictionary<string, string> configData;
             if (File.Exists(appsettings))
             {
-                using (var file = File.OpenText(appsettings))
-                {
-                    using (var reader = new JsonTextReader(file))
-                    {
-                        config = await JObject.LoadAsync(reader);
-                    }
-                }
+                using var streamReader = File.OpenRead(appsettings);
+                configData = await JsonConfigurationParser.ParseAsync(streamReader);
             }
             else
             {
-                config = new JObject();
+                configData = new Dictionary<string, string>();
             }
 
             foreach (var key in data.Keys)
             {
-                if (data[key] != null)
+                if (data[key] is not null)
                 {
-                    config[key] = data[key];
+                    configData[key] = data[key];
                 }
                 else
                 {
-                    config.Remove(key);
+                    configData.Remove(key);
                 }
             }
 
             Directory.CreateDirectory(tenantFolder);
 
-            using (var file = File.CreateText(appsettings))
-            {
-                using (var writer = new JsonTextWriter(file) { Formatting = Formatting.Indented })
-                {
-                    await config.WriteToAsync(writer);
-                }
-            }
+            using var streamWriter = File.Create(appsettings);
+            await JsonSerializer.SerializeAsync(streamWriter, configData.ToJsonObject(), JOptions.Indented);
         }
 
         public Task RemoveAsync(string tenant)

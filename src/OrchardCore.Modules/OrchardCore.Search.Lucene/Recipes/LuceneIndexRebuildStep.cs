@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.BackgroundJobs;
@@ -15,7 +16,7 @@ namespace OrchardCore.Search.Lucene.Recipes
     {
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "lucene-index-rebuild", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(context.Name, "lucene-index-rebuild", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
@@ -47,7 +48,7 @@ namespace OrchardCore.Search.Lucene.Recipes
         private class LuceneIndexRebuildStepModel
         {
             public bool IncludeAll { get; set; } = false;
-            public string[] Indices { get; set; } = Array.Empty<string>();
+            public string[] Indices { get; set; } = [];
         }
     }
 }

@@ -45,7 +45,7 @@ namespace OrchardCore.Shells.Azure.Configuration
             if (appSettingsFileInfo != null)
             {
                 var stream = await _shellsFileStore.GetFileStreamAsync("appsettings.json");
-                builder.AddJsonStream(stream);
+                builder.AddTenantJsonStream(stream);
             }
 
             var environmentAppSettingsFileName = $"appsettings.{_environment}.json";
@@ -65,7 +65,7 @@ namespace OrchardCore.Shells.Azure.Configuration
             if (environmentAppSettingsFileInfo != null)
             {
                 var stream = await _shellsFileStore.GetFileStreamAsync(environmentAppSettingsFileName);
-                builder.AddJsonStream(stream);
+                builder.AddTenantJsonStream(stream);
             }
         }
 
@@ -76,10 +76,8 @@ namespace OrchardCore.Shells.Azure.Configuration
                 return false;
             }
 
-            using (var file = File.OpenRead(fileSystemPath))
-            {
-                await _shellsFileStore.CreateFileFromStreamAsync(destPath, file);
-            }
+            using var file = File.OpenRead(fileSystemPath);
+            await _shellsFileStore.CreateFileFromStreamAsync(destPath, file);
 
             return true;
         }

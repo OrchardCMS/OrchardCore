@@ -19,7 +19,7 @@ namespace OrchardCore.Mvc
         ICompilationReferencesProvider
     {
         private static IEnumerable<string> _referencePaths;
-        private static object _synLock = new object();
+        private static readonly object _synLock = new();
         private ShellBlueprint _shellBlueprint;
         private IEnumerable<ITagHelpersProvider> _tagHelpers;
 

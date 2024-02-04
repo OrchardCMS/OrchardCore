@@ -22,17 +22,17 @@
 
         @if (Model.Actions != null)
         {
-            <div class="@Orchard.GetWrapperCssClasses("edit-item-secondary","group")">
-                <div class="@Orchard.GetEndCssClasses(true, "edit-item-actions")">
+            <div class="@Orchard.GetWrapperClasses("edit-item-secondary","group")">
+                <div class="@Orchard.GetEndClasses(true, "edit-item-actions")">
                     @await DisplayAsync(Model.Actions)
 
                     @{
                         var returnUrl = Context.Request.Query["returnUrl"];
                     }
 
-                    @if (!String.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    @if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
                     {
-                        <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
+                        <a class="btn btn-secondary cancel mb-1" role="button" href="@returnUrl">@T["Cancel"]</a>
                     }
                 </div>
             </div>
@@ -49,7 +49,7 @@
 
 @if (Model.Actions != null)
 {
-    @if (!String.IsNullOrWhiteSpace(Context.Request.Query["returnUrl"]))
+    @if (!string.IsNullOrWhiteSpace(Context.Request.Query["returnUrl"]))
     {
         @Html.Hidden("returnUrl", Context.Request.Query["returnUrl"])
     }

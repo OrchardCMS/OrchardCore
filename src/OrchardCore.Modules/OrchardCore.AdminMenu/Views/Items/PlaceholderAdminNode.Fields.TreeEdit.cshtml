@@ -1,45 +1,42 @@
 @model PlaceholderAdminNodeViewModel
-@using Newtonsoft.Json
-@using Newtonsoft.Json.Serialization
+@using System.Text.Json
+@using System.Text.Json.Nodes
 
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css" at="Head" depends-on="admin"></style>
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.css" at="Head" depends-on="admin"></style>
 
 <script asp-name="vuejs" at="Foot"></script>
-<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.js" at="Foot" depends-on="admin"></script>
-<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.js" at="Foot" depends-on="admin"></script>
+<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.js" at="Foot" depends-on="jQuery-ui"></script>
+<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.js" at="Foot" depends-on="jQuery"></script>
 
 <h5>@T["Placeholder"]</h5>
 
 <div class="mb-3" asp-validation-class-for="LinkText">
-    <label asp-for="LinkText">@T["Link Text"]</label>
+    <label asp-for="LinkText" class="form-label">@T["Link Text"]</label>
     <input asp-for="LinkText" class="form-control" />
     <span asp-validation-for="LinkText"></span>
     <span class="hint">@T["The text of the menu item as it will be shown in the tree."]</span>
 </div>
 
 <div class="mb-3">
-    <label asp-for="IconClass">@T["Icon"]</label>
+    <label asp-for="IconClass" class="form-label">@T["Icon"]</label>
 
     <div class="input-group mb-3">
         <div class="btn-toolbar" role="toolbar" aria-label="Icon Selector Toolbar">
 
             <div class="btn-group input-group me-2" role="group" aria-label="Icon Selector">
-                <button type="button" class="btn btn-primary sample-icon">
+                <button type="button" class="btn btn-secondary sample-icon">
                     <i id="@("sample-icon-" + Html.IdFor(m=>m.IconClass))" class="@Model.IconClass"></i>
                 </button>
                 <input type="hidden" name="@Html.NameFor(m=>m.IconClass)" id="@Html.IdFor(m => m.IconClass)" value="@Model.IconClass" />
                 <button type="button"
-                        class="btn btn-primary icon-picker-trigger"
+                        class="btn btn-secondary icon-picker-trigger"
                         data-related-node="@Html.IdFor(m => m.IconClass)">
                     @T["Pick"]
                 </button>
-            </div>
-
-            <div class="btn-group" role="group" aria-label="Remove Icon Button">
-                <button type="button" class="btn btn-secondary remove-icon" data-related-node="@Html.IdFor(m => m.IconClass)">
+                <button type="button" class="btn btn-warning remove-icon" data-related-node="@Html.IdFor(m => m.IconClass)">
                     <div style="pointer-events:none;">
-                        <i class="fa fa-trash" aria-hidden="true"></i>
+                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                     </div>
                 </button>
             </div>
@@ -66,14 +63,14 @@
 
 <div class="mb-3">
     @{
-        var selectedItems = JsonConvert.SerializeObject(Model.SelectedItems, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
-        var allItems = JsonConvert.SerializeObject(Model.AllItems, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+        var selectedItems = JConvert.SerializeObject(Model.SelectedItems, JOptions.CamelCase);
+        var allItems = JConvert.SerializeObject(Model.AllItems, JOptions.CamelCase);
     }
 
     <script asp-name="admin-menu-permission-picker" asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-permission-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-permission-picker.js" at="Foot" depends-on="vuejs, vue-multiselect"></script>
     <style asp-name="admin-menu-permission-picker" asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-permission-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-permission-picker.css" depends-on="vue-multiselect"></style>
 
-    <label asp-for="SelectedPermissionNames">@T["Permissions"]</label>
+    <label asp-for="SelectedPermissionNames" class="form-label">@T["Permissions"]</label>
 
     <div id="PermissionPicker" class="vue-multiselect" data-editor-type="PermissionPicker" data-selected-items="@selectedItems" data-all-items="@allItems" data-multiple="true">
 
@@ -85,7 +82,7 @@
                     <div class="align-items-center align-self-center"><span>{{ item.displayText }}</span></div>
 
                     <div class="btn-group btn-group-sm align-items-center" role="group">
-                        <button v-on:click="remove(item)" type="button" class="btn btn-secondary permission-picker-default__list-item__delete"><i class="fa fa-trash fa-sm" aria-hidden="true"></i></button>
+                        <button v-on:click="remove(item)" type="button" class="btn btn-secondary permission-picker-default__list-item__delete"><i class="fa-solid fa-trash fa-sm" aria-hidden="true"></i></button>
                     </div>
                 </li>
             </ul>
@@ -94,19 +91,19 @@
         <div class="mb-3">
             <div class="w-xl-50">
                 <input asp-for="SelectedPermissionNames" type="hidden" v-model="selectedNames" />
-                <vue-multiselect v-model="value" 
-                                :options="options" 
-                                track-by="name"
-                                label="displayText" 
-                                placeholder="@T["Type to search"]"
-                                @@select="onSelect"
-                                :searchable="true" 
-                                :close-on-select="true" 
-                                :reset-after="true"
-                                :show-labels="true" 
-                                :hide-selected="false"
-                                select-label="@T["Select"]" 
-                                deselect-label="@T["Remove"]">
+                <vue-multiselect v-model="value"
+                                 :options="options"
+                                 track-by="name"
+                                 label="displayText"
+                                 placeholder="@T["Type to search"]"
+                                 @@select="onSelect"
+                                 :searchable="true"
+                                 :close-on-select="true"
+                                 :reset-after="true"
+                                 :show-labels="true"
+                                 :hide-selected="false"
+                                 select-label="@T["Select"]"
+                                 deselect-label="@T["Remove"]">
                     <template slot="option" slot-scope="props">
                         <div v-cloak><span>{{ props.option.displayText }}</span></div>
                     </template>
