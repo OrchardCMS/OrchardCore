@@ -20,6 +20,11 @@ namespace OrchardCore.Admin
         /// </summary>
         public string Template { get; set; }
 
+        public AdminAttribute(string template = null)
+        {
+            Template = template;
+        }
+
         public Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
         {
             Apply(context.HttpContext);
