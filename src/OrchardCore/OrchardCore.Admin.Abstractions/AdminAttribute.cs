@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace OrchardCore.Admin
@@ -12,6 +13,12 @@ namespace OrchardCore.Admin
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class AdminAttribute : Attribute, IAsyncResourceFilter
     {
+        /// <summary>
+        /// Gets or sets the patters which should be used as the path after the admin suffix. This is similar to the
+        /// <see cref="RouteAttribute.Template"/>.
+        /// </summary>
+        public string Template { get; set; }
+
         public Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
         {
             Apply(context.HttpContext);
