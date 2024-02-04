@@ -15,7 +15,8 @@ namespace OrchardCore.Admin
     {
         /// <summary>
         /// Gets or sets the patters which should be used as the path after the admin suffix. This is similar to the
-        /// <see cref="RouteAttribute.Template"/>.
+        /// <see cref="RouteAttribute.Template"/>. When applying to a controller with multiple actions, the template
+        /// should include the <c>{action}</c> expression.
         /// </summary>
         public string Template { get; set; }
 
