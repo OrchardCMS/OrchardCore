@@ -17,7 +17,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public IList<string> ContentTypeFilter
         {
-            get => GetProperty<IList<string>>(defaultValue: () => new List<string>());
+            get => GetProperty<IList<string>>(defaultValue: () => []);
             set => SetProperty(value);
         }
 

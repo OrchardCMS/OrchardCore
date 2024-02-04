@@ -41,13 +41,13 @@ namespace OrchardCore.Users.Models
 
         public string ResetToken { get; set; }
 
-        public IList<string> RoleNames { get; set; } = new List<string>();
+        public IList<string> RoleNames { get; set; } = [];
 
-        public IList<UserClaim> UserClaims { get; set; } = new List<UserClaim>();
+        public IList<UserClaim> UserClaims { get; set; } = [];
 
-        public IList<UserLoginInfo> LoginInfos { get; set; } = new List<UserLoginInfo>();
+        public IList<UserLoginInfo> LoginInfos { get; set; } = [];
 
-        public IList<UserToken> UserTokens { get; set; } = new List<UserToken>();
+        public IList<UserToken> UserTokens { get; set; } = [];
 
         public override string ToString()
         {

@@ -52,7 +52,7 @@ public class AzureAISearchIndexingService
 
         if (indexNames == null || indexNames.Length == 0)
         {
-            indexSettings = new List<AzureAISearchIndexSettings>(indexesDocument.IndexSettings.Values);
+            indexSettings = [..indexesDocument.IndexSettings.Values];
         }
         else
         {
