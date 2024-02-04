@@ -82,14 +82,12 @@ namespace OrchardCore.Mvc
 
                 // Custom model binder to testing purpose
                 options.ModelBinderProviders.Insert(0, new CheckMarkModelBinderProvider());
+
+                options.ModelBinderProviders.Insert(0, new SafeBoolModelBinderProvider());
             });
 
             // Add a route endpoint selector policy.
             services.AddSingleton<MatcherPolicy, FormValueRequiredMatcherPolicy>();
-
-            // There are some issues when using the default formatters based on
-            // System.Text.Json. Here, we manually add JSON.NET based formatters.
-            builder.AddNewtonsoftJson();
 
             services.AddModularRazorPages();
 
@@ -108,10 +106,11 @@ namespace OrchardCore.Mvc
             if (_hostingEnvironment.IsDevelopment() && refsFolderExists)
             {
                 builder.AddRazorRuntimeCompilation();
-
-                // Shares across tenants the same compiler and its 'IMemoryCache' instance.
-                services.AddSingleton<IViewCompilerProvider, SharedViewCompilerProvider>();
             }
+
+            // Share across tenants a static compiler even if there is no runtime compilation
+            // because the compiler still uses its internal cache to retrieve compiled items.
+            services.AddSingleton<IViewCompilerProvider, SharedViewCompilerProvider>();
 
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<MvcRazorRuntimeCompilationOptions>, RazorCompilationOptionsSetup>());

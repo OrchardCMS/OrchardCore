@@ -12,7 +12,7 @@ namespace OrchardCore.Localization.Services
     public class LocalizationService : ILocalizationService
     {
         private static readonly string _defaultCulture = CultureInfo.InstalledUICulture.Name;
-        private static readonly string[] _supportedCultures = new[] { CultureInfo.InstalledUICulture.Name };
+        private static readonly string[] _supportedCultures = [CultureInfo.InstalledUICulture.Name];
 
         private readonly ISiteService _siteService;
 

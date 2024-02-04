@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -12,12 +11,13 @@ using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Services
 {
-    public class TenantValidator : ITenantValidator
+    public partial class TenantValidator : ITenantValidator
     {
         private readonly IShellHost _shellHost;
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IFeatureProfilesService _featureProfilesService;
         private readonly IDbConnectionValidator _dbConnectionValidator;
+
         protected readonly IStringLocalizer S;
 
         public TenantValidator(
@@ -56,7 +56,7 @@ namespace OrchardCore.Tenants.Services
                 }
             }
 
-            if (!string.IsNullOrEmpty(model.Name) && !Regex.IsMatch(model.Name, @"^\w+$"))
+            if (!string.IsNullOrEmpty(model.Name) && !TenantNameRuleRegex().IsMatch(model.Name))
             {
                 errors.Add(new ModelError(nameof(model.Name), S["Invalid tenant name. Must contain characters only and no spaces."]));
             }
@@ -82,7 +82,11 @@ namespace OrchardCore.Tenants.Services
                 if (existingShellSettings is null)
                 {
                     // Set the settings to be validated.
-                    shellSettings = _shellSettingsManager.CreateDefaultSettings();
+                    shellSettings = _shellSettingsManager
+                        .CreateDefaultSettings()
+                        .AsUninitialized()
+                        .AsDisposable();
+
                     shellSettings.Name = model.Name;
                 }
                 else if (existingShellSettings.IsDefaultShell())
@@ -106,6 +110,9 @@ namespace OrchardCore.Tenants.Services
 
             if (shellSettings is not null)
             {
+                // A newly loaded settings from the configuration should be disposed.
+                using var disposable = existingShellSettings is null ? shellSettings : null;
+
                 var validationContext = new DbConnectionValidatorContext(shellSettings, model);
                 await ValidateConnectionAsync(validationContext, errors);
             }
@@ -129,6 +136,12 @@ namespace OrchardCore.Tenants.Services
                         S["The provided connection string is invalid or server is unreachable."]));
                     break;
 
+                case DbConnectionValidatorResult.InvalidCertificate:
+                    errors.Add(new ModelError(
+                        nameof(TenantViewModel.ConnectionString),
+                        S["The security certificate on the server is from a non-trusted source (the certificate issuing authority isn't listed as a trusted authority in Trusted Root Certification Authorities on the client machine). In a development environment, you have the option to use the '{0}' parameter in your connection string to bypass the validation performed by the certificate authority.", "TrustServerCertificate=True"]));
+                    break;
+
                 case DbConnectionValidatorResult.DocumentTableFound:
                     if (validationContext.DatabaseProvider == DatabaseProviderValue.Sqlite)
                     {
@@ -144,5 +157,8 @@ namespace OrchardCore.Tenants.Services
                     break;
             }
         }
+
+        [GeneratedRegex(@"^\w+$")]
+        private static partial Regex TenantNameRuleRegex();
     }
 }

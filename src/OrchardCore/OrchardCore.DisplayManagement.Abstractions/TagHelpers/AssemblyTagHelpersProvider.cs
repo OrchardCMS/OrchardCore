@@ -12,10 +12,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
 
         public AssemblyTagHelpersProvider(Assembly assembly)
         {
-            if (assembly == null)
-            {
-                throw new ArgumentNullException(nameof(assembly));
-            }
+            ArgumentNullException.ThrowIfNull(assembly);
 
             _assembly = assembly;
         }

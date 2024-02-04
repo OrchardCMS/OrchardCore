@@ -1,9 +1,8 @@
-using System;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using OrchardCore.Data.Documents;
 
 namespace OrchardCore.Documents
@@ -11,15 +10,9 @@ namespace OrchardCore.Documents
     /// <summary>
     /// Serializes and deserializes an <see cref="IDocument"/> into and from a sequence of bytes.
     /// </summary>
-    public class DefaultDocumentSerializer : IDocumentSerialiser
+    public class DefaultDocumentSerializer : IDocumentSerializer
     {
         public static readonly DefaultDocumentSerializer Instance = new();
-
-        private static readonly JsonSerializerSettings _jsonSettings = new()
-        {
-            TypeNameHandling = TypeNameHandling.Auto,
-            DateTimeZoneHandling = DateTimeZoneHandling.Utc
-        };
 
         public DefaultDocumentSerializer()
         {
@@ -27,8 +20,7 @@ namespace OrchardCore.Documents
 
         public Task<byte[]> SerializeAsync<TDocument>(TDocument document, int compressThreshold = int.MaxValue) where TDocument : class, IDocument, new()
         {
-            var data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(document, _jsonSettings));
-
+            var data = Encoding.UTF8.GetBytes(JConvert.SerializeObject(document));
             if (data.Length >= compressThreshold)
             {
                 data = Compress(data);
@@ -44,12 +36,12 @@ namespace OrchardCore.Documents
                 data = Decompress(data);
             }
 
-            var document = JsonConvert.DeserializeObject<TDocument>(Encoding.UTF8.GetString(data), _jsonSettings);
+            var document = JConvert.DeserializeObject<TDocument>(Encoding.UTF8.GetString(data));
 
             return Task.FromResult(document);
         }
 
-        private static readonly byte[] _gZipHeaderBytes = { 0x1f, 0x8b };
+        private static readonly byte[] _gZipHeaderBytes = [0x1f, 0x8b];
 
         internal static bool IsCompressed(byte[] data)
         {

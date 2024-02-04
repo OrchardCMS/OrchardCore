@@ -13,39 +13,18 @@ namespace OrchardCore.Modules.Manifest
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true, Inherited = false)]
     public class FeatureAttribute : Attribute
     {
-        /// <summary>
-        /// &quot;&quot;
-        /// </summary>
         protected internal const string DefaultName = "";
 
-        /// <summary>
-        /// &quot;&quot;
-        /// </summary>
         protected internal const string DefaultDescription = "";
 
-        /// <summary>
-        /// &quot;Uncategorized&quot;
-        /// </summary>
         protected internal const string Uncategorized = nameof(Uncategorized);
 
-        /// <summary>
-        /// &quot;&quot;
-        /// </summary>
         protected internal const string DefaultCategory = "";
 
-        /// <summary>
-        /// &quot;&quot;
-        /// </summary>
         protected internal const string DefaultFeatureDependencies = "";
 
-        /// <summary>
-        /// <c>false</c>
-        /// </summary>
         protected internal const bool DefaultDefaultTenantOnly = false;
 
-        /// <summary>
-        /// <c>false</c>
-        /// </summary>
         protected internal const bool DefaultAlwaysEnabled = false;
 
         /// <summary>
@@ -288,9 +267,6 @@ namespace OrchardCore.Modules.Manifest
             set => _dependencies = (value ?? GetValues<string>()).Select(_ => _.Trim()).ToArray();
         }
 
-        /// <summary>
-        /// 0
-        /// </summary>
         protected internal const int DefaultPriority = 0;
 
         /// <summary>

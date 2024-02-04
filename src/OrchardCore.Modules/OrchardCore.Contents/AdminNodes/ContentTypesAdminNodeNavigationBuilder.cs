@@ -37,7 +37,7 @@ namespace OrchardCore.Contents.AdminNodes
             _logger = logger;
         }
 
-        public string Name => typeof(ContentTypesAdminNode).Name;
+        public string Name => nameof(ContentTypesAdminNode);
 
         public async Task BuildNavigationAsync(MenuItem menuItem, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
         {
@@ -88,7 +88,7 @@ namespace OrchardCore.Contents.AdminNodes
 
         private async Task<IEnumerable<ContentTypeDefinition>> GetListableContentTypeDefinitionsAsync(ContentTypesAdminNode node)
         {
-            var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions();
+            var contentTypeDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
 
             var listableContentTypeDefinitions = new List<ContentTypeDefinition>();
 
@@ -132,7 +132,7 @@ namespace OrchardCore.Contents.AdminNodes
                 .ToList()
                 .Select(c => "icon-class-" + c)
                 .ToList()
-                ?? new List<string>();
+                ?? [];
         }
     }
 }

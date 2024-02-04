@@ -1,11 +1,12 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
-using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.Admin.Models;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Localization.Drivers;
@@ -41,17 +42,18 @@ namespace OrchardCore.Localization
         }
 
         /// <inheritdocs />
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        public override async ValueTask ConfigureAsync(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var localizationService = serviceProvider.GetService<ILocalizationService>();
 
-            var defaultCulture = localizationService.GetDefaultCultureAsync().GetAwaiter().GetResult();
-            var supportedCultures = localizationService.GetSupportedCulturesAsync().GetAwaiter().GetResult();
+            var defaultCulture = await localizationService.GetDefaultCultureAsync();
+            var supportedCultures = await localizationService.GetSupportedCulturesAsync();
 
+            var cultureOptions = serviceProvider.GetService<IOptions<CultureOptions>>().Value;
             var localizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
-            var ignoreSystemSettings = serviceProvider.GetService<IOptions<CultureOptions>>().Value.IgnoreSystemSettings;
 
-            new LocalizationOptionsUpdater(localizationOptions, ignoreSystemSettings)
+            localizationOptions.CultureInfoUseUserOverride = !cultureOptions.IgnoreSystemSettings;
+            localizationOptions
                 .SetDefaultCulture(defaultCulture)
                 .AddSupportedCultures(supportedCultures)
                 .AddSupportedUICultures(supportedCultures);
@@ -92,7 +94,7 @@ namespace OrchardCore.Localization
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IShapeTableProvider, AdminCulturePickerShapes>();
+            services.AddScoped<IDisplayDriver<Navbar>, AdminCulturePickerNavbarDisplayDriver>();
 
             services.Configure<RequestLocalizationOptions>(options =>
                 options.AddInitialRequestCultureProvider(new AdminCookieCultureProvider(_shellSettings, _adminOptions)));

@@ -18,7 +18,6 @@ using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.Environment.Shell;
 using OrchardCore.FileStorage;
@@ -47,6 +46,7 @@ using OrchardCore.Modules.FileProviders;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
+using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Shortcodes;
 using SixLabors.ImageSharp.Web.Caching;
@@ -73,6 +73,10 @@ namespace OrchardCore.Media
         {
             services.AddSingleton<IAnchorTag, MediaAnchorTag>();
 
+            // Resized media and remote media caches cleanups.
+            services.AddSingleton<IBackgroundTask, ResizedMediaCacheBackgroundTask>();
+            services.AddSingleton<IBackgroundTask, RemoteMediaCacheBackgroundTask>();
+
             services.Configure<TemplateOptions>(o =>
             {
                 o.MemberAccessStrategy.Register<DisplayMediaFieldViewModel>();
@@ -82,6 +86,8 @@ namespace OrchardCore.Media
             })
             .AddLiquidFilter<AssetUrlFilter>("asset_url")
             .AddLiquidFilter<ResizeUrlFilter>("resize_url");
+
+            services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
 
             services.AddTransient<IConfigureOptions<MediaOptions>, MediaOptionsConfiguration>();
 
@@ -97,6 +103,7 @@ namespace OrchardCore.Media
                 {
                     Directory.CreateDirectory(mediaPath);
                 }
+
                 return new MediaFileProvider(options.AssetsRequestPath, mediaPath);
             });
 
@@ -167,8 +174,6 @@ namespace OrchardCore.Media
             services.AddScoped<IContentHandler, AttachedMediaFieldContentHandler>();
             services.AddScoped<IModularTenantEvents, TempDirCleanerService>();
             services.AddDataMigration<Migrations>();
-            services.AddScoped<IContentFieldIndexHandler, MediaFieldIndexHandler>();
-            services.AddMediaFileTextProvider<PdfMediaFileTextProvider>(".pdf");
             services.AddRecipeExecutionStep<MediaStep>();
 
             // MIME types
@@ -383,13 +388,8 @@ namespace OrchardCore.Media
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, MediaDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<MediaDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, MediaDeploymentStepDriver>();
-
-            services.AddTransient<IDeploymentSource, AllMediaProfilesDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllMediaProfilesDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllMediaProfilesDeploymentStepDriver>();
+            services.AddDeployment<MediaDeploymentSource, MediaDeploymentStep, MediaDeploymentStepDriver>();
+            services.AddDeployment<AllMediaProfilesDeploymentSource, AllMediaProfilesDeploymentStep, AllMediaProfilesDeploymentStepDriver>();
         }
     }
 
@@ -398,10 +398,17 @@ namespace OrchardCore.Media
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IContentFieldIndexHandler, MediaFieldIndexHandler>();
+        }
+    }
+
+    [Feature("OrchardCore.Media.Indexing.Text")]
+    public class TextIndexingStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
             services.AddMediaFileTextProvider<TextMediaFileTextProvider>(".txt");
             services.AddMediaFileTextProvider<TextMediaFileTextProvider>(".md");
-            services.AddMediaFileTextProvider<WordDocumentMediaFileTextProvider>(".docx");
-            services.AddMediaFileTextProvider<PresentationDocumentMediaFileTextProvider>(".pptx");
         }
     }
 
@@ -427,7 +434,7 @@ namespace OrchardCore.Media
     <td>class, alt</td>
   </tr>
 </table>";
-                d.Categories = new string[] { "HTML Content", "Media" };
+                d.Categories = ["HTML Content", "Media"];
             });
 
             services.AddShortcode<AssetUrlShortcodeProvider>("asset_url", d =>
@@ -442,7 +449,7 @@ namespace OrchardCore.Media
     <td>width, height, mode</td>
   </tr>
 </table>";
-                d.Categories = new string[] { "HTML Content", "Media" };
+                d.Categories = ["HTML Content", "Media"];
             });
         }
     }

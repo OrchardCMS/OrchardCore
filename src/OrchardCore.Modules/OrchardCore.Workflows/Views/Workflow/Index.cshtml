@@ -6,7 +6,7 @@
     int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
     int endIndex = startIndex + Model.Workflows.Count - 1;
 }
-<script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
+<script asp-name="bootstrap-select" depends-on="bootstrap" at="Foot"></script>
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["{0} Instances", Model.WorkflowType.Name])</h1></zone>
 
@@ -29,7 +29,7 @@
         <ul class="list-group with-checkbox">
             @if (Model.Workflows.Any())
             {
-                <li class="list-group-item bg-primary">
+                <li class="list-group-item text-bg-theme">
                     <div class="row">
                         <div class="col mb-1 text-nowrap">
                             <div class="form-check mt-2 me-n2">
@@ -64,8 +64,8 @@
                 @for (var i = 0; i < Model.Workflows.Count; i++)
                 {
                     var entry = Model.Workflows[i];
-                    var statusCss = "";
-
+                    var statusCss = string.Empty;
+                    var restartable = true;
                     switch (entry.Workflow.Status)
                     {
                         case WorkflowStatus.Aborted:
@@ -83,6 +83,7 @@
                         case WorkflowStatus.Resuming:
                         case WorkflowStatus.Starting:
                             statusCss = "info";
+                            restartable = false;
                             break;
                         case WorkflowStatus.Faulted:
                             statusCss = "danger";
@@ -92,6 +93,10 @@
                     <li class="list-group-item">
                         <div class="w-100">
                             <div class="float-end">
+                                @if (restartable)
+                                {
+                                    <a asp-action="Restart" asp-route-id="@entry.Workflow.Id" class="btn btn-warning btn-sm" data-title="@T["Restart"]" data-message="@T["Are you sure you want to restart this workflow instance?"]" data-url-af="RemoveUrl UnsafeUrl">@T["Restart"]</a>
+                                }
                                 <a asp-action="Delete" asp-route-id="@entry.Workflow.Id" class="btn btn-danger btn-sm" data-message="@T["Are you sure you want to delete this workflow instance?"]" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                             </div>
 
@@ -103,7 +108,7 @@
                             <div>
                                 <span class="hint">@T["Created {0}", (object)(await DisplayAsync(await New.TimeSpan(Utc: entry.Workflow.CreatedUtc)))]</span>
                                 <div class="info">
-                                    <span class="badge bg-@statusCss">
+                                    <span class="badge text-bg-@statusCss">
                                         @T.GetLocalizedStatus(entry.Workflow.Status)
                                     </span>
                                 </div>
@@ -132,7 +137,9 @@
 <script at="Foot">
     $(function () {
         $('.selectpicker').selectpicker();
-
+        $('.selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+            $("[name='submit.Filter']").click();
+        });
         var actions = $("#actions");
         var items = $("#items");
         var filters = $(".filter");
@@ -144,21 +151,19 @@
             $("[name='submit.Filter']").click();
         });
 
-        $('.selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-            $("[name='submit.Filter']").click();
-        });
-
-        $(".dropdown-menu .dropdown-item").filter(function() {
+        $(".dropdown-menu .dropdown-item").filter(function () {
             return $(this).data("action");
         }).on("click", function () {
             if ($(":checkbox[name='itemIds']:checked").length > 1) {
                 var $this = $(this);
-                confirmDialog({title: $this.data('title'), message: $this.data('message'), callback: function(r) {
-                    if (r) {
-                        $("[name='Options.BulkAction']").val($this.data("action"));
-                        $("[name='submit.BulkAction']").click();
+                confirmDialog({
+                    title: $this.data('title'), message: $this.data('message'), callback: function (r) {
+                        if (r) {
+                            $("[name='Options.BulkAction']").val($this.data("action"));
+                            $("[name='submit.BulkAction']").click();
+                        }
                     }
-                }});
+                });
             }
         });
 
@@ -177,7 +182,7 @@
             }
         }
 
-        selectAllCtrl.click(function(){
+        selectAllCtrl.click(function () {
             itemsCheckboxes.not(this).prop("checked", this.checked);
             selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
             displayActionsOrFilters();

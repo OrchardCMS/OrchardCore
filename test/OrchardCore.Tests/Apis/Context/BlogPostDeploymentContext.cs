@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using OrchardCore.ContentManagement;
 using OrchardCore.Deployment.Remote.Services;
 using OrchardCore.Deployment.Remote.ViewModels;
@@ -29,7 +31,7 @@ namespace OrchardCore.Tests.Apis.Context
                         .WithField("contentItemId");
                 });
 
-            BlogPostContentItemId = result["data"]["blogPost"].First["contentItemId"].ToString();
+            BlogPostContentItemId = result["data"]["blogPost"][0]["contentItemId"].ToString();
 
             var content = await Client.GetAsync($"api/content/{BlogPostContentItemId}");
             OriginalBlogPost = await content.Content.ReadAsAsync<ContentItem>();
@@ -43,19 +45,19 @@ namespace OrchardCore.Tests.Apis.Context
             });
         }
 
-        public static JObject GetContentStepRecipe(ContentItem contentItem, Action<JObject> mutation)
+        public static JsonObject GetContentStepRecipe(ContentItem contentItem, Action<JsonObject> mutation)
         {
             var jContentItem = JObject.FromObject(contentItem);
             mutation.Invoke(jContentItem);
 
-            var recipe = new JObject
+            var recipe = new JsonObject
             {
-                ["steps"] = new JArray
+                ["steps"] = new JsonArray
                 {
-                    new JObject
+                    new JsonObject
                     {
                         ["name"] = "content",
-                        ["Data"] = new JArray { jContentItem }
+                        ["Data"] = new JsonArray { jContentItem }
                     }
                 }
             };
@@ -63,16 +65,14 @@ namespace OrchardCore.Tests.Apis.Context
             return recipe;
         }
 
-        public async Task<HttpResponseMessage> PostRecipeAsync(JObject recipe, bool ensureSuccess = true)
+        public async Task<HttpResponseMessage> PostRecipeAsync(JsonObject recipe, bool ensureSuccess = true)
         {
             using var zipStream = new MemoryStream();
             using (var zip = new ZipArchive(zipStream, ZipArchiveMode.Create, true))
             {
                 var entry = zip.CreateEntry("Recipe.json");
-                using var streamWriter = new StreamWriter(entry.Open());
-                using var jsonWriter = new JsonTextWriter(streamWriter);
-                await recipe.WriteToAsync(jsonWriter);
-                await jsonWriter.FlushAsync();
+                using var streamWriter = new Utf8JsonWriter(entry.Open());
+                recipe.WriteTo(streamWriter);
             }
 
             zipStream.Position = 0;

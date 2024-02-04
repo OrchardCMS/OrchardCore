@@ -19,5 +19,5 @@ using OrchardCore.Modules.Manifest;
     Name = "Shortcode Templates",
     Description = "The Shortcode Templates feature provides a way to write custom shortcode templates from the admin.",
     Category = "Content",
-    Dependencies = new[] { "OrchardCore.Liquid", "OrchardCore.Shortcodes" }
+    Dependencies = ["OrchardCore.Liquid", "OrchardCore.Shortcodes"]
 )]

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace OrchardCore.ResourceManagement
@@ -20,6 +19,6 @@ namespace OrchardCore.ResourceManagement
         /// </summary>
         public string ContentBasePath { get; set; } = string.Empty;
 
-        public HashSet<ResourceManifest> ResourceManifests { get; } = new HashSet<ResourceManifest>();
+        public HashSet<ResourceManifest> ResourceManifests { get; init; } = [];
     }
 }

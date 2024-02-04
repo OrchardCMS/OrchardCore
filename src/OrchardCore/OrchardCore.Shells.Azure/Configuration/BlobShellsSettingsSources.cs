@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Shells.Azure.Services;
@@ -47,7 +48,7 @@ namespace OrchardCore.Shells.Azure.Configuration
             if (fileInfo != null)
             {
                 var stream = await _shellsFileStore.GetFileStreamAsync(TenantsBlobName);
-                builder.AddJsonStream(stream);
+                builder.AddTenantJsonStream(stream);
             }
         }
 
@@ -55,24 +56,21 @@ namespace OrchardCore.Shells.Azure.Configuration
 
         public async Task SaveAsync(string tenant, IDictionary<string, string> data)
         {
-            JObject tenantsSettings;
+            JsonObject tenantsSettings;
 
             var fileInfo = await _shellsFileStore.GetFileInfoAsync(TenantsBlobName);
 
             if (fileInfo != null)
             {
                 using var stream = await _shellsFileStore.GetFileStreamAsync(TenantsBlobName);
-                using var streamReader = new StreamReader(stream);
-                using var reader = new JsonTextReader(streamReader);
-                tenantsSettings = await JObject.LoadAsync(reader);
+                tenantsSettings = await JObject.LoadAsync(stream);
             }
             else
             {
-                tenantsSettings = new JObject();
+                tenantsSettings = [];
             }
 
-            var settings = tenantsSettings.GetValue(tenant) as JObject ?? new JObject();
-
+            var settings = tenantsSettings[tenant] as JsonObject ?? [];
             foreach (var key in data.Keys)
             {
                 if (data[key] != null)
@@ -87,14 +85,9 @@ namespace OrchardCore.Shells.Azure.Configuration
 
             tenantsSettings[tenant] = settings;
 
-            using var memoryStream = new MemoryStream();
-            using var streamWriter = new StreamWriter(memoryStream);
-            using var jsonWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.Indented };
+            var tenantsSettingsString = tenantsSettings.ToJsonString(JOptions.Default);
+            using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(tenantsSettingsString));
 
-            await tenantsSettings.WriteToAsync(jsonWriter);
-            await jsonWriter.FlushAsync();
-
-            memoryStream.Position = 0;
             await _shellsFileStore.CreateFileFromStreamAsync(TenantsBlobName, memoryStream);
         }
 
@@ -104,23 +97,17 @@ namespace OrchardCore.Shells.Azure.Configuration
 
             if (fileInfo != null)
             {
-                JObject tenantsSettings;
+                JsonObject tenantsSettings;
                 using (var stream = await _shellsFileStore.GetFileStreamAsync(TenantsBlobName))
                 {
-                    using var streamReader = new StreamReader(stream);
-                    using var reader = new JsonTextReader(streamReader);
-                    tenantsSettings = await JObject.LoadAsync(reader);
+                    tenantsSettings = await JObject.LoadAsync(stream);
                 }
 
                 tenantsSettings.Remove(tenant);
 
-                using var memoryStream = new MemoryStream();
-                using var streamWriter = new StreamWriter(memoryStream);
-                using var jsonWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.Indented };
+                var tenantsSettingsString = tenantsSettings.ToJsonString(JOptions.Default);
+                using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(tenantsSettingsString));
 
-                await tenantsSettings.WriteToAsync(jsonWriter);
-                await jsonWriter.FlushAsync();
-                memoryStream.Position = 0;
                 await _shellsFileStore.CreateFileFromStreamAsync(TenantsBlobName, memoryStream);
             }
         }

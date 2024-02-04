@@ -14,7 +14,7 @@ namespace OrchardCore.Users.Handlers
         /// <param name="user">The <see cref="IUser"/>.</param>
         /// <param name="loginProvider">The login provider.</param>
         /// <param name="externalClaims">The user claims.</param>
-        /// <param name="userRoles">The user roles</param>
+        /// <param name="userRoles">The user roles.</param>
         public UpdateRolesContext(IUser user, string loginProvider, IEnumerable<SerializableClaim> externalClaims, IEnumerable<string> userRoles) : base(user)
         {
             ExternalClaims = externalClaims.AsEnumerable();
@@ -40,11 +40,11 @@ namespace OrchardCore.Users.Handlers
         /// <summary>
         /// Gets the roles to be added to the user roles.
         /// </summary>
-        public List<string> RolesToAdd { get; } = new List<string>();
+        public List<string> RolesToAdd { get; init; } = [];
 
         /// <summary>
         /// Gets the roles to be removed from the user roles.
         /// </summary>
-        public List<string> RolesToRemove { get; } = new List<string>();
+        public List<string> RolesToRemove { get; init; } = [];
     }
 }

@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <PackageReference Include="Lucene.Net" />
-    <PackageReference Include="Newtonsoft.Json" />
   </ItemGroup>
 
   <ItemGroup>

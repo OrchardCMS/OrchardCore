@@ -17,21 +17,25 @@ using OrchardCore.Search.Elasticsearch.Core.Services;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Handlers
 {
-    public class ElasticIndexingContentHandler : ContentHandlerBase
+    public class ElasticIndexingContentHandler(IHttpContextAccessor httpContextAccessor) : ContentHandlerBase
     {
-        private readonly List<ContentContextBase> _contexts = new();
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly List<ContentContextBase> _contexts = [];
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
-        public ElasticIndexingContentHandler(IHttpContextAccessor httpContextAccessor)
-        {
-            _httpContextAccessor = httpContextAccessor;
-        }
+        public override Task PublishedAsync(PublishContentContext context)
+            => AddContextAsync(context);
 
-        public override Task PublishedAsync(PublishContentContext context) => AddContextAsync(context);
-        public override Task CreatedAsync(CreateContentContext context) => AddContextAsync(context);
-        public override Task UpdatedAsync(UpdateContentContext context) => AddContextAsync(context);
-        public override Task RemovedAsync(RemoveContentContext context) => AddContextAsync(context);
-        public override Task UnpublishedAsync(PublishContentContext context) => AddContextAsync(context);
+        public override Task CreatedAsync(CreateContentContext context)
+            => AddContextAsync(context);
+
+        public override Task UpdatedAsync(UpdateContentContext context)
+            => AddContextAsync(context);
+
+        public override Task RemovedAsync(RemoveContentContext context)
+            => AddContextAsync(context);
+
+        public override Task UnpublishedAsync(PublishContentContext context)
+            => AddContextAsync(context);
 
         private Task AddContextAsync(ContentContextBase context)
         {
@@ -43,7 +47,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Handlers
 
             if (context.ContentItem.Id == 0)
             {
-                // Ignore that case, when Update is called on a content item which has not be "created" yet.
+                // Ignore that case, when Update is called on a content item which has not been created yet.
                 return Task.CompletedTask;
             }
 
@@ -105,15 +109,15 @@ namespace OrchardCore.Search.Elasticsearch.Core.Handlers
 
                         if (contentItem == null)
                         {
-                            await elasticIndexManager.DeleteDocumentsAsync(indexSettings.IndexName, new string[] { context.ContentItem.ContentItemId });
+                            await elasticIndexManager.DeleteDocumentsAsync(indexSettings.IndexName, [context.ContentItem.ContentItemId]);
                         }
                         else
                         {
-                            var buildIndexContext = new BuildIndexContext(new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId), contentItem, new string[] { contentItem.ContentType }, new ElasticContentIndexSettings());
+                            var buildIndexContext = new BuildIndexContext(new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId), contentItem, [contentItem.ContentType], new ElasticContentIndexSettings());
                             await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), logger);
 
-                            await elasticIndexManager.DeleteDocumentsAsync(indexSettings.IndexName, new string[] { contentItem.ContentItemId });
-                            await elasticIndexManager.StoreDocumentsAsync(indexSettings.IndexName, new DocumentIndex[] { buildIndexContext.DocumentIndex });
+                            await elasticIndexManager.DeleteDocumentsAsync(indexSettings.IndexName, [contentItem.ContentItemId]);
+                            await elasticIndexManager.StoreDocumentsAsync(indexSettings.IndexName, [buildIndexContext.DocumentIndex]);
                         }
                     }
                 }

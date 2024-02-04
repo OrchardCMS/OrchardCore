@@ -24,7 +24,7 @@ namespace OrchardCore.Rules.Services
             switch (existingRule)
             {
                 case "true":
-                    if (factories.TryGetValue(typeof(BooleanCondition).Name, out var booleanFactory))
+                    if (factories.TryGetValue(nameof(BooleanCondition), out var booleanFactory))
                     {
                         var condition = (BooleanCondition)booleanFactory.Create();
                         _conditionIdGenerator.GenerateUniqueId(condition);
@@ -33,7 +33,7 @@ namespace OrchardCore.Rules.Services
                     }
                     break;
                 case "isHomepage()":
-                    if (factories.TryGetValue(typeof(HomepageCondition).Name, out var homepageFactory))
+                    if (factories.TryGetValue(nameof(HomepageCondition), out var homepageFactory))
                     {
                         var condition = (HomepageCondition)homepageFactory.Create();
                         _conditionIdGenerator.GenerateUniqueId(condition);
@@ -42,7 +42,7 @@ namespace OrchardCore.Rules.Services
                     }
                     break;
                 case "isAnonymous()":
-                    if (factories.TryGetValue(typeof(IsAnonymousCondition).Name, out var isAnonymousFactory))
+                    if (factories.TryGetValue(nameof(IsAnonymousCondition), out var isAnonymousFactory))
                     {
                         var condition = (IsAnonymousCondition)isAnonymousFactory.Create();
                         _conditionIdGenerator.GenerateUniqueId(condition);
@@ -50,7 +50,7 @@ namespace OrchardCore.Rules.Services
                     }
                     break;
                 case "isAuthenticated()":
-                    if (factories.TryGetValue(typeof(IsAuthenticatedCondition).Name, out var isAuthenticatedFactory))
+                    if (factories.TryGetValue(nameof(IsAuthenticatedCondition), out var isAuthenticatedFactory))
                     {
                         var condition = (IsAuthenticatedCondition)isAuthenticatedFactory.Create();
                         _conditionIdGenerator.GenerateUniqueId(condition);
@@ -58,7 +58,7 @@ namespace OrchardCore.Rules.Services
                     }
                     break;
                 default:
-                    if (factories.TryGetValue(typeof(JavascriptCondition).Name, out var javascriptFactory))
+                    if (factories.TryGetValue(nameof(JavascriptCondition), out var javascriptFactory))
                     {
                         var condition = (JavascriptCondition)javascriptFactory.Create();
                         _conditionIdGenerator.GenerateUniqueId(condition);

@@ -52,7 +52,7 @@ namespace OrchardCore.Mvc
             else if (folder.StartsWith(Application.ModuleRoot, StringComparison.Ordinal))
             {
                 // Check for a "Pages" or a "Views" segment.
-                var tokenizer = new StringTokenizer(folder, new char[] { '/' });
+                var tokenizer = new StringTokenizer(folder, ['/']);
                 if (tokenizer.Any(s => s == "Pages" || s == "Views"))
                 {
                     // Resolve the subpath relative to the application's module root.

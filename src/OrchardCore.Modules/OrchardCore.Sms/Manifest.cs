@@ -16,11 +16,11 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Name = "SMS Notifications",
     Id = "OrchardCore.Notifications.Sms",
-    Description = "Provides a way to sent SMS notifications to users.",
+    Description = "Provides a way to send SMS notifications to users.",
     Category = "Notifications",
-    Dependencies = new[]
-    {
+    Dependencies =
+    [
         "OrchardCore.Notifications",
         "OrchardCore.Sms",
-    }
+    ]
 )]

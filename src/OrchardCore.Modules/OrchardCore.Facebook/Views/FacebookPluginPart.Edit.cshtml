@@ -1,7 +1,7 @@
 @model OrchardCore.Facebook.Widgets.ViewModels.FacebookPluginPartViewModel
 @using OrchardCore
 <style asp-name="codemirror"></style>
-<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
 <script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
@@ -9,9 +9,9 @@
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
-<div class="@Orchard.GetWrapperCssClasses()">
-    <label asp-for="Liquid" class="@Orchard.GetLabelCssClasses()">@T["Body"]</label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Liquid" class="@Orchard.GetLabelClasses()">@T["Body"]</label>
+    <div class="@Orchard.GetEndClasses()">
         <textarea asp-for="Liquid" rows="5" class="form-control content-preview-text"></textarea>
         <span class="hint">@T["The template of the plugin, in Liquid format."]</span>
     </div>

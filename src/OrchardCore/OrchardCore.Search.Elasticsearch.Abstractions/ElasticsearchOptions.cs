@@ -7,5 +7,5 @@ public class ElasticsearchOptions
 {
     public string IndexPrefix { get; set; }
 
-    public Dictionary<string, JsonObject> Analyzers { get; } = new();
+    public Dictionary<string, JsonObject> Analyzers { get; } = [];
 }

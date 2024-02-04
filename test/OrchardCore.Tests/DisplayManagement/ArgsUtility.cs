@@ -1,4 +1,5 @@
 using OrchardCore.DisplayManagement;
+using Arguments = OrchardCore.DisplayManagement.Arguments;
 
 namespace OrchardCore.Tests.DisplayManagement
 {
@@ -15,7 +16,7 @@ namespace OrchardCore.Tests.DisplayManagement
         }
         public static INamedEnumerable<T> Empty<T>()
         {
-            return Arguments.FromT(Enumerable.Empty<T>(), Enumerable.Empty<string>());
+            return Arguments.FromT(Array.Empty<T>(), []);
         }
         public static INamedEnumerable<object> Empty()
         {
@@ -29,7 +30,7 @@ namespace OrchardCore.Tests.DisplayManagement
 
         public static INamedEnumerable<object> Positional(params object[] args)
         {
-            return Arguments.From(args, Enumerable.Empty<string>());
+            return Arguments.From(args, []);
         }
     }
 }
