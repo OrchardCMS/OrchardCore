@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Email.Core.Services;
 using OrchardCore.Email.ViewModels;
@@ -21,6 +23,7 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IShellHost _shellHost;
+    private readonly IEmailProviderResolver _emailProviderResolver;
     private readonly ShellSettings _shellSettings;
     private readonly EmailProviderOptions _emailProviders;
 
@@ -31,28 +34,25 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
         IAuthorizationService authorizationService,
         IShellHost shellHost,
         IOptions<EmailProviderOptions> emailProviders,
+        IEmailProviderResolver emailProviderResolver,
         ShellSettings shellSettings,
         IStringLocalizer<EmailSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _shellHost = shellHost;
+        _emailProviderResolver = emailProviderResolver;
         _emailProviders = emailProviders.Value;
         _shellSettings = shellSettings;
         S = stringLocalizer;
     }
 
     public override IDisplayResult Edit(EmailSettings settings)
-        => Initialize<EmailSettingsViewModel>("EmailSettings_Edit", model =>
+        => Initialize("EmailSettings_Edit", (Func<EmailSettingsViewModel, ValueTask>)(async model =>
         {
             model.DefaultProvider = settings.DefaultProviderName;
-            model.Providers = _emailProviders.Providers
-                .Where(entry => entry.Value.IsEnabled)
-                .Select(entry => new SelectListItem(entry.Key, entry.Key))
-                .OrderBy(item => item.Text)
-                .ToArray();
-
-        }).Location("Content:1#Providers")
+            model.Providers = await GetProviderOptionsAsync();
+        })).Location("Content:1#Providers")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageEmailSettings))
         .OnGroup(EmailSettings.GroupId);
 
@@ -79,5 +79,24 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
         }
 
         return Edit(settings);
+    }
+
+    private async Task<SelectListItem[]> GetProviderOptionsAsync()
+    {
+        var options = new List<SelectListItem>();
+
+        foreach (var entry in _emailProviders.Providers)
+        {
+            if (!entry.Value.IsEnabled)
+            {
+                continue;
+            }
+
+            var provider = await _emailProviderResolver.GetAsync(entry.Key);
+
+            options.Add(new SelectListItem(provider.Name, entry.Key));
+        }
+
+        return options.OrderBy(x => x.Text).ToArray();
     }
 }

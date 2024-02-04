@@ -8,6 +8,7 @@ using Azure.Communication.Email;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Email.Azure.Models;
 
 namespace OrchardCore.Email.Azure;
 
@@ -82,17 +83,17 @@ public class AzureEmailProvider : IEmailProvider
         { ".zip", "application/zip" }
     };
 
-    private readonly AzureEmailSettings _emailSettings;
+    private readonly AzureEmailOptions _emailOptions;
     private readonly ILogger _logger;
 
     protected readonly IStringLocalizer S;
 
     public AzureEmailProvider(
-        IOptions<AzureEmailSettings> options,
+        IOptions<AzureEmailOptions> options,
         ILogger<AzureEmailProvider> logger,
         IStringLocalizer<AzureEmailProvider> stringLocalizer)
     {
-        _emailSettings = options.Value;
+        _emailOptions = options.Value;
         _logger = logger;
         S = stringLocalizer;
     }
@@ -106,7 +107,7 @@ public class AzureEmailProvider : IEmailProvider
     {
         ArgumentNullException.ThrowIfNull(message);
 
-        if (_emailSettings == null)
+        if (_emailOptions == null)
         {
             return EmailResult.FailedResult(S["Azure Email settings must be configured before an email can be sent."]);
         }
@@ -116,7 +117,7 @@ public class AzureEmailProvider : IEmailProvider
         try
         {
             var senderAddress = string.IsNullOrWhiteSpace(message.From)
-                ? _emailSettings.DefaultSender
+                ? _emailOptions.DefaultSender
                 : message.From;
 
             if (!string.IsNullOrWhiteSpace(senderAddress))
@@ -126,7 +127,7 @@ public class AzureEmailProvider : IEmailProvider
 
             var emailMessage = FromMailMessage(message, out result);
 
-            var client = new EmailClient(_emailSettings.ConnectionString);
+            var client = new EmailClient(_emailOptions.ConnectionString);
             await client.SendAsync(WaitUntil.Completed, emailMessage);
 
             result = EmailResult.SuccessResult;

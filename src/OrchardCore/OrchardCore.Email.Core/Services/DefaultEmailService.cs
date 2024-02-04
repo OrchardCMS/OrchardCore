@@ -28,7 +28,7 @@ public class DefaultEmailService : IEmailService
         S = stringLocalizer;
     }
 
-    public async Task<EmailResult> SendAsync(MailMessage message)
+    public async Task<EmailResult> SendAsync(MailMessage message, string name = null)
     {
         _provider ??= await _providerResolver.GetAsync();
 

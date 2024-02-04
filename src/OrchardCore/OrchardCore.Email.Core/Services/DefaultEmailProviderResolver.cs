@@ -39,12 +39,16 @@ public class DefaultEmailProviderResolver : IEmailProviderResolver
             name = settings.DefaultProviderName;
         }
 
-        if (name != null && _providerOptions.Providers.TryGetValue(name, out var providerType))
+        if (!string.IsNullOrEmpty(name))
         {
-            return _serviceProvider.CreateInstance<IEmailProvider>(providerType.Type);
-        }
+            if (_providerOptions.Providers.TryGetValue(name, out var providerType))
+            {
+                return _serviceProvider.CreateInstance<IEmailProvider>(providerType.Type);
+            }
 
-        if (string.IsNullOrEmpty(name) && _providerOptions.Providers.Count > 0)
+            throw new InvalidEmailProviderException(name);
+        }
+        else if (_providerOptions.Providers.Count > 0)
         {
             return _serviceProvider.CreateInstance<IEmailProvider>(_providerOptions.Providers.Values.Last().Type);
         }
