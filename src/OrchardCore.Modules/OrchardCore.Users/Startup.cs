@@ -106,49 +106,6 @@ namespace OrchardCore.Users
                 defaults: new { controller = _accountControllerName, action = nameof(AccountController.ExternalLogins) }
             );
 
-            routes.MapAreaControllerRoute(
-                name: "UsersIndex",
-                areaName: UserConstants.Features.Users,
-                pattern: _adminOptions.AdminUrlPrefix + "/Users/Index",
-                defaults: new { controller = _adminControllerName, action = nameof(AdminController.Index) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "UsersCreate",
-                areaName: UserConstants.Features.Users,
-                pattern: _adminOptions.AdminUrlPrefix + "/Users/Create",
-                defaults: new { controller = _adminControllerName, action = nameof(AdminController.Create) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "UsersDelete",
-                areaName: UserConstants.Features.Users,
-                pattern: _adminOptions.AdminUrlPrefix + "/Users/Delete/{id}",
-                defaults: new { controller = _adminControllerName, action = nameof(AdminController.Delete) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "UsersEdit",
-                areaName: UserConstants.Features.Users,
-                pattern: _adminOptions.AdminUrlPrefix + "/Users/Edit/{id?}",
-                defaults: new { controller = _adminControllerName, action = nameof(AdminController.Edit) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "UsersEditPassword",
-                areaName: UserConstants.Features.Users,
-                pattern: _adminOptions.AdminUrlPrefix + "/Users/EditPassword/{id}",
-                defaults: new { controller = _adminControllerName, action = nameof(AdminController.EditPassword) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "UsersUnlock",
-                areaName: UserConstants.Features.Users,
-                pattern: _adminOptions.AdminUrlPrefix + "/Users/Unlock/{id}",
-                defaults: new { controller = _adminControllerName, action = nameof(AdminController.Unlock) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "UsersDisplay",
-                areaName: UserConstants.Features.Users,
-                pattern: _adminOptions.AdminUrlPrefix + "/Users/Display/{id}",
-                defaults: new { controller = _adminControllerName, action = nameof(AdminController.Display) }
-            );
-
             builder.UseAuthorization();
         }
 

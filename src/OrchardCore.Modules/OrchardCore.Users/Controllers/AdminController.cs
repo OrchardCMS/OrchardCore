@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -84,6 +85,7 @@ namespace OrchardCore.Users.Controllers
             S = stringLocalizer;
         }
 
+        [Admin("Users/Index")]
         public async Task<ActionResult> Index([ModelBinder(BinderType = typeof(UserFilterEngineModelBinder), Name = "q")] QueryFilterResult<User> queryFilterResult, PagerParameters pagerParameters)
         {
             // Check a dummy user account to see if the current user has permission to view users.
@@ -290,6 +292,7 @@ namespace OrchardCore.Users.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Admin("Users/Create")]
         public async Task<IActionResult> Create()
         {
             var user = new User();
@@ -334,6 +337,7 @@ namespace OrchardCore.Users.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Admin("Users/Edit/{id}")]
         public async Task<IActionResult> Edit(string id, string returnUrl)
         {
             // When no id is provided we assume the user is trying to edit their own profile.
@@ -435,6 +439,7 @@ namespace OrchardCore.Users.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Admin("Users/Display/{id}")]
         public async Task<IActionResult> Display(string id)
         {
             if (await _userManager.FindByIdAsync(id) is not User user)
@@ -453,6 +458,7 @@ namespace OrchardCore.Users.Controllers
         }
 
         [HttpPost]
+        [Admin("Users/Delete/{id}")]
         public async Task<IActionResult> Delete(string id)
         {
             if (await _userManager.FindByIdAsync(id) is not User user)
@@ -486,6 +492,7 @@ namespace OrchardCore.Users.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Admin("Users/EditPassword/{id}")]
         public async Task<IActionResult> EditPassword(string id)
         {
             if (await _userManager.FindByIdAsync(id) is not User user)
@@ -532,6 +539,7 @@ namespace OrchardCore.Users.Controllers
         }
 
         [HttpPost]
+        [Admin("Users/Unlock/{id}")]
         public async Task<IActionResult> Unlock(string id)
         {
             if (await _userManager.FindByIdAsync(id) is not User user)
