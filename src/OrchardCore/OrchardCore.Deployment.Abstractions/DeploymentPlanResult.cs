@@ -31,7 +31,7 @@ namespace OrchardCore.Deployment
         }
 
         public JsonObject Recipe { get; }
-        public IList<JsonObject> Steps { get; init; } = new List<JsonObject>();
+        public IList<JsonObject> Steps { get; init; } = [];
         public IFileBuilder FileBuilder { get; }
         public async Task FinalizeAsync()
         {

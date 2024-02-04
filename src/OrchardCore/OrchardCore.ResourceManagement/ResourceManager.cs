@@ -375,7 +375,7 @@ namespace OrchardCore.ResourceManagement
             List<string> dependencies = null;
             if (resource.Dependencies != null)
             {
-                dependencies = new List<string>(resource.Dependencies);
+                dependencies = [..resource.Dependencies];
                 if (settings.Dependencies != null)
                 {
                     dependencies.AddRange(settings.Dependencies);
@@ -383,7 +383,7 @@ namespace OrchardCore.ResourceManagement
             }
             else if (settings.Dependencies != null)
             {
-                dependencies = new List<string>(settings.Dependencies);
+                dependencies = [..settings.Dependencies];
             }
 
             // Settings is given so they can cascade down into dependencies. For example, if Foo depends on Bar, and Foo's required

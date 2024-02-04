@@ -15,13 +15,10 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public int Order { get; }
 
-        public ICollection<Action<IServiceCollection, IServiceProvider>> ConfigureServicesActions { get; } =
-            new List<Action<IServiceCollection, IServiceProvider>>();
+        public ICollection<Action<IServiceCollection, IServiceProvider>> ConfigureServicesActions { get; } = [];
 
-        public ICollection<Action<IApplicationBuilder, IEndpointRouteBuilder, IServiceProvider>> ConfigureActions { get; } =
-            new List<Action<IApplicationBuilder, IEndpointRouteBuilder, IServiceProvider>>();
+        public ICollection<Action<IApplicationBuilder, IEndpointRouteBuilder, IServiceProvider>> ConfigureActions { get; } = [];
 
-        public ICollection<Func<IApplicationBuilder, IEndpointRouteBuilder, IServiceProvider, ValueTask>> AsyncConfigureActions { get; } =
-            new List<Func<IApplicationBuilder, IEndpointRouteBuilder, IServiceProvider, ValueTask>>();
+        public ICollection<Func<IApplicationBuilder, IEndpointRouteBuilder, IServiceProvider, ValueTask>> AsyncConfigureActions { get; } = [];
     }
 }

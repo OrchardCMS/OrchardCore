@@ -28,7 +28,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
             if (existing == null)
             {
-                _parts = new List<ContentTypePartDefinition>();
+                _parts = [];
                 _settings = [];
             }
             else
