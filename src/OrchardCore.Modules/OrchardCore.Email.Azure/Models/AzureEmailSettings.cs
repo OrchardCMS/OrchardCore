@@ -5,6 +5,8 @@ namespace OrchardCore.Email.Azure;
 /// </summary>
 public class AzureEmailSettings : EmailProviderSettings
 {
+    public bool IsSet { get; set; }
+
     /// <summary>
     /// Gets or sets the connection string.
     /// </summary>

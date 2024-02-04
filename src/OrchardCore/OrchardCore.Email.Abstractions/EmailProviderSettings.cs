@@ -6,8 +6,6 @@ public class EmailProviderSettings
 {
     public bool IsEnabled { get; set; }
 
-    public bool IsSet { get; set; }
-
     /// <summary>
     /// Gets or sets the default sender mail.
     /// </summary>
