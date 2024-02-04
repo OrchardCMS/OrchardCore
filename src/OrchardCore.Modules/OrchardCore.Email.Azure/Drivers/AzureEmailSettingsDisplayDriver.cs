@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -15,8 +15,10 @@ using OrchardCore.Email;
 using OrchardCore.Email.Azure;
 using OrchardCore.Email.Azure.Models;
 using OrchardCore.Email.Azure.ViewModels;
+using OrchardCore.Email.Services;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
 
@@ -24,14 +26,12 @@ namespace OrchardCore.Azure.Email.Drivers;
 
 public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, AzureEmailSettings>
 {
-    public const string AzureEmailSettingProtector = "AzureEmailProtector";
-
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly AzureEmailOptions _azureEmailOptions;
     private readonly IAuthorizationService _authorizationService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IShellHost _shellHost;
     private readonly ShellSettings _shellSettings;
+    private readonly IShellConfiguration _shellConfiguration;
     private readonly INotifier _notifier;
 
     protected IStringLocalizer S;
@@ -39,21 +39,21 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
 
     public AzureEmailSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
-        IOptions<AzureEmailOptions> azureEmailOptions,
         IAuthorizationService authorizationService,
         IDataProtectionProvider dataProtectionProvider,
         IShellHost shellHost,
         ShellSettings shellSettings,
+        IShellConfiguration shellConfiguration,
         INotifier notifier,
         IStringLocalizer<AzureEmailSettingsDisplayDriver> stringLocalizer,
         IHtmlLocalizer<AzureEmailSettingsDisplayDriver> htmlLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
-        _azureEmailOptions = azureEmailOptions.Value;
         _authorizationService = authorizationService;
         _dataProtectionProvider = dataProtectionProvider;
         _shellHost = shellHost;
         _shellSettings = shellSettings;
+        _shellConfiguration = shellConfiguration;
         _notifier = notifier;
         S = stringLocalizer;
         H = htmlLocalizer;
@@ -68,9 +68,11 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
             return null;
         }
 
+        var azureEmailOptions = _shellConfiguration.GetSection(AzureEmailOptionsConfiguration.SectionName).Get<AzureEmailOptions>();
+
         return Initialize<AzureEmailSettingsViewModel>("AzureEmailSettings_Edit", model =>
         {
-            var hasFileConnectionString = !string.IsNullOrWhiteSpace(_azureEmailOptions.ConnectionString);
+            var hasFileConnectionString = !string.IsNullOrWhiteSpace(azureEmailOptions?.ConnectionString);
 
             if (settings.IsSet)
             {
@@ -78,13 +80,13 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
             }
             else
             {
-                model.IsEnabled = hasFileConnectionString && !string.IsNullOrWhiteSpace(_azureEmailOptions.DefaultSender);
+                model.IsEnabled = hasFileConnectionString && !string.IsNullOrWhiteSpace(azureEmailOptions?.DefaultSender);
             };
 
-            model.DefaultSender = settings.DefaultSender ?? _azureEmailOptions.DefaultSender;
+            model.DefaultSender = settings.DefaultSender ?? azureEmailOptions.DefaultSender;
             model.ConfigurationExists = !string.IsNullOrWhiteSpace(settings.ConnectionString);
             model.FileConfigurationExists = hasFileConnectionString;
-            model.PreventUIConnectionChange = _azureEmailOptions.PreventUIConnectionChange;
+            model.PreventUIConnectionChange = azureEmailOptions?.PreventUIConnectionChange ?? false;
 
         }).Location("Content:5#Azure")
         .OnGroup(EmailSettings.GroupId);
@@ -107,7 +109,7 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
 
             var emailSettings = site.As<EmailSettings>();
 
-            var hasChanges = model.IsEnabled == settings.IsEnabled;
+            var hasChanges = model.IsEnabled != settings.IsEnabled;
 
             if (!model.IsEnabled)
             {
@@ -126,18 +128,21 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
             {
                 settings.IsEnabled = true;
 
-                hasChanges |= model.DefaultSender == settings.DefaultSender;
+                hasChanges |= model.DefaultSender != settings.DefaultSender;
 
-                if (!_azureEmailOptions.PreventUIConnectionChange)
+                settings.DefaultSender = model.DefaultSender;
+                var azureEmailOptions = _shellConfiguration.GetSection(AzureEmailOptionsConfiguration.SectionName).Get<AzureEmailOptions>();
+
+                if (azureEmailOptions is null || !azureEmailOptions.PreventUIConnectionChange)
                 {
-                    if (!string.IsNullOrWhiteSpace(model.ConnectionString) && settings.ConnectionString is null)
+                    if (string.IsNullOrWhiteSpace(model.ConnectionString) && settings.ConnectionString is null)
                     {
                         context.Updater.ModelState.AddModelError(Prefix, nameof(model.ConnectionString), S["Connection string is required."]);
                     }
                     else if (!string.IsNullOrWhiteSpace(model.ConnectionString))
                     {
                         // Encrypt the connection string.
-                        var protector = _dataProtectionProvider.CreateProtector(AzureEmailSettingProtector);
+                        var protector = _dataProtectionProvider.CreateProtector(AzureEmailOptionsConfiguration.AzureEmailSettingProtector);
 
                         var protectedConnection = protector.Protect(model.ConnectionString);
 

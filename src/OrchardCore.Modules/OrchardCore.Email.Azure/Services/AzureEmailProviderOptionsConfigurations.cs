@@ -1,5 +1,8 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using OrchardCore.Email.Azure.Models;
 using OrchardCore.Email.Core.Services;
+using OrchardCore.Email.Services;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Settings;
 
@@ -27,22 +30,20 @@ public class AzureEmailProviderOptionsConfigurations : IConfigureOptions<EmailPr
             .GetResult()
             .As<AzureEmailSettings>();
 
+        var azureEmailOptions = _shellConfiguration.GetSection(AzureEmailOptionsConfiguration.SectionName).Get<AzureEmailOptions>();
+
         var hasConnectionString = !string.IsNullOrEmpty(settings.ConnectionString);
 
         if (!hasConnectionString)
         {
-            var connectionString = _shellConfiguration[$"OrchardCore_Email_Azure:{nameof(AzureEmailSettings.ConnectionString)}"];
-
-            hasConnectionString = !string.IsNullOrWhiteSpace(connectionString);
+            hasConnectionString = !string.IsNullOrWhiteSpace(azureEmailOptions?.ConnectionString);
         }
 
         var hasDefaultSender = !string.IsNullOrEmpty(settings.DefaultSender);
 
         if (!hasDefaultSender)
         {
-            var defaultSender = _shellConfiguration[$"OrchardCore_Email_Azure:{nameof(AzureEmailSettings.DefaultSender)}"];
-
-            hasDefaultSender = !string.IsNullOrWhiteSpace(defaultSender);
+            hasDefaultSender = !string.IsNullOrWhiteSpace(azureEmailOptions?.DefaultSender);
         }
 
         typeOptions.IsEnabled = hasConnectionString && hasDefaultSender;

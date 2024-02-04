@@ -8,9 +8,9 @@ namespace OrchardCore.Email.Services;
 /// </summary>
 public class SmtpService : ISmtpService
 {
-    private readonly IEmailService _emailProviderResolver;
+    private readonly IEmailProviderResolver _emailProviderResolver;
 
-    public SmtpService(IEmailService emailProviderResolver)
+    public SmtpService(IEmailProviderResolver emailProviderResolver)
     {
         _emailProviderResolver = emailProviderResolver;
     }
