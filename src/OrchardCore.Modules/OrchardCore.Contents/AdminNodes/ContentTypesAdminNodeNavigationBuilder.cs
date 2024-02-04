@@ -37,7 +37,7 @@ namespace OrchardCore.Contents.AdminNodes
             _logger = logger;
         }
 
-        public string Name => typeof(ContentTypesAdminNode).Name;
+        public string Name => nameof(ContentTypesAdminNode);
 
         public async Task BuildNavigationAsync(MenuItem menuItem, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
         {
