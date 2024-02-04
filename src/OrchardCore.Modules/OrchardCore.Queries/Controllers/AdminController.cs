@@ -90,7 +90,7 @@ namespace OrchardCore.Queries.Controllers
 
             var model = new QueriesIndexViewModel
             {
-                Queries = new List<QueryEntry>(),
+                Queries = [],
                 Options = options,
                 Pager = await _shapeFactory.PagerAsync(pager, queries.Count(), routeData),
                 QuerySourceNames = _querySources.Select(x => x.Name).ToList()

@@ -13,10 +13,7 @@ namespace OrchardCore.Tests.Extensions
             = new StubHostingEnvironment();
 
         private static readonly IApplicationContext _applicationContext
-            = new ModularApplicationContext(_hostingEnvironment, new List<IModuleNamesProvider>()
-            {
-                new ModuleNamesProvider()
-            });
+            = new ModularApplicationContext(_hostingEnvironment, [new ModuleNamesProvider()]);
 
         private static readonly IFeaturesProvider _moduleFeatureProvider =
             new FeaturesProvider(new[] { new ThemeFeatureBuilderEvents() });
