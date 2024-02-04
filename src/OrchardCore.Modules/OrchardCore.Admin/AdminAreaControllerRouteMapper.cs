@@ -24,7 +24,10 @@ namespace OrchardCore.Admin
             var controllerAttribute = descriptor.ControllerTypeInfo.GetCustomAttribute<AdminAttribute>();
             var actionAttribute = descriptor.MethodInfo.GetCustomAttribute<AdminAttribute>();
 
-            if (descriptor.ControllerName != "Admin" && controllerAttribute == null && actionAttribute == null) return false;
+            if (descriptor.ControllerName != "Admin" && controllerAttribute == null && actionAttribute == null)
+            {
+                return false;
+            }
 
             var pattern = _defaultAreaPattern;
 
