@@ -10,10 +10,7 @@ namespace OrchardCore.Security.Permissions
 
         public Permission(string name)
         {
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
+            ArgumentNullException.ThrowIfNull(name);
 
             Name = name;
         }

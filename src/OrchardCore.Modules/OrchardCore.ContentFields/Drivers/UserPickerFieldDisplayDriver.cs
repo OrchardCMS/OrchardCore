@@ -79,7 +79,7 @@ namespace OrchardCore.ContentFields.Drivers
             if (await updater.TryUpdateModelAsync(viewModel, Prefix, f => f.UserIds))
             {
                 field.UserIds = viewModel.UserIds == null
-                    ? Array.Empty<string>() : viewModel.UserIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                    ? [] : viewModel.UserIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
                 var settings = context.PartFieldDefinition.GetSettings<UserPickerFieldSettings>();
 

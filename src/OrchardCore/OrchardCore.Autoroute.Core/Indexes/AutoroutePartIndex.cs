@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
@@ -55,8 +55,8 @@ namespace OrchardCore.Autoroute.Core.Indexes
     public class AutoroutePartIndexProvider : ContentHandlerBase, IIndexProvider, IScopedIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly HashSet<ContentItem> _itemRemoved = new();
-        private readonly HashSet<string> _partRemoved = new();
+        private readonly HashSet<ContentItem> _itemRemoved = [];
+        private readonly HashSet<string> _partRemoved = [];
         private IContentDefinitionManager _contentDefinitionManager;
         private IContentManager _contentManager;
 
@@ -134,8 +134,7 @@ namespace OrchardCore.Autoroute.Core.Indexes
                     var results = new List<AutoroutePartIndex>
                     {
                         // If the part is disabled or was removed, a record is still added but with a null path.
-                        new AutoroutePartIndex
-                        {
+                        new() {
                             ContentItemId = contentItem.ContentItemId,
                             Path = !partRemoved && !part.Disabled ? part.Path : null,
                             Published = contentItem.Published,
@@ -152,19 +151,19 @@ namespace OrchardCore.Autoroute.Core.Indexes
 
                     var containedContentItemsAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
 
-                    await PopulateContainedContentItemIndexesAsync(results, contentItem, containedContentItemsAspect, contentItem.Content, part.Path);
+                    await PopulateContainedContentItemIndexesAsync(results, contentItem, containedContentItemsAspect, (JsonObject)contentItem.Content, part.Path);
 
                     return results;
                 });
         }
 
-        private async Task PopulateContainedContentItemIndexesAsync(List<AutoroutePartIndex> results, ContentItem containerContentItem, ContainedContentItemsAspect containedContentItemsAspect, JObject content, string basePath)
+        private async Task PopulateContainedContentItemIndexesAsync(List<AutoroutePartIndex> results, ContentItem containerContentItem, ContainedContentItemsAspect containedContentItemsAspect, JsonObject content, string basePath)
         {
             foreach (var accessor in containedContentItemsAspect.Accessors)
             {
                 var items = accessor.Invoke(content);
 
-                foreach (var jItem in items.Cast<JObject>())
+                foreach (var jItem in items.Cast<JsonObject>())
                 {
                     var contentItem = jItem.ToObject<ContentItem>();
                     var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem);
@@ -184,7 +183,7 @@ namespace OrchardCore.Autoroute.Core.Indexes
                             Published = containerContentItem.Published,
                             Latest = containerContentItem.Latest,
                             ContainedContentItemId = contentItem.ContentItemId,
-                            JsonPath = jItem.Path
+                            JsonPath = jItem.GetNormalizedPath(),
                         });
                     }
 

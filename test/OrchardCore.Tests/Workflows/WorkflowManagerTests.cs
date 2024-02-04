@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
@@ -32,18 +33,18 @@ namespace OrchardCore.Tests.Workflows
                 WorkflowTypeId = IdGenerator.GenerateId(),
                 Activities = new List<ActivityRecord>
                 {
-                    new ActivityRecord { ActivityId = "1", IsStart = true, Name = addTask.Name, Properties = JObject.FromObject( new
+                    new() { ActivityId = "1", IsStart = true, Name = addTask.Name, Properties = JObject.FromObject( new
                     {
                         A = new WorkflowExpression<double>("input(\"A\")"),
                         B = new WorkflowExpression<double>("input(\"B\")"),
                     }) },
-                    new ActivityRecord { ActivityId = "2", Name = writeLineTask.Name, Properties = JObject.FromObject( new { Text = new WorkflowExpression<string>("lastResult().toString()") }) },
-                    new ActivityRecord { ActivityId = "3", Name = setOutputTask.Name, Properties = JObject.FromObject( new { Value = new WorkflowExpression<string>("lastResult()"), OutputName = "Sum" }) }
+                    new() { ActivityId = "2", Name = writeLineTask.Name, Properties = JObject.FromObject( new { Text = new WorkflowExpression<string>("lastResult().toString()") }) },
+                    new() { ActivityId = "3", Name = setOutputTask.Name, Properties = JObject.FromObject( new { Value = new WorkflowExpression<string>("lastResult()"), OutputName = "Sum" }) }
                 },
                 Transitions = new List<Transition>
                 {
-                    new Transition{ SourceActivityId = "1", SourceOutcomeName = "Done", DestinationActivityId = "2" },
-                    new Transition{ SourceActivityId = "2", SourceOutcomeName = "Done", DestinationActivityId = "3" }
+                    new() { SourceActivityId = "1", SourceOutcomeName = "Done", DestinationActivityId = "2" },
+                    new() { SourceActivityId = "2", SourceOutcomeName = "Done", DestinationActivityId = "3" }
                 }
             };
 

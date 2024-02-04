@@ -186,7 +186,7 @@ namespace OrchardCore.Contents.Controllers
             }
 
             // If ContentTypeOptions is not initialized by query string or by the code above, initialize it.
-            options.ContentTypeOptions ??= new List<SelectListItem>();
+            options.ContentTypeOptions ??= [];
 
             // With the populated options, filter the query allowing the filters to alter the options.
             var query = await _contentsAdminListQueryService.QueryAsync(options, _updateModelAccessor.ModelUpdater);

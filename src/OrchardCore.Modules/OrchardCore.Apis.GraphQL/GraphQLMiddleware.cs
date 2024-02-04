@@ -28,9 +28,8 @@ namespace OrchardCore.Apis.GraphQL
         private readonly GraphQLSettings _settings;
         private readonly IDocumentExecuter _executer;
         internal static readonly Encoding _utf8Encoding = new UTF8Encoding(false);
-        private readonly static MediaType _jsonMediaType = new("application/json");
-        private readonly static MediaType _graphQlMediaType = new("application/graphql");
-        private readonly static JsonSerializerOptions _jsonSerializerOptions = new() { WriteIndented = false, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        private static readonly MediaType _jsonMediaType = new("application/json");
+        private static readonly MediaType _graphQlMediaType = new("application/graphql");
 
         public GraphQLMiddleware(
             RequestDelegate next,
@@ -101,7 +100,7 @@ namespace OrchardCore.Apis.GraphQL
                         }
                         else
                         {
-                            request = await JsonSerializer.DeserializeAsync<GraphQLRequest>(context.Request.Body, _jsonSerializerOptions);
+                            request = await JsonSerializer.DeserializeAsync<GraphQLRequest>(context.Request.Body, JOptions.CamelCase);
                         }
                     }
                     else
@@ -189,7 +188,7 @@ namespace OrchardCore.Apis.GraphQL
 
             if (context.Request.Query.ContainsKey("variables"))
             {
-                request.Variables = JsonSerializer.Deserialize<JsonElement>(context.Request.Query["variables"], _jsonSerializerOptions);
+                request.Variables = JConvert.DeserializeObject<JsonElement>(context.Request.Query["variables"], JOptions.CamelCase);
             }
 
             if (context.Request.Query.ContainsKey("operationName"))

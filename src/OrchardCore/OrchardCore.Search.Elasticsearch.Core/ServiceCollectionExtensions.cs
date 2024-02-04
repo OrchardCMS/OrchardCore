@@ -1,9 +1,11 @@
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Queries;
 using OrchardCore.Recipes;
 using OrchardCore.Search.Elasticsearch.Core.Handlers;
+using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Recipes;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 
@@ -32,6 +34,9 @@ public static class ServiceCollectionExtensions
         services.AddRecipeExecutionStep<ElasticIndexRebuildStep>();
         services.AddRecipeExecutionStep<ElasticIndexResetStep>();
 
+        // Allows to serialize 'ElasticQuery' from its base type.
+        services.AddJsonDerivedTypeInfo<ElasticQuery, Query>();
+      
         return services;
     }
 }

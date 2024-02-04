@@ -1,10 +1,10 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Cysharp.Text;
 using Fluid;
 using Fluid.Filters;
 using Fluid.Values;
 using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Liquid;
 
@@ -37,7 +37,7 @@ namespace OrchardCore.ContentManagement.Display.Liquid
                 sb.Append(stringContent);
                 sb.Append("\"");
             }
-            else if (content is JToken jTokenContent)
+            else if (content is JsonNode jTokenContent)
             {
                 sb.Append(jTokenContent.ToString());
             }

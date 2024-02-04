@@ -40,7 +40,7 @@ namespace OrchardCore.Lists.AdminNodes
             _logger = logger;
         }
 
-        public string Name => typeof(ListsAdminNode).Name;
+        public string Name => nameof(ListsAdminNode);
 
         public async Task BuildNavigationAsync(MenuItem menuItem, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
         {
@@ -94,7 +94,7 @@ namespace OrchardCore.Lists.AdminNodes
             {
                 var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci);
 
-                if (cim.AdminRouteValues.Any() && ci.DisplayText != null)
+                if (cim.AdminRouteValues.Count > 0 && ci.DisplayText != null)
                 {
                     listTypeMenu.Add(new LocalizedString(ci.DisplayText, ci.DisplayText), m =>
                     {
@@ -128,7 +128,7 @@ namespace OrchardCore.Lists.AdminNodes
                 .ToList()
                 .Select(c => "icon-class-" + c)
                 .ToList()
-                ?? new List<string>();
+                ?? [];
         }
     }
 }

@@ -13,17 +13,17 @@ namespace OrchardCore.Search.Lucene.Indexing
         public Types Type { get; set; }
 
         /// <summary>
-        /// Gets or sets whether the field should be searchable or not. Default is <code>true</code>.
+        /// Gets or sets whether the field should be searchable or not. Default is. <code>true</code>.
         /// </summary>
         public bool? Index { get; set; }
 
         /// <summary>
-        /// Gets or sets whether the field value should be stored and retrievable. Default is <code>false</code>.
+        /// Gets or sets whether the field value should be stored and retrievable. Default is. <code>false</code>.
         /// </summary>
         public bool? Store { get; set; }
 
         /// <summary>
-        /// Gets or sets whether the field value should included in the <code>_all</code> field. Default is <code>false</code>.
+        /// Gets or sets whether the field value should included in the. <code>_all</code> field. Default is. <code>false</code>.
         /// </summary>
         public bool? IncludeInAll { get; set; }
 
@@ -47,7 +47,7 @@ namespace OrchardCore.Search.Lucene.Indexing
         /// <summary>
         /// Gets the list of supplemental values to be indexed.
         /// </summary>
-        public Dictionary<string, Property> Fields { get; } = new Dictionary<string, Property>();
+        public Dictionary<string, Property> Fields { get; init; } = [];
 
         /// <summary>
         /// Gets or sets the query time boosting.

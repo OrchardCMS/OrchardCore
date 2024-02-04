@@ -11,9 +11,9 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Rules",
     Name = "Rules",
     Description = "The Rules module adds rule building capabilities.",
-    Dependencies = new[]
-    {
+    Dependencies =
+    [
         "OrchardCore.Scripting"
-    },
+    ],
     Category = "Infrastructure"
 )]

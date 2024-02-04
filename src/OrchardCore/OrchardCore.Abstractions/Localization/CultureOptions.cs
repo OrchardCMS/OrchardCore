@@ -10,7 +10,7 @@ public class CultureOptions
     /// </summary>
     /// <remarks>
     /// The current culture should not depend on local computer settings by default.
-    /// For more information refer to https://github.com/OrchardCMS/OrchardCore/issues/11228
+    /// For more information refer to https://github.com/OrchardCMS/OrchardCore/issues/11228.
     /// </remarks>
     public bool IgnoreSystemSettings { get; set; }
 }

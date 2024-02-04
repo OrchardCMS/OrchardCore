@@ -14,7 +14,7 @@ namespace OrchardCore.Alias.Settings
         public string Pattern { get; set; } = "{{ Model.ContentItem.DisplayText | slugify }}";
 
         /// <summary>
-        /// Gets or sets whether a user can define a custom alias
+        /// Gets or sets whether a user can define a custom alias.
         /// </summary>
         [DefaultValue(AliasPartOptions.Editable)]
         public AliasPartOptions Options { get; set; } = AliasPartOptions.Editable;
