@@ -51,7 +51,7 @@ public class DefaultEmailProviderResolver : IEmailProviderResolver
 
         if (_logger.IsEnabled(LogLevel.Error))
         {
-            _logger.LogError("No SMS provider registered to match the given name {name}.", name);
+            _logger.LogError("No Email provider registered to match the given name {name}.", name);
         }
 
         return null;

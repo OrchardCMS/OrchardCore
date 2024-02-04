@@ -49,6 +49,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email.Workflows
         {
             var options = new Mock<IOptions<SmtpSettings>>();
             var logger = new Mock<ILogger<SmtpEmailProvider>>();
+            var logger2 = new Mock<ILogger<DefaultEmailService>>();
+
             var localizer = new Mock<IStringLocalizer<SmtpEmailProvider>>();
             var emailServiceLocalizer = new Mock<IStringLocalizer<DefaultEmailService>>();
             var smtp = new SmtpEmailProvider(options.Object, logger.Object, localizer.Object);
@@ -62,7 +64,11 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email.Workflows
             options.Setup(o => o.Value)
                 .Returns(settings);
 
-            return new DefaultEmailService(resolver.Object, emailServiceLocalizer.Object);
+            return new DefaultEmailService(
+                resolver.Object,
+                Enumerable.Empty<IEmailServiceEvents>(),
+                logger2.Object,
+                emailServiceLocalizer.Object);
         }
 
         private class SimpleWorkflowExpressionEvaluator : IWorkflowExpressionEvaluator

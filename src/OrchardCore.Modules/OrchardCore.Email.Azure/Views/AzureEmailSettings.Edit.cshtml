@@ -1,0 +1,20 @@
+@model OrchardCore.Email.Azure.ViewModels.AzureEmailSettingsViewModel
+
+<p class="alert alert-secondary">
+    @T["Azure email is configured with appsettings.json."]
+    <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Email.Azure/#configuration" target="_blank">@T["See documentation."]</a>
+</p>
+
+<div class="mb-3 row">
+    <label asp-for="DefaultSender" class="col-sm-2 col-form-label">@T["Default Sender"]</label>
+    <div class="col-sm-10">
+        <code><input asp-for="DefaultSender" class="form-control-plaintext" disabled /></code>
+    </div>
+</div>
+
+<div class="mb-3 row">
+    <label asp-for="ConnectionString" class="col-sm-2 col-form-label">@T["Connection String"]</label>
+    <div class="col-sm-10 mt-2">
+        <code>@(Model.IsConfigured ? T["Configured"] : T["Not Configured"])</code>
+    </div>
+</div>

@@ -1,10 +1,24 @@
 # Email (`OrchardCore.Email`)
 
-This module provides the infrastructure necessary to send emails using `SMTP`.
+This module provides the infrastructure necessary to send emails using multiple providers.
+
+
 
 ## SMTP Settings
 
-Enabling the `OrchardCore.Email` module will allow the user to set the following settings:
+Enabling the `Email` feature will add a new settings page under `Configurations` >> `Settings` >> `Email`. You can utilize these settings to set up the default Email provider configuration. The following are the providers that are readily accessible.
+
+
+| Provider | Description |
+| --- | --- |
+| `SMTP` | Opting for this provider enables the utilization of SMTP for sending email messages. Edit the `SMTP` tab in the email settings to enable this provider. |
+| `Azure` | Opting for this provider enables the utilization of [Azure Communication Services Email](https://learn.microsoft.com/en-us/azure/communication-services/concepts/email/email-overview) for sending email messages. Edit the `Azure` tab in the email settings to enable this provider. This option is only available after enabling `OrchardCore.Email.Azure` feature. |
+
+# Configuring SMTP Provider
+
+To enable the `SMTP` provider, navigate to `Configurations` >> `Settings` >> `EMAIL`. Click on the `SMTP` tab, click the Enable checkbox and provider your SMTP info. Then in the `Providers` tab, select SMTP as your default provider.
+
+Here are the available SMTP settings
 
 | Setting | Description |
 | --- | --- |
@@ -32,22 +46,22 @@ The `OrchardCore.Email` module allows the user to use configuration values to ov
 The following configuration values can be customized:
 
 ```json
-    "OrchardCore_Email": {
-      "DefaultSender": "",
-      "DefaultSender": "Network",
-      "PickupDirectoryLocation": "",
-      "Host": "localhost",
-      "Port": 25,
-      // Uncomment if SMTP server runs through a proxy server
-      //"ProxyHost": "proxy.domain.com",
-      //"ProxyPort": 5050,
-      "EncryptionMethod": "SSLTLS",
-      "AutoSelectEncryption": false,
-      "UseDefaultCredentials": false,
-      "RequireCredentials": true,
-      "Username": "",
-      "Password": ""
-    }
+"OrchardCore_Email": {
+    "DefaultSender": "",
+    "DefaultSender": "Network",
+    "PickupDirectoryLocation": "",
+    "Host": "localhost",
+    "Port": 25,
+    // Uncomment if SMTP server runs through a proxy server
+    //"ProxyHost": "proxy.domain.com",
+    //"ProxyPort": 5050,
+    "EncryptionMethod": "SSLTLS",
+    "AutoSelectEncryption": false,
+    "UseDefaultCredentials": false,
+    "RequireCredentials": true,
+    "Username": "",
+    "Password": ""
+}
 ```
 
 For more information please refer to [Configuration](../../core/Configuration/README.md).

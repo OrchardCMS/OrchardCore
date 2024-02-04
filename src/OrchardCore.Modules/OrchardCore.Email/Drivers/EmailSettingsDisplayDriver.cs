@@ -22,10 +22,9 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
     private readonly IAuthorizationService _authorizationService;
     private readonly IShellHost _shellHost;
     private readonly ShellSettings _shellSettings;
-
-    protected IStringLocalizer S;
-
     private readonly EmailProviderOptions _emailProviders;
+
+    protected readonly IStringLocalizer S;
 
     public EmailSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
