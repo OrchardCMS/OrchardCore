@@ -74,7 +74,7 @@ namespace OrchardCore.Search.Lucene
                 if (luceneQuery.ReturnContentItems)
                 {
                     // We always return an empty collection if the bottom lines queries have no results.
-                    luceneQueryResults.Items = new List<ContentItem>();
+                    luceneQueryResults.Items = [];
 
                     // Load corresponding content item versions
                     var indexedContentItemVersionIds = docs.TopDocs.ScoreDocs.Select(x => searcher.Doc(x.Doc).Get("ContentItemVersionId")).ToArray();

@@ -44,7 +44,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             // such that the tag helper can be matched based on the expected attribute names.
             if (DefaultArgumentsMapping.TryGetValue(identifier, out var mapping))
             {
-                arguments = new List<FilterArgument>(arguments);
+                arguments = [..arguments];
                 arguments[0] = new FilterArgument(mapping, arguments[0].Expression);
             }
 
