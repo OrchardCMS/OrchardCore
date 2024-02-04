@@ -34,7 +34,7 @@ namespace OrchardCore.DynamicCache.Liquid
                                         The contents of the cache block will not be cached.
                                         To enable caching, make sure that a feature that contains an implementation of IDynamicCacheService and ICacheScopeManager is enabled (for example, 'Dynamic Cache').");
 
-                if (statements != null && statements.Count > 0)
+                if (statements is {Count: > 0})
                 {
                     var completion = await statements.RenderStatementsAsync(writer, encoder, context);
 
@@ -86,7 +86,7 @@ namespace OrchardCore.DynamicCache.Liquid
             var content = "";
             try
             {
-                if (statements != null && statements.Count > 0)
+                if (statements is {Count: > 0})
                 {
                     using var sb = StringBuilderPool.GetInstance();
                     using (var render = new StringWriter(sb.Builder))

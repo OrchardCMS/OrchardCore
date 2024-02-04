@@ -21,8 +21,7 @@ public class CustomUserSettingsDeploymentSource : IDeploymentSource
 
     public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
     {
-        var customUserSettingsStep = step as CustomUserSettingsDeploymentStep;
-        if (customUserSettingsStep == null)
+        if (step is not CustomUserSettingsDeploymentStep customUserSettingsStep)
         {
             return;
         }

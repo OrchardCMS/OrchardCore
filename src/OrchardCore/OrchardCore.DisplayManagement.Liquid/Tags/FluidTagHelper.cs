@@ -67,7 +67,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             ViewBufferTextWriterContent content = null;
 
-            if (statements != null && statements.Count > 0)
+            if (statements is {Count: > 0})
             {
                 content = new ViewBufferTextWriterContent();
 

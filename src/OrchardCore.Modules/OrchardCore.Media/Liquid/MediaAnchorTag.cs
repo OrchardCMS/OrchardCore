@@ -84,7 +84,7 @@ namespace OrchardCore.Media.Liquid
 
             tagBuilder.RenderStartTag().WriteTo(writer, (HtmlEncoder)encoder);
 
-            if (statements != null && statements.Count > 0)
+            if (statements is {Count: > 0})
             {
                 var completion = await statements.RenderStatementsAsync(writer, encoder, context);
 

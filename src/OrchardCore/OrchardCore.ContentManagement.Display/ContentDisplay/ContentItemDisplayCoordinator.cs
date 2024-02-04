@@ -74,9 +74,8 @@ namespace OrchardCore.ContentManagement.Display
                 var partName = contentTypePartDefinition.Name;
                 var partTypeName = contentTypePartDefinition.PartDefinition.Name;
                 var partActivator = _contentPartFactory.GetTypeActivator(partTypeName);
-                var part = contentItem.Get(partActivator.Type, partName) as ContentPart;
 
-                if (part == null)
+                if (contentItem.Get(partActivator.Type, partName) is not ContentPart part)
                 {
                     continue;
                 }

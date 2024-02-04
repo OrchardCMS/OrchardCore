@@ -69,7 +69,7 @@ namespace OrchardCore.Recipes.Services
                         }
 
                         // Go to Steps, then iterate.
-                        if (property.Name == "steps" && property.Value.ValueKind == JsonValueKind.Array)
+                        if (property is {Name: "steps", Value.ValueKind: JsonValueKind.Array})
                         {
                             foreach (var step in property.Value.EnumerateArray())
                             {

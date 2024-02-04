@@ -169,9 +169,7 @@ namespace OrchardCore.Users.Services
                 return await Task.FromResult<IUser>(null);
             }
 
-            var user = await _userManager.FindByEmailAsync(userIdentifier) as User;
-
-            if (user == null)
+            if (await _userManager.FindByEmailAsync(userIdentifier) is not User user)
             {
                 return await Task.FromResult<IUser>(null);
             }
@@ -207,9 +205,7 @@ namespace OrchardCore.Users.Services
                 return result;
             }
 
-            var user = await _userManager.FindByEmailAsync(emailAddress) as User;
-
-            if (user == null)
+            if (await _userManager.FindByEmailAsync(emailAddress) is not User user)
             {
                 return false;
             }

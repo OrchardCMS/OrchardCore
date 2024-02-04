@@ -97,7 +97,7 @@ namespace OrchardCore.Resources.Liquid
 
                 var content = "";
 
-                if (statements != null && statements.Count > 0)
+                if (statements is {Count: > 0})
                 {
                     using var sw = new ZStringWriter();
                     var completion = await statements.RenderStatementsAsync(sw, encoder, context);
@@ -127,7 +127,7 @@ namespace OrchardCore.Resources.Liquid
 
                 var content = "";
 
-                if (statements != null && statements.Count > 0)
+                if (statements is {Count: > 0})
                 {
                     using var sw = new ZStringWriter();
                     var completion = await statements.RenderStatementsAsync(sw, encoder, context);

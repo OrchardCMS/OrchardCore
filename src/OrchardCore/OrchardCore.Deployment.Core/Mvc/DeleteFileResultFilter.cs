@@ -8,9 +8,7 @@ namespace OrchardCore.Deployment.Core.Mvc
     {
         public override void OnResultExecuted(ResultExecutedContext context)
         {
-            var result = context.Result as PhysicalFileResult;
-
-            if (result == null)
+            if (context.Result is not PhysicalFileResult result)
             {
                 return;
             }

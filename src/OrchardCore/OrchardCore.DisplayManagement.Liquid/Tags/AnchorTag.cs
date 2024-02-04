@@ -98,7 +98,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                     protocol != null ||
                     host != null ||
                     fragment != null ||
-                    (routeValues != null && routeValues.Count > 0))
+                    routeValues is {Count: > 0})
                 {
                     // User specified an href and one of the bound attributes; can't determine the href attribute.
                     throw new InvalidOperationException("Cannot override href with other properties");
@@ -117,7 +117,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             }
 
             RouteValueDictionary localRouteValues = null;
-            if (routeValues != null && routeValues.Count > 0)
+            if (routeValues is {Count: > 0})
             {
                 localRouteValues = new RouteValueDictionary(routeValues);
             }
@@ -176,7 +176,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             tagBuilder.RenderStartTag().WriteTo(writer, (HtmlEncoder)encoder);
 
-            if (statements != null && statements.Count > 0)
+            if (statements is {Count: > 0})
             {
                 var completion = await statements.RenderStatementsAsync(writer, encoder, context);
 

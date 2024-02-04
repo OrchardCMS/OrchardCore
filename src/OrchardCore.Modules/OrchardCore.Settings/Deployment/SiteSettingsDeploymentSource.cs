@@ -16,8 +16,7 @@ namespace OrchardCore.Settings.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var settingsStep = step as SiteSettingsDeploymentStep;
-            if (settingsStep == null)
+            if (step is not SiteSettingsDeploymentStep settingsStep)
             {
                 return;
             }

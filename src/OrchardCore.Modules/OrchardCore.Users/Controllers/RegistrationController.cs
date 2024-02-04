@@ -157,8 +157,7 @@ namespace OrchardCore.Users.Controllers
                 return Forbid();
             }
 
-            var user = await _userManager.FindByIdAsync(id) as User;
-            if (user != null)
+            if (await _userManager.FindByIdAsync(id) is User user)
             {
                 await this.SendEmailConfirmationTokenAsync(user, S["Confirm your account"]);
 

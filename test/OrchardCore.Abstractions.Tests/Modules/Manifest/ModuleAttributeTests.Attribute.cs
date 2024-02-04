@@ -110,7 +110,7 @@ namespace OrchardCore.Modules.Manifest
             Assert.NotNull(module);
             Assert.NotNull(assembly);
             Assert.NotNull(expected);
-            Assert.True(fieldCount >= 0 && fieldCount <= 3);
+            Assert.True(fieldCount is >= 0 and <= 3);
 
             // Overall, not too concerned care trailing zero octets, but for test purposes we need to be aware.
             var assyName = assembly.GetName();

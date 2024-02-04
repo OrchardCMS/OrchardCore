@@ -16,9 +16,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var elasticSettingsStep = step as ElasticSettingsDeploymentStep;
-
-            if (elasticSettingsStep == null)
+            if (step is not ElasticSettingsDeploymentStep)
             {
                 return;
             }

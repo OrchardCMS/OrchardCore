@@ -85,9 +85,8 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentTypeDefinitionBuilder MergeSettings<T>(Action<T> setting) where T : class, new()
         {
-            var existingJObject = _settings[typeof(T).Name] as JsonObject;
             // If existing settings do not exist, create.
-            if (existingJObject == null)
+            if (_settings[typeof(T).Name] is not JsonObject existingJObject)
             {
                 existingJObject = JObject.FromObject(new T(), ContentBuilderSettings.IgnoreDefaultValuesSerializer);
                 _settings[typeof(T).Name] = existingJObject;

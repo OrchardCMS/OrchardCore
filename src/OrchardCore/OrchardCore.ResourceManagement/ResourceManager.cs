@@ -655,7 +655,7 @@ namespace OrchardCore.ResourceManagement
 
             foreach (var context in localScripts)
             {
-                if ((context.Settings.Location == ResourceLocation.Unspecified || context.Settings.Location == ResourceLocation.Inline) &&
+                if (context.Settings.Location is ResourceLocation.Unspecified or ResourceLocation.Inline &&
                     (_localScripts.Add(context.Settings.Name) || context.Settings.Name == settings.Name))
                 {
                     if (!first)

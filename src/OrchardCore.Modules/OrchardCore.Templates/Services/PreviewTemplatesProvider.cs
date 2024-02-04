@@ -22,9 +22,7 @@ namespace OrchardCore.Templates.Services
 
                 if (httpContext.Items.TryGetValue("OrchardCore.PreviewTemplate", out var model))
                 {
-                    var viewModel = model as TemplateViewModel;
-
-                    if (viewModel == null || viewModel.Name == null)
+                    if (model is not TemplateViewModel viewModel || viewModel.Name == null)
                     {
                         return templatesDocument;
                     }

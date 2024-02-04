@@ -19,9 +19,7 @@ public class NotificationMethodProviderAccessor : INotificationMethodProviderAcc
 
     public Task<IEnumerable<INotificationMethodProvider>> GetProvidersAsync(object notify)
     {
-        var user = notify as User;
-
-        if (user != null)
+        if (notify is User user)
         {
             var notificationPart = user.As<UserNotificationPreferencesPart>();
 

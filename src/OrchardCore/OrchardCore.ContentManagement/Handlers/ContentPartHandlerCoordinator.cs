@@ -269,9 +269,8 @@ namespace OrchardCore.ContentManagement.Handlers
             {
                 var partName = typePartDefinition.PartDefinition.Name;
                 var activator = _contentPartFactory.GetTypeActivator(partName);
-                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
 
-                if (part == null)
+                if (context.ContentItem.Get(activator.Type, typePartDefinition.Name) is not ContentPart part)
                 {
                     continue;
                 }
@@ -288,9 +287,8 @@ namespace OrchardCore.ContentManagement.Handlers
                 {
                     var fieldName = partFieldDefinition.FieldDefinition.Name;
                     var fieldActivator = _contentFieldFactory.GetTypeActivator(fieldName);
-                    var field = context.ContentItem.Get(fieldActivator.Type, partFieldDefinition.Name) as ContentField;
 
-                    if (field == null)
+                    if (context.ContentItem.Get(fieldActivator.Type, partFieldDefinition.Name) is not ContentField field)
                     {
                         continue;
                     }
@@ -463,9 +461,8 @@ namespace OrchardCore.ContentManagement.Handlers
             {
                 var partName = typePartDefinition.PartDefinition.Name;
                 var partActivator = _contentPartFactory.GetTypeActivator(partName);
-                var part = context.ContentItem.Get(partActivator.Type, typePartDefinition.Name) as ContentPart;
 
-                if (part == null)
+                if (context.ContentItem.Get(partActivator.Type, typePartDefinition.Name) is not ContentPart part)
                 {
                     continue;
                 }
@@ -496,9 +493,7 @@ namespace OrchardCore.ContentManagement.Handlers
 
                     var fieldActivator = _contentFieldFactory.GetTypeActivator(fieldName);
 
-                    var field = part.Get(fieldActivator.Type, partFieldDefinition.Name) as ContentField;
-
-                    if (field == null)
+                    if (part.Get(fieldActivator.Type, partFieldDefinition.Name) is not ContentField field)
                     {
                         continue;
                     }

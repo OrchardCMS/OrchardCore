@@ -47,7 +47,7 @@ public static class ShapeFactoryExtensions
             pager.PageSize,
         }));
 
-        if (values != null && values.Count > 0)
+        if (values is {Count: > 0})
         {
             shape.UrlParams(values);
         }

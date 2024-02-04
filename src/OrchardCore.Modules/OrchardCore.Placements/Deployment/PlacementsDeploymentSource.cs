@@ -16,9 +16,7 @@ namespace OrchardCore.Placements.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var placementsStep = step as PlacementsDeploymentStep;
-
-            if (placementsStep == null)
+            if (step is not PlacementsDeploymentStep)
             {
                 return;
             }

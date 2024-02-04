@@ -40,9 +40,8 @@ namespace OrchardCore.ContentLocalization.Handlers
             {
                 var partName = typePartDefinition.PartDefinition.Name;
                 var activator = _contentPartFactory.GetTypeActivator(partName);
-                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
 
-                if (part != null)
+                if (context.ContentItem.Get(activator.Type, typePartDefinition.Name) is ContentPart part)
                 {
                     await _partHandlers.InvokeAsync((handler, context, part) => handler.LocalizingAsync(context, part), context, part, _logger);
                 }
@@ -61,9 +60,8 @@ namespace OrchardCore.ContentLocalization.Handlers
             {
                 var partName = typePartDefinition.PartDefinition.Name;
                 var activator = _contentPartFactory.GetTypeActivator(partName);
-                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
 
-                if (part != null)
+                if (context.ContentItem.Get(activator.Type, typePartDefinition.Name) is ContentPart part)
                 {
                     await _partHandlers.InvokeAsync((handler, context, part) => handler.LocalizedAsync(context, part), context, part, _logger);
                 }

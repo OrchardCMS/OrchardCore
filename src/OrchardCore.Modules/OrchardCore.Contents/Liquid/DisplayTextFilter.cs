@@ -9,9 +9,7 @@ namespace OrchardCore.Contents.Liquid
     {
         public static ValueTask<FluidValue> DisplayText(FluidValue input, FilterArguments _1, TemplateContext _2)
         {
-            var contentItem = input.ToObjectValue() as ContentItem;
-
-            if (contentItem == null)
+            if (input.ToObjectValue() is not ContentItem contentItem)
             {
                 return new ValueTask<FluidValue>(NilValue.Instance);
             }

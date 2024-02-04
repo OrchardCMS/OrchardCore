@@ -17,9 +17,8 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var contentItemDeploymentStep = step as ContentItemDeploymentStep;
-
-            if (contentItemDeploymentStep == null || contentItemDeploymentStep.ContentItemId == null)
+            if (step is not ContentItemDeploymentStep contentItemDeploymentStep ||
+                contentItemDeploymentStep.ContentItemId == null)
             {
                 return;
             }

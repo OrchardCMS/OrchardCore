@@ -73,8 +73,7 @@ namespace OrchardCore.Shells.Database.Configuration
                 }
             });
 
-            var configuration = configurations[tenant] as JsonObject;
-            if (configuration is not null)
+            if (configurations[tenant] is JsonObject configuration)
             {
                 var configurationString = configuration.ToJsonString(JOptions.Default);
                 builder.AddTenantJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(configurationString)));

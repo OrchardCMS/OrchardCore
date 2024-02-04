@@ -434,7 +434,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
 
         var data = await DistributedCache.GetAsync(key);
 
-        if (data != null && data.Length > 0)
+        if (data is {Length: > 0})
         {
             var model = JsonSerializer.Deserialize<ShowRecoveryCodesViewModel>(data);
 

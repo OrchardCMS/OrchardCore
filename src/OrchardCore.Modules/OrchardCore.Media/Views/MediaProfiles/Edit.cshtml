@@ -64,7 +64,7 @@
         </div>
     </div>
 
-    <div class="form-g mb-3" asp-validation-class-for="BackgroundColor" style="@(Model.SelectedMode == ResizeMode.Pad || Model.SelectedMode == ResizeMode.BoxPad ? "" : "display: none;")">
+    <div class="form-g mb-3" asp-validation-class-for="BackgroundColor" style="@(Model.SelectedMode is ResizeMode.Pad or ResizeMode.BoxPad ? "" : "display: none;")">
         <div class="w-100 w-lg-75 w-xl-50">
             <label asp-for="BackgroundColor" class="form-label">@T["Background Color"]</label>
             <input type="text" asp-for="BackgroundColor" class="form-control" />

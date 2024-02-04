@@ -178,9 +178,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         async Task<IDisplayResult> IContentPartDisplayDriver.BuildDisplayAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, BuildDisplayContext context)
         {
-            var part = contentPart as TPart;
-
-            if (part == null)
+            if (contentPart is not TPart part)
             {
                 return null;
             }
@@ -201,9 +199,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         async Task<IDisplayResult> IContentPartDisplayDriver.BuildEditorAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, BuildEditorContext context)
         {
-            var part = contentPart as TPart;
-
-            if (part == null)
+            if (contentPart is not TPart part)
             {
                 return null;
             }
@@ -224,9 +220,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
         async Task<IDisplayResult> IContentPartDisplayDriver.UpdateEditorAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, UpdateEditorContext context)
         {
-            var part = contentPart as TPart;
-
-            if (part == null)
+            if (contentPart is not TPart part)
             {
                 return null;
             }

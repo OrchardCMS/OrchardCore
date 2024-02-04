@@ -520,7 +520,7 @@ namespace OrchardCore.Users.Services
         {
             ArgumentNullException.ThrowIfNull(user);
 
-            if (user is User u && u.LoginInfos != null)
+            if (user is User {LoginInfos: not null} u)
             {
                 var item = u.LoginInfos.FirstOrDefault(c => c.LoginProvider == loginProvider && c.ProviderKey == providerKey);
                 if (item != null)
@@ -746,7 +746,7 @@ namespace OrchardCore.Users.Services
         {
             ArgumentNullException.ThrowIfNull(user);
 
-            if (user is User u && u.LockoutEndUtc.HasValue)
+            if (user is User {LockoutEndUtc: not null} u)
             {
                 return Task.FromResult<DateTimeOffset?>(u.LockoutEndUtc.Value.ToUniversalTime());
             }

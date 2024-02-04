@@ -26,7 +26,7 @@ namespace OrchardCore.DisplayManagement
 
     public static class IShapeExtensions
     {
-        public static bool IsNullOrEmpty(this IShape shape) => shape == null || shape is ZoneOnDemand;
+        public static bool IsNullOrEmpty(this IShape shape) => shape is null or ZoneOnDemand;
 
         public static bool TryGetProperty<T>(this IShape shape, string key, out T value)
         {

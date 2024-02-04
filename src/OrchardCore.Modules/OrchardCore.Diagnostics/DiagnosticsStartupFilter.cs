@@ -33,7 +33,7 @@ namespace OrchardCore.Diagnostics
                 {
                     await next();
 
-                    if (context.Response.StatusCode < 200 || context.Response.StatusCode >= 400)
+                    if (context.Response.StatusCode is < 200 or >= 400)
                     {
                         if (_contentTypeProvider.TryGetContentType(context.Request.Path.Value, out var contentType))
                         {

@@ -100,8 +100,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             {
                 _logger.LogWarning(ex, "Unable to validate connection string.");
 
-                if (ex is SqlException sqlException
-                    && sqlException.InnerException?.Message == "The certificate chain was issued by an authority that is not trusted.")
+                if (ex is SqlException {InnerException.Message: "The certificate chain was issued by an authority that is not trusted."})
                 {
                     return DbConnectionValidatorResult.InvalidCertificate;
                 }

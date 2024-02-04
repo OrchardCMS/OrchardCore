@@ -6,7 +6,7 @@
 
 <h5>@T["Site Settings"]</h5>
 
-@if (settings != null && settings.Length > 0)
+@if (settings is {Length: > 0})
 {
     @foreach (var setting in settings)
     {

@@ -113,9 +113,7 @@ namespace OrchardCore.Taxonomies.Drivers
         {
             var contentItem = GetTaxonomyItemAt(originalItems.Terms, item["index"].ToString().Split('-').Select(x => Convert.ToInt32(x)).ToArray());
 
-            var children = item["children"] as JsonArray;
-
-            if (children is not null)
+            if (item["children"] is JsonArray children)
             {
                 var taxonomyItems = new JsonArray();
 

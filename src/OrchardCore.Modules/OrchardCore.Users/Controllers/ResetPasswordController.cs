@@ -69,11 +69,10 @@ namespace OrchardCore.Users.Controllers
 
             if (TryValidateModel(model) && ModelState.IsValid)
             {
-                var user = await _userService.GetForgotPasswordUserAsync(model.Email) as User;
-                if (user == null || (
+                if (await _userService.GetForgotPasswordUserAsync(model.Email) is not User user || (
                         (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersMustValidateEmail
                         && !await _userManager.IsEmailConfirmedAsync(user))
-                    )
+                   )
                 {
                     // returns to confirmation page anyway: we don't want to let scrapers know if a username or an email exist
                     return RedirectToLocal(Url.Action("ForgotPasswordConfirmation", "ResetPassword"));

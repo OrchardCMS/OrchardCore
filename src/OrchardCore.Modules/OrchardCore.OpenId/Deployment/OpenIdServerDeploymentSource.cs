@@ -18,9 +18,7 @@ namespace OrchardCore.OpenId.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var openIdServerStep = step as OpenIdServerDeploymentStep;
-
-            if (openIdServerStep == null)
+            if (step is not OpenIdServerDeploymentStep)
             {
                 return;
             }

@@ -137,8 +137,7 @@ public static class JNode
     /// Whether this node contains elements or not.
     /// </summary>
     public static bool HasValues(this JsonNode? jsonNode) =>
-        jsonNode is JsonObject jsonObject && jsonObject.Count > 0 ||
-        jsonNode is JsonArray jsonArray && jsonArray.Count > 0;
+        jsonNode is JsonObject {Count: > 0} or JsonArray {Count: > 0};
 
     /// <summary>
     /// Gets the values of the specified type of this <see cref="JsonNode"/>.

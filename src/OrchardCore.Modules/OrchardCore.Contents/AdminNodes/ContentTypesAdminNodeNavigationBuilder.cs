@@ -41,9 +41,7 @@ namespace OrchardCore.Contents.AdminNodes
 
         public async Task BuildNavigationAsync(MenuItem menuItem, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
         {
-            var node = menuItem as ContentTypesAdminNode;
-
-            if (node == null || !node.Enabled)
+            if (menuItem is not ContentTypesAdminNode {Enabled: true} node)
             {
                 return;
             }

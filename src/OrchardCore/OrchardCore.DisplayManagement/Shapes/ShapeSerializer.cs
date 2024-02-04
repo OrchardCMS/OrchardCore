@@ -70,7 +70,7 @@ namespace OrchardCore.DisplayManagement.Shapes
                 FindShapesInProperties(_shape);
             }
 
-            if (_shape is Shape actualShape && actualShape.HasItems && _shapes.Add(actualShape))
+            if (_shape is Shape {HasItems: true} actualShape && _shapes.Add(actualShape))
             {
                 var jItems = new JsonArray();
                 // Because items can be mutated during shape execution.

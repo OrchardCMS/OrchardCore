@@ -39,7 +39,7 @@ namespace OrchardCore.Localization.PortableObject
                 }
 
                 // msgid or msgctxt are first lines of the entry. If builder contains valid entry return it and start building a new one.
-                if ((context == PoContext.MessageId || context == PoContext.MessageContext) && entryBuilder.ShouldFlushRecord)
+                if (context is PoContext.MessageId or PoContext.MessageContext && entryBuilder.ShouldFlushRecord)
                 {
                     yield return entryBuilder.BuildRecordAndReset();
                 }

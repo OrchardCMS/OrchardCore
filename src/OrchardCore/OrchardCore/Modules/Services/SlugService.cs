@@ -50,7 +50,7 @@ namespace OrchardCore.Modules.Services
                         appendHyphen = false;
                     }
                 }
-                else if (currentChar == '_' || currentChar == '~')
+                else if (currentChar is '_' or '~')
                 {
                     slug.Append(currentChar);
                 }

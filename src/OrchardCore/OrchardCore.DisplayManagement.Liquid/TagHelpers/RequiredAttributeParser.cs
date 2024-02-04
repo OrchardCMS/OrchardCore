@@ -294,7 +294,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 
             private void PassOptionalWhitespace()
             {
-                while (!AtEnd && (Current == ' ' || Current == '\t'))
+                while (!AtEnd && Current is ' ' or '\t')
                 {
                     _index++;
                 }

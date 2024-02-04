@@ -16,9 +16,7 @@ namespace OrchardCore.Facebook.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var facebookLoginStep = step as FacebookLoginDeploymentStep;
-
-            if (facebookLoginStep == null)
+            if (step is not FacebookLoginDeploymentStep)
             {
                 return;
             }

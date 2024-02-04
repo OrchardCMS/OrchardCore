@@ -24,9 +24,9 @@ namespace OrchardCore.AdminMenu.AdminNodes
 
         public Task BuildNavigationAsync(MenuItem menuItem, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
         {
-            var node = menuItem as PlaceholderAdminNode;
-
-            if (node == null || string.IsNullOrEmpty(node.LinkText) || !node.Enabled)
+            if (menuItem is not PlaceholderAdminNode node ||
+                string.IsNullOrEmpty(node.LinkText) ||
+                !node.Enabled)
             {
                 return Task.CompletedTask;
             }

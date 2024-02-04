@@ -31,7 +31,7 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
             return Task.FromResult((INodeVisitor)new NodeVisitors(
             new MatchingNodeVisitor<Argument>((arg, visitorContext) =>
             {
-                if ((arg.Name == "first" || arg.Name == "last") && arg.Value != null)
+                if (arg.Name is "first" or "last" && arg.Value != null)
                 {
                     var context = (GraphQLUserContext)validationContext.UserContext;
 

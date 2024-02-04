@@ -164,7 +164,7 @@ namespace OrchardCore.Navigation
             var pageSize = PageSize;
 
             var numberOfPagesToShow = Quantity ?? 0;
-            if (Quantity == null || Quantity < 0)
+            if (Quantity is null or < 0)
                 numberOfPagesToShow = 7;
 
             var totalPageCount = pageSize > 0 ? (int)Math.Ceiling(TotalItemCount / pageSize) : 1;

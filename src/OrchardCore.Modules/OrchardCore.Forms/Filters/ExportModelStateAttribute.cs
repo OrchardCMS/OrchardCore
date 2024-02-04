@@ -10,10 +10,9 @@ namespace OrchardCore.Forms.Filters
         public override void OnActionExecuted(ActionExecutedContext context)
         {
             // Only export if ModelState is not valid.
-            if (context.ModelState != null && !context.ModelState.IsValid && IsRedirect(context))
+            if (context.ModelState is {IsValid: false} && IsRedirect(context))
             {
-                var controller = context.Controller as Controller;
-                if (controller != null)
+                if (context.Controller is Controller controller)
                 {
                     controller.TempData[Key] = ModelStateHelpers.SerializeModelState(context.ModelState);
                 }

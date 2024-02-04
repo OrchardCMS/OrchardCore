@@ -209,7 +209,7 @@ namespace OrchardCore.Autoroute.Handlers
                     {
                         // Only an autoroute part, not a default handler aspect can set itself as the homepage.
                         var autoroutePart = contentItem.As<AutoroutePart>();
-                        if (autoroutePart != null && autoroutePart.SetHomepage)
+                        if (autoroutePart is {SetHomepage: true})
                         {
                             await SetHomeRouteAsync(autoroutePart, homeRoute =>
                             {
@@ -287,7 +287,7 @@ namespace OrchardCore.Autoroute.Handlers
 
                     // This is only relevant if the content items have an autoroute part as we adjust the part value as required to guarantee a unique route.
                     // Content items routed only through the handler aspect already guarantee uniqueness.
-                    if (containedAutoroutePart != null && !containedAutoroutePart.Disabled)
+                    if (containedAutoroutePart is {Disabled: false})
                     {
                         var path = containedAutoroutePart.Path;
 

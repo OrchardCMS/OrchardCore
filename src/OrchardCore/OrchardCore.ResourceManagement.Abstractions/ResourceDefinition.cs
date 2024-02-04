@@ -227,7 +227,7 @@ namespace OrchardCore.ResourceManagement
             }
 
             // If settings has value, it can override resource definition, otherwise use resource definition.
-            if (url != null && ((settings.AppendVersion.HasValue && settings.AppendVersion == true) ||
+            if (url != null && (settings.AppendVersion is true ||
                 (!settings.AppendVersion.HasValue && AppendVersion == true)))
             {
                 url = fileVersionProvider.AddFileVersionToPath(applicationPath, url);

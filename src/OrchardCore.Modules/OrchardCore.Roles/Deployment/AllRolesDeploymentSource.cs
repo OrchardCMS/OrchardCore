@@ -24,9 +24,7 @@ namespace OrchardCore.Roles.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var allRolesStep = step as AllRolesDeploymentStep;
-
-            if (allRolesStep == null)
+            if (step is not AllRolesDeploymentStep)
             {
                 return;
             }

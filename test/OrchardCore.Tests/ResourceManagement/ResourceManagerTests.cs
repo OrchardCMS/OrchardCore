@@ -522,8 +522,8 @@ namespace OrchardCore.Tests.ResourceManagement
                 .QuerySelector<IHtmlMetaElement>("meta[name=keywords]");
 
             Assert.Equal("bar,baz", meta.Content);
-            Assert.Contains(meta.Attributes, attr => attr.Name == "attr1" && attr.Value == "val1");
-            Assert.Contains(meta.Attributes, attr => attr.Name == "attr2" && attr.Value == "val2");
+            Assert.Contains(meta.Attributes, attr => attr is {Name: "attr1", Value: "val1"});
+            Assert.Contains(meta.Attributes, attr => attr is {Name: "attr2", Value: "val2"});
         }
 
         [Fact]

@@ -27,9 +27,7 @@ public class PresentationDocumentMediaFileTextProvider : IMediaFileTextProvider
 
             foreach (var slideId in slideIds)
             {
-                var slidePart = document.PresentationPart.GetPartById(slideId.RelationshipId) as SlidePart;
-
-                if (slidePart == null)
+                if (document.PresentationPart.GetPartById(slideId.RelationshipId) is not SlidePart slidePart)
                 {
                     continue;
                 }

@@ -317,7 +317,7 @@ namespace OrchardCore.AdminMenu.Controllers
             var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
             var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, treeId);
 
-            if ((adminMenu == null) || (adminMenu.MenuItems == null))
+            if (adminMenu?.MenuItems == null)
             {
                 return NotFound();
             }

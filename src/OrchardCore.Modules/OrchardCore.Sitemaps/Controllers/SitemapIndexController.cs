@@ -204,9 +204,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 return Forbid();
             }
 
-            var sitemap = (await _sitemapManager.GetSitemapAsync(sitemapId)) as SitemapIndex;
-
-            if (sitemap == null)
+            if (await _sitemapManager.GetSitemapAsync(sitemapId) is not SitemapIndex sitemap)
             {
                 return NotFound();
             }

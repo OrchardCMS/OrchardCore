@@ -40,9 +40,7 @@ namespace OrchardCore.Sitemaps.Builders
                     new XAttribute(_schemaInstance + "schemaLocation", _schemaLocation))
             };
 
-            var indexSource = sitemap.SitemapSources.FirstOrDefault() as SitemapIndexSource;
-
-            if (indexSource == null)
+            if (sitemap.SitemapSources.FirstOrDefault() is not SitemapIndexSource indexSource)
             {
                 return;
             }

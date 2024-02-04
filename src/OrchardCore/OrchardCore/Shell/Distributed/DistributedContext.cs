@@ -34,7 +34,7 @@ namespace OrchardCore.Environment.Shell.Distributed
 
             // If the current cache is an in memory cache, the distributed cache is not set.
             var distributedCache = context.ServiceProvider.GetService<IDistributedCache>();
-            if (distributedCache is null || distributedCache is MemoryDistributedCache)
+            if (distributedCache is null or MemoryDistributedCache)
             {
                 return;
             }

@@ -11,9 +11,7 @@ namespace OrchardCore.Sitemaps.Builders
     {
         Task<DateTime?> ISitemapSourceModifiedDateProvider.GetLastModifiedDateAsync(SitemapSource source)
         {
-            var tSource = source as TSitemapSource;
-
-            if (tSource == null)
+            if (source is not TSitemapSource tSource)
             {
                 return Task.FromResult<DateTime?>(null);
             }

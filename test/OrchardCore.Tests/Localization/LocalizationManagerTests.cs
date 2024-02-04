@@ -56,7 +56,7 @@ namespace OrchardCore.Tests.Localization
         [Fact]
         public void GetDictionarySelectsPluralRuleFromProviderWithHigherPriority()
         {
-            PluralizationRuleDelegate csPluralRuleOverride = n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 0);
+            PluralizationRuleDelegate csPluralRuleOverride = n => ((n == 1) ? 0 : n is >= 2 and <= 4 ? 1 : 0);
 
             var highPriorityRuleProvider = new Mock<IPluralRuleProvider>();
             highPriorityRuleProvider.SetupGet(o => o.Order).Returns(-1);

@@ -168,8 +168,7 @@ namespace OrchardCore.DisplayManagement.Razor
         {
             var newHelper = viewContext.HttpContext.RequestServices.GetRequiredService<IHtmlHelper>();
 
-            var contextable = newHelper as IViewContextAware;
-            if (contextable != null)
+            if (newHelper is IViewContextAware contextable)
             {
                 var newViewContext = new ViewContext(viewContext, viewContext.View, viewData, viewContext.Writer);
                 contextable.Contextualize(newViewContext);

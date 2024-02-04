@@ -43,10 +43,9 @@ namespace OrchardCore.Workflows.Events
 
         public override async Task<bool> CanExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var faultModel = workflowContext.Input[WorkflowFaultModel.WorkflowFaultInputKey] as WorkflowFaultModel;
-
             // Avoid endless loops.
-            if (faultModel == null || faultModel.WorkflowName == workflowContext.WorkflowType.Name)
+            if (workflowContext.Input[WorkflowFaultModel.WorkflowFaultInputKey] is not WorkflowFaultModel faultModel ||
+                faultModel.WorkflowName == workflowContext.WorkflowType.Name)
             {
                 return false;
             }

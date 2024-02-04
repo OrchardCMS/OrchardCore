@@ -16,9 +16,7 @@ namespace OrchardCore.Media.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var allMediaProfilesStep = step as AllMediaProfilesDeploymentStep;
-
-            if (allMediaProfilesStep == null)
+            if (step is not AllMediaProfilesDeploymentStep)
             {
                 return;
             }

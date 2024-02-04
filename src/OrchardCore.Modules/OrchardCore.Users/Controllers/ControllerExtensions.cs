@@ -69,9 +69,7 @@ namespace OrchardCore.Users.Controllers
 
                 if (controller.ModelState.IsValid)
                 {
-                    var user = await userService.CreateUserAsync(new User { UserName = model.UserName, Email = model.Email, EmailConfirmed = !settings.UsersMustValidateEmail, IsEnabled = !settings.UsersAreModerated }, model.Password, (key, message) => controller.ModelState.AddModelError(key, message)) as User;
-
-                    if (user != null && controller.ModelState.IsValid)
+                    if (await userService.CreateUserAsync(new User { UserName = model.UserName, Email = model.Email, EmailConfirmed = !settings.UsersMustValidateEmail, IsEnabled = !settings.UsersAreModerated }, model.Password, (key, message) => controller.ModelState.AddModelError(key, message)) is User user && controller.ModelState.IsValid)
                     {
                         if (settings.UsersMustValidateEmail && !user.EmailConfirmed)
                         {

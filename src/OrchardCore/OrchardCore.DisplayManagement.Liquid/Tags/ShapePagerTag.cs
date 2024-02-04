@@ -46,7 +46,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
                 var expressions = new NamedExpressionList(arguments.Item2);
 
-                if (shape.Metadata.Type == "PagerSlim" || shape.Metadata.Type == "Pager")
+                if (shape.Metadata.Type is "PagerSlim" or "Pager")
                 {
                     if (expressions.HasNamed("item_classes"))
                     {

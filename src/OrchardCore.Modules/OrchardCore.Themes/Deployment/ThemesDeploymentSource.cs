@@ -20,9 +20,7 @@ namespace OrchardCore.Themes.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var themesStep = step as ThemesDeploymentStep;
-
-            if (themesStep == null)
+            if (step is not ThemesDeploymentStep)
             {
                 return;
             }

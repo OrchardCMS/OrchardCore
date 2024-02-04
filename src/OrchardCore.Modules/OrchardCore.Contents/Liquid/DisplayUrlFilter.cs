@@ -27,10 +27,9 @@ namespace OrchardCore.Contents.Liquid
 
         public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
         {
-            var contentItem = input.ToObjectValue() as ContentItem;
             RouteValueDictionary routeValues;
 
-            if (contentItem == null)
+            if (input.ToObjectValue() is not ContentItem contentItem)
             {
                 if (string.IsNullOrEmpty(input.ToStringValue()))
                 {

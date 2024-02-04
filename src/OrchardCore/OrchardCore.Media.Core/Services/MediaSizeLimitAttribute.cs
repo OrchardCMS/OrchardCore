@@ -42,7 +42,7 @@ namespace OrchardCore.Media.Services
                     var features = context.HttpContext.Features;
                     var formFeature = features.Get<IFormFeature>();
 
-                    if (formFeature == null || formFeature.Form == null)
+                    if (formFeature?.Form == null)
                     {
                         // Request form has not been read yet, so set the limits
                         var formOptions = new FormOptions
@@ -60,7 +60,7 @@ namespace OrchardCore.Media.Services
                     // Will only be available when running OutOfProcess with Kestrel.
                     var maxRequestBodySizeFeature = context.HttpContext.Features.Get<IHttpMaxRequestBodySizeFeature>();
 
-                    if (maxRequestBodySizeFeature != null && !maxRequestBodySizeFeature.IsReadOnly)
+                    if (maxRequestBodySizeFeature is {IsReadOnly: false})
                     {
                         maxRequestBodySizeFeature.MaxRequestBodySize = _maxFileSize;
                     }

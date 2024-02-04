@@ -19,7 +19,7 @@
     }
 }
 
-@if (Model.Value.Editor == SelectEditorOption.Checkbox || Model.Value.Editor == SelectEditorOption.Radio)
+@if (Model.Value.Editor is SelectEditorOption.Checkbox or SelectEditorOption.Radio)
 {
     int i = 0;
     var htmlType = Model.Value.Editor == SelectEditorOption.Checkbox ? "checkbox" : "radio";

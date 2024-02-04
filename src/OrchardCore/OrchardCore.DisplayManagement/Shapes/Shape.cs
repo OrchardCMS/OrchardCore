@@ -44,7 +44,7 @@ namespace OrchardCore.DisplayManagement.Shapes
             }
         }
 
-        public bool HasItems => _items != null && _items.Count > 0;
+        public bool HasItems => _items is {Count: > 0};
 
         public string Position
         {
@@ -75,8 +75,7 @@ namespace OrchardCore.DisplayManagement.Shapes
             }
             else
             {
-                var shape = item as IPositioned;
-                if (shape != null)
+                if (item is IPositioned shape)
                 {
                     if (position != null)
                     {

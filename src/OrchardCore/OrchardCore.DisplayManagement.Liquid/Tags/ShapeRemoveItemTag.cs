@@ -14,7 +14,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
         {
             var objectValue = (await arguments.Item1.EvaluateAsync(context)).ToObjectValue();
 
-            if (objectValue is Shape shape && shape.Items != null)
+            if (objectValue is Shape {Items: not null} shape)
             {
                 var shapeName = (await arguments.Item2.EvaluateAsync(context)).ToStringValue();
                 shape.Remove(shapeName);

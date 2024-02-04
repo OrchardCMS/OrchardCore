@@ -242,7 +242,7 @@ namespace OrchardCore.Media.Controllers
             }
 
             var mediaFolder = await _mediaFileStore.GetDirectoryInfoAsync(path);
-            if (mediaFolder != null && !mediaFolder.IsDirectory)
+            if (mediaFolder is {IsDirectory: false})
             {
                 return StatusCode(StatusCodes.Status403Forbidden, S["Cannot delete path because it is not a directory"]);
             }

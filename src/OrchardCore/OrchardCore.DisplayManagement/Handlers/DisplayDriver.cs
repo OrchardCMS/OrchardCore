@@ -152,9 +152,7 @@ namespace OrchardCore.DisplayManagement.Handlers
 
         Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.BuildDisplayAsync(TModel model, TDisplayContext context)
         {
-            var concrete = model as TConcrete;
-
-            if (concrete == null || !CanHandleModel(concrete))
+            if (model is not TConcrete concrete || !CanHandleModel(concrete))
             {
                 return Task.FromResult<IDisplayResult>(null);
             }
@@ -166,9 +164,7 @@ namespace OrchardCore.DisplayManagement.Handlers
 
         Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.BuildEditorAsync(TModel model, TEditorContext context)
         {
-            var concrete = model as TConcrete;
-
-            if (concrete == null || !CanHandleModel(concrete))
+            if (model is not TConcrete concrete || !CanHandleModel(concrete))
             {
                 return Task.FromResult<IDisplayResult>(null);
             }
@@ -180,9 +176,7 @@ namespace OrchardCore.DisplayManagement.Handlers
 
         Task<IDisplayResult> IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>.UpdateEditorAsync(TModel model, TUpdateContext context)
         {
-            var concrete = model as TConcrete;
-
-            if (concrete == null || !CanHandleModel(concrete))
+            if (model is not TConcrete concrete || !CanHandleModel(concrete))
             {
                 return Task.FromResult<IDisplayResult>(null);
             }

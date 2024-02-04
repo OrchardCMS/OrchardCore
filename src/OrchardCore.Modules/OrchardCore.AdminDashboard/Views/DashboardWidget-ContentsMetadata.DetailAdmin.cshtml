@@ -9,7 +9,7 @@
 
 }
 
-@if (dashboardFeature != null && dashboardFeature.IsManageRequest)
+@if (dashboardFeature is {IsManageRequest: true})
 {
     ContentItem contentItem = Model.ContentItem;
     var modifiedUtc = contentItem.ModifiedUtc?.ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture);

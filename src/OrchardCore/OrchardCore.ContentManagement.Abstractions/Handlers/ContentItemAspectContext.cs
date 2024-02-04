@@ -13,9 +13,7 @@ namespace OrchardCore.ContentManagement.Handlers
         /// </summary>
         public async Task<ContentItemAspectContext> ForAsync<TAspect>(Func<TAspect, Task> action) where TAspect : class
         {
-            var aspect = Aspect as TAspect;
-
-            if (aspect != null)
+            if (Aspect is TAspect aspect)
             {
                 await action(aspect);
             }

@@ -64,7 +64,7 @@ namespace OrchardCore.Title.Handlers
             var settings = await GetSettingsAsync(part);
 
             // Do not compute the title if the user can modify it.
-            if (settings.Options == TitlePartOptions.Editable || settings.Options == TitlePartOptions.EditableRequired)
+            if (settings.Options is TitlePartOptions.Editable or TitlePartOptions.EditableRequired)
             {
                 if (string.IsNullOrWhiteSpace(part.ContentItem.DisplayText))
                 {

@@ -113,9 +113,7 @@ namespace OrchardCore.Menu.Drivers
         {
             var contentItem = GetMenuItemAt(originalItems, item["index"].ToString().Split('-').Select(x => Convert.ToInt32(x)).ToArray());
 
-            var children = item["children"] as JsonArray;
-
-            if (children is not null)
+            if (item["children"] is JsonArray children)
             {
                 var menuItems = new JsonArray();
                 for (var i = 0; i < children.Count; i++)

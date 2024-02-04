@@ -24,7 +24,7 @@ namespace OrchardCore.Liquid.Filters
             {
                 var stringValue = input.ToStringValue();
 
-                if (stringValue == "now" || stringValue == "today")
+                if (stringValue is "now" or "today")
                 {
                     value = await _localClock.LocalNowAsync;
                 }

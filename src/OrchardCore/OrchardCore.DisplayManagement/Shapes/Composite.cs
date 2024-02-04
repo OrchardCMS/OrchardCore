@@ -96,9 +96,7 @@ namespace OrchardCore.DisplayManagement.Shapes
             if (indexes.Length == 1)
             {
                 // try to access an existing member.
-                var stringIndex = indexes[0] as string;
-
-                if (stringIndex != null && TrySetMemberImpl(stringIndex, value))
+                if (indexes[0] is string stringIndex && TrySetMemberImpl(stringIndex, value))
                 {
                     return true;
                 }

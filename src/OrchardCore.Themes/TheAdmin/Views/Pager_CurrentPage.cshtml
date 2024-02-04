@@ -1,9 +1,8 @@
 ﻿@{
     Model.Metadata.Alternates.Clear();
     Model.Metadata.Type = "Pager_Link";
-    var parentTag = Model.Tag as TagBuilder;
 
-    if (parentTag != null)
+    if (Model.Tag is TagBuilder parentTag)
     {
         parentTag.AddCssClass("active");
         parentTag.MergeAttribute("aria-current", "page");

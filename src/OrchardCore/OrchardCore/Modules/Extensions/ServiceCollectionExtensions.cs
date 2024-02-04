@@ -82,11 +82,10 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // If an instance of OrchardCoreBuilder exists reuse it,
             // so we can call AddOrchardCore several times.
-            var builder = services
-                .LastOrDefault(d => d.ServiceType == typeof(OrchardCoreBuilder))?
-                .ImplementationInstance as OrchardCoreBuilder;
 
-            if (builder == null)
+            if (services
+                    .LastOrDefault(d => d.ServiceType == typeof(OrchardCoreBuilder))?
+                    .ImplementationInstance is not OrchardCoreBuilder builder)
             {
                 builder = new OrchardCoreBuilder(services);
                 services.AddSingleton(builder);

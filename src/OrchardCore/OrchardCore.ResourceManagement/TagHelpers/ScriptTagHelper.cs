@@ -135,7 +135,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.SetAttribute(attribute.Name, attribute.Value.ToString());
                 }
 
-                if (At == ResourceLocation.Unspecified || At == ResourceLocation.Inline)
+                if (At is ResourceLocation.Unspecified or ResourceLocation.Inline)
                 {
                     using var sw = new StringWriter();
                     _resourceManager.RenderLocalScript(setting, sw);

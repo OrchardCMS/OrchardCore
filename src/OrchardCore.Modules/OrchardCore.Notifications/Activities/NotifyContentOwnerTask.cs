@@ -43,7 +43,7 @@ public class NotifyContentOwnerTask : NotifyUserTaskActivity<NotifyContentOwnerT
             && obj is ContentItem contentItem
             && !string.IsNullOrEmpty(contentItem.Owner))
         {
-            if (workflowContext.Input.TryGetValue("Owner", out var ownerObject) && ownerObject is User user && user.IsEnabled)
+            if (workflowContext.Input.TryGetValue("Owner", out var ownerObject) && ownerObject is User {IsEnabled: true} user)
             {
                 return new[] { user };
             }

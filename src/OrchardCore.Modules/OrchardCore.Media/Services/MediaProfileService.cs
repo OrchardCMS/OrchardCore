@@ -42,7 +42,7 @@ namespace OrchardCore.Media.Services
                     commands["format"] = mediaProfile.Format.ToString().ToLower();
                 }
 
-                if (mediaProfile.Quality > 0 && mediaProfile.Quality < 100)
+                if (mediaProfile.Quality is > 0 and < 100)
                 {
                     commands["quality"] = mediaProfile.Quality.ToString();
                 }

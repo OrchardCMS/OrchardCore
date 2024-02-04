@@ -28,8 +28,7 @@ namespace OrchardCore.ContentFields.GraphQL.Types
 
         public override object ParseLiteral(IValue value)
         {
-            var str = value as StringValue;
-            if (str != null)
+            if (value is StringValue str)
             {
                 return ParseValue(str.Value);
             }

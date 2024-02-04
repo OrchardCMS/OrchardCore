@@ -4,7 +4,7 @@ namespace OrchardCore.Tests.Localization;
 
 public class PluralizationRule
 {
-    public static readonly PluralizationRuleDelegate Czech = n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 2);
+    public static readonly PluralizationRuleDelegate Czech = n => ((n == 1) ? 0 : n is >= 2 and <= 4 ? 1 : 2);
 
     public static readonly PluralizationRuleDelegate English = n => (n == 1) ? 0 : 1;
 

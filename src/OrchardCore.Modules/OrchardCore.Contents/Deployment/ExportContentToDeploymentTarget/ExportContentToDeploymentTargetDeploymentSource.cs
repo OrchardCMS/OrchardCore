@@ -30,9 +30,7 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var exportContentToDeploymentTargetContentDeploymentStep = step as ExportContentToDeploymentTargetDeploymentStep;
-
-            if (exportContentToDeploymentTargetContentDeploymentStep == null)
+            if (step is not ExportContentToDeploymentTargetDeploymentStep)
             {
                 return;
             }

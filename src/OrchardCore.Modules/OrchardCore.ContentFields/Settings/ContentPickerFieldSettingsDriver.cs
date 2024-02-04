@@ -115,7 +115,7 @@ namespace OrchardCore.ContentFields.Settings
                 return ContentPickerSettingType.AllTypes;
             }
 
-            return settings.DisplayedStereotypes != null && settings.DisplayedStereotypes.Length > 0
+            return settings.DisplayedStereotypes is {Length: > 0}
                 ? ContentPickerSettingType.Stereotypes
                 : ContentPickerSettingType.ContentTypes;
         }

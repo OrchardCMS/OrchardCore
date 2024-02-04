@@ -18,9 +18,7 @@ namespace OrchardCore.Queries.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var queryDeploymentStep = step as QueryBasedContentDeploymentStep;
-
-            if (queryDeploymentStep == null)
+            if (step is not QueryBasedContentDeploymentStep queryDeploymentStep)
             {
                 return;
             }

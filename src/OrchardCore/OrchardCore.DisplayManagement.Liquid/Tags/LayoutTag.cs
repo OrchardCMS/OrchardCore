@@ -18,7 +18,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             var viewContextAccessor = services.GetRequiredService<ViewContextAccessor>();
             var viewContext = viewContextAccessor.ViewContext;
 
-            if (viewContext.View is RazorView razorView && razorView.RazorPage is Razor.IRazorPage razorPage)
+            if (viewContext.View is RazorView {RazorPage: Razor.IRazorPage razorPage})
             {
                 razorPage.ViewLayout = (await expression.EvaluateAsync(context)).ToStringValue();
             }

@@ -31,7 +31,7 @@ public class NotifyUserTask : NotifyUserTaskActivity<NotifyUserTask>
 
     protected override Task<IEnumerable<IUser>> GetUsersAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        if (workflowContext.Input.TryGetValue("User", out var userObject) && userObject is User user && user.IsEnabled)
+        if (workflowContext.Input.TryGetValue("User", out var userObject) && userObject is User {IsEnabled: true} user)
         {
             return Task.FromResult<IEnumerable<IUser>>(new[] { user });
         }

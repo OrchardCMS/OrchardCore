@@ -13,9 +13,7 @@ namespace OrchardCore.Indexing
     {
         Task IContentPartIndexHandler.BuildIndexAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, BuildIndexContext context, IContentIndexSettings settings)
         {
-            var part = contentPart as TPart;
-
-            if (part == null)
+            if (contentPart is not TPart part)
             {
                 return Task.CompletedTask;
             }

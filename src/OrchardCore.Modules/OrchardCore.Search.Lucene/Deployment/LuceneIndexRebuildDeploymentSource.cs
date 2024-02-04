@@ -9,9 +9,7 @@ namespace OrchardCore.Search.Lucene.Deployment
     {
         public Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var luceneIndexRebuildStep = step as LuceneIndexRebuildDeploymentStep;
-
-            if (luceneIndexRebuildStep == null)
+            if (step is not LuceneIndexRebuildDeploymentStep luceneIndexRebuildStep)
             {
                 return Task.CompletedTask;
             }

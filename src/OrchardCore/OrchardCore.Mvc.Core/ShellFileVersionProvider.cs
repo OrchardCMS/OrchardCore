@@ -95,8 +95,7 @@ namespace OrchardCore.Mvc
 
                 // Perform check against VirtualPathBase.
                 if (!fileInfo.Exists &&
-                    fileProvider is IVirtualPathBaseProvider virtualPathBaseProvider &&
-                    virtualPathBaseProvider.VirtualPathBase.HasValue &&
+                    fileProvider is IVirtualPathBaseProvider {VirtualPathBase.HasValue: true} virtualPathBaseProvider &&
                     resolvedPath.StartsWith(virtualPathBaseProvider.VirtualPathBase.Value, StringComparison.OrdinalIgnoreCase))
                 {
                     resolvedPath = resolvedPath[virtualPathBaseProvider.VirtualPathBase.Value.Length..];

@@ -27,7 +27,7 @@ namespace OrchardCore.Environment.Commands
 
         private void SetSwitchValues(CommandContext context)
         {
-            if (context.Switches != null && context.Switches.Count > 0)
+            if (context.Switches is {Count: > 0})
             {
                 foreach (var commandSwitch in context.Switches)
                 {

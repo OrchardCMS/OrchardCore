@@ -28,7 +28,7 @@ public class JsonMergeSettings
         get => _mergeArrayHandling;
         set
         {
-            if (value < MergeArrayHandling.Concat || value > MergeArrayHandling.Merge)
+            if (value is < MergeArrayHandling.Concat or > MergeArrayHandling.Merge)
             {
                 throw new ArgumentOutOfRangeException(nameof(value));
             }
@@ -45,7 +45,7 @@ public class JsonMergeSettings
         get => _mergeNullValueHandling;
         set
         {
-            if (value < MergeNullValueHandling.Ignore || value > MergeNullValueHandling.Merge)
+            if (value is < MergeNullValueHandling.Ignore or > MergeNullValueHandling.Merge)
             {
                 throw new ArgumentOutOfRangeException(nameof(value));
             }
@@ -64,7 +64,7 @@ public class JsonMergeSettings
         get => _propertyNameComparison;
         set
         {
-            if (value < StringComparison.CurrentCulture || value > StringComparison.OrdinalIgnoreCase)
+            if (value is < StringComparison.CurrentCulture or > StringComparison.OrdinalIgnoreCase)
             {
                 throw new ArgumentOutOfRangeException(nameof(value));
             }

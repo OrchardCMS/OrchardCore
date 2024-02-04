@@ -1,6 +1,6 @@
 @model SearchSettingsViewModel
 
-@if (Model.SearchServices != null && Model.SearchServices.Count > 0)
+@if (Model.SearchServices is {Count: > 0})
 {
     <div class="mb-3" asp-validation-class-for="ProviderName">
         <label asp-for="ProviderName" class="form-label">@T["Default search provider"]</label>

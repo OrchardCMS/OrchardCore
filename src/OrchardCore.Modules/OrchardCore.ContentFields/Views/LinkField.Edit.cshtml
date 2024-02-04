@@ -27,7 +27,7 @@
                     <span class="hint">@settings.Hint</span>
                 }
             </div>
-            @if (settings.LinkTextMode == LinkTextMode.Optional || settings.LinkTextMode == LinkTextMode.Required)
+            @if (settings.LinkTextMode is LinkTextMode.Optional or LinkTextMode.Required)
             {
                 <div class="col-md-6" asp-validation-class-for="Text">
                     <div class="@(useFormFloating ? "form-floating" : string.Empty)">

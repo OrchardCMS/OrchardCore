@@ -9,11 +9,10 @@
     var children = menuItem.Items;
     var index = 0;
 
-    string disabledClass = "";
-    string toggleButtonText = T["Toggle"].Value;
+    var disabledClass = "";
+    var toggleButtonText = T["Toggle"].Value;
 
-    var adminNode = menuItem as AdminNode;
-    if (adminNode != null)
+    if (menuItem is AdminNode adminNode)
     {
         disabledClass = adminNode.Enabled ? "" : "disabled-admin-node";
         toggleButtonText = adminNode.Enabled ? T["Disable"].Value : T["Enable"].Value;

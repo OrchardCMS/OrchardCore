@@ -20,7 +20,7 @@ namespace OrchardCore.ContentManagement.Handlers
 
         public static void Fail(this ValidateContentContext context, string errorMessage, params string[] memberNames)
         {
-            if (memberNames != null && memberNames.Length > 0)
+            if (memberNames is {Length: > 0})
             {
                 context.ContentValidateResult.Fail(new ValidationResult(errorMessage, memberNames));
             }

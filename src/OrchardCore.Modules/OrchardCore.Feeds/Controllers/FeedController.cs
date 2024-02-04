@@ -36,11 +36,11 @@ namespace OrchardCore.Feeds.Controllers
 
             var bestFormatterMatch = _feedFormatProviders
                 .Select(provider => provider.Match(context))
-                .Where(match => match != null && match.FeedBuilder != null)
+                .Where(match => match is {FeedBuilder: not null})
                 .OrderByDescending(match => match.Priority)
                 .FirstOrDefault();
 
-            if (bestFormatterMatch == null || bestFormatterMatch.FeedBuilder == null)
+            if (bestFormatterMatch?.FeedBuilder == null)
             {
                 return NotFound();
             }
@@ -55,11 +55,11 @@ namespace OrchardCore.Feeds.Controllers
             }
 
             var bestQueryMatch = queryMatches
-                .Where(match => match != null && match.FeedQuery != null)
+                .Where(match => match is {FeedQuery: not null})
                 .OrderByDescending(match => match.Priority)
                 .FirstOrDefault();
 
-            if (bestQueryMatch == null || bestQueryMatch.FeedQuery == null)
+            if (bestQueryMatch?.FeedQuery == null)
             {
                 return NotFound();
             }

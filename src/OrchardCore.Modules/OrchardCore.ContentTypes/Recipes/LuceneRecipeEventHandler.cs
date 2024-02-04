@@ -24,7 +24,7 @@ namespace OrchardCore.ContentTypes
 
         public Task RecipeStepExecutingAsync(RecipeExecutionContext context)
         {
-            if (context.Name == "ReplaceContentDefinition" || context.Name == "ContentDefinition")
+            if (context.Name is "ReplaceContentDefinition" or "ContentDefinition")
             {
                 var step = context.Step.ToObject<ContentDefinitionStepModel>();
 

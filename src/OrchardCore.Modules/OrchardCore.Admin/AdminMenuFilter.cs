@@ -48,7 +48,7 @@ namespace OrchardCore.Admin
 
             // Don't create the menu if the status code is 3xx
             var statusCode = filterContext.HttpContext.Response.StatusCode;
-            if (statusCode >= 300 && statusCode < 400)
+            if (statusCode is >= 300 and < 400)
             {
                 await next();
                 return;

@@ -56,9 +56,8 @@ namespace OrchardCore.Deployment.Controllers
                 archiveFileName = fileBuilder.Folder + ".zip";
 
                 var recipeDescriptor = new RecipeDescriptor();
-                var recipeFileDeploymentStep = deploymentPlan.DeploymentSteps.FirstOrDefault(ds => ds.Name == nameof(RecipeFileDeploymentStep)) as RecipeFileDeploymentStep;
 
-                if (recipeFileDeploymentStep != null)
+                if (deploymentPlan.DeploymentSteps.FirstOrDefault(ds => ds.Name == nameof(RecipeFileDeploymentStep)) is RecipeFileDeploymentStep recipeFileDeploymentStep)
                 {
                     recipeDescriptor.Name = recipeFileDeploymentStep.RecipeName;
                     recipeDescriptor.DisplayName = recipeFileDeploymentStep.DisplayName;

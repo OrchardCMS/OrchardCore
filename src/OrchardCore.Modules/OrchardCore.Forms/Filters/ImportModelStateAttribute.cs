@@ -10,12 +10,11 @@ namespace OrchardCore.Forms.Filters
         public override void OnActionExecuted(ActionExecutedContext context)
         {
             var controller = context.Controller as Controller;
-            var serializedModelState = controller?.TempData[Key] as string;
 
-            if (serializedModelState != null)
+            if (controller?.TempData[Key] is string serializedModelState)
             {
                 // Only Import if we are viewing.
-                if (context.Result is ViewResult || context.Result is PageResult)
+                if (context.Result is ViewResult or PageResult)
                 {
                     var modelState = ModelStateHelpers.DeserializeModelState(serializedModelState);
                     context.ModelState.Merge(modelState);

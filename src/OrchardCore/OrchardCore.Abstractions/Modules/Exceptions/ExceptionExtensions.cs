@@ -15,14 +15,16 @@ namespace OrchardCore.Modules
         public static bool IsFatal(this Exception ex)
         {
             return
-                ex is OutOfMemoryException ||
-                ex is SecurityException ||
-                ex is SEHException;
+                ex is
+                    OutOfMemoryException or
+                    SecurityException or
+                    SEHException;
         }
 
         public static bool IsFileSharingViolation(this Exception ex) =>
             ex is IOException &&
-            (ex.HResult == ERROR_SHARING_VIOLATION ||
-            ex.HResult == ERROR_LOCK_VIOLATION);
+            ex.HResult is
+                ERROR_SHARING_VIOLATION or
+                ERROR_LOCK_VIOLATION;
     }
 }

@@ -55,7 +55,7 @@ namespace OrchardCore.ContentFields.Controllers
 
             var contentTypes = fieldSettings.DisplayedContentTypes;
 
-            if (fieldSettings.DisplayedStereotypes != null && fieldSettings.DisplayedStereotypes.Length > 0)
+            if (fieldSettings.DisplayedStereotypes is {Length: > 0})
             {
                 contentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
                     .Where(contentType =>

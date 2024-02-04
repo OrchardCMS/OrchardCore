@@ -23,7 +23,7 @@ public static class ResourceCdnHelperExtensions
         }
 
         // If append version is set, allow it to override the site setting.
-        if (resourcePath != null && ((appendVersion.HasValue && appendVersion == true) ||
+        if (resourcePath != null && (appendVersion is true ||
                 (!appendVersion.HasValue && options.AppendVersion == true)))
         {
             resourcePath = fileVersionProvider.AddFileVersionToPath(orchardHelper.HttpContext.Request.PathBase, resourcePath);

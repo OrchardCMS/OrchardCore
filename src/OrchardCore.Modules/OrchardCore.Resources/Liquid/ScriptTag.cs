@@ -143,7 +143,7 @@ namespace OrchardCore.Resources.Liquid
                     }
                 }
 
-                if (at == ResourceLocation.Unspecified || at == ResourceLocation.Inline)
+                if (at is ResourceLocation.Unspecified or ResourceLocation.Inline)
                 {
                     resourceManager.RenderLocalScript(setting, writer);
                 }
@@ -196,7 +196,7 @@ namespace OrchardCore.Resources.Liquid
                     setting.SetDependencies(dependsOn.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
                 }
 
-                if (at == ResourceLocation.Unspecified || at == ResourceLocation.Inline)
+                if (at is ResourceLocation.Unspecified or ResourceLocation.Inline)
                 {
                     resourceManager.RenderLocalScript(setting, writer);
                 }

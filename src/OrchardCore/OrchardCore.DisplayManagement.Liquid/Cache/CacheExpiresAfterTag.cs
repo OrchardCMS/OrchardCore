@@ -37,14 +37,12 @@ namespace OrchardCore.DynamicCache.Liquid
             }
             else
             {
-                var objectValue = input.ToObjectValue() as TimeSpan?;
-
-                if (!objectValue.HasValue)
+                if (input.ToObjectValue() is not TimeSpan objectValue)
                 {
                     return Completion.Normal;
                 }
 
-                value = objectValue.Value;
+                value = objectValue;
             }
 
             cacheScopeManager.WithExpiryAfter(value);

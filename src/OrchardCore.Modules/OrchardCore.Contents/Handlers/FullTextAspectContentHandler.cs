@@ -60,7 +60,7 @@ namespace OrchardCore.Contents.Handlers
                     var contentManager = _serviceProvider.GetRequiredService<IContentManager>();
                     var bodyAspect = await contentManager.PopulateAspectAsync<BodyAspect>(context.ContentItem);
 
-                    if (bodyAspect != null && bodyAspect.Body != null)
+                    if (bodyAspect is {Body: not null})
                     {
                         using var sw = new ZStringWriter();
                         // Don't encode the body

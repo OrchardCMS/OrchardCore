@@ -52,7 +52,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                 var allNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { property.Name };
                 var htmlAttribute = property.GetCustomAttribute<HtmlAttributeNameAttribute>();
 
-                if (htmlAttribute != null && htmlAttribute.Name != null)
+                if (htmlAttribute is {Name: not null})
                 {
                     allNames.Add(htmlAttribute.Name.ToPascalCaseDash());
 

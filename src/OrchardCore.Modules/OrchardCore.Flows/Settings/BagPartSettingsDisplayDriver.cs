@@ -36,7 +36,7 @@ namespace OrchardCore.Flows.Settings
                 model.ContainedContentTypes = model.BagPartSettings.ContainedContentTypes;
                 model.DisplayType = model.BagPartSettings.DisplayType;
                 model.ContentTypes = [];
-                model.Source = settings.ContainedStereotypes != null && settings.ContainedStereotypes.Length > 0 ? BagPartSettingType.Stereotypes : BagPartSettingType.ContentTypes;
+                model.Source = settings.ContainedStereotypes is {Length: > 0} ? BagPartSettingType.Stereotypes : BagPartSettingType.ContentTypes;
                 model.Stereotypes = string.Join(',', settings.ContainedStereotypes ?? []);
                 foreach (var contentTypeDefinition in await _contentDefinitionManager.ListTypeDefinitionsAsync())
                 {

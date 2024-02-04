@@ -223,9 +223,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 return Forbid();
             }
 
-            var sitemap = (await _sitemapManager.GetSitemapAsync(sitemapId)) as Sitemap;
-
-            if (sitemap == null)
+            if (await _sitemapManager.GetSitemapAsync(sitemapId) is not Sitemap sitemap)
             {
                 return NotFound();
             }
@@ -249,9 +247,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 return Forbid();
             }
 
-            var sitemap = (await _sitemapManager.LoadSitemapAsync(model.SitemapId)) as Sitemap;
-
-            if (sitemap == null)
+            if (await _sitemapManager.LoadSitemapAsync(model.SitemapId) is not Sitemap sitemap)
             {
                 return NotFound();
             }

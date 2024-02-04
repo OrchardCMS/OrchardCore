@@ -68,8 +68,7 @@ namespace OrchardCore.ContentManagement
                 return element;
             }
 
-            var elementData = contentElement.Data[name] as JsonObject;
-            if (elementData is null)
+            if (contentElement.Data[name] is not JsonObject elementData)
             {
                 return null;
             }
@@ -152,8 +151,7 @@ namespace OrchardCore.ContentManagement
         {
             var elementName = typeof(TElement).Name;
 
-            var elementData = contentElement.Data[elementName] as JsonObject;
-            if (elementData == null)
+            if (contentElement.Data[elementName] is not JsonObject)
             {
                 // build and weld the part
                 var part = new TElement();
@@ -184,8 +182,7 @@ namespace OrchardCore.ContentManagement
         /// <returns>The current <see cref="ContentItem"/> instance.</returns>
         public static ContentElement Apply(this ContentElement contentElement, string name, ContentElement element)
         {
-            var elementData = contentElement.Data[name] as JsonObject;
-            if (elementData is not null)
+            if (contentElement.Data[name] is JsonObject elementData)
             {
                 elementData.Merge(JObject.FromObject(element), _jsonMergeSettings);
             }
@@ -283,7 +280,7 @@ namespace OrchardCore.ContentManagement
         /// <returns><c>True</c> if the content is published, <c>False</c> otherwise.</returns>
         public static bool IsPublished(this IContent content)
         {
-            return content.ContentItem != null && content.ContentItem.Published;
+            return content.ContentItem is {Published: true};
         }
 
         /// <summary>
@@ -305,9 +302,7 @@ namespace OrchardCore.ContentManagement
         {
             foreach (var part in contentElement.Elements)
             {
-                var result = part.Value as TElement;
-
-                if (result != null)
+                if (part.Value is TElement result)
                 {
                     yield return result;
                 }

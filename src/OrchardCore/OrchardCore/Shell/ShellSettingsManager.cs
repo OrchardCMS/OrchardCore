@@ -247,8 +247,7 @@ namespace OrchardCore.Environment.Shell
             }
 
             var lastProviders = (_applicationConfiguration as IConfigurationRoot)?.Providers
-                .Where(p => p is EnvironmentVariablesConfigurationProvider ||
-                            p is CommandLineConfigurationProvider)
+                .Where(p => p is EnvironmentVariablesConfigurationProvider or CommandLineConfigurationProvider)
                 .ToArray()
                 ?? [];
 

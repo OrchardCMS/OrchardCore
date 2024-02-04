@@ -57,7 +57,7 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
                 .FirstOrDefaultAsync())
                 ?.As<AuditTrailContentEvent>();
 
-            if (auditTrailContentEvent == null || auditTrailContentEvent.ContentItem == null)
+            if (auditTrailContentEvent?.ContentItem == null)
             {
                 return NotFound();
             }

@@ -17,9 +17,7 @@ namespace OrchardCore.Microsoft.Authentication.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var azureADStep = step as AzureADDeploymentStep;
-
-            if (azureADStep == null)
+            if (step is not AzureADDeploymentStep)
             {
                 return;
             }

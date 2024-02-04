@@ -6,7 +6,7 @@
 }
 
 <h5>@T["Content"]</h5>
-@if (contentTypes != null && contentTypes.Length > 0)
+@if (contentTypes is {Length: > 0})
 {
     @foreach (var contentTypeDefinition in await ContentDefinitionManager.ListTypeDefinitionsAsync())
     {

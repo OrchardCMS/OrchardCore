@@ -280,7 +280,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
 
         var data = await DistributedCache.GetAsync(key);
 
-        if (data != null && data.Length > 0)
+        if (data is {Length: > 0})
         {
             return Encoding.UTF8.GetString(data);
         }

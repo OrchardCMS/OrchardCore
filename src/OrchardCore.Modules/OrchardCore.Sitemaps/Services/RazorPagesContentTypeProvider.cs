@@ -27,7 +27,7 @@ namespace OrchardCore.Sitemaps.Services
         public Task<string> GetRouteAsync(SitemapBuilderContext context, ContentItem contentItem)
         {
             var option = _options.ContentTypeOptions.FirstOrDefault(o => o.ContentType == contentItem.ContentType);
-            if (option != null && option.RouteValues != null)
+            if (option is {RouteValues: not null})
             {
                 var pageName = string.IsNullOrEmpty(option.PageName) ? option.ContentType : option.PageName;
 

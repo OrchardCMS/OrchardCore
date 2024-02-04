@@ -21,9 +21,7 @@ namespace OrchardCore.Contents.Deployment
         {
             // TODO: Batch and create separate content files in the result.
 
-            var contentStep = step as ContentDeploymentStep;
-
-            if (contentStep == null)
+            if (step is not ContentDeploymentStep contentStep)
             {
                 return;
             }

@@ -142,7 +142,7 @@ namespace OrchardCore.AutoSetup.Options
                 yield return new ValidationResult(string.Format(_requiredErrorMessageFormat, nameof(DatabaseProvider)));
             }
 
-            if (selectedProvider != null && selectedProvider.HasConnectionString && string.IsNullOrWhiteSpace(DatabaseConnectionString))
+            if (selectedProvider is {HasConnectionString: true} && string.IsNullOrWhiteSpace(DatabaseConnectionString))
             {
                 yield return new ValidationResult(string.Format(_requiredErrorMessageFormat, nameof(DatabaseConnectionString)));
             }

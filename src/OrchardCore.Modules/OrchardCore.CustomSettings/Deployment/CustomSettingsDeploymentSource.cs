@@ -18,8 +18,7 @@ namespace OrchardCore.CustomSettings.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var customSettingsStep = step as CustomSettingsDeploymentStep;
-            if (customSettingsStep == null)
+            if (step is not CustomSettingsDeploymentStep customSettingsStep)
             {
                 return;
             }

@@ -15,9 +15,7 @@ namespace OrchardCore.Search.Lucene.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var luceneSettingsStep = step as LuceneSettingsDeploymentStep;
-
-            if (luceneSettingsStep == null)
+            if (step is not LuceneSettingsDeploymentStep)
             {
                 return;
             }

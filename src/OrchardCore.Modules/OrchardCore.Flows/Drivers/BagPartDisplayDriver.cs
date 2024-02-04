@@ -227,12 +227,12 @@ namespace OrchardCore.Flows.Drivers
             var settings = typePartDefinition.GetSettings<BagPartSettings>();
             var contentTypes = Enumerable.Empty<ContentTypeDefinition>();
 
-            if (settings.ContainedStereotypes != null && settings.ContainedStereotypes.Length > 0)
+            if (settings.ContainedStereotypes is {Length: > 0})
             {
                 contentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
                     .Where(contentType => contentType.HasStereotype() && settings.ContainedStereotypes.Contains(contentType.GetStereotype(), StringComparer.OrdinalIgnoreCase));
             }
-            else if (settings.ContainedContentTypes != null && settings.ContainedContentTypes.Length > 0)
+            else if (settings.ContainedContentTypes is {Length: > 0})
             {
                 var definitions = new List<ContentTypeDefinition>();
 

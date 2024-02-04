@@ -116,26 +116,15 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
                 var contentTypePartOption = contentTypeOption.PartOptions.FirstOrDefault(p => p.Name == partName);
 
-                if (contentTypePartOption != null)
-                {
-                    if (contentTypePartOption.Collapse)
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            var contentPartOption = PartOptions.FirstOrDefault(p => p.Name == partName);
-
-            if (contentPartOption != null)
-            {
-                if (contentPartOption.Collapse)
+                if (contentTypePartOption is {Collapse: true})
                 {
                     return true;
                 }
             }
 
-            return false;
+            var contentPartOption = PartOptions.FirstOrDefault(p => p.Name == partName);
+
+            return contentPartOption is {Collapse: true};
         }
 
         internal bool ShouldSkip(ContentTypePartDefinition definition)
@@ -200,23 +189,17 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
                 var contentTypePartOption = contentTypeOption.PartOptions.FirstOrDefault(p => p.Name == partName);
 
-                if (contentTypePartOption != null)
+                if (contentTypePartOption is {Hidden: true})
                 {
-                    if (contentTypePartOption.Hidden)
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
 
             var contentPartOption = PartOptions.FirstOrDefault(p => p.Name == partName);
 
-            if (contentPartOption != null)
+            if (contentPartOption is {Hidden: true})
             {
-                if (contentPartOption.Hidden)
-                {
-                    return true;
-                }
+                return true;
             }
 
             return false;

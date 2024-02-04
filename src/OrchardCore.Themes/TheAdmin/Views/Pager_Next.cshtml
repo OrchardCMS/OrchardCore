@@ -7,9 +7,7 @@
     value.AppendHtml("<i class=\"fa-solid fa-angle-right\"></i>");
     Model.Value = value;
 
-    var parentTag = Model.Tag as TagBuilder;
-
-    if (parentTag != null)
+    if (Model.Tag is TagBuilder parentTag)
     {
         parentTag.MergeAttribute("title", T["Go to next page."].Value);
     }
