@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.AdminMenu;
-using OrchardCore.AdminMenu.Services;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -218,9 +217,6 @@ namespace OrchardCore.Contents
             });
 
             services.AddTransient<IContentsAdminListFilterProvider, DefaultContentsAdminListFilterProvider>();
-
-            // Allows to serialize 'AdminNode' derived types.
-            services.AddAdminNode<ContentTypesAdminNode>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -332,9 +328,7 @@ namespace OrchardCore.Contents
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IAdminNodeProviderFactory>(new AdminNodeProviderFactory<ContentTypesAdminNode>());
-            services.AddScoped<IAdminNodeNavigationBuilder, ContentTypesAdminNodeNavigationBuilder>();
-            services.AddScoped<IDisplayDriver<MenuItem>, ContentTypesAdminNodeDriver>();
+            services.AddAdminMenu<ContentTypesAdminNode, ContentTypesAdminNodeNavigationBuilder, ContentTypesAdminNodeDriver>();
         }
     }
 
