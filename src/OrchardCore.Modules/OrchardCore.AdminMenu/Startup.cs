@@ -10,7 +10,6 @@ using OrchardCore.AdminMenu.Deployment;
 using OrchardCore.AdminMenu.Recipes;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
@@ -42,17 +41,10 @@ namespace OrchardCore.AdminMenu
             services.AddDeployment<AdminMenuDeploymentSource, AdminMenuDeploymentStep, AdminMenuDeploymentStepDriver>();
 
             // placeholder treeNode
-            services.AddSingleton<IAdminNodeProviderFactory>(new AdminNodeProviderFactory<PlaceholderAdminNode>());
-            services.AddScoped<IAdminNodeNavigationBuilder, PlaceholderAdminNodeNavigationBuilder>();
-            services.AddScoped<IDisplayDriver<MenuItem>, PlaceholderAdminNodeDriver>();
+            services.AddAdminMenu<PlaceholderAdminNode, PlaceholderAdminNodeNavigationBuilder, PlaceholderAdminNodeDriver>();
 
             // link treeNode
-            services.AddSingleton<IAdminNodeProviderFactory>(new AdminNodeProviderFactory<LinkAdminNode>());
-            services.AddScoped<IAdminNodeNavigationBuilder, LinkAdminNodeNavigationBuilder>();
-            services.AddScoped<IDisplayDriver<MenuItem>, LinkAdminNodeDriver>();
-
-            services.AddAdminNode<LinkAdminNode>();
-            services.AddAdminNode<PlaceholderAdminNode>();
+            services.AddAdminMenu<LinkAdminNode, LinkAdminNodeNavigationBuilder, LinkAdminNodeDriver>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
