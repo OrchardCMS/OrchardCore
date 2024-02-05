@@ -8,8 +8,8 @@ namespace OrchardCore.ContentManagement.Metadata.Records
     {
         public ContentDefinitionRecord()
         {
-            ContentTypeDefinitionRecords = new List<ContentTypeDefinitionRecord>();
-            ContentPartDefinitionRecords = new List<ContentPartDefinitionRecord>();
+            ContentTypeDefinitionRecords = [];
+            ContentPartDefinitionRecords = [];
         }
 
         public IList<ContentTypeDefinitionRecord> ContentTypeDefinitionRecords { get; set; }
