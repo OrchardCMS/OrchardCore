@@ -32,11 +32,13 @@ public class DbConnectionValidator : IDbConnectionValidator
     private readonly ILogger _logger;
     private readonly SqliteOptions _sqliteOptions;
     private readonly ShellOptions _shellOptions;
+    private readonly ShellSettings _shellSettings;
 
     public DbConnectionValidator(
         IEnumerable<DatabaseProvider> databaseProviders,
         IOptions<SqliteOptions> sqliteOptions,
         IOptions<ShellOptions> shellOptions,
+        ShellSettings shellSettings,
         ITableNameConventionFactory tableNameConventionFactory,
         ILogger<DbConnectionValidator> logger)
     {
@@ -45,6 +47,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         _logger = logger;
         _sqliteOptions = sqliteOptions.Value;
         _shellOptions = shellOptions.Value;
+        _shellSettings = shellSettings;
     }
 
     public async Task<DbConnectionValidatorResult> ValidateAsync(DbConnectionValidatorContext context)
@@ -70,7 +73,7 @@ public class DbConnectionValidator : IDbConnectionValidator
                 return DbConnectionValidatorResult.DocumentTableNotFound;
             }
 
-            connectionString = SqliteHelper.GetConnectionString(_sqliteOptions, _shellOptions, context.ShellName);
+            connectionString = SqliteHelper.GetConnectionString(_sqliteOptions, _shellOptions, _shellSettings);
         }
 
         if (string.IsNullOrWhiteSpace(connectionString))
