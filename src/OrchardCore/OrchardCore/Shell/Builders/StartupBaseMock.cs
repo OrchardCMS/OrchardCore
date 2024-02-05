@@ -45,7 +45,7 @@ namespace OrchardCore.Environment.Shell.Builders
                 return;
             }
 
-            _configureService.Invoke(_startup, new[] { services });
+            _configureService.Invoke(_startup, [services]);
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
