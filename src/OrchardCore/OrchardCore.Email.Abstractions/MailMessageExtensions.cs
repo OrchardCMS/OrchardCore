@@ -17,12 +17,18 @@ public static class MailMessageExtensions
 
         return recipients;
     }
-    public static IEnumerable<string> GetSender(this MailMessage message) =>
-        string.IsNullOrWhiteSpace(message.From) ? Enumerable.Empty<string>() : SplitMailMessageRecipients(message.From);
 
-    public static IEnumerable<string> GetReplyTo(this MailMessage message) =>
-        string.IsNullOrWhiteSpace(message.ReplyTo) ? message.GetSender() : SplitMailMessageRecipients(message.ReplyTo);
+    public static IEnumerable<string> GetSender(this MailMessage message)
+        => string.IsNullOrWhiteSpace(message.From)
+        ? Enumerable.Empty<string>()
+        : SplitMailMessageRecipients(message.From);
 
-    private static IEnumerable<string> SplitMailMessageRecipients(string recipients) => recipients
-        ?.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries) ?? Enumerable.Empty<string>();
+    public static IEnumerable<string> GetReplyTo(this MailMessage message)
+        => string.IsNullOrWhiteSpace(message.ReplyTo)
+        ? message.GetSender()
+        : SplitMailMessageRecipients(message.ReplyTo);
+
+    private static IEnumerable<string> SplitMailMessageRecipients(string recipients)
+        => recipients?.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+        ?? Enumerable.Empty<string>();
 }

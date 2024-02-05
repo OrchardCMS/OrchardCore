@@ -10,7 +10,7 @@ namespace OrchardCore.Email.Services;
 
 public class AzureEmailOptionsConfiguration : IConfigureOptions<AzureEmailOptions>
 {
-    public const string AzureEmailSettingProtector = "AzureEmailProtector";
+    public const string ProtectorName = "AzureEmailProtector";
     public const string SectionName = "OrchardCore_Email_Azure";
 
     private readonly ISiteService _siteService;
@@ -46,7 +46,7 @@ public class AzureEmailOptionsConfiguration : IConfigureOptions<AzureEmailOption
 
         if (!options.PreventUIConnectionChange && !string.IsNullOrEmpty(settings.ConnectionString))
         {
-            var protector = _dataProtectionProvider.CreateProtector(AzureEmailSettingProtector);
+            var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
 
             options.ConnectionString = protector.Unprotect(settings.ConnectionString);
         }

@@ -3,7 +3,6 @@
 This module provides the infrastructure necessary to send emails using multiple providers.
 
 
-
 ## SMTP Settings
 
 Enabling the `Email` feature will add a new settings page under `Configurations` >> `Settings` >> `Email`. You can utilize these settings to set up the default Email provider configuration. The following are the providers that are readily accessible.
@@ -71,6 +70,7 @@ For more information please refer to [Configuration](../../core/Configuration/RE
 The `OrchardCore.Email` module provides you with the capability to integrate additional providers for dispatching email messages. To achieve this, you can easily create an implementation of the `IEmailProvider` interface and then proceed to register it using one of the following approaches:
 
 If your provider does not require any settings like the `LogProvider`, you may register it like this.
+
 ```csharp
 services.AddEmailProvider<YourCustomImplemenation>("A technical name for your implementation")
 ```
@@ -111,7 +111,7 @@ public class SmtpProviderOptionsConfigurations : IConfigureOptions<EmailProvider
 
 An Email message can be send by injecting `IEmailService` and invoke the `SendAsync` method. For instance
 
-```c#
+```csharp
 public class TestController
 {
     private readonly IEmailService _emailService;

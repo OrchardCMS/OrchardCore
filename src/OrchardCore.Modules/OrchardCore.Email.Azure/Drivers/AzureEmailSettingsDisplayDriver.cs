@@ -140,7 +140,7 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
                     else if (!string.IsNullOrWhiteSpace(model.ConnectionString))
                     {
                         // Encrypt the connection string.
-                        var protector = _dataProtectionProvider.CreateProtector(AzureEmailOptionsConfiguration.AzureEmailSettingProtector);
+                        var protector = _dataProtectionProvider.CreateProtector(AzureEmailOptionsConfiguration.ProtectorName);
 
                         var protectedConnection = protector.Protect(model.ConnectionString);
 
