@@ -29,9 +29,7 @@ public static class SqliteHelper
 
         return new SqliteConnectionStringBuilder
         {
-            DataSource = string.IsNullOrEmpty(databaseFolder)
-            ? databaseName
-            : Path.Combine(databaseFolder, databaseName),
+            DataSource = string.IsNullOrEmpty(databaseFolder) ? databaseName : Path.Combine(databaseFolder, databaseName),
             Cache = SqliteCacheMode.Shared,
             Pooling = sqliteOptions.UseConnectionPooling,
             Mode = shellSettings.IsInitializing() ? SqliteOpenMode.ReadWriteCreate : SqliteOpenMode.ReadWrite
@@ -40,22 +38,21 @@ public static class SqliteHelper
     }
 
     /// <summary>
-    /// Generic helper for any other SQLite connection. Restricted to ReadWrite.
+    /// Generic helper for any other SQLite connection.
     /// </summary>
     /// <param name="sqliteOptions"></param>
     /// <param name="databaseFolder"></param>
     /// <param name="databaseName"></param>
+    /// <param name="sqliteOpenMode"></param>
     /// <returns></returns>
-    public static string GetConnectionString(SqliteOptions sqliteOptions, string databaseFolder, string databaseName)
+    public static string GetConnectionString(SqliteOptions sqliteOptions, string databaseFolder, string databaseName, SqliteOpenMode sqliteOpenMode)
     {
         return new SqliteConnectionStringBuilder
         {
-            DataSource = string.IsNullOrEmpty(databaseFolder)
-                ? databaseName
-                : Path.Combine(databaseFolder, databaseName),
+            DataSource = string.IsNullOrEmpty(databaseFolder) ? databaseName : Path.Combine(databaseFolder, databaseName),
             Cache = SqliteCacheMode.Shared,
             Pooling = sqliteOptions.UseConnectionPooling,
-            Mode = SqliteOpenMode.ReadWrite
+            Mode = sqliteOpenMode
         }
         .ToString();
     }
