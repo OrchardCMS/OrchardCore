@@ -42,7 +42,7 @@ namespace OrchardCore.Microsoft.Authentication
                 ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, MicrosoftAccountOptionsConfiguration>(),
                 ServiceDescriptor.Transient<IConfigureOptions<MicrosoftAccountOptions>, MicrosoftAccountOptionsConfiguration>(),
                 // Built-in initializers:
-                ServiceDescriptor.Transient<IPostConfigureOptions<MicrosoftAccountOptions>, OAuthPostConfigureOptions<MicrosoftAccountOptions,MicrosoftAccountHandler>>()
+                ServiceDescriptor.Transient<IPostConfigureOptions<MicrosoftAccountOptions>, OAuthPostConfigureOptions<MicrosoftAccountOptions, MicrosoftAccountHandler>>()
             });
         }
     }
@@ -82,9 +82,7 @@ namespace OrchardCore.Microsoft.Authentication
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AzureADDeploymentStepDriver>();
-            services.AddTransient<IDeploymentSource, AzureADDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<AzureADDeploymentStep>>();
+            services.AddDeployment<AzureADDeploymentSource, AzureADDeploymentStep, AzureADDeploymentStepDriver>();
         }
     }
 }

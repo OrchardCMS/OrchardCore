@@ -1,5 +1,5 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.Entities;
 using OrchardCore.Search.Models;
@@ -28,10 +28,11 @@ namespace OrchardCore.Search.Deployment
             var settings = await _site.GetSiteSettingsAsync();
             var searchSettings = settings.As<SearchSettings>();
 
-            result.Steps.Add(new JObject(
-                new JProperty("name", "Settings"),
-                new JProperty("SearchSettings", JObject.FromObject(searchSettings))
-            ));
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "Settings",
+                ["SearchSettings"] = JObject.FromObject(searchSettings),
+            });
         }
     }
 }

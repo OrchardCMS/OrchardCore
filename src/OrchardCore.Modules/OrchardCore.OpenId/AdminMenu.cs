@@ -1,7 +1,7 @@
-using System;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Navigation;
@@ -10,6 +10,12 @@ namespace OrchardCore.OpenId
 {
     public class AdminMenu : INavigationProvider
     {
+        private static readonly RouteValueDictionary _clientRouteValues = new()
+        {
+            { "area", "OrchardCore.Settings" },
+            { "groupId", "OrchardCore.OpenId.Client" },
+        };
+
         private readonly ShellDescriptor _shellDescriptor;
         protected readonly IStringLocalizer S;
 
@@ -23,7 +29,7 @@ namespace OrchardCore.OpenId
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
                 return Task.CompletedTask;
             }
@@ -43,7 +49,7 @@ namespace OrchardCore.OpenId
                         if (features.Contains(OpenIdConstants.Features.Client))
                         {
                             settings.Add(S["Authentication client"], "1", client => client
-                                    .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "OrchardCore.OpenId.Client" })
+                                    .Action("Index", "Admin", _clientRouteValues)
                                     .Permission(Permissions.ManageClientSettings)
                                     .LocalNav());
                         }

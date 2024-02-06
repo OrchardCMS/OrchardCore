@@ -24,7 +24,7 @@ namespace OrchardCore.AutoSetup.Options
         /// <summary>
         /// Gets or sets the tenants to install.
         /// </summary>
-        public List<TenantSetupOptions> Tenants { get; set; } = new List<TenantSetupOptions>();
+        public List<TenantSetupOptions> Tenants { get; set; } = [];
 
         /// <summary>
         /// Whether the configuration section exists.
@@ -38,7 +38,7 @@ namespace OrchardCore.AutoSetup.Options
         /// <returns>The collection of errors.</returns>
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (!string.IsNullOrWhiteSpace(AutoSetupPath) && !AutoSetupPath.StartsWith("/"))
+            if (!string.IsNullOrWhiteSpace(AutoSetupPath) && !AutoSetupPath.StartsWith('/'))
             {
                 yield return new ValidationResult($"The field '{nameof(AutoSetupPath)}' should be empty or start with '/'.");
             }

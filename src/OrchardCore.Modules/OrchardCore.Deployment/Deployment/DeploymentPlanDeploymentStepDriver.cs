@@ -38,7 +38,7 @@ namespace OrchardCore.Deployment.Deployment
 
         public override async Task<IDisplayResult> UpdateAsync(DeploymentPlanDeploymentStep step, IUpdateModel updater)
         {
-            step.DeploymentPlanNames = Array.Empty<string>();
+            step.DeploymentPlanNames = [];
 
             await updater.TryUpdateModelAsync(step,
                                               Prefix,
@@ -48,7 +48,7 @@ namespace OrchardCore.Deployment.Deployment
             // don't have the selected option if include all
             if (step.IncludeAll)
             {
-                step.DeploymentPlanNames = Array.Empty<string>();
+                step.DeploymentPlanNames = [];
             }
 
             return Edit(step);

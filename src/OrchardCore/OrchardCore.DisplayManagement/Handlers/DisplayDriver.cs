@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -115,11 +114,13 @@ namespace OrchardCore.DisplayManagement.Handlers
 
         protected virtual void BuildPrefix(TModel model, string htmlFieldPrefix)
         {
-            Prefix = typeof(TModel).Name;
-
             if (!string.IsNullOrEmpty(htmlFieldPrefix))
             {
-                Prefix = htmlFieldPrefix + "." + Prefix;
+                Prefix = $"{htmlFieldPrefix}.{typeof(TModel).Name}";
+            }
+            else
+            {
+                Prefix = typeof(TModel).Name;
             }
         }
     }

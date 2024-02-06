@@ -1,11 +1,10 @@
-using OpenIddict.Abstractions;
+using System.Text.Json.Nodes;
 using OrchardCore.OpenId.Abstractions.Descriptors;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Recipes;
 using OrchardCore.OpenId.YesSql.Models;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Tests.Utilities;
-using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
 {
@@ -36,11 +35,11 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                     new ValueTask<object>(actual));
 
             var step = new OpenIdApplicationStep(appManagerMock.Object);
-            var recipe = JObject.Parse(GetRecipeFileContent(recipeName));
+            var recipe = JsonNode.Parse(GetRecipeFileContent(recipeName));
             var context = new RecipeExecutionContext
             {
-                Name = recipe.Property("steps").Value.First.Value<string>("name"),
-                Step = (JObject)recipe.Property("steps").Value.First,
+                Name = recipe["steps"][0].Value<string>("name"),
+                Step = (JsonObject)recipe["steps"][0],
             };
 
             // Act
@@ -59,9 +58,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
 
             Assert.Equal(expected.ClientId, actual.ClientId);
             Assert.Equal(expected.ClientSecret, actual.ClientSecret);
+            Assert.Equal(expected.ClientType, actual.ClientType);
             Assert.Equal(expected.ConsentType, actual.ConsentType);
             Assert.Equal(expected.DisplayName, actual.DisplayName);
-            Assert.Equal(expected.Type, actual.Type);
             Assert.Equal(expected.Permissions, actual.Permissions);
             Assert.Equal(expected.PostLogoutRedirectUris, actual.PostLogoutRedirectUris);
             Assert.Equal(expected.RedirectUris, actual.RedirectUris);
@@ -88,7 +87,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             };
             actual.RedirectUris.UnionWith(new[] { new Uri("https://localhost/x") });
             actual.Roles.UnionWith(new[] { "x" });
-            actual.Permissions.UnionWith(new[] { $"{Permissions.Prefixes.Scope}x" });
+            actual.Permissions.UnionWith(new[] { $"{OpenIddictConstants.Permissions.Prefixes.Scope}x" });
 
             var actualDb = new OpenIdApplication
             {
@@ -127,11 +126,11 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                     new ValueTask());
 
             var step = new OpenIdApplicationStep(appManagerMock.Object);
-            var recipe = JObject.Parse(GetRecipeFileContent(recipeName));
+            var recipe = JsonNode.Parse(GetRecipeFileContent(recipeName));
             var context = new RecipeExecutionContext
             {
-                Name = recipe.Property("steps").Value.First.Value<string>("name"),
-                Step = (JObject)recipe.Property("steps").Value.First,
+                Name = recipe["steps"][0].Value<string>("name"),
+                Step = (JsonObject)recipe["steps"][0],
             };
 
             // Act
@@ -151,9 +150,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
 
             Assert.Equal(expected.ClientId, actual.ClientId);
             Assert.Equal(expected.ClientSecret, actual.ClientSecret);
+            Assert.Equal(expected.ClientType, actual.ClientType);
             Assert.Equal(expected.ConsentType, actual.ConsentType);
             Assert.Equal(expected.DisplayName, actual.DisplayName);
-            Assert.Equal(expected.Type, actual.Type);
             Assert.Equal(expected.Permissions, actual.Permissions);
             Assert.Equal(expected.PostLogoutRedirectUris, actual.PostLogoutRedirectUris);
             Assert.Equal(expected.RedirectUris, actual.RedirectUris);

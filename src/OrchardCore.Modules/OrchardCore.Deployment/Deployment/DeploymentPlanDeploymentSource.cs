@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Deployment.Deployment
 {
@@ -49,10 +49,11 @@ namespace OrchardCore.Deployment.Deployment
                          }).ToArray();
 
             // Adding deployment plans.
-            result.Steps.Add(new JObject(
-                new JProperty("name", "deployment"),
-                new JProperty("Plans", JArray.FromObject(plans))
-            ));
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "deployment",
+                ["Plans"] = JArray.FromObject(plans),
+            });
         }
 
         /// <summary>

@@ -14,25 +14,16 @@ namespace Microsoft.AspNetCore.Authorization
     {
         public static Task<bool> AuthorizeContentTypeAsync(this IAuthorizationService service, ClaimsPrincipal user, Permission requiredPermission, ContentTypeDefinition contentTypeDefinition, string owner = null)
         {
-            if (contentTypeDefinition == null)
-            {
-                throw new ArgumentNullException(nameof(contentTypeDefinition));
-            }
+            ArgumentNullException.ThrowIfNull(contentTypeDefinition);
 
             return service.AuthorizeContentTypeAsync(user, requiredPermission, contentTypeDefinition.Name, owner);
         }
 
         public static Task<bool> AuthorizeContentTypeAsync(this IAuthorizationService service, ClaimsPrincipal user, Permission requiredPermission, string contentType, string owner = null)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
-            if (requiredPermission == null)
-            {
-                throw new ArgumentNullException(nameof(requiredPermission));
-            }
+            ArgumentNullException.ThrowIfNull(requiredPermission);
 
             if (string.IsNullOrWhiteSpace(contentType))
             {
@@ -49,7 +40,7 @@ namespace Microsoft.AspNetCore.Authorization
         }
 
         /// <summary>
-        /// Evaluate if we have a specific owner variation permission to at least one content type
+        /// Evaluate if we have a specific owner variation permission to at least one content type.
         /// </summary>
         public static async Task<bool> AuthorizeContentTypeDefinitionsAsync(this IAuthorizationService service, ClaimsPrincipal user, Permission requiredPermission, IEnumerable<ContentTypeDefinition> contentTypeDefinitions, IContentManager contentManager)
         {

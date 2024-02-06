@@ -12,7 +12,7 @@ namespace Microsoft.Extensions.Configuration.Json
         /// Builds the <see cref="TenantJsonStreamConfigurationProvider"/> for this source.
         /// </summary>
         /// <param name="builder">The <see cref="IConfigurationBuilder"/>.</param>
-        /// <returns>An <see cref="TenantJsonStreamConfigurationProvider"/></returns>
+        /// <returns>An <see cref="TenantJsonStreamConfigurationProvider"/>.</returns>
         public override IConfigurationProvider Build(IConfigurationBuilder builder)
             => new TenantJsonStreamConfigurationProvider(this);
     }

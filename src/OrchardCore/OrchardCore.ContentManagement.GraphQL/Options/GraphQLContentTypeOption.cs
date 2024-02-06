@@ -8,10 +8,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
     {
         public GraphQLContentTypeOption(string contentType)
         {
-            if (string.IsNullOrEmpty(contentType))
-            {
-                throw new ArgumentNullException(nameof(contentType));
-            }
+            ArgumentException.ThrowIfNullOrEmpty(contentType);
 
             ContentType = contentType;
         }
@@ -23,7 +20,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
         public bool Hidden { get; set; }
 
         public IEnumerable<GraphQLContentPartOption> PartOptions { get; set; }
-            = Enumerable.Empty<GraphQLContentPartOption>();
+            = [];
 
         public GraphQLContentTypeOption ConfigurePart<TContentPart>(Action<GraphQLContentPartOption> action)
             where TContentPart : ContentPart

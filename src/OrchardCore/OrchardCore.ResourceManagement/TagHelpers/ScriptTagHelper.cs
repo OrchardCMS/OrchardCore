@@ -11,6 +11,8 @@ namespace OrchardCore.ResourceManagement.TagHelpers
     [HtmlTargetElement("script", Attributes = AtAttributeName)]
     public class ScriptTagHelper : TagHelper
     {
+        private static readonly char[] _separator = [',', ' '];
+
         private const string NameAttributeName = "asp-name";
         private const string SrcAttributeName = "asp-src";
         private const string AtAttributeName = "at";
@@ -82,12 +84,12 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                     if (!string.IsNullOrEmpty(Culture))
                     {
-                        definition.SetCultures(Culture.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                        definition.SetCultures(Culture.Split(_separator, StringSplitOptions.RemoveEmptyEntries));
                     }
 
                     if (!string.IsNullOrEmpty(DependsOn))
                     {
-                        definition.SetDependencies(DependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                        definition.SetDependencies(DependsOn.Split(_separator, StringSplitOptions.RemoveEmptyEntries));
                     }
 
                     if (AppendVersion.HasValue)
@@ -185,7 +187,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 // This allows additions to the pre registered scripts dependencies.
                 if (!string.IsNullOrEmpty(DependsOn))
                 {
-                    setting.SetDependencies(DependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                    setting.SetDependencies(DependsOn.Split(_separator, StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 foreach (var attribute in output.Attributes)
@@ -238,12 +240,12 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 if (!string.IsNullOrEmpty(Culture))
                 {
-                    definition.SetCultures(Culture.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                    definition.SetCultures(Culture.Split(_separator, StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 if (!string.IsNullOrEmpty(DependsOn))
                 {
-                    definition.SetDependencies(DependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                    definition.SetDependencies(DependsOn.Split(_separator, StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 if (AppendVersion.HasValue)

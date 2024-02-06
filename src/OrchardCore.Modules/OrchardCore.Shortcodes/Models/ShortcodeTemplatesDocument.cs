@@ -6,7 +6,7 @@ namespace OrchardCore.Shortcodes.Models
 {
     public class ShortcodeTemplatesDocument : Document
     {
-        public Dictionary<string, ShortcodeTemplate> ShortcodeTemplates { get; } = new Dictionary<string, ShortcodeTemplate>(StringComparer.OrdinalIgnoreCase);
+        public Dictionary<string, ShortcodeTemplate> ShortcodeTemplates { get; init; } = new Dictionary<string, ShortcodeTemplate>(StringComparer.OrdinalIgnoreCase);
     }
 
     public class ShortcodeTemplate
@@ -15,6 +15,6 @@ namespace OrchardCore.Shortcodes.Models
         public string Hint { get; set; }
         public string Usage { get; set; }
         public string DefaultValue { get; set; }
-        public string[] Categories { get; set; } = Array.Empty<string>();
+        public string[] Categories { get; set; } = [];
     }
 }

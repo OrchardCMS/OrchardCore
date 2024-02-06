@@ -6,6 +6,6 @@ using OrchardCore.Modules.Manifest;
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
     Description = "The Archive Later module adds the ability to schedule content items to be archived at a given future date and time.",
-    Dependencies = new[] { "OrchardCore.Contents" },
+    Dependencies = ["OrchardCore.Contents"],
     Category = "Content Management"
 )]

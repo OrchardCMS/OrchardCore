@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.DisplayManagement.Zones;
@@ -9,7 +10,7 @@ namespace OrchardCore.DisplayManagement.Title
         private readonly static HtmlString _defaultTitleSeparator = new(" - ");
 
         private readonly List<PositionalTitlePart> _titleParts;
-        private IHtmlContent _title;
+        private HtmlContentBuilder _title;
         private IHtmlContent _fixedTitle;
 
         public PageTitleBuilder()
@@ -48,7 +49,7 @@ namespace OrchardCore.DisplayManagement.Title
                 return _fixedTitle;
             }
 
-            if (_title != null)
+            if (_title is { Count: > 0 })
             {
                 return _title;
             }
@@ -57,12 +58,13 @@ namespace OrchardCore.DisplayManagement.Title
 
             _titleParts.Sort(FlatPositionComparer.Instance);
 
-            var htmlContentBuilder = new HtmlContentBuilder();
-
             if (_titleParts.Count == 0)
             {
                 return HtmlString.Empty;
             }
+
+            // _titleParts.Count * 2 because we add a separator for each entry
+            var htmlContentBuilder = new HtmlContentBuilder(_titleParts.Count * 2);
 
             for (var i = 0; i < _titleParts.Count; i++)
             {
@@ -82,6 +84,7 @@ namespace OrchardCore.DisplayManagement.Title
         public void Clear()
         {
             _fixedTitle = null;
+            _title = null;
             _titleParts.Clear();
         }
     }

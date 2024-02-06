@@ -36,7 +36,7 @@ namespace OrchardCore.Resources.Liquid
                     case "http_equiv": httpEquiv = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                     case "charset": charset = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                     case "separator": separator = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                    default: (customAttributes ??= new Dictionary<string, string>())[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                    default: (customAttributes ??= [])[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
                 }
             }
 

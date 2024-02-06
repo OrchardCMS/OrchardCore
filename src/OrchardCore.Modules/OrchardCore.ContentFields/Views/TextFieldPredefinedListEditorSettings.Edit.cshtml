@@ -60,12 +60,12 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="options-textarea">@T["Options"]</label>
+                        <label for="options-textarea" class="form-label">@T["Options"]</label>
                         <textarea id="options-textarea" name="options-textarea" rows="8" class="form-control" v-bind:value="JSON.stringify(data.options)" v-on:input="data.options = JSON.parse($event.target.value)"></textarea>
                         <span class="hint">@T["A JSON representation of the allowed values, e.g. {0}", "[ { name: 'First option', value: 'option1' }, { name: 'Second option', value: 'option2' } ]"]</span>
                     </div>
                     <div class="mb-3">
-                        <label for="options-defaultvalue">@T["Default value"]</label>
+                        <label for="options-defaultvalue" class="form-label">@T["Default value"]</label>
                         <input id="options-defaultvalue" name="options-defaultvalue" class="form-control" type="text" v-model="data.selected" />
                         <span class="hint">@T["(Optional) The default to assign to the text field."]</span>
                     </div>
@@ -82,7 +82,7 @@
 <div id="@Html.IdFor(m => m)" class="field-editor field-editor-predefinedlist">
     <div class="row">
         <div class="mb-3 col-sm-6">
-            <label asp-for="Editor">@T["What type of list editor should be used?"]</label>
+            <label asp-for="Editor" class="form-label">@T["What type of list editor should be used?"]</label>
             <select asp-for="Editor" class="form-select">
                 <option value="@nameof(EditorOption.Dropdown)">@T["Drop down list"]</option>
                 <option value="@nameof(EditorOption.Radio)">@T["Radio buttons"]</option>
@@ -92,7 +92,7 @@
 
     <div class="row">
         <div class="col-sm-6">
-            <label asp-for="Options">@T["Options"]</label>
+            <label asp-for="Options" class="form-label">@T["Options"]</label>
             <a href="javascript:void(0)" v-on:click="showModal" class="float-end" title="@T["Edit Data"]"><i class="fa-solid fa-edit" aria-hidden="true"></i></a>
             <options-table :data="sharedState"></options-table>
             <options-modal :data="sharedState" v-on:reload-data="reloadData()"></options-modal>

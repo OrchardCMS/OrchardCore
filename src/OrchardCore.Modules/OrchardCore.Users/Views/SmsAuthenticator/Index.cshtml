@@ -14,7 +14,7 @@
 
 <form method="post">
     <div class="mb-3">
-        <label asp-for="PhoneNumber">@T["Phone Number"]</label>
+        <label asp-for="PhoneNumber" class="form-label">@T["Phone Number"]</label>
         <input class="form-control" type="text" asp-for="PhoneNumber" asp-is-disabled="!Model.AllowChangingPhoneNumber">
         @if (Model.AllowChangingPhoneNumber)
         {

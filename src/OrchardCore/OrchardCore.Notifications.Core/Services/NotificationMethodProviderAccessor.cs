@@ -25,8 +25,8 @@ public class NotificationMethodProviderAccessor : INotificationMethodProviderAcc
         {
             var notificationPart = user.As<UserNotificationPreferencesPart>();
 
-            var selectedMethods = ((notificationPart?.Methods) ?? Array.Empty<string>()).ToList();
-            var optout = notificationPart.Optout ?? Array.Empty<string>();
+            var selectedMethods = ((notificationPart?.Methods) ?? []).ToList();
+            var optout = notificationPart.Optout ?? [];
 
             var methods = _notificationMethodProviders.Where(provider => !optout.Contains(provider.Method));
             if (selectedMethods.Count > 0)

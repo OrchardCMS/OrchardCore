@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Environment.Extensions.Features;
@@ -16,7 +15,7 @@ namespace OrchardCore.Environment.Shell
         public static async Task<IEnumerable<IFeatureInfo>> EnableFeaturesAsync(this IShellFeaturesManager shellFeaturesManager,
             IEnumerable<IFeatureInfo> features, bool force)
         {
-            var (_, featuresToEnable) = await shellFeaturesManager.UpdateFeaturesAsync(Array.Empty<IFeatureInfo>(), features, force);
+            var (_, featuresToEnable) = await shellFeaturesManager.UpdateFeaturesAsync([], features, force);
             return featuresToEnable;
         }
 
@@ -29,7 +28,7 @@ namespace OrchardCore.Environment.Shell
         public static async Task<IEnumerable<IFeatureInfo>> DisableFeaturesAsync(this IShellFeaturesManager shellFeaturesManager,
             IEnumerable<IFeatureInfo> features, bool force)
         {
-            var (featuresToDisable, _) = await shellFeaturesManager.UpdateFeaturesAsync(features, Array.Empty<IFeatureInfo>(), force);
+            var (featuresToDisable, _) = await shellFeaturesManager.UpdateFeaturesAsync(features, [], force);
             return featuresToDisable;
         }
     }

@@ -8,7 +8,6 @@ using OrchardCore.Admin;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
@@ -98,9 +97,7 @@ namespace OrchardCore.Placements
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, PlacementsDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<PlacementsDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, PlacementsDeploymentStepDriver>();
+            services.AddDeployment<PlacementsDeploymentSource, PlacementsDeploymentStep, PlacementsDeploymentStepDriver>();
         }
     }
 }

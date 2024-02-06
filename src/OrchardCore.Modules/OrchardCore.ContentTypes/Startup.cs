@@ -10,7 +10,6 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.ContentTypes.RecipeSteps;
 using OrchardCore.ContentTypes.Services;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
@@ -140,17 +139,9 @@ namespace OrchardCore.ContentTypes
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, ContentDefinitionDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ContentDefinitionDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, ContentDefinitionDeploymentStepDriver>();
-
-            services.AddTransient<IDeploymentSource, ReplaceContentDefinitionDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ReplaceContentDefinitionDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, ReplaceContentDefinitionDeploymentStepDriver>();
-
-            services.AddTransient<IDeploymentSource, DeleteContentDefinitionDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<DeleteContentDefinitionDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, DeleteContentDefinitionDeploymentStepDriver>();
+            services.AddDeployment<ContentDefinitionDeploymentSource, ContentDefinitionDeploymentStep, ContentDefinitionDeploymentStepDriver>();
+            services.AddDeployment<ReplaceContentDefinitionDeploymentSource, ReplaceContentDefinitionDeploymentStep, ReplaceContentDefinitionDeploymentStepDriver>();
+            services.AddDeployment<DeleteContentDefinitionDeploymentSource, DeleteContentDefinitionDeploymentStep, DeleteContentDefinitionDeploymentStepDriver>();
         }
     }
 }

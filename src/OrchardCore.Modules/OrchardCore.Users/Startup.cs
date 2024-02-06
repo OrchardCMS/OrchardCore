@@ -17,8 +17,8 @@ using OrchardCore.Admin;
 using OrchardCore.Admin.Models;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
-using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Deployment;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Commands;
@@ -206,7 +206,7 @@ namespace OrchardCore.Users
                 options.LogoutPath = "/" + userOptions.Value.LogoffPath;
                 options.AccessDeniedPath = "/Error/403";
             });
-
+            services.AddTransient<IPostConfigureOptions<SecurityStampValidatorOptions>, ConfigureSecurityStampOptions>();
             services.AddDataMigration<Migrations>();
 
             services.AddScoped<IUserClaimsProvider, EmailClaimsProvider>();
@@ -505,10 +505,7 @@ namespace OrchardCore.Users
         {
             services.AddScoped<IDisplayDriver<User>, CustomUserSettingsDisplayDriver>();
             services.AddScoped<IPermissionProvider, CustomUserSettingsPermissions>();
-
-            services.AddTransient<IDeploymentSource, CustomUserSettingsDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<CustomUserSettingsDeploymentStep>>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>, CustomUserSettingsDeploymentStepDriver>();
+            services.AddDeployment<CustomUserSettingsDeploymentSource, CustomUserSettingsDeploymentStep, CustomUserSettingsDeploymentStepDriver>();
         }
     }
 
@@ -516,9 +513,7 @@ namespace OrchardCore.Users
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, AllUsersDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<AllUsersDeploymentStep>>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllUsersDeploymentStepDriver>();
+            services.AddDeployment<AllUsersDeploymentSource, AllUsersDeploymentStep, AllUsersDeploymentStepDriver>();
         }
     }
 }

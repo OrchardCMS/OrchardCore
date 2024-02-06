@@ -8,6 +8,6 @@ namespace OrchardCore.AdminMenu.Models
     /// </summary>
     public class AdminMenuList : Document
     {
-        public List<AdminMenu> AdminMenu { get; set; } = new List<AdminMenu>();
+        public List<AdminMenu> AdminMenu { get; set; } = [];
     }
 }

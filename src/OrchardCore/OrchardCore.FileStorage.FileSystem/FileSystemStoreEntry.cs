@@ -10,8 +10,11 @@ namespace OrchardCore.FileStorage.FileSystem
 
         internal FileSystemStoreEntry(string path, IFileInfo fileInfo)
         {
-            _fileInfo = fileInfo ?? throw new ArgumentNullException(nameof(fileInfo));
-            _path = path ?? throw new ArgumentNullException(nameof(path));
+            ArgumentNullException.ThrowIfNull(path);
+            ArgumentNullException.ThrowIfNull(fileInfo);
+
+            _fileInfo = fileInfo;
+            _path = path;
         }
 
         public string Path => _path;

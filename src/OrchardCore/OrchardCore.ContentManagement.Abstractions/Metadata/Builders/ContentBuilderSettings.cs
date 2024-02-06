@@ -1,5 +1,6 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.Json.Settings;
 
 namespace OrchardCore.ContentManagement.Metadata.Builders
 {
@@ -18,9 +19,11 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         /// A Json serializer that ignores properties which have their default values.
         /// To be able to have a default value : use [DefaultValue(true)] on a class property for example.
         /// </summary>
-        public static readonly JsonSerializer IgnoreDefaultValuesSerializer = new()
+        public static readonly JsonSerializerOptions IgnoreDefaultValuesSerializer = new()
         {
-            DefaultValueHandling = DefaultValueHandling.Ignore,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            ReferenceHandler = ReferenceHandler.IgnoreCycles,
+            PropertyNameCaseInsensitive = true,
         };
     }
 }

@@ -1,0 +1,11 @@
+@model AzureAISearchContentIndexSettings
+
+<h4>@T["Azure AI Search Index Settings"]</h4>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="Included" checked="@Model.Included" />
+        <label class="form-check-label" asp-for="Included">@T["Include this element in the index"]</label>
+        <span class="hint dashed">@T["Check to include the value of this element in the index."]</span>
+    </div>
+</div>

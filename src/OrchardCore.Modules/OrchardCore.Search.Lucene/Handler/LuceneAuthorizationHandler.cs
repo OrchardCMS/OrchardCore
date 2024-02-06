@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Entities;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Search.Lucene.Services;
@@ -11,17 +10,12 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Lucene.Handler;
 
-public class LuceneAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
+public class LuceneAuthorizationHandler(IServiceProvider serviceProvider) : AuthorizationHandler<PermissionRequirement>
 {
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IServiceProvider _serviceProvider = serviceProvider;
 
     private IAuthorizationService _authorizationService;
     private ISiteService _siteService;
-
-    public LuceneAuthorizationHandler(IServiceProvider serviceProvider)
-    {
-        _serviceProvider = serviceProvider;
-    }
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
     {
@@ -36,9 +30,7 @@ public class LuceneAuthorizationHandler : AuthorizationHandler<PermissionRequire
             return;
         }
 
-        var service = _serviceProvider.GetService<LuceneSearchService>();
-
-        if (service == null || service.Name != parameters.ServiceName)
+        if (LuceneSearchService.Key != parameters.ServiceName)
         {
             // Only validate if Lucene is requested.
             return;

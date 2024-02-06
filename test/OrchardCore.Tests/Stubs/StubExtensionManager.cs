@@ -27,7 +27,7 @@ namespace OrchardCore.Tests.Stubs
 
         public IEnumerable<IFeatureInfo> GetFeatures()
         {
-            return Enumerable.Empty<IFeatureInfo>();
+            return [];
         }
 
         public IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad)

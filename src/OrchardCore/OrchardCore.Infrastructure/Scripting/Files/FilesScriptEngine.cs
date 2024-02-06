@@ -6,7 +6,7 @@ using Microsoft.Extensions.FileProviders;
 namespace OrchardCore.Scripting.Files
 {
     /// <summary>
-    /// Provides
+    /// Provides.
     /// </summary>
     public class FilesScriptEngine : IScriptingEngine
     {
@@ -19,10 +19,7 @@ namespace OrchardCore.Scripting.Files
 
         public object Evaluate(IScriptingScope scope, string script)
         {
-            if (scope == null)
-            {
-                throw new ArgumentNullException(nameof(scope));
-            }
+            ArgumentNullException.ThrowIfNull(scope);
 
             if (scope is not FilesScriptScope fileScope)
             {

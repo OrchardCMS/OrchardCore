@@ -6,7 +6,7 @@ namespace OrchardCore.XmlRpc.Models
     {
         public XRpcArray()
         {
-            Data = new List<XRpcData>();
+            Data = [];
         }
         public IList<XRpcData> Data { get; set; }
 

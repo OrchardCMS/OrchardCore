@@ -51,7 +51,7 @@ namespace OrchardCore.Contents.Liquid
             ContentItem createFor = null;
 
             Dictionary<string, string> routeValues = null;
-            Dictionary<string, string> customAttributes = new();
+            Dictionary<string, string> customAttributes = [];
 
             foreach (var argument in argumentsList)
             {
@@ -67,7 +67,7 @@ namespace OrchardCore.Contents.Liquid
 
                         if (argument.Name.StartsWith("route_", StringComparison.OrdinalIgnoreCase))
                         {
-                            routeValues ??= new Dictionary<string, string>();
+                            routeValues ??= [];
                             routeValues[argument.Name[6..]] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
                         }
                         else

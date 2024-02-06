@@ -16,24 +16,18 @@ namespace OrchardCore.DisplayManagement.Views
 
         public ShapeViewModel(string shapeType)
         {
-            if (string.IsNullOrEmpty(shapeType))
-            {
-                throw new ArgumentException($"The {nameof(shapeType)} cannot be empty");
-            }
+            ArgumentException.ThrowIfNullOrEmpty(shapeType, nameof(shapeType));
 
             Metadata.Type = shapeType;
         }
 
         private ShapeMetadata _metadata;
+
         public ShapeMetadata Metadata => _metadata ??= new ShapeMetadata();
 
         public string Position
         {
-            get
-            {
-                return Metadata.Position;
-            }
-
+            get => Metadata.Position;
             set
             {
                 Metadata.Position = value;
@@ -41,25 +35,30 @@ namespace OrchardCore.DisplayManagement.Views
         }
 
         public string Id { get; set; }
+
         public string TagName { get; set; }
 
         private List<string> _classes;
-        public IList<string> Classes => _classes ??= new List<string>();
+
+        public IList<string> Classes => _classes ??= [];
 
         private Dictionary<string, string> _attributes;
-        public IDictionary<string, string> Attributes => _attributes ??= new Dictionary<string, string>();
+
+        public IDictionary<string, string> Attributes => _attributes ??= [];
 
         private Dictionary<string, object> _properties;
-        public IDictionary<string, object> Properties => _properties ??= new Dictionary<string, object>();
+
+        public IDictionary<string, object> Properties => _properties ??= [];
 
         private bool _sorted = false;
 
         private List<IPositioned> _items;
+
         public IReadOnlyList<IPositioned> Items
         {
             get
             {
-                _items ??= new List<IPositioned>();
+                _items ??= [];
 
                 if (!_sorted)
                 {
@@ -78,8 +77,9 @@ namespace OrchardCore.DisplayManagement.Views
                 return new ValueTask<IShape>(this);
             }
 
-            position ??= "";
+            position ??= string.Empty;
             _sorted = false;
+            _items ??= [];
 
             if (item is IHtmlContent)
             {
@@ -91,8 +91,7 @@ namespace OrchardCore.DisplayManagement.Views
             }
             else
             {
-                var shape = item as IPositioned;
-                if (shape != null)
+                if (item is IPositioned shape)
                 {
                     if (position != null)
                     {

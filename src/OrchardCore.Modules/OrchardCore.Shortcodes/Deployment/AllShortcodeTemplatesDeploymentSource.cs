@@ -1,5 +1,5 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.Shortcodes.Services;
 
@@ -23,7 +23,7 @@ namespace OrchardCore.Shortcodes.Deployment
                 return;
             }
 
-            var templateObjects = new JObject();
+            var templateObjects = new JsonObject();
             var templates = await _templatesManager.GetShortcodeTemplatesDocumentAsync();
 
             foreach (var template in templates.ShortcodeTemplates)
@@ -31,10 +31,11 @@ namespace OrchardCore.Shortcodes.Deployment
                 templateObjects[template.Key] = JObject.FromObject(template.Value);
             }
 
-            result.Steps.Add(new JObject(
-                new JProperty("name", "ShortcodeTemplates"),
-                new JProperty("ShortcodeTemplates", templateObjects)
-            ));
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "ShortcodeTemplates",
+                ["ShortcodeTemplates"] = templateObjects,
+            });
         }
     }
 }

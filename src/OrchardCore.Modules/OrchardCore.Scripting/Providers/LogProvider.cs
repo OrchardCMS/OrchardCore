@@ -32,7 +32,7 @@ namespace OrchardCore.Scripting.Providers
                             object[] args;
                             if (param is not Array)
                             {
-                                args = new[] { param };
+                                args = [param];
                             }
                             else
                             {

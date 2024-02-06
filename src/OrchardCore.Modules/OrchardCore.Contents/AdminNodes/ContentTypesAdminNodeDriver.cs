@@ -58,7 +58,7 @@ namespace OrchardCore.Contents.AdminNodes
         public override async Task<IDisplayResult> UpdateAsync(ContentTypesAdminNode treeNode, IUpdateModel updater)
         {
             // Initializes the value to empty otherwise the model is not updated if no type is selected.
-            treeNode.ContentTypes = Array.Empty<ContentTypeEntry>();
+            treeNode.ContentTypes = [];
 
             var model = new ContentTypesAdminNodeViewModel();
 

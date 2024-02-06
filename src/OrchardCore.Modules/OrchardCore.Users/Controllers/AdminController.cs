@@ -45,7 +45,6 @@ namespace OrchardCore.Users.Controllers
         private readonly IShapeFactory _shapeFactory;
         private readonly ILogger _logger;
 
-        protected readonly dynamic New;
         protected readonly IHtmlLocalizer H;
         protected readonly IStringLocalizer S;
 
@@ -81,8 +80,6 @@ namespace OrchardCore.Users.Controllers
             _updateModelAccessor = updateModelAccessor;
             _shapeFactory = shapeFactory;
             _logger = logger;
-
-            New = shapeFactory;
             H = htmlLocalizer;
             S = stringLocalizer;
         }
@@ -113,8 +110,6 @@ namespace OrchardCore.Users.Controllers
             // Populate route values to maintain previous route data when generating page links.
             options.RouteValues.TryAdd("q", options.FilterResult.ToString());
 
-            var routeData = new RouteData(options.RouteValues);
-
             var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
             var count = await users.CountAsync();
@@ -124,7 +119,7 @@ namespace OrchardCore.Users.Controllers
                 .Take(pager.PageSize)
                 .ListAsync();
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
+            dynamic pagerShape = await _shapeFactory.PagerAsync(pager, count, options.RouteValues);
 
             var userEntries = new List<UserEntry>();
 
@@ -137,31 +132,31 @@ namespace OrchardCore.Users.Controllers
                 });
             }
 
-            options.UserFilters = new List<SelectListItem>()
-            {
+            options.UserFilters =
+            [
                 new SelectListItem() { Text = S["All Users"], Value = nameof(UsersFilter.All), Selected = (options.Filter == UsersFilter.All) },
                 new SelectListItem() { Text = S["Enabled Users"], Value = nameof(UsersFilter.Enabled), Selected = (options.Filter == UsersFilter.Enabled) },
                 new SelectListItem() { Text = S["Disabled Users"], Value = nameof(UsersFilter.Disabled), Selected = (options.Filter == UsersFilter.Disabled) }
                 // new SelectListItem() { Text = S["Approved"], Value = nameof(UsersFilter.Approved) },
                 // new SelectListItem() { Text = S["Email pending"], Value = nameof(UsersFilter.EmailPending) },
                 // new SelectListItem() { Text = S["Pending"], Value = nameof(UsersFilter.Pending) }
-            };
+            ];
 
-            options.UserSorts = new List<SelectListItem>()
-            {
+            options.UserSorts =
+            [
                 new SelectListItem() { Text = S["Name"], Value = nameof(UsersOrder.Name), Selected = (options.Order == UsersOrder.Name) },
                 new SelectListItem() { Text = S["Email"], Value = nameof(UsersOrder.Email), Selected = (options.Order == UsersOrder.Email) },
                 // new SelectListItem() { Text = S["Created date"], Value = nameof(UsersOrder.CreatedUtc) },
                 // new SelectListItem() { Text = S["Last Login date"], Value = nameof(UsersOrder.LastLoginUtc) }
-            };
+            ];
 
-            options.UsersBulkAction = new List<SelectListItem>()
-            {
+            options.UsersBulkAction =
+            [
                 new SelectListItem() { Text = S["Approve"], Value = nameof(UsersBulkAction.Approve) },
                 new SelectListItem() { Text = S["Enable"], Value = nameof(UsersBulkAction.Enable) },
                 new SelectListItem() { Text = S["Disable"], Value = nameof(UsersBulkAction.Disable) },
                 new SelectListItem() { Text = S["Delete"], Value = nameof(UsersBulkAction.Delete) }
-            };
+            ];
 
             var roleNames = new List<string>();
 
@@ -177,25 +172,23 @@ namespace OrchardCore.Users.Controllers
                 roleNames.Add(roleName);
             }
 
-            options.UserRoleFilters = new List<SelectListItem>()
-            {
+            options.UserRoleFilters =
+            [
                 new SelectListItem() { Text = S["Any role"], Value = string.Empty, Selected = options.SelectedRole == string.Empty },
-                new SelectListItem() { Text = S["Authenticated (no roles)"], Value = "Authenticated", Selected = string.Equals(options.SelectedRole, "Authenticated", StringComparison.OrdinalIgnoreCase) }
-            };
-
-            // TODO Candidate for dynamic localization.
-            options.UserRoleFilters.AddRange(
-                roleNames.Select(roleName =>
+                new SelectListItem() { Text = S["Authenticated (no roles)"], Value = "Authenticated", Selected = string.Equals(options.SelectedRole, "Authenticated", StringComparison.OrdinalIgnoreCase) },
+                // TODO Candidate for dynamic localization.
+                .. roleNames.Select(roleName =>
                     new SelectListItem
                     {
                         Text = roleName,
                         Value = roleName.Contains(' ') ? $"\"{roleName}\"" : roleName,
                         Selected = string.Equals(options.SelectedRole?.Trim('"'), roleName, StringComparison.OrdinalIgnoreCase)
                     })
-                );
+,
+            ];
 
             // Populate options pager summary values.
-            var startIndex = (pagerShape.Page - 1) * (pagerShape.PageSize) + 1;
+            var startIndex = (pagerShape.Page - 1) * pagerShape.PageSize + 1;
             options.StartIndex = startIndex;
             options.EndIndex = startIndex + userEntries.Count - 1;
             options.UsersCount = userEntries.Count;
@@ -214,7 +207,7 @@ namespace OrchardCore.Users.Controllers
             return View(shapeViewModel);
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
         public async Task<ActionResult> IndexFilterPOST(UserIndexOptions options)
         {
@@ -233,7 +226,7 @@ namespace OrchardCore.Users.Controllers
             return RedirectToAction(nameof(Index), options.RouteValues);
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.BulkAction")]
         public async Task<ActionResult> IndexPOST(UserIndexOptions options, IEnumerable<string> itemIds)
         {
@@ -289,13 +282,14 @@ namespace OrchardCore.Users.Controllers
                             }
                             break;
                         default:
-                            throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk options.");
+                            throw new ArgumentOutOfRangeException(options.BulkAction.ToString(), "Invalid bulk options.");
                     }
                 }
-
             }
+
             return RedirectToAction(nameof(Index));
         }
+
         public async Task<IActionResult> Create()
         {
             var user = new User();

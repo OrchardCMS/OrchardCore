@@ -30,8 +30,8 @@ Start by adding a new Lucene query. Name it `GetBlogsByFilter.` You can leave th
 
 The query itself will use Liquid to:
 
--   check if we have a value for each of the filters
--   build the correct blocks based on the filter data
+- check if we have a value for each of the filters
+- build the correct blocks based on the filter data
 
 ### A quick review
 
@@ -52,10 +52,10 @@ A good way to model this filter in JSON is like this:
 
 ```
 {
-	"size": 10,
-	"query": {
- 	  "term": { "Content.ContentItem.ContentType.keyword" : "BlogPost" }
-	}
+ "size": 10,
+ "query": {
+    "term": { "Content.ContentItem.ContentType.keyword" : "BlogPost" }
+ }
 }
 ```
 
@@ -74,14 +74,14 @@ To create that logic, we can do this:
 
 ```
 {
-	"size": 10,
-	"query": {
+ "size": 10,
+ "query": {
 {% if categories or tags %}
 
 {% else %}
-  	"term": { "Content.ContentItem.ContentType.keyword" : "BlogPost" }
+   "term": { "Content.ContentItem.ContentType.keyword" : "BlogPost" }
 {% endif %}
-	}
+ }
 }
 ```
 
@@ -108,66 +108,66 @@ To create the `AND` condition across taxonomy fields, we'll be wrapping the `mat
 
 ```
 "must": [
-	{% if categories %}
-		{
+ {% if categories %}
+  {
       "match":
       {
-      	"BlogPost.Category":
+       "BlogPost.Category":
         {
-      	  "query":"{% for cat in categories %}{{cat}} {% endfor %}",
-         	"operator": "or"
-      	}
-    	}
-	  },
-	{% endif %}
-	{% if tags %}
-		{
+         "query":"{% for cat in categories %}{{cat}} {% endfor %}",
+          "operator": "or"
+       }
+     }
+   },
+ {% endif %}
+ {% if tags %}
+  {
       "match":
       {
-      	"BlogPost.Tags": {
-      		"query":"{% for tag in tags %}{{tag}} {% endfor %}",
-      		"operator": "or"
-      	}
-    	}
+       "BlogPost.Tags": {
+        "query":"{% for tag in tags %}{{tag}} {% endfor %}",
+        "operator": "or"
+       }
+     }
     },
-	{% endif %}
+ {% endif %}
 ```
 
 Finally, gluing it all together into a usable query:
 
 ```
 {
-	"size": 10,
-	"query": {
-		{% if categories or tags %}
+ "size": 10,
+ "query": {
+  {% if categories or tags %}
     "bool": {
-			"must": [
-				{% if categories %}
-              		{
-      					"match": {
-      						"BlogPost.Category": {
-      	  						"query": "{% for cat in categories %}{{cat}} {% endfor %}",
-         						"operator": "or"
-      						}
-    					}
-	  				},
-				{% endif %}
-				{% if tags %}
-					{
-      					"match": {
-      						"BlogPost.Tags": {
-      							"query":"{% for tag in tags %}{{tag}} {% endfor %}",
-      							"operator": "or"
-      						}
-    					}
-    				},
-				{% endif %}
-    		],
-		}
+   "must": [
+    {% if categories %}
+                {
+           "match": {
+            "BlogPost.Category": {
+               "query": "{% for cat in categories %}{{cat}} {% endfor %}",
+               "operator": "or"
+            }
+         }
+       },
+    {% endif %}
+    {% if tags %}
+     {
+           "match": {
+            "BlogPost.Tags": {
+             "query":"{% for tag in tags %}{{tag}} {% endfor %}",
+             "operator": "or"
+            }
+         }
+        },
+    {% endif %}
+      ],
+  }
     {% else %}
       "term": { "Content.ContentItem.ContentType.keyword" : "BlogPost" }
     {% endif %}
-	}
+ }
 }
 ```
 

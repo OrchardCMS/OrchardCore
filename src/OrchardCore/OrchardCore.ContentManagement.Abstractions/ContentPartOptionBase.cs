@@ -6,10 +6,7 @@ namespace OrchardCore.ContentManagement
     {
         public ContentPartOptionBase(Type contentPartType)
         {
-            if (contentPartType == null)
-            {
-                throw new ArgumentNullException(nameof(contentPartType));
-            }
+            ArgumentNullException.ThrowIfNull(contentPartType);
 
             Type = contentPartType;
         }

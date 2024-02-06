@@ -13,7 +13,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
     public class ShapeTag
     {
-        private static readonly char[] _separators = { ',', ' ' };
+        private static readonly char[] _separators = [',', ' '];
 
         public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
@@ -58,7 +58,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                     case "type":
                     case "": type = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
 
-                    default: (customAttributes ??= new Dictionary<string, object>())[argument.Name.ToPascalCaseUnderscore()] = (await argument.Expression.EvaluateAsync(context)).ToObjectValue(); break;
+                    default: (customAttributes ??= [])[argument.Name.ToPascalCaseUnderscore()] = (await argument.Expression.EvaluateAsync(context)).ToObjectValue(); break;
                 }
             }
 

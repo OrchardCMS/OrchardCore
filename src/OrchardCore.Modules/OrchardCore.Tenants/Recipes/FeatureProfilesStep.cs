@@ -1,6 +1,6 @@
 using System;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -27,11 +27,11 @@ namespace OrchardCore.Tenants.Recipes
                 return;
             }
 
-            if (context.Step.Property("FeatureProfiles")?.Value is JObject featureProfiles)
+            if (context.Step.TryGetPropertyValue("FeatureProfiles", out var jsonNode) && jsonNode is JsonObject featureProfiles)
             {
-                foreach (var property in featureProfiles.Properties())
+                foreach (var property in featureProfiles)
                 {
-                    var name = property.Name;
+                    var name = property.Key;
                     var value = property.Value.ToObject<FeatureProfile>();
 
                     await _featureProfilesManager.UpdateFeatureProfileAsync(name, value);

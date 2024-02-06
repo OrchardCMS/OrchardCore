@@ -11,9 +11,9 @@ namespace OrchardCore.Media.Services
 {
     public class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
     {
-        private static readonly int[] _defaultSupportedSizes = new[] { 16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048 };
+        private static readonly int[] _defaultSupportedSizes = [16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048];
 
-        private static readonly string[] _defaultAllowedFileExtensions = new string[] {
+        private static readonly string[] _defaultAllowedFileExtensions = [
             // Images
             ".jpg",
             ".jpeg",
@@ -25,10 +25,15 @@ namespace OrchardCore.Media.Services
 
             // Documents
             ".pdf", // (Portable Document Format; Adobe Acrobat)
-            ".doc", ".docx", // (Microsoft Word Document)
-            ".ppt", ".pptx", ".pps", ".ppsx", // (Microsoft PowerPoint Presentation)
+            ".doc",
+            ".docx", // (Microsoft Word Document)
+            ".ppt",
+            ".pptx",
+            ".pps",
+            ".ppsx", // (Microsoft PowerPoint Presentation)
             ".odt", // (OpenDocument Text Document)
-            ".xls", ".xlsx", // (Microsoft Excel Document)
+            ".xls",
+            ".xlsx", // (Microsoft Excel Document)
             ".psd", // (Adobe Photoshop Document)
 
             // Audio
@@ -38,14 +43,15 @@ namespace OrchardCore.Media.Services
             ".wav",
 
             // Video
-            ".mp4", ".m4v", // (MPEG-4)
+            ".mp4",
+            ".m4v", // (MPEG-4)
             ".mov", // (QuickTime)
             ".wmv", // (Windows Media Video)
             ".avi",
             ".mpg",
             ".ogv", // (Ogg)
             ".3gp", // (3GPP)
-        };
+        ];
 
         private const int DefaultMaxBrowserCacheDays = 30;
         private const int DefaultMaxCacheDays = 365;

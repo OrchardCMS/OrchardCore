@@ -13,7 +13,7 @@ namespace OrchardCore.Modules.OrchardCore.Tenants.Tests;
 
 public class ApiControllerTests
 {
-    private readonly Dictionary<string, ShellSettings> _shellSettings = new();
+    private readonly Dictionary<string, ShellSettings> _shellSettings = [];
     private readonly Mock<IClock> _clockMock = new();
     private readonly Dictionary<string, FeatureProfile> _featureProfiles = new()
     {
@@ -32,7 +32,7 @@ public class ApiControllerTests
             Name = "Test",
             RequestUrlPrefix = "test",
             RequestUrlHost = "orchardcore.net",
-            FeatureProfiles = new[] { "Feature Profile" },
+            FeatureProfiles = ["Feature Profile"],
             IsNewTenant = true
         };
 
@@ -73,7 +73,7 @@ public class ApiControllerTests
             Name = "Test",
             RequestUrlPrefix = "test",
             RequestUrlHost = "orchardcore.net",
-            FeatureProfiles = new[] { "Feature Profile" },
+            FeatureProfiles = ["Feature Profile"],
             IsNewTenant = true
         };
 
@@ -171,7 +171,7 @@ public class ApiControllerTests
             Mock.Of<IEmailAddressValidator>(),
             Options.Create(new IdentityOptions()),
             Options.Create(new TenantsOptions()),
-            Enumerable.Empty<DatabaseProvider>(),
+            [],
             tenantValidator,
             Mock.Of<IStringLocalizer<ApiController>>(),
             Mock.Of<ILogger<ApiController>>())

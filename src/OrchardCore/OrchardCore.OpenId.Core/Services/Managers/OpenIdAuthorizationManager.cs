@@ -54,10 +54,7 @@ namespace OrchardCore.OpenId.Services.Managers
         /// </returns>
         public virtual ValueTask<string> GetPhysicalIdAsync(TAuthorization authorization, CancellationToken cancellationToken = default)
         {
-            if (authorization == null)
-            {
-                throw new ArgumentNullException(nameof(authorization));
-            }
+            ArgumentNullException.ThrowIfNull(authorization);
 
             return Store is IOpenIdAuthorizationStore<TAuthorization> store ?
                 store.GetPhysicalIdAsync(authorization, cancellationToken) :

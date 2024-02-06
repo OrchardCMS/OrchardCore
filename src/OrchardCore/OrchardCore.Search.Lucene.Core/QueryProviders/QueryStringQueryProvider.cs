@@ -1,12 +1,12 @@
+using System.Text.Json.Nodes;
 using Lucene.Net.QueryParsers.Classic;
 using Lucene.Net.Search;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Search.Lucene.QueryProviders
 {
     public class QueryStringQueryProvider : ILuceneQueryProvider
     {
-        public Query CreateQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JObject query)
+        public Query CreateQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JsonObject query)
         {
             if (type != "query_string")
             {

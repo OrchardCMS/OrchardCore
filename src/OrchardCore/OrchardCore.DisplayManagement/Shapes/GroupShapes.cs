@@ -24,7 +24,7 @@ namespace OrchardCore.DisplayManagement.Shapes
             }
 
             var tabs = tabsGrouping.Select(group => group.Key).ToArray();
-            if (!tabs.Any())
+            if (tabs.Length == 0)
             {
                 return HtmlString.Empty;
             }

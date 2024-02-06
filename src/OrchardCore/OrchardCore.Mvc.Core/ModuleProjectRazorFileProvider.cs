@@ -162,7 +162,7 @@ namespace OrchardCore.Mvc
 
                         if (File.Exists(filePath))
                         {
-                            //Serve the file from the physical file system.
+                            // Serve the file from the physical file system.
                             return new PhysicalFileInfo(new FileInfo(filePath));
                         }
                     }

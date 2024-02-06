@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace OrchardCore.Tests.Apis.Context
 {
     /// <summary>
@@ -5,11 +7,6 @@ namespace OrchardCore.Tests.Apis.Context
     /// </summary>
     internal static class HttpRequestExtensions
     {
-        private readonly static JsonSerializerSettings _jsonSettings = new()
-        {
-            NullValueHandling = NullValueHandling.Ignore
-        };
-
         /// <summary>
         /// The patch as json async.
         /// </summary>
@@ -34,10 +31,10 @@ namespace OrchardCore.Tests.Apis.Context
             this HttpClient client,
             string requestUri,
             T value,
-            JsonSerializerSettings settings = null)
+            JsonSerializerOptions options = null)
         {
             var content = new StringContent(
-                JsonConvert.SerializeObject(value, settings ?? _jsonSettings),
+                JConvert.SerializeObject(value, options),
                 Encoding.UTF8,
                 "application/json");
 
@@ -99,10 +96,10 @@ namespace OrchardCore.Tests.Apis.Context
             this HttpClient client,
             string requestUri,
             T value,
-            JsonSerializerSettings settings = null)
+            JsonSerializerOptions options = null)
         {
             var content = new StringContent(
-                JsonConvert.SerializeObject(value, settings ?? _jsonSettings),
+                JConvert.SerializeObject(value, options),
                 Encoding.UTF8,
                 "application/json");
 
@@ -133,10 +130,10 @@ namespace OrchardCore.Tests.Apis.Context
             this HttpClient client,
             string requestUri,
             T value,
-            JsonSerializerSettings settings = null)
+            JsonSerializerOptions options = null)
         {
             var content = new StringContent(
-                JsonConvert.SerializeObject(value, settings ?? _jsonSettings),
+                JConvert.SerializeObject(value, options),
                 Encoding.UTF8,
                 "application/json");
 

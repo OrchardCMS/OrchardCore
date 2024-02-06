@@ -1,37 +1,37 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Handlers;
 
 namespace OrchardCore.ContentManagement
 {
     /// <summary>
-    /// Content management functionality to deal with Orchard content items and their parts
+    /// Content management functionality to deal with Orchard content items and their parts.
     /// </summary>
     public interface IContentManager
     {
         /// <summary>
-        /// Creates a new content item with the specified type
+        /// Creates a new content item with the specified type.
         /// </summary>
         /// <remarks>
-        /// The content item is not yet persisted!
+        /// The content item is not yet persisted!.
         /// </remarks>
-        /// <param name="contentType">The name of the content type</param>
+        /// <param name="contentType">The name of the content type.</param>
         Task<ContentItem> NewAsync(string contentType);
 
         /// <summary>
         /// Updates a content item without creating a new version.
         /// </summary>
-        /// <param name="contentItem">The existing content item with updated data</param>
+        /// <param name="contentItem">The existing content item with updated data.</param>
         Task UpdateAsync(ContentItem contentItem);
 
         /// <summary>
-        /// Creates (persists) a new content item with the specified version
+        /// Creates (persists) a new content item with the specified version.
         /// </summary>
-        /// <param name="contentItem">The content instance filled with all necessary data</param>
-        /// <param name="options">The version to create the item with</param>
+        /// <param name="contentItem">The content instance filled with all necessary data.</param>
+        /// <param name="options">The version to create the item with.</param>
         Task CreateAsync(ContentItem contentItem, VersionOptions options);
 
 
@@ -57,36 +57,36 @@ namespace OrchardCore.ContentManagement
         Task ImportAsync(IEnumerable<ContentItem> contentItems);
 
         /// <summary>
-        /// Validates a content item
+        /// Validates a content item.
         /// </summary>
         /// <param name="contentItem"></param>
         /// <returns>The validation <see cref="ContentValidateResult"/> result.</returns>
         Task<ContentValidateResult> ValidateAsync(ContentItem contentItem);
 
         /// <summary>
-        /// Restores a content item
+        /// Restores a content item.
         /// </summary>
         /// <param name="contentItem"></param>
         /// <returns>The validation <see cref="ContentValidateResult"/> result.</returns>
         Task<ContentValidateResult> RestoreAsync(ContentItem contentItem);
 
         /// <summary>
-        /// Gets the published content item with the specified id
+        /// Gets the published content item with the specified id.
         /// </summary>
-        /// <param name="id">The content item id to load</param>
+        /// <param name="id">The content item id to load.</param>
         Task<ContentItem> GetAsync(string id);
 
         /// <summary>
-        /// Gets the content item with the specified id and version
+        /// Gets the content item with the specified id and version.
         /// </summary>
-        /// <param name="id">The id content item id to load</param>
-        /// <param name="options">The version option</param>
+        /// <param name="id">The id content item id to load.</param>
+        /// <param name="options">The version option.</param>
         Task<ContentItem> GetAsync(string id, VersionOptions options);
 
         /// <summary>
-        /// Gets the published content items with the specified ids
+        /// Gets the published content items with the specified ids.
         /// </summary>
-        /// <param name="contentItemIds">The content item ids to load</param>
+        /// <param name="contentItemIds">The content item ids to load.</param>
         /// <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
         /// <remarks>
         /// This method will always issue a database query.
@@ -95,10 +95,10 @@ namespace OrchardCore.ContentManagement
         Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, bool latest = false);
 
         /// <summary>
-        /// Gets the published content items with the specified ids
+        /// Gets the published content items with the specified ids.
         /// </summary>
-        /// <param name="contentItemIds">The content item ids to load</param>
-        /// <param name="options">The version option</param>
+        /// <param name="contentItemIds">The content item ids to load.</param>
+        /// <param name="options">The version option.</param>
         /// <remarks>
         /// This method will always issue a database query.
         /// This means that it should be used only to get a list of content items that have not been loaded.
@@ -106,15 +106,15 @@ namespace OrchardCore.ContentManagement
         Task<IEnumerable<ContentItem>> GetAsync(IEnumerable<string> contentItemIds, VersionOptions options);
 
         /// <summary>
-        /// Gets the content item with the specified version id
+        /// Gets the content item with the specified version id.
         /// </summary>
-        /// <param name="contentItemVersionId">The content item version id</param>
+        /// <param name="contentItemVersionId">The content item version id.</param>
         Task<ContentItem> GetVersionAsync(string contentItemVersionId);
 
         /// <summary>
         /// Triggers the Load events for a content item that was queried directly from the database.
         /// </summary>
-        /// <param name="contentItem">The content item </param>
+        /// <param name="contentItem">The content item. </param>
         Task<ContentItem> LoadAsync(ContentItem contentItem);
 
         /// <summary>
@@ -142,20 +142,20 @@ namespace OrchardCore.ContentManagement
         Task<TAspect> PopulateAspectAsync<TAspect>(IContent content, TAspect aspect);
 
         /// <summary>
-        /// Makes a clone of the content item
+        /// Makes a clone of the content item.
         /// </summary>
-        /// <param name="contentItem">The content item to clone</param>
-        /// <returns>Clone of the item</returns>
+        /// <param name="contentItem">The content item to clone.</param>
+        /// <returns>Clone of the item.</returns>
         Task<ContentItem> CloneAsync(ContentItem contentItem);
     }
 
     public static class ContentManagerExtensions
     {
         /// <summary>
-        /// Creates (persists) a new Published content item
+        /// Creates (persists) a new Published content item.
         /// </summary>
         /// <param name="contentManager">The <see cref="IContentManager"/> instance.</param>
-        /// <param name="contentItem">The content instance filled with all necessary data</param>
+        /// <param name="contentItem">The content instance filled with all necessary data.</param>
         public static Task CreateAsync(this IContentManager contentManager, ContentItem contentItem)
         {
             return contentManager.CreateAsync(contentItem, VersionOptions.Published);
@@ -218,8 +218,8 @@ namespace OrchardCore.ContentManagement
         /// Gets either the published container content item with the specified id, or if the json path supplied gets the contained content item. 
         /// </summary>
         /// <param name="contentManager">The <see cref="IContentManager"/> instance.</param>
-        /// <param name="id">The content item id to load</param>
-        /// <param name="jsonPath">The json path of the contained content item</param>
+        /// <param name="id">The content item id to load.</param>
+        /// <param name="jsonPath">The json path of the contained content item.</param>
         public static Task<ContentItem> GetAsync(this IContentManager contentManager, string id, string jsonPath)
         {
             return contentManager.GetAsync(id, jsonPath, VersionOptions.Published);
@@ -229,9 +229,9 @@ namespace OrchardCore.ContentManagement
         /// Gets either the container content item with the specified id and version, or if the json path supplied gets the contained content item.
         /// </summary>
         /// <param name="contentManager">The <see cref="IContentManager"/> instance.</param>
-        /// <param name="id">The id content item id to load</param>
-        /// <param name="options">The version option</param>
-        /// <param name="jsonPath">The json path of the contained content item</param>
+        /// <param name="id">The id content item id to load.</param>
+        /// <param name="options">The version option.</param>
+        /// <param name="jsonPath">The json path of the contained content item.</param>
         public static async Task<ContentItem> GetAsync(this IContentManager contentManager, string id, string jsonPath, VersionOptions options)
         {
             var contentItem = await contentManager.GetAsync(id, options);
@@ -239,8 +239,8 @@ namespace OrchardCore.ContentManagement
             // It represents a contained content item
             if (!string.IsNullOrEmpty(jsonPath))
             {
-                var root = contentItem.Content as JObject;
-                contentItem = root.SelectToken(jsonPath)?.ToObject<ContentItem>();
+                var root = (JsonObject)contentItem.Content;
+                contentItem = root.SelectNode(jsonPath)?.ToObject<ContentItem>();
 
                 return contentItem;
             }

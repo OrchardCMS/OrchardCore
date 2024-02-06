@@ -6,7 +6,7 @@ using OrchardCore.Queries.Sql.GraphQL.Queries;
 namespace OrchardCore.Queries.Sql.GraphQL
 {
     /// <summary>
-    /// These services are registered on the tenant service collection
+    /// These services are registered on the tenant service collection.
     /// </summary>
     [Feature("OrchardCore.Queries.Sql")]
     [RequireFeatures("OrchardCore.Apis.GraphQL")]

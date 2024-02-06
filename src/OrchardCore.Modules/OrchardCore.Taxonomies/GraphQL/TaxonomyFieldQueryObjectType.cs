@@ -1,7 +1,7 @@
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
@@ -52,7 +52,10 @@ namespace OrchardCore.Taxonomies.GraphQL
 
                     foreach (var termContentItemId in ids)
                     {
-                        var term = TaxonomyOrchardHelperExtensions.FindTerm(taxonomy.Content.TaxonomyPart.Terms as JArray, termContentItemId);
+                        var term = TaxonomyOrchardHelperExtensions.FindTerm(
+                            (JsonArray)taxonomy.Content["TaxonomyPart"]["Terms"],
+                            termContentItemId);
+
                         terms.Add(term);
                     }
 

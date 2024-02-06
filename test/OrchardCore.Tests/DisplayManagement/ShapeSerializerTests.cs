@@ -4,6 +4,7 @@ using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Tests.Stubs;
+using Arguments = OrchardCore.DisplayManagement.Arguments;
 
 namespace OrchardCore.Tests.DisplayManagement
 {

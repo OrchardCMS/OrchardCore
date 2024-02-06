@@ -19,7 +19,9 @@ public class TenantCompiledRazorAssemblyPart : ApplicationPart, IRazorCompiledIt
     /// <param name="assembly">The <see cref="System.Reflection.Assembly"/>The assembly.</param>
     public TenantCompiledRazorAssemblyPart(Assembly assembly)
     {
-        Assembly = assembly ?? throw new ArgumentNullException(nameof(assembly));
+        ArgumentNullException.ThrowIfNull(assembly);
+
+        Assembly = assembly;
     }
 
     /// <summary>

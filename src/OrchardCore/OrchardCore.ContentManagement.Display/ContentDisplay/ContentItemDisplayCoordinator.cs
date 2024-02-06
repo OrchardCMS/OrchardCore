@@ -157,7 +157,7 @@ namespace OrchardCore.ContentManagement.Display
 
                     var contentPartShape = shapeResult.Shape;
 
-                    // Make the ContentPart name property available on the shape
+                    // Make the ContentPart property available on the shape
                     contentPartShape.Properties[partTypeName] = part.Content;
                     contentPartShape.Properties["ContentItem"] = part.ContentItem;
 

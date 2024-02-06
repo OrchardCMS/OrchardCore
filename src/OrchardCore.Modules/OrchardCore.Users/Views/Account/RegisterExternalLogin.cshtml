@@ -16,7 +16,7 @@
     @if (!Model.NoUsername || string.IsNullOrWhiteSpace(Model.UserName) || ViewData.ModelState.GetFieldValidationState("UserName") == ModelValidationState.Invalid)
     {
         <div class="mb-3">
-            <label asp-for="UserName" class="col-md-3 control-label">@T["Username"]</label>
+            <label asp-for="UserName" class="col-md-3 form-label">@T["Username"]</label>
             <div class="col-md-9">
                 <input asp-for="UserName" class="form-control" autofocus />
                 <span asp-validation-for="UserName" class="text-danger"></span>
@@ -27,7 +27,7 @@
     @if (!Model.NoEmail || string.IsNullOrWhiteSpace(Model.Email) || ViewData.ModelState.GetFieldValidationState("Email") == ModelValidationState.Invalid)
     {
         <div class="mb-3">
-            <label asp-for="Email" class="col-md-3 control-label">@T["Email"]</label>
+            <label asp-for="Email" class="col-md-3 form-label">@T["Email"]</label>
             <div class="col-md-9">
                 <input asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
@@ -38,7 +38,7 @@
     @if (!Model.NoPassword)
     {
         <div class="mb-3">
-            <label asp-for="Password" class="col-md-3 control-label">@T["Password"]</label>
+            <label asp-for="Password" class="col-md-3 form-label">@T["Password"]</label>
             <div class="col-md-9">
                 <input asp-for="Password" class="form-control" />
                 <span asp-validation-for="Password" class="text-danger"></span>
@@ -46,7 +46,7 @@
         </div>
 
         <div class="mb-3">
-            <label asp-for="ConfirmPassword" class="col-md-3 control-label">@T["Confirm password"]</label>
+            <label asp-for="ConfirmPassword" class="col-md-3 form-label">@T["Confirm password"]</label>
             <div class="col-md-9">
                 <input asp-for="ConfirmPassword" class="form-control" />
                 <span asp-validation-for="ConfirmPassword" class="text-danger"></span>

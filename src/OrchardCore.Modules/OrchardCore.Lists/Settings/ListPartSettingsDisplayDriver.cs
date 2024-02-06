@@ -37,7 +37,7 @@ namespace OrchardCore.Lists.Settings
                 model.EnableOrdering = model.ListPartSettings.EnableOrdering;
                 model.ContainedContentTypes = model.ListPartSettings.ContainedContentTypes;
                 model.ShowHeader = model.ListPartSettings.ShowHeader;
-                model.ContentTypes = new NameValueCollection();
+                model.ContentTypes = [];
 
                 foreach (var contentTypeDefinition in await _contentDefinitionManager.ListTypeDefinitionsAsync())
                 {

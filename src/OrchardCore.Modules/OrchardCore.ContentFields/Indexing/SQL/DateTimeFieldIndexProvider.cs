@@ -18,7 +18,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
     public class DateTimeFieldIndexProvider : ContentFieldIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly HashSet<string> _ignoredTypes = new();
+        private readonly HashSet<string> _ignoredTypes = [];
         private IContentDefinitionManager _contentDefinitionManager;
 
         public DateTimeFieldIndexProvider(IServiceProvider serviceProvider)

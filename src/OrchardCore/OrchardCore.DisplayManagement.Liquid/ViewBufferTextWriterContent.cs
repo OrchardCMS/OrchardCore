@@ -58,7 +58,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         private StringBuilder AllocateBuilder()
         {
-            _previousPooledBuilders ??= new List<StringBuilderPool>();
+            _previousPooledBuilders ??= [];
             _previousPooledBuilders.Add(_pooledBuilder);
 
             _pooledBuilder = StringBuilderPool.GetInstance();

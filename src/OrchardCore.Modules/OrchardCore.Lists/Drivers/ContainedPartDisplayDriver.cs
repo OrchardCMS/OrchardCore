@@ -147,7 +147,7 @@ namespace OrchardCore.Lists.Drivers
             return Combine(results);
         }
 
-        private IDisplayResult GetListPartHeader(ContentItem containerContentItem, ListPartSettings listPartSettings)
+        private ShapeResult GetListPartHeader(ContentItem containerContentItem, ListPartSettings listPartSettings)
             => Initialize<ListPartHeaderAdminViewModel>("ListPartHeaderAdmin", async model =>
             {
                 model.ContainerContentItem = containerContentItem;
@@ -168,7 +168,7 @@ namespace OrchardCore.Lists.Drivers
         {
             if (settings.ContainedContentTypes == null)
             {
-                return Enumerable.Empty<ContentTypeDefinition>();
+                return [];
             }
 
             var definitions = new List<ContentTypeDefinition>();

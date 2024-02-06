@@ -18,9 +18,9 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Notifications.Sms",
     Description = "Provides a way to send SMS notifications to users.",
     Category = "Notifications",
-    Dependencies = new[]
-    {
+    Dependencies =
+    [
         "OrchardCore.Notifications",
         "OrchardCore.Sms",
-    }
+    ]
 )]

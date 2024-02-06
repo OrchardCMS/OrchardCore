@@ -12,7 +12,7 @@ namespace OrchardCore.Data.Migration.Records
         /// </summary>
         public DataMigrationRecord()
         {
-            DataMigrations = new List<DataMigration>();
+            DataMigrations = [];
         }
 
         /// <summary>

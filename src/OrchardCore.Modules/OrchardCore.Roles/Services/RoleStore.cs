@@ -62,10 +62,7 @@ namespace OrchardCore.Roles.Services
 
         public async Task<IdentityResult> CreateAsync(IRole role, CancellationToken cancellationToken)
         {
-            if (role == null)
-            {
-                throw new ArgumentNullException(nameof(role));
-            }
+            ArgumentNullException.ThrowIfNull(role);
 
             var roleToCreate = (Role)role;
 
@@ -83,10 +80,7 @@ namespace OrchardCore.Roles.Services
 
         public async Task<IdentityResult> DeleteAsync(IRole role, CancellationToken cancellationToken)
         {
-            if (role == null)
-            {
-                throw new ArgumentNullException(nameof(role));
-            }
+            ArgumentNullException.ThrowIfNull(role);
 
             var roleToRemove = (Role)role;
 
@@ -142,40 +136,28 @@ namespace OrchardCore.Roles.Services
 
         public Task<string> GetNormalizedRoleNameAsync(IRole role, CancellationToken cancellationToken)
         {
-            if (role == null)
-            {
-                throw new ArgumentNullException(nameof(role));
-            }
+            ArgumentNullException.ThrowIfNull(role);
 
             return Task.FromResult(((Role)role).NormalizedRoleName);
         }
 
         public Task<string> GetRoleIdAsync(IRole role, CancellationToken cancellationToken)
         {
-            if (role == null)
-            {
-                throw new ArgumentNullException(nameof(role));
-            }
+            ArgumentNullException.ThrowIfNull(role);
 
             return Task.FromResult(role.RoleName.ToUpperInvariant());
         }
 
         public Task<string> GetRoleNameAsync(IRole role, CancellationToken cancellationToken)
         {
-            if (role == null)
-            {
-                throw new ArgumentNullException(nameof(role));
-            }
+            ArgumentNullException.ThrowIfNull(role);
 
             return Task.FromResult(role.RoleName);
         }
 
         public Task SetNormalizedRoleNameAsync(IRole role, string normalizedName, CancellationToken cancellationToken)
         {
-            if (role == null)
-            {
-                throw new ArgumentNullException(nameof(role));
-            }
+            ArgumentNullException.ThrowIfNull(role);
 
             ((Role)role).NormalizedRoleName = normalizedName;
 
@@ -184,10 +166,7 @@ namespace OrchardCore.Roles.Services
 
         public Task SetRoleNameAsync(IRole role, string roleName, CancellationToken cancellationToken)
         {
-            if (role == null)
-            {
-                throw new ArgumentNullException(nameof(role));
-            }
+            ArgumentNullException.ThrowIfNull(role);
 
             ((Role)role).RoleName = roleName;
 
@@ -196,10 +175,7 @@ namespace OrchardCore.Roles.Services
 
         public async Task<IdentityResult> UpdateAsync(IRole role, CancellationToken cancellationToken)
         {
-            if (role == null)
-            {
-                throw new ArgumentNullException(nameof(role));
-            }
+            ArgumentNullException.ThrowIfNull(role);
 
             var roles = await LoadRolesAsync();
             var existingRole = roles.Roles.FirstOrDefault(x => x.RoleName == role.RoleName);
@@ -217,15 +193,9 @@ namespace OrchardCore.Roles.Services
 
         public Task AddClaimAsync(IRole role, Claim claim, CancellationToken cancellationToken = default)
         {
-            if (role == null)
-            {
-                throw new ArgumentNullException(nameof(role));
-            }
+            ArgumentNullException.ThrowIfNull(role);
 
-            if (claim == null)
-            {
-                throw new ArgumentNullException(nameof(claim));
-            }
+            ArgumentNullException.ThrowIfNull(claim);
 
             ((Role)role).RoleClaims.Add(new RoleClaim { ClaimType = claim.Type, ClaimValue = claim.Value });
 
@@ -234,25 +204,16 @@ namespace OrchardCore.Roles.Services
 
         public Task<IList<Claim>> GetClaimsAsync(IRole role, CancellationToken cancellationToken = default)
         {
-            if (role == null)
-            {
-                throw new ArgumentNullException(nameof(role));
-            }
+            ArgumentNullException.ThrowIfNull(role);
 
             return Task.FromResult<IList<Claim>>(((Role)role).RoleClaims.Select(x => x.ToClaim()).ToList());
         }
 
         public Task RemoveClaimAsync(IRole role, Claim claim, CancellationToken cancellationToken = default)
         {
-            if (role == null)
-            {
-                throw new ArgumentNullException(nameof(role));
-            }
+            ArgumentNullException.ThrowIfNull(role);
 
-            if (claim == null)
-            {
-                throw new ArgumentNullException(nameof(claim));
-            }
+            ArgumentNullException.ThrowIfNull(claim);
 
             ((Role)role).RoleClaims.RemoveAll(x => x.ClaimType == claim.Type && x.ClaimValue == claim.Value);
 

@@ -41,7 +41,7 @@ You can disable this by unchecking the `Sanitize HTML` setting, or further confi
 
 ## Editors
 
-The __HtmlBody Part__ editor can be different for each content type. In the __HtmlBody Part__ settings of a 
+The __HtmlBody Part__ editor can be different for each content type. In the __HtmlBody Part__ settings of a
 content type, just select the one that needs to be used.
 
 There are three predefined editor names:
@@ -65,7 +65,7 @@ render the actual HTML for the editor.
 
 #### Declaration
 
-To declare a new editor, create a shape named `HtmlBodyPart_Option__{Name}` where `{Name}` is a value 
+To declare a new editor, create a shape named `HtmlBodyPart_Option__{Name}` where `{Name}` is a value
 of your choosing. This will be represented by a file named `HtmlBodyPart-{Name}.Option.cshtml`.
 
 Sample content:

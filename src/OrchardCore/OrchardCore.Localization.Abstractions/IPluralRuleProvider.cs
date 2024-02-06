@@ -19,7 +19,7 @@ namespace OrchardCore.Localization
         /// </summary>
         /// <param name="culture">The culture.</param>
         /// <param name="rule">The <see cref="PluralizationRuleDelegate"/>.</param>
-        /// <returns>A boolean value indicates whether the culture rule is retrieved?</returns>
+        /// <returns>A boolean value indicates whether the culture rule is retrieved?.</returns>
         bool TryGetRule(CultureInfo culture, out PluralizationRuleDelegate rule);
     }
 }

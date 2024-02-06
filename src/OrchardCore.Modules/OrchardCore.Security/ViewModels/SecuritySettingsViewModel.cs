@@ -7,8 +7,8 @@ namespace OrchardCore.Security.ViewModels
 {
     public class SecuritySettingsViewModel
     {
-        private Dictionary<string, string> _contentSecurityPolicy = new();
-        private Dictionary<string, string> _permissionsPolicy = new();
+        private Dictionary<string, string> _contentSecurityPolicy = [];
+        private Dictionary<string, string> _permissionsPolicy = [];
 
         public Dictionary<string, string> ContentSecurityPolicy
         {

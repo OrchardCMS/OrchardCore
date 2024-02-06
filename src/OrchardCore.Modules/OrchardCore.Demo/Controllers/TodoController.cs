@@ -47,8 +47,7 @@ namespace OrchardCore.Demo.Controllers
         public async Task<IActionResult> Edit(string todoId)
         {
             var model = (await _session.Query<TodoModel>().ListAsync())
-                .Where(m => m.TodoId == todoId)
-                .FirstOrDefault();
+                .FirstOrDefault(m => m.TodoId == todoId);
 
             if (model == null)
             {
@@ -73,8 +72,7 @@ namespace OrchardCore.Demo.Controllers
             if (ModelState.IsValid)
             {
                 var model = (await _session.Query<TodoModel>().ListAsync())
-                    .Where(m => m.TodoId == viewModel.TodoId)
-                    .FirstOrDefault();
+                    .FirstOrDefault(m => m.TodoId == viewModel.TodoId);
 
                 model ??= new TodoModel() { TodoId = viewModel.TodoId };
 
@@ -82,7 +80,7 @@ namespace OrchardCore.Demo.Controllers
                 model.DueDate = viewModel.DueDate;
                 model.IsCompleted = viewModel.IsCompleted;
 
-                _session.Save(model);
+                await _session.SaveAsync(model);
 
                 if (Url.IsLocalUrl(returnUrl))
                 {
@@ -99,8 +97,7 @@ namespace OrchardCore.Demo.Controllers
         public async Task<IActionResult> Delete(string todoId)
         {
             var model = (await _session.Query<TodoModel>().ListAsync())
-                .Where(m => m.TodoId == todoId)
-                .FirstOrDefault();
+                .FirstOrDefault(m => m.TodoId == todoId);
 
             if (model == null)
             {

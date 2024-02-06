@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
@@ -7,23 +6,22 @@ namespace OrchardCore.Seo;
 
 public class SeoPermissionProvider : IPermissionProvider
 {
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-    {
-        return Task.FromResult(new[] { SeoConstants.ManageSeoSettings }.AsEnumerable());
-    }
+    public static readonly Permission ManageSeoSettings = SeoConstants.ManageSeoSettings;
 
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-    {
-        return new[]
+    private readonly IEnumerable<Permission> _allPermissions =
+    [
+        ManageSeoSettings,
+    ];
+
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
+    [
+        new PermissionStereotype
         {
-            new PermissionStereotype
-            {
-                Name = "Administrator",
-                Permissions = new[]
-                {
-                    SeoConstants.ManageSeoSettings
-                }
-            }
-        };
-    }
+            Name = "Administrator",
+            Permissions = _allPermissions,
+        },
+    ];
 }

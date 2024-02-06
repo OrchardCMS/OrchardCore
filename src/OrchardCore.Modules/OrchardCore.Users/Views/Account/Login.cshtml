@@ -34,12 +34,12 @@
                 <hr />
 
                 <div class="mb-3">
-                    <label asp-for="UserName">@T["Username or email address"]</label>
+                    <label asp-for="UserName" class="form-label">@T["Username or email address"]</label>
                     <input asp-for="UserName" class="form-control" autofocus tabindex="1" />
                     <span asp-validation-for="UserName" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
-                    <label asp-for="Password">
+                    <label asp-for="Password" class="form-label">
                         @T["Password"]
                         @if (allowResetPassword)
                         {

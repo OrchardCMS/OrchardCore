@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
@@ -22,7 +21,7 @@ namespace OrchardCore.HomeRoute.Routing
         {
             if (address.AmbientValues == null || address.ExplicitValues == null)
             {
-                return Enumerable.Empty<Endpoint>();
+                return [];
             }
 
             var homeRoute = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult().HomeRoute;
@@ -54,7 +53,7 @@ namespace OrchardCore.HomeRoute.Routing
                 return new[] { endpoint };
             }
 
-            return Enumerable.Empty<Endpoint>();
+            return [];
         }
 
         private static bool Match(RouteValueDictionary routeValues, RouteValueDictionary explicitValues)

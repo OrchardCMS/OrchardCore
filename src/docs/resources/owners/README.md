@@ -21,3 +21,4 @@ The below table lists the different code/features areas and their owners:
 | [Sébastien Ros](https://github.com/sebastienros) | YesSql, Fluid, Jint, Shortcodes |
 | [Jasmin Savard](https://github.com/skrypt) | Lucene, Indexing, Admin, UI |
 | [Bertrand Le Roy](https://github.com/bleroy) | Commerce module |
+| [Mike Alhayek](https://github.com/MikeAlhayek) | Azure AI Search, Notifications, SMS |

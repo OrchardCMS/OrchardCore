@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 using OrchardCore.Scripting;
 
 namespace OrchardCore.Recipes
@@ -18,7 +18,7 @@ namespace OrchardCore.Recipes
                 Name = "parameters",
                 Method = serviceprovider => (Func<string, object>)(name =>
                {
-                   return environmentObject.SelectToken(name)?.Value<string>();
+                   return environmentObject.SelectNode(name)?.Value<string>();
                }),
             };
         }

@@ -13,7 +13,7 @@ namespace OrchardCore.Features.Models
         /// </summary>
         public ModuleEntry()
         {
-            Notifications = new List<string>();
+            Notifications = [];
         }
 
         /// <summary>

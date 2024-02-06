@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Scripting;
 
@@ -14,7 +14,7 @@ namespace OrchardCore.Recipes
         private readonly GlobalMethod _globalMethod;
         private const string GlobalMethodName = "variables";
 
-        public VariablesMethodProvider(JObject variables, List<IGlobalMethodProvider> scopedMethodProviders)
+        public VariablesMethodProvider(JsonObject variables, List<IGlobalMethodProvider> scopedMethodProviders)
         {
             _globalMethod = new GlobalMethod
             {
@@ -37,7 +37,7 @@ namespace OrchardCore.Recipes
                     {
                         value = value.Trim('[', ']');
                         value = (ScriptingManager.Evaluate(value, null, null, scopedMethodProviders) ?? "").ToString();
-                        variables[name] = new JValue(value);
+                        variables[name] = value;
                     }
 
                     return value;

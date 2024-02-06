@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Workflows.Models;
@@ -27,7 +27,7 @@ namespace OrchardCore.Workflows.Recipes
 
             var model = context.Step.ToObject<WorkflowStepModel>();
 
-            foreach (var token in model.Data.Cast<JObject>())
+            foreach (var token in model.Data.Cast<JsonObject>())
             {
                 var workflow = token.ToObject<WorkflowType>();
 
@@ -49,6 +49,6 @@ namespace OrchardCore.Workflows.Recipes
 
     public class WorkflowStepModel
     {
-        public JArray Data { get; set; }
+        public JsonArray Data { get; set; }
     }
 }

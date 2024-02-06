@@ -203,7 +203,7 @@ namespace OrchardCore.Autoroute.Core.Services
             if (_initialized)
             {
                 return;
-            }
+            }   
 
             await _semaphore.WaitAsync();
             try

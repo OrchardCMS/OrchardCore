@@ -21,7 +21,7 @@
 
 <div class="mb-3" asp-validation-class-for="QueryName">
     <div>
-        <label asp-for="QueryName">@T["Query"]</label>
+        <label asp-for="QueryName" class="form-label">@T["Query"]</label>
         <select class="form-select form-select-sm" asp-for="QueryName">
             @foreach (var query in (await QueryManager.ListQueriesAsync()))
             {
@@ -36,7 +36,7 @@
 </div>
 
 <div class="mb-3" asp-validation-class-for="QueryParameters">
-    <label asp-for="QueryParameters">@T["Parameters"]</label>
+    <label asp-for="QueryParameters" class="form-label">@T["Parameters"]</label>
     <textarea asp-for="QueryParameters" class="form-control"></textarea>
     <span asp-validation-for="QueryParameters" class="text-danger"></span>
     <div class="hint">@T["An optional JSON object containing the parameter values for this query."]</div>

@@ -29,8 +29,7 @@ public class Startup : StartupBase
         if (!string.IsNullOrWhiteSpace(connectionString))
         {
             services
-                .AddSingleton(new BlobOptions())
-                .AddTransient<BlobOptionsSetup>()
+                .Configure<BlobOptions, BlobOptionsSetup>()
                 .AddDataProtection()
                 .PersistKeysToAzureBlobStorage(sp =>
                 {
@@ -40,13 +39,6 @@ public class Startup : StartupBase
                         options.ContainerName,
                         options.BlobName);
                 });
-
-            services.Initialize(async sp =>
-            {
-                var options = sp.GetRequiredService<BlobOptions>();
-                var setup = sp.GetRequiredService<BlobOptionsSetup>();
-                await setup.ConfigureAsync(options);
-            });
         }
         else
         {

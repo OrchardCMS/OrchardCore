@@ -79,7 +79,7 @@ namespace OrchardCore.Deployment
             return GetDeploymentPlans(deploymentPlans, deploymentPlanNames);
         }
 
-        private static IEnumerable<DeploymentPlan> GetDeploymentPlans(IDictionary<string, DeploymentPlan> deploymentPlans, params string[] deploymentPlanNames)
+        private static IEnumerable<DeploymentPlan> GetDeploymentPlans(Dictionary<string, DeploymentPlan> deploymentPlans, params string[] deploymentPlanNames)
         {
             foreach (var deploymentPlanName in deploymentPlanNames)
             {
@@ -106,11 +106,11 @@ namespace OrchardCore.Deployment
                     existingDeploymentPlan.DeploymentSteps.Clear();
                     existingDeploymentPlan.DeploymentSteps.AddRange(deploymentPlan.DeploymentSteps);
 
-                    _session.Save(existingDeploymentPlan);
+                    await _session.SaveAsync(existingDeploymentPlan);
                 }
                 else
                 {
-                    _session.Save(deploymentPlan);
+                    await _session.SaveAsync(deploymentPlan);
                 }
             }
         }

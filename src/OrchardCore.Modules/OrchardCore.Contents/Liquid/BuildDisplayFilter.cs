@@ -1,8 +1,8 @@
 using System;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement;
@@ -41,7 +41,7 @@ namespace OrchardCore.Contents.Liquid
             {
                 contentItem = null;
 
-                if (obj is JObject jObject)
+                if (obj is JsonObject jObject)
                 {
                     contentItem = jObject.ToObject<ContentItem>();
                 }

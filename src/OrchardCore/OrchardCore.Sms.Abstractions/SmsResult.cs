@@ -8,7 +8,10 @@ public class SmsResult
     /// <summary>
     /// Returns an <see cref="SmsResult"/> indicating a successful SMS operation.
     /// </summary>
-    public static SmsResult Success { get; } = new() { Succeeded = true };
+    public readonly static SmsResult Success = new()
+    {
+        Succeeded = true
+    };
 
     /// <summary>
     /// An <see cref="IEnumerable{LocalizedString}"/> containing an errors that occurred during the SMS operation.
@@ -33,6 +36,6 @@ public class SmsResult
         => new()
         {
             Succeeded = false,
-            Errors = errors
+            Errors = errors ?? [],
         };
 }

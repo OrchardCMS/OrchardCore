@@ -42,7 +42,7 @@ If not supplied the `BlobName` will automatically default to a folder per tenant
 !!! note
 When templating the `ContainerName`  using  `{{ ShellSettings.Name }}`, the tenant's name will be automatically lowercased, however, you must also make sure the `ContainerName` conforms to other Azure Blob naming conventions as set out in Azure's documentation.
 
-### Configuring a container per tenant.
+### Configuring a container per tenant
 
 ```json
 {

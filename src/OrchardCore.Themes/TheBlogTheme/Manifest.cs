@@ -7,5 +7,5 @@ using OrchardCore.Modules.Manifest;
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
     Description = "A theme adapted for blogs.",
-    Tags = new[] { "Blog", "Bootstrap", "Liquid" }
+    Tags = ["Blog", "Bootstrap", "Liquid"]
 )]

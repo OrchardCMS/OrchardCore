@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -90,7 +90,7 @@ namespace OrchardCore.Deployment.Recipes
         {
             public string Type { get; set; }
 
-            public JObject Step { get; set; }
+            public JsonObject Step { get; set; }
         }
     }
 }

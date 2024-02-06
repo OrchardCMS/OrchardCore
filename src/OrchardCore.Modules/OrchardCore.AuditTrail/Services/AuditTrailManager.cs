@@ -107,7 +107,7 @@ namespace OrchardCore.AuditTrail.Services
 
             await _auditTrailEventHandlers.InvokeAsync((handler, context, auditTrailEvent) => handler.AlterAsync(context, auditTrailEvent), createContext, auditTrailEvent, _logger);
 
-            _session.Save(auditTrailEvent, AuditTrailEvent.Collection);
+            await _session.SaveAsync(auditTrailEvent, AuditTrailEvent.Collection);
         }
         public Task<AuditTrailEvent> GetEventAsync(string eventId) =>
             _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)

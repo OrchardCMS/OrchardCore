@@ -5,14 +5,14 @@ using Microsoft.Extensions.FileProviders;
 namespace OrchardCore.Modules.FileProviders
 {
     /// <summary>
-    /// Represents a directory on a physical filesystem
+    /// Represents a directory on a physical filesystem.
     /// </summary>
     public class EmbeddedDirectoryInfo : IFileInfo
     {
         /// <summary>
-        /// Initializes an instance of <see cref="EmbeddedDirectoryInfo"/>
+        /// Initializes an instance of <see cref="EmbeddedDirectoryInfo"/>.
         /// </summary>
-        /// <param name="name">The directory</param>
+        /// <param name="name">The directory.</param>
         public EmbeddedDirectoryInfo(string name)
         {
             Name = name;
@@ -49,8 +49,8 @@ namespace OrchardCore.Modules.FileProviders
         /// <summary>
         /// Always throws an exception because read streams are not support on directories.
         /// </summary>
-        /// <exception cref="InvalidOperationException">Always thrown</exception>
-        /// <returns>Never returns</returns>
+        /// <exception cref="InvalidOperationException">Always thrown.</exception>
+        /// <returns>Never returns.</returns>
         public Stream CreateReadStream()
         {
             throw new InvalidOperationException("Cannot create a stream for a directory.");

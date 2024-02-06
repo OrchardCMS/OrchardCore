@@ -103,7 +103,7 @@ namespace OrchardCore.Features.Services
         ///// Determines if a module was recently installed by using the project's last written time.
         ///// </summary>
         ///// <param name="extensionDescriptor">The extension descriptor.</param>
-        //public bool IsRecentlyInstalled(ExtensionDescriptor extensionDescriptor) {
+        // public bool IsRecentlyInstalled(ExtensionDescriptor extensionDescriptor) {
         //    DateTime lastWrittenUtc = _cacheManager.Get(extensionDescriptor, descriptor => {
         //        string projectFile = GetManifestPath(extensionDescriptor);
         //        if (!string.IsNullOrEmpty(projectFile)) {
@@ -111,26 +111,26 @@ namespace OrchardCore.Features.Services
         //            return _virtualPathProvider.GetFileLastWriteTimeUtc(projectFile);
         //        }
 
-        //        return DateTime.UtcNow;
+        // return DateTime.UtcNow;
         //    });
 
-        //    return DateTime.UtcNow.Subtract(lastWrittenUtc) < new TimeSpan(1, 0, 0, 0);
-        //}
+        // return DateTime.UtcNow.Subtract(lastWrittenUtc) < new TimeSpan(1, 0, 0, 0);
+        // }
 
         ///// <summary>
         ///// Retrieves the full path of the manifest file for a module's extension descriptor.
         ///// </summary>
         ///// <param name="extensionDescriptor">The module's extension descriptor.</param>
         ///// <returns>The full path to the module's manifest file.</returns>
-        //private string GetManifestPath(ExtensionDescriptor extensionDescriptor) {
+        // private string GetManifestPath(ExtensionDescriptor extensionDescriptor) {
         //    string projectPath = _virtualPathProvider.Combine(extensionDescriptor.Location, extensionDescriptor.Id, "module.txt");
 
-        //    if (!_virtualPathProvider.FileExists(projectPath)) {
+        // if (!_virtualPathProvider.FileExists(projectPath)) {
         //        return null;
         //    }
 
-        //    return projectPath;
-        //}
+        // return projectPath;
+        // }
 
         private static ModuleFeature AssembleModuleFromDescriptor(IFeatureInfo featureInfo, bool isEnabled)
         {
@@ -141,11 +141,11 @@ namespace OrchardCore.Features.Services
             };
         }
 
-        //private void GenerateWarning(string messageFormat, string featureName, IEnumerable<string> featuresInQuestion) {
+        // private void GenerateWarning(string messageFormat, string featureName, IEnumerable<string> featuresInQuestion) {
         //    if (featuresInQuestion.Count() < 1)
         //        return;
 
-        //    Services.Notifier.Warning(T(
+        // Services.Notifier.Warning(T(
         //        messageFormat,
         //        featureName,
         //        featuresInQuestion.Count() > 1
@@ -158,6 +158,6 @@ namespace OrchardCore.Features.Services
         //                                           ? "{0} and "
         //                                           : "{0}, "), fn).ToString()).ToArray())
         //            : featuresInQuestion.First()));
-        //}
+        // }
     }
 }

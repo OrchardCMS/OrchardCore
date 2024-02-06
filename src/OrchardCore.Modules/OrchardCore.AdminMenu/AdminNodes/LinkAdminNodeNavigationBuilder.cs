@@ -28,7 +28,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
             _logger = logger;
         }
 
-        public string Name => typeof(LinkAdminNode).Name;
+        public string Name => nameof(LinkAdminNode);
 
         public Task BuildNavigationAsync(MenuItem menuItem, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
         {
@@ -62,7 +62,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
                 itemBuilder.Priority(node.Priority);
                 itemBuilder.Position(node.Position);
 
-                if (node.PermissionNames.Any())
+                if (node.PermissionNames.Length > 0)
                 {
                     var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
 

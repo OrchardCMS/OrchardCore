@@ -17,6 +17,6 @@ namespace OrchardCore.Contents.Workflows.ViewModels
         }
 
         public IList<ContentTypeDefinition> ContentTypeFilter { get; set; }
-        public IList<string> SelectedContentTypeNames { get; set; } = new List<string>();
+        public IList<string> SelectedContentTypeNames { get; set; } = [];
     }
 }

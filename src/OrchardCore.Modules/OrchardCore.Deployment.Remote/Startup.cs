@@ -90,7 +90,7 @@ namespace OrchardCore.Deployment
                 defaults: new { controller = remoteInstanceControllerName, action = nameof(RemoteInstanceController.Edit) }
             );
 
-            //ExportRemoteInstance
+            // ExportRemoteInstance
             routes.MapAreaControllerRoute(
                 name: "DeploymentExportRemoteInstanceExecute",
                 areaName: "OrchardCore.Deployment.Remote",

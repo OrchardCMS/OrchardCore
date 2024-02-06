@@ -63,10 +63,7 @@ namespace OrchardCore.Layers
             services.AddDataMigration<Migrations>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddRecipeExecutionStep<LayerStep>();
-
-            services.AddTransient<IDeploymentSource, AllLayersDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllLayersDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllLayersDeploymentStepDriver>();
+            services.AddDeployment<AllLayersDeploymentSource, AllLayersDeploymentStep, AllLayersDeploymentStepDriver>();
             services.AddSingleton<IGlobalMethodProvider, DefaultLayersMethodProvider>();
         }
 

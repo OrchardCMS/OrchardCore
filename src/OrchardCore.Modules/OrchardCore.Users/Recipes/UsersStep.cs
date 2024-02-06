@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using OrchardCore.Recipes.Models;
@@ -60,7 +61,7 @@ public class UsersStep : IRecipeStepHandler
             user.PhoneNumberConfirmed = importedUser.PhoneNumberConfirmed;
             user.RoleNames = importedUser.RoleNames;
 
-            _session.Save(user);
+            await _session.SaveAsync(user);
         }
     }
 }

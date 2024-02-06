@@ -1,5 +1,5 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Routing;
 
@@ -12,11 +12,11 @@ namespace OrchardCore.Taxonomies.Handlers
             return context.ForAsync<ContainedContentItemsAspect>(aspect =>
             {
                 // Check this content item contains Terms.
-                if (context.ContentItem.Content.Terms is JArray children)
+                if (((JsonNode)context.ContentItem.Content)["Terms"] is JsonArray)
                 {
-                    aspect.Accessors.Add((jObject) =>
+                    aspect.Accessors.Add((jsonObject) =>
                     {
-                        return jObject["Terms"] as JArray;
+                        return jsonObject["Terms"] as JsonArray;
                     });
                 }
 

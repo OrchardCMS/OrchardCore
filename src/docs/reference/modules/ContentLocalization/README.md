@@ -29,7 +29,6 @@ By default, the `ContentCulturePicker` sets a cookie for the `CookieRequestCultu
 
 The `ContentRequestCultureProvider` can set the cookie based on the ContentItem that matches the current url. This setting can be edited in the  `Configuration/Settings/Localization/Content Request Culture Provider` settings page.
 
-
 #### Recipe Step
 
 The cookie can be set during recipes using the settings step. Here is a sample step:

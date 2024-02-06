@@ -7,15 +7,15 @@ namespace OrchardCore.ContentLocalization
     public interface IContentLocalizationManager
     {
         /// <summary>
-        /// Get the list of items for the localizationSet
+        /// Get the list of items for the localizationSet.
         /// </summary>
-        /// <returns>List of all items matching a localizationSet</returns>
+        /// <returns>List of all items matching a localizationSet.</returns>
         Task<IEnumerable<ContentItem>> GetItemsForSetAsync(string localizationSet);
 
         /// <summary>
-        /// Get the content item that matches the localizationSet / culture combination
+        /// Get the content item that matches the localizationSet / culture combination.
         /// </summary>
-        /// <returns>ContentItem or null if not found</returns>
+        /// <returns>ContentItem or null if not found.</returns>
         Task<ContentItem> GetContentItemAsync(string localizationSet, string culture);
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace OrchardCore.ContentLocalization
         /// This method will clone the ContentItem of the default locale
         /// and set the culture of the LocalizationPart to the targetCulture.
         /// </summary>
-        /// <returns>The localized content item</returns>
+        /// <returns>The localized content item.</returns>
         Task<ContentItem> LocalizeAsync(ContentItem content, string targetCulture);
 
         /// <summary>
@@ -31,9 +31,9 @@ namespace OrchardCore.ContentLocalization
         /// Each ContentItem is chosen with the following rules:
         /// - ContentItemId of the current culture for the set
         /// - OR ContentItemId of the default culture for the set
-        /// - OR First ContentItemId found in the set
+        /// - OR First ContentItemId found in the set.
         /// </summary>
-        /// <returns>Cleaned list of ContentItem</returns>
+        /// <returns>Cleaned list of ContentItem.</returns>
         Task<IDictionary<string, ContentItem>> DeduplicateContentItemsAsync(IEnumerable<ContentItem> contentItems);
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace OrchardCore.ContentLocalization
         /// List of contentItemId, each chosen with the following rules:
         /// - ContentItemId of the current culture for the set
         /// - OR ContentItemId of the default culture for the set
-        /// - OR First ContentItemId found in the set
+        /// - OR First ContentItemId found in the set.
         /// </returns>
         Task<IDictionary<string, string>> GetFirstItemIdForSetsAsync(IEnumerable<string> localizationSets);
         /// <summary>

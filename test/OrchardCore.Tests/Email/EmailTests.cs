@@ -263,7 +263,7 @@ namespace OrchardCore.Tests.Email
             return content;
         }
 
-        private static ISmtpService CreateSmtpService(SmtpSettings settings)
+        private static SmtpService CreateSmtpService(SmtpSettings settings)
         {
             var options = new Mock<IOptions<SmtpSettings>>();
             options.Setup(o => o.Value).Returns(settings);

@@ -3,14 +3,14 @@
 @model LogTaskViewModel
 
 <div class="mb-3" asp-validation-class-for="LogLevel">
-    <label asp-for="LogLevel">@T["Log Level"]</label>
+    <label asp-for="LogLevel" class="form-label">@T["Log Level"]</label>
     <select asp-for="LogLevel" class="form-select" asp-items="Html.GetEnumSelectList<LogLevel>()"></select>
     <span asp-validation-for="LogLevel"></span>
     <span class="hint">@T["The log level."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="Text">
-    <label asp-for="Text">@T["Text"]</label>
+    <label asp-for="Text" class="form-label">@T["Text"]</label>
     <input type="text" asp-for="Text" class="form-control code" />
     <span asp-validation-for="Text"></span>
     <span class="hint">@T["The text to log. With Liquid support."]</span>

@@ -82,7 +82,7 @@ namespace OrchardCore.ContentLocalization
                 // If the source content item is not yet localized, define its defaults.
                 localizationPart.LocalizationSet = _iidGenerator.GenerateUniqueId();
                 localizationPart.Culture = await _localizationService.GetDefaultCultureAsync();
-                _session.Save(content);
+                await _session.SaveAsync(content);
             }
             else
             {
@@ -160,14 +160,14 @@ namespace OrchardCore.ContentLocalization
         /// OR null if nothing found.
         /// </summary>
         /// <returns>List of ContentItemId.</returns>
-        private static IEnumerable<LocalizedContentItemIndex> GetSingleContentItemIdPerSet(IEnumerable<LocalizedContentItemIndex> indexValues, string currentCulture, string defaultCulture)
+        private static List<LocalizedContentItemIndex> GetSingleContentItemIdPerSet(IEnumerable<LocalizedContentItemIndex> indexValues, string currentCulture, string defaultCulture)
         {
             return indexValues.GroupBy(l => l.LocalizationSet).Select(set =>
             {
-                var currentcultureContentItem = set.FirstOrDefault(f => f.Culture == currentCulture);
-                if (currentcultureContentItem is not null)
+                var currentCultureContentItem = set.FirstOrDefault(f => f.Culture == currentCulture);
+                if (currentCultureContentItem is not null)
                 {
-                    return currentcultureContentItem;
+                    return currentCultureContentItem;
                 }
 
                 var defaultCultureContentItem = set.FirstOrDefault(f => f.Culture == defaultCulture);

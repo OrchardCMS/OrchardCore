@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Search.Lucene.Model;
@@ -34,9 +34,9 @@ namespace OrchardCore.Search.Lucene.Recipes
             }
 
             var indices = context.Step["Indices"];
-            if (indices != null)
+            if (indices is JsonArray jsonArray)
             {
-                foreach (var index in indices)
+                foreach (var index in jsonArray)
                 {
                     var luceneIndexSettings = index.ToObject<Dictionary<string, LuceneIndexSettings>>().FirstOrDefault();
 
@@ -52,6 +52,6 @@ namespace OrchardCore.Search.Lucene.Recipes
 
     public class ContentStepModel
     {
-        public JObject Data { get; set; }
+        public JsonObject Data { get; set; }
     }
 }

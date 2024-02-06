@@ -32,6 +32,8 @@ namespace OrchardCore.OpenId
 
     internal static class OpenIdApplicationExtensions
     {
+        internal static readonly string[] _separator = [" ", ","];
+
         public static async Task UpdateDescriptorFromSettings(this IOpenIdApplicationManager _applicationManager, OpenIdApplicationSettings model, object application = null)
         {
             var descriptor = new OpenIdApplicationDescriptor();
@@ -44,14 +46,14 @@ namespace OrchardCore.OpenId
             descriptor.ClientId = model.ClientId;
             descriptor.ConsentType = model.ConsentType;
             descriptor.DisplayName = model.DisplayName;
-            descriptor.Type = model.Type;
+            descriptor.ClientType = model.Type;
 
             if (!string.IsNullOrEmpty(model.ClientSecret))
             {
                 descriptor.ClientSecret = model.ClientSecret;
             }
 
-            if (string.Equals(descriptor.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(descriptor.ClientType, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
             {
                 descriptor.ClientSecret = null;
             }
@@ -223,16 +225,16 @@ namespace OrchardCore.OpenId
             }
 
             descriptor.PostLogoutRedirectUris.Clear();
-            foreach (Uri uri in
-                (from uri in model.PostLogoutRedirectUris?.Split(new[] { " ", "," }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
+            foreach (var uri in
+                (from uri in model.PostLogoutRedirectUris?.Split(_separator, StringSplitOptions.RemoveEmptyEntries) ?? []
                  select new Uri(uri, UriKind.Absolute)))
             {
                 descriptor.PostLogoutRedirectUris.Add(uri);
             }
 
             descriptor.RedirectUris.Clear();
-            foreach (Uri uri in
-               (from uri in model.RedirectUris?.Split(new[] { " ", "," }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
+            foreach (var uri in
+               (from uri in model.RedirectUris?.Split(_separator, StringSplitOptions.RemoveEmptyEntries) ?? []
                 select new Uri(uri, UriKind.Absolute)))
             {
                 descriptor.RedirectUris.Add(uri);

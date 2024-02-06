@@ -6,7 +6,7 @@ namespace OrchardCore.Apis.GraphQL
 {
     public class OrchardFieldNameConverter : INameConverter
     {
-        private readonly INameConverter _defaultConverter = new CamelCaseNameConverter();
+        private readonly CamelCaseNameConverter _defaultConverter = new();
 
         // todo: custom argument name?
         public string NameForArgument(string argumentName, IComplexGraphType parentGraphType, FieldType field)

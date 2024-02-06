@@ -32,7 +32,7 @@ First, you need to create an Microsoft Entra ID app on the [Azure Portal](https:
 3. Use the following settings:
     - Name: We suggest the name of your web app, e.g. "My App". This is not the same display name that you need to specify for the login later and it doesn't need to match anything else.
     - Supported account types: The feature supports both single and multitenant Microsoft Entra ID, but not personal accounts.
-    - Redirect URI: While supposedly optional, you have to specify one for the login flow to work with web apps. Add the URL that will handle Microsoft Entra ID login redirects; by default, this is `/signin-oidc` under your app's root URL, e.g. "https://example.com/signin-oidc" (upon login, users will be redirected to the page they visited previously, this isn't for that).
+    - Redirect URI: While supposedly optional, you have to specify one for the login flow to work with web apps. Add the URL that will handle Microsoft Entra ID login redirects; by default, this is `/signin-oidc` under your app's root URL, e.g. "<https://example.com/signin-oidc>" (upon login, users will be redirected to the page they visited previously, this isn't for that).
 4. Once the app is created, note the following details of it, as displayed in the Azure Portal, which will be necessary to configure in Orchard Core later:
     - Application (client) ID
     - Directory (tenant) ID

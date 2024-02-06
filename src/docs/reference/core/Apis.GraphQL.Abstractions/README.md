@@ -100,7 +100,6 @@ public class AutorouteInputObjectType : InputObjectGraphType<AutoroutePart>
 }
 ```
 
-
 Update Startup class like below.
 
 ```csharp

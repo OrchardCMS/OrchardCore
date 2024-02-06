@@ -56,7 +56,7 @@ namespace OrchardCore.ContentFields.Drivers
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
 
-                model.SelectedItems = new List<VueMultiselectItemViewModel>();
+                model.SelectedItems = [];
 
                 foreach (var kvp in await _contentLocalizationManager.GetFirstItemIdForSetsAsync(field.LocalizationSets))
                 {
@@ -69,7 +69,7 @@ namespace OrchardCore.ContentFields.Drivers
 
                     model.SelectedItems.Add(new VueMultiselectItemViewModel
                     {
-                        Id = kvp.Key, //localization set
+                        Id = kvp.Key, // localization set
                         DisplayText = contentItem.ToString(),
                         HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem)
                     });
@@ -89,7 +89,7 @@ namespace OrchardCore.ContentFields.Drivers
             }
 
             field.LocalizationSets = viewModel.LocalizationSets == null
-                ? Array.Empty<string>() : viewModel.LocalizationSets.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                ? [] : viewModel.LocalizationSets.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
             var settings = context.PartFieldDefinition.GetSettings<LocalizationSetContentPickerFieldSettings>();
 

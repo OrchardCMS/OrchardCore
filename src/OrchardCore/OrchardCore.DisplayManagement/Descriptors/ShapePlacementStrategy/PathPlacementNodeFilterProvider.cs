@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 {
@@ -17,17 +17,18 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
         public string Key { get { return "path"; } }
 
-        public bool IsMatch(ShapePlacementContext context, JToken expression)
+        public bool IsMatch(ShapePlacementContext context, object expression)
         {
             IEnumerable<string> paths;
 
-            if (expression is JArray)
+            var jsonNode = JNode.FromObject(expression);
+            if (jsonNode is JsonArray jsonArray)
             {
-                paths = expression.Values<string>();
+                paths = jsonArray.Values<string>();
             }
             else
             {
-                paths = new string[] { expression.Value<string>() };
+                paths = new string[] { jsonNode.Value<string>() };
             }
 
             var requestPath = _httpContextAccessor.HttpContext.Request.Path.Value;

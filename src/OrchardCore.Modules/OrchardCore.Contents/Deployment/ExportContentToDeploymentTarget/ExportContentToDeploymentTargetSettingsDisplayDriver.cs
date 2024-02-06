@@ -10,7 +10,7 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 {
     public class ExportContentToDeploymentTargetSettingsDisplayDriver : SectionDisplayDriver<ISite, ExportContentToDeploymentTargetSettings>
     {
-        private const string SettingsGroupId = "ExportContentToDeploymentTarget";
+        public const string GroupId = "ExportContentToDeploymentTarget";
 
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
@@ -34,12 +34,12 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
             return Initialize<ExportContentToDeploymentTargetSettingsViewModel>("ExportContentToDeploymentTargetSettings_Edit", model =>
             {
                 model.ExportContentToDeploymentTargetPlanId = settings.ExportContentToDeploymentTargetPlanId;
-            }).Location("Content:2").OnGroup(SettingsGroupId);
+            }).Location("Content:2").OnGroup(GroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ExportContentToDeploymentTargetSettings settings, BuildEditorContext context)
         {
-            if (context.GroupId == SettingsGroupId)
+            if (context.GroupId == GroupId)
             {
                 var model = new ExportContentToDeploymentTargetSettingsViewModel();
 

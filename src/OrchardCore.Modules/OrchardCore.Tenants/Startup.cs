@@ -8,7 +8,6 @@ using Microsoft.Net.Http.Headers;
 using OrchardCore.Admin;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Distributed;
@@ -205,13 +204,11 @@ namespace OrchardCore.Tenants
     }
 
     [RequireFeatures("OrchardCore.Deployment", "OrchardCore.Tenants.FeatureProfiles")]
-    public class FeatureProfilesDeployementStartup : StartupBase
+    public class FeatureProfilesDeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, AllFeatureProfilesDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllFeatureProfilesDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllFeatureProfilesDeploymentStepDriver>();
+            services.AddDeployment<AllFeatureProfilesDeploymentSource, AllFeatureProfilesDeploymentStep, AllFeatureProfilesDeploymentStepDriver>();
         }
     }
 

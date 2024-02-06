@@ -11,7 +11,7 @@ public static class ShellSettingsExtensions
     private const string DefaultTableNameSeparator = $"{DatabaseTableOptions}:DefaultTableNameSeparator";
     private const string DefaultIdentityColumnSize = $"{DatabaseTableOptions}:DefaultIdentityColumnSize";
 
-    private readonly static string[] _identityColumnSizes = new[] { nameof(Int64), nameof(Int32) };
+    private readonly static string[] _identityColumnSizes = [nameof(Int64), nameof(Int32)];
 
     public static DatabaseTableOptions GetDatabaseTableOptions(this ShellSettings shellSettings) =>
         new()

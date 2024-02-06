@@ -1,4 +1,4 @@
-using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -9,9 +9,9 @@ using OrchardCore.DisplayManagement.Utilities;
 
 namespace OrchardCore.Contents
 {
-    public class Shapes : IShapeTableProvider
+    public class Shapes : ShapeTableProvider
     {
-        public void Discover(ShapeTableBuilder builder)
+        public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
         {
             builder.Describe("Content")
                 .OnDisplaying(displaying =>
@@ -91,8 +91,10 @@ namespace OrchardCore.Contents
                         displayShape.Metadata.Alternates.Add(alternate);
                     }
 
-                    await context.Shape.AddAsync(displayShape, "");
+                    await context.Shape.AddAsync(displayShape, string.Empty);
                 });
+
+            return ValueTask.CompletedTask;
         }
     }
 }

@@ -22,7 +22,7 @@ namespace OrchardCore.Email.Services
     {
         private const string EmailExtension = ".eml";
 
-        private static readonly char[] _emailsSeparator = new char[] { ',', ';' };
+        private static readonly char[] _emailsSeparator = [',', ';'];
 
         private readonly SmtpSettings _options;
         private readonly ILogger _logger;
@@ -109,7 +109,7 @@ namespace OrchardCore.Email.Services
             return result;
         }
 
-        private MimeMessage FromMailMessage(MailMessage message, IList<LocalizedString> errors)
+        private MimeMessage FromMailMessage(MailMessage message, List<LocalizedString> errors)
         {
             var submitterAddress = string.IsNullOrWhiteSpace(message.Sender)
                 ? _options.DefaultSender

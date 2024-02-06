@@ -31,7 +31,7 @@ The following configuration values are used by default and can be customized:
 }
 ```
 
-Refer also to the [Configuration Section](../../core/Configuration/README.md), 
+Refer also to the [Configuration Section](../../core/Configuration/README.md),
 and the [Media Section](../Media/README.md) for other Media related configuration settings.
 
 If the `CreateContainer` option is set to `true` an activating event will check on `Startup` for a
@@ -42,7 +42,7 @@ If these are not present in `appSettings.json`, it will not enable the feature, 
 
 ## Templating Configuration
 
-Optionally you may use liquid templating to further configure Azure Media Storage, perhaps creating a container per tenant, 
+Optionally you may use liquid templating to further configure Azure Media Storage, perhaps creating a container per tenant,
 or a single container with a base path per tenant.
 
 The `ShellSettings` property is made available to the liquid template.
@@ -51,8 +51,8 @@ The `ContainerName` property and the `BasePath` property are the only templatabl
 !!! note
     When templating the `ContainerName`  using  `{{ ShellSettings.Name }}`, the tenant's name will be automatically lowercased, however, you must also make sure the `ContainerName` conforms to other Azure Blob naming conventions as set out in Azure's documentation.
 
-### Configuring a container per tenant.
- 
+### Configuring a container per tenant
+
 ```json
 {
   "OrchardCore": {
@@ -69,8 +69,8 @@ The `ContainerName` property and the `BasePath` property are the only templatabl
 }
 ```
 
-### Configuring a single container, with a base folder per tenant.
- 
+### Configuring a single container, with a base folder per tenant
+
 ```json
 {
   "OrchardCore": {
@@ -109,7 +109,7 @@ another PoP may not, until it is requested. At this stage the Media Cache will, 
 asset from Azure Blog Storage, on the fly, and provide it to the CDN PoP.
 
 CDN providers also clear their caches at pre-determined times of their own devising, so while CDN’s
-are a valuable caching and performance asset, it is important that they are always be able to 
+are a valuable caching and performance asset, it is important that they are always be able to
 re-fetch the source file, as and when required, which the Media Cache Module will automatically handle.
 
 !!! note

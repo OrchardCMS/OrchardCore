@@ -19,7 +19,7 @@ namespace OrchardCore.Mvc
     public class ShellFileVersionProvider : IFileVersionProvider
     {
         private const string VersionKey = "v";
-        private static readonly char[] _queryStringAndFragmentTokens = new[] { '?', '#' };
+        private static readonly char[] _queryStringAndFragmentTokens = ['?', '#'];
         private static readonly MemoryCache _sharedCache = new(new MemoryCacheOptions());
 
         private readonly IFileProvider[] _fileProviders;
@@ -39,10 +39,7 @@ namespace OrchardCore.Mvc
 
         public string AddFileVersionToPath(PathString requestPathBase, string path)
         {
-            if (path == null)
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
+            ArgumentNullException.ThrowIfNull(path);
 
             var resolvedPath = path;
 

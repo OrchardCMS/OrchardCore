@@ -17,4 +17,4 @@ using OrchardCore.Modules.Manifest;
     Name = "ReCaptcha Users",
     Description = "Provides ReCaptcha functionality to harness login, register, forgot password and forms against robots.",
     Category = "Security",
-    Dependencies = new[] { "OrchardCore.ReCaptcha", "OrchardCore.Users" })]
+    Dependencies = ["OrchardCore.ReCaptcha", "OrchardCore.Users"])]

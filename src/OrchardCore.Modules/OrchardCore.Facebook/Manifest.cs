@@ -22,10 +22,10 @@ using OrchardCore.Modules.Manifest;
     Name = "Meta Login",
     Category = "Meta",
     Description = "Authenticates users from Meta.",
-    Dependencies = new[]
-    {
+    Dependencies =
+    [
         FacebookConstants.Features.Core
-    }
+    ]
 )]
 
 [assembly: Feature(
@@ -33,12 +33,12 @@ using OrchardCore.Modules.Manifest;
     Name = "Meta Social Plugins Widgets",
     Category = "Meta",
     Description = "Integrates Meta social plugins as predefined widgets",
-    Dependencies = new[]
-    {
+    Dependencies =
+    [
         FacebookConstants.Features.Core,
         "OrchardCore.Widgets",
         "OrchardCore.Recipes.Core",
-    }
+    ]
 )]
 
 [assembly: Feature(

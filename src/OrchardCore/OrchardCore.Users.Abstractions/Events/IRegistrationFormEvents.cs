@@ -17,7 +17,7 @@ namespace OrchardCore.Users.Events
         /// <summary>
         /// Occurs when user has been registered.
         /// </summary>
-        /// <param name="user">The <see cref="IUser"/></param>
+        /// <param name="user">The <see cref="IUser"/>.</param>
         Task RegisteredAsync(IUser user);
     }
 }

@@ -207,7 +207,7 @@ namespace OrchardCore.DisplayManagement
     ///        var sb = inst.builder;
     ///        ... Do Stuff...
     ///        ... sb.ToString() ...
-    ///        inst.Free();
+    ///        inst.Free();.
     /// </summary>
     public sealed class StringBuilderPool : IDisposable
     {

@@ -46,7 +46,7 @@ namespace OrchardCore.Demo.Pages
             var contentItems = await query.ListAsync();
             var updater = _updateModelAccessor.ModelUpdater;
 
-            Items = new List<dynamic>();
+            Items = [];
             Title = "Foo List";
 
             foreach (var contentItem in contentItems)

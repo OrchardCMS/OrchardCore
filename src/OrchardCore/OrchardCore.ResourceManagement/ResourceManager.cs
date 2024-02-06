@@ -13,7 +13,7 @@ namespace OrchardCore.ResourceManagement
 {
     public class ResourceManager : IResourceManager
     {
-        private readonly Dictionary<ResourceTypeName, RequireSettings> _required = new();
+        private readonly Dictionary<ResourceTypeName, RequireSettings> _required = [];
         private readonly Dictionary<string, ResourceRequiredContext[]> _builtResources;
         private readonly IFileVersionProvider _fileVersionProvider;
         private ResourceManifest _dynamicManifest;
@@ -42,15 +42,8 @@ namespace OrchardCore.ResourceManagement
 
         public RequireSettings RegisterResource(string resourceType, string resourceName)
         {
-            if (resourceType == null)
-            {
-                return ThrowArgumentNullException<RequireSettings>(nameof(resourceType));
-            }
-
-            if (resourceName == null)
-            {
-                return ThrowArgumentNullException<RequireSettings>(nameof(resourceName));
-            }
+            ArgumentNullException.ThrowIfNull(resourceType);
+            ArgumentNullException.ThrowIfNull(resourceName);
 
             var key = new ResourceTypeName(resourceType, resourceName);
             if (!_required.TryGetValue(key, out var settings))
@@ -68,15 +61,8 @@ namespace OrchardCore.ResourceManagement
 
         public RequireSettings RegisterUrl(string resourceType, string resourcePath, string resourceDebugPath)
         {
-            if (resourceType == null)
-            {
-                return ThrowArgumentNullException<RequireSettings>(nameof(resourceType));
-            }
-
-            if (resourcePath == null)
-            {
-                return ThrowArgumentNullException<RequireSettings>(nameof(resourcePath));
-            }
+            ArgumentNullException.ThrowIfNull(resourceType);
+            ArgumentNullException.ThrowIfNull(resourcePath);
 
             // ~/ ==> convert to absolute path (e.g. /orchard/..).
 
@@ -97,38 +83,29 @@ namespace OrchardCore.ResourceManagement
 
         public void RegisterHeadScript(IHtmlContent script)
         {
-            _headScripts ??= new List<IHtmlContent>();
+            _headScripts ??= [];
 
             _headScripts.Add(script);
         }
 
         public void RegisterFootScript(IHtmlContent script)
         {
-            _footScripts ??= new List<IHtmlContent>();
+            _footScripts ??= [];
 
             _footScripts.Add(script);
         }
 
         public void RegisterStyle(IHtmlContent style)
         {
-            _styles ??= new List<IHtmlContent>();
+            _styles ??= [];
 
             _styles.Add(style);
         }
 
         public void NotRequired(string resourceType, string resourceName)
         {
-            if (resourceType == null)
-            {
-                ThrowArgumentNullException(nameof(resourceType));
-                return;
-            }
-
-            if (resourceName == null)
-            {
-                ThrowArgumentNullException(nameof(resourceName));
-                return;
-            }
+            ArgumentNullException.ThrowIfNull(resourceType);
+            ArgumentNullException.ThrowIfNull(resourceType);
 
             var key = new ResourceTypeName(resourceType, resourceName);
             _builtResources[resourceType] = null;
@@ -206,9 +183,8 @@ namespace OrchardCore.ResourceManagement
                             }
                         }
 
-                        // Use the highest version of all matches.
-                        if (resource == null
-                            || (resourceDefinition.Version != null && new Version(resource.Version) < version))
+                        // Use the highest version of all matches. Resources that don't specify a version have the lowest priority.
+                        if (resource?.Version is null || new Version(resource.Version) < version)
                         {
                             resource = resourceDefinition;
                         }
@@ -221,7 +197,7 @@ namespace OrchardCore.ResourceManagement
 
         /// <summary>
         /// Returns the upper bound value of a required version number.
-        /// For instance, 3.1.0 returns 3.1.1, 4 returns 5.0.0, 6.1 returns 6.2.0
+        /// For instance, 3.1.0 returns 3.1.1, 4 returns 5.0.0, 6.1 returns 6.2.0.
         /// </summary>
         private static Version GetUpperBoundVersion(string minimumVersion)
         {
@@ -249,7 +225,7 @@ namespace OrchardCore.ResourceManagement
 
         /// <summary>
         /// Returns the lower bound value of a required version number.
-        /// For instance, 3.1.0 returns 3.1.0, 4 returns 4.0.0, 6.1 returns 6.1.0
+        /// For instance, 3.1.0 returns 3.1.0, 4 returns 4.0.0, 6.1 returns 6.1.0.
         /// </summary>
         private static Version GetLowerBoundVersion(string minimumVersion)
         {
@@ -399,7 +375,7 @@ namespace OrchardCore.ResourceManagement
             List<string> dependencies = null;
             if (resource.Dependencies != null)
             {
-                dependencies = new List<string>(resource.Dependencies);
+                dependencies = [..resource.Dependencies];
                 if (settings.Dependencies != null)
                 {
                     dependencies.AddRange(settings.Dependencies);
@@ -407,7 +383,7 @@ namespace OrchardCore.ResourceManagement
             }
             else if (settings.Dependencies != null)
             {
-                dependencies = new List<string>(settings.Dependencies);
+                dependencies = [..settings.Dependencies];
             }
 
             // Settings is given so they can cascade down into dependencies. For example, if Foo depends on Bar, and Foo's required
@@ -466,7 +442,7 @@ namespace OrchardCore.ResourceManagement
 
         public void RegisterLink(LinkEntry link)
         {
-            _links ??= new List<LinkEntry>();
+            _links ??= [];
 
             var href = link.Href;
 
@@ -490,7 +466,7 @@ namespace OrchardCore.ResourceManagement
                 return;
             }
 
-            _metas ??= new Dictionary<string, MetaEntry>();
+            _metas ??= [];
 
             var index = meta.Name ?? meta.Property ?? meta.HttpEquiv ?? "charset";
 
@@ -511,7 +487,7 @@ namespace OrchardCore.ResourceManagement
                 return;
             }
 
-            _metas ??= new Dictionary<string, MetaEntry>();
+            _metas ??= [];
 
             if (_metas.TryGetValue(index, out var existingMeta))
             {
@@ -758,24 +734,12 @@ namespace OrchardCore.ResourceManagement
 
         private static class EmptyList<T>
         {
-            public static readonly List<T> Instance = new();
+            public static readonly List<T> Instance = [];
         }
 
         private static class EmptyValueCollection<T>
         {
-            public static readonly Dictionary<string, T>.ValueCollection Instance = new(new Dictionary<string, T>());
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void ThrowArgumentNullException(string paramName)
-        {
-            ThrowArgumentNullException<object>(paramName);
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static T ThrowArgumentNullException<T>(string paramName)
-        {
-            throw new ArgumentNullException(paramName);
+            public static readonly Dictionary<string, T>.ValueCollection Instance = new([]);
         }
     }
 }

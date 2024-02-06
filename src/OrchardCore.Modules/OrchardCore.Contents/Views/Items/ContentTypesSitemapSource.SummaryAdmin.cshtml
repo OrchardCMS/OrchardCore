@@ -3,7 +3,7 @@
 @{
     var allRoutableContentTypes = await RoutableContentTypeCoordinator.ListRoutableTypeDefinitionsAsync();
 
-    var selectedContentTypes = Model.Value.ContentTypes ?? new ContentTypeSitemapEntry[] { };
+    var selectedContentTypes = Model.Value.ContentTypes ?? [];
 
     var selectedDisplayNames = allRoutableContentTypes
         .Where(ctd => selectedContentTypes.Any(sct => sct.ContentTypeName == ctd.Name))

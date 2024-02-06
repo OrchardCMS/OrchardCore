@@ -14,9 +14,9 @@ namespace OrchardCore.Contents.Sitemaps
 
         public int Priority { get; set; } = 5;
 
-        public ContentTypeSitemapEntryViewModel[] ContentTypes { get; set; } = Array.Empty<ContentTypeSitemapEntryViewModel>();
+        public ContentTypeSitemapEntryViewModel[] ContentTypes { get; set; } = [];
 
-        public ContentTypeLimitedSitemapEntryViewModel[] LimitedContentTypes { get; set; } = Array.Empty<ContentTypeLimitedSitemapEntryViewModel>();
+        public ContentTypeLimitedSitemapEntryViewModel[] LimitedContentTypes { get; set; } = [];
 
         public string LimitedContentType { get; set; }
 

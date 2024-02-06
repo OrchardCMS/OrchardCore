@@ -60,7 +60,7 @@ namespace OrchardCore.Lists.Controllers
                 new ContainedItemOptions { Status = ContentsStatus.Latest }))
                 .ToList();
 
-            if (pageOfContentItems == null || !pageOfContentItems.Any())
+            if (pageOfContentItems == null || pageOfContentItems.Count == 0)
             {
                 return NotFound();
             }

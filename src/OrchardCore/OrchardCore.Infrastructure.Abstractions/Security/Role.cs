@@ -7,7 +7,7 @@ namespace OrchardCore.Security
         public string RoleName { get; set; }
         public string RoleDescription { get; set; }
         public string NormalizedRoleName { get; set; }
-        public List<RoleClaim> RoleClaims { get; set; } = new List<RoleClaim>();
+        public List<RoleClaim> RoleClaims { get; set; } = [];
 
         public Role Clone()
         {

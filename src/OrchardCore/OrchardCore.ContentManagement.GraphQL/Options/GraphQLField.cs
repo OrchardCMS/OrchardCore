@@ -14,15 +14,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
     {
         public GraphQLField(Type fieldType, string fieldName)
         {
-            if (fieldType == null)
-            {
-                throw new ArgumentNullException(nameof(fieldType));
-            }
-
-            if (string.IsNullOrWhiteSpace(fieldName))
-            {
-                throw new ArgumentNullException(nameof(fieldName));
-            }
+            ArgumentNullException.ThrowIfNull(fieldType);
+            ArgumentException.ThrowIfNullOrWhiteSpace(fieldName);
 
             FieldName = fieldName;
             FieldType = fieldType;

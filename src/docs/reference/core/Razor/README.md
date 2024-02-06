@@ -56,7 +56,7 @@ private IOrchardHelper _orchard;
 
 public MyClass(IOrchardHelper orchard)
 {
-	_orchard = orchard;
+ _orchard = orchard;
 }
 ```
 

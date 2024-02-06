@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 
 namespace OrchardCore.ContentManagement.Handlers
 {
@@ -21,7 +20,7 @@ namespace OrchardCore.ContentManagement.Handlers
 
         public static void Fail(this ValidateContentContext context, string errorMessage, params string[] memberNames)
         {
-            if (memberNames != null && memberNames.Any())
+            if (memberNames != null && memberNames.Length > 0)
             {
                 context.ContentValidateResult.Fail(new ValidationResult(errorMessage, memberNames));
             }

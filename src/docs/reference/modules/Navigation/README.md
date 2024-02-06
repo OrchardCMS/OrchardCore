@@ -57,7 +57,7 @@ Properties inherited from the base Shape class:
 | `Classes` | `Dictionary<string, string>` | CSS classes to add to the main Tag element. |
 
 The `PagerId` property is used to create templates for specific instances. For instance, assigning
-the value `MainBlog` to `PagerId` and then rendering the pager will look for a template named 
+the value `MainBlog` to `PagerId` and then rendering the pager will look for a template named
 `Pager-MainBlog.cshtml`.
 
 A pager can be further customized by defining templates for the following shapes:
@@ -124,7 +124,7 @@ would in turn look for the template `Pager-MainBlog.Previous.cshtml`.
 
 ## SEO
 
-In order to block search engines from crawling all your pagers links, it is possible to override the Pager anchors "rel" attributes with "no-follow". To achieve this, you can simply do this: 
+In order to block search engines from crawling all your pagers links, it is possible to override the Pager anchors "rel" attributes with "no-follow". To achieve this, you can simply do this:
 
 === "Liquid"
 

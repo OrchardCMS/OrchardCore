@@ -65,7 +65,7 @@ namespace OrchardCore.ContentFields.Fields
                 field.Values = viewModel.Values;
 
                 var settings = context.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
-                if (settings.Required && !viewModel.Values.Any())
+                if (settings.Required && viewModel.Values.Length == 0)
                 {
                     updater.ModelState.AddModelError(Prefix, nameof(field.Values), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }

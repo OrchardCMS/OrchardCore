@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.ContentTypes.Services;
+namespace OrchardCore.ContentTypes.Services;
 
 public class StereotypeDescription
 {

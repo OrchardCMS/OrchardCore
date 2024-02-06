@@ -24,7 +24,7 @@ public class TwoFactorAuthenticationViewModel
     public bool CanDisableTwoFactor { get; set; }
 
     [BindNever]
-    public IList<IShape> AuthenticationMethods { get; } = new List<IShape>();
+    public IList<IShape> AuthenticationMethods { get; } = [];
 
     [BindNever]
     public IUser User { get; set; }

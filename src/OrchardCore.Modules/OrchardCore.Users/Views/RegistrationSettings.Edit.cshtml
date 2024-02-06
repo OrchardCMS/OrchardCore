@@ -10,7 +10,7 @@
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 
 <div class="mb-3" asp-validation-class-for="UsersCanRegister">
-    <label asp-for="UsersCanRegister">@T["Configure users registration."]</label>
+    <label asp-for="UsersCanRegister" class="form-label">@T["Configure users registration."]</label>
     <select asp-for="UsersCanRegister" class="form-select">
         <option value="@UserRegistrationType.NoRegistration" selected="@(Model.UsersCanRegister == UserRegistrationType.NoRegistration)">@T["No Registration"]</option>
         <option value="@UserRegistrationType.AllowRegistration" selected="@(Model.UsersCanRegister == UserRegistrationType.AllowRegistration)">@T["Allow Registration"]</option>
@@ -136,11 +136,11 @@
         var editor = $('#@Html.IdFor(x => x.GenerateUsernameScript)').data('editor');
         if (!keepText) {
             editor.doc.setValue(
-                '/* Uncomment to map AzureAD\n' +
+                '/* Uncomment to map AzureAd\n' +
                 '// Uncomment to output the context variable in the logs\n' +
                 '// log("warning", JSON.stringify(context));\n' +
                 'switch (context.loginProvider) {\n' +
-                '    case "AzureAD":\n' +
+                '    case "AzureAd":\n' +
                 '        context.userName = "azad" + uuid();\n' +
                 '        break;\n' +
                 '    default:\n' +
@@ -154,7 +154,7 @@
         }
     }
 
-    window.onload=function () {
+    window.onload = function () {
         refresh();
 
         $("#@Html.IdFor(m => m.UsersCanRegister)").change(function () {

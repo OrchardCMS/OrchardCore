@@ -29,10 +29,7 @@ namespace OrchardCore.Localization
 
         public static CalendarName GetCalendarName(Calendar calendar)
         {
-            if (calendar == null)
-            {
-                throw new ArgumentNullException(nameof(calendar));
-            }
+            ArgumentNullException.ThrowIfNull(calendar);
 
             var calendarType = calendar.GetType();
             if (calendarType == typeof(GregorianCalendar))
@@ -67,10 +64,7 @@ namespace OrchardCore.Localization
 
         public static CalendarSystem ConvertToCalendarSystem(Calendar calendar)
         {
-            if (calendar == null)
-            {
-                throw new ArgumentNullException(nameof(calendar));
-            }
+            ArgumentNullException.ThrowIfNull(calendar);
 
             var calendarType = calendar.GetType();
             if (calendarType == typeof(GregorianCalendar))

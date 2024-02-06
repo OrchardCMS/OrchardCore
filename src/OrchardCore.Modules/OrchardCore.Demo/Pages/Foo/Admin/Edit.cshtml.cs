@@ -86,7 +86,7 @@ namespace OrchardCore.Demo.Pages
             }
 
             contentItem.Content.TestContentPartA.Line = Text;
-            _session.Save(contentItem);
+            await _session.SaveAsync(contentItem);
 
             return RedirectToPage("/Foo/List");
         }

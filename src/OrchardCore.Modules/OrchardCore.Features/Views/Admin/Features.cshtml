@@ -97,12 +97,12 @@
                                         {
                                             <div class="form-check mb-1">
                                                 <input type="checkbox" class="form-check-input" name="featureIds" id="@featureId" value="@featureId">
-                                                <label class="form-check-label fw-semibold" for="@featureId">@featureName</label>
+                                                <label class="form-check-label fw-semibold" for="@featureId">@featureName (<code>@featureId</code>)</label>
                                             </div>
                                         }
                                         else
                                         {
-                                            <div class="fw-semibold mb-1">@featureName</div>
+                                            <div class="fw-semibold mb-1">@featureName (<code>@featureId</code>)</div>
                                         }
 
                                         <p class="text-muted mb-1">@feature.Descriptor.Description</p>

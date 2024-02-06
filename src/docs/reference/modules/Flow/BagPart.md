@@ -17,7 +17,7 @@ An example of this can be found in TheAgencyTheme where four Named BagParts are 
 - About
 - Team
 
-## Templating in a decoupled manner.
+## Templating in a decoupled manner
 
 When templating in a decoupled manner the content items are accessed directly through the name of the BagPart.
 

@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell.Builders;
@@ -21,7 +22,7 @@ public static class ShellContextFactoryExtensions
             return await shellContextFactory.CreateMinimumContextAsync(shellSettings, sharedSettings);
         }
 
-        shellDescriptor = new ShellDescriptor { Features = shellDescriptor.Installed };
+        shellDescriptor = new ShellDescriptor { Features = shellDescriptor.Installed.Cast<ShellFeature>().ToList() };
 
         var context = await shellContextFactory.CreateDescribedContextAsync(shellSettings, shellDescriptor);
         if (sharedSettings)

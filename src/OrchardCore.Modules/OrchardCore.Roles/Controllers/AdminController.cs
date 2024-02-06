@@ -248,9 +248,9 @@ namespace OrchardCore.Roles.Controllers
                 {
                     var groupKey = GetGroupKey(feature, permission.Category);
 
-                    if (installedPermissions.ContainsKey(groupKey))
+                    if (installedPermissions.TryGetValue(groupKey, out var value))
                     {
-                        installedPermissions[groupKey] = installedPermissions[groupKey].Concat(new[] { permission });
+                        installedPermissions[groupKey] = value.Concat(new[] { permission });
 
                         continue;
                     }

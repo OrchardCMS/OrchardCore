@@ -12,10 +12,10 @@ namespace OrchardCore.Data.Documents
     {
         private readonly ISession _session;
 
-        private readonly Dictionary<Type, object> _loaded = new();
+        private readonly Dictionary<Type, object> _loaded = [];
 
-        private readonly List<Type> _afterCommitsSuccess = new();
-        private readonly List<Type> _afterCommitsFailure = new();
+        private readonly List<Type> _afterCommitsSuccess = [];
+        private readonly List<Type> _afterCommitsFailure = [];
 
         private DocumentStoreCommitSuccessDelegate _afterCommitSuccess;
         private DocumentStoreCommitFailureDelegate _afterCommitFailure;
@@ -64,9 +64,9 @@ namespace OrchardCore.Data.Documents
         }
 
         /// <inheritdoc />
-        public Task UpdateAsync<T>(T document, Func<T, Task> updateCache, bool checkConcurrency = false)
+        public async Task UpdateAsync<T>(T document, Func<T, Task> updateCache, bool checkConcurrency = false)
         {
-            _session.Save(document, checkConcurrency);
+            await _session.SaveAsync(document, checkConcurrency);
 
             AfterCommitSuccess<T>(() =>
             {
@@ -79,8 +79,6 @@ namespace OrchardCore.Data.Documents
                     $"The '{typeof(T).Name}' could not be persisted and cached as it has been changed by another process.",
                     exception);
             });
-
-            return Task.CompletedTask;
         }
 
         /// <inheritdoc />

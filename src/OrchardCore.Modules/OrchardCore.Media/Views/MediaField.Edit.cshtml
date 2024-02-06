@@ -8,7 +8,6 @@
     var settings = Model.PartFieldDefinition.GetSettings<MediaFieldSettings>();
     var modalMediaId = "Modal" + Html.IdFor(m => m);
 }
-<script asp-name="media" at="Foot"></script>
 <style asp-name="media" at="Head"></style>
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Paths)_FieldWrapper">
@@ -21,7 +20,7 @@
 
         <input asp-for="Paths" type="hidden" class="paths" :value="paths" data-init="@Model.Paths" />
 
-        <div class="form-control-plaintext media-field-toolbar" v-cloak>
+        <div class="media-field-toolbar mb-1" v-cloak>
             <div class="btn-group">
                 <button type="button" class="btn btn-secondary btn-sm" :disabled="mediaItems.length < 1" v-on:click="smallThumbs = !smallThumbs">
                     <span v-show="!smallThumbs" title="@T[" Small Thumbs"]"><i class="fa-solid fa-compress-alt" aria-hidden="true"></i></span>
@@ -32,7 +31,7 @@
                 <a href="javascript:;" v-show="allowAnchors" v-on:click="showAnchorModal" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa-solid fa-crosshairs" aria-hidden="true"></i></a>
                 <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa-solid fa-trash-alt" aria-hidden="true"></i></a>
             </div>
-            <label class="selected-media-name">
+            <label class="selected-media-name form-label">
                 <code class="text-end" v-if="selectedMedia">@T["{{{{ selectedMedia.name }}}}{{{{ selectedMedia.mediaText === '' ? '' : ', ' + selectedMedia.mediaText }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
             </label>
         </div>
@@ -62,9 +61,12 @@
     <partial name="Shared/MediaFieldEditLocalization.cshtml" />
 </div>
 
-<script at="Foot">
+<script asp-name="media" at="Foot"></script>
+<script at="Foot" asp-name="MediaFieldAppInitializer" depends-on="media">
     initializeMediaApplication(false, '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media", extensions = string.Join(',', Model.AllowedExtensions) })', '@Context.Request.PathBase.ToString()');
+</script>
 
+<script at="Foot">
     initializeMediaField(
         document.getElementById('@Html.IdFor(m => m)'),
         document.getElementById('@Html.IdFor(m => m)-ModalBody'),

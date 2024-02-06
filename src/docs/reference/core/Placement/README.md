@@ -35,6 +35,7 @@ Currently you can filter shapes by:
 
 !!! note
     Shape type (placement.json property name) DOES NOT necessarily align with with your part type. For instance, if you created a Content Part `GalleryPart` without a part driver, your shape type will be `ContentPart` with differentiator `GalleryPart`. So your placement.json would look like
+
 ```json
 {
   "ContentPart": [{
@@ -319,17 +320,19 @@ We also specify that the `Content` column will take 9 columns, of the default 12
 !!! note
     By default the columns will break responsively at the `md` breakpoint, and a modifier will be parsed to `col-md-9`.
     If you want to change the breakpoint, you could also specifiy `Content_lg-9`, which is parsed to `col-lg-9`.
-    
+
 ### Dynamic part placement
 
 In the following example we place a dynamic part (part without driver, i.e. created in json) `GalleryPart` in a zone called `MyGalleryZone`. When displaying that part inside Content template we would execute:
 
 === Content-Product.Detail.html
+
 ``` html
 @await DisplayAsync(Model.MyGalleryZone)
 ```
 
 Dynamic parts use `ContentPart` shape for detail display with differentiator of Part name, so the placement file would look like this:
+
 ``` json
 {
   "ContentPart": [
@@ -346,6 +349,7 @@ This setup would then show your template (e.g. `GalleryPart.cshtml` or `GalleryP
 If we would like to show the same part in a summary display content template (or any other that isn't `Detail` display type):
 
 === Content-Product.Summary.html
+
 ``` html
 @await DisplayAsync(Model.MyGalleryZone)
 ```

@@ -55,8 +55,8 @@ namespace OrchardCore.Workflows.Http.Activities
 
         public string FormLocationKey
         {
-            get => GetProperty<string>();
-            set => SetProperty(value);
+            get => GetProperty(() => string.Empty);
+            set => SetProperty(value ?? string.Empty);
         }
 
         public override bool CanExecute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
@@ -77,13 +77,10 @@ namespace OrchardCore.Workflows.Http.Activities
                 if (!workflowContext.Output.TryGetValue(WorkflowConstants.HttpFormLocationOutputKeyName, out var obj)
                     || obj is not Dictionary<string, string> formLocation)
                 {
-                    formLocation = new Dictionary<string, string>();
+                    formLocation = [];
                 }
 
-                // if no custom location-key was provided, we use empty string as the default key.
-                var location = FormLocationKey ?? string.Empty;
-
-                formLocation[location] = GetLocationUrl(value);
+                formLocation[FormLocationKey] = GetLocationUrl(value);
 
                 workflowContext.Output[WorkflowConstants.HttpFormLocationOutputKeyName] = formLocation;
             }

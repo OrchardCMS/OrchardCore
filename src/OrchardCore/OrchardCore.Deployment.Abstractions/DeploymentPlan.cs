@@ -9,6 +9,6 @@ namespace OrchardCore.Deployment
     {
         public long Id { get; set; }
         public string Name { get; set; }
-        public List<DeploymentStep> DeploymentSteps { get; } = new List<DeploymentStep>();
+        public List<DeploymentStep> DeploymentSteps { get; init; } = [];
     }
 }

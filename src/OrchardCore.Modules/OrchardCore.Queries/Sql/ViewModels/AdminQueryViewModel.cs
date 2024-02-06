@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Queries.Sql.ViewModels
@@ -17,7 +16,7 @@ namespace OrchardCore.Queries.Sql.ViewModels
         public TimeSpan Elapsed { get; set; } = TimeSpan.Zero;
 
         [BindNever]
-        public IEnumerable<dynamic> Documents { get; set; } = Enumerable.Empty<dynamic>();
+        public IEnumerable<dynamic> Documents { get; set; } = [];
 
         [BindNever]
         public string FactoryName { get; set; }

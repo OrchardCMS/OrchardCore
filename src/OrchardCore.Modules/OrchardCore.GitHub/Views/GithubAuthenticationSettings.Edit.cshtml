@@ -15,7 +15,7 @@
 
 <div class="mb-3 row" asp-validation-class-for="ClientID">
     <div class="col-large col-12 col-sm-12 col-md-12 col-lg-12 col-xl-9">
-        <label asp-for="ClientID">@T["Client ID"]</label>
+        <label asp-for="ClientID" class="form-label">@T["Client ID"]</label>
         <input asp-for="ClientID" class="form-control" />
         <span asp-validation-for="ClientID"></span>
         <span class="hint">@T["The Client ID defined in the general tab of your <a target=\"_blank\" href=\"https://github.com/settings/apps\">GitHub App</a>."]</span>
@@ -24,7 +24,7 @@
 
 <div class="mb-3 row" asp-validation-class-for="ClientSecret">
     <div class="col-large col-12 col-sm-12 col-md-12 col-lg-12 col-xl-9">
-        <label asp-for="ClientSecret">@T["Client secret"]</label>
+        <label asp-for="ClientSecret" class="form-label">@T["Client secret"]</label>
         <input asp-for="ClientSecret" class="form-control" type="password" value="@Model.ClientSecret" />
         <span asp-validation-for="ClientSecret"></span>
         <span class="hint">@T["The secret for your app."]</span>
@@ -33,7 +33,7 @@
 
 <div class="mb-3 row" asp-validation-class-for="CallbackUrl">
     <div class="col-large col-12 col-sm-12 col-md-12 col-lg-12 col-xl-9">
-        <label asp-for="CallbackUrl">@T["CallbackPath"]</label>
+        <label asp-for="CallbackUrl" class="form-label">@T["CallbackPath"]</label>
         <input asp-for="CallbackUrl" class="form-control" placeholder="/signin-github" />
         <span asp-validation-for="CallbackUrl"></span>
         <span class="hint">@T["The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."]</span>

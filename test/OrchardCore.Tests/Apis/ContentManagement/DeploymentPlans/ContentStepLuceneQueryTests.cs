@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.Tests.Apis.Context;
@@ -23,7 +24,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
 
             // Create a second content item in the recipe data so we can confirm the behaviour
             // of the LuceneIndexingContentHandler.
-            var data = recipe["steps"][0]["Data"] as JArray;
+            var data = recipe["steps"][0]["Data"].AsArray();
             var secondContentItem = JObject.FromObject(context.OriginalBlogPost);
             secondContentItem[nameof(ContentItem.ContentItemId)] = "secondcontentitemid";
             secondContentItem[nameof(ContentItem.ContentItemVersionId)] = "secondcontentitemversionid";
@@ -45,7 +46,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
 
             var nodes = result["data"]["recentBlogPosts"];
 
-            Assert.Equal(2, nodes.Count());
+            Assert.Equal(2, nodes.AsArray().Count());
             Assert.Equal("new version", nodes[0]["displayText"].ToString());
             Assert.Equal("second content item display text", nodes[1]["displayText"].ToString());
         }

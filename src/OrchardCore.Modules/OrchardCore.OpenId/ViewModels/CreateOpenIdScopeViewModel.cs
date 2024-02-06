@@ -15,7 +15,7 @@ namespace OrchardCore.OpenId.ViewModels
 
         public string Resources { get; set; }
 
-        public List<TenantEntry> Tenants { get; } = new List<TenantEntry>();
+        public List<TenantEntry> Tenants { get; } = [];
 
         public class TenantEntry
         {

@@ -5,7 +5,7 @@ namespace OrchardCore.Tests.Commands
 {
     public class CommandsTests
     {
-        private readonly ICommandHandler _handler;
+        private readonly StubCommandHandler _handler;
 
         public CommandsTests()
         {
@@ -14,12 +14,12 @@ namespace OrchardCore.Tests.Commands
 
         private static CommandContext CreateCommandContext(string commandName)
         {
-            return CreateCommandContext(commandName, new Dictionary<string, string>(), Array.Empty<string>());
+            return CreateCommandContext(commandName, new Dictionary<string, string>(), []);
         }
 
         private static CommandContext CreateCommandContext(string commandName, IDictionary<string, string> switches)
         {
-            return CreateCommandContext(commandName, switches, Array.Empty<string>());
+            return CreateCommandContext(commandName, switches, []);
         }
 
         private static CommandContext CreateCommandContext(string commandName, IDictionary<string, string> switches, string[] args)
@@ -140,7 +140,7 @@ namespace OrchardCore.Tests.Commands
         [Fact]
         public async Task TestCommandArgumentsArePassedCorrectly()
         {
-            var commandContext = CreateCommandContext("Concat", new Dictionary<string, string>(), new[] { "left to ", "right" });
+            var commandContext = CreateCommandContext("Concat", new Dictionary<string, string>(), ["left to ", "right"]);
             await _handler.ExecuteAsync(commandContext);
             Assert.Equal("left to right", commandContext.Output.ToString());
         }
@@ -148,7 +148,7 @@ namespace OrchardCore.Tests.Commands
         [Fact]
         public async Task TestCommandArgumentsArePassedCorrectlyWithAParamsParameters()
         {
-            var commandContext = CreateCommandContext("ConcatParams", new Dictionary<string, string>(), new[] { "left to ", "right" });
+            var commandContext = CreateCommandContext("ConcatParams", new Dictionary<string, string>(), ["left to ", "right"]);
             await _handler.ExecuteAsync(commandContext);
             Assert.Equal("left to right", commandContext.Output.ToString());
         }
@@ -166,7 +166,7 @@ namespace OrchardCore.Tests.Commands
         {
             var commandContext = CreateCommandContext("ConcatAllParams",
                 new Dictionary<string, string>(),
-                new[] { "left-", "center-", "right" });
+                ["left-", "center-", "right"]);
             await _handler.ExecuteAsync(commandContext);
             Assert.Equal("left-center-right", commandContext.Output.ToString());
         }
@@ -174,14 +174,14 @@ namespace OrchardCore.Tests.Commands
         [Fact]
         public async Task TestCommandParamsMismatchWithoutParamsNotEnoughArguments()
         {
-            var commandContext = CreateCommandContext("Concat", new Dictionary<string, string>(), new[] { "left to " });
+            var commandContext = CreateCommandContext("Concat", new Dictionary<string, string>(), ["left to "]);
             await Assert.ThrowsAsync<InvalidOperationException>(async Task () => await _handler.ExecuteAsync(commandContext));
         }
 
         [Fact]
         public async Task TestCommandParamsMismatchWithoutParamsTooManyArguments()
         {
-            var commandContext = CreateCommandContext("Foo", new Dictionary<string, string>(), new[] { "left to " });
+            var commandContext = CreateCommandContext("Foo", new Dictionary<string, string>(), ["left to "]);
             await Assert.ThrowsAsync<InvalidOperationException>(async Task () => await _handler.ExecuteAsync(commandContext));
         }
 

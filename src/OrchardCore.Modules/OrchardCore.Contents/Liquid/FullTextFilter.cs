@@ -1,10 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Models;
 using OrchardCore.Liquid;
@@ -78,7 +77,7 @@ namespace OrchardCore.Contents.Liquid
             {
                 contentItem = null;
 
-                if (obj is JObject jObject)
+                if (obj is JsonObject jObject)
                 {
                     contentItem = jObject.ToObject<ContentItem>();
                     // If input is a 'JObject' but which not represents a 'ContentItem',

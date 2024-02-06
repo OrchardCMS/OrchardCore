@@ -1,5 +1,5 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.Workflows.Services;
 
@@ -23,11 +23,12 @@ namespace OrchardCore.Workflows.Deployment
                 return;
             }
 
-            var data = new JArray();
-            result.Steps.Add(new JObject(
-                new JProperty("name", "WorkflowType"),
-                new JProperty("data", data)
-            ));
+            var data = new JsonArray();
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "WorkflowType",
+                ["data"] = data,
+            });
 
             foreach (var workflow in await _workflowTypeStore.ListAsync())
             {

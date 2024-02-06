@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.AdminMenu.Models;
 
 namespace OrchardCore.Contents.AdminNodes
@@ -7,7 +6,7 @@ namespace OrchardCore.Contents.AdminNodes
     {
         public bool ShowAll { get; set; }
         public string IconClass { get; set; }
-        public ContentTypeEntry[] ContentTypes { get; set; } = Array.Empty<ContentTypeEntry>();
+        public ContentTypeEntry[] ContentTypes { get; set; } = [];
     }
 
     public class ContentTypeEntry

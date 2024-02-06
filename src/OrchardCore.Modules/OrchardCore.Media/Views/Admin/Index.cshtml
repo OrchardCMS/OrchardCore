@@ -1,9 +1,11 @@
 <script asp-name="media" at="Foot"></script>
 <style asp-name="media" at="Head"></style>
 
-<script at="Foot">
+<script at="Foot" asp-name="MediaFieldAppInitializer" depends-on="media">
     initializeMediaApplication(true, '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })', '@Context.Request.PathBase.ToString()');
+</script>
 
+<script at="Foot">
     @* mediaApp is absolutely positioned. When a warning is shown we need to move it down to avoid overlapping. *@
     $(function () {
         if (!$('.message').length) { return; };

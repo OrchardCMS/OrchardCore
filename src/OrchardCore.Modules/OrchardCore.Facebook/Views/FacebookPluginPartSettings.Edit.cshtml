@@ -10,7 +10,7 @@
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
 <div class="mb-3">
-    <label asp-for="Liquid">@T["Body"]</label>
+    <label asp-for="Liquid" class="form-label">@T["Body"]</label>
     <textarea asp-for="Liquid" rows="5" class="form-control content-preview-text"></textarea>
     <span class="hint">@T["The default template of the plugin, in Liquid format."]</span>
 </div>

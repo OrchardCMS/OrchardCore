@@ -16,8 +16,11 @@ namespace OrchardCore.AuditTrail.Services.Models
             Func<IServiceProvider, AuditTrailAdminListOption, AuditTrailIndexOptions, SelectListItem> selectListItem,
             bool isDefault)
         {
-            Value = value ?? throw new ArgumentNullException(nameof(value));
-            Query = query ?? throw new ArgumentNullException(nameof(query));
+            ArgumentNullException.ThrowIfNull(value);
+            ArgumentNullException.ThrowIfNull(query);
+
+            Value = value;
+            Query = query;
             SelectListItem = selectListItem;
             IsDefault = isDefault;
         }

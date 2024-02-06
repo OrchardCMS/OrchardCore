@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 
 namespace OrchardCore.Workflows.Models
 {
@@ -26,7 +26,7 @@ namespace OrchardCore.Workflows.Models
         /// <summary>
         /// Serialized state of the workflow.
         /// </summary>
-        public JObject State { get; set; } = new JObject();
+        public JsonObject State { get; set; } = [];
 
         public WorkflowStatus Status { get; set; }
         public string FaultMessage { get; set; }
@@ -45,7 +45,7 @@ namespace OrchardCore.Workflows.Models
         /// List of activities the current workflow instance is waiting on
         /// for continuing its process.
         /// </summary>
-        public IList<BlockingActivity> BlockingActivities { get; } = new List<BlockingActivity>();
+        public IList<BlockingActivity> BlockingActivities { get; init; } = [];
 
         public DateTime CreatedUtc { get; set; }
 

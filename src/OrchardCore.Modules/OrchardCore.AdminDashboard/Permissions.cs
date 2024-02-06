@@ -1,59 +1,54 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.AdminDashboard
+namespace OrchardCore.AdminDashboard;
+
+public class Permissions : IPermissionProvider
 {
-    public class Permissions : IPermissionProvider
-    {
-        public static readonly Permission ManageAdminDashboard = new("ManageAdminDashboard", "Manage the Admin Dashboard");
-        public static readonly Permission AccessAdminDashboard = new("AccessAdminDashboard", "Access the Admin Dashboard", new[] { ManageAdminDashboard });
+    public static readonly Permission ManageAdminDashboard = new("ManageAdminDashboard", "Manage the Admin Dashboard");
+    public static readonly Permission AccessAdminDashboard = new("AccessAdminDashboard", "Access the Admin Dashboard", new[] { ManageAdminDashboard });
 
-        public Permissions()
-        {
-        }
+    private readonly IEnumerable<Permission> _allPermissions =
+    [
+        AccessAdminDashboard,
+        ManageAdminDashboard,
+    ];
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        {
-            return Task.FromResult(new[]
-            {
-                AccessAdminDashboard,
-                ManageAdminDashboard,
-            }
-            .AsEnumerable());
-        }
+    private readonly IEnumerable<Permission> _generalPermissions =
+    [
+        AccessAdminDashboard,
+    ];
 
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
+    [
+        new PermissionStereotype
         {
-            return new[]
-            {
-                new PermissionStereotype
-                {
-                    Name = "Administrator",
-                    Permissions = new[] { AccessAdminDashboard, ManageAdminDashboard },
-                },
-                new PermissionStereotype
-                {
-                    Name = "Editor",
-                    Permissions = new[] { AccessAdminDashboard },
-                },
-                new PermissionStereotype
-                {
-                    Name = "Moderator",
-                    Permissions = new[] { AccessAdminDashboard },
-                },
-                new PermissionStereotype
-                {
-                    Name = "Author",
-                    Permissions = new[] { AccessAdminDashboard },
-                },
-                new PermissionStereotype
-                {
-                    Name = "Contributor",
-                    Permissions = new[] { AccessAdminDashboard },
-                }
-            };
-        }
-    }
+            Name = "Administrator",
+            Permissions = _allPermissions,
+        },
+        new PermissionStereotype
+        {
+            Name = "Editor",
+            Permissions = _generalPermissions,
+        },
+        new PermissionStereotype
+        {
+            Name = "Moderator",
+            Permissions = _generalPermissions,
+        },
+        new PermissionStereotype
+        {
+            Name = "Author",
+            Permissions = _generalPermissions,
+        },
+        new PermissionStereotype
+        {
+            Name = "Contributor",
+            Permissions = _generalPermissions,
+        },
+    ];
 }

@@ -14,7 +14,6 @@ The feed url is <https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json>
 
 ![image](assets/add-preview-package-source.png)
 
-
 ## Adding Orchard Core preview Feed with NuGet.config
 
 You can also add the package source by using a NuGet.config file:

@@ -1,6 +1,7 @@
 using System.IO;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Search.Lucene
@@ -12,7 +13,7 @@ namespace OrchardCore.Search.Lucene
     public class LuceneIndexingState
     {
         private readonly string _indexSettingsFilename;
-        private readonly JObject _content;
+        private readonly JsonObject _content;
 
         public LuceneIndexingState(
             IOptions<ShellOptions> shellOptions,
@@ -29,7 +30,7 @@ namespace OrchardCore.Search.Lucene
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(_indexSettingsFilename));
 
-                File.WriteAllText(_indexSettingsFilename, new JObject().ToString(Newtonsoft.Json.Formatting.Indented));
+                File.WriteAllText(_indexSettingsFilename, new JsonObject().ToJsonString(JOptions.Indented));
             }
 
             _content = JObject.Parse(File.ReadAllText(_indexSettingsFilename));
@@ -37,8 +38,7 @@ namespace OrchardCore.Search.Lucene
 
         public long GetLastTaskId(string indexName)
         {
-            JToken value;
-            if (_content.TryGetValue(indexName, out value))
+            if (_content.TryGetPropertyValue(indexName, out var value))
             {
                 return value.Value<long>();
             }
@@ -46,7 +46,7 @@ namespace OrchardCore.Search.Lucene
             {
                 lock (this)
                 {
-                    _content.Add(new JProperty(indexName, 0));
+                    _content.Add(indexName, JsonValue.Create<long>(0));
                 }
 
                 return 0L;
@@ -65,7 +65,7 @@ namespace OrchardCore.Search.Lucene
         {
             lock (this)
             {
-                File.WriteAllText(_indexSettingsFilename, _content.ToString(Newtonsoft.Json.Formatting.Indented));
+                File.WriteAllText(_indexSettingsFilename, _content.ToJsonString(JOptions.Indented));
             }
         }
     }

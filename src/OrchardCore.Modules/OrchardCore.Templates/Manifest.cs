@@ -11,7 +11,7 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Templates",
     Name = "Templates",
     Description = "The Templates module provides a way to write custom shape templates from the admin.",
-    Dependencies = new[] { "OrchardCore.Liquid" },
+    Dependencies = ["OrchardCore.Liquid"],
     Category = "Development"
 )]
 
@@ -19,6 +19,6 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.AdminTemplates",
     Name = "Admin Templates",
     Description = "The Admin Templates module provides a way to write custom admin shape templates.",
-    Dependencies = new[] { "OrchardCore.Templates" },
+    Dependencies = ["OrchardCore.Templates"],
     Category = "Development"
 )]

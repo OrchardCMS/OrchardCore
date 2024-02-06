@@ -4,7 +4,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
     /// <summary>
     /// This service determines which paths to examine, and provides
-    /// the shape type based on the template file paths discovered
+    /// the shape type based on the template file paths discovered.
     /// </summary>
     public interface IShapeTemplateHarvester
     {

@@ -22,7 +22,7 @@ namespace OrchardCore.Tests.DisplayManagement
                 new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
                 new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
             );
-            _additionalBindings = new TestShapeBindingsDictionary();
+            _additionalBindings = [];
 
             IServiceCollection serviceCollection = new ServiceCollection();
 

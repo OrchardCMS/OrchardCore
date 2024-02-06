@@ -18,7 +18,7 @@
     <div class="tab-content" id="tabs">
         <div class="tab-pane fade show active" id="properties" role="tabpanel" aria-labelledby="properties-tab">
             <div class="mb-3" asp-validation-class-for="Name">
-                <label asp-for="Name">@T["Name"]</label>
+                <label asp-for="Name" class="form-label">@T["Name"]</label>
                 <input asp-for="Name" class="form-control" autofocus />
                 <span asp-validation-for="Name" class="text-danger"></span>
                 <div class="hint">@T["The name of the workflow."]</div>
@@ -54,13 +54,13 @@
 
         <div class="tab-pane fade" id="advanced" role="tabpanel" aria-labelledby="advanced-tab">
             <div class="mb-3">
-                <label asp-for="LockTimeout">@T["Lock timeout (ms)"]</label>
+                <label asp-for="LockTimeout" class="form-label">@T["Lock timeout (ms)"]</label>
                 <input asp-for="LockTimeout" type="number" max="30000" class="form-control">
                 <span class="hint">@T["The timeout in milliseconds to acquire a lock before resuming a given workflow instance of this type atomically. Leave it to zero to not use any locking."]</span>
             </div>
 
             <div class="mb-3">
-                <label asp-for="LockExpiration">@T["Lock expiration (ms)"]</label>
+                <label asp-for="LockExpiration" class="form-label">@T["Lock expiration (ms)"]</label>
                 <input asp-for="LockExpiration" type="number" max="30000" class="form-control">
                 <span class="hint">@T["The expiration in milliseconds of the lock acquired before resuming a workflow instance of this type atomically. Leave it to zero to not use any locking."]</span>
             </div>

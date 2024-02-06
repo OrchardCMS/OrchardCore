@@ -10,14 +10,11 @@ public class ElasticsearchIndexPermissionHelper
 
     private static readonly Permission _indexPermissionTemplate = new("QueryElasticsearch{0}Index", "Query Elasticsearch {0} Index", new[] { ManageElasticIndexes });
 
-    private static readonly Dictionary<string, Permission> _permissions = new();
+    private static readonly Dictionary<string, Permission> _permissions = [];
 
     public static Permission GetElasticIndexPermission(string indexName)
     {
-        if (string.IsNullOrEmpty(indexName))
-        {
-            throw new ArgumentException($"{nameof(indexName)} cannot be null or empty");
-        }
+        ArgumentException.ThrowIfNullOrEmpty(indexName, nameof(indexName));
 
         if (!_permissions.TryGetValue(indexName, out var permission))
         {

@@ -46,6 +46,6 @@ namespace OrchardCore.Shortcodes
         /// <summary>
         /// The categories for the shortcode.
         /// </summary>
-        public string[] Categories { get; set; } = Array.Empty<string>();
+        public string[] Categories { get; set; } = [];
     }
 }

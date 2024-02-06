@@ -1,5 +1,5 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Cors.Settings;
 using OrchardCore.Entities;
 using OrchardCore.Settings;

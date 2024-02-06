@@ -1,5 +1,6 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Data.Documents;
 
 namespace OrchardCore.Documents
@@ -16,10 +17,9 @@ namespace OrchardCore.Documents
         public async Task<T> GetAsync<T>(string key) where T : new()
         {
             var document = await _documentManager.GetOrCreateImmutableAsync();
-
-            if (document.Properties.TryGetValue(key, out var value))
+            if (document.Properties.TryGetPropertyValue(key, out var value))
             {
-                return value.ToObject<T>();
+                return value.Deserialize<T>(JOptions.Default);
             }
 
             return new T();

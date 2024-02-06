@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -10,7 +11,7 @@ namespace OrchardCore.Users.Services;
 
 public class NullRoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
 {
-    public IQueryable<IRole> Roles => Enumerable.Empty<IRole>().AsQueryable();
+    public IQueryable<IRole> Roles => Array.Empty<IRole>().AsQueryable();
 
     public Task AddClaimAsync(IRole role, Claim claim, CancellationToken cancellationToken = default)
         => Task.CompletedTask;
@@ -34,7 +35,7 @@ public class NullRoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
         => Task.FromResult<IRole>(null);
 
     public Task<IList<Claim>> GetClaimsAsync(IRole role, CancellationToken cancellationToken = default)
-        => Task.FromResult<IList<Claim>>(new List<Claim>());
+        => Task.FromResult<IList<Claim>>([]);
 
     public Task<string> GetNormalizedRoleNameAsync(IRole role, CancellationToken cancellationToken)
         => Task.FromResult<string>(null);

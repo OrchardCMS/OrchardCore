@@ -21,10 +21,7 @@ namespace OrchardCore.Admin
 
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
+            ArgumentNullException.ThrowIfNull(context);
 
             if (!await AuthorizeAsync(context.HttpContext))
             {
@@ -37,10 +34,7 @@ namespace OrchardCore.Admin
 
         public async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
+            ArgumentNullException.ThrowIfNull(context);
 
             if (!await AuthorizeAsync(context.HttpContext))
             {

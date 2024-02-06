@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
@@ -7,20 +6,22 @@ namespace OrchardCore.Facebook;
 
 public class PixelPermissionProvider : IPermissionProvider
 {
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-    {
-        return Task.FromResult(new[] { FacebookConstants.ManageFacebookPixelPermission }.AsEnumerable());
-    }
+    public static readonly Permission ManageFacebookPixelPermission = FacebookConstants.ManageFacebookPixelPermission;
 
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-    {
-        yield return new PermissionStereotype
+    private readonly IEnumerable<Permission> _allPermissions =
+    [
+        ManageFacebookPixelPermission,
+    ];
+
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
+    [
+        new PermissionStereotype
         {
             Name = "Administrator",
-            Permissions = new[]
-            {
-                FacebookConstants.ManageFacebookPixelPermission
-            }
-        };
-    }
+            Permissions = _allPermissions,
+        },
+    ];
 }

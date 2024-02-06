@@ -43,9 +43,9 @@ namespace OrchardCore.Environment.Commands
                 .GetProperty(commandSwitch.Key, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase)
                 ?? throw new InvalidOperationException(S["Switch \"{0}\" was not found", commandSwitch.Key]);
 
-            if (!propertyInfo.GetCustomAttributes(typeof(OrchardSwitchAttribute), false).Any())
+            if (propertyInfo.GetCustomAttributes(typeof(OrchardSwitchAttribute), false).Length == 0)
             {
-                throw new InvalidOperationException(S["A property \"{0}\" exists but is not decorated with \"{1}\"", commandSwitch.Key, typeof(OrchardSwitchAttribute).Name]);
+                throw new InvalidOperationException(S["A property \"{0}\" exists but is not decorated with \"{1}\"", commandSwitch.Key, nameof(OrchardSwitchAttribute)]);
             }
 
             // Set the value.
@@ -70,7 +70,7 @@ namespace OrchardCore.Environment.Commands
         {
             CheckMethodForSwitches(context.CommandDescriptor.MethodInfo, context.Switches);
 
-            var arguments = (context.Arguments ?? Enumerable.Empty<string>()).ToArray();
+            var arguments = (context.Arguments ?? []).ToArray();
             var invokeParameters = GetInvokeParametersForMethod(context.CommandDescriptor.MethodInfo, arguments)
                 ?? throw new InvalidOperationException(S["Command arguments \"{0}\" don't match command definition", string.Join(" ", arguments)]);
 

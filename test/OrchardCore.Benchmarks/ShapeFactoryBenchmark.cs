@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using Fluid;
@@ -12,7 +10,6 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Environment.Extensions;
-using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Tests.Stubs;
@@ -31,15 +28,15 @@ namespace OrchardCore.Benchmark
             _templateContext = new TemplateContext();
             var defaultShapeTable = new ShapeTable
             (
-                new Dictionary<string, ShapeDescriptor>(),
-                new Dictionary<string, ShapeBinding>()
+                [],
+                []
             );
 
             var shapeFactory = new DefaultShapeFactory(
                 serviceProvider: new ServiceCollection().BuildServiceProvider(),
-                events: Enumerable.Empty<IShapeFactoryEvents>(),
+                events: [],
                 shapeTableManager: new TestShapeTableManager(defaultShapeTable),
-                themeManager: new MockThemeManager(new ExtensionInfo("path", new ManifestInfo(new ModuleAttribute()), (x, y) => Enumerable.Empty<IFeatureInfo>())));
+                themeManager: new MockThemeManager(new ExtensionInfo("path", new ManifestInfo(new ModuleAttribute()), (x, y) => [])));
 
             _templateContext.AmbientValues["DisplayHelper"] = new DisplayHelper(null, shapeFactory, null);
         }

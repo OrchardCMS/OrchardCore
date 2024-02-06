@@ -29,7 +29,7 @@ namespace OrchardCore.Scripting
 
         /// <summary>
         /// Converts a Base64 encoded gzip stream to an uncompressed Base64 string.
-        /// See http://www.txtwizard.net/compression
+        /// See http://www.txtwizard.net/compression.
         /// </summary>
         private static readonly GlobalMethod _gZip = new()
         {

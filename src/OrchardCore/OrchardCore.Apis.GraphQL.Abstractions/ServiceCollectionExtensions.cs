@@ -6,7 +6,7 @@ namespace OrchardCore.Apis
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Registers a type describing input arguments
+        /// Registers a type describing input arguments.
         /// </summary>
         /// <typeparam name="TObject"></typeparam>
         /// <typeparam name="TObjectType"></typeparam>
@@ -23,7 +23,7 @@ namespace OrchardCore.Apis
         }
 
         /// <summary>
-        /// Registers a type describing output arguments
+        /// Registers a type describing output arguments.
         /// </summary>
         /// <typeparam name="TInput"></typeparam>
         /// <typeparam name="TInputType"></typeparam>

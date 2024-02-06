@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,14 +10,16 @@ namespace OrchardCore.ContentManagement
     /// </summary>
     public class ContentOptions
     {
-        private readonly List<ContentPartOption> _contentParts = new();
-        private readonly List<ContentFieldOption> _contentFields = new();
+        private readonly List<ContentPartOption> _contentParts = [];
+        private readonly List<ContentFieldOption> _contentFields = [];
 
         private IReadOnlyDictionary<string, ContentPartOption> _contentPartOptionsLookup;
-        public IReadOnlyDictionary<string, ContentPartOption> ContentPartOptionsLookup => _contentPartOptionsLookup ??= ContentPartOptions.ToDictionary(k => k.Type.Name);
+        public IReadOnlyDictionary<string, ContentPartOption> ContentPartOptionsLookup
+            => _contentPartOptionsLookup ??= ContentPartOptions.ToFrozenDictionary(k => k.Type.Name);
 
         private IReadOnlyDictionary<string, ContentFieldOption> _contentFieldOptionsLookup;
-        public IReadOnlyDictionary<string, ContentFieldOption> ContentFieldOptionsLookup => _contentFieldOptionsLookup ??= ContentFieldOptions.ToDictionary(k => k.Type.Name);
+        public IReadOnlyDictionary<string, ContentFieldOption> ContentFieldOptionsLookup
+            => _contentFieldOptionsLookup ??= ContentFieldOptions.ToFrozenDictionary(k => k.Type.Name);
 
         public IReadOnlyList<ContentPartOption> ContentPartOptions => _contentParts;
         public IReadOnlyList<ContentFieldOption> ContentFieldOptions => _contentFields;

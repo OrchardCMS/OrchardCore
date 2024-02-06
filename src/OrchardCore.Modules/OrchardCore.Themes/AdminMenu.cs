@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
@@ -16,7 +15,7 @@ namespace OrchardCore.Themes
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
                 return Task.CompletedTask;
             }
@@ -24,8 +23,8 @@ namespace OrchardCore.Themes
             builder
                 .Add(S["Design"], NavigationConstants.AdminMenuDesignPosition, design => design
                     .AddClass("themes").Id("themes")
-                    .Add(S["Themes"], S["Themes"].PrefixPosition(), installed => installed
-                        .Action("Index", "Admin", new { area = "OrchardCore.Themes" })
+                    .Add(S["Themes"], S["Themes"].PrefixPosition(), themes => themes
+                        .Action("Index", "Admin", "OrchardCore.Themes")
                         .Permission(Permissions.ApplyTheme)
                         .LocalNav()
                     )

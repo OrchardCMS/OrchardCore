@@ -23,7 +23,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
         {
             _httpContextAccessor = httpContextAccessor;
             _contentOptions = contentOptionsAccessor.Value;
-            _dynamicPartFields = new Dictionary<string, FieldType>();
+            _dynamicPartFields = [];
 
             S = localizer;
         }

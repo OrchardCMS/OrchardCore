@@ -19,7 +19,7 @@ namespace OrchardCore.Lists.Drivers
         }
 
         /// <summary>
-        /// Assign the Localized version of the List when localizing the Contained Item
+        /// Assign the Localized version of the List when localizing the Contained Item.
         /// </summary>
         public override async Task LocalizingAsync(LocalizationContentContext context, LocalizationPart part)
         {
@@ -49,7 +49,7 @@ namespace OrchardCore.Lists.Drivers
 
         /// <summary>
         /// Need to override CreatingAsync to set the right parent on Creation.
-        /// This will attach the item to the right list when the item is created from a list of another culture
+        /// This will attach the item to the right list when the item is created from a list of another culture.
         /// </summary>
         public override async Task CreatingAsync(CreateContentContext context, LocalizationPart instance)
         {

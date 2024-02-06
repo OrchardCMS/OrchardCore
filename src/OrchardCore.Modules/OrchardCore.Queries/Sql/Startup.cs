@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
@@ -8,7 +9,7 @@ using OrchardCore.Security.Permissions;
 namespace OrchardCore.Queries.Sql
 {
     /// <summary>
-    /// These services are registered on the tenant service collection
+    /// These services are registered on the tenant service collection.
     /// </summary>
     [Feature("OrchardCore.Queries.Sql")]
     public class Startup : StartupBase
@@ -19,6 +20,9 @@ namespace OrchardCore.Queries.Sql
             services.AddScoped<IDisplayDriver<Query>, SqlQueryDisplayDriver>();
             services.AddScoped<IQuerySource, SqlQuerySource>();
             services.AddScoped<INavigationProvider, AdminMenu>();
+
+            // Allows to serialize 'SqlQuery' from its base type.
+            services.AddJsonDerivedTypeInfo<SqlQuery, Query>();
         }
     }
 }

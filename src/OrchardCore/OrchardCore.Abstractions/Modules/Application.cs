@@ -33,7 +33,7 @@ namespace OrchardCore.Modules
 
             Assembly = Assembly.Load(new AssemblyName(Name));
 
-            _modules = new List<Module>(modules);
+            _modules = [..modules];
             _modulesByName = _modules.ToDictionary(m => m.Name, m => m);
         }
 

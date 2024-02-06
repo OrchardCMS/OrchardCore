@@ -6,10 +6,10 @@ Widgets are used by different modules that need to render specialized pieces of 
 
 ## Creating custom Widgets
 
-Many types of Widgets can be created and the default recipes do create some custom ones like `Paragraph`, `Blockquote`, and `MediaWidget` that you can 
+Many types of Widgets can be created and the default recipes do create some custom ones like `Paragraph`, `Blockquote`, and `MediaWidget` that you can
 use as examples.
 
-Widgets are content items, and as such they can be composed of content fields and content parts. For instance the `Paragraph` widget that is included with the 
+Widgets are content items, and as such they can be composed of content fields and content parts. For instance the `Paragraph` widget that is included with the
 `TheBlogTheme` recipe is made out of an HTML field with a WYSIWYG editor.
 
 Widgets can then be composed from the Admin UI during the lifetime of the site, from migrations files to include them as part of custom modules, or recipe files
@@ -53,7 +53,7 @@ The `Widget` shape is used to render a Widget. The default template will render 
 </div>
 ```
 
-If the HTML contains `<div class="widget-container">` then your widget has been rendered by the `Layers` modules which will add this automatically, as it needs to 
+If the HTML contains `<div class="widget-container">` then your widget has been rendered by the `Layers` modules which will add this automatically, as it needs to
 be able to render a title, and uses it as a container for both the title and the widget's actual content.
 
 The actual template for the `Widget` shape can be found in `src/OrchardCore.Modules/OrchardCore.Widgets/Views/Widgets.cshtml` but can be simplified to this:

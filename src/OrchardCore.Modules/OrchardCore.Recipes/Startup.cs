@@ -15,7 +15,7 @@ using OrchardCore.Recipes.Services;
 namespace OrchardCore.Recipes
 {
     /// <summary>
-    /// These services are registered on the tenant service collection
+    /// These services are registered on the tenant service collection.
     /// </summary>
     public class Startup : StartupBase
     {

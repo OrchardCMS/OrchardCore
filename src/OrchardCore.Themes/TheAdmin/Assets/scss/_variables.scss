@@ -35,8 +35,8 @@ $dropdown-max-height: 250px !default;
     --oc-editor-fullscreen: #{$zindex-modal - 1};
     --oc-selected-indicator-color: var(--bs-primary);
     /* Action bar should always be less than dropdown menu */
-    --oc-action-bar-zindex: #{$zindex-dropdown - 17};
-    --oc-second-action-bar-zindex: #{$zindex-dropdown - 20};
+    --oc-action-bar-zindex: #{$zindex-dropdown - 20};
+    --oc-second-action-bar-zindex: #{$zindex-dropdown - 17};
     /* Undefined Bootstrap variables */
     --bs-dropdown-zindex: #{$zindex-dropdown};
     --bs-zindex-fixed: #{$zindex-fixed};

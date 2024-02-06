@@ -4,9 +4,11 @@
     <RootNamespace>OrchardCore.Users</RootNamespace>
     <!-- NuGet properties-->
     <Title>OrchardCore Users Core</Title>
-    <Description>$(OCCMSDescription)
+    <Description>
+      $(OCCMSDescription)
 
-    Core implementation for Users module.</Description>
+      Core implementation for Users module.
+    </Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>
 
@@ -22,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="YesSql.Filters.Query"/>
+    <PackageReference Include="YesSql.Filters.Query" />
   </ItemGroup>
 
 </Project>

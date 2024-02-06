@@ -7,6 +7,6 @@ namespace OrchardCore.Taxonomies.Models
     public class TaxonomyPart : ContentPart
     {
         public string TermContentType { get; set; }
-        public List<ContentItem> Terms { get; set; } = new List<ContentItem>();
+        public List<ContentItem> Terms { get; set; } = [];
     }
 }

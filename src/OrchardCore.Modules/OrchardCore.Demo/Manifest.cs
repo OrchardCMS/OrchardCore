@@ -12,7 +12,7 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Demo",
     Description = "Test",
     Category = "Samples",
-    Dependencies = new[] { "OrchardCore.Users", "OrchardCore.Contents" }
+    Dependencies = ["OrchardCore.Users", "OrchardCore.Contents"]
 )]
 
 [assembly: Feature(

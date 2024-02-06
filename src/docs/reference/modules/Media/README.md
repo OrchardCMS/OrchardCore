@@ -464,7 +464,7 @@ The `Anchors[]` is kept in sync with the `Paths[]` array and the index for a giv
 
 When resizing images, the query string command values are, by default, signed with an HMAC signature that is unique to the tenant.
 
-This prevents prevent malicious clients from creating too many variations of the same image. 
+This prevents prevent malicious clients from creating too many variations of the same image.
 
 If the `UseTokenizedQueryString` is set to `false` the following features will be removed.
 
@@ -518,4 +518,4 @@ The `Media Indexing` feature extends the media indexing capability to also encom
 ## Credits
 
 To index PDF files the [PdfPig library](https://github.com/UglyToad/PdfPig/) is used.
-To index Microsoft Office files (i.e., .docx, .ppts) the [Open-XML-SDK ](https://github.com/dotnet/Open-XML-SDK) is used.
+To index Microsoft Office files (i.e., .docx, .ppts) the [Open-XML-SDK](https://github.com/dotnet/Open-XML-SDK) is used.

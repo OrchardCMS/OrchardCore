@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Indexing;
@@ -42,7 +42,7 @@ namespace OrchardCore.Taxonomies.Indexing
             var inheritedContentItems = new List<ContentItem>();
             foreach (var contentItemId in field.TermContentItemIds)
             {
-                TaxonomyOrchardHelperExtensions.FindTermHierarchy(taxonomy.Content.TaxonomyPart.Terms as JArray, contentItemId, inheritedContentItems);
+                TaxonomyOrchardHelperExtensions.FindTermHierarchy((JsonArray)taxonomy.Content.TaxonomyPart.Terms, contentItemId, inheritedContentItems);
             }
 
             foreach (var key in context.Keys)

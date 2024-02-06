@@ -1,7 +1,7 @@
 using System;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -29,9 +29,9 @@ namespace OrchardCore.Settings.Recipes
             var model = context.Step;
             var site = await _siteService.LoadSiteSettingsAsync();
 
-            foreach (JProperty property in model.Properties())
+            foreach (var property in model)
             {
-                switch (property.Name)
+                switch (property.Key)
                 {
                     case "BaseUrl":
                         site.BaseUrl = property.Value.ToString();
@@ -98,7 +98,7 @@ namespace OrchardCore.Settings.Recipes
                         break;
 
                     default:
-                        site.Properties[property.Name] = property.Value;
+                        site.Properties[property.Key] = property.Value.Clone();
                         break;
                 }
             }

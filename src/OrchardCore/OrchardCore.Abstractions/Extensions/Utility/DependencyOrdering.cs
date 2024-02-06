@@ -77,7 +77,7 @@ namespace OrchardCore.Environment.Extensions.Utility
         {
             if (index < lowerIndex)
             {
-                throw new ArgumentException("Should be higher or equal to 'lowerIndex'.", nameof(index));
+                throw new ArgumentException($"Should be higher or equal to '{nameof(lowerIndex)}'.", nameof(index));
             }
 
             if (index != lowerIndex)

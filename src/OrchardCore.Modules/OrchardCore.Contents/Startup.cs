@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
-using OrchardCore.AdminMenu.Services;
+using OrchardCore.AdminMenu;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -317,14 +317,8 @@ namespace OrchardCore.Contents
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, AllContentDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllContentDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllContentDeploymentStepDriver>();
-
-            services.AddTransient<IDeploymentSource, ContentDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ContentDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, ContentDeploymentStepDriver>();
-
+            services.AddDeployment<AllContentDeploymentSource, AllContentDeploymentStep, AllContentDeploymentStepDriver>();
+            services.AddDeployment<ContentDeploymentSource, ContentDeploymentStep, ContentDeploymentStepDriver>();
             services.AddSiteSettingsPropertyDeploymentStep<ContentAuditTrailSettings, DeploymentStartup>(S => S["Content Audit Trail settings"], S => S["Exports the content audit trail settings."]);
         }
     }
@@ -334,9 +328,7 @@ namespace OrchardCore.Contents
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IAdminNodeProviderFactory>(new AdminNodeProviderFactory<ContentTypesAdminNode>());
-            services.AddScoped<IAdminNodeNavigationBuilder, ContentTypesAdminNodeNavigationBuilder>();
-            services.AddScoped<IDisplayDriver<MenuItem>, ContentTypesAdminNodeDriver>();
+            services.AddAdminMenu<ContentTypesAdminNode, ContentTypesAdminNodeNavigationBuilder, ContentTypesAdminNodeDriver>();
         }
     }
 

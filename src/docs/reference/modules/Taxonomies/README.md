@@ -275,9 +275,9 @@ Returns the list of terms including their parents.
 
 Provides a way to query content items that are categorized with specific terms.
 
-#### QueryCategorizedContentItemsAsync Example 
+#### QueryCategorizedContentItemsAsync Example
 
-The following example queries content items that are related to the current content item 
+The following example queries content items that are related to the current content item
 by the term category, but excluding the current content item.
 
 ```csharp
@@ -301,7 +301,7 @@ by the term category, but excluding the current content item.
 
 The `taxonomy_terms` filter loads the specified term content items.
 
-#### taxonomy_terms Example 
+#### taxonomy_terms Example
 
 The following example lists all the terms related to the **Colors** field on the **BlogPost**
 content type, then renders them.

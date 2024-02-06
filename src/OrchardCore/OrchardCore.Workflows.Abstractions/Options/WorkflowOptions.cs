@@ -8,25 +8,25 @@ namespace OrchardCore.Workflows.Options
     {
         public WorkflowOptions()
         {
-            ActivityDictionary = new Dictionary<Type, ActivityRegistration>();
+            ActivityDictionary = [];
         }
 
         /// <summary>
         /// The set of activities available to workflows.
         /// Modules can register and unregister activities.
         /// </summary>
-        private IDictionary<Type, ActivityRegistration> ActivityDictionary { get; }
+        private Dictionary<Type, ActivityRegistration> ActivityDictionary { get; }
 
         public IEnumerable<Type> ActivityTypes => ActivityDictionary.Values.Select(x => x.ActivityType).ToList().AsReadOnly();
         public IEnumerable<Type> ActivityDisplayDriverTypes => ActivityDictionary.Values.SelectMany(x => x.DriverTypes).ToList().AsReadOnly();
 
         public WorkflowOptions RegisterActivity(Type activityType, Type driverType = null)
         {
-            if (ActivityDictionary.ContainsKey(activityType))
+            if (ActivityDictionary.TryGetValue(activityType, out var value))
             {
                 if (driverType != null)
                 {
-                    ActivityDictionary[activityType].DriverTypes.Add(driverType);
+                    value.DriverTypes.Add(driverType);
                 }
             }
             else

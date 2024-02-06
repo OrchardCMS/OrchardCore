@@ -4,7 +4,7 @@ using YesSql.Filters.Abstractions.Nodes;
 namespace OrchardCore.Contents.Services
 {
     /// <summary>
-    /// Provides a content type node is used when a filter has not been selected
+    /// Provides a content type node is used when a filter has not been selected.
     /// </summary>
     public class ContentTypeFilterNode : TermOperationNode
     {

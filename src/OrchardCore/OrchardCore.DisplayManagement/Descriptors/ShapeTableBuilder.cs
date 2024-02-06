@@ -6,7 +6,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
 {
     public class ShapeTableBuilder
     {
-        private readonly IList<ShapeAlterationBuilder> _alterationBuilders = new List<ShapeAlterationBuilder>();
+        private readonly IList<ShapeAlterationBuilder> _alterationBuilders = [];
         private readonly IFeatureInfo _feature;
 
         public ShapeTableBuilder(IFeatureInfo feature, IReadOnlyCollection<string> excludedFeatureIds = null)

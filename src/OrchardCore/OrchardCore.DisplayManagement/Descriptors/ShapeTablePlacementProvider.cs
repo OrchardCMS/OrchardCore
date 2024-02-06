@@ -28,7 +28,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
                 return null;
             }
 
-            var shapeTable = _shapeTableManager.GetShapeTable(theme.Id);
+            var shapeTable = await _shapeTableManager.GetShapeTableAsync(theme.Id);
 
             return new ShapeTablePlacementResolver(shapeTable);
         }

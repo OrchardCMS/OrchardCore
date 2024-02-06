@@ -177,7 +177,7 @@ namespace OrchardCore.AdminDashboard.Controllers
 
                 contentItem.Apply(dashboardPart);
 
-                _session.Save(contentItem);
+                await _session.SaveAsync(contentItem);
 
                 if (contentItem.IsPublished() == false)
                 {
@@ -189,7 +189,7 @@ namespace OrchardCore.AdminDashboard.Controllers
                         publishedMetaData.Width = partViewModel.Width;
                         publishedMetaData.Height = partViewModel.Height;
                         publishedVersion.Apply(publishedMetaData);
-                        _session.Save(publishedVersion);
+                        await _session.SaveAsync(publishedVersion);
                     }
                 }
             }

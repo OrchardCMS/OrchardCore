@@ -51,20 +51,20 @@ namespace OrchardCore.Workflows.Services
                 .ListAsync();
         }
 
-        public Task SaveAsync(WorkflowType workflowType)
+        public async Task SaveAsync(WorkflowType workflowType)
         {
             var isNew = workflowType.Id == 0;
-            _session.Save(workflowType);
+            await _session.SaveAsync(workflowType);
 
             if (isNew)
             {
                 var context = new WorkflowTypeCreatedContext(workflowType);
-                return _handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
+                await _handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
             }
             else
             {
                 var context = new WorkflowTypeUpdatedContext(workflowType);
-                return _handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
+                await _handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
             }
         }
 

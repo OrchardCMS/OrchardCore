@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using OrchardCore.Data.Migration;
 using OrchardCore.Workflows.Indexes;
 using YesSql.Sql;
@@ -7,16 +8,16 @@ namespace OrchardCore.Workflows
 {
     public class Migrations : DataMigration
     {
-        public int Create()
+        public async Task<int> CreateAsync()
         {
-            SchemaBuilder.CreateMapIndexTable<WorkflowTypeIndex>(table => table
+            await SchemaBuilder.CreateMapIndexTableAsync<WorkflowTypeIndex>(table => table
                 .Column<string>("WorkflowTypeId", c => c.WithLength(26))
                 .Column<string>("Name")
                 .Column<bool>("IsEnabled")
                 .Column<bool>("HasStart")
             );
 
-            SchemaBuilder.AlterIndexTable<WorkflowTypeIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<WorkflowTypeIndex>(table => table
                 .CreateIndex("IDX_WorkflowTypeIndex_DocumentId",
                     "DocumentId",
                     "WorkflowTypeId",
@@ -25,7 +26,7 @@ namespace OrchardCore.Workflows
                     "HasStart")
             );
 
-            SchemaBuilder.CreateMapIndexTable<WorkflowTypeStartActivitiesIndex>(table => table
+            await SchemaBuilder.CreateMapIndexTableAsync<WorkflowTypeStartActivitiesIndex>(table => table
                 .Column<string>("WorkflowTypeId")
                 .Column<string>("Name")
                 .Column<bool>("IsEnabled")
@@ -33,7 +34,7 @@ namespace OrchardCore.Workflows
                 .Column<string>("StartActivityName")
             );
 
-            SchemaBuilder.AlterIndexTable<WorkflowTypeStartActivitiesIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<WorkflowTypeStartActivitiesIndex>(table => table
                 .CreateIndex("IDX_WorkflowTypeStartActivitiesIndex_DocumentId",
                     "DocumentId",
                     "WorkflowTypeId",
@@ -42,14 +43,14 @@ namespace OrchardCore.Workflows
                     "IsEnabled")
             );
 
-            SchemaBuilder.CreateMapIndexTable<WorkflowIndex>(table => table
+            await SchemaBuilder.CreateMapIndexTableAsync<WorkflowIndex>(table => table
                 .Column<string>("WorkflowTypeId", c => c.WithLength(26))
                 .Column<string>("WorkflowId", c => c.WithLength(26))
                 .Column<string>("WorkflowStatus", c => c.WithLength(26))
                 .Column<DateTime>("CreatedUtc")
             );
 
-            SchemaBuilder.AlterIndexTable<WorkflowIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<WorkflowIndex>(table => table
                 .CreateIndex("IDX_WorkflowIndex_DocumentId",
                     "DocumentId",
                     "WorkflowTypeId",
@@ -58,7 +59,7 @@ namespace OrchardCore.Workflows
                     "CreatedUtc")
             );
 
-            SchemaBuilder.CreateMapIndexTable<WorkflowBlockingActivitiesIndex>(table => table
+            await SchemaBuilder.CreateMapIndexTableAsync<WorkflowBlockingActivitiesIndex>(table => table
                 .Column<string>("ActivityId")
                 .Column<string>("ActivityName")
                 .Column<bool>("ActivityIsStart")
@@ -67,7 +68,7 @@ namespace OrchardCore.Workflows
                 .Column<string>("WorkflowCorrelationId")
             );
 
-            SchemaBuilder.AlterIndexTable<WorkflowBlockingActivitiesIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<WorkflowBlockingActivitiesIndex>(table => table
                 .CreateIndex("IDX_WFBlockingActivities_DocumentId_ActivityId",
                     "DocumentId",
                     "ActivityId",
@@ -75,7 +76,7 @@ namespace OrchardCore.Workflows
                     "WorkflowId")
             );
 
-            SchemaBuilder.AlterIndexTable<WorkflowBlockingActivitiesIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<WorkflowBlockingActivitiesIndex>(table => table
                 .CreateIndex("IDX_WFBlockingActivities_DocumentId_ActivityName",
                     "DocumentId",
                     "ActivityName",
@@ -88,9 +89,9 @@ namespace OrchardCore.Workflows
         }
 
         // This code can be removed in a later version.
-        public int UpdateFrom1()
+        public async Task<int> UpdateFrom1Async()
         {
-            SchemaBuilder.AlterIndexTable<WorkflowIndex>(table =>
+            await SchemaBuilder.AlterIndexTableAsync<WorkflowIndex>(table =>
             {
                 table.AddColumn<string>("WorkflowStatus");
             });
@@ -99,9 +100,9 @@ namespace OrchardCore.Workflows
         }
 
         // This code can be removed in a later version.
-        public int UpdateFrom2()
+        public async Task<int> UpdateFrom2Async()
         {
-            SchemaBuilder.AlterIndexTable<WorkflowTypeIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<WorkflowTypeIndex>(table => table
                 .CreateIndex("IDX_WorkflowTypeIndex_DocumentId",
                     "DocumentId",
                     "WorkflowTypeId",
@@ -110,7 +111,7 @@ namespace OrchardCore.Workflows
                     "HasStart")
             );
 
-            SchemaBuilder.AlterIndexTable<WorkflowTypeStartActivitiesIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<WorkflowTypeStartActivitiesIndex>(table => table
                 .CreateIndex("IDX_WorkflowTypeStartActivitiesIndex_DocumentId",
                     "DocumentId",
                     "WorkflowTypeId",
@@ -119,7 +120,7 @@ namespace OrchardCore.Workflows
                     "IsEnabled")
             );
 
-            SchemaBuilder.AlterIndexTable<WorkflowIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<WorkflowIndex>(table => table
                 .CreateIndex("IDX_WorkflowIndex_DocumentId",
                     "DocumentId",
                     "WorkflowTypeId",
@@ -128,7 +129,7 @@ namespace OrchardCore.Workflows
                     "CreatedUtc")
             );
 
-            SchemaBuilder.AlterIndexTable<WorkflowBlockingActivitiesIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<WorkflowBlockingActivitiesIndex>(table => table
                 .CreateIndex("IDX_WFBlockingActivities_DocumentId_ActivityId",
                     "DocumentId",
                     "ActivityId",
@@ -136,7 +137,7 @@ namespace OrchardCore.Workflows
                     "WorkflowId")
             );
 
-            SchemaBuilder.AlterIndexTable<WorkflowBlockingActivitiesIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<WorkflowBlockingActivitiesIndex>(table => table
                 .CreateIndex("IDX_WFBlockingActivities_DocumentId_ActivityName",
                     "DocumentId",
                     "ActivityName",

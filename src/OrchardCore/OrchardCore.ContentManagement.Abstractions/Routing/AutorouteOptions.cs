@@ -4,7 +4,7 @@ namespace OrchardCore.ContentManagement.Routing
 {
     public class AutorouteOptions
     {
-        public RouteValueDictionary GlobalRouteValues { get; set; } = new RouteValueDictionary();
+        public RouteValueDictionary GlobalRouteValues { get; set; } = [];
         public string ContentItemIdKey { get; set; } = "";
 
         // The contained content item key is only used for route generation and should be removed after generation.

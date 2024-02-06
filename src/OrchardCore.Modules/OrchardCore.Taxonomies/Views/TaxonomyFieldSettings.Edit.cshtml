@@ -12,7 +12,7 @@
 
 <div class="mb-3">
     <div class="w-sm-75 w-lg-75 w-xl-50">
-        <label asp-for="Hint">@T["Hint"]</label>
+        <label asp-for="Hint" class="form-label">@T["Hint"]</label>
         <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
     </div>
     <span class="hint">@T["The hint text to display for this field on the editor."]</span>
@@ -20,7 +20,7 @@
 
 <div class="mb-3">
     <div class="w-sm-75 w-lg-75 w-xl-50">
-        <label asp-for="TaxonomyContentItemId">@T["Taxonomy"]</label>
+        <label asp-for="TaxonomyContentItemId" class="form-label">@T["Taxonomy"]</label>
         <select asp-for="TaxonomyContentItemId" class="form-select">
             <option value="">@T["Select a Taxonomy"]</option>
             @foreach (var taxonomy in taxonomies)

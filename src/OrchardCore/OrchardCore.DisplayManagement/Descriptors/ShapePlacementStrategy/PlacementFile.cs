@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 {
@@ -10,25 +10,25 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
     public class PlacementNode
     {
-        [JsonProperty(PropertyName = "place")]
+        [JsonPropertyName("place")]
         public string Location { get; set; }
 
-        [JsonProperty(PropertyName = "displayType")]
+        [JsonPropertyName("displayType")]
         public string DisplayType { get; set; }
 
-        [JsonProperty(PropertyName = "differentiator")]
+        [JsonPropertyName("differentiator")]
         public string Differentiator { get; set; }
 
-        [JsonProperty(PropertyName = "alternates")]
+        [JsonPropertyName("alternates")]
         public string[] Alternates { get; set; }
 
-        [JsonProperty(PropertyName = "wrappers")]
+        [JsonPropertyName("wrappers")]
         public string[] Wrappers { get; set; }
 
-        [JsonProperty(PropertyName = "shape")]
+        [JsonPropertyName("shape")]
         public string ShapeType { get; set; }
 
         [JsonExtensionData]
-        public IDictionary<string, JToken> Filters { get; set; } = new Dictionary<string, JToken>();
+        public IDictionary<string, object> Filters { get; set; } = new Dictionary<string, object>();
     }
 }

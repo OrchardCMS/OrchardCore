@@ -25,7 +25,7 @@ namespace OrchardCore.DisplayManagement
 
         private Dictionary<string, object> _properties;
 
-        public IDictionary<string, object> Properties => _properties ??= new Dictionary<string, object>();
+        public IDictionary<string, object> Properties => _properties ??= [];
 
         public IReadOnlyList<IPositioned> Items => throw new System.NotImplementedException();
 

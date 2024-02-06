@@ -10,9 +10,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         private readonly IConfiguration _configuration;
         private readonly IEnumerable<IIndexPropertyProvider> _propertyProviders;
 
-        private readonly HashSet<string> _usedAliases = new();
-        private readonly Dictionary<string, string> _aliases = new();
-        private readonly Dictionary<string, string> _tableAliases = new();
+        private readonly HashSet<string> _usedAliases = [];
+        private readonly Dictionary<string, string> _aliases = [];
+        private readonly Dictionary<string, string> _tableAliases = [];
 
         public PredicateQuery(
             IConfiguration configuration,
@@ -40,29 +40,17 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
 
         public void CreateAlias(string path, string alias)
         {
-            if (path == null)
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
+            ArgumentNullException.ThrowIfNull(path);
 
-            if (alias == null)
-            {
-                throw new ArgumentNullException(nameof(alias));
-            }
+            ArgumentNullException.ThrowIfNull(alias);
 
             _aliases[path] = alias;
         }
         public void CreateTableAlias(string path, string tableAlias)
         {
-            if (path == null)
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
+            ArgumentNullException.ThrowIfNull(path);
 
-            if (tableAlias == null)
-            {
-                throw new ArgumentNullException(nameof(tableAlias));
-            }
+            ArgumentNullException.ThrowIfNull(tableAlias);
 
             _tableAliases[path] = tableAlias;
         }
@@ -70,14 +58,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
 
         public void SearchUsedAlias(string propertyPath)
         {
-            if (propertyPath == null)
-            {
-                throw new ArgumentNullException(nameof(propertyPath));
-            }
+            ArgumentNullException.ThrowIfNull(propertyPath);
 
             // Check if there's an alias for the full path
             // aliasPart.Alias -> AliasFieldIndex.Alias
-            if (_aliases.TryGetValue(propertyPath, out string alias))
+            if (_aliases.TryGetValue(propertyPath, out var alias))
             {
                 _usedAliases.Add(alias);
                 return;
@@ -115,10 +100,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
 
         public string GetColumnName(string propertyPath)
         {
-            if (propertyPath == null)
-            {
-                throw new ArgumentNullException(nameof(propertyPath));
-            }
+            ArgumentNullException.ThrowIfNull(propertyPath);
 
             // Check if there's an alias for the full path
             // aliasPart.Alias -> AliasFieldIndex.Alias
@@ -153,7 +135,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
                     // no property provider exists; hope sql is case-insensitive (will break postgres; property providers must be supplied for postgres)
                     // Switch the given alias in the path with the mapped alias.
                     // aliasPart.Alias -> AliasPartIndex.alias
-                    return Dialect.QuoteForTableName($"{tableAlias}", _configuration.Schema) + "." + Dialect.QuoteForColumnName(values[1]);
+                    return Dialect.QuoteForTableName($"{tableAlias}", _configuration.Schema) + "." + Dialect.QuoteForColumnName(values[0]);
                 }
             }
 

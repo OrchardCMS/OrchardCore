@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -11,11 +12,13 @@ namespace OrchardCore.ContentFields.Settings
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
             return Initialize<YoutubeFieldSettings>("YoutubeFieldSetting_Edit", model =>
-             {
-                 partFieldDefinition.PopulateSettings(model);
-                 model.Height = model.Height != default ? model.Height : 315;
-                 model.Width = model.Width != default ? model.Width : 560;
-             }).Location("Content");
+            {
+                var settings = partFieldDefinition.Settings.ToObject<YoutubeFieldSettings>();
+
+                model.Height = model.Height != default ? model.Height : 315;
+                model.Width = model.Width != default ? model.Width : 560;
+            })
+                .Location("Content");
         }
 
         public async override Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

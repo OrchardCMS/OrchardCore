@@ -62,3 +62,10 @@
     color: var(--bs-body-color);
     fill: var(--bs-body-color);
 }
+
+[dir] .trumbowyg-box .trumbowyg-editor th, [dir] .trumbowyg-box .trumbowyg-editor td {
+    border-width: var(--bs-border-width, 1px);
+    border-style: var(--bs-border-style, solid);
+    border-color: var(--bs-border-color, #dee2e6);
+    padding: 0.5rem;
+}

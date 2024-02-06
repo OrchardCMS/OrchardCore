@@ -7,8 +7,8 @@ namespace OrchardCore.Apis.GraphQL.Client
     public class ContentPartBuilder
     {
         private readonly string _contentPartName;
-        private readonly Dictionary<string, string> _keysWithValues = new();
-        private readonly List<string> _keys = new();
+        private readonly Dictionary<string, string> _keysWithValues = [];
+        private readonly List<string> _keys = [];
 
         public ContentPartBuilder(string contentPartName)
         {

@@ -133,9 +133,7 @@ namespace OrchardCore.Workflows
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, AllWorkflowTypeDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllWorkflowTypeDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllWorkflowTypeDeploymentStepDriver>();
+            services.AddDeployment<AllWorkflowTypeDeploymentSource, AllWorkflowTypeDeploymentStep, AllWorkflowTypeDeploymentStepDriver>();
         }
     }
 

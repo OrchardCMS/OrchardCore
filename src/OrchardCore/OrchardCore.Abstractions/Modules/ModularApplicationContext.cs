@@ -39,11 +39,11 @@ namespace OrchardCore.Modules
             }
         }
 
-        private IEnumerable<Module> GetModules()
+        private ConcurrentBag<Module> GetModules()
         {
             var modules = new ConcurrentBag<Module>
             {
-                new Module(_environment.ApplicationName, true),
+                new(_environment.ApplicationName, true),
             };
 
             var names = _moduleNamesProviders

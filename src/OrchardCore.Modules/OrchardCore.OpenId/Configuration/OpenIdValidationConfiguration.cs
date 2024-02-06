@@ -174,7 +174,7 @@ namespace OrchardCore.OpenId.Configuration
                 {
                     options.TokenValidationParameters.IssuerValidator = (issuer, token, parameters) =>
                     {
-                        if (!Uri.TryCreate(issuer, UriKind.Absolute, out Uri uri))
+                        if (!Uri.TryCreate(issuer, UriKind.Absolute, out var uri))
                         {
                             throw new SecurityTokenInvalidIssuerException("The token issuer is not valid.");
                         }

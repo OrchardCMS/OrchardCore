@@ -36,10 +36,7 @@ namespace OrchardCore.Twitter.Services
 
         public async Task UpdateSettingsAsync(TwitterSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
             container.Alter<TwitterSettings>(nameof(TwitterSettings), aspect =>
@@ -55,10 +52,7 @@ namespace OrchardCore.Twitter.Services
 
         public IEnumerable<ValidationResult> ValidateSettings(TwitterSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             if (string.IsNullOrWhiteSpace(settings.ConsumerKey))
             {

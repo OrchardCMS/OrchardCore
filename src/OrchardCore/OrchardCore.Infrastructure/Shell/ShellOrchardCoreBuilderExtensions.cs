@@ -24,7 +24,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Host services to load site settings from the file system
+        /// Host services to load site settings from the file system.
         /// </summary>
         public static OrchardCoreBuilder AddSitesFolder(this OrchardCoreBuilder builder)
         {

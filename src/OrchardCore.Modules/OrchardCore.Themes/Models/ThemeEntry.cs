@@ -13,7 +13,7 @@ namespace OrchardCore.Themes.Models
         /// </summary>
         public ThemeEntry()
         {
-            Notifications = new List<string>();
+            Notifications = [];
         }
 
         /// <summary>

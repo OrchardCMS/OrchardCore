@@ -7,6 +7,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Rules.Models;
+using OrchardCore.Rules.Services;
 
 namespace OrchardCore.Rules.Drivers
 {
@@ -18,7 +19,7 @@ namespace OrchardCore.Rules.Drivers
         private readonly IConditionOperatorResolver _operatorResolver;
 
         // Hashset to prevent duplicate entries, but comparison is done by the comparers.
-        private readonly HashSet<string> _contentTypes = new();
+        private readonly HashSet<string> _contentTypes = [];
 
         public ContentTypeConditionEvaluatorDriver(IConditionOperatorResolver operatorResolver)
         {
