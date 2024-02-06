@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Microsoft.Data.Sqlite;
 using OrchardCore.Environment.Shell;
@@ -47,6 +48,9 @@ public static class SqliteHelper
     /// <returns></returns>
     public static string GetConnectionString(SqliteOptions sqliteOptions, string databaseFolder, string databaseName, SqliteOpenMode sqliteOpenMode)
     {
+        ArgumentException.ThrowIfNullOrEmpty(databaseFolder, nameof(databaseFolder));
+        ArgumentException.ThrowIfNullOrEmpty(databaseName, nameof(databaseName));
+
         return new SqliteConnectionStringBuilder
         {
             DataSource = string.IsNullOrEmpty(databaseFolder) ? databaseName : Path.Combine(databaseFolder, databaseName),
