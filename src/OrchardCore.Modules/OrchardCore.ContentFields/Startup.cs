@@ -154,16 +154,6 @@ namespace OrchardCore.ContentFields
             // Migration, can be removed in a future release.
             services.AddDataMigration<Migrations>();
         }
-
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapAreaControllerRoute(
-                name: "ContentPicker",
-                areaName: "OrchardCore.ContentFields",
-                pattern: _adminOptions.AdminUrlPrefix + "/ContentFields/SearchContentItems",
-                defaults: new { controller = typeof(ContentPickerAdminController).ControllerName(), action = nameof(ContentPickerAdminController.SearchContentItems) }
-            );
-        }
     }
 
     [RequireFeatures("OrchardCore.ContentLocalization")]
@@ -184,16 +174,6 @@ namespace OrchardCore.ContentFields
 
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, LocalizationSetContentPickerFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, LocalizationSetContentPickerFieldIndexHandler>();
-        }
-
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapAreaControllerRoute(
-                name: "SearchLocalizationSets",
-                areaName: "OrchardCore.ContentFields",
-                pattern: _adminOptions.AdminUrlPrefix + "/ContentFields/SearchLocalizationSets",
-                defaults: new { controller = typeof(LocalizationSetContentPickerAdminController).ControllerName(), action = nameof(LocalizationSetContentPickerAdminController.SearchLocalizationSets) }
-            );
         }
     }
 
@@ -243,16 +223,6 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, UserPickerFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, UserPickerFieldIndexHandler>();
             services.AddScoped<IUserPickerResultProvider, DefaultUserPickerResultProvider>();
-        }
-
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapAreaControllerRoute(
-                name: "SearchUsers",
-                areaName: "OrchardCore.ContentFields",
-                pattern: _adminOptions.AdminUrlPrefix + "/ContentFields/SearchUsers",
-                defaults: new { controller = typeof(UserPickerAdminController).ControllerName(), action = nameof(UserPickerAdminController.SearchUsers) }
-            );
         }
     }
 
