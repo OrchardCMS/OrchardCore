@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.AdminMenu;
-using OrchardCore.AdminMenu.Services;
 using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;
@@ -32,7 +31,6 @@ using OrchardCore.Lists.Services;
 using OrchardCore.Lists.Settings;
 using OrchardCore.Lists.ViewModels;
 using OrchardCore.Modules;
-using OrchardCore.Navigation;
 
 namespace OrchardCore.Lists
 {
@@ -72,8 +70,6 @@ namespace OrchardCore.Lists
             services.AddDataMigration<Migrations>();
             services.AddScoped<IContentItemIndexHandler, ContainedPartContentIndexHandler>();
             services.AddScoped<IContainerService, ContainerService>();
-
-            services.AddAdminNode<ListsAdminNode>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -92,9 +88,7 @@ namespace OrchardCore.Lists
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IAdminNodeProviderFactory>(new AdminNodeProviderFactory<ListsAdminNode>());
-            services.AddScoped<IAdminNodeNavigationBuilder, ListsAdminNodeNavigationBuilder>();
-            services.AddScoped<IDisplayDriver<MenuItem>, ListsAdminNodeDriver>();
+            services.AddAdminMenu<ListsAdminNode, ListsAdminNodeNavigationBuilder, ListsAdminNodeDriver>();
         }
     }
 
