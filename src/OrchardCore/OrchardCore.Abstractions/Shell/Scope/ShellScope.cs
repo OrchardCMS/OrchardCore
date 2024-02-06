@@ -19,11 +19,11 @@ namespace OrchardCore.Environment.Shell.Scope
         private static readonly AsyncLocal<ShellScopeHolder> _current = new();
 
         private readonly AsyncServiceScope _serviceScope;
-        private readonly Dictionary<object, object> _items = new();
-        private readonly List<Func<ShellScope, Task>> _beforeDispose = new();
-        private readonly HashSet<string> _deferredSignals = new();
-        private readonly List<Func<ShellScope, Task>> _deferredTasks = new();
-        private readonly List<Func<ShellScope, Exception, Task>> _exceptionHandlers = new();
+        private readonly Dictionary<object, object> _items = [];
+        private readonly List<Func<ShellScope, Task>> _beforeDispose = [];
+        private readonly HashSet<string> _deferredSignals = [];
+        private readonly List<Func<ShellScope, Task>> _deferredTasks = [];
+        private readonly List<Func<ShellScope, Exception, Task>> _exceptionHandlers = [];
 
         private bool _serviceScopeOnly;
         private bool _shellTerminated;

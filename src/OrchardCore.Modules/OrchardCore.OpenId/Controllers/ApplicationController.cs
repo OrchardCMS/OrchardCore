@@ -27,14 +27,15 @@ namespace OrchardCore.OpenId.Controllers
     public class ApplicationController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
-        protected readonly IStringLocalizer S;
-        protected readonly IHtmlLocalizer H;
+        private readonly IShapeFactory _shapeFactory;
         private readonly PagerOptions _pagerOptions;
         private readonly IOpenIdApplicationManager _applicationManager;
         private readonly IOpenIdScopeManager _scopeManager;
         private readonly INotifier _notifier;
         private readonly ShellDescriptor _shellDescriptor;
-        protected readonly dynamic New;
+
+        protected readonly IStringLocalizer S;
+        protected readonly IHtmlLocalizer H;
 
         public ApplicationController(
             IShapeFactory shapeFactory,
@@ -47,7 +48,7 @@ namespace OrchardCore.OpenId.Controllers
             INotifier notifier,
             ShellDescriptor shellDescriptor)
         {
-            New = shapeFactory;
+            _shapeFactory = shapeFactory;
             _pagerOptions = pagerOptions.Value;
             S = stringLocalizer;
             H = htmlLocalizer;
@@ -70,7 +71,7 @@ namespace OrchardCore.OpenId.Controllers
 
             var model = new OpenIdApplicationsIndexViewModel
             {
-                Pager = (await New.Pager(pager)).TotalItemCount(count)
+                Pager = await _shapeFactory.PagerAsync(pager, (int)count),
             };
 
             await foreach (var application in _applicationManager.ListAsync(pager.PageSize, pager.GetStartIndex()))

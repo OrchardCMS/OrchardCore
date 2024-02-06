@@ -1,12 +1,20 @@
-using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
+using OrchardCore.Sms.Controllers;
 
 namespace OrchardCore.Sms;
 
 public class AdminMenu : INavigationProvider
 {
+    private static readonly RouteValueDictionary _routeValues = new()
+    {
+        { "area", "OrchardCore.Settings" },
+        { "groupId", SmsSettings.GroupId },
+    };
+
     protected readonly IStringLocalizer S;
 
     public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
@@ -16,7 +24,7 @@ public class AdminMenu : INavigationProvider
 
     public Task BuildNavigationAsync(string name, NavigationBuilder builder)
     {
-        if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+        if (!NavigationHelper.IsAdminMenu(name))
         {
             return Task.CompletedTask;
         }
@@ -27,7 +35,14 @@ public class AdminMenu : INavigationProvider
                     .Add(S["SMS"], S["SMS"].PrefixPosition(), sms => sms
                         .AddClass("sms")
                         .Id("sms")
-                        .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SmsSettings.GroupId })
+                        .Action("Index", "Admin", _routeValues)
+                        .Permission(SmsPermissions.ManageSmsSettings)
+                        .LocalNav()
+                    )
+                    .Add(S["SMS Test"], S["SMS Test"].PrefixPosition(), sms => sms
+                        .AddClass("smstest")
+                        .Id("smstest")
+                        .Action(nameof(AdminController.Test), typeof(AdminController).ControllerName(), "OrchardCore.Sms")
                         .Permission(SmsPermissions.ManageSmsSettings)
                         .LocalNav()
                     )

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
+using OrchardCore.Contents.Indexing;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Indexing;
 using OrchardCore.Media.Fields;
@@ -34,12 +35,12 @@ namespace OrchardCore.Media.Indexing
             var options = context.Settings.ToOptions();
             var settings = context.ContentPartFieldDefinition.GetSettings<MediaFieldSettings>();
 
-            if (field.Paths?.Length == 0)
+            if (field.Paths?.Length is null || field.Paths.Length == 0)
             {
                 foreach (var key in context.Keys)
                 {
-                    context.DocumentIndex.Set(key + MediaTextKeySuffix, "NULL", options);
-                    context.DocumentIndex.Set(key + FileTextKeySuffix, "NULL", options);
+                    context.DocumentIndex.Set(key + MediaTextKeySuffix, IndexingConstants.NullValue, options);
+                    context.DocumentIndex.Set(key + FileTextKeySuffix, IndexingConstants.NullValue, options);
                 }
 
                 return;
@@ -58,7 +59,7 @@ namespace OrchardCore.Media.Indexing
                     }
                     else
                     {
-                        context.DocumentIndex.Set(key + MediaTextKeySuffix, "NULL", options);
+                        context.DocumentIndex.Set(key + MediaTextKeySuffix, IndexingConstants.NullValue, options);
                     }
                 }
             }

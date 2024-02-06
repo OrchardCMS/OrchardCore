@@ -97,7 +97,7 @@ namespace OrchardCore.ContentTypes.Services
         {
             if (string.IsNullOrWhiteSpace(displayName))
             {
-                throw new ArgumentException("The 'displayName' can't be null or empty.", nameof(displayName));
+                throw new ArgumentException($"The '{nameof(displayName)}' can't be null or empty.", nameof(displayName));
             }
 
             if (string.IsNullOrWhiteSpace(name))
@@ -193,7 +193,7 @@ namespace OrchardCore.ContentTypes.Services
 
             // Code-defined parts.
             var codeDefinedParts = metadataPartsOnly
-                ? Enumerable.Empty<EditPartViewModel>()
+                ? []
                 : _contentPartTypes
                         .Where(cpd => !userContentParts.ContainsKey(cpd.Name))
                         .Select(cpi => new EditPartViewModel { Name = cpi.Name, DisplayName = cpi.Name })
@@ -322,7 +322,7 @@ namespace OrchardCore.ContentTypes.Services
         {
             if (string.IsNullOrEmpty(fieldName))
             {
-                throw new ArgumentException("The 'fieldName' can't be null or empty.", nameof(fieldName));
+                throw new ArgumentException($"The '{nameof(fieldName)}' can't be null or empty.", nameof(fieldName));
             }
 
             var partDefinition = await _contentDefinitionManager.LoadPartDefinitionAsync(partName);
@@ -390,9 +390,20 @@ namespace OrchardCore.ContentTypes.Services
         public Task AlterTypePartsOrderAsync(ContentTypeDefinition typeDefinition, string[] partNames)
             => _contentDefinitionManager.AlterTypeDefinitionAsync(typeDefinition.Name, type =>
             {
+                if (partNames is null)
+                {
+                    return;
+                }
+
                 for (var i = 0; i < partNames.Length; i++)
                 {
-                    var partDefinition = typeDefinition.Parts.FirstOrDefault(x => x.Name == partNames[i]);
+                    var partDefinition = typeDefinition.Parts?.FirstOrDefault(x => x.Name == partNames[i]);
+
+                    if (partDefinition == null)
+                    {
+                        continue;
+                    }
+
                     type.WithPart(partNames[i], partDefinition.PartDefinition, part =>
                     {
                         part.MergeSettings<ContentTypePartSettings>(x => x.Position = i.ToString());
@@ -403,6 +414,11 @@ namespace OrchardCore.ContentTypes.Services
         public Task AlterPartFieldsOrderAsync(ContentPartDefinition partDefinition, string[] fieldNames)
             => _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, type =>
             {
+                if (fieldNames is null)
+                {
+                    return;
+                }
+
                 for (var i = 0; i < fieldNames.Length; i++)
                 {
                     var fieldDefinition = partDefinition.Fields.FirstOrDefault(x => x.Name == fieldNames[i]);
@@ -437,9 +453,9 @@ namespace OrchardCore.ContentTypes.Services
                 var type = await _contentDefinitionManager.LoadTypeDefinitionAsync(partName)
                     ?? throw new ArgumentException("The part doesn't exist: " + partName);
 
-                var typePart = type.Parts.FirstOrDefault(x => x.PartDefinition.Name == partName);
+                var typePart = type.Parts?.FirstOrDefault(x => x.PartDefinition.Name == partName);
 
-                // Id passed in might be that of a type w/ no implicit field.
+                // If passed in might be that of a type w/ no implicit field.
                 if (typePart == null)
                 {
                     return displayName;

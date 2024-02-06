@@ -3,6 +3,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Layers.Indexes;
 using OrchardCore.Layers.Services;
 using OrchardCore.Rules;
+using OrchardCore.Rules.Services;
 using YesSql.Sql;
 
 namespace OrchardCore.Layers
@@ -23,13 +24,13 @@ namespace OrchardCore.Layers
             _ruleMigrator = ruleMigrator;
         }
 
-        public int Create()
+        public async Task<int> CreateAsync()
         {
-            SchemaBuilder.CreateMapIndexTable<LayerMetadataIndex>(table => table
+            await SchemaBuilder.CreateMapIndexTableAsync<LayerMetadataIndex>(table => table
                .Column<string>("Zone", c => c.WithLength(64))
             );
 
-            SchemaBuilder.AlterIndexTable<LayerMetadataIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<LayerMetadataIndex>(table => table
                 .CreateIndex("IDX_LayerMetadataIndex_DocumentId",
                 "DocumentId",
                 "Zone")
@@ -40,9 +41,9 @@ namespace OrchardCore.Layers
         }
 
         // This code can be removed in a later version.
-        public int UpdateFrom1()
+        public async Task<int> UpdateFrom1Async()
         {
-            SchemaBuilder.AlterIndexTable<LayerMetadataIndex>(table => table
+            await SchemaBuilder.AlterIndexTableAsync<LayerMetadataIndex>(table => table
                 .CreateIndex("IDX_LayerMetadataIndex_DocumentId",
                 "DocumentId",
                 "Zone")

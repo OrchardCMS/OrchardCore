@@ -1,5 +1,5 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Workflows.Models;
 
@@ -16,7 +16,7 @@ namespace OrchardCore.Workflows.Services
 
         public async Task DeserializeValueAsync(SerializeWorkflowValueContext context)
         {
-            if (context.Input is JObject jObject)
+            if (context.Input is JsonObject jObject)
             {
                 var type = jObject.Value<string>("Type");
 

@@ -512,6 +512,14 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.ContentsTransfer.Core", "src\OrchardCore\OrchardCore.ContentsTransfer.Core\OrchardCore.ContentsTransfer.Core.csproj", "{0C7C15A8-6018-4F43-86A7-96D25D66E36D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.ContentsTransfer.Abstractions", "src\OrchardCore\OrchardCore.ContentsTransfer.Abstractions\OrchardCore.ContentsTransfer.Abstractions.csproj", "{EF72865D-FC5A-42B6-821B-A3983BE372EA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Search.AzureAI", "src\OrchardCore.Modules\OrchardCore.Search.AzureAI\OrchardCore.Search.AzureAI.csproj", "{5527BACF-FA5D-4617-978B-7EDE8942E6F6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Search.AzureAI.Core", "src\OrchardCore\OrchardCore.Search.AzureAI.Core\OrchardCore.Search.AzureAI.Core.csproj", "{E9428DE8-5D81-4359-BF84-31435041FF1A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Media.Indexing.Pdf", "src\OrchardCore.Modules\OrchardCore.Media.Indexing.Pdf\OrchardCore.Media.Indexing.Pdf.csproj", "{95187E6A-5B74-4475-8FEB-758ACD012DCC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Media.Indexing.OpenXML", "src\OrchardCore.Modules\OrchardCore.Media.Indexing.OpenXML\OrchardCore.Media.Indexing.OpenXML.csproj", "{47777735-7432-4CCA-A8C5-672E9EE65121}"
+
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1353,6 +1361,22 @@ Global
 		{EF72865D-FC5A-42B6-821B-A3983BE372EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF72865D-FC5A-42B6-821B-A3983BE372EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF72865D-FC5A-42B6-821B-A3983BE372EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5527BACF-FA5D-4617-978B-7EDE8942E6F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5527BACF-FA5D-4617-978B-7EDE8942E6F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5527BACF-FA5D-4617-978B-7EDE8942E6F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5527BACF-FA5D-4617-978B-7EDE8942E6F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9428DE8-5D81-4359-BF84-31435041FF1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9428DE8-5D81-4359-BF84-31435041FF1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9428DE8-5D81-4359-BF84-31435041FF1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9428DE8-5D81-4359-BF84-31435041FF1A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95187E6A-5B74-4475-8FEB-758ACD012DCC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95187E6A-5B74-4475-8FEB-758ACD012DCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95187E6A-5B74-4475-8FEB-758ACD012DCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95187E6A-5B74-4475-8FEB-758ACD012DCC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47777735-7432-4CCA-A8C5-672E9EE65121}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47777735-7432-4CCA-A8C5-672E9EE65121}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47777735-7432-4CCA-A8C5-672E9EE65121}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47777735-7432-4CCA-A8C5-672E9EE65121}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1587,6 +1611,10 @@ Global
 		{188D4C60-8821-40DA-9498-4D492A56F062} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 		{0C7C15A8-6018-4F43-86A7-96D25D66E36D} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{EF72865D-FC5A-42B6-821B-A3983BE372EA} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{5527BACF-FA5D-4617-978B-7EDE8942E6F6} = {90030E85-0C4F-456F-B879-443E8A3F220D}
+		{E9428DE8-5D81-4359-BF84-31435041FF1A} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{95187E6A-5B74-4475-8FEB-758ACD012DCC} = {90030E85-0C4F-456F-B879-443E8A3F220D}
+		{47777735-7432-4CCA-A8C5-672E9EE65121} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}

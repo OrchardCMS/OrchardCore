@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
@@ -16,7 +15,7 @@ namespace OrchardCore.Deployment
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
                 return Task.CompletedTask;
             }
@@ -25,17 +24,17 @@ namespace OrchardCore.Deployment
                 .Add(S["Configuration"], configuration => configuration
                     .Add(S["Import/Export"], S["Import/Export"].PrefixPosition(), import => import
                         .Add(S["Deployment Plans"], S["Deployment Plans"].PrefixPosition(), deployment => deployment
-                            .Action("Index", "DeploymentPlan", new { area = "OrchardCore.Deployment" })
+                            .Action("Index", "DeploymentPlan", "OrchardCore.Deployment")
                             .Permission(Permissions.Export)
                             .LocalNav()
                         )
                         .Add(S["Package Import"], S["Package Import"].PrefixPosition(), deployment => deployment
-                            .Action("Index", "Import", new { area = "OrchardCore.Deployment" })
+                            .Action("Index", "Import", "OrchardCore.Deployment")
                             .Permission(Permissions.Import)
                             .LocalNav()
                         )
                         .Add(S["JSON Import"], S["JSON Import"].PrefixPosition(), deployment => deployment
-                            .Action("Json", "Import", new { area = "OrchardCore.Deployment" })
+                            .Action("Json", "Import", "OrchardCore.Deployment")
                             .Permission(Permissions.Import)
                             .LocalNav()
                         )

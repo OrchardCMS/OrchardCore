@@ -12,7 +12,7 @@ namespace OrchardCore.Navigation
 
         public NavigationBuilder()
         {
-            Contained = new List<MenuItem>();
+            Contained = [];
         }
 
         public async Task<NavigationBuilder> AddAsync(LocalizedString caption, string position, Func<NavigationItemBuilder, Task> itemBuilder, IEnumerable<string> classes = null, int priority = 0)
@@ -98,7 +98,7 @@ namespace OrchardCore.Navigation
 
         public virtual List<MenuItem> Build()
         {
-            return (Contained ?? new List<MenuItem>()).ToList();
+            return (Contained ?? []).ToList();
         }
 
         private static void RemoveRecursive(List<MenuItem> menuItems, Predicate<MenuItem> match)

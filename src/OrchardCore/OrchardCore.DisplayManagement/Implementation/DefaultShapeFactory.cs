@@ -53,7 +53,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             if (_scopedShapeTable == null)
             {
                 var theme = await _themeManager.GetThemeAsync();
-                _scopedShapeTable = _shapeTableManager.GetShapeTable(theme?.Id);
+                _scopedShapeTable = await _shapeTableManager.GetShapeTableAsync(theme?.Id);
             }
 
             return _scopedShapeTable;
@@ -70,7 +70,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                 New = this,
                 ShapeFactory = this,
                 ShapeType = shapeType,
-                OnCreated = new List<Func<ShapeCreatedContext, Task>>(),
+                OnCreated = [],
                 CreateAsync = shapeFactory
             };
 

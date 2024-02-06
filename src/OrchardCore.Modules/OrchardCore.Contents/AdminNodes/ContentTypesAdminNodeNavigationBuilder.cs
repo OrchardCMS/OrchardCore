@@ -37,7 +37,7 @@ namespace OrchardCore.Contents.AdminNodes
             _logger = logger;
         }
 
-        public string Name => typeof(ContentTypesAdminNode).Name;
+        public string Name => nameof(ContentTypesAdminNode);
 
         public async Task BuildNavigationAsync(MenuItem menuItem, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
         {
@@ -76,7 +76,7 @@ namespace OrchardCore.Contents.AdminNodes
             {
                 try
                 {
-                    var treeBuilder = treeNodeBuilders.Where(x => x.Name == childNode.GetType().Name).FirstOrDefault();
+                    var treeBuilder = treeNodeBuilders.FirstOrDefault(x => x.Name == childNode.GetType().Name);
                     await treeBuilder.BuildNavigationAsync(childNode, builder, treeNodeBuilders);
                 }
                 catch (Exception e)
@@ -119,8 +119,7 @@ namespace OrchardCore.Contents.AdminNodes
             else
             {
                 var typeEntry = node.ContentTypes
-                                .Where(x => string.Equals(x.ContentTypeId, contentType.Name, StringComparison.OrdinalIgnoreCase))
-                                .FirstOrDefault();
+                    .FirstOrDefault(x => string.Equals(x.ContentTypeId, contentType.Name, StringComparison.OrdinalIgnoreCase));
 
                 return AddPrefixToClasses(typeEntry.IconClass);
             }
@@ -132,7 +131,7 @@ namespace OrchardCore.Contents.AdminNodes
                 .ToList()
                 .Select(c => "icon-class-" + c)
                 .ToList()
-                ?? new List<string>();
+                ?? [];
         }
     }
 }

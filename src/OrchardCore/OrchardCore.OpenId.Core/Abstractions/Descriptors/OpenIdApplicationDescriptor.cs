@@ -9,6 +9,6 @@ namespace OrchardCore.OpenId.Abstractions.Descriptors
         /// <summary>
         /// Gets the roles associated with the application.
         /// </summary>
-        public ISet<string> Roles { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        public ISet<string> Roles { get; init; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
     }
 }

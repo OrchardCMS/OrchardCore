@@ -16,7 +16,7 @@ namespace OrchardCore.DynamicCache.Liquid
 {
     public class CacheTag
     {
-        private static readonly char[] _splitChars = new[] { ',', ' ' };
+        private static readonly char[] _splitChars = [',', ' '];
 
         public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> arguments, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {

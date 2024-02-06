@@ -13,12 +13,12 @@ namespace OrchardCore.Localization.ViewModels
         ///
         /// </summary>
         [BindNever]
-        public CultureEntry[] Cultures { get; set; } = Array.Empty<CultureEntry>();
+        public CultureEntry[] Cultures { get; set; } = [];
 
         /// <summary>
         /// Gets or sets all the supported cultures of the site. It also contains the default culture.
         /// </summary>
-        /// <remarks>This property is a json array that is set in the editor</remarks>
+        /// <remarks>This property is a json array that is set in the editor.</remarks>
         public string SupportedCultures { get; set; }
 
         /// <summary>

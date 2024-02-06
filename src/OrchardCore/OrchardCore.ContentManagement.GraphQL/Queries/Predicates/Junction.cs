@@ -9,7 +9,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
     /// </summary>
     public abstract class Junction : IPredicate
     {
-        private readonly IList<IPredicate> _predicates = new List<IPredicate>();
+        private readonly List<IPredicate> _predicates = [];
 
         /// <summary>
         /// Get the Sql operator to put between multiple <see cref="IPredicate" />s.

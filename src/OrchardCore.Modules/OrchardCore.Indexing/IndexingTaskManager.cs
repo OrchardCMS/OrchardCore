@@ -30,7 +30,7 @@ namespace OrchardCore.Indexing.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
 
-        private readonly List<IndexingTask> _tasksQueue = new();
+        private readonly List<IndexingTask> _tasksQueue = [];
 
         public IndexingTaskManager(
             IClock clock,
@@ -48,10 +48,7 @@ namespace OrchardCore.Indexing.Services
 
         public Task CreateTaskAsync(ContentItem contentItem, IndexingTaskTypes type)
         {
-            if (contentItem == null)
-            {
-                throw new ArgumentNullException(nameof(contentItem));
-            }
+            ArgumentNullException.ThrowIfNull(contentItem);
 
             // Do not index a preview content item.
             if (_httpContextAccessor.HttpContext?.Features.Get<ContentPreviewFeature>()?.Previewing == true)
@@ -122,10 +119,10 @@ namespace OrchardCore.Indexing.Services
                 logger.LogDebug("Updating indexing tasks: {ContentItemIds}", string.Join(", ", tasks.Select(x => x.ContentItemId)));
             }
 
-            using var connection = dbConnectionAccessor.CreateConnection();
+            await using var connection = dbConnectionAccessor.CreateConnection();
             await connection.OpenAsync();
 
-            using var transaction = connection.BeginTransaction(session.Store.Configuration.IsolationLevel);
+            using var transaction = await connection.BeginTransactionAsync(session.Store.Configuration.IsolationLevel);
             var dialect = session.Store.Configuration.SqlDialect;
 
             try
@@ -162,7 +159,7 @@ namespace OrchardCore.Indexing.Services
 
         public async Task<IEnumerable<IndexingTask>> GetIndexingTasksAsync(long afterTaskId, int count)
         {
-            using var connection = _dbConnectionAccessor.CreateConnection();
+            await using var connection = _dbConnectionAccessor.CreateConnection();
             await connection.OpenAsync();
 
             try

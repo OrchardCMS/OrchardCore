@@ -16,6 +16,6 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
         /// At startup, this is initialized to include an instance of <see cref="PhysicalFileProvider"/> that is
         /// rooted at the application root.
         /// </remarks>
-        public IList<IFileProvider> FileProviders { get; } = new List<IFileProvider>();
+        public IList<IFileProvider> FileProviders { get; } = [];
     }
 }
