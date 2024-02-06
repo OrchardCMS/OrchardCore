@@ -24,24 +24,5 @@ namespace OrchardCore.Contents.Deployment.Download
         {
             services.AddScoped<IContentDisplayDriver, DownloadContentDriver>();
         }
-
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            var downloadControllerName = typeof(DownloadController).ControllerName();
-
-            routes.MapAreaControllerRoute(
-               name: "DownloadDisplay",
-               areaName: "OrchardCore.Contents",
-               pattern: _adminOptions.AdminUrlPrefix + "/Download/Display/{contentItemId}",
-               defaults: new { controller = downloadControllerName, action = nameof(DownloadController.Display) }
-           );
-
-            routes.MapAreaControllerRoute(
-               name: "DownloadDownload",
-               areaName: "OrchardCore.Contents",
-               pattern: _adminOptions.AdminUrlPrefix + "/Download/Download/{contentItemId}",
-               defaults: new { controller = downloadControllerName, action = nameof(DownloadController.Download) }
-           );
-        }
     }
 }

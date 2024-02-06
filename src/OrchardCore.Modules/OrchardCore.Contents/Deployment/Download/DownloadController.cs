@@ -9,7 +9,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Contents.Deployment.Download
 {
-    [Admin]
+    [Admin("Download/{action}/{contentItemId}")]
     [Feature("OrchardCore.Contents.Deployment.Download")]
     public class DownloadController : Controller
     {

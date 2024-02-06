@@ -29,24 +29,5 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
             services.AddScoped<IContentDisplayDriver, AddToDeploymentPlanContentDriver>();
             services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, AddToDeploymentPlanContentsAdminListDisplayDriver>();
         }
-
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            var addToDeploymentPlanControllerName = typeof(AddToDeploymentPlanController).ControllerName();
-
-            routes.MapAreaControllerRoute(
-               name: "AddToDeploymentPlan",
-               areaName: "OrchardCore.Contents",
-               pattern: _adminOptions.AdminUrlPrefix + "/AddToDeploymentPlan/AddContentItem/{deploymentPlanId}",
-               defaults: new { controller = addToDeploymentPlanControllerName, action = nameof(AddToDeploymentPlanController.AddContentItem) }
-           );
-
-            routes.MapAreaControllerRoute(
-               name: "AddToDeploymentPlan",
-               areaName: "OrchardCore.Contents",
-               pattern: _adminOptions.AdminUrlPrefix + "/AddToDeploymentPlan/AddContentItems/{deploymentPlanId}",
-               defaults: new { controller = addToDeploymentPlanControllerName, action = nameof(AddToDeploymentPlanController.AddContentItems) }
-           );
-        }
     }
 }
