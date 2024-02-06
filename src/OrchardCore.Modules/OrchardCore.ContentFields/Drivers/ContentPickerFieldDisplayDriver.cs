@@ -59,7 +59,7 @@ namespace OrchardCore.ContentFields.Drivers
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
 
-                model.SelectedItems = new List<VueMultiselectItemViewModel>();
+                model.SelectedItems = [];
                 var settings = context.PartFieldDefinition.GetSettings<ContentPickerFieldSettings>();
 
                 foreach (var contentItemId in field.ContentItemIds)

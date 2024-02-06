@@ -37,6 +37,6 @@ namespace OrchardCore.Workflows.Models
         /// <summary>
         /// The list of executed activities.
         /// </summary>
-        public IList<ExecutedActivity> ExecutedActivities { get; set; } = new List<ExecutedActivity>();
+        public IList<ExecutedActivity> ExecutedActivities { get; set; } = [];
     }
 }

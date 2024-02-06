@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using OrchardCore.Json.Serialization;
 
@@ -33,16 +32,7 @@ namespace YesSql.Serialization
         public DefaultJsonContentSerializer(JsonSerializerOptions options) => _options = options;
 
         public object Deserialize(string content, Type type)
-        {
-            try
-            {
-                return JsonSerializer.Deserialize(content, type, _options);
-            }
-            catch
-            {
-                return default;
-            }
-        }
+            => JsonSerializer.Deserialize(content, type, _options);
 
         public dynamic DeserializeDynamic(string content) => JsonSerializer.Deserialize<dynamic>(content, _options);
 

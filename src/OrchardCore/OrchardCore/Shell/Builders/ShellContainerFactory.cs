@@ -79,7 +79,7 @@ namespace OrchardCore.Environment.Shell.Builders
                     BindingFlags.Public | BindingFlags.Instance,
                     null,
                     CallingConventions.Any,
-                    new Type[] { typeof(IServiceCollection) },
+                    [typeof(IServiceCollection)],
                     null);
 
                 var configureMethod = rawStartup.GetMethod(
