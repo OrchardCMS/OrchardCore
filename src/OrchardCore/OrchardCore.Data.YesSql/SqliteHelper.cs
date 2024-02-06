@@ -28,14 +28,9 @@ public static class SqliteHelper
             databaseName = "yessql.db";
         }
 
-        return new SqliteConnectionStringBuilder
-        {
-            DataSource = string.IsNullOrEmpty(databaseFolder) ? databaseName : Path.Combine(databaseFolder, databaseName),
-            Cache = SqliteCacheMode.Shared,
-            Pooling = sqliteOptions.UseConnectionPooling,
-            Mode = shellSettings.IsInitializing() ? SqliteOpenMode.ReadWriteCreate : SqliteOpenMode.ReadWrite
-        }
-        .ToString();
+        var sqliteOpenMode = shellSettings.IsInitializing() ? SqliteOpenMode.ReadWriteCreate : SqliteOpenMode.ReadWrite;
+
+        return GetSqliteConnectionStringBuilder(sqliteOptions, databaseFolder, databaseName, sqliteOpenMode).ToString();
     }
 
     /// <summary>
@@ -51,16 +46,19 @@ public static class SqliteHelper
         ArgumentException.ThrowIfNullOrEmpty(databaseFolder, nameof(databaseFolder));
         ArgumentException.ThrowIfNullOrEmpty(databaseName, nameof(databaseName));
 
+        return GetSqliteConnectionStringBuilder(sqliteOptions, databaseFolder, databaseName, sqliteOpenMode).ToString();
+    }
+
+    public static string GetDatabaseFolder(ShellOptions shellOptions, string shellName) =>
+        Path.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellName);
+
+    private static SqliteConnectionStringBuilder GetSqliteConnectionStringBuilder(SqliteOptions sqliteOptions, string databaseFolder, string databaseName, SqliteOpenMode sqliteOpenMode){
         return new SqliteConnectionStringBuilder
         {
             DataSource = string.IsNullOrEmpty(databaseFolder) ? databaseName : Path.Combine(databaseFolder, databaseName),
             Cache = SqliteCacheMode.Shared,
             Pooling = sqliteOptions.UseConnectionPooling,
             Mode = sqliteOpenMode
-        }
-        .ToString();
+        };
     }
-
-    public static string GetDatabaseFolder(ShellOptions shellOptions, string shellName) =>
-        Path.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellName);
 }
