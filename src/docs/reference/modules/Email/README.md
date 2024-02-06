@@ -1,21 +1,64 @@
 # Email (`OrchardCore.Email`)
 
-This module provides the infrastructure necessary to send emails using multiple providers.
+This module provides the infrastructure necessary to send emails using multiple email providers.
 
 
 ## SMTP Settings
 
-Enabling the `Email` feature will add a new settings page under `Configurations` >> `Settings` >> `Email`. You can utilize these settings to set up the default Email provider configuration. The following are the providers that are readily accessible.
+Enabling the `Email` feature will add a new settings page under `Configurations` >> `Settings` >> `Email`. You can utilize these settings to set up the default Email provider. The following are the providers that are readily accessible in OrchardCore:
 
 
 | Provider | Description |
 | --- | --- |
-| `SMTP` | Opting for this provider enables the utilization of SMTP for sending email messages. Edit the `SMTP` tab in the email settings to enable this provider. |
+| `SMTP` | Opting for this provider enables the utilization of SMTP protocol for sending email messages. Edit the `SMTP` tab in the email settings to enable this provider. |
 | `Azure` | Opting for this provider enables the utilization of [Azure Communication Services Email](https://learn.microsoft.com/en-us/azure/communication-services/concepts/email/email-overview) for sending email messages. Edit the `Azure` tab in the email settings to enable this provider. This option is only available after enabling `OrchardCore.Email.Azure` feature. |
+
+
+## Adding Custom Providers
+
+The `OrchardCore.Email` module provides you with the capability to integrate additional providers for dispatching email messages. To achieve this, you can easily create an implementation of the `IEmailProvider` interface and then proceed to register it using one of the following approaches:
+
+If your provider does not require any settings, you may register using the `AddEmailProvider<>` extension. For instance:
+
+```csharp
+services.AddEmailProvider<YourCustomImplemenation>("A technical name for your implementation")
+```
+
+However, if you have a complex provider like the included SMTP provider, you may implement `IConfigureOptions<EmailProviderOptions>` and register it using the `AddEmailProviderOptionsConfiguration<>` extensions. For instance:
+
+```csharp
+services.AddEmailProviderOptionsConfiguration<YourCustomImplemenation>()
+```
+
+Here is and example of how we register the SMTP complex provider:
+
+```csharp
+public class SmtpProviderOptionsConfigurations : IConfigureOptions<EmailProviderOptions>
+{
+    private readonly ISiteService _siteService;
+
+    public SmtpProviderOptionsConfigurations(ISiteService siteService)
+    {
+        _siteService = siteService;
+    }
+
+    public void Configure(EmailProviderOptions options)
+    {
+        var typeOptions = new EmailProviderTypeOptions(typeof(SmtpEmailProvider));
+
+        var site = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
+        var settings = site.As<SmtpSettings>();
+
+        typeOptions.IsEnabled = settings.IsEnabled;
+
+        options.TryAddProvider(SmtpEmailProvider.TechnicalName, typeOptions);
+    }
+}
+```
 
 # Configuring SMTP Provider
 
-To enable the `SMTP` provider, navigate to `Configurations` >> `Settings` >> `EMAIL`. Click on the `SMTP` tab, click the Enable checkbox and provider your SMTP info. Then in the `Providers` tab, select SMTP as your default provider.
+To enable the `SMTP` provider, navigate to `Configurations` >> `Settings` >> `Email`. Click on the `SMTP` tab, click the Enable checkbox and provider your SMTP configuration. Then in the `Providers` tab, select SMTP as your default provider.
 
 Here are the available SMTP settings
 
@@ -63,49 +106,7 @@ The following configuration values can be customized:
 }
 ```
 
-For more information please refer to [Configuration](../../core/Configuration/README.md).
-
-## Adding Custom Providers
-
-The `OrchardCore.Email` module provides you with the capability to integrate additional providers for dispatching email messages. To achieve this, you can easily create an implementation of the `IEmailProvider` interface and then proceed to register it using one of the following approaches:
-
-If your provider does not require any settings like the `LogProvider`, you may register it like this.
-
-```csharp
-services.AddEmailProvider<YourCustomImplemenation>("A technical name for your implementation")
-```
-
-However, if you have a complex provider like the SMTP provider, you may implement `IConfigureOptions<EmailProviderOptions>` and register it using the following extensions
-
-```csharp
-services.AddEmailProviderOptionsConfiguration<YourCustomImplemenation>()
-```
-
-Here is and example of how we register Twilio complex provider:
-
-```csharp
-public class SmtpProviderOptionsConfigurations : IConfigureOptions<EmailProviderOptions>
-{
-    private readonly ISiteService _siteService;
-
-    public SmtpProviderOptionsConfigurations(ISiteService siteService)
-    {
-        _siteService = siteService;
-    }
-
-    public void Configure(EmailProviderOptions options)
-    {
-        var typeOptions = new EmailProviderTypeOptions(typeof(SmtpEmailProvider));
-
-        var site = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
-        var settings = site.As<SmtpSettings>();
-
-        typeOptions.IsEnabled = settings.IsEnabled;
-
-        options.TryAddProvider(SmtpEmailProvider.TechnicalName, typeOptions);
-    }
-}
-```
+For more information about configurations, please refer to [Configuration](../../core/Configuration/README.md).
 
 ## Sending SMS Message
 

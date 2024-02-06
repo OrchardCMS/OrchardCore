@@ -16,7 +16,9 @@ public class AzureEmailProvider : IEmailProvider
 {
     public const string TechnicalName = "Azure";
 
-    // https://learn.microsoft.com/en-us/azure/communication-services/concepts/email/email-attachment-allowed-mime-types
+    // Common supported file extensions and their corresponding MIME types for email attachments
+    // using Azure Communication Services Email.
+    // For more info <see href="https://learn.microsoft.com/en-us/azure/communication-services/concepts/email/email-attachment-allowed-mime-types" />
     private static readonly Dictionary<string, string> _allowedMimeTypes = new()
     {
         { ".3gp", "video/3gpp" },

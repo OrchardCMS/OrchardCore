@@ -15,6 +15,7 @@ public class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddTransient<IConfigureOptions<AzureEmailOptions>, AzureEmailOptionsConfiguration>();
+
         services.AddEmailProviderOptionsConfiguration<AzureEmailProviderOptionsConfigurations>()
             .AddScoped<IDisplayDriver<ISite>, AzureEmailSettingsDisplayDriver>();
     }

@@ -4,7 +4,7 @@ This module provides an Email provider for sending emails through the [Azure Com
 
 ## Azure Email Settings
 
-Enabling this module will introduce a new tab labeled 'Azure' within the email settings, allowing you to configure the service. To access these settings, navigate to `Configuration` > `Settings` > `Email` and click on the `Azure` tab. The following are the available settings
+Enabling this module will introduce a new tab labeled 'Azure' within the email settings, allowing you to configure the service. To access these settings, navigate to `Configuration` >> `Settings` >> `Email` and click on the 'Azure' tab. The following are the available settings
 
 | Setting | Description |
 | --- | --- |
@@ -19,6 +19,8 @@ You may configure the Azure Email Service using `appsettings.json` file by addin
 "OrchardCore_Email_Azure": {
     "DefaultSender": "",
     "ConnectionString": "",
-    "PreventUIConnectionChange": false // This options will prevent the user to provide custom connection string from the site settings or UI.
+    "PreventUIConnectionChange": false // This option restricts users from inputting a custom connection string through site settings or the UI.
 }
 ```
+
+For more information about configurations, please refer to [Configuration](../../core/Configuration/README.md).
