@@ -60,16 +60,6 @@ namespace OrchardCore.ContentLocalization
             services.AddTransient<IContentsAdminListFilterProvider, LocalizationPartContentsAdminListFilterProvider>();
             services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, LocalizationContentsAdminListDisplayDriver>();
         }
-
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapAreaControllerRoute(
-                name: "ContentLocalization.Localize",
-                areaName: "OrchardCore.ContentLocalization",
-                pattern: _adminOptions.AdminUrlPrefix + "/ContentLocalization",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Localize) }
-            );
-        }
     }
 
     [Feature("OrchardCore.ContentLocalization.ContentCulturePicker")]
