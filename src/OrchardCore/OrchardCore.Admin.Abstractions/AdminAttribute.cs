@@ -14,7 +14,7 @@ namespace OrchardCore.Admin
     public class AdminAttribute : Attribute, IAsyncResourceFilter
     {
         /// <summary>
-        /// Gets or sets the patters which should be used as the path after the admin suffix. This is similar to the
+        /// Gets or sets the pattern which should be used as the path after the admin suffix. This is similar to the
         /// <see cref="RouteAttribute.Template"/>. When applying to a controller with multiple actions, the template
         /// should include the <c>{action}</c> expression. When applied to both the action and the controller, the
         /// action's template takes precedence. If it's <see langword="null"/> or empty for both, the fallback value
