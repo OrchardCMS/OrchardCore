@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using GraphQL;
 using GraphQL.Execution;
 using GraphQL.Resolvers;
@@ -14,6 +15,7 @@ using OrchardCore.Environment.Shell;
 using YesSql;
 using YesSql.Indexes;
 using YesSql.Provider.Sqlite;
+using YesSql.Serialization;
 using YesSql.Sql;
 using ISession = YesSql.ISession;
 
@@ -35,6 +37,9 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             _prefix = "tp";
             _prefixedStore = await StoreFactory.CreateAndInitializeAsync(new Configuration().UseSqLite(string.Format(connectionStringTemplate, _tempFilename + _prefix)).SetTablePrefix(_prefix + "_"));
+
+            _store.Configuration.ContentSerializer = new DefaultJsonContentSerializer();
+            _prefixedStore.Configuration.ContentSerializer = new DefaultJsonContentSerializer();
 
             await CreateTablesAsync(_store);
             await CreateTablesAsync(_prefixedStore);
@@ -136,9 +141,9 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             var type = new ContentItemsFieldType("Animal", new Schema(services), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
-            context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ contentItemId: \"1\" }"), ArgumentSource.Variable);
-            var dogs = (await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver)
-                            .ResolveAsync(context)) as IEnumerable<ContentItem>;
+            context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ \"contentItemId\": \"1\" }"), ArgumentSource.Variable);
+            var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver)
+                            .ResolveAsync(context)) as IEnumerable<ContentItem>;            
 
             Assert.Single(dogs);
             Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
@@ -173,13 +178,12 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             var type = new ContentItemsFieldType("Animal", new Schema(services), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
-            context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ contentItemId: \"1\" }"), ArgumentSource.Variable);
+            context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ \"contentItemId\": \"1\" }"), ArgumentSource.Variable);
             var dogs = await ResolveContentItems(type, context);
 
             Assert.Single(dogs);
             Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
         }
-
 
         [Theory]
         [InlineData("animal")]
@@ -212,7 +216,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 Options.Create(new GraphQLContentOptions()),
                 Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
-            context.Arguments["where"] = new ArgumentValue(JObject.Parse(string.Concat("{ ", fieldName, ": { name: \"doug\" } }")), ArgumentSource.Variable);
+            context.Arguments["where"] = new ArgumentValue(JObject.Parse($"{{\"{fieldName}\" : {{ \"name\": \"doug\" }} }}"), ArgumentSource.Variable);
             var dogs = await ResolveContentItems(type, context);
 
             Assert.Single(dogs);
@@ -245,13 +249,13 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
-            context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ cats: { name: \"doug\" } }"), ArgumentSource.Variable);
+            context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ \"cats\": { \"name\": \"doug\" } }"), ArgumentSource.Variable);
             var cats = await ResolveContentItems(type, context);
 
             Assert.Single(cats);
             Assert.Equal("doug", cats.First().As<Animal>().Name);
 
-            context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ dogs: { name: \"doug\" } }"), ArgumentSource.Variable);
+            context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ \"dogs\": { \"name\": \"doug\" } }"), ArgumentSource.Variable);
             var dogs = await ResolveContentItems(type, context);
 
             Assert.Single(dogs);
@@ -296,7 +300,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
-            context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ animals: { name: \"doug\", isScary: true } }"), ArgumentSource.Variable);
+            context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ \"animals\": { \"name\": \"doug\", \"isScary\": true } }"), ArgumentSource.Variable);
             var animals = await ResolveContentItems(type, context);
 
             Assert.Single(animals);
@@ -331,7 +335,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
-            context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ animal: { name: \"doug\" } }"), ArgumentSource.Variable);
+            context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ \"animal\": { \"name\": \"doug\" } }"), ArgumentSource.Variable);
             var dogs = await ResolveContentItems(type, context);
 
             Assert.Single(dogs);
@@ -364,7 +368,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
-            context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ name: \"doug\" }"), ArgumentSource.Variable);
+            context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ \"name\": \"doug\" }"), ArgumentSource.Variable);
             var dogs = await ResolveContentItems(type, context);
 
             Assert.Single(dogs);

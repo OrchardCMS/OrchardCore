@@ -42,8 +42,8 @@ namespace OrchardCore.Modules
                 var moduleInfos = Assembly.GetCustomAttributes<ModuleAttribute>();
 
                 ModuleInfo =
-                    moduleInfos.Where(f => f is not ModuleMarkerAttribute).FirstOrDefault()
-                    ?? moduleInfos.Where(f => f is ModuleMarkerAttribute).FirstOrDefault()
+                    moduleInfos.FirstOrDefault(f => f is not ModuleMarkerAttribute)
+                    ?? moduleInfos.FirstOrDefault(f => f is ModuleMarkerAttribute)
                     // This is better use the default parameterless ctor and assign the property.
                     ?? new ModuleAttribute() { Name = assemblyName };
 

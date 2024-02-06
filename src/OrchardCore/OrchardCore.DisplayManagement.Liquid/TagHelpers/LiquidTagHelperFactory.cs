@@ -76,7 +76,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
         public LiquidTagHelperActivator GetActivator(string helper, IEnumerable<string> arguments)
         {
             EnsureMatchings();
-            var matching = _matchings.Where(d => d.Match(helper, arguments)).FirstOrDefault() ?? LiquidTagHelperMatching.None;
+            var matching = _matchings.FirstOrDefault(d => d.Match(helper, arguments)) ?? LiquidTagHelperMatching.None;
 
             if (matching != LiquidTagHelperMatching.None)
             {

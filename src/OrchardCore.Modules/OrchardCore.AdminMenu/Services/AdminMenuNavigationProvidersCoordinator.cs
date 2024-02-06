@@ -59,7 +59,7 @@ namespace OrchardCore.AdminMenu.Services
 
         private async Task BuildTreeAsync(Models.AdminMenu tree, NavigationBuilder builder)
         {
-            foreach (MenuItem node in tree.MenuItems)
+            foreach (var node in tree.MenuItems)
             {
                 var nodeBuilder = _nodeBuilders.FirstOrDefault(x => x.Name == node.GetType().Name);
 

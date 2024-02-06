@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Resolvers;
@@ -8,8 +10,6 @@ using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Resolvers;
 using OrchardCore.ContentManagement.GraphQL.Queries;
@@ -83,23 +83,22 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
             }
         }
 
-        private static FieldType BuildSchemaBasedFieldType(LuceneQuery query, JToken querySchema, string fieldTypeName)
+        private static FieldType BuildSchemaBasedFieldType(LuceneQuery query, JsonNode querySchema, string fieldTypeName)
         {
-            var properties = querySchema["properties"];
-
+            var properties = querySchema["properties"].AsObject(); ;
             if (properties == null)
             {
                 return null;
             }
 
-            var typetype = new ObjectGraphType<JObject>
+            var typetype = new ObjectGraphType<JsonObject>
             {
                 Name = fieldTypeName
             };
 
-            foreach (var child in properties.Children().Cast<JProperty>())
+            foreach (var child in properties)
             {
-                var name = child.Name;
+                var name = child.Key;
                 var nameLower = name.Replace('.', '_');
                 var type = child.Value["type"].ToString();
                 var description = child.Value["description"]?.ToString();
@@ -149,7 +148,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                 Description = "Represents the " + query.Source + " Query : " + query.Name,
                 ResolvedType = new ListGraphType(typetype),
                 Resolver = new LockedAsyncFieldResolver<object, object>(ResolveAsync),
-                Type = typeof(ListGraphType<ObjectGraphType<JObject>>)
+                Type = typeof(ListGraphType<ObjectGraphType<JsonObject>>)
             };
 
             async ValueTask<object> ResolveAsync(IResolveFieldContext<object> context)
@@ -159,9 +158,9 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
                 var parameters = context.GetArgument<string>("parameters");
 
-                    var queryParameters = parameters != null ?
-                        JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                        : [];
+                var queryParameters = parameters != null ?
+                    JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                    : [];
 
                 var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
 
@@ -201,7 +200,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                 var parameters = context.GetArgument<string>("parameters");
 
                     var queryParameters = parameters != null ?
-                        JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                        JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                         : [];
 
                 var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);

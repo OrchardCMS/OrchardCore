@@ -45,7 +45,7 @@ namespace OrchardCore.Environment.Commands
 
             if (propertyInfo.GetCustomAttributes(typeof(OrchardSwitchAttribute), false).Length == 0)
             {
-                throw new InvalidOperationException(S["A property \"{0}\" exists but is not decorated with \"{1}\"", commandSwitch.Key, typeof(OrchardSwitchAttribute).Name]);
+                throw new InvalidOperationException(S["A property \"{0}\" exists but is not decorated with \"{1}\"", commandSwitch.Key, nameof(OrchardSwitchAttribute)]);
             }
 
             // Set the value.

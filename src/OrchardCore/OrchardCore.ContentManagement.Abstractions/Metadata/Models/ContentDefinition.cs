@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 
 namespace OrchardCore.ContentManagement.Metadata.Models
 {
@@ -14,7 +13,7 @@ namespace OrchardCore.ContentManagement.Metadata.Models
         /// <summary>
         /// Do not access this property directly. Migrate to use GetSettings and PopulateSettings.
         /// </summary>
-        public JObject Settings { get; protected set; }
+        public JsonObject Settings { get; protected set; }
 
         public T GetSettings<T>() where T : new()
         {
@@ -29,8 +28,8 @@ namespace OrchardCore.ContentManagement.Metadata.Models
             {
                 var typeName = typeof(T).Name;
 
-                JToken value;
-                if (Settings.TryGetValue(typeName, out value))
+                JsonNode value;
+                if (Settings.TryGetPropertyValue(typeName, out value))
                 {
                     result = value.ToObject<T>();
                 }
@@ -48,23 +47,6 @@ namespace OrchardCore.ContentManagement.Metadata.Models
             }
 
             return (T)result;
-        }
-
-        public void PopulateSettings<T>(T target)
-        {
-            if (Settings == null)
-            {
-                return;
-            }
-
-            var typeName = typeof(T).Name;
-
-            JToken value;
-            if (Settings.TryGetValue(typeName, out value))
-            {
-                JsonConvert.PopulateObject(value.ToString(), target);
-                _namedSettings = [];
-            }
         }
     }
 }

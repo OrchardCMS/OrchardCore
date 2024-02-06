@@ -1,6 +1,7 @@
 using System;
+using System.Text.Json.Nodes;
+using System.Text.Json.Settings;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.ContentManagement
 {
@@ -153,14 +154,14 @@ namespace OrchardCore.ContentManagement
         /// </summary>
         /// <param name="contentItem">The <see cref="ContentItem"/>.</param>
         /// <param name="properties">The object to merge.</param>
-        /// <param name="jsonMergeSettings">The <see cref="JsonMergeSettings"/> to use.</param>
+        /// <param name="settings">The <see cref="JsonMergeSettings"/> to use.</param>
         /// <returns>The current <see cref="ContentItem"/> instance.</returns>
-        public static ContentItem Merge(this ContentItem contentItem, object properties, JsonMergeSettings jsonMergeSettings = null)
+        public static ContentItem Merge(this ContentItem contentItem, object properties, JsonMergeSettings settings = null)
         {
             var props = JObject.FromObject(properties);
 
             var originalDocumentId = contentItem.Id;
-            contentItem.Data.Merge(props, jsonMergeSettings);
+            contentItem.Data.Merge(props, settings);
             contentItem.Elements.Clear();
 
             // Return to original value or it will be interpreted as a different object by YesSql.
@@ -170,19 +171,19 @@ namespace OrchardCore.ContentManagement
             // or these properties will take precedence over the properties on the C# object when and if they are mutated.
             if (props.ContainsKey(nameof(contentItem.DisplayText)))
             {
-                contentItem.DisplayText = props[nameof(contentItem.DisplayText)].ToString();
+                contentItem.DisplayText = props[nameof(contentItem.DisplayText)]?.ToString();
                 contentItem.Data.Remove(nameof(contentItem.DisplayText));
             }
 
             if (props.ContainsKey(nameof(contentItem.Owner)))
             {
-                contentItem.Owner = props[nameof(contentItem.Owner)].ToString();
+                contentItem.Owner = props[nameof(contentItem.Owner)]?.ToString();
                 contentItem.Data.Remove(nameof(contentItem.Owner));
             }
 
             if (props.ContainsKey(nameof(contentItem.Author)))
             {
-                contentItem.Author = props[nameof(contentItem.Author)].ToString();
+                contentItem.Author = props[nameof(contentItem.Author)]?.ToString();
                 contentItem.Data.Remove(nameof(contentItem.Author));
             }
 

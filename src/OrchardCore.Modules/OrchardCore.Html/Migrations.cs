@@ -1,7 +1,8 @@
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -83,7 +84,7 @@ namespace OrchardCore.Html
 
                 foreach (var contentItemVersion in contentItemVersions)
                 {
-                    if (UpdateBody(contentItemVersion.Content))
+                    if (UpdateBody((JsonObject)contentItemVersion.Content))
                     {
                         await _session.SaveAsync(contentItemVersion);
                         _logger.LogInformation("A content item version's BodyPart was upgraded: {ContentItemVersionId}", contentItemVersion.ContentItemVersionId);
@@ -95,24 +96,32 @@ namespace OrchardCore.Html
                 await _session.SaveChangesAsync();
             }
 
-            static bool UpdateBody(JToken content)
+            static bool UpdateBody(JsonNode content)
             {
                 var changed = false;
 
-                if (content.Type == JTokenType.Object)
+                if (content.GetValueKind() == JsonValueKind.Object)
                 {
                     var body = content["BodyPart"]?["Body"]?.Value<string>();
 
                     if (!string.IsNullOrWhiteSpace(body))
                     {
-                        content["HtmlBodyPart"] = new JObject(new JProperty("Html", body));
+                        content["HtmlBodyPart"] = new JsonObject() { ["Html"] = body };
                         changed = true;
+                    }
+
+                    foreach (var node in content.AsObject())
+                    {
+                        changed = UpdateBody(node.Value) || changed;
                     }
                 }
 
-                foreach (var token in content)
+                if (content.GetValueKind() == JsonValueKind.Array)
                 {
-                    changed = UpdateBody(token) || changed;
+                    foreach (var node in content.AsArray())
+                    {
+                        changed = UpdateBody(node) || changed;
+                    }
                 }
 
                 return changed;

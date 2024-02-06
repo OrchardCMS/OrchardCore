@@ -8,7 +8,7 @@ namespace OrchardCore.AdminMenu.Models
         public string Id { get; set; } = Guid.NewGuid().ToString("n");
         public string Name { get; set; }
         public bool Enabled { get; set; } = true;
-        public List<AdminNode> MenuItems { get; } = [];
+        public List<AdminNode> MenuItems { get; init; } = [];
 
         public AdminNode GetMenuItemById(string id)
         {

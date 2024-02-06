@@ -1,33 +1,32 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Environment.Shell.Configuration.Internal;
 
 public static class ConfigurationExtensions
 {
-    public static JObject ToJObject(this IConfiguration configuration)
+    public static JsonObject ToJsonObject(this IConfiguration configuration)
     {
-        var jToken = ToJToken(configuration);
-        if (jToken is not JObject jObject)
+        var jsonNode = ToJsonNode(configuration);
+        if (jsonNode is not JsonObject jObject)
         {
-            throw new FormatException($"Top level JSON element must be an object. Instead, {jToken.Type} was found.");
+            throw new FormatException($"Top level JSON element must be an object. Instead, {jsonNode.GetValueKind()} was found.");
         }
 
         return jObject;
     }
 
-    public static JToken ToJToken(this IConfiguration configuration)
+    public static JsonNode ToJsonNode(this IConfiguration configuration)
     {
-        JArray jArray = null;
-        JObject jObject = null;
+        JsonArray jArray = null;
+        JsonObject jObject = null;
 
         foreach (var child in configuration.GetChildren())
         {
@@ -45,13 +44,13 @@ public static class ConfigurationExtensions
                     // it allows to keep non null items at the right position.
                     for (var i = jArray.Count; i < index; i++)
                     {
-                        jArray.Add(JValue.CreateNull());
+                        jArray.Add(null);
                     }
                 }
 
                 if (child.GetChildren().Any())
                 {
-                    jArray.Add(ToJToken(child));
+                    jArray.Add(ToJsonNode(child));
                 }
                 else
                 {
@@ -68,7 +67,7 @@ public static class ConfigurationExtensions
                 jObject ??= [];
                 if (child.GetChildren().Any())
                 {
-                    jObject.Add(child.Key, ToJToken(child));
+                    jObject.Add(child.Key, ToJsonNode(child));
                 }
                 else
                 {
@@ -77,10 +76,10 @@ public static class ConfigurationExtensions
             }
         }
 
-        return jArray as JToken ?? jObject ?? [];
+        return jArray as JsonNode ?? jObject ?? [];
     }
 
-    public static JObject ToJObject(this IDictionary<string, string> configurationData)
+    public static JsonObject ToJsonObject(this IDictionary<string, string> configurationData)
     {
         var configuration = new ConfigurationBuilder()
             .Add(new UpdatableDataProvider(configurationData))
@@ -88,31 +87,19 @@ public static class ConfigurationExtensions
 
         using var disposable = configuration as IDisposable;
 
-        return configuration.ToJObject();
+        return configuration.ToJsonObject();
     }
 
-    public static async Task<IDictionary<string, string>> ToConfigurationDataAsync(this JObject jConfiguration)
+    public static async Task<IDictionary<string, string>> ToConfigurationDataAsync(this JsonObject jConfiguration)
     {
         if (jConfiguration is null)
         {
             return new Dictionary<string, string>();
         }
 
-        var configurationString = await jConfiguration.ToStringAsync(Formatting.None);
+        var configurationString = jConfiguration.ToJsonString(JOptions.Default);
         using var ms = new MemoryStream(Encoding.UTF8.GetBytes(configurationString));
 
         return await JsonConfigurationParser.ParseAsync(ms);
-    }
-
-    public static async Task<string> ToStringAsync(this JObject jConfiguration, Formatting formatting = Formatting.Indented)
-    {
-        jConfiguration ??= [];
-
-        using var sw = new StringWriter(CultureInfo.InvariantCulture);
-        using var jw = new JsonTextWriter(sw) { Formatting = formatting };
-
-        await jConfiguration.WriteToAsync(jw);
-
-        return sw.ToString();
     }
 }
