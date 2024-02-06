@@ -24,13 +24,6 @@ namespace OrchardCore.Flows
 {
     public class Startup : StartupBase
     {
-        private readonly AdminOptions _adminOptions;
-
-        public Startup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
             services.Configure<TemplateOptions>(o =>
@@ -59,16 +52,6 @@ namespace OrchardCore.Flows
             services.AddContentPart<FlowMetadata>();
 
             services.AddDataMigration<Migrations>();
-        }
-
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapAreaControllerRoute(
-                name: "Flows.BuildEditor",
-                areaName: "OrchardCore.Flows",
-                pattern: _adminOptions.AdminUrlPrefix + "/Flows/BuildEditor",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.BuildEditor) }
-            );
         }
     }
 }
