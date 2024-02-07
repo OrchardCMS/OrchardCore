@@ -21,7 +21,7 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.Deployment.Remote.Controllers
 {
-    [Admin]
+    [Admin("Deployment/RemoteClient/{action}/{id?}")]
     public class RemoteClientController : Controller
     {
         private const string _optionsSearch = "Options.Search";
