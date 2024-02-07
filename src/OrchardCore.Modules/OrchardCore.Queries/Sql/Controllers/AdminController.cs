@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Queries.Sql.ViewModels;
@@ -19,6 +20,7 @@ using YesSql;
 namespace OrchardCore.Queries.Sql.Controllers
 {
     [Feature("OrchardCore.Queries.Sql")]
+    [Admin("Queries/Sql/{action}")]
     public class AdminController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
