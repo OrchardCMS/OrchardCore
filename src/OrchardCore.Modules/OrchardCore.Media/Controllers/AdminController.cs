@@ -514,6 +514,7 @@ namespace OrchardCore.Media.Controllers
         // If a remote storage is used, then we need to preemptively cache the newly uploaded or renamed file. Without
         // this, the Media Library page will try to load the thumbnail without a cache busting parameter, since
         // ShellFileVersionProvider won't find it in the local cache.
+        // This is not required for files moved across folders, because the folder will be reopened anyway.
         private async Task PreCacheRemoteMedia(Stream stream, IFileStoreEntry mediaFile)
         {
             var mediaFileStoreCache = _serviceProvider.GetService<IMediaFileStoreCache>();
