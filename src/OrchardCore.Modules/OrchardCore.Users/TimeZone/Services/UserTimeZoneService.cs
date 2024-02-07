@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Distributed;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
+using OrchardCore.Settings.Deployment;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.TimeZone.Models;
 
@@ -25,7 +26,7 @@ namespace OrchardCore.Users.TimeZone.Services
             IDistributedCache distributedCache,
             IHttpContextAccessor httpContextAccessor,
             UserManager<IUser> userManager
-            )
+        )
         {
             _clock = clock;
             _distributedCache = distributedCache;
@@ -36,6 +37,7 @@ namespace OrchardCore.Users.TimeZone.Services
         public async Task<ITimeZone> GetUserTimeZoneAsync()
         {
             var currentTimeZoneId = await GetCurrentUserTimeZoneIdAsync();
+
             if (string.IsNullOrEmpty(currentTimeZoneId))
             {
                 return null;
@@ -73,10 +75,16 @@ namespace OrchardCore.Users.TimeZone.Services
                 var user = await _userManager.FindByNameAsync(userName) as User;
                 timeZoneId = user.As<UserTimeZone>()?.TimeZoneId;
 
-                if (!string.IsNullOrEmpty(timeZoneId))
+                if (string.IsNullOrEmpty(timeZoneId))
                 {
-                    await _distributedCache.SetStringAsync(key, timeZoneId, new DistributedCacheEntryOptions { SlidingExpiration = _slidingExpiration });
+                    timeZoneId = _clock.GetSystemTimeZone().TimeZoneId;
                 }
+
+                await _distributedCache.SetStringAsync(
+                    key,
+                    timeZoneId,
+                    new DistributedCacheEntryOptions { SlidingExpiration = _slidingExpiration }
+                );
             }
 
             return timeZoneId;
