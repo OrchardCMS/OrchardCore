@@ -49,6 +49,7 @@ namespace OrchardCore.Sitemaps.Controllers
             H = htmlLocalizer;
         }
 
+        [Admin("SitemapSource/Create/{sitemapId}/{sourceType}")]
         public async Task<IActionResult> Create(string sitemapId, string sourceType)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
@@ -126,6 +127,7 @@ namespace OrchardCore.Sitemaps.Controllers
             return View(model);
         }
 
+        [Admin("SitemapSource/Edit/{sitemapId}/{sourceId}")]
         public async Task<IActionResult> Edit(string sitemapId, string sourceId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
@@ -200,6 +202,7 @@ namespace OrchardCore.Sitemaps.Controllers
         }
 
         [HttpPost]
+        [Admin("SitemapSource/Delete/{sitemapId}/{sourceId}")]
         public async Task<IActionResult> Delete(string sitemapId, string sourceId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
