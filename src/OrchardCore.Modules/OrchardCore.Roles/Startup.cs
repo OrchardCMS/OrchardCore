@@ -1,19 +1,12 @@
-using System;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
 using OrchardCore.Deployment;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
-using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
-using OrchardCore.Roles.Controllers;
 using OrchardCore.Roles.Deployment;
 using OrchardCore.Roles.Recipes;
 using OrchardCore.Roles.Services;
@@ -25,13 +18,6 @@ namespace OrchardCore.Roles
 {
     public class Startup : StartupBase
     {
-        private readonly AdminOptions _adminOptions;
-
-        public Startup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<RoleStore>();
@@ -42,36 +28,6 @@ namespace OrchardCore.Roles
             services.AddScoped<IAuthorizationHandler, RolesPermissionsHandler>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
-        }
-
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            var adminControllerName = typeof(AdminController).ControllerName();
-
-            routes.MapAreaControllerRoute(
-                name: "RolesIndex",
-                areaName: "OrchardCore.Roles",
-                pattern: _adminOptions.AdminUrlPrefix + "/Roles/Index",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Index) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "RolesCreate",
-                areaName: "OrchardCore.Roles",
-                pattern: _adminOptions.AdminUrlPrefix + "/Roles/Create",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Create) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "RolesDelete",
-                areaName: "OrchardCore.Roles",
-                pattern: _adminOptions.AdminUrlPrefix + "/Roles/Delete/{id}",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Delete) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "RolesEdit",
-                areaName: "OrchardCore.Roles",
-                pattern: _adminOptions.AdminUrlPrefix + "/Roles/Edit/{id}",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Edit) }
-            );
         }
     }
 
