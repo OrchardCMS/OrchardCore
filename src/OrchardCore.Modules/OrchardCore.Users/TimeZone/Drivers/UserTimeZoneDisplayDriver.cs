@@ -4,6 +4,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Users.Models;
+using OrchardCore.Users.Services;
 using OrchardCore.Users.TimeZone.Models;
 using OrchardCore.Users.TimeZone.Services;
 using OrchardCore.Users.TimeZone.ViewModels;
@@ -12,22 +13,31 @@ namespace OrchardCore.Users.TimeZone.Drivers
 {
     public class UserTimeZoneDisplayDriver : SectionDisplayDriver<User, UserTimeZone>
     {
-        private readonly UserTimeZoneService _userTimeZoneService;
+        private readonly IUserTimeZoneService _userTimeZoneService;
 
-        public UserTimeZoneDisplayDriver(UserTimeZoneService userTimeZoneService)
+        public UserTimeZoneDisplayDriver(IUserTimeZoneService userTimeZoneService)
         {
             _userTimeZoneService = userTimeZoneService;
         }
 
         public override IDisplayResult Edit(UserTimeZone userTimeZone, BuildEditorContext context)
         {
-            return Initialize<UserTimeZoneViewModel>("UserTimeZone_Edit", model =>
-            {
-                model.TimeZoneId = userTimeZone.TimeZoneId;
-            }).Location("Content:2");
+            return Initialize<UserTimeZoneViewModel>(
+                    "UserTimeZone_Edit",
+                    model =>
+                    {
+                        model.TimeZoneId = userTimeZone.TimeZoneId;
+                    }
+                )
+                .Location("Content:2");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(User user, UserTimeZone userTimeZone, IUpdateModel updater, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(
+            User user,
+            UserTimeZone userTimeZone,
+            IUpdateModel updater,
+            BuildEditorContext context
+        )
         {
             var model = new UserTimeZoneViewModel();
 
