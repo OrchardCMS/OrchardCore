@@ -22,7 +22,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Deployment.Controllers
 {
-    [Admin]
+    [Admin("DeploymentPlan/{action}/{id?}")]
     public class DeploymentPlanController : Controller
     {
         private const string _optionsSearch = "Options.Search";
