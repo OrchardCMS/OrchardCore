@@ -70,7 +70,7 @@ public class UserTimeZoneService : IUserTimeZoneService
         var key = GetCacheKey(userName);
         var timeZoneId = await _distributedCache.GetStringAsync(key);
 
-        if (string.IsNullOrEmpty(timeZoneId))
+        if (timeZoneId is null)
         {
             var user = await _userManager.FindByNameAsync(userName) as User;
             timeZoneId = user.As<UserTimeZone>()?.TimeZoneId;
