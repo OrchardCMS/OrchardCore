@@ -35,7 +35,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
             Assert.Null(executionResult.Errors);
 
             var writer = new GraphQLSerializer();
-            var result = JsonObject.Parse(await writer.WriteToStringAsync(executionResult));
+            var result = JsonObject.Parse(writer.Serialize(executionResult));
 
             Assert.Equal("Fantastic Fox Hates Permissions", result["data"]["test"]["noPermissions"].ToString());
         }

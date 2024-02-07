@@ -143,7 +143,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             context.Arguments["where"] = new ArgumentValue(JObject.Parse("{ \"contentItemId\": \"1\" }"), ArgumentSource.Variable);
             var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver)
-                            .ResolveAsync(context)) as IEnumerable<ContentItem>;            
+                            .ResolveAsync(context) as IEnumerable<ContentItem>;            
 
             Assert.Single(dogs);
             Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);

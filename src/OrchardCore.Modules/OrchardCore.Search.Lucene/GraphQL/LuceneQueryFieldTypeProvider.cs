@@ -110,7 +110,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                         Name = nameLower,
                         Description = description,
                         Type = typeof(StringGraphType),
-                        Resolver = new FuncFieldResolver<JObject, string>(context =>
+                        Resolver = new FuncFieldResolver<JsonObject, string>(context =>
                         {
                             var source = context.Source;
                             return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<string>();
@@ -126,7 +126,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                         Name = nameLower,
                         Description = description,
                         Type = typeof(IntGraphType),
-                        Resolver = new FuncFieldResolver<JObject, int?>(context =>
+                        Resolver = new FuncFieldResolver<JsonObject, int?>(context =>
                         {
                             var source = context.Source;
                             return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<int>();
