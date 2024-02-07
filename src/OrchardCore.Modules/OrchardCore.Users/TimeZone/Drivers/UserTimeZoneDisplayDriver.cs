@@ -6,7 +6,6 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.TimeZone.Models;
-using OrchardCore.Users.TimeZone.Services;
 using OrchardCore.Users.TimeZone.ViewModels;
 
 namespace OrchardCore.Users.TimeZone.Drivers
