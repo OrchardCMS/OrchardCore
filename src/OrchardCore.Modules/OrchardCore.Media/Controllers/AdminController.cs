@@ -214,7 +214,7 @@ namespace OrchardCore.Media.Controllers
                             var mediaFile = await _mediaFileStore.GetFileInfoAsync(mediaFilePath);
 
                             stream.Position = 0;
-                            await PreCacheRemoteMedia(stream, mediaFile);
+                            await PreCacheRemoteMedia(mediaFile, stream);
 
                             result.Add(CreateFileResult(mediaFile));
                         }
@@ -324,7 +324,7 @@ namespace OrchardCore.Media.Controllers
             await _mediaFileStore.MoveFileAsync(oldPath, newPath);
 
             var newFileInfo = await _mediaFileStore.GetFileInfoAsync(newPath);
-            await PreCacheRemoteMedia(await _mediaFileStore.GetFileStreamAsync(newFileInfo), newFileInfo);
+            await PreCacheRemoteMedia(newFileInfo);
 
             return Ok(new { newUrl = GetCacheBustingMediaPublicUrl(newPath) });
         }
@@ -515,12 +515,29 @@ namespace OrchardCore.Media.Controllers
         // this, the Media Library page will try to load the thumbnail without a cache busting parameter, since
         // ShellFileVersionProvider won't find it in the local cache.
         // This is not required for files moved across folders, because the folder will be reopened anyway.
-        private async Task PreCacheRemoteMedia(Stream stream, IFileStoreEntry mediaFile)
+        private async Task PreCacheRemoteMedia(IFileStoreEntry mediaFile, Stream stream = null)
         {
             var mediaFileStoreCache = _serviceProvider.GetService<IMediaFileStoreCache>();
-            if (mediaFileStoreCache != null)
+            if (mediaFileStoreCache == null)
+            {
+                return;
+            }
+
+            Stream localStream = null;
+
+            if (stream == null)
+            {
+                localStream = await _mediaFileStore.GetFileStreamAsync(mediaFile);
+                stream = localStream;
+            }
+
+            try
             {
                 await mediaFileStoreCache.SetCacheAsync(stream, mediaFile, HttpContext.RequestAborted);
+            }
+            finally
+            {
+                localStream?.Dispose();
             }
         }
     }
