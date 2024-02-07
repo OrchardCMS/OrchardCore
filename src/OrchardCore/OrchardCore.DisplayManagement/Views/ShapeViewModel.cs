@@ -16,7 +16,7 @@ namespace OrchardCore.DisplayManagement.Views
 
         public ShapeViewModel(string shapeType)
         {
-            ArgumentException.ThrowIfNullOrEmpty(shapeType, nameof(shapeType));
+            ArgumentException.ThrowIfNullOrEmpty(shapeType);
 
             Metadata.Type = shapeType;
         }
