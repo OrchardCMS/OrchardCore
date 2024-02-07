@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -31,6 +32,7 @@ namespace OrchardCore.Media.Controllers
         private readonly MediaOptions _mediaOptions;
         private readonly IUserAssetFolderNameProvider _userAssetFolderNameProvider;
         private readonly IChunkFileUploadService _chunkFileUploadService;
+        private readonly IFileVersionProvider _fileVersionProvider;
 
         public AdminController(
             IMediaFileStore mediaFileStore,
@@ -41,8 +43,8 @@ namespace OrchardCore.Media.Controllers
             ILogger<AdminController> logger,
             IStringLocalizer<AdminController> stringLocalizer,
             IUserAssetFolderNameProvider userAssetFolderNameProvider,
-            IChunkFileUploadService chunkFileUploadService
-            )
+            IChunkFileUploadService chunkFileUploadService,
+            IFileVersionProvider fileVersionProvider)
         {
             _mediaFileStore = mediaFileStore;
             _mediaNameNormalizerService = mediaNameNormalizerService;
@@ -53,6 +55,7 @@ namespace OrchardCore.Media.Controllers
             S = stringLocalizer;
             _userAssetFolderNameProvider = userAssetFolderNameProvider;
             _chunkFileUploadService = chunkFileUploadService;
+            _fileVersionProvider = fileVersionProvider;
         }
 
         public async Task<IActionResult> Index()
@@ -116,7 +119,10 @@ namespace OrchardCore.Media.Controllers
             var allowedExtensions = GetRequestedExtensions(extensions, false);
 
             var allowed = _mediaFileStore.GetDirectoryContentAsync(path)
-                .WhereAwait(async e => !e.IsDirectory && (allowedExtensions.Count == 0 || allowedExtensions.Contains(Path.GetExtension(e.Path))) && await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)e.Path))
+                .WhereAwait(async e =>
+                    !e.IsDirectory &&
+                    (allowedExtensions.Count == 0 || allowedExtensions.Contains(Path.GetExtension(e.Path))) &&
+                    await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)e.Path))
                 .Select(e => CreateFileResult(e));
 
             return Ok(await allowed.ToListAsync());
@@ -443,7 +449,7 @@ namespace OrchardCore.Media.Controllers
                 size = mediaFile.Length,
                 lastModify = mediaFile.LastModifiedUtc.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds,
                 folder = mediaFile.DirectoryPath,
-                url = _mediaFileStore.MapPathToPublicUrl(mediaFile.Path),
+                url = _fileVersionProvider.AddFileVersionToPath(HttpContext.Request.PathBase, _mediaFileStore.MapPathToPublicUrl(mediaFile.Path)),
                 mediaPath = mediaFile.Path,
                 mime = contentType ?? "application/octet-stream",
                 mediaText = string.Empty,
