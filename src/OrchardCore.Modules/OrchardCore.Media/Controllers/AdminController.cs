@@ -10,12 +10,14 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.FileStorage;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
 
 namespace OrchardCore.Media.Controllers
 {
+    [Admin("Media/{action}")]
     public class AdminController : Controller
     {
         private static readonly char[] InvalidFolderNameCharacters = ['\\', '/'];
@@ -55,6 +57,7 @@ namespace OrchardCore.Media.Controllers
             _chunkFileUploadService = chunkFileUploadService;
         }
 
+        [Admin("Media")]
         public async Task<IActionResult> Index()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
