@@ -7,11 +7,12 @@ using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
+using OrchardCore.Users.Services;
 using OrchardCore.Users.TimeZone.Models;
 
 namespace OrchardCore.Users.TimeZone.Services;
 
-public class UserTimeZoneService
+public class UserTimeZoneService : IUserTimeZoneService
 {
     private const string CacheKey = "UserTimeZone/";
     private readonly TimeSpan _slidingExpiration = TimeSpan.FromMinutes(1);
@@ -49,16 +50,16 @@ public class UserTimeZoneService
         return _clock.GetTimeZone(currentTimeZoneId);
     }
 
-    public Task UpdateUserTimeZoneAsync(User user)
+    public async Task UpdateUserTimeZoneAsync(IUser user)
     {
         var userName = user?.UserName;
 
         if (!string.IsNullOrEmpty(userName))
         {
-            return _distributedCache.RemoveAsync(GetCacheKey(userName));
+            await _distributedCache.RemoveAsync(GetCacheKey(userName));
         }
 
-        return Task.CompletedTask;
+        return;
     }
 
     public async Task<string> GetCurrentUserTimeZoneIdAsync()
