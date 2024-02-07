@@ -57,7 +57,7 @@ namespace OrchardCore.Recipes.Controllers
             _logger = logger;
         }
 
-        [Admin("Recipes")]
+        [Admin("Recipes", "Admin Route for the recipe list.")]
         public async Task<ActionResult> Index()
         {
             if (!await _authorizationService.AuthorizeAsync(User, StandardPermissions.SiteOwner))

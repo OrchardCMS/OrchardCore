@@ -30,6 +30,7 @@ namespace OrchardCore.Admin
         public AdminAttribute(string template = null, string routeName = null)
         {
             Template = template;
+            RouteName = routeName;
         }
 
         public Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
