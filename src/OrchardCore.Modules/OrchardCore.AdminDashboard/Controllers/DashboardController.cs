@@ -85,6 +85,7 @@ namespace OrchardCore.AdminDashboard.Controllers
             return View(model);
         }
 
+        [Admin("dashboard/manage")]
         public async Task<IActionResult> Manage()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminDashboard))
