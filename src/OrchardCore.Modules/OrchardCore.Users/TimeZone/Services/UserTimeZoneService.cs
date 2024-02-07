@@ -6,12 +6,11 @@ using Microsoft.Extensions.Caching.Distributed;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Users.Models;
-using OrchardCore.Users.Services;
 using OrchardCore.Users.TimeZone.Models;
 
 namespace OrchardCore.Users.TimeZone.Services;
 
-public class UserTimeZoneService : IUserTimeZoneService
+public class UserTimeZoneService
 {
     private const string CacheKey = "UserTimeZone/";
     private readonly TimeSpan _slidingExpiration = TimeSpan.FromMinutes(1);

@@ -4,17 +4,17 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Users.Models;
-using OrchardCore.Users.Services;
 using OrchardCore.Users.TimeZone.Models;
+using OrchardCore.Users.TimeZone.Services;
 using OrchardCore.Users.TimeZone.ViewModels;
 
 namespace OrchardCore.Users.TimeZone.Drivers
 {
     public class UserTimeZoneDisplayDriver : SectionDisplayDriver<User, UserTimeZone>
     {
-        private readonly IUserTimeZoneService _userTimeZoneService;
+        private readonly UserTimeZoneService _userTimeZoneService;
 
-        public UserTimeZoneDisplayDriver(IUserTimeZoneService userTimeZoneService)
+        public UserTimeZoneDisplayDriver(UserTimeZoneService userTimeZoneService)
         {
             _userTimeZoneService = userTimeZoneService;
         }
