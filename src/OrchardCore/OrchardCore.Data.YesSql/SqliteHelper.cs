@@ -43,8 +43,8 @@ public static class SqliteHelper
     /// <returns></returns>
     public static string GetConnectionString(SqliteOptions sqliteOptions, string databaseFolder, string databaseName, SqliteOpenMode sqliteOpenMode)
     {
-        ArgumentException.ThrowIfNullOrEmpty(databaseFolder, nameof(databaseFolder));
-        ArgumentException.ThrowIfNullOrEmpty(databaseName, nameof(databaseName));
+        ArgumentException.ThrowIfNullOrEmpty(databaseFolder);
+        ArgumentException.ThrowIfNullOrEmpty(databaseName);
 
         return GetSqliteConnectionStringBuilder(sqliteOptions, databaseFolder, databaseName, sqliteOpenMode).ToString();
     }
