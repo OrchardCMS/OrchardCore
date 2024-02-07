@@ -9,91 +9,90 @@ using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.TimeZone.Models;
 
-namespace OrchardCore.Users.TimeZone.Services
+namespace OrchardCore.Users.TimeZone.Services;
+
+public class UserTimeZoneService
 {
-    public class UserTimeZoneService
+    private const string CacheKey = "UserTimeZone/";
+    private readonly TimeSpan _slidingExpiration = TimeSpan.FromMinutes(1);
+
+    private readonly IClock _clock;
+    private readonly IDistributedCache _distributedCache;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly UserManager<IUser> _userManager;
+    private readonly ISiteService _siteService;
+
+    public UserTimeZoneService(
+        IClock clock,
+        IDistributedCache distributedCache,
+        IHttpContextAccessor httpContextAccessor,
+        UserManager<IUser> userManager,
+        ISiteService siteService
+    )
     {
-        private const string CacheKey = "UserTimeZone/";
-        private readonly TimeSpan _slidingExpiration = TimeSpan.FromMinutes(1);
+        _clock = clock;
+        _distributedCache = distributedCache;
+        _httpContextAccessor = httpContextAccessor;
+        _userManager = userManager;
+        _siteService = siteService;
+    }
 
-        private readonly IClock _clock;
-        private readonly IDistributedCache _distributedCache;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly UserManager<IUser> _userManager;
-        private readonly ISiteService _siteService;
+    public async Task<ITimeZone> GetUserTimeZoneAsync()
+    {
+        var currentTimeZoneId = await GetCurrentUserTimeZoneIdAsync();
 
-        public UserTimeZoneService(
-            IClock clock,
-            IDistributedCache distributedCache,
-            IHttpContextAccessor httpContextAccessor,
-            UserManager<IUser> userManager,
-            ISiteService siteService
-        )
+        if (string.IsNullOrEmpty(currentTimeZoneId))
         {
-            _clock = clock;
-            _distributedCache = distributedCache;
-            _httpContextAccessor = httpContextAccessor;
-            _userManager = userManager;
-            _siteService = siteService;
+            return null;
         }
 
-        public async Task<ITimeZone> GetUserTimeZoneAsync()
+        return _clock.GetTimeZone(currentTimeZoneId);
+    }
+
+    public Task UpdateUserTimeZoneAsync(User user)
+    {
+        var userName = user?.UserName;
+
+        if (!string.IsNullOrEmpty(userName))
         {
-            var currentTimeZoneId = await GetCurrentUserTimeZoneIdAsync();
-
-            if (string.IsNullOrEmpty(currentTimeZoneId))
-            {
-                return null;
-            }
-
-            return _clock.GetTimeZone(currentTimeZoneId);
+            return _distributedCache.RemoveAsync(GetCacheKey(userName));
         }
 
-        public Task UpdateUserTimeZoneAsync(User user)
+        return Task.CompletedTask;
+    }
+
+    public async Task<string> GetCurrentUserTimeZoneIdAsync()
+    {
+        var userName = _httpContextAccessor.HttpContext.User?.Identity?.Name;
+
+        if (string.IsNullOrEmpty(userName))
         {
-            var userName = user?.UserName;
-
-            if (!string.IsNullOrEmpty(userName))
-            {
-                return _distributedCache.RemoveAsync(GetCacheKey(userName));
-            }
-
-            return Task.CompletedTask;
+            return null;
         }
 
-        public async Task<string> GetCurrentUserTimeZoneIdAsync()
+        var key = GetCacheKey(userName);
+        var timeZoneId = await _distributedCache.GetStringAsync(key);
+
+        if (string.IsNullOrEmpty(timeZoneId))
         {
-            var userName = _httpContextAccessor.HttpContext.User?.Identity?.Name;
-
-            if (string.IsNullOrEmpty(userName))
-            {
-                return null;
-            }
-
-            var key = GetCacheKey(userName);
-            var timeZoneId = await _distributedCache.GetStringAsync(key);
+            var user = await _userManager.FindByNameAsync(userName) as User;
+            timeZoneId = user.As<UserTimeZone>()?.TimeZoneId;
 
             if (string.IsNullOrEmpty(timeZoneId))
             {
-                var user = await _userManager.FindByNameAsync(userName) as User;
-                timeZoneId = user.As<UserTimeZone>()?.TimeZoneId;
-
-                if (string.IsNullOrEmpty(timeZoneId))
-                {
-                    var siteSettings = await _siteService.GetSiteSettingsAsync();
-                    timeZoneId = siteSettings.TimeZoneId;
-                }
-
-                await _distributedCache.SetStringAsync(
-                    key,
-                    timeZoneId,
-                    new DistributedCacheEntryOptions { SlidingExpiration = _slidingExpiration }
-                );
+                var siteSettings = await _siteService.GetSiteSettingsAsync();
+                timeZoneId = siteSettings.TimeZoneId;
             }
 
-            return timeZoneId;
+            await _distributedCache.SetStringAsync(
+                key,
+                timeZoneId,
+                new DistributedCacheEntryOptions { SlidingExpiration = _slidingExpiration }
+            );
         }
 
-        private static string GetCacheKey(string userName) => CacheKey + userName;
+        return timeZoneId;
     }
+
+    private static string GetCacheKey(string userName) => CacheKey + userName;
 }
