@@ -56,15 +56,12 @@ namespace OrchardCore.Users
     public class Startup : StartupBase
     {
         private static readonly string _accountControllerName = typeof(AccountController).ControllerName();
-        private static readonly string _adminControllerName = typeof(AdminController).ControllerName();
 
-        private readonly AdminOptions _adminOptions;
         private readonly string _tenantName;
         private UserOptions _userOptions;
 
-        public Startup(IOptions<AdminOptions> adminOptions, ShellSettings shellSettings)
+        public Startup(ShellSettings shellSettings)
         {
-            _adminOptions = adminOptions.Value;
             _tenantName = shellSettings.Name;
         }
 

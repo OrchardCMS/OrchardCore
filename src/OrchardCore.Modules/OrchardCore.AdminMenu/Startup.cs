@@ -1,6 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
 using OrchardCore.AdminMenu.AdminNodes;
 using OrchardCore.AdminMenu.Deployment;
 using OrchardCore.AdminMenu.Recipes;
@@ -15,13 +13,6 @@ namespace OrchardCore.AdminMenu
 {
     public class Startup : StartupBase
     {
-        private readonly AdminOptions _adminOptions;
-
-        public Startup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IPermissionProvider, Permissions>();

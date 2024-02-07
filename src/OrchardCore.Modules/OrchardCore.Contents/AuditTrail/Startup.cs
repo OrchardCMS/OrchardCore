@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
@@ -22,13 +21,6 @@ namespace OrchardCore.Contents.AuditTrail
     [RequireFeatures("OrchardCore.AuditTrail")]
     public class Startup : StartupBase
     {
-        private readonly AdminOptions _adminOptions;
-
-        public Startup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddDataMigration<Migrations>();

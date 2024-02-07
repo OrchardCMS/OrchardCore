@@ -1,11 +1,5 @@
-using System;
 using Fluid;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
-using OrchardCore.ContentFields.Controllers;
 using OrchardCore.ContentFields.Drivers;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Handlers;
@@ -21,19 +15,12 @@ using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
-using OrchardCore.Mvc.Core.Utilities;
+using System;
 
 namespace OrchardCore.ContentFields
 {
     public class Startup : StartupBase
     {
-        private readonly AdminOptions _adminOptions;
-
-        public Startup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
             services.Configure<TemplateOptions>(o =>
@@ -159,13 +146,6 @@ namespace OrchardCore.ContentFields
     [RequireFeatures("OrchardCore.ContentLocalization")]
     public class LocalizationSetContentPickerStartup : StartupBase
     {
-        private readonly AdminOptions _adminOptions;
-
-        public LocalizationSetContentPickerStartup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddContentField<LocalizationSetContentPickerField>()
@@ -199,13 +179,6 @@ namespace OrchardCore.ContentFields
     [RequireFeatures("OrchardCore.Users")]
     public class UserPickerStartup : StartupBase
     {
-        private readonly AdminOptions _adminOptions;
-
-        public UserPickerStartup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
             services.Configure<TemplateOptions>(o =>

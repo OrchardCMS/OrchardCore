@@ -1,13 +1,9 @@
-using System;
-using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
 using OrchardCore.AdminMenu;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -54,19 +50,14 @@ using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Handlers;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
+using System;
+using System.Threading.Tasks;
 using YesSql.Filters.Query;
 
 namespace OrchardCore.Contents
 {
     public class Startup : StartupBase
     {
-        private readonly AdminOptions _adminOptions;
-
-        public Startup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IAnchorTag, ContentAnchorTag>();
