@@ -213,15 +213,8 @@ namespace OrchardCore.Media.Controllers
 
                             var mediaFile = await _mediaFileStore.GetFileInfoAsync(mediaFilePath);
 
-                            // If a remote storage is used, then preemptively caching the uploaded file. Without this,
-                            // the Media Library page will try to load the thumbnail without a cache busting parameter,
-                            // since ShellFileVersionProvider won't find it in the local cache.
-                            var mediaFileStoreCache = _serviceProvider.GetService<IMediaFileStoreCache>();
-                            if (mediaFileStoreCache != null)
-                            {
-                                stream.Position = 0;
-                                await mediaFileStoreCache.SetCacheAsync(stream, mediaFile, HttpContext.RequestAborted);
-                            }
+                            stream.Position = 0;
+                            await PreCacheRemoteMedia(stream, mediaFile);
 
                             result.Add(CreateFileResult(mediaFile));
                         }
@@ -330,7 +323,10 @@ namespace OrchardCore.Media.Controllers
 
             await _mediaFileStore.MoveFileAsync(oldPath, newPath);
 
-            return Ok();
+            var newFileInfo = await _mediaFileStore.GetFileInfoAsync(newPath);
+            await PreCacheRemoteMedia(await _mediaFileStore.GetFileStreamAsync(newFileInfo), newFileInfo);
+
+            return Ok(new { newUrl = GetCacheBustingMediaPublicUrl(newPath) });
         }
 
         [HttpPost]
@@ -463,7 +459,7 @@ namespace OrchardCore.Media.Controllers
                 size = mediaFile.Length,
                 lastModify = mediaFile.LastModifiedUtc.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds,
                 folder = mediaFile.DirectoryPath,
-                url = _fileVersionProvider.AddFileVersionToPath(HttpContext.Request.PathBase, _mediaFileStore.MapPathToPublicUrl(mediaFile.Path)),
+                url = GetCacheBustingMediaPublicUrl(mediaFile.Path),
                 mediaPath = mediaFile.Path,
                 mime = contentType ?? "application/octet-stream",
                 mediaText = string.Empty,
@@ -510,6 +506,21 @@ namespace OrchardCore.Media.Controllers
             }
 
             return EmptySet;
+        }
+
+        private string GetCacheBustingMediaPublicUrl(string path) =>
+            _fileVersionProvider.AddFileVersionToPath(HttpContext.Request.PathBase, _mediaFileStore.MapPathToPublicUrl(path));
+
+        // If a remote storage is used, then we need to preemptively cache the newly uploaded or renamed file. Without
+        // this, the Media Library page will try to load the thumbnail without a cache busting parameter, since
+        // ShellFileVersionProvider won't find it in the local cache.
+        private async Task PreCacheRemoteMedia(Stream stream, IFileStoreEntry mediaFile)
+        {
+            var mediaFileStoreCache = _serviceProvider.GetService<IMediaFileStoreCache>();
+            if (mediaFileStoreCache != null)
+            {
+                await mediaFileStoreCache.SetCacheAsync(stream, mediaFile, HttpContext.RequestAborted);
+            }
         }
     }
 }
