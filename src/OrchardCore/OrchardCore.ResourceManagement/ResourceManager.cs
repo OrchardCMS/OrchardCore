@@ -382,7 +382,7 @@ namespace OrchardCore.ResourceManagement
             }
             else if (settings.Dependencies != null)
             {
-                dependencies = new List<string>(resource.Dependencies);
+                dependencies = new List<string>(settings.Dependencies);
             }
 
             // Settings is given so they can cascade down into dependencies. For example, if Foo depends on Bar, and Foo's required
