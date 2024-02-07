@@ -22,7 +22,12 @@ namespace OrchardCore.Admin
         /// </summary>
         public string Template { get; set; }
 
-        public AdminAttribute(string template = null)
+        /// <summary>
+        /// Gets or sets the name used when mapping the admin route. If empty,
+        /// </summary>
+        public string RouteName { get; set; }
+
+        public AdminAttribute(string template = null, string routeName = null)
         {
             Template = template;
         }

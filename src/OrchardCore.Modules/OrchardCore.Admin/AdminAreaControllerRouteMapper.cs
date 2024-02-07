@@ -29,19 +29,24 @@ namespace OrchardCore.Admin
                 return false;
             }
 
+            string name = null;
             var pattern = _defaultAreaPattern;
 
             if (!string.IsNullOrWhiteSpace(actionAttribute?.Template))
             {
+                name = actionAttribute.RouteName;
                 pattern = actionAttribute.Template;
             }
             else if (!string.IsNullOrWhiteSpace(controllerAttribute?.Template))
             {
+                name = controllerAttribute.RouteName;
                 pattern = controllerAttribute.Template;
             }
 
             routes.MapAreaControllerRoute(
-                name: descriptor.DisplayName,
+                name: name ??
+                      descriptor.DisplayName ??
+                      $"Admin Route for {descriptor.ControllerName} {descriptor.ActionName}",
                 areaName: descriptor.RouteValues["area"],
                 pattern: $"{_adminUrlPrefix}/{pattern.TrimStart('/').Replace("{action}", descriptor.ActionName)}",
                 defaults: new { controller = descriptor.ControllerName, action = descriptor.ActionName }
