@@ -81,6 +81,7 @@ namespace OrchardCore.Workflows.Controllers
             H = htmlLocalizer;
         }
 
+        [Admin("Workflows/Types/{action}/{id?}")]
         public async Task<IActionResult> Index(WorkflowTypeIndexOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
