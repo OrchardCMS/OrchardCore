@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Distributed;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
-using OrchardCore.Settings.Deployment;
+using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.TimeZone.Models;
 
@@ -20,18 +20,21 @@ namespace OrchardCore.Users.TimeZone.Services
         private readonly IDistributedCache _distributedCache;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<IUser> _userManager;
+        private readonly ISiteService _siteService;
 
         public UserTimeZoneService(
             IClock clock,
             IDistributedCache distributedCache,
             IHttpContextAccessor httpContextAccessor,
-            UserManager<IUser> userManager
+            UserManager<IUser> userManager,
+            ISiteService siteService
         )
         {
             _clock = clock;
             _distributedCache = distributedCache;
             _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
+            _siteService = siteService;
         }
 
         public async Task<ITimeZone> GetUserTimeZoneAsync()
@@ -77,7 +80,8 @@ namespace OrchardCore.Users.TimeZone.Services
 
                 if (string.IsNullOrEmpty(timeZoneId))
                 {
-                    timeZoneId = _clock.GetSystemTimeZone().TimeZoneId;
+                    var siteSettings = await _siteService.GetSiteSettingsAsync();
+                    timeZoneId = siteSettings.TimeZoneId;
                 }
 
                 await _distributedCache.SetStringAsync(
