@@ -82,7 +82,9 @@ public class UserTimeZoneService : IUserTimeZoneService
             if (string.IsNullOrEmpty(timeZoneId))
             {
                 var siteSettings = await _siteService.GetSiteSettingsAsync();
-                timeZoneId = siteSettings.TimeZoneId;
+                timeZoneId = string.IsNullOrEmpty(siteSettings.TimeZoneId)
+                    ? _clock.GetSystemTimeZone().TimeZoneId
+                    : siteSettings.TimeZoneId;
             }
 
             await _distributedCache.SetStringAsync(
