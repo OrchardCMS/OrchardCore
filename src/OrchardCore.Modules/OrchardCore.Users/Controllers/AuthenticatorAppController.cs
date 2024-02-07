@@ -57,6 +57,7 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
         _shellSettings = shellSettings;
     }
 
+    [Admin("Authenticator/Configure/App")]
     public async Task<IActionResult> Index(string returnUrl)
     {
         var user = await UserManager.GetUserAsync(User);
@@ -106,6 +107,7 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
         return await RedirectToTwoFactorAsync(user);
     }
 
+    [Admin("Authenticator/Reset/App")]
     public async Task<IActionResult> Reset()
     {
         var user = await UserManager.GetUserAsync(User);
