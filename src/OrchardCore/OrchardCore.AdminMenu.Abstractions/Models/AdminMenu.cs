@@ -27,19 +27,16 @@ namespace OrchardCore.AdminMenu.Models
 
         public bool RemoveMenuItem(AdminNode itemToRemove)
         {
-            if (MenuItems.Contains(itemToRemove)) // todo: avoid this check by having a single TreeNode as a property of the content tree preset.
+            if (MenuItems.Remove(itemToRemove)) // todo: avoid this check by having a single TreeNode as a property of the content tree preset.
             {
-                MenuItems.Remove(itemToRemove);
                 return true; // success
             }
-            else
+
+            foreach (var firstLevelMenuItem in MenuItems)
             {
-                foreach (var firstLevelMenuItem in MenuItems)
+                if (firstLevelMenuItem.RemoveMenuItem(itemToRemove))
                 {
-                    if (firstLevelMenuItem.RemoveMenuItem(itemToRemove))
-                    {
-                        return true; // success
-                    }
+                    return true; // success
                 }
             }
 

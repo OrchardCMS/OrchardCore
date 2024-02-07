@@ -23,6 +23,7 @@ namespace OrchardCore.OpenId.Drivers
     public class OpenIdClientSettingsDisplayDriver : SectionDisplayDriver<ISite, OpenIdClientSettings>
     {
         private const string SettingsGroupId = "OrchardCore.OpenId.Client";
+        private static readonly char[] _separator = [' ', ','];
 
         private readonly IAuthorizationService _authorizationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -117,7 +118,7 @@ namespace OrchardCore.OpenId.Drivers
                 model.Scopes ??= string.Empty;
 
                 settings.DisplayName = model.DisplayName;
-                settings.Scopes = model.Scopes.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
+                settings.Scopes = model.Scopes.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
                 settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
                 settings.CallbackPath = model.CallbackPath;
                 settings.ClientId = model.ClientId;

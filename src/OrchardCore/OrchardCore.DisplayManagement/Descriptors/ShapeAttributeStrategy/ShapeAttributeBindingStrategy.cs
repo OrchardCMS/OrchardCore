@@ -152,7 +152,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
             return (Func<object, object[], object>)lambda;
         }
 
-        private static void CreateParamsExpressions(MethodBase method, out ParameterExpression argsExp, out Expression[] paramsExps)
+        private static void CreateParamsExpressions(MethodInfo method, out ParameterExpression argsExp, out Expression[] paramsExps)
         {
             var parameters = method.GetParameters().Select(x => x.ParameterType).ToArray();
 

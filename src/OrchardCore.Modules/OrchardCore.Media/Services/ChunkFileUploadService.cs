@@ -147,7 +147,7 @@ public class ChunkFileUploadService : IChunkFileUploadService
         return false;
     }
 
-    private Stream GetOrCreateTemporaryFile(Guid uploadId, IFormFile formFile, long size)
+    private FileStream GetOrCreateTemporaryFile(Guid uploadId, IFormFile formFile, long size)
     {
         var siteTempFolderPath = GetTempFolderPath();
 
@@ -187,7 +187,7 @@ public class ChunkFileUploadService : IChunkFileUploadService
             GetTempFolderPath(),
             $"{_tempFileNamePrefix}{CalculateHash(uploadId.ToString(), formFile.FileName, formFile.Name)}");
 
-    private static Stream CreateTemporaryFile(string tempPath, long size)
+    private static FileStream CreateTemporaryFile(string tempPath, long size)
     {
         var stream = File.Create(tempPath);
         stream.SetLength(size);

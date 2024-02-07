@@ -16,7 +16,7 @@ namespace OrchardCore.Mvc
     /// </summary>
     public class ModuleProjectRazorFileProvider : IFileProvider
     {
-        private static IList<IFileProvider> _pageFileProviders;
+        private static List<IFileProvider> _pageFileProviders;
         private static Dictionary<string, string> _roots;
         private static readonly object _synLock = new();
 
@@ -33,7 +33,7 @@ namespace OrchardCore.Mvc
                 {
                     var application = applicationContext.Application;
 
-                    _pageFileProviders = new List<IFileProvider>();
+                    _pageFileProviders = [];
                     var roots = new Dictionary<string, string>();
 
                     // Resolve all module projects roots.

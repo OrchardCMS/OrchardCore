@@ -109,7 +109,7 @@ namespace OrchardCore.Menu.Drivers
             return newObj;
         }
 
-        private JsonObject ProcessItem(MenuItemsListPart originalItems, JsonObject item)
+        private static JsonObject ProcessItem(MenuItemsListPart originalItems, JsonObject item)
         {
             var contentItem = GetMenuItemAt(originalItems, item["index"].ToString().Split('-').Select(x => Convert.ToInt32(x)).ToArray());
 
