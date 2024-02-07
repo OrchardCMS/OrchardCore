@@ -70,7 +70,7 @@ public class DbConnectionValidator : IDbConnectionValidator
                 return DbConnectionValidatorResult.DocumentTableNotFound;
             }
 
-            connectionString = SqliteHelper.GetConnectionString(_sqliteOptions, _shellOptions, context.ShellName);
+            connectionString = SqliteHelper.GetConnectionString(_sqliteOptions, _shellOptions, context.ShellSettings);
         }
 
         if (string.IsNullOrWhiteSpace(connectionString))
