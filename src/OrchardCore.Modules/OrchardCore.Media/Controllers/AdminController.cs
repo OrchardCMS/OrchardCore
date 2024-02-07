@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -33,6 +34,7 @@ namespace OrchardCore.Media.Controllers
         private readonly IUserAssetFolderNameProvider _userAssetFolderNameProvider;
         private readonly IChunkFileUploadService _chunkFileUploadService;
         private readonly IFileVersionProvider _fileVersionProvider;
+        private readonly IServiceProvider _serviceProvider;
 
         public AdminController(
             IMediaFileStore mediaFileStore,
@@ -44,7 +46,8 @@ namespace OrchardCore.Media.Controllers
             IStringLocalizer<AdminController> stringLocalizer,
             IUserAssetFolderNameProvider userAssetFolderNameProvider,
             IChunkFileUploadService chunkFileUploadService,
-            IFileVersionProvider fileVersionProvider)
+            IFileVersionProvider fileVersionProvider,
+            IServiceProvider serviceProvider)
         {
             _mediaFileStore = mediaFileStore;
             _mediaNameNormalizerService = mediaNameNormalizerService;
@@ -56,6 +59,7 @@ namespace OrchardCore.Media.Controllers
             _userAssetFolderNameProvider = userAssetFolderNameProvider;
             _chunkFileUploadService = chunkFileUploadService;
             _fileVersionProvider = fileVersionProvider;
+            _serviceProvider = serviceProvider;
         }
 
         public async Task<IActionResult> Index()
@@ -208,6 +212,16 @@ namespace OrchardCore.Media.Controllers
                             mediaFilePath = await _mediaFileStore.CreateFileFromStreamAsync(mediaFilePath, stream);
 
                             var mediaFile = await _mediaFileStore.GetFileInfoAsync(mediaFilePath);
+
+                            // If a remote storage is used, then preemptively caching the uploaded file. Without this,
+                            // the Media Library page will try to load the thumbnail without a cache busting parameter,
+                            // since ShellFileVersionProvider won't find it in the local cache.
+                            var mediaFileStoreCache = _serviceProvider.GetService<IMediaFileStoreCache>();
+                            if (mediaFileStoreCache != null)
+                            {
+                                stream.Position = 0;
+                                await mediaFileStoreCache.SetCacheAsync(stream, mediaFile, HttpContext.RequestAborted);
+                            }
 
                             result.Add(CreateFileResult(mediaFile));
                         }
