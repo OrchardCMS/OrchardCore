@@ -60,7 +60,7 @@ public class UserTimeZoneService : IUserTimeZoneService
 
     public async Task<string> GetCurrentUserTimeZoneIdAsync()
     {
-        var userName = _httpContextAccessor.HttpContext.User?.Identity?.Name;
+        var userName = _httpContextAccessor.HttpContext?.User?.Identity?.Name;
 
         if (string.IsNullOrEmpty(userName))
         {
@@ -73,7 +73,7 @@ public class UserTimeZoneService : IUserTimeZoneService
         if (timeZoneId is null)
         {
             var user = await _userManager.FindByNameAsync(userName) as User;
-            timeZoneId = user.As<UserTimeZone>()?.TimeZoneId ?? string.Empty;
+            timeZoneId = user?.As<UserTimeZone>()?.TimeZoneId ?? string.Empty;
 
             await _distributedCache.SetStringAsync(
                 key,
