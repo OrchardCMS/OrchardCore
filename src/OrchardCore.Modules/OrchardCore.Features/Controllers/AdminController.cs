@@ -53,6 +53,7 @@ namespace OrchardCore.Features.Controllers
             H = htmlLocalizer;
         }
 
+        [Admin("Features/{tenant?}")]
         public async Task<ActionResult> Features(string tenant)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
@@ -106,6 +107,7 @@ namespace OrchardCore.Features.Controllers
         }
 
         [HttpPost]
+        [Admin("Features/{id}/Disable/{tenant?}")]
         public async Task<IActionResult> Disable(string id, string tenant)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
@@ -145,6 +147,7 @@ namespace OrchardCore.Features.Controllers
         }
 
         [HttpPost]
+        [Admin("Features/{id}/Enable/{tenant?}")]
         public async Task<IActionResult> Enable(string id, string tenant)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
