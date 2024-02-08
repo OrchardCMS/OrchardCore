@@ -133,7 +133,7 @@ namespace OrchardCore.CustomSettings.Services
         {
             var contentTypes = await _contentDefinitionManager.ListTypeDefinitionsAsync();
 
-            var result = contentTypes.Where(x => x.StereotypeEquals("CustomSettings"))
+            var result = contentTypes.Where(x => x.StereotypeEquals(CustomSettingsConstants.Stereotype))
             .ToDictionary(x => x.Name);
 
             return result;
