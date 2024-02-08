@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.ReCaptcha.ActionFilters;
 using OrchardCore.ReCaptcha.ActionFilters.Detection;
@@ -18,19 +17,17 @@ using OrchardCore.ResourceManagement;
 namespace OrchardCore.ReCaptcha.TagHelpers
 {
     [HtmlTargetElement("captcha", TagStructure = TagStructure.WithoutEndTag)]
-    [HtmlTargetElement("captcha", Attributes = "mode,language", TagStructure = TagStructure.WithoutEndTag)]
+    [HtmlTargetElement("captcha", Attributes = "mode,language,onload", TagStructure = TagStructure.WithoutEndTag)]
     public class ReCaptchaTagHelper : TagHelper
     {
         private readonly IResourceManager _resourceManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ReCaptchaSettings _settings;
         private readonly ILogger _logger;
-        private readonly ILocalizationService _localizationService;
 
         public ReCaptchaTagHelper(
             IOptions<ReCaptchaSettings> optionsAccessor,
             IResourceManager resourceManager,
-            ILocalizationService localizationService,
             IHttpContextAccessor httpContextAccessor,
             ILogger<ReCaptchaTagHelper> logger)
         {
@@ -38,7 +35,6 @@ namespace OrchardCore.ReCaptcha.TagHelpers
             _httpContextAccessor = httpContextAccessor;
             _settings = optionsAccessor.Value;
             Mode = ReCaptchaMode.PreventRobots;
-            _localizationService = localizationService;
             _logger = logger;
         }
 
@@ -51,6 +47,12 @@ namespace OrchardCore.ReCaptcha.TagHelpers
         /// </summary>
         [HtmlAttributeName("language")]
         public string Language { get; set; }
+
+        /// <summary>
+        /// The name of the JavaScript callback method to be called when the reCAPTCHA loads.
+        /// </summary>
+        [HtmlAttributeName("onload")]
+        public string OnLoad { get; set; }
 
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
@@ -77,12 +79,28 @@ namespace OrchardCore.ReCaptcha.TagHelpers
             output.TagMode = TagMode.StartTagAndEndTag;
 
             var builder = new TagBuilder("script");
-            var cultureInfo = await GetCultureAsync();
-
-            var settingsUrl = $"{_settings.ReCaptchaScriptUri}?hl={cultureInfo.TwoLetterISOLanguageName}";
-
-            builder.Attributes.Add("src", settingsUrl);
+            builder.Attributes.Add("src", await GetReCaptchaScriptUrlAsync());
             _resourceManager.RegisterFootScript(builder);
+        }
+
+        private async Task<string> GetReCaptchaScriptUrlAsync()
+        {
+            var query = new QueryString();
+            var cultureInfo = await GetCultureAsync();
+            if (cultureInfo != null)
+            {
+                query = query.Add("hl", cultureInfo.TwoLetterISOLanguageName);
+            }
+            if (!string.IsNullOrWhiteSpace(OnLoad))
+            {
+                query = query.Add("onload", OnLoad);
+            }
+
+            var settingsUrl = new UriBuilder(_settings.ReCaptchaScriptUri)
+            {
+                Query = query.ToString()
+            };
+            return settingsUrl.ToString();
         }
 
         private async Task<CultureInfo> GetCultureAsync()
