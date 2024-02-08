@@ -171,13 +171,12 @@ public class DbConnectionValidator : IDbConnectionValidator
         sqlBuilder.Select();
         sqlBuilder.Selector("*");
         sqlBuilder.Table(documentTable, alias: null, schema);
+        sqlBuilder.Take("1");
 
         if (isShellDescriptorDocument)
         {
             sqlBuilder.WhereAnd($"Type = '{_shellDescriptorTypeColumnValue}'");
         }
-
-        sqlBuilder.Take("1");
 
         return sqlBuilder.ToString();
     }
