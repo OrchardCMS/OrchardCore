@@ -402,7 +402,7 @@ namespace OrchardCore.Environment.Shell.Scope
                 return;
             }
 
-            if (_deferredSignals.Any())
+            if (_deferredSignals.Count > 0)
             {
                 var signal = ShellContext.ServiceProvider.GetRequiredService<ISignal>();
                 foreach (var key in _deferredSignals)
@@ -411,7 +411,7 @@ namespace OrchardCore.Environment.Shell.Scope
                 }
             }
 
-            if (_deferredTasks.Any())
+            if (_deferredTasks.Count > 0)
             {
                 var shellHost = ShellContext.ServiceProvider.GetRequiredService<IShellHost>();
 

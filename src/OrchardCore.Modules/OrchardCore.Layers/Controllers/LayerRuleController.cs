@@ -270,7 +270,7 @@ namespace OrchardCore.Layers.Controllers
             return Ok();
         }
 
-        private Condition FindCondition(Condition condition, string conditionId)
+        private static Condition FindCondition(Condition condition, string conditionId)
         {
             if (string.Equals(condition.ConditionId, conditionId, StringComparison.OrdinalIgnoreCase))
             {
@@ -282,7 +282,7 @@ namespace OrchardCore.Layers.Controllers
                 return null;
             }
 
-            if (!conditionGroup.Conditions.Any())
+            if (conditionGroup.Conditions.Count == 0)
             {
                 return null;
             }
