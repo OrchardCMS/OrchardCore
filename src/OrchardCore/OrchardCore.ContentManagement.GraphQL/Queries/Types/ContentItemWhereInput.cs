@@ -31,9 +31,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             AddFilterField<StringGraphType>("author", "the author of the content item");
 
             var whereInputType = new ListGraphType(this);
-            Field<ListGraphType<ContentItemWhereInput>>("Or", "OR logical operation").ResolvedType = whereInputType;
-            Field<ListGraphType<ContentItemWhereInput>>("And", "AND logical operation").ResolvedType = whereInputType;
-            Field<ListGraphType<ContentItemWhereInput>>("Not", "NOT logical operation").ResolvedType = whereInputType;
+            Field<ListGraphType<ContentItemWhereInput>>("Or").Description("OR logical operation").Type(whereInputType);
+            Field<ListGraphType<ContentItemWhereInput>>("And").Description("AND logical operation").Type(whereInputType);
+            Field<ListGraphType<ContentItemWhereInput>>("Not").Description("NOT logical operation").Type(whereInputType);
         }
 
         private void AddFilterField<T>(string name, string description)

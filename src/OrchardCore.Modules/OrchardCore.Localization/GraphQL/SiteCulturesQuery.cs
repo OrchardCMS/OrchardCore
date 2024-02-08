@@ -58,7 +58,7 @@ namespace OrchardCore.Localization.GraphQL
             return Task.CompletedTask;
         }
 
-        private async Task<IEnumerable<SiteCulture>> ResolveAsync(IResolveFieldContext resolveContext)
+        private async ValueTask<IEnumerable<SiteCulture>> ResolveAsync(IResolveFieldContext resolveContext)
         {
             var localizationService = resolveContext.RequestServices.GetService<ILocalizationService>();
 

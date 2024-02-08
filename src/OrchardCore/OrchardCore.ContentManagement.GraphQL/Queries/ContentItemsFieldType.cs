@@ -65,7 +65,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             _defaultNumberOfItems = settingsAccessor.Value.DefaultNumberOfResults;
         }
 
-        private async Task<IEnumerable<ContentItem>> Resolve(IResolveFieldContext context)
+        private async ValueTask<IEnumerable<ContentItem>> Resolve(IResolveFieldContext context)
+
         {
             var versionOption = VersionOptions.Published;
 
