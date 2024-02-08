@@ -4,7 +4,6 @@ using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace OrchardCore.DisplayManagement.Implementation
 {
