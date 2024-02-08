@@ -36,24 +36,11 @@ namespace OrchardCore.CustomSettings.Services
             _settingsTypes = new Lazy<Task<IDictionary<string, ContentTypeDefinition>>>(async () => await GetContentTypeAsync());
         }
 
-        [Obsolete($"Instead, utilize the {nameof(GetAllSettingsTypeNamesAsync)} method. This current method is slated for removal in upcoming releases.")]
-        public IEnumerable<string> GetAllSettingsTypeNames()
-            => GetAllSettingsTypeNamesAsync().GetAwaiter().GetResult();
-
         public async Task<IEnumerable<string>> GetAllSettingsTypeNamesAsync()
             => (await _settingsTypes.Value).Keys;
 
-
-        [Obsolete($"Instead, utilize the {nameof(GetAllSettingsTypesAsync)} method. This current method is slated for removal in upcoming releases.")]
-        public IEnumerable<ContentTypeDefinition> GetAllSettingsTypes()
-            => GetAllSettingsTypesAsync().GetAwaiter().GetResult();
-
         public async Task<IEnumerable<ContentTypeDefinition>> GetAllSettingsTypesAsync()
             => (await _settingsTypes.Value).Values;
-
-        [Obsolete($"Instead, utilize the {nameof(GetSettingsTypesAsync)} method. This current method is slated for removal in upcoming releases.")]
-        public IEnumerable<ContentTypeDefinition> GetSettingsTypes(params string[] settingsTypeNames)
-            => GetSettingsTypesAsync(settingsTypeNames).GetAwaiter().GetResult();
 
         public async Task<IEnumerable<ContentTypeDefinition>> GetSettingsTypesAsync(params string[] settingsTypeNames)
         {
