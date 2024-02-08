@@ -19,7 +19,7 @@
         <span class="hint">@T["The default email address to use as a sender, unless the email sender is set."]</span>
     </div>
 
-    @if (!Model.PreventUIConnectionChange)
+    @if (!Model.PreventAdminSettingsOverride)
     {
         LocalizedHtmlString placeholder = null;
 

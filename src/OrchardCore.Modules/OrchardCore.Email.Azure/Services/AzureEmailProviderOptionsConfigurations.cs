@@ -46,7 +46,7 @@ public class AzureEmailProviderOptionsConfigurations : IConfigureOptions<EmailPr
             hasDefaultSender = !string.IsNullOrWhiteSpace(azureEmailOptions?.DefaultSender);
         }
 
-        typeOptions.IsEnabled = hasConnectionString && hasDefaultSender;
+        typeOptions.IsEnabled = settings.IsEnabled ?? (hasConnectionString && hasDefaultSender);
 
         options.TryAddProvider(AzureEmailProvider.TechnicalName, typeOptions);
     }

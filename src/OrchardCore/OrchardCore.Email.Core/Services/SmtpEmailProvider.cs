@@ -26,7 +26,7 @@ public class SmtpEmailProvider : IEmailProvider
 
     private static readonly char[] _emailsSeparator = [',', ';'];
 
-    private readonly SmtpSettings _options;
+    private readonly SmtpSettings _providerOptions;
     private readonly ILogger _logger;
     protected readonly IStringLocalizer S;
 
@@ -41,7 +41,7 @@ public class SmtpEmailProvider : IEmailProvider
         ILogger<SmtpEmailProvider> logger,
         IStringLocalizer<SmtpEmailProvider> stringLocalizer)
     {
-        _options = options.Value;
+        _providerOptions = options.Value;
         _logger = logger;
         S = stringLocalizer;
     }
@@ -59,9 +59,9 @@ public class SmtpEmailProvider : IEmailProvider
     /// <remarks>This method allows to send an email without setting <see cref="MailMessage.To"/> if <see cref="MailMessage.Cc"/> or <see cref="MailMessage.Bcc"/> is provided.</remarks>
     public async Task<EmailResult> SendAsync(MailMessage message)
     {
-        if (_options == null)
+        if (!(_providerOptions.IsEnabled ?? _providerOptions.HasValidSettings()))
         {
-            return EmailResult.FailedResult(S["SMTP settings must be configured before an email can be sent."]);
+            return EmailResult.FailedResult(S["The SMTP Email Provider is disabled."]);
         }
 
         EmailResult result;
@@ -70,7 +70,7 @@ public class SmtpEmailProvider : IEmailProvider
         {
             // Set the MailMessage.From, to avoid the confusion between _options.DefaultSender (Author) and submitter (Sender)
             var senderAddress = string.IsNullOrWhiteSpace(message.From)
-                ? _options.DefaultSender
+                ? _providerOptions.DefaultSender
                 : message.From;
 
             if (!string.IsNullOrWhiteSpace(senderAddress))
@@ -92,16 +92,16 @@ public class SmtpEmailProvider : IEmailProvider
                 return EmailResult.FailedResult(S["The mail message should have at least one of these headers: To, Cc or Bcc."]);
             }
 
-            switch (_options.DeliveryMethod)
+            switch (_providerOptions.DeliveryMethod)
             {
                 case SmtpDeliveryMethod.Network:
                     response = await SendOnlineMessageAsync(mimeMessage);
                     break;
                 case SmtpDeliveryMethod.SpecifiedPickupDirectory:
-                    await SendOfflineMessageAsync(mimeMessage, _options.PickupDirectoryLocation);
+                    await SendOfflineMessageAsync(mimeMessage, _providerOptions.PickupDirectoryLocation);
                     break;
                 default:
-                    throw new NotSupportedException($"The '{_options.DeliveryMethod}' delivery method is not supported.");
+                    throw new NotSupportedException($"The '{_providerOptions.DeliveryMethod}' delivery method is not supported.");
             }
 
             result = EmailResult.SuccessResult;
@@ -119,7 +119,7 @@ public class SmtpEmailProvider : IEmailProvider
     private MimeMessage FromMailMessage(MailMessage message, List<LocalizedString> errors)
     {
         var submitterAddress = string.IsNullOrWhiteSpace(message.Sender)
-            ? _options.DefaultSender
+            ? _providerOptions.DefaultSender
             : message.Sender;
 
         var mimeMessage = new MimeMessage();
@@ -252,9 +252,9 @@ public class SmtpEmailProvider : IEmailProvider
     {
         var secureSocketOptions = SecureSocketOptions.Auto;
 
-        if (!_options.AutoSelectEncryption)
+        if (!_providerOptions.AutoSelectEncryption)
         {
-            secureSocketOptions = _options.EncryptionMethod switch
+            secureSocketOptions = _providerOptions.EncryptionMethod switch
             {
                 SmtpEncryptionMethod.None => SecureSocketOptions.None,
                 SmtpEncryptionMethod.SslTls => SecureSocketOptions.SslOnConnect,
@@ -269,24 +269,24 @@ public class SmtpEmailProvider : IEmailProvider
 
         await OnMessageSendingAsync(client, message);
 
-        await client.ConnectAsync(_options.Host, _options.Port, secureSocketOptions);
+        await client.ConnectAsync(_providerOptions.Host, _providerOptions.Port, secureSocketOptions);
 
-        if (_options.RequireCredentials)
+        if (_providerOptions.RequireCredentials)
         {
-            if (_options.UseDefaultCredentials)
+            if (_providerOptions.UseDefaultCredentials)
             {
                 // There's no notion of 'UseDefaultCredentials' in MailKit, so empty credentials is passed in
                 await client.AuthenticateAsync(string.Empty, string.Empty);
             }
-            else if (!string.IsNullOrWhiteSpace(_options.UserName))
+            else if (!string.IsNullOrWhiteSpace(_providerOptions.UserName))
             {
-                await client.AuthenticateAsync(_options.UserName, _options.Password);
+                await client.AuthenticateAsync(_providerOptions.UserName, _providerOptions.Password);
             }
         }
 
-        if (!string.IsNullOrEmpty(_options.ProxyHost))
+        if (!string.IsNullOrEmpty(_providerOptions.ProxyHost))
         {
-            client.ProxyClient = new Socks5Client(_options.ProxyHost, _options.ProxyPort);
+            client.ProxyClient = new Socks5Client(_providerOptions.ProxyHost, _providerOptions.ProxyPort);
         }
 
         var response = await client.SendAsync(message);
@@ -328,6 +328,6 @@ public class SmtpEmailProvider : IEmailProvider
             }
         }
 
-        return _options.IgnoreInvalidSslCertificate;
+        return _providerOptions.IgnoreInvalidSslCertificate;
     }
 }

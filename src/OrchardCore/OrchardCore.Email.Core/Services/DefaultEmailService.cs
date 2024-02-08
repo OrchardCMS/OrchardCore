@@ -12,8 +12,6 @@ public class DefaultEmailService : IEmailService
     private readonly IEnumerable<IEmailServiceEvents> _emailServiceEvents;
     private readonly ILogger _logger;
 
-    private IEmailProvider _provider;
-
     protected readonly IStringLocalizer S;
 
     public DefaultEmailService(
@@ -30,16 +28,16 @@ public class DefaultEmailService : IEmailService
 
     public async Task<EmailResult> SendAsync(MailMessage message, string name = null)
     {
-        _provider ??= await _providerResolver.GetAsync();
+        var provider = await _providerResolver.GetAsync(name);
 
-        if (_provider is null)
+        if (provider is null)
         {
             return EmailResult.FailedResult(S["Email settings must be configured before an Email message can be sent."]);
         }
 
         await _emailServiceEvents.InvokeAsync((e) => e.SendingAsync(message), _logger);
 
-        var result = await _provider.SendAsync(message);
+        var result = await provider.SendAsync(message);
 
         if (result.Succeeded)
         {

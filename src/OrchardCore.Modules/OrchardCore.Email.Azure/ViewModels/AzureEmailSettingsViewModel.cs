@@ -15,5 +15,5 @@ public class AzureEmailSettingsViewModel
 
     public bool FileConfigurationExists { get; set; }
 
-    public bool PreventUIConnectionChange { get; set; }
+    public bool PreventAdminSettingsOverride { get; set; }
 }

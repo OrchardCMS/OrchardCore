@@ -1,32 +1,58 @@
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Services
 {
     public class SmtpSettingsConfiguration : IConfigureOptions<SmtpSettings>
     {
+        private const string SectionName = "OrchardCore_Email";
+
         private readonly ISiteService _site;
+        private readonly IShellConfiguration _shellConfiguration;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly ILogger _logger;
 
         public SmtpSettingsConfiguration(
             ISiteService site,
+            IShellConfiguration shellConfiguration,
             IDataProtectionProvider dataProtectionProvider,
             ILogger<SmtpSettingsConfiguration> logger)
         {
             _site = site;
+            _shellConfiguration = shellConfiguration;
             _dataProtectionProvider = dataProtectionProvider;
             _logger = logger;
         }
 
         public void Configure(SmtpSettings options)
         {
+            var fileSettings = _shellConfiguration.GetSection(SectionName);
+
+            if (fileSettings.Exists())
+            {
+                fileSettings.Bind(options);
+
+                if (options.HasValidSettings())
+                {
+                    options.IsEnabled = true;
+
+                    return;
+                }
+                else
+                {
+                    _logger.LogWarning("The SMTP provider settings in the appsettings are invalid or are incomplete.");
+                }
+            }
+
             var settings = _site.GetSiteSettingsAsync()
                 .GetAwaiter().GetResult()
                 .As<SmtpSettings>();
 
+            options.IsEnabled = settings.IsEnabled ?? settings.HasValidSettings();
             options.DefaultSender = settings.DefaultSender;
             options.DeliveryMethod = settings.DeliveryMethod;
             options.PickupDirectoryLocation = settings.PickupDirectoryLocation;

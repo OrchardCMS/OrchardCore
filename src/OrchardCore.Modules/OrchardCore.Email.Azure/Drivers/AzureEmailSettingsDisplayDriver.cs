@@ -74,17 +74,12 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
         {
             var hasFileConnectionString = !string.IsNullOrWhiteSpace(azureEmailOptions?.ConnectionString);
 
-            model.IsEnabled = settings.IsEnabled;
-
-            if (!settings.IsSet)
-            {
-                model.IsEnabled = hasFileConnectionString && !string.IsNullOrWhiteSpace(azureEmailOptions?.DefaultSender);
-            };
+            model.IsEnabled = settings.IsEnabled ?? (hasFileConnectionString && !string.IsNullOrWhiteSpace(azureEmailOptions.DefaultSender));
 
             model.DefaultSender = settings.DefaultSender ?? azureEmailOptions.DefaultSender;
             model.ConfigurationExists = !string.IsNullOrWhiteSpace(settings.ConnectionString);
             model.FileConfigurationExists = hasFileConnectionString;
-            model.PreventUIConnectionChange = azureEmailOptions?.PreventUIConnectionChange ?? false;
+            model.PreventAdminSettingsOverride = azureEmailOptions?.PreventUIConnectionChange ?? false;
 
         }).Location("Content:5#Azure")
         .OnGroup(EmailSettings.GroupId);
@@ -103,8 +98,6 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
 
         if (await updater.TryUpdateModelAsync(model, Prefix))
         {
-            settings.IsSet = true;
-
             var emailSettings = site.As<EmailSettings>();
 
             var hasChanges = model.IsEnabled != settings.IsEnabled;

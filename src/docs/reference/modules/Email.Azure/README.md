@@ -19,7 +19,7 @@ You may configure the Azure Email Service using `appsettings.json` file by addin
 "OrchardCore_Email_Azure": {
     "DefaultSender": "",
     "ConnectionString": "",
-    "PreventUIConnectionChange": false // This option restricts users from inputting a custom connection string through site settings or the UI.
+    "PreventAdminSettingsOverride": false // This option restricts users from inputting a custom connection string through site settings or the UI.
 }
 ```
 

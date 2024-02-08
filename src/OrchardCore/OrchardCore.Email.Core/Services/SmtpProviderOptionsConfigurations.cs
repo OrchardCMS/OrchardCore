@@ -20,7 +20,7 @@ public class SmtpProviderOptionsConfigurations : IConfigureOptions<EmailProvider
         var site = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
         var settings = site.As<SmtpSettings>();
 
-        typeOptions.IsEnabled = settings.IsEnabled;
+        typeOptions.IsEnabled = settings.IsEnabled ?? settings.HasValidSettings();
 
         options.TryAddProvider(SmtpEmailProvider.TechnicalName, typeOptions);
     }

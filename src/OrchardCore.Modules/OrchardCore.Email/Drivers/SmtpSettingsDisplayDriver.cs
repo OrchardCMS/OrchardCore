@@ -4,12 +4,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Email.Services;
+using OrchardCore.Email.ViewModels;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
@@ -25,6 +27,7 @@ namespace OrchardCore.Email.Drivers
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly SmtpSettings _smtpOptions;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
 
@@ -35,6 +38,7 @@ namespace OrchardCore.Email.Drivers
             IShellHost shellHost,
             ShellSettings shellSettings,
             IHttpContextAccessor httpContextAccessor,
+            IOptions<SmtpSettings> options,
             INotifier notifier,
             IHtmlLocalizer<SmtpSettingsDisplayDriver> htmlLocalizer,
             IAuthorizationService authorizationService)
@@ -43,6 +47,7 @@ namespace OrchardCore.Email.Drivers
             _shellHost = shellHost;
             _shellSettings = shellSettings;
             _httpContextAccessor = httpContextAccessor;
+            _smtpOptions = options.Value;
             _notifier = notifier;
             _authorizationService = authorizationService;
             H = htmlLocalizer;
@@ -57,9 +62,11 @@ namespace OrchardCore.Email.Drivers
                 return null;
             }
 
-            return Initialize<SmtpSettings>("SmtpSettings_Edit", model =>
+            return Initialize<SmtpSettingsViewModel>("SmtpSettings_Edit", model =>
             {
-                model.IsEnabled = settings.IsEnabled;
+                // when IsEnabled is not set, we fall back on loaded SmtpOption to see if the settings were loaded via appsettings.
+
+                model.IsEnabled = settings.IsEnabled ?? _smtpOptions.HasValidSettings();
                 model.DefaultSender = settings.DefaultSender;
                 model.DeliveryMethod = settings.DeliveryMethod;
                 model.PickupDirectoryLocation = settings.PickupDirectoryLocation;
@@ -92,7 +99,7 @@ namespace OrchardCore.Email.Drivers
                 return null;
             }
 
-            var model = new SmtpSettings();
+            var model = new SmtpSettingsViewModel();
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {

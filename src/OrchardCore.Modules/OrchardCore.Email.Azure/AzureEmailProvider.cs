@@ -85,7 +85,7 @@ public class AzureEmailProvider : IEmailProvider
         { ".zip", "application/zip" }
     };
 
-    private readonly AzureEmailOptions _emailOptions;
+    private readonly AzureEmailOptions _providerOptions;
     private readonly ILogger _logger;
 
     protected readonly IStringLocalizer S;
@@ -95,7 +95,7 @@ public class AzureEmailProvider : IEmailProvider
         ILogger<AzureEmailProvider> logger,
         IStringLocalizer<AzureEmailProvider> stringLocalizer)
     {
-        _emailOptions = options.Value;
+        _providerOptions = options.Value;
         _logger = logger;
         S = stringLocalizer;
     }
@@ -109,9 +109,9 @@ public class AzureEmailProvider : IEmailProvider
     {
         ArgumentNullException.ThrowIfNull(message);
 
-        if (_emailOptions == null)
+        if (!_providerOptions.IsEnabled)
         {
-            return EmailResult.FailedResult(S["Azure Email settings must be configured before an email can be sent."]);
+            return EmailResult.FailedResult(S["The Azure Email Provider is disabled."]);
         }
 
         EmailResult result;
@@ -119,7 +119,7 @@ public class AzureEmailProvider : IEmailProvider
         try
         {
             var senderAddress = string.IsNullOrWhiteSpace(message.From)
-                ? _emailOptions.DefaultSender
+                ? _providerOptions.DefaultSender
                 : message.From;
 
             if (!string.IsNullOrWhiteSpace(senderAddress))
@@ -129,16 +129,17 @@ public class AzureEmailProvider : IEmailProvider
 
             var emailMessage = FromMailMessage(message, out result);
 
-            var client = new EmailClient(_emailOptions.ConnectionString);
+            var client = new EmailClient(_providerOptions.ConnectionString);
             await client.SendAsync(WaitUntil.Completed, emailMessage);
 
             result = EmailResult.SuccessResult;
         }
         catch (Exception ex)
         {
-            result = EmailResult.FailedResult(S["An error occurred while sending an email: '{0}'", ex.Message]);
+            // IMPORTANT, do not expose ex.Message as it could container the connection string in a raw format!
+            result = EmailResult.FailedResult(S["An error occurred while sending an email."]);
 
-            _logger.LogError(ex, "Error while sending an email '{message}'.", message);
+            _logger.LogError(ex, "An error occurred while sending an email using Azure Email Provider.");
         }
 
         return result;

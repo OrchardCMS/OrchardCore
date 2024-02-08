@@ -77,12 +77,12 @@ public class AdminController : Controller
                 {
                     await _notifier.SuccessAsync(H["Message sent successfully."]);
 
-                    return Redirect(Url.Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = EmailSettings.GroupId }));
+                    return RedirectToAction(nameof(Test));
                 }
 
                 foreach (var error in result.Errors)
                 {
-                    ModelState.AddModelError(string.Empty, error.ToString());
+                    ModelState.AddModelError(string.Empty, error);
                 }
             }
             catch (InvalidEmailProviderException)
@@ -94,6 +94,8 @@ public class AdminController : Controller
                 ModelState.AddModelError(string.Empty, ex.Message);
             }
         }
+
+        PopulateModel(model);
 
         return View(model);
     }

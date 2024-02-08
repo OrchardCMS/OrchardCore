@@ -7,4 +7,6 @@ public class AzureEmailOptions
     public string ConnectionString { get; set; }
 
     public bool PreventUIConnectionChange { get; set; }
+
+    public bool IsEnabled { get; set; }
 }

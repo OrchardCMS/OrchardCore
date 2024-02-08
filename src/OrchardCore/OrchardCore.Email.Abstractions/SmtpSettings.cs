@@ -1,15 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
-
 namespace OrchardCore.Email;
 
 /// <summary>
 /// Represents a settings for SMTP.
 /// </summary>
-public class SmtpSettings : EmailProviderSettings, IValidatableObject
+public class SmtpSettings : EmailProviderSettings
 {
     /// <summary>
     /// Gets or sets the SMTP server/host.
@@ -19,7 +13,6 @@ public class SmtpSettings : EmailProviderSettings, IValidatableObject
     /// <summary>
     /// Gets or sets the SMTP port number. Defaults to <c>25</c>.
     /// </summary>
-    [Range(0, 65535)]
     public int Port { get; set; } = 25;
 
     /// <summary>
@@ -70,34 +63,10 @@ public class SmtpSettings : EmailProviderSettings, IValidatableObject
     /// <summary>
     /// Gets or sets the mail delivery method.
     /// </summary>
-    [Required]
     public SmtpDeliveryMethod DeliveryMethod { get; set; }
 
     /// <summary>
     /// Gets or sets the mailbox directory, this used for <see cref="SmtpDeliveryMethod.SpecifiedPickupDirectory"/> option.
     /// </summary>
     public string PickupDirectoryLocation { get; set; }
-
-    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-    {
-        var S = validationContext.GetService<IStringLocalizer<SmtpSettings>>();
-
-        switch (DeliveryMethod)
-        {
-            case SmtpDeliveryMethod.Network:
-                if (string.IsNullOrEmpty(Host))
-                {
-                    yield return new ValidationResult(S["The {0} field is required.", "Host name"], new[] { nameof(Host) });
-                }
-                break;
-            case SmtpDeliveryMethod.SpecifiedPickupDirectory:
-                if (string.IsNullOrEmpty(PickupDirectoryLocation))
-                {
-                    yield return new ValidationResult(S["The {0} field is required.", "Pickup directory location"], new[] { nameof(PickupDirectoryLocation) });
-                }
-                break;
-            default:
-                throw new NotSupportedException(S["The '{0}' delivery method is not supported.", DeliveryMethod]);
-        }
-    }
 }

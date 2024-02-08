@@ -50,5 +50,7 @@ public class AzureEmailOptionsConfiguration : IConfigureOptions<AzureEmailOption
 
             options.ConnectionString = protector.Unprotect(settings.ConnectionString);
         }
+
+        options.IsEnabled = settings.IsEnabled ?? (!string.IsNullOrEmpty(options.DefaultSender) && !string.IsNullOrEmpty(options.ConnectionString));
     }
 }
