@@ -30,8 +30,8 @@ namespace OrchardCore.ReCaptcha.TagHelpers
         public ReCaptchaTagHelper(
             IOptions<ReCaptchaSettings> optionsAccessor,
             IResourceManager resourceManager,
-            IHttpContextAccessor httpContextAccessor,
             ILocalizationService localizationService,
+            IHttpContextAccessor httpContextAccessor,
             ILogger<ReCaptchaTagHelper> logger)
         {
             _resourceManager = resourceManager;
