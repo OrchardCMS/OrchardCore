@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -375,7 +374,7 @@ namespace OrchardCore.ResourceManagement
             List<string> dependencies = null;
             if (resource.Dependencies != null)
             {
-                dependencies = [..resource.Dependencies];
+                dependencies = new List<string>(resource.Dependencies);
                 if (settings.Dependencies != null)
                 {
                     dependencies.AddRange(settings.Dependencies);
@@ -383,7 +382,7 @@ namespace OrchardCore.ResourceManagement
             }
             else if (settings.Dependencies != null)
             {
-                dependencies = [..settings.Dependencies];
+                dependencies = new List<string>(settings.Dependencies);
             }
 
             // Settings is given so they can cascade down into dependencies. For example, if Foo depends on Bar, and Foo's required

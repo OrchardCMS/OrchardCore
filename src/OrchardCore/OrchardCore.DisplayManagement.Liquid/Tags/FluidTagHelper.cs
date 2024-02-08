@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
@@ -20,7 +19,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
         public static ValueTask<Completion> WriteArgumentsTagHelperAsync(List<FilterArgument> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            return WriteToAsync(null, arguments, Array.Empty<Statement>(), writer, encoder, context);
+            return WriteToAsync(null, arguments, [], writer, encoder, context);
         }
 
         public static ValueTask<Completion> WriteArgumentsBlockHelperAsync(List<FilterArgument> arguments, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
@@ -44,7 +43,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             // such that the tag helper can be matched based on the expected attribute names.
             if (DefaultArgumentsMapping.TryGetValue(identifier, out var mapping))
             {
-                arguments = [..arguments];
+                arguments = new List<FilterArgument>(arguments);
                 arguments[0] = new FilterArgument(mapping, arguments[0].Expression);
             }
 
