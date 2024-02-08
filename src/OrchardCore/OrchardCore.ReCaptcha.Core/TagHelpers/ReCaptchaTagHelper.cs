@@ -31,15 +31,15 @@ namespace OrchardCore.ReCaptcha.TagHelpers
             IOptions<ReCaptchaSettings> optionsAccessor,
             IResourceManager resourceManager,
             IHttpContextAccessor httpContextAccessor,
-            ILogger<ReCaptchaTagHelper> logger,
-            ILocalizationService localizationService)
+            ILocalizationService localizationService,
+            ILogger<ReCaptchaTagHelper> logger)
         {
             _resourceManager = resourceManager;
             _httpContextAccessor = httpContextAccessor;
             _settings = optionsAccessor.Value;
             Mode = ReCaptchaMode.PreventRobots;
-            _logger = logger;
             _localizationService = localizationService;
+            _logger = logger;
         }
 
         [HtmlAttributeName("mode")]
