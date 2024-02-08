@@ -84,6 +84,7 @@ namespace OrchardCore.ReCaptcha.TagHelpers
 
             var builder = new TagBuilder("script");
             builder.Attributes.Add("src", await GetReCaptchaScriptUrlAsync());
+
             _resourceManager.RegisterFootScript(builder);
         }
 
@@ -95,6 +96,7 @@ namespace OrchardCore.ReCaptcha.TagHelpers
             {
                 query = query.Add("hl", cultureInfo.TwoLetterISOLanguageName);
             }
+
             if (!string.IsNullOrWhiteSpace(OnLoad))
             {
                 query = query.Add("onload", OnLoad);
@@ -104,6 +106,7 @@ namespace OrchardCore.ReCaptcha.TagHelpers
             {
                 Query = query.ToString()
             };
+
             return settingsUrl.ToString();
         }
 
