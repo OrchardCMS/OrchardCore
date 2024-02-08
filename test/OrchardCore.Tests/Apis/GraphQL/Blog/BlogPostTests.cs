@@ -207,7 +207,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             await context.InitializeAsync();
 
             var response = await context.GraphQLClient.Client.GetAsync("api/graphql");
-            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         [Fact]

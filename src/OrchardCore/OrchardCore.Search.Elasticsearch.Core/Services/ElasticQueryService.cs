@@ -71,7 +71,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                 if (searchResponse.IsValid)
                 {
                     elasticTopDocs.Count = searchResponse.Total;
-                    elasticTopDocs.TopDocs = [.. searchResponse.Documents];
+                    elasticTopDocs.TopDocs = new List<Dictionary<string, object>>(searchResponse.Documents);
                     elasticTopDocs.Fields = hits;
                 }
                 else

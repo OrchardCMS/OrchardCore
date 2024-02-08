@@ -40,7 +40,7 @@ namespace OrchardCore.Lists.AdminNodes
             _logger = logger;
         }
 
-        public string Name => typeof(ListsAdminNode).Name;
+        public string Name => nameof(ListsAdminNode);
 
         public async Task BuildNavigationAsync(MenuItem menuItem, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
         {
@@ -78,7 +78,7 @@ namespace OrchardCore.Lists.AdminNodes
             {
                 try
                 {
-                    var treeBuilder = treeNodeBuilders.Where(x => x.Name == childNode.GetType().Name).FirstOrDefault();
+                    var treeBuilder = treeNodeBuilders.FirstOrDefault(x => x.Name == childNode.GetType().Name);
                     await treeBuilder.BuildNavigationAsync(childNode, builder, treeNodeBuilders);
                 }
                 catch (Exception e)

@@ -69,7 +69,7 @@ namespace OrchardCore.Media.Services
 
         private const int DefaultMaxUploadChunkSize = 104_857_600; // 100MB
 
-        private static readonly TimeSpan DefaultTemporaryFileLifeTime = TimeSpan.FromHours(1);
+        private static readonly TimeSpan _defaultTemporaryFileLifeTime = TimeSpan.FromHours(1);
 
         private readonly IShellConfiguration _shellConfiguration;
 
@@ -102,7 +102,7 @@ namespace OrchardCore.Media.Services
             options.AssetsUsersFolder = section.GetValue("AssetsUsersFolder", DefaultAssetsUsersFolder);
             options.UseTokenizedQueryString = section.GetValue("UseTokenizedQueryString", DefaultUseTokenizedQueryString);
             options.MaxUploadChunkSize = section.GetValue(nameof(options.MaxUploadChunkSize), DefaultMaxUploadChunkSize);
-            options.TemporaryFileLifetime = section.GetValue(nameof(options.TemporaryFileLifetime), DefaultTemporaryFileLifeTime);
+            options.TemporaryFileLifetime = section.GetValue(nameof(options.TemporaryFileLifetime), _defaultTemporaryFileLifeTime);
 
             var contentSecurityPolicy = section.GetValue("ContentSecurityPolicy", DefaultContentSecurityPolicy);
 

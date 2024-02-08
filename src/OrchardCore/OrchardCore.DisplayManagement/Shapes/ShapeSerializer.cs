@@ -56,7 +56,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
             if (_shape.Classes != null && _shape.Classes.Any())
             {
-                jObject.Add(nameof(_shape.Classes), JArray.FromObject(_shape.Classes , _shapeJsonSerializer));
+                jObject.Add(nameof(_shape.Classes), JArray.FromObject(_shape.Classes, _shapeJsonSerializer));
             }
 
             if (_shape.Attributes != null && _shape.Attributes.Any())

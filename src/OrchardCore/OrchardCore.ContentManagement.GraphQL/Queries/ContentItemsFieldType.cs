@@ -65,7 +65,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             _defaultNumberOfItems = settingsAccessor.Value.DefaultNumberOfResults;
         }
 
-        private async Task<IEnumerable<ContentItem>> Resolve(IResolveFieldContext context)
+        private async ValueTask<IEnumerable<ContentItem>> Resolve(IResolveFieldContext context)
+
         {
             var versionOption = VersionOptions.Published;
 
@@ -124,7 +125,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             var defaultTableAlias = query.GetTypeAlias(typeof(ContentItemIndex));
 
-            IPredicateQuery predicateQuery = new PredicateQuery(
+            var predicateQuery = new PredicateQuery(
                 configuration: session.Store.Configuration,
                 propertyProviders: fieldContext.RequestServices.GetServices<IIndexPropertyProvider>());
 
@@ -143,10 +144,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 {
                     predicateQuery.CreateAlias(alias.Alias, alias.Index);
                     indexAliases.Add(alias.Alias, alias.Alias);
-                    if (!indexes.ContainsKey(alias.Index))
-                    {
-                        indexes.Add(alias.Index, alias);
-                    }
+                    indexes.TryAdd(alias.Index, alias);
                 }
             }
 

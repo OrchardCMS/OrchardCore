@@ -11,56 +11,58 @@ using GraphQL.Execution;
 using GraphQL.SystemTextJson;
 using GraphQL.Validation;
 using GraphQL.Validation.Complexity;
+using GraphQL.Validation.Rules.Custom;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.Apis.GraphQL.ValidationRules;
 using OrchardCore.Routing;
 
 namespace OrchardCore.Apis.GraphQL
 {
-    public class GraphQLMiddleware
+    public class GraphQLMiddleware : IMiddleware
     {
-        private readonly RequestDelegate _next;
         private readonly GraphQLSettings _settings;
+        private readonly IGraphQLSerializer _serializer;
         private readonly IDocumentExecuter _executer;
         internal static readonly Encoding _utf8Encoding = new UTF8Encoding(false);
         private static readonly MediaType _jsonMediaType = new("application/json");
         private static readonly MediaType _graphQlMediaType = new("application/graphql");
 
         public GraphQLMiddleware(
-            RequestDelegate next,
-            GraphQLSettings settings,
-            IDocumentExecuter executer)
+            IOptions<GraphQLSettings> settingsOption,
+            IDocumentExecuter executer,
+            IGraphQLSerializer serializer)
         {
-            _next = next;
-            _settings = settings;
+            _settings = settingsOption.Value;
             _executer = executer;
+            _serializer = serializer;
         }
-
-        public async Task Invoke(HttpContext context, IAuthorizationService authorizationService, IAuthenticationService authenticationService, ISchemaFactory schemaService, IDocumentWriter documentWriter)
+        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             if (!IsGraphQLRequest(context))
             {
-                await _next(context);
+                await next(context);
             }
             else
             {
+                var authenticationService = context.RequestServices.GetService<IAuthenticationService>();
                 var authenticateResult = await authenticationService.AuthenticateAsync(context, "Api");
-
                 if (authenticateResult.Succeeded)
                 {
                     context.User = authenticateResult.Principal;
                 }
-
+                var authorizationService = context.RequestServices.GetService<IAuthorizationService>();
                 var authorized = await authorizationService.AuthorizeAsync(context.User, Permissions.ExecuteGraphQL);
 
                 if (authorized)
                 {
-                    await ExecuteAsync(context, schemaService, documentWriter);
+                    await ExecuteAsync(context);
                 }
                 else
                 {
@@ -68,15 +70,14 @@ namespace OrchardCore.Apis.GraphQL
                 }
             }
         }
-
         private bool IsGraphQLRequest(HttpContext context)
         {
             return context.Request.Path.StartsWithNormalizedSegments(_settings.Path, StringComparison.OrdinalIgnoreCase);
         }
 
-        private async Task ExecuteAsync(HttpContext context, ISchemaFactory schemaService, IDocumentWriter documentWriter)
+        private async Task ExecuteAsync(HttpContext context)
         {
-            GraphQLRequest request = null;
+            GraphQLNamedQueryRequest request = null;
 
             // c.f. https://graphql.org/learn/serving-over-http/#post-request
 
@@ -93,14 +94,14 @@ namespace OrchardCore.Apis.GraphQL
                         {
                             using var sr = new StreamReader(context.Request.Body);
 
-                            request = new GraphQLRequest
+                            request = new GraphQLNamedQueryRequest
                             {
                                 Query = await sr.ReadToEndAsync()
                             };
                         }
                         else
                         {
-                            request = await JsonSerializer.DeserializeAsync<GraphQLRequest>(context.Request.Body, JOptions.CamelCase);
+                            request = await JsonSerializer.DeserializeAsync<GraphQLNamedQueryRequest>(context.Request.Body, JOptions.CamelCase);
                         }
                     }
                     else
@@ -120,7 +121,7 @@ namespace OrchardCore.Apis.GraphQL
             }
             catch (Exception e)
             {
-                await documentWriter.WriteErrorAsync(context, "An error occurred while processing the GraphQL query", e);
+                await _serializer.WriteErrorAsync(context, "An error occurred while processing the GraphQL query", e);
                 return;
             }
 
@@ -137,25 +138,26 @@ namespace OrchardCore.Apis.GraphQL
                 queryToExecute = queries[request.NamedQuery];
             }
 
+            var schemaService = context.RequestServices.GetService<ISchemaFactory>();
             var schema = await schemaService.GetSchemaAsync();
             var dataLoaderDocumentListener = context.RequestServices.GetRequiredService<IDocumentExecutionListener>();
-            var result = await _executer.ExecuteAsync(_ =>
+            var result = await _executer.ExecuteAsync(options =>
             {
-                _.Schema = schema;
-                _.Query = queryToExecute;
-                _.OperationName = request.OperationName;
-                _.Inputs = request.Variables.ToInputs();
-                _.UserContext = _settings.BuildUserContext?.Invoke(context);
-                _.ValidationRules = DocumentValidator.CoreRules
-                                    .Concat(context.RequestServices.GetServices<IValidationRule>());
-                _.ComplexityConfiguration = new ComplexityConfiguration
-                {
-                    MaxDepth = _settings.MaxDepth,
-                    MaxComplexity = _settings.MaxComplexity,
-                    FieldImpact = _settings.FieldImpact
-                };
-                _.Listeners.Add(dataLoaderDocumentListener);
-                _.RequestServices = context.RequestServices;
+                options.Schema = schema;
+                options.Query = queryToExecute;
+                options.OperationName = request.OperationName;
+                options.Variables = request.Variables;
+                options.UserContext = _settings.BuildUserContext?.Invoke(context);
+                options.ValidationRules = DocumentValidator.CoreRules
+                    .Concat(context.RequestServices.GetServices<IValidationRule>())
+                    .Append(new ComplexityValidationRule(new ComplexityConfiguration
+                    {
+                        MaxDepth = _settings.MaxDepth,
+                        MaxComplexity = _settings.MaxComplexity,
+                        FieldImpact = _settings.FieldImpact
+                    }));
+                options.Listeners.Add(dataLoaderDocumentListener);
+                options.RequestServices = context.RequestServices;
             });
 
             context.Response.StatusCode = (int)(result.Errors == null || result.Errors.Count == 0
@@ -166,10 +168,10 @@ namespace OrchardCore.Apis.GraphQL
 
             context.Response.ContentType = MediaTypeNames.Application.Json;
 
-            await documentWriter.WriteAsync(context.Response.Body, result);
+            await _serializer.WriteAsync(context.Response.Body, result);
         }
 
-        private static GraphQLRequest CreateRequestFromQueryString(HttpContext context, bool validateQueryKey = false)
+        private GraphQLNamedQueryRequest CreateRequestFromQueryString(HttpContext context, bool validateQueryKey = false)
         {
             if (!context.Request.Query.ContainsKey("query"))
             {
@@ -181,14 +183,14 @@ namespace OrchardCore.Apis.GraphQL
                 return null;
             }
 
-            var request = new GraphQLRequest
+            var request = new GraphQLNamedQueryRequest
             {
                 Query = context.Request.Query["query"]
             };
 
             if (context.Request.Query.ContainsKey("variables"))
             {
-                request.Variables = JConvert.DeserializeObject<JsonElement>(context.Request.Query["variables"], JOptions.CamelCase);
+                request.Variables = JsonSerializer.Deserialize<Inputs>(context.Request.Query["variables"], JOptions.CamelCase);
             }
 
             if (context.Request.Query.ContainsKey("operationName"))

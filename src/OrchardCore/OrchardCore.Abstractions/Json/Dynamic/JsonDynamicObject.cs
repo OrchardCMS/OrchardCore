@@ -14,9 +14,9 @@ public class JsonDynamicObject : DynamicObject
 {
     private readonly JsonObject _jsonObject;
 
-    private readonly Dictionary<string, object?> _dictionary = new();
+    private readonly Dictionary<string, object?> _dictionary = [];
 
-    public JsonDynamicObject() => _jsonObject = new JsonObject();
+    public JsonDynamicObject() => _jsonObject = [];
 
     public JsonDynamicObject(JsonObject jsonObject) => _jsonObject = jsonObject;
 

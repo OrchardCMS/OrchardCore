@@ -31,21 +31,27 @@ namespace OrchardCore.Tests.Workflows
             {
                 Id = 1,
                 WorkflowTypeId = IdGenerator.GenerateId(),
-                Activities = new List<ActivityRecord>
-                {
-                    new() { ActivityId = "1", IsStart = true, Name = addTask.Name, Properties = JObject.FromObject( new
+                Activities =
+                [
+                    new()
                     {
-                        A = new WorkflowExpression<double>("input(\"A\")"),
-                        B = new WorkflowExpression<double>("input(\"B\")"),
-                    }) },
-                    new() { ActivityId = "2", Name = writeLineTask.Name, Properties = JObject.FromObject( new { Text = new WorkflowExpression<string>("lastResult().toString()") }) },
-                    new() { ActivityId = "3", Name = setOutputTask.Name, Properties = JObject.FromObject( new { Value = new WorkflowExpression<string>("lastResult()"), OutputName = "Sum" }) }
-                },
-                Transitions = new List<Transition>
-                {
+                        ActivityId = "1",
+                        IsStart = true,
+                        Name = addTask.Name,
+                        Properties = JObject.FromObject(new
+                        {
+                            A = new WorkflowExpression<double>("input(\"A\")"),
+                            B = new WorkflowExpression<double>("input(\"B\")"),
+                        })
+                    },
+                    new() { ActivityId = "2", Name = writeLineTask.Name, Properties = JObject.FromObject(new { Text = new WorkflowExpression<string>("lastResult().toString()") }) },
+                    new() { ActivityId = "3", Name = setOutputTask.Name, Properties = JObject.FromObject(new { Value = new WorkflowExpression<string>("lastResult()"), OutputName = "Sum" }) }
+                ],
+                Transitions =
+                [
                     new() { SourceActivityId = "1", SourceOutcomeName = "Done", DestinationActivityId = "2" },
                     new() { SourceActivityId = "2", SourceOutcomeName = "Done", DestinationActivityId = "3" }
-                }
+                ]
             };
 
             var workflowManager = CreateWorkflowManager(serviceProvider, new IActivity[] { addTask, writeLineTask, setOutputTask }, workflowType);

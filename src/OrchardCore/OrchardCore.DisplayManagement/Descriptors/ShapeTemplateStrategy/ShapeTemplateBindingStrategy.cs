@@ -81,7 +81,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 {
                     var filePaths = _fileProviderAccessor.FileProvider.GetViewFilePaths(
                         PathExtensions.Combine(extensionDescriptor.SubPath, subPath),
-                        [.. _viewEnginesByExtension.Keys],
+                        _viewEnginesByExtension.Keys.ToArray(),
                         inViewsFolder: true, inDepth: false).ToArray();
 
                     return new { harvesterInfo.harvester, subPath, filePaths };
@@ -150,10 +150,10 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
             _logger.LogInformation("Done discovering shapes");
         }
 
-        private static IEnumerable<IExtensionInfo> Once(IEnumerable<IFeatureInfo> featureDescriptors)
+        private static IExtensionInfo[] Once(IEnumerable<IFeatureInfo> featureDescriptors)
         {
             var once = new ConcurrentDictionary<string, object>();
-            return featureDescriptors.Select(x => x.Extension).Where(ed => once.TryAdd(ed.Id, null)).ToList();
+            return featureDescriptors.Select(x => x.Extension).Where(ed => once.TryAdd(ed.Id, null)).ToArray();
         }
     }
 }

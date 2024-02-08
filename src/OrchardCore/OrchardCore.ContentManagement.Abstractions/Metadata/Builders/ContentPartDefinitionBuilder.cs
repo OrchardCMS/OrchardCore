@@ -12,7 +12,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
     public class ContentPartDefinitionBuilder
     {
         private readonly ContentPartDefinition _part;
-        private readonly IList<ContentPartFieldDefinition> _fields;
+        private readonly List<ContentPartFieldDefinition> _fields;
         private readonly JsonObject _settings;
 
         public ContentPartDefinition Current { get; private set; }
@@ -28,7 +28,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
             if (existing == null)
             {
-                _fields = new List<ContentPartFieldDefinition>();
+                _fields = [];
                 _settings = [];
             }
             else

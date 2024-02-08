@@ -33,7 +33,10 @@ namespace OrchardCore.Environment.Shell.Configuration
             var tenantFolder = Path.Combine(_container, tenant);
             var appsettings = Path.Combine(tenantFolder, "appsettings.json");
 
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance
             IDictionary<string, string> configData;
+#pragma warning restore CA1859 // Use concrete types when possible for improved performance
+
             if (File.Exists(appsettings))
             {
                 using var streamReader = File.OpenRead(appsettings);
