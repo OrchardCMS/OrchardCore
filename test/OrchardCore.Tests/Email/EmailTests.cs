@@ -246,7 +246,8 @@ namespace OrchardCore.Tests.Email
             {
                 DefaultSender = defaultSender,
                 DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory,
-                PickupDirectoryLocation = pickupDirectoryPath
+                PickupDirectoryLocation = pickupDirectoryPath,
+                IsEnabled = true,
             };
             var smtp = CreateSmtpService(settings);
 
