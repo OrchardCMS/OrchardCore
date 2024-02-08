@@ -49,7 +49,7 @@
     <PackageManagement Include="NEST" Version="7.17.5" />
     <PackageManagement Include="NJsonSchema" Version="11.0.0" />
     <PackageManagement Include="NLog.Web.AspNetCore" Version="5.3.8" />
-    <PackageManagement Include="NodaTime" Version="3.1.10" />
+    <PackageManagement Include="NodaTime" Version="3.1.11" />
     <PackageManagement Include="OpenIddict.AspNetCore" Version="5.1.0" />
     <PackageManagement Include="OpenIddict.Core" Version="5.1.0" />
     <PackageManagement Include="OrchardCore.Translations.All" Version="1.8.0" />
