@@ -13,7 +13,6 @@ using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Resolvers;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.Search.Lucene;
-
 namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 {
     public class LuceneQueryFieldTypeProvider : ISchemaBuilder
@@ -58,19 +57,21 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                     FieldType fieldType;
 
                     var fieldTypeName = querySchema["fieldTypeName"]?.ToString() ?? query.Name;
-
-                    if (query.ReturnContentItems &&
-                        type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
+                    if (query.ReturnContentItems && type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
                     {
                         var contentType = type.Remove(0, 12);
-                        fieldType = BuildContentTypeFieldType(schema, contentType, query, fieldTypeName);
+                        fieldType = query.HasTotal
+                          ? BuildTotalContentTypeFieldType(schema, contentType, query, fieldTypeName)
+                          : BuildContentTypeFieldType(schema, contentType, query, fieldTypeName);
                     }
                     else
                     {
-                        fieldType = BuildSchemaBasedFieldType(query, querySchema, fieldTypeName);
+                        fieldType = query.HasTotal
+                          ? BuildTotalSchemaBasedFieldType(query, querySchema, fieldTypeName)
+                          : BuildSchemaBasedFieldType(query, querySchema, fieldTypeName);
                     }
 
-                    if (fieldType != null)
+                    if (fieldType != null && !schema.Query.HasField(fieldType.Name))
                     {
                         schema.Query.AddField(fieldType);
                     }
@@ -150,7 +151,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                         JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                         : [];
 
-                    var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
+                    var result = (await queryManager.ExecuteQueryAsync(iquery, queryParameters)) as Search.Lucene.LuceneQueryResults;
                     return result.Items;
                 }),
                 Type = typeof(ListGraphType<ObjectGraphType<JsonObject>>)
@@ -171,12 +172,106 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
             var fieldType = new FieldType
             {
                 Arguments = new QueryArguments(
-                        new QueryArgument<StringGraphType> { Name = "parameters" }
-                    ),
+                        new QueryArgument<StringGraphType> { Name = "parameters" }),
 
                 Name = fieldTypeName,
                 Description = "Represents the " + query.Source + " Query : " + query.Name,
                 ResolvedType = typetype.ResolvedType,
+                Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
+                {
+                    var queryManager = context.RequestServices
+                    .GetService<IQueryManager>();
+                    var iquery = await queryManager.GetQueryAsync(query.Name);
+
+                    var parameters = context.GetArgument<string>("parameters");
+
+                    var queryParameters = parameters != null ?
+                        JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                        : new Dictionary<string, object>();
+                    var result = (await queryManager.ExecuteQueryAsync(iquery, queryParameters)) as Search.Lucene.LuceneQueryResults;
+                    return result.Items;
+                }),
+                Type = typetype.Type
+            };
+
+            return fieldType;
+        }
+
+        private FieldType BuildTotalSchemaBasedFieldType(LuceneQuery query, JToken querySchema, string fieldTypeName)
+        {
+            var properties = querySchema["properties"];
+            if (properties == null)
+            {
+                return null;
+            }
+
+            var totalType = new ObjectGraphType<Search.Lucene.LuceneQueryResults>()
+            {
+                Name = fieldTypeName
+            };
+
+            var typetype = new ObjectGraphType<JObject>
+            {
+                Name = fieldTypeName
+            };
+            var listType = new ListGraphType(typetype);
+
+            totalType.Field(listType.GetType(), "items",
+                resolve: context =>
+                {
+                    return context.Source?.Items;
+                });
+            var total = totalType.Field<IntGraphType>("total",
+                         resolve: context =>
+                         {
+                             return context.Source?.Count;
+                         });
+
+
+            foreach (JProperty child in properties.Children())
+            {
+                var name = child.Name;
+                var nameLower = name.Replace('.', '_');
+                var type = child.Value["type"].ToString();
+                var description = child.Value["description"]?.ToString();
+
+                if (type == "string")
+                {
+                    var field = typetype.Field(
+                        typeof(StringGraphType),
+                        nameLower,
+                        description: description,
+                        resolve: context =>
+                        {
+                            var source = context.Source;
+                            return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<string>();
+                        });
+                    field.Metadata.Add("Name", name);
+                }
+                else if (type == "integer")
+                {
+                    var field = typetype.Field(
+                        typeof(IntGraphType),
+                        nameLower,
+                        description: description,
+                        resolve: context =>
+                        {
+                            var source = context.Source;
+                            return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<int>();
+                        });
+                    field.Metadata.Add("Name", name);
+                }
+            }
+
+            var fieldType = new FieldType
+            {
+                Arguments = new QueryArguments(
+                    new QueryArgument<StringGraphType> { Name = "parameters" }
+                ),
+
+                Name = fieldTypeName,
+                Description = "Represents the " + query.Source + " Query : " + query.Name,
+                ResolvedType = totalType,
                 Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
                 {
                     var queryManager = context.RequestServices.GetService<IQueryManager>();
@@ -188,13 +283,69 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                         JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                         : [];
 
-                    var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
-                    return result.Items;
+                    var result = (await queryManager.ExecuteQueryAsync(iquery, queryParameters)) as Search.Lucene.LuceneQueryResults;
+                    return result;
                 }),
-                Type = typetype.Type
+                Type = totalType.GetType()
             };
 
             return fieldType;
         }
+
+        private FieldType BuildTotalContentTypeFieldType(ISchema schema, string contentType, LuceneQuery query, string fieldTypeName)
+        {
+            var typetype = schema.Query.Fields.OfType<ContentItemsFieldType>().FirstOrDefault(x => x.Name == contentType);
+            if (typetype == null)
+            {
+                return null;
+            }
+
+            var totalType = new ObjectGraphType<Search.Lucene.LuceneQueryResults>
+            {
+                Name = fieldTypeName
+            };
+
+            var items = totalType.Field(typetype.Type, "items",
+                         resolve: context =>
+                         {
+                             return context.Source?.Items ?? Array.Empty<object>();
+                         });
+            items.ResolvedType = typetype.ResolvedType;
+            totalType.Field<IntGraphType>("total",
+                        resolve: context =>
+                        {
+                            return context.Source?.Count ?? 0;
+                        });
+
+            var fieldType = new FieldType
+            {
+                Arguments = new QueryArguments(
+                        new QueryArgument<StringGraphType> { Name = "parameters" }),
+
+                Name = fieldTypeName,
+                Description = "Represents the " + query.Source + " Query : " + query.Name,
+                ResolvedType = totalType,
+                Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
+                {
+                    var queryManager = context.RequestServices.GetService<IQueryManager>();
+                    var iquery = await queryManager.GetQueryAsync(query.Name);
+
+                    var parameters = context.GetArgument<string>("parameters");
+
+                    var queryParameters = parameters != null ?
+                        JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                        : new Dictionary<string, object>();
+                    var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
+
+                    return result as Search.Lucene.LuceneQueryResults;
+                }),
+                Type = totalType.GetType()
+            };
+
+            return fieldType;
+        }
+
+
     }
+
 }

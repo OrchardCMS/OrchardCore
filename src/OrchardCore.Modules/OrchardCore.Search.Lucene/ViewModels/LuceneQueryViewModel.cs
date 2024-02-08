@@ -6,5 +6,6 @@ namespace OrchardCore.Search.Lucene.ViewModels
         public string Index { get; set; }
         public string Query { get; set; }
         public bool ReturnContentItems { get; set; }
+        public bool HasTotal { get; set; }
     }
 }

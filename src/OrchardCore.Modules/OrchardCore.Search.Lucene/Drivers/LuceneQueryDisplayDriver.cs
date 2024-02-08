@@ -38,6 +38,7 @@ namespace OrchardCore.Search.Lucene.Drivers
                 model.Query = query.Template;
                 model.Index = query.Index;
                 model.ReturnContentItems = query.ReturnContentItems;
+                model.HasTotal = query.HasTotal;
                 model.Indices = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
 
                 // Extract query from the query string if we come from the main query editor
@@ -51,11 +52,12 @@ namespace OrchardCore.Search.Lucene.Drivers
         public override async Task<IDisplayResult> UpdateAsync(LuceneQuery model, IUpdateModel updater)
         {
             var viewModel = new LuceneQueryViewModel();
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix, m => m.Query, m => m.Index, m => m.ReturnContentItems))
+            if (await updater.TryUpdateModelAsync(viewModel, Prefix, m => m.Query, m => m.Index, m => m.ReturnContentItems, m => m.HasTotal))
             {
                 model.Template = viewModel.Query;
                 model.Index = viewModel.Index;
                 model.ReturnContentItems = viewModel.ReturnContentItems;
+                model.HasTotal = viewModel.HasTotal;
             }
 
             if (string.IsNullOrWhiteSpace(model.Template))
