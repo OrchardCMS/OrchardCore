@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
@@ -32,7 +31,7 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
 
             var queryObj = filter.AsObject();
 
-            if (queryObj.Count() != 2)
+            if (queryObj.Count != 2)
             {
                 return null;
             }

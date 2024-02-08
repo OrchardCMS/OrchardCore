@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -46,7 +45,7 @@ namespace OrchardCore.Navigation
             {
                 dynamic menuItemShape = await BuildMenuItemShapeAsync(shapeFactory, parentShape, menu, menuItem, viewContext);
 
-                if (menuItem.Items != null && menuItem.Items.Any())
+                if (menuItem.Items != null && menuItem.Items.Count > 0)
                 {
                     await PopulateMenuLevelAsync(shapeFactory, menuItemShape, menu, menuItem.Items, viewContext);
                 }
@@ -158,7 +157,7 @@ namespace OrchardCore.Navigation
 
             var tempStack = new Stack<dynamic>(new dynamic[] { parentShape });
 
-            while (tempStack.Any())
+            while (tempStack.Count > 0)
             {
                 // evaluate first
                 dynamic item = tempStack.Pop();

@@ -194,9 +194,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 TableNameConvention = tableNameFactory.Create(databaseTableOptions),
                 IdentityColumnSize = Enum.Parse<IdentityColumnSize>(databaseTableOptions.IdentityColumnSize),
                 Logger = loggerFactory.CreateLogger("YesSql"),
+                ContentSerializer = new DefaultJsonContentSerializer(typeInfoResolvers)
             };
-
-            storeConfiguration.ContentSerializer = new DefaultJsonContentSerializer(typeInfoResolvers);
 
             if (yesSqlOptions.IdGenerator != null)
             {

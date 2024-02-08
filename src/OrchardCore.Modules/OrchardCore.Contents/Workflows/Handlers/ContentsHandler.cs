@@ -4,6 +4,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Workflows;
 using OrchardCore.Contents.Workflows.Activities;
+using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Contents.Workflows.Handlers
@@ -52,7 +53,7 @@ namespace OrchardCore.Contents.Workflows.Handlers
             return TriggerWorkflowEventAsync(nameof(ContentVersionedEvent), context.ContentItem);
         }
 
-        private Task TriggerWorkflowEventAsync(string name, ContentItem contentItem)
+        private Task<IEnumerable<WorkflowExecutionContext>> TriggerWorkflowEventAsync(string name, ContentItem contentItem)
         {
             var contentEvent = new ContentEventContext()
             {
