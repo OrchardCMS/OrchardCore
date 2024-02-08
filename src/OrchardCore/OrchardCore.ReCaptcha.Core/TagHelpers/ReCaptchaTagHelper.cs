@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Localization;
 using OrchardCore.Modules;
 using OrchardCore.ReCaptcha.ActionFilters;
 using OrchardCore.ReCaptcha.ActionFilters.Detection;
@@ -24,18 +25,21 @@ namespace OrchardCore.ReCaptcha.TagHelpers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ReCaptchaSettings _settings;
         private readonly ILogger _logger;
+        private readonly ILocalizationService _localizationService;
 
         public ReCaptchaTagHelper(
             IOptions<ReCaptchaSettings> optionsAccessor,
             IResourceManager resourceManager,
             IHttpContextAccessor httpContextAccessor,
-            ILogger<ReCaptchaTagHelper> logger)
+            ILogger<ReCaptchaTagHelper> logger,
+            ILocalizationService localizationService)
         {
             _resourceManager = resourceManager;
             _httpContextAccessor = httpContextAccessor;
             _settings = optionsAccessor.Value;
             Mode = ReCaptchaMode.PreventRobots;
             _logger = logger;
+            _localizationService = localizationService;
         }
 
         [HtmlAttributeName("mode")]
