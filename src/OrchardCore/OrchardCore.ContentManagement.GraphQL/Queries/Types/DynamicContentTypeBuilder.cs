@@ -108,11 +108,10 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     }
                     else
                     {
-                        var field = contentItemType.Field(
-                            typeof(DynamicPartGraphType),
-                            partName.ToFieldName(),
-                            description: S["Represents a {0}.", part.PartDefinition.Name],
-                            resolve: context =>
+                        var field = contentItemType
+                            .Field<DynamicPartGraphType>(partName.ToFieldName())
+                            .Description(S["Represents a {0}.", part.PartDefinition.Name])
+                            .Resolve(context =>
                             {
                                 var nameToResolve = partName;
                                 var typeToResolve = context.FieldDefinition.ResolvedType.GetType().BaseType.GetGenericArguments().First();
@@ -120,8 +119,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                                 return context.Source.Get(typeToResolve, nameToResolve);
                             });
 
-                        field.ResolvedType = new DynamicPartGraphType(_httpContextAccessor, part);
-                        _dynamicPartFields[partName] = field;
+                        field.Type(new DynamicPartGraphType(_httpContextAccessor, part));
+                        _dynamicPartFields[partName] = field.FieldType;
                     }
                 }
             }

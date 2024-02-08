@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using GraphQL;
+using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -105,29 +106,36 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
 
                 if (type == "string")
                 {
-                    var field = typetype.Field(
-                        typeof(StringGraphType),
-                        nameLower,
-                        description: description,
-                        resolve: context =>
+                    var field = new FieldType()
+                    {
+                        Name = nameLower,
+                        Description = description,
+                        Type = typeof(StringGraphType),
+                        Resolver = new FuncFieldResolver<JsonObject, string>(context =>
                         {
                             var source = context.Source;
                             return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<string>();
-                        });
+                        }),
+                    };
                     field.Metadata.Add("Name", name);
+                    typetype.AddField(field);
                 }
                 else if (type == "integer")
                 {
-                    var field = typetype.Field(
-                        typeof(IntGraphType),
-                        nameLower,
-                        description: description,
-                        resolve: context =>
+                    var field = new FieldType()
+                    {
+                        Name = nameLower,
+                        Description = description,
+                        Type = typeof(IntGraphType),
+                        Resolver = new FuncFieldResolver<JsonObject, int?>(context =>
                         {
                             var source = context.Source;
                             return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<int>();
-                        });
+                        }),
+                    };
+              
                     field.Metadata.Add("Name", name);
+                    typetype.AddField(field);
                 }
             }
 
@@ -140,22 +148,25 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                 Name = fieldTypeName,
                 Description = "Represents the " + query.Source + " Query : " + query.Name,
                 ResolvedType = new ListGraphType(typetype),
-                Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
-                {
-                    var queryManager = context.RequestServices.GetService<IQueryManager>();
-                    var iquery = await queryManager.GetQueryAsync(query.Name);
+                Resolver = new LockedAsyncFieldResolver<object, object>(ResolveAsync),
+                Type = typeof(ListGraphType<ObjectGraphType<JsonObject>>)
+            };
 
-                    var parameters = context.GetArgument<string>("parameters");
+            async ValueTask<object> ResolveAsync(IResolveFieldContext<object> context)
+            {
+                var queryManager = context.RequestServices.GetService<IQueryManager>();
+                var iquery = await queryManager.GetQueryAsync(query.Name);
+
+                var parameters = context.GetArgument<string>("parameters");
 
                     var queryParameters = parameters != null ?
                         JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                         : [];
 
-                    var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
-                    return result.Items;
-                }),
-                Type = typeof(ListGraphType<ObjectGraphType<JsonObject>>)
-            };
+                var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
+
+                return result.Items;
+            }
 
             return fieldType;
         }
@@ -177,22 +188,24 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                 Name = fieldTypeName,
                 Description = "Represents the " + query.Source + " Query : " + query.Name,
                 ResolvedType = typetype.ResolvedType,
-                Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
-                {
-                    var queryManager = context.RequestServices.GetService<IQueryManager>();
-                    var iquery = await queryManager.GetQueryAsync(query.Name);
+                Resolver = new LockedAsyncFieldResolver<object, object>(ResolveAsync),
+                Type = typetype.Type
+            };
 
-                    var parameters = context.GetArgument<string>("parameters");
+            async ValueTask<object> ResolveAsync(IResolveFieldContext<object> context)
+            {
+                var queryManager = context.RequestServices.GetService<IQueryManager>();
+                var iquery = await queryManager.GetQueryAsync(query.Name);
+
+                var parameters = context.GetArgument<string>("parameters");
 
                     var queryParameters = parameters != null ?
                         JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                         : [];
 
-                    var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
-                    return result.Items;
-                }),
-                Type = typetype.Type
-            };
+                var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
+                return result.Items;
+            }
 
             return fieldType;
         }
