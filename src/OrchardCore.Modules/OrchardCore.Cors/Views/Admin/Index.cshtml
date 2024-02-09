@@ -1,9 +1,5 @@
 @model CorsSettingsViewModel
 
-@{
-    var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeHtml };
-}
-
 <script depends-on="vuejs:2" asp-src="~/OrchardCore.Cors/Scripts/cors-admin.min.js" debug-src="~/OrchardCore.Cors/Scripts/cors-admin.js" type="text/javascript" asp-name="cors-admin" at="Foot"></script>
 <script depends-on="cors-admin" at="Foot">
     corsApp.policies = @Html.Raw(Json.Serialize(Model.Policies));
