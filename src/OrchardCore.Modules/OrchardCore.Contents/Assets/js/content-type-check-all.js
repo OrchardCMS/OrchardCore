@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
         master.addEventListener('change', function (elem) {
             let isChecked = elem.target.checked;
-            
+
             slaves.forEach(slave => {
                 slave.checked = isChecked;
             });
