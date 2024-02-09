@@ -61,14 +61,17 @@ namespace OrchardCore.Navigation
         public NavigationItemBuilder AddClass(string className)
         {
             if (!_item.Classes.Contains(className))
+            {
                 _item.Classes.Add(className);
+            }
+
             return this;
         }
 
         public NavigationItemBuilder RemoveClass(string className)
         {
-            if (_item.Classes.Contains(className))
-                _item.Classes.Remove(className);
+            _item.Classes.Remove(className);
+
             return this;
         }
 

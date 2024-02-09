@@ -286,7 +286,7 @@ namespace OrchardCore.Menu.Controllers
             return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = menuContentItemId });
         }
 
-        private JsonObject FindMenuItem(JsonObject contentItem, string menuItemId)
+        private static JsonObject FindMenuItem(JsonObject contentItem, string menuItemId)
         {
             if (contentItem["ContentItemId"]?.Value<string>() == menuItemId)
             {

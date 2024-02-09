@@ -65,12 +65,12 @@ namespace OrchardCore.ContentManagement
                         contentItem.DisplayText = reader.TokenType == JsonTokenType.String ? reader.GetString() : null;
                         break;
                     case nameof(ContentItem.Latest):
-                        contentItem.Latest = reader.TokenType == JsonTokenType.True ||
-                            reader.TokenType == JsonTokenType.False ? reader.GetBoolean() : false;
+                        contentItem.Latest = (reader.TokenType == JsonTokenType.True ||
+                            reader.TokenType == JsonTokenType.False) && reader.GetBoolean();
                         break;
                     case nameof(ContentItem.Published):
-                        contentItem.Published = reader.TokenType == JsonTokenType.True ||
-                            reader.TokenType == JsonTokenType.False ? reader.GetBoolean() : false;
+                        contentItem.Published = (reader.TokenType == JsonTokenType.True ||
+                            reader.TokenType == JsonTokenType.False) && reader.GetBoolean();
                         break;
                     case nameof(ContentItem.PublishedUtc):
                         contentItem.PublishedUtc = reader.TokenType != JsonTokenType.Null &&

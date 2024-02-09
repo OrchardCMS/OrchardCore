@@ -61,7 +61,7 @@ internal class CurrentUserQuery : ISchemaBuilder
             Name = "me",
             Description = S["Gets the currently authenticated user."],
             ResolvedType = userType,
-            Resolver = new AsyncFieldResolver<User>(async context =>
+            Resolver = new FuncFieldResolver<User>(async context =>
             {
                 var userService = context.RequestServices!.GetRequiredService<IUserService>();
                 var user = await userService.GetAuthenticatedUserAsync(((GraphQLUserContext)context.UserContext).User);

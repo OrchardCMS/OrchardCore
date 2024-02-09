@@ -29,31 +29,32 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
             {
                 await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("elastic-index-reset", async scope =>
                 {
-
                     var elasticIndexingService = scope.ServiceProvider.GetService<ElasticIndexingService>();
                     var elasticIndexSettingsService = scope.ServiceProvider.GetService<ElasticIndexSettingsService>();
                     var elasticIndexManager = scope.ServiceProvider.GetRequiredService<ElasticIndexManager>();
 
-                    var indices = model.IncludeAll ? (await elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray() : model.Indices;
+                    var indexNames = model.IncludeAll ? (await elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray() : model.Indices;
 
-                    foreach (var indexName in indices)
+                    foreach (var indexName in indexNames)
                     {
                         var elasticIndexSettings = await elasticIndexSettingsService.GetSettingsAsync(indexName);
 
-                        if (elasticIndexSettings != null)
+                        if (elasticIndexSettings == null)
                         {
-                            if (!await elasticIndexManager.ExistsAsync(indexName))
-                            {
-                                await elasticIndexingService.CreateIndexAsync(elasticIndexSettings);
-                            }
-                            else
-                            {
-                                await elasticIndexingService.ResetIndexAsync(elasticIndexSettings.IndexName);
-                            }
+                            continue;
+                        }
 
-                            await elasticIndexingService.ProcessContentItemsAsync(indexName);
+                        if (!await elasticIndexManager.ExistsAsync(indexName))
+                        {
+                            await elasticIndexingService.CreateIndexAsync(elasticIndexSettings);
+                        }
+                        else
+                        {
+                            await elasticIndexingService.ResetIndexAsync(elasticIndexSettings.IndexName);
                         }
                     }
+
+                    await elasticIndexingService.ProcessContentItemsAsync(indexNames);
                 });
             }
         }

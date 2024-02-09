@@ -70,7 +70,7 @@ namespace OrchardCore.ContentManagement
 
         public async Task<ContentTypeDefinition> LoadTypeDefinitionAsync(string name)
         {
-            ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
+            ArgumentException.ThrowIfNullOrEmpty(name);
 
             if (_scopedTypeDefinitions.TryGetValue(name, out var typeDefinition))
             {
@@ -84,7 +84,7 @@ namespace OrchardCore.ContentManagement
 
         public async Task<ContentTypeDefinition> GetTypeDefinitionAsync(string name)
         {
-            ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
+            ArgumentException.ThrowIfNullOrEmpty(name);
 
             var document = await _contentDefinitionStore.GetContentDefinitionAsync();
 
@@ -95,7 +95,7 @@ namespace OrchardCore.ContentManagement
 
         public async Task<ContentPartDefinition> LoadPartDefinitionAsync(string name)
         {
-            ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
+            ArgumentException.ThrowIfNullOrEmpty(name);
 
             if (_scopedPartDefinitions.TryGetValue(name, out var partDefinition))
             {
@@ -109,7 +109,7 @@ namespace OrchardCore.ContentManagement
 
         public async Task<ContentPartDefinition> GetPartDefinitionAsync(string name)
         {
-            ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
+            ArgumentException.ThrowIfNullOrEmpty(name);
 
             var document = await _contentDefinitionStore.GetContentDefinitionAsync();
 
@@ -120,7 +120,7 @@ namespace OrchardCore.ContentManagement
 
         public async Task DeleteTypeDefinitionAsync(string name)
         {
-            ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
+            ArgumentException.ThrowIfNullOrEmpty(name);
 
             var document = await _contentDefinitionStore.LoadContentDefinitionAsync();
 
@@ -136,7 +136,7 @@ namespace OrchardCore.ContentManagement
 
         public async Task DeletePartDefinitionAsync(string name)
         {
-            ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
+            ArgumentException.ThrowIfNullOrEmpty(name);
 
             var document = await _contentDefinitionStore.LoadContentDefinitionAsync();
 

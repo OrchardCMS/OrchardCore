@@ -58,7 +58,7 @@ namespace OrchardCore.Contents.Workflows.Activities
         public WorkflowExpression<string> ContentProperties
         {
             get => GetProperty(() =>
-                //new WorkflowExpression<string>(JsonConvert.SerializeObject(new { DisplayText = S["Enter a title"].Value }, Formatting.Indented)));
+                // new WorkflowExpression<string>(JsonConvert.SerializeObject(new { DisplayText = S["Enter a title"].Value }, Formatting.Indented)));
                 new WorkflowExpression<string>(JConvert.SerializeObject(new { DisplayText = S["Enter a title"].Value })));
 
 

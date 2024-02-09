@@ -21,13 +21,22 @@ namespace OrchardCore.Users.TimeZone.Drivers
 
         public override IDisplayResult Edit(UserTimeZone userTimeZone, BuildEditorContext context)
         {
-            return Initialize<UserTimeZoneViewModel>("UserTimeZone_Edit", model =>
-            {
-                model.TimeZoneId = userTimeZone.TimeZoneId;
-            }).Location("Content:2");
+            return Initialize<UserTimeZoneViewModel>(
+                    "UserTimeZone_Edit",
+                    model =>
+                    {
+                        model.TimeZoneId = userTimeZone.TimeZoneId;
+                    }
+                )
+                .Location("Content:2");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(User user, UserTimeZone userTimeZone, IUpdateModel updater, BuildEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(
+            User user,
+            UserTimeZone userTimeZone,
+            IUpdateModel updater,
+            BuildEditorContext context
+        )
         {
             var model = new UserTimeZoneViewModel();
 
