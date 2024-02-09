@@ -43,7 +43,11 @@ namespace OrchardCore.Workflows.Recipes
 
                 foreach (var activity in workflow.Activities.Where(a => a.Name == nameof(HttpRequestEvent)))
                 {
-                    activity.Properties["Url"] = ReGenerateHttpRequestEventUrl(workflow, activity);
+                    var tokenLifeSpan = activity.Properties["TokenLifeSpan"];
+                    if (tokenLifeSpan != null)
+                    {
+                        activity.Properties["Url"] = ReGenerateHttpRequestEventUrl(workflow, activity, tokenLifeSpan.ToObject<int>());
+                    }
                 }
 
                 var existing = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
@@ -61,9 +65,8 @@ namespace OrchardCore.Workflows.Recipes
             }
         }
 
-        private string ReGenerateHttpRequestEventUrl(WorkflowType workflow, ActivityRecord activity)
+        private string ReGenerateHttpRequestEventUrl(WorkflowType workflow, ActivityRecord activity, int tokenLifeSpan)
         {
-            var tokenLifeSpan = activity.Properties["TokenLifeSpan"]?.ToObject<int>() ?? 0;
             var token = _securityTokenService.CreateToken(new WorkflowPayload(workflow.WorkflowTypeId, activity.ActivityId),
                 TimeSpan.FromDays(tokenLifeSpan == 0 ? HttpWorkflowController.NoExpiryTokenLifespan : tokenLifeSpan));
 
