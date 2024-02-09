@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
-using OrchardCore.AdminMenu.Services;
+using OrchardCore.AdminMenu;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -328,9 +328,7 @@ namespace OrchardCore.Contents
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IAdminNodeProviderFactory>(new AdminNodeProviderFactory<ContentTypesAdminNode>());
-            services.AddScoped<IAdminNodeNavigationBuilder, ContentTypesAdminNodeNavigationBuilder>();
-            services.AddScoped<IDisplayDriver<MenuItem>, ContentTypesAdminNodeDriver>();
+            services.AddAdminMenu<ContentTypesAdminNode, ContentTypesAdminNodeNavigationBuilder, ContentTypesAdminNodeDriver>();
         }
     }
 

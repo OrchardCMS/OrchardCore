@@ -28,7 +28,7 @@ namespace OrchardCore.DisplayManagement.Razor
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ViewContextAccessor _viewContextAccessor;
         private readonly ITempDataProvider _tempDataProvider;
-        private readonly List<string> _templateFileExtensions = new(new[] { RazorViewEngine.ViewExtension });
+        private readonly List<string> _templateFileExtensions = new([RazorViewEngine.ViewExtension]);
 
         public RazorShapeTemplateViewEngine(
             IOptions<MvcViewOptions> options,

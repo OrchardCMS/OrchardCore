@@ -77,14 +77,19 @@ namespace OrchardCore.Search.Elasticsearch
 
                 if (analyzersObject != null)
                 {
-                    foreach (var analyzer in analyzersObject)
-                    {
-                        if (analyzer.Value == null)
-                        {
-                            continue;
-                        }
+                    o.IndexPrefix = configuration.GetValue<string>(nameof(o.IndexPrefix));
 
-                        o.Analyzers.Add(analyzer.Key, analyzer.Value.AsObject());
+                    if (jsonNode is JsonObject jAnalyzers)
+                    {
+                        foreach (var analyzer in jAnalyzers)
+                        {
+                            if (analyzer.Value is not JsonObject jAnalyzer)
+                            {
+                                continue;
+                            }
+
+                            o.Analyzers.Add(analyzer.Key, jAnalyzer);
+                        }
                     }
                 }
 

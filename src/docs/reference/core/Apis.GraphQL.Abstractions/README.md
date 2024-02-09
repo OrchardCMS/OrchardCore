@@ -38,7 +38,7 @@ public class AutoroutePart : ContentPart
 }
 ```
 
-This is the part that is attached to your content item. GraphQL doesnt know what this is, so we now need to create a GraphQL representation of this class;
+This is the part that is attached to your content item. GraphQL doesn't know what this is, so we now need to create a GraphQL representation of this class;
 
 ```csharp
 public class AutorouteQueryObjectType : ObjectGraphType<AutoroutePart>

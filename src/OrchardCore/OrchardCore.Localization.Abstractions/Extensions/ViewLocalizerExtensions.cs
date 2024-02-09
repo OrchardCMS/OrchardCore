@@ -24,7 +24,7 @@ namespace Microsoft.AspNetCore.Mvc.Localization
                 throw new ArgumentNullException(nameof(plural), "Plural text can't be null. If you don't want to specify the plural text, use IStringLocalizer without Plural extension.");
             }
 
-            return localizer[singular, new PluralizationArgument { Count = count, Forms = new[] { singular, plural }, Arguments = arguments }];
+            return localizer[singular, new PluralizationArgument { Count = count, Forms = [singular, plural], Arguments = arguments }];
         }
 
         /// <summary>

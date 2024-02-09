@@ -41,7 +41,7 @@ public class FeatureService
     {
         if (ids == null || ids.Length == 0)
         {
-            return Enumerable.Empty<IFeatureInfo>();
+            return [];
         }
 
         return (await GetAvailableFeatures()).Where(feature => ids.Contains(feature.Id));

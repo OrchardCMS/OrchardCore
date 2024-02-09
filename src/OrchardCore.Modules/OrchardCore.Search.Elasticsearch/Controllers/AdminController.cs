@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
@@ -12,11 +14,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using OrchardCore.BackgroundJobs;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
@@ -152,6 +154,7 @@ namespace OrchardCore.Search.Elasticsearch
                 new SelectListItem(S["Rebuild"], nameof(ContentsBulkAction.Rebuild)),
                 new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
             ];
+
 
             return View(model);
         }
@@ -324,7 +327,7 @@ namespace OrchardCore.Search.Elasticsearch
             }
 
             await _elasticIndexingService.ResetIndexAsync(id);
-            await _elasticIndexingService.ProcessContentItemsAsync(id);
+            await ProcessContentItemsAsync(id);
 
             await _notifier.SuccessAsync(H["Index <em>{0}</em> reset successfully.", id]);
 
@@ -362,7 +365,7 @@ namespace OrchardCore.Search.Elasticsearch
                 await _elasticIndexSettingsService.UpdateIndexAsync(settings);
             }
 
-            await _elasticIndexingService.ProcessContentItemsAsync(id);
+            await ProcessContentItemsAsync(id);
 
             await _notifier.SuccessAsync(H["Index <em>{0}</em> rebuilt successfully.", id]);
 
@@ -434,7 +437,7 @@ namespace OrchardCore.Search.Elasticsearch
         public async Task<IActionResult> Mappings(string indexName)
         {
             var mappings = await _elasticIndexManager.GetIndexMappings(indexName);
-            var formattedJson = JValue.Parse(mappings).ToString(Formatting.Indented);
+            var formattedJson = JNode.Parse(mappings).ToJsonString(System.Text.Json.JOptions.Indented);
             return View(new MappingsViewModel
             {
                 IndexName = _elasticIndexManager.GetFullIndexName(indexName),
@@ -512,7 +515,7 @@ namespace OrchardCore.Search.Elasticsearch
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
+            var parameters = JConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
             var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(model.DecodedQuery, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions.Value))));
 
             try
@@ -576,7 +579,7 @@ namespace OrchardCore.Search.Elasticsearch
                             }
 
                             await _elasticIndexingService.ResetIndexAsync(item.IndexName);
-                            await _elasticIndexingService.ProcessContentItemsAsync(item.IndexName);
+                            await ProcessContentItemsAsync(item.IndexName);
 
                             await _notifier.SuccessAsync(H["Index <em>{0}</em> reset successfully.", item.IndexName]);
                         }
@@ -590,7 +593,8 @@ namespace OrchardCore.Search.Elasticsearch
                             }
 
                             await _elasticIndexingService.RebuildIndexAsync(await _elasticIndexSettingsService.GetSettingsAsync(item.IndexName));
-                            await _elasticIndexingService.ProcessContentItemsAsync(item.IndexName);
+
+                            await ProcessContentItemsAsync(item.IndexName);
                             await _notifier.SuccessAsync(H["Index <em>{0}</em> rebuilt successfully.", item.IndexName]);
                         }
                         break;
@@ -633,7 +637,14 @@ namespace OrchardCore.Search.Elasticsearch
                 .Select(x => new SelectListItem { Text = x.Key, Value = x.Key });
         }
 
-        private IActionResult NotConfigured()
+        private ViewResult NotConfigured()
             => View("NotConfigured");
+
+        private static Task ProcessContentItemsAsync(string indexName)
+            => HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("sync-content-items-elasticsearch-" + indexName, async (scope) =>
+            {
+                var indexingService = scope.ServiceProvider.GetRequiredService<ElasticIndexingService>();
+                await indexingService.ProcessContentItemsAsync(indexName);
+            });
     }
 }

@@ -9,6 +9,6 @@ namespace OrchardCore.Workflows.Models
         {
         }
 
-        public IList<IGlobalMethodProvider> ScopedMethodProviders { get; } = new List<IGlobalMethodProvider>();
+        public IList<IGlobalMethodProvider> ScopedMethodProviders { get; init; } = [];
     }
 }

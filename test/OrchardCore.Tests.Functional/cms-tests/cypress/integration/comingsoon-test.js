@@ -9,13 +9,13 @@ describe('ComingSoon Recipe test', function () {
         cy.newTenant(tenant);
     })
 
-    it('Displays the home page of the ComingSoon theme', function(){
+    it('Displays the home page of the ComingSoon theme', function () {
         cy.visit(`${tenant.prefix}`);
         cy.get('h1').should('contain.text', 'Coming Soon');
         cy.get('p').should('contain.text', "We're working hard to finish the development of this site.");
     })
 
-    it('ComingSoon admin login should work', function(){
+    it('ComingSoon admin login should work', function () {
         cy.login(tenant);
         cy.visit(`${tenant.prefix}/Admin`);
         cy.get('.menu-admin').should('have.id', 'adminMenu')

@@ -53,7 +53,7 @@ namespace OrchardCore.ContentLocalization.Services
                 return localizations;
             }
 
-            return Enumerable.Empty<LocalizationEntry>();
+            return [];
         }
 
         public async Task UpdateEntriesAsync()
@@ -97,7 +97,7 @@ namespace OrchardCore.ContentLocalization.Services
                 }
                 else
                 {
-                    localizations = ImmutableList.Create(entry);
+                    localizations = [entry];
                 }
 
                 _localizationSets = _localizationSets.SetItem(entry.LocalizationSet, localizations);

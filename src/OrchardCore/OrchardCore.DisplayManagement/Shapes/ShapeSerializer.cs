@@ -1,8 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 namespace OrchardCore.DisplayManagement.Shapes
 {
@@ -10,17 +10,16 @@ namespace OrchardCore.DisplayManagement.Shapes
     /// Safely serializes a shape to Json.
     /// </summary>
     /// <remarks>
-    /// A new instance should be created for each <see cref="IShape"/>
+    /// A new instance should be created for each <see cref="IShape"/>.
     /// </remarks>
     public class ShapeSerializer
     {
-        // This code is used for debugging so does not need to be performance optimized.
-        private static readonly JsonSerializer _shapeJsonSerializer = new()
+        private static readonly JsonSerializerOptions _shapeJsonSerializer = new()
         {
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            ReferenceHandler = ReferenceHandler.IgnoreCycles,
         };
 
-        private readonly HashSet<IShape> _shapes = new();
+        private readonly HashSet<IShape> _shapes = [];
         private readonly IShape _shape;
 
         public ShapeSerializer(IShape shape)
@@ -28,14 +27,14 @@ namespace OrchardCore.DisplayManagement.Shapes
             _shape = shape;
         }
 
-        public JObject Serialize()
+        public JsonObject Serialize()
         {
             if (_shape == null)
             {
-                return new JObject();
+                return [];
             }
 
-            var jObject = new JObject();
+            var jObject = new JsonObject();
 
             // Provides a convenient identifier in console.
             var displayText = _shape.Metadata.Name;
@@ -73,7 +72,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
             if (_shape is Shape actualShape && actualShape.HasItems && _shapes.Add(actualShape))
             {
-                var jItems = new JArray();
+                var jItems = new JsonArray();
                 // Because items can be mutated during shape execution.
                 var shapeItems = actualShape.Items.ToArray();
                 foreach (var item in shapeItems)
@@ -85,6 +84,7 @@ namespace OrchardCore.DisplayManagement.Shapes
                         jItems.Add(jItem);
                     }
                 }
+
                 jObject.Add(nameof(actualShape.Items), jItems);
             }
 

@@ -1,5 +1,5 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -54,6 +54,7 @@ namespace OrchardCore.DisplayManagement.Entities
 
             if (context.Updater.ModelState.IsValid)
             {
+                // model.Properties[PropertyName] = JObject.FromObject(section);
                 model.Properties[PropertyName] = JObject.FromObject(section);
             }
 
@@ -121,11 +122,9 @@ namespace OrchardCore.DisplayManagement.Entities
         }
 
         private TSection GetSection(TModel model)
-        {
-            return model.Properties.TryGetValue(PropertyName, out var property)
+            => model.Properties.TryGetPropertyValue(PropertyName, out var property)
                 ? property.ToObject<TSection>()
                 : new TSection();
-        }
 
         protected override void BuildPrefix(TModel model, string htmlFieldPrefix)
         {
