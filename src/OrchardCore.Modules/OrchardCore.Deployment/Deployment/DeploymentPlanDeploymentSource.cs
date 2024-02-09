@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Deployment.Deployment
 {
@@ -49,26 +49,25 @@ namespace OrchardCore.Deployment.Deployment
                          }).ToArray();
 
             // Adding deployment plans.
-            result.Steps.Add(new JObject(
-                new JProperty("name", "deployment"),
-                new JProperty("Plans", JArray.FromObject(plans))
-            ));
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "deployment",
+                ["Plans"] = JArray.FromObject(plans),
+            });
         }
 
         /// <summary>
         /// A Site Settings Step is generic and the name is mapped to the <see cref="IDeploymentStepFactory.Name"/> so its 'Type' should be determined though a lookup.
         /// A normal steps name is not mapped to the <see cref="IDeploymentStepFactory.Name"/> and should use its type.
         /// </summary>
-        private static string GetStepType(IDictionary<string, IDeploymentStepFactory> deploymentStepFactories, DeploymentStep step)
+        private static string GetStepType(Dictionary<string, IDeploymentStepFactory> deploymentStepFactories, DeploymentStep step)
         {
             if (deploymentStepFactories.TryGetValue(step.Name, out var deploymentStepFactory))
             {
                 return deploymentStepFactory.Name;
             }
-            else
-            {
-                return step.GetType().Name;
-            }
+
+            return step.GetType().Name;
         }
     }
 }

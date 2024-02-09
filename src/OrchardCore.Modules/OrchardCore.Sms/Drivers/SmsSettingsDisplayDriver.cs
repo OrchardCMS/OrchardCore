@@ -56,7 +56,6 @@ public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
 
         }).Location("Content:1#Providers")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings))
-        .Prefix(Prefix)
         .OnGroup(SmsSettings.GroupId);
 
     public override async Task<IDisplayResult> UpdateAsync(SmsSettings settings, BuildEditorContext context)
@@ -89,15 +88,5 @@ public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
         }
 
         return Edit(settings);
-    }
-
-    protected override void BuildPrefix(ISite model, string htmlFieldPrefix)
-    {
-        Prefix = typeof(SmsSettings).Name;
-
-        if (!string.IsNullOrEmpty(htmlFieldPrefix))
-        {
-            Prefix = htmlFieldPrefix + "." + Prefix;
-        }
     }
 }

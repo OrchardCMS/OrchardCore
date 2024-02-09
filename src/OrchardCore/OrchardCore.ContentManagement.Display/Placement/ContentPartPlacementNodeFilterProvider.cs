@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy;
@@ -13,21 +13,22 @@ namespace OrchardCore.ContentManagement.Display.Placement
     {
         public string Key { get { return "contentPart"; } }
 
-        public bool IsMatch(ShapePlacementContext context, JToken expression)
+        public bool IsMatch(ShapePlacementContext context, object expression)
         {
             var contentItem = GetContent(context);
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 return false;
             }
 
-            if (expression is JArray)
+            var jsonNode = JNode.FromObject(expression);
+            if (jsonNode is JsonArray jsonArray)
             {
-                return expression.Any(p => contentItem.Has(p.Value<string>()));
+                return jsonArray.Any(p => contentItem.Has(p.Value<string>()));
             }
             else
             {
-                return contentItem.Has(expression.Value<string>());
+                return contentItem.Has(jsonNode.Value<string>());
             }
         }
     }
@@ -36,23 +37,24 @@ namespace OrchardCore.ContentManagement.Display.Placement
     {
         public string Key { get { return "contentType"; } }
 
-        public bool IsMatch(ShapePlacementContext context, JToken expression)
+        public bool IsMatch(ShapePlacementContext context, object expression)
         {
             var contentItem = GetContent(context);
-            if (contentItem == null)
+            if (contentItem is null)
             {
                 return false;
             }
 
             IEnumerable<string> contentTypes;
 
-            if (expression is JArray)
+            var jsonNode = JNode.FromObject(expression);
+            if (jsonNode is JsonArray jsonArray)
             {
-                contentTypes = expression.Values<string>();
+                contentTypes = jsonArray.Values<string>();
             }
             else
             {
-                contentTypes = new string[] { expression.Value<string>() };
+                contentTypes = new string[] { jsonNode.Value<string>() };
             }
 
             return contentTypes.Any(ct =>

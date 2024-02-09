@@ -27,7 +27,7 @@ namespace OrchardCore.ContentFields.Settings
                 model.Required = settings.Required;
                 model.Multiple = settings.Multiple;
                 var roles = (await _roleService.GetRoleNamesAsync())
-                    .Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase)
+                    .Except(RoleHelper.SystemRoleNames, StringComparer.OrdinalIgnoreCase)
                     .Select(roleName => new RoleEntry
                     {
                         Role = roleName,
@@ -59,7 +59,7 @@ namespace OrchardCore.ContentFields.Settings
                 if (model.DisplayAllUsers || selectedRoles.Length == 0)
                 {
                     // No selected role should have the same effect as display all users
-                    settings.DisplayedRoles = Array.Empty<string>();
+                    settings.DisplayedRoles = [];
                     settings.DisplayAllUsers = true;
                 }
                 else

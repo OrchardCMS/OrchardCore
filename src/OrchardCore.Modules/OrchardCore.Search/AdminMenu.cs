@@ -1,5 +1,5 @@
-using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
@@ -7,6 +7,12 @@ namespace OrchardCore.Search
 {
     public class AdminMenu : INavigationProvider
     {
+        private static readonly RouteValueDictionary _routeValues = new()
+        {
+            { "area", "OrchardCore.Settings" },
+            { "groupId", SearchConstants.SearchSettingsGroupId },
+        };
+
         protected readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
@@ -16,20 +22,21 @@ namespace OrchardCore.Search
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
                 return Task.CompletedTask;
             }
 
             builder
                 .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
-                    .AddClass("search").Id("search")
+                    .AddClass("search")
+                    .Id("search")
                     .Add(S["Settings"], S["Settings"].PrefixPosition(), settings => settings
-                        .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SearchConstants.SearchSettingsGroupId })
+                        .Action("Index", "Admin", _routeValues)
                         .Permission(Permissions.ManageSearchSettings)
                         .LocalNav()
-                        )
-                    );
+                    )
+                );
 
             return Task.CompletedTask;
         }

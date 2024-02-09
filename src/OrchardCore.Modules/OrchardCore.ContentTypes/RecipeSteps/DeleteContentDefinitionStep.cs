@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Recipes.Models;
@@ -42,8 +43,8 @@ namespace OrchardCore.ContentTypes.RecipeSteps
 
         private class DeleteContentDefinitionStepModel
         {
-            public string[] ContentTypes { get; set; } = Array.Empty<string>();
-            public string[] ContentParts { get; set; } = Array.Empty<string>();
+            public string[] ContentTypes { get; set; } = [];
+            public string[] ContentParts { get; set; } = [];
         }
     }
 }

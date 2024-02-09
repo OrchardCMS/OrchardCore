@@ -10,10 +10,7 @@ namespace OrchardCore.Forms.GraphQL
             Name = "LabelPart";
 
             Field(x => x.For, nullable: true);
-            Field<StringGraphType>("value", resolve: context =>
-            {
-                return context.Source.ContentItem.DisplayText;
-            });
+            Field("value", context => context.ContentItem.DisplayText);
         }
     }
 }

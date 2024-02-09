@@ -1,31 +1,31 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Deployment
+namespace OrchardCore.Deployment;
+
+public class Permissions : IPermissionProvider
 {
-    public class Permissions : IPermissionProvider
-    {
-        public static readonly Permission ManageDeploymentPlan = CommonPermissions.ManageDeploymentPlan;
-        public static readonly Permission Export = CommonPermissions.Export;
-        public static readonly Permission Import = CommonPermissions.Import;
+    public static readonly Permission ManageDeploymentPlan = CommonPermissions.ManageDeploymentPlan;
+    public static readonly Permission Export = CommonPermissions.Export;
+    public static readonly Permission Import = CommonPermissions.Import;
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        {
-            return Task.FromResult(new[] { ManageDeploymentPlan, Import, Export }.AsEnumerable());
-        }
+    private readonly IEnumerable<Permission> _allPermissions =
+    [
+        Import,
+        Export,
+        ManageDeploymentPlan,
+    ];
 
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
+    [
+        new PermissionStereotype
         {
-            return new[]
-            {
-                new PermissionStereotype
-                {
-                    Name = "Administrator",
-                    Permissions = new[] { Import, Export },
-                }
-            };
-        }
-    }
+            Name = "Administrator",
+            Permissions = _allPermissions,
+        },
+    ];
 }

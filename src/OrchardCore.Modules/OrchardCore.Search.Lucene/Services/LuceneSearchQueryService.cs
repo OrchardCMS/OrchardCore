@@ -8,7 +8,7 @@ namespace OrchardCore.Search.Lucene.Services
     {
         private readonly LuceneIndexManager _luceneIndexManager;
 
-        private static readonly HashSet<string> _idSet = new(new string[] { "ContentItemId" });
+        private static readonly HashSet<string> _idSet = new(["ContentItemId"]);
 
         public LuceneSearchQueryService(LuceneIndexManager luceneIndexManager)
         {

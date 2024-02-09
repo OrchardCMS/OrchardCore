@@ -28,7 +28,7 @@ namespace OrchardCore.Tests.Apis.Context
                         .WithField("contentItemId");
                 });
 
-            BlogContentItemId = result["data"]["blog"].First["contentItemId"].ToString();
+            BlogContentItemId = result["data"]["blog"][0]["contentItemId"].ToString();
         }
     }
 }

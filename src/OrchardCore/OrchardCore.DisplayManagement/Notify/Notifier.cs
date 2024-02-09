@@ -12,7 +12,7 @@ namespace OrchardCore.DisplayManagement.Notify
 
         public Notifier(ILogger<Notifier> logger)
         {
-            _entries = new List<NotifyEntry>();
+            _entries = [];
             _logger = logger;
         }
 

@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
@@ -168,16 +167,14 @@ namespace OrchardCore.Users.Controllers
             return RedirectToAction(nameof(AdminController.Index), "Admin");
         }
 
-        private IActionResult RedirectToLocal(string returnUrl)
+        private RedirectResult RedirectToLocal(string returnUrl)
         {
             if (Url.IsLocalUrl(returnUrl))
             {
                 return Redirect(returnUrl);
             }
-            else
-            {
-                return Redirect("~/");
-            }
+
+            return Redirect("~/");
         }
     }
 }

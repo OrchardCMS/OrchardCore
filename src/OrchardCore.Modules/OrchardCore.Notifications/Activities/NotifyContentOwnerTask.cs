@@ -58,6 +58,6 @@ public class NotifyContentOwnerTask : NotifyUserTaskActivity<NotifyContentOwnerT
             }
         }
 
-        return Enumerable.Empty<IUser>();
+        return [];
     }
 }

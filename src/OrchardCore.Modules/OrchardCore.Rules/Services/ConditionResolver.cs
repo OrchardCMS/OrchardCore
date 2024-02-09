@@ -22,7 +22,9 @@ namespace OrchardCore.Rules.Services
                 return _serviceProvider.GetRequiredService(conditionEvaluatorType) as IConditionEvaluator;
             }
 
-            throw new InvalidOperationException($"Condition evaluator for '{condition.GetType().Name}; not registered");
+            // throw new InvalidOperationException($"Condition evaluator for '{condition.GetType().Name}; not registered");
+
+            return null;
         }
     }
 }

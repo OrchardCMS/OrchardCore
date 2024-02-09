@@ -1,10 +1,10 @@
 @model OrchardCore.ContentFields.ViewModels.EditUserPickerFieldViewModel
-@using Newtonsoft.Json
-@using Newtonsoft.Json.Serialization
+@using System.Text.Json
+@using System.Text.Json.Nodes
 @using OrchardCore.Mvc.Utilities
 @{
     var settings = Model.PartFieldDefinition.GetSettings<UserPickerFieldSettings>();
-    var selectedUsers = JsonConvert.SerializeObject(Model.SelectedUsers, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+    var selectedUsers = JConvert.SerializeObject(Model.SelectedUsers, JOptions.CamelCase);
     var partName = Model.PartFieldDefinition.PartDefinition.Name;
     var fieldName = Model.PartFieldDefinition.Name;
     var contentTypeName = Model.TypePartDefinition.Name;

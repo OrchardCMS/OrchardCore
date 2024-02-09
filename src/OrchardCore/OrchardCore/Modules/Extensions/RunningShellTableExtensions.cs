@@ -11,10 +11,7 @@ namespace OrchardCore.Modules
     {
         public static ShellSettings Match(this IRunningShellTable table, HttpContext httpContext)
         {
-            if (httpContext == null)
-            {
-                throw new ArgumentNullException(nameof(httpContext));
-            }
+            ArgumentNullException.ThrowIfNull(httpContext);
 
             var httpRequest = httpContext.Request;
 

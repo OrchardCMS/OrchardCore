@@ -10,6 +10,6 @@ namespace OrchardCore.Sitemaps.Models
 
     public class SitemapIndexSource : SitemapSource
     {
-        public string[] ContainedSitemapIds { get; set; } = Array.Empty<string>();
+        public string[] ContainedSitemapIds { get; set; } = [];
     }
 }

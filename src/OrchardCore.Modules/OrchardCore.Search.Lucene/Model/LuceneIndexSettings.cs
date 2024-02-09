@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using OrchardCore.Data.Documents;
 
 namespace OrchardCore.Search.Lucene.Model
@@ -22,6 +22,6 @@ namespace OrchardCore.Search.Lucene.Model
 
     public class LuceneIndexSettingsDocument : Document
     {
-        public Dictionary<string, LuceneIndexSettings> LuceneIndexSettings { get; set; } = new Dictionary<string, LuceneIndexSettings>();
+        public Dictionary<string, LuceneIndexSettings> LuceneIndexSettings { get; set; } = [];
     }
 }

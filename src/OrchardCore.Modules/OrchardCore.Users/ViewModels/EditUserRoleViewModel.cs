@@ -4,7 +4,7 @@ namespace OrchardCore.Users.ViewModels
 {
     public class EditUserRoleViewModel
     {
-        public RoleEntry[] Roles { get; set; } = Array.Empty<RoleEntry>();
+        public RoleEntry[] Roles { get; set; } = [];
     }
 
     public class RoleEntry
