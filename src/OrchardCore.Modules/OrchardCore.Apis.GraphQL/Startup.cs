@@ -1,3 +1,4 @@
+using System.Text.Json;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Execution;
@@ -31,7 +32,6 @@ namespace OrchardCore.Apis.GraphQL
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
-            services.AddSingleton<IDocumentWriter, DocumentWriter>();
             services.AddSingleton<IDataLoaderContextAccessor, DataLoaderContextAccessor>();
             services.AddSingleton<IDocumentExecutionListener, DataLoaderDocumentListener>();
 
@@ -42,11 +42,13 @@ namespace OrchardCore.Apis.GraphQL
             services.AddSingleton<IErrorInfoProvider>(services =>
             {
                 var settings = services.GetRequiredService<IOptions<GraphQLSettings>>();
-                return new ErrorInfoProvider(new ErrorInfoProviderOptions { ExposeExceptionStackTrace = settings.Value.ExposeExceptions });
+                return new ErrorInfoProvider(new ErrorInfoProviderOptions { ExposeExceptionDetails = settings.Value.ExposeExceptions });
             });
 
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddTransient<INavigationProvider, AdminMenu>();
+            services.AddSingleton<GraphQLMiddleware>();
+            services.AddGraphQL(builder => builder.AddSystemTextJson());
 
             services.AddOptions<GraphQLSettings>().Configure<IShellConfiguration>((c, configuration) =>
             {
@@ -67,7 +69,7 @@ namespace OrchardCore.Apis.GraphQL
                     User = ctx.User,
                 };
                 c.ExposeExceptions = exposeExceptions;
-                c.MaxDepth = configuration.GetValue<int?>($"OrchardCore_Apis_GraphQL:{nameof(GraphQLSettings.MaxDepth)}") ?? 20;
+                c.MaxDepth = configuration.GetValue<int?>($"OrchardCore_Apis_GraphQL:{nameof(GraphQLSettings.MaxDepth)}") ?? 100;
                 c.MaxComplexity = configuration.GetValue<int?>($"OrchardCore_Apis_GraphQL:{nameof(GraphQLSettings.MaxComplexity)}");
                 c.FieldImpact = configuration.GetValue<double?>($"OrchardCore_Apis_GraphQL:{nameof(GraphQLSettings.FieldImpact)}");
                 c.MaxNumberOfResults = configuration.GetValue<int?>($"OrchardCore_Apis_GraphQL:{nameof(GraphQLSettings.MaxNumberOfResults)}") ?? 1000;
@@ -78,7 +80,7 @@ namespace OrchardCore.Apis.GraphQL
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            app.UseMiddleware<GraphQLMiddleware>(serviceProvider.GetService<IOptions<GraphQLSettings>>().Value);
+            app.UseMiddleware<GraphQLMiddleware>();
         }
     }
 }

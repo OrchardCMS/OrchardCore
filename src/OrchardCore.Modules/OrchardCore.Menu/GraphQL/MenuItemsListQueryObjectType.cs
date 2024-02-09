@@ -9,10 +9,10 @@ namespace OrchardCore.Menu.GraphQL
         {
             Name = "MenuItemsListPart";
 
-            Field<ListGraphType<MenuItemInterface>>(
-                "menuItems",
-                "The menu items.",
-                resolve: context => context.Source.MenuItems);
+            Field<ListGraphType<MenuItemInterface>>("menuItems")
+               .Description("The menu items.")
+                .Resolve(context => context.Source.MenuItems);
+
         }
     }
 }

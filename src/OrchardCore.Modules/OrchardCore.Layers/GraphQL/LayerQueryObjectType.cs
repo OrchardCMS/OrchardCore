@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,31 +26,31 @@ namespace OrchardCore.Layers.GraphQL
 #pragma warning disable 0618
             Field(layer => layer.Rule).Description("Deprecated. The rule that activates the layer.");
 #pragma warning restore 0618
-            Field<ListGraphType<StringGraphType>, IEnumerable<Condition>>()
-                .Name("layerrule")
+            Field<ListGraphType<StringGraphType>, IEnumerable<Condition>>("layerrule")
                 .Description("The rule that activates the layer.")
                 .Resolve(ctx => ctx.Source.LayerRule.Conditions);
             Field(layer => layer.Description).Description("The description of the layer.");
-            Field<ListGraphType<LayerWidgetQueryObjectType>, IEnumerable<ContentItem>>()
-                .Name("widgets")
+            Field<ListGraphType<LayerWidgetQueryObjectType>, IEnumerable<ContentItem>>("widgets")
                 .Description("The widgets for this layer.")
-                .Argument<PublicationStatusGraphType, PublicationStatusEnum>("status", "publication status of the widgets")
-                .ResolveLockedAsync(async ctx =>
+                .Argument<PublicationStatusGraphType>("status", "publication status of the widgets")
+                .ResolveLockedAsync(GetWidgetsForLayerAsync);
+
+            async ValueTask<IEnumerable<ContentItem>> GetWidgetsForLayerAsync(IResolveFieldContext<Layer> context)
+            {
+                var layerService = context.RequestServices.GetService<ILayerService>();
+
+                var filter = GetVersionFilter(context.GetArgument<PublicationStatusEnum>("status"));
+                var widgets = await layerService.GetLayerWidgetsAsync(filter);
+
+                var layerWidgets = widgets?.Where(item =>
                 {
-                    var layerService = ctx.RequestServices.GetService<ILayerService>();
-
-                    var filter = GetVersionFilter(ctx.GetArgument<PublicationStatusEnum>("status"));
-                    var widgets = await layerService.GetLayerWidgetsAsync(filter);
-
-                    var layerWidgets = widgets?.Where(item =>
-                    {
-                        var metadata = item.As<LayerMetadata>();
-                        if (metadata == null) return false;
-                        return metadata.Layer == ctx.Source.Name;
-                    });
-
-                    return layerWidgets;
+                    var metadata = item.As<LayerMetadata>();
+                    if (metadata == null) return false;
+                    return metadata.Layer == context.Source.Name;
                 });
+
+                return layerWidgets;
+            }
         }
 
         private static Expression<Func<ContentItemIndex, bool>> GetVersionFilter(PublicationStatusEnum status) =>

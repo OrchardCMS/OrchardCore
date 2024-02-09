@@ -185,8 +185,7 @@ namespace OrchardCore.Users.Controllers
                         Text = roleName,
                         Value = roleName.Contains(' ') ? $"\"{roleName}\"" : roleName,
                         Selected = string.Equals(options.SelectedRole?.Trim('"'), roleName, StringComparison.OrdinalIgnoreCase)
-                    })
-,
+                    }),
             ];
 
             // Populate options pager summary values.

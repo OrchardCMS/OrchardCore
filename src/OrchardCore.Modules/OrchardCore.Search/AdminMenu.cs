@@ -29,7 +29,8 @@ namespace OrchardCore.Search
 
             builder
                 .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
-                    .AddClass("search").Id("search")
+                    .AddClass("search")
+                    .Id("search")
                     .Add(S["Settings"], S["Settings"].PrefixPosition(), settings => settings
                         .Action("Index", "Admin", _routeValues)
                         .Permission(Permissions.ManageSearchSettings)
