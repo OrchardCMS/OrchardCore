@@ -63,7 +63,7 @@ namespace OrchardCore.Workflows.Recipes
 
         private string ReGenerateHttpRequestEventUrl(WorkflowType workflow, ActivityRecord activity)
         {
-            var tokenLifeSpan = activity.Properties["TokenLifeSpan"].ToObject<int>();
+            var tokenLifeSpan = activity.Properties["TokenLifeSpan"]?.ToObject<int>() ?? 0;
             var token = _securityTokenService.CreateToken(new WorkflowPayload(workflow.WorkflowTypeId, activity.ActivityId),
                 TimeSpan.FromDays(tokenLifeSpan == 0 ? HttpWorkflowController.NoExpiryTokenLifespan : tokenLifeSpan));
 
