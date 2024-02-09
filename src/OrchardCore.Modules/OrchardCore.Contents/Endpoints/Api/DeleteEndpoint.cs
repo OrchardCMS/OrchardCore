@@ -11,7 +11,7 @@ public static class DeleteEndpoint
 {
     public static IEndpointRouteBuilder AddDeleteContentApiEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapDelete("api/ep-content/{contentItemId}", ActionAsync);
+        builder.MapDelete("api/content/{contentItemId}", ActionAsync);
 
         return builder;
     }

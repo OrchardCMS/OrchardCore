@@ -18,7 +18,7 @@ public static class CreateEndpoint
 {
     public static IEndpointRouteBuilder AddCreateContentApiEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapPost("api/ep-content", ActionAsync);
+        builder.MapPost("api/content", ActionAsync);
 
         return builder;
     }

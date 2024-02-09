@@ -11,7 +11,7 @@ public static class GetEndpoint
 {
     public static IEndpointRouteBuilder AddGetContentApiContentEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapGet("api/ep-content/{contentItemId}", ActionAsync);
+        builder.MapGet("api/content/{contentItemId}", ActionAsync);
 
         return builder;
     }
