@@ -80,7 +80,7 @@ Orchard Core is available for use via two different NuGet meta packages: `Orchar
 
 ![image](../assets/images/templates/orchard-screencast-2.gif)
 
-After creating a new Web Application, Visual Studio automatically adds `Models`, `Views` and `Controllers` folders with files. We can delete them for now.
+Visual Studio may automatically include Models, Views, and Controllers folders with boilerplate code, depending on the template used to create the web application. To prevent potential conflicts with OrchardCore services, it is advisable to delete these folders.
 Finally, we will need to register Orchard CMS service in our `Program.cs` file like this:
 
 ```csharp
