@@ -51,9 +51,9 @@ namespace OrchardCore.AuditTrail.Services
         }
     }
 
-    public class DateNode : OperatorNode
+    public class DateTimeOffsetNode : OperatorNode
     {
-        public DateNode(DateTimeOffset dateTime)
+        public DateTimeOffsetNode(DateTimeOffset dateTime)
         {
             DateTime = dateTime;
         }
@@ -67,9 +67,9 @@ namespace OrchardCore.AuditTrail.Services
             => $"{(string.IsNullOrEmpty(Operator) ? string.Empty : Operator)}{DateTime:o}";
     }
 
-    public class DateNode2 : OperatorNode
+    public class DateTimeNode : OperatorNode
     {
-        public DateNode2(DateTime dateTime)
+        public DateTimeNode(DateTime dateTime)
         {
             DateTime = dateTime;
         }
@@ -199,7 +199,7 @@ namespace OrchardCore.AuditTrail.Services
                     // Try o, primarily for times, and fall back to local timezone.
                     if (DateTimeOffset.TryParseExact(dateValue, "yyyy-MM-dd'T'HH:mm:ss.FFFK", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateTimeOffset))
                     {
-                        return new DateNode2(dateTimeOffset.UtcDateTime);
+                        return new DateTimeNode(dateTimeOffset.UtcDateTime);
                     }
                     else
                     {
@@ -216,7 +216,7 @@ namespace OrchardCore.AuditTrail.Services
                         if (success)
                         {
                             var converted = context.Clock.ConvertToTimeZone(dateTime, context.UserTimeZone);
-                            return new DateNode2(converted.UtcDateTime.Date);
+                            return new DateTimeNode(converted.UtcDateTime.Date);
                         }
                     }
 
