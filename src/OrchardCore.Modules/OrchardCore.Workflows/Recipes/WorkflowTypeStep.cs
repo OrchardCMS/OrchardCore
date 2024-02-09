@@ -21,7 +21,10 @@ namespace OrchardCore.Workflows.Recipes
         private readonly ISecurityTokenService _securityTokenService;
         private readonly IUrlHelper _urlHelper;
 
-        public WorkflowTypeStep(IWorkflowTypeStore workflowTypeStore, ISecurityTokenService securityTokenService, IActionContextAccessor actionContextAccessor, IUrlHelperFactory urlHelperFactory)
+        public WorkflowTypeStep(IWorkflowTypeStore workflowTypeStore,
+            ISecurityTokenService securityTokenService,
+            IActionContextAccessor actionContextAccessor,
+            IUrlHelperFactory urlHelperFactory)
         {
             _workflowTypeStore = workflowTypeStore;
             _securityTokenService = securityTokenService;
