@@ -127,6 +127,9 @@
 <input type="hidden" id="moveMediaListUrl" value="@Url.Action("MoveMediaList", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="uploadFiles" value="@Url.Action("Upload", "Admin", new { area = "OrchardCore.Media", extensions = Model.Extensions })" />
 
+@* Settings *@
+<input type="hidden" id="allowNewRootFolders" value="@(Model.AllowNewRootFolders ? "true" : "false")" />
+
 @* Chunked file upload settings *@
 <input type="hidden" id="maxUploadChunkSize" value="@MediaOptions.Value.MaxUploadChunkSize" />
 

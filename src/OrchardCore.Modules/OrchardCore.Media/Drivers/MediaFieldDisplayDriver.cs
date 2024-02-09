@@ -78,7 +78,7 @@ namespace OrchardCore.Media.Drivers
                 }
 
                 model.Paths = JConvert.SerializeObject(itemPaths, JOptions.CamelCase);
-                model.TempUploadFolder = _attachedMediaFieldFileService.MediaFieldsTempSubFolder;
+                model.TempUploadFolder = _attachedMediaFieldFileService.GetMediaFieldsTempSubFolder();
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
