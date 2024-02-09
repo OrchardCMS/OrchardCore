@@ -106,7 +106,7 @@ namespace OrchardCore.Layers.Services
                 }),
             };
 
-            _allMethods = new[] { _isAnonymous, _isAuthenticated, _isInRole, _isHomepage, _url, _culture };
+            _allMethods = [_isAnonymous, _isAuthenticated, _isInRole, _isHomepage, _url, _culture];
         }
 
         public IEnumerable<GlobalMethod> GetMethods()

@@ -186,7 +186,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 .Returns(mockSiteService);
             mockServiceProvider
                 .Setup(x => x.GetService(typeof(IEnumerable<IRegistrationFormEvents>)))
-                .Returns(Enumerable.Empty<IRegistrationFormEvents>());
+                .Returns(Array.Empty<IRegistrationFormEvents>());
             mockServiceProvider
                 .Setup(x => x.GetService(typeof(IUserService)))
                 .Returns(userService.Object);

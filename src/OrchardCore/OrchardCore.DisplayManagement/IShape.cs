@@ -1,8 +1,7 @@
-using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
 
@@ -120,7 +119,7 @@ namespace OrchardCore.DisplayManagement
             return tagBuilder;
         }
 
-        public static JObject ShapeToJson(this IShape shape) => new ShapeSerializer(shape).Serialize();
+        public static JsonObject ShapeToJson(this IShape shape) => new ShapeSerializer(shape).Serialize();
 
     }
 }

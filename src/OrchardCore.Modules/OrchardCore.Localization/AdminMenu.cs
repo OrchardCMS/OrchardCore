@@ -1,5 +1,5 @@
-using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Localization.Drivers;
 using OrchardCore.Navigation;
@@ -11,6 +11,12 @@ namespace OrchardCore.Localization
     /// </summary>
     public class AdminMenu : INavigationProvider
     {
+        private static readonly RouteValueDictionary _routeValues = new()
+        {
+            { "area", "OrchardCore.Settings" },
+            { "groupId", LocalizationSettingsDisplayDriver.GroupId },
+        };
+
         protected readonly IStringLocalizer S;
 
         /// <summary>
@@ -25,23 +31,27 @@ namespace OrchardCore.Localization
         /// <inheritdocs />
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
-                builder
-                    .Add(S["Configuration"], configuration => configuration
-                        .Add(S["Settings"], settings => settings
-                            .Add(S["Localization"], localization => localization
-                                .AddClass("localization").Id("localization")
-                                .Add(S["Cultures"], S["Cultures"].PrefixPosition(), entry => entry
-                                    .AddClass("cultures").Id("cultures")
-                                    .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LocalizationSettingsDisplayDriver.GroupId })
-                                    .Permission(Permissions.ManageCultures)
-                                    .LocalNav()
-                                )
+                return Task.CompletedTask;
+            }
+
+            builder
+                .Add(S["Configuration"], configuration => configuration
+                    .Add(S["Settings"], settings => settings
+                        .Add(S["Localization"], localization => localization
+                            .AddClass("localization")
+                            .Id("localization")
+                            .Add(S["Cultures"], S["Cultures"].PrefixPosition(), cultures => cultures
+                                .AddClass("cultures")
+                                .Id("cultures")
+                                .Action("Index", "Admin", _routeValues)
+                                .Permission(Permissions.ManageCultures)
+                                .LocalNav()
                             )
                         )
-                    );
-            }
+                    )
+                );
 
             return Task.CompletedTask;
         }

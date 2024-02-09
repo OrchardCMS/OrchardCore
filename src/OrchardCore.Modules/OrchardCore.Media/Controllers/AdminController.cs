@@ -20,9 +20,8 @@ namespace OrchardCore.Media.Controllers
 {
     public class AdminController : Controller
     {
-        private static readonly char[] InvalidFolderNameCharacters = new char[] { '\\', '/' };
-        private static readonly char[] ExtensionSeperator = new char[] { ' ', ',' };
-        private static readonly HashSet<string> EmptySet = new();
+        private static readonly char[] _invalidFolderNameCharacters = ['\\', '/'];
+        private static readonly char[] _extensionSeperator = [' ', ','];
 
         private readonly IMediaFileStore _mediaFileStore;
         private readonly IMediaNameNormalizerService _mediaNameNormalizerService;
@@ -417,7 +416,7 @@ namespace OrchardCore.Media.Controllers
 
             name = _mediaNameNormalizerService.NormalizeFolderName(name);
 
-            if (InvalidFolderNameCharacters.Any(invalidChar => name.Contains(invalidChar)))
+            if (_invalidFolderNameCharacters.Any(invalidChar => name.Contains(invalidChar)))
             {
                 return BadRequest(S["Cannot create folder because the folder name contains invalid characters"]);
             }
@@ -487,7 +486,7 @@ namespace OrchardCore.Media.Controllers
         {
             if (!string.IsNullOrWhiteSpace(exts))
             {
-                var extensions = exts.Split(ExtensionSeperator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                var extensions = exts.Split(_extensionSeperator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
                 var requestedExtensions = _mediaOptions.AllowedFileExtensions
                     .Intersect(extensions)
@@ -505,7 +504,7 @@ namespace OrchardCore.Media.Controllers
                     .ToHashSet(StringComparer.OrdinalIgnoreCase);
             }
 
-            return EmptySet;
+            return [];
         }
 
         private string GetCacheBustingMediaPublicUrl(string path) =>

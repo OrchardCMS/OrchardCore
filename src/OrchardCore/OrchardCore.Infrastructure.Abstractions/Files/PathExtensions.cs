@@ -7,12 +7,12 @@ namespace System.IO
 {
     public class PathExtensions
     {
-        public static readonly char[] PathSeparators = new[] { '/', '\\' };
+        public static readonly char[] PathSeparators = ['/', '\\'];
         private const string CurrentDirectoryToken = ".";
         private const string ParentDirectoryToken = "..";
 
         /// <summary>
-        /// Combines two path parts
+        /// Combines two path parts.
         /// </summary>
         public static string Combine(string path, string other = null)
         {
@@ -45,7 +45,7 @@ namespace System.IO
         }
 
         /// <summary>
-        /// Combines multiple path parts
+        /// Combines multiple path parts.
         /// </summary>
         public static string Combine(string path, params string[] others)
         {
@@ -60,7 +60,7 @@ namespace System.IO
         }
 
         /// <summary>
-        /// Resolves relative segments in a path
+        /// Resolves relative segments in a path.
         /// </summary>
         public static string ResolvePath(string path)
         {

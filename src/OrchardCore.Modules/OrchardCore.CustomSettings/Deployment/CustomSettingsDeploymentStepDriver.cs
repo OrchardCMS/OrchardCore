@@ -40,7 +40,7 @@ namespace OrchardCore.CustomSettings.Deployment
 
         public override async Task<IDisplayResult> UpdateAsync(CustomSettingsDeploymentStep step, IUpdateModel updater)
         {
-            step.SettingsTypeNames = Array.Empty<string>();
+            step.SettingsTypeNames = [];
 
             await updater.TryUpdateModelAsync(step,
                                               Prefix,
@@ -50,7 +50,7 @@ namespace OrchardCore.CustomSettings.Deployment
             // don't have the selected option if include all
             if (step.IncludeAll)
             {
-                step.SettingsTypeNames = Array.Empty<string>();
+                step.SettingsTypeNames = [];
             }
 
             return Edit(step);

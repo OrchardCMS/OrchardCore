@@ -4,7 +4,7 @@ namespace OrchardCore.OpenId.ViewModels
 {
     public class OpenIdApplicationsIndexViewModel
     {
-        public IList<OpenIdApplicationEntry> Applications { get; } = new List<OpenIdApplicationEntry>();
+        public IList<OpenIdApplicationEntry> Applications { get; } = [];
         public dynamic Pager { get; set; }
     }
 

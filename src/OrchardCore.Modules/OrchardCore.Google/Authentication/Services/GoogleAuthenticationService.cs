@@ -36,10 +36,7 @@ namespace OrchardCore.Google.Authentication.Services
 
         public async Task UpdateSettingsAsync(GoogleAuthenticationSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
             container.Alter<GoogleAuthenticationSettings>(nameof(GoogleAuthenticationSettings), aspect =>
@@ -54,10 +51,7 @@ namespace OrchardCore.Google.Authentication.Services
 
         public IEnumerable<ValidationResult> ValidateSettings(GoogleAuthenticationSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var results = new List<ValidationResult>();
 

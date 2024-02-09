@@ -21,7 +21,7 @@ public class AzureAISearchIndexingService
     private readonly IIndexingTaskManager _indexingTaskManager;
     private readonly AzureAISearchIndexSettingsService _azureAISearchIndexSettingsService;
     private readonly AzureAIIndexDocumentManager _indexDocumentManager;
-    private readonly ISession _session;
+    private readonly IStore _store;
     private readonly IContentManager _contentManager;
     private readonly IEnumerable<IContentItemIndexHandler> _contentItemIndexHandlers;
     private readonly ILogger _logger;
@@ -30,7 +30,7 @@ public class AzureAISearchIndexingService
         IIndexingTaskManager indexingTaskManager,
         AzureAISearchIndexSettingsService azureAISearchIndexSettingsService,
         AzureAIIndexDocumentManager indexDocumentManager,
-        ISession session,
+        IStore store,
         IContentManager contentManager,
         IEnumerable<IContentItemIndexHandler> contentItemIndexHandlers,
         ILogger<AzureAISearchIndexingService> logger)
@@ -38,7 +38,7 @@ public class AzureAISearchIndexingService
         _indexingTaskManager = indexingTaskManager;
         _azureAISearchIndexSettingsService = azureAISearchIndexSettingsService;
         _indexDocumentManager = indexDocumentManager;
-        _session = session;
+        _store = store;
         _contentManager = contentManager;
         _contentItemIndexHandlers = contentItemIndexHandlers;
         _logger = logger;
@@ -81,6 +81,7 @@ public class AzureAISearchIndexingService
         var tasks = new List<IndexingTask>();
 
         var allContentTypes = indexSettings.SelectMany(x => x.IndexedContentTypes ?? []).Distinct().ToList();
+        var readOnlySession = _store.CreateSession(withTracking: false);
 
         while (tasks.Count <= _batchSize)
         {
@@ -107,25 +108,15 @@ public class AzureAISearchIndexingService
 
             if (indexSettings.Any(x => !x.IndexLatest))
             {
-                var publishedContentItems = await _session.Query<ContentItem, ContentItemIndex>(index => index.Published && index.ContentType.IsIn(allContentTypes) && index.ContentItemId.IsIn(updatedContentItemIds)).ListAsync();
+                var publishedContentItems = await readOnlySession.Query<ContentItem, ContentItemIndex>(index => index.Published && index.ContentType.IsIn(allContentTypes) && index.ContentItemId.IsIn(updatedContentItemIds)).ListAsync();
                 allPublished = publishedContentItems.DistinctBy(x => x.ContentItemId)
                 .ToDictionary(k => k.ContentItemId);
-
-                foreach (var publishedContentItem in publishedContentItems)
-                {
-                    _session.Detach(publishedContentItem);
-                }
             }
 
             if (indexSettings.Any(x => x.IndexLatest))
             {
-                var latestContentItems = await _session.Query<ContentItem, ContentItemIndex>(index => index.Latest && index.ContentType.IsIn(allContentTypes) && index.ContentItemId.IsIn(updatedContentItemIds)).ListAsync();
+                var latestContentItems = await readOnlySession.Query<ContentItem, ContentItemIndex>(index => index.Latest && index.ContentType.IsIn(allContentTypes) && index.ContentItemId.IsIn(updatedContentItemIds)).ListAsync();
                 allLatest = latestContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId);
-
-                foreach (var latestContentItem in latestContentItems)
-                {
-                    _session.Detach(latestContentItem);
-                }
             }
 
             foreach (var task in tasks)

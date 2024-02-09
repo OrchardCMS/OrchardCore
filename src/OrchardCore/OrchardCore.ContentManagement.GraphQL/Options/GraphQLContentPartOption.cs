@@ -13,10 +13,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
     {
         public GraphQLContentPartOption(string contentPartName)
         {
-            if (string.IsNullOrEmpty(contentPartName))
-            {
-                throw new ArgumentNullException(nameof(contentPartName));
-            }
+            ArgumentException.ThrowIfNullOrEmpty(contentPartName);
 
             Name = contentPartName;
         }

@@ -10,7 +10,7 @@ namespace OrchardCore.Modules
         private static Instant CurrentInstant => SystemClock.Instance.GetCurrentInstant();
 
         /// <summary>
-        /// Returns a Datetime Kind.Utc that is "Now"
+        /// Returns a Datetime Kind.Utc that is "Now".
         /// </summary>
         /// <inheritdoc />
         public DateTime UtcNow => CurrentInstant.ToDateTimeUtc();
@@ -73,12 +73,9 @@ namespace OrchardCore.Modules
             return DateTimeZoneProviders.Tzdb.GetSystemDefault();
         }
 
-        private ITimeZone CreateTimeZone(DateTimeZone dateTimeZone)
+        private static TimeZone CreateTimeZone(DateTimeZone dateTimeZone)
         {
-            if (dateTimeZone == null)
-            {
-                throw new ArgumentException(nameof(DateTimeZone));
-            }
+            ArgumentNullException.ThrowIfNull(dateTimeZone);
 
             var zoneInterval = dateTimeZone.GetZoneInterval(CurrentInstant);
 

@@ -33,32 +33,32 @@ namespace OrchardCore.Users.ViewModels
             {
                 if (!NoEmail)
                 {
-                    yield return new ValidationResult(S["Email is required!"], new[] { "Email" });
+                    yield return new ValidationResult(S["Email is required!"], ["Email"]);
                 }
             }
             else if (!emailAddressValidator.Validate(Email))
             {
-                yield return new ValidationResult(S["Invalid Email."], new[] { "Email" });
+                yield return new ValidationResult(S["Invalid Email."], ["Email"]);
             }
 
             if (string.IsNullOrWhiteSpace(UserName) && !NoUsername)
             {
-                yield return new ValidationResult(S["Username is required!"], new[] { "UserName" });
+                yield return new ValidationResult(S["Username is required!"], ["UserName"]);
             }
 
             if (string.IsNullOrWhiteSpace(Password) && !NoPassword)
             {
-                yield return new ValidationResult(S["Password is required!"], new[] { "Password" });
+                yield return new ValidationResult(S["Password is required!"], ["Password"]);
             }
 
             if (Password != ConfirmPassword)
             {
-                yield return new ValidationResult(S["Confirm Password do not match"], new[] { "ConfirmPassword" });
+                yield return new ValidationResult(S["Confirm Password do not match"], ["ConfirmPassword"]);
             }
 
             if (Password != null && (Password.Length < 6 || Password.Length > 100))
             {
-                yield return new ValidationResult(string.Format(S["Password must be between {0} and {1} characters"], 6, 100), new[] { "Password" });
+                yield return new ValidationResult(string.Format(S["Password must be between {0} and {1} characters"], 6, 100), ["Password"]);
             }
         }
     }

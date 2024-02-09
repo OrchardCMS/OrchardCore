@@ -21,7 +21,7 @@ public class AzureAISearchIndexMap
 
     public AzureAISearchIndexMap(string azureFieldKey, Types type)
     {
-        ArgumentException.ThrowIfNullOrEmpty(azureFieldKey, nameof(azureFieldKey));
+        ArgumentException.ThrowIfNullOrEmpty(azureFieldKey);
 
         AzureFieldKey = azureFieldKey;
         Type = type;
