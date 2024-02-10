@@ -43,11 +43,18 @@ namespace OrchardCore.Admin
                 pattern = controllerAttribute.Template;
             }
 
+            var area = descriptor.RouteValues["area"];
+            var controller = descriptor.ControllerName;
+            var action = descriptor.ActionName;
+
             routes.MapAreaControllerRoute(
-                name: name ?? descriptor.DisplayName,
-                areaName: descriptor.RouteValues["area"],
-                pattern: $"{_adminUrlPrefix}/{pattern.TrimStart('/').Replace("{action}", descriptor.ActionName)}",
-                defaults: new { controller = descriptor.ControllerName, action = descriptor.ActionName }
+                name: name?
+                    .Replace("{area}", area)
+                    .Replace("{controller}", controller)
+                    .Replace("{action}", action) ?? descriptor.DisplayName,
+                areaName: area,
+                pattern: $"{_adminUrlPrefix}/{pattern.TrimStart('/').Replace("{action}", action)}",
+                defaults: new { controller, action }
             );
 
             return true;
