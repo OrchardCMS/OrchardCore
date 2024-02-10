@@ -21,12 +21,6 @@ namespace OrchardCore.Admin
         public const string NameFromControllerAndAction = "{controller}{action}";
 
         /// <summary>
-        /// This may be used if the route name should be the controller and action names separated by a dot. For
-        /// example <c>~/Admin/Flows/BuildEditor</c> gets the route name <c>Flows.BuildEditor</c>.
-        /// </summary>
-        public const string NameFromControllerAndActionDotSeparated = "{controller}.{action}";
-
-        /// <summary>
         /// Gets or sets the pattern which should be used as the path after the admin suffix. This is similar to the
         /// <see cref="RouteAttribute.Template"/>. When applying to a controller with multiple actions, the template
         /// should include the <c>{action}</c> expression. When applied to both the action and the controller, the

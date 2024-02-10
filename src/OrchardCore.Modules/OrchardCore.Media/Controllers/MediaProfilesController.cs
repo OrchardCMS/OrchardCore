@@ -21,7 +21,7 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.Media.Controllers
 {
-    [Admin("MediaProfiles/{action}", AdminAttribute.NameFromControllerAndActionDotSeparated)]
+    [Admin("MediaProfiles/{action}", "MediaProfiles.{action}")]
     public class MediaProfilesController : Controller
     {
         private const string _optionsSearch = "Options.Search";

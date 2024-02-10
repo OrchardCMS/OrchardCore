@@ -12,7 +12,7 @@ using OrchardCore.Modules;
 namespace OrchardCore.Media.Controllers
 {
     [Feature("OrchardCore.Media.Cache")]
-    [Admin("MediaCache/{action}", AdminAttribute.NameFromControllerAndActionDotSeparated)]
+    [Admin("MediaCache/{action}", "MediaCache.{action}")]
     public class MediaCacheController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
