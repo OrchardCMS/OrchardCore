@@ -41,7 +41,7 @@ namespace OrchardCore.Settings.Controllers
             H = h;
         }
 
-        [Admin("Settings/{groupId}")]
+        [Admin("Settings/{groupId}", "AdminSettings")]
         public async Task<IActionResult> Index(string groupId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageGroupSettings, (object)groupId))
