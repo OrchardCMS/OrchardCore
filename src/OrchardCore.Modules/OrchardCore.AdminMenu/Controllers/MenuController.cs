@@ -73,7 +73,7 @@ namespace OrchardCore.AdminMenu.Controllers
 
             var startIndex = pager.GetStartIndex();
             var pageSize = pager.PageSize;
-            IEnumerable<Models.AdminMenu> results = new List<Models.AdminMenu>();
+            IEnumerable<Models.AdminMenu> results = [];
 
             // todo: handle the case where there is a deserialization exception on some of the presets.
             // load at least the ones without error. Provide a way to delete the ones on error.

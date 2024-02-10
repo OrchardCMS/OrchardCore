@@ -56,7 +56,6 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
             .ToList();
         }).Location("Content:2#Azure AI Search;5")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
-        .Prefix(Prefix)
         .OnGroup(SearchConstants.SearchSettingsGroupId);
 
     public override async Task<IDisplayResult> UpdateAsync(AzureAISearchSettings section, BuildEditorContext context)
@@ -104,16 +103,6 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
         }
 
         return Edit(section);
-    }
-
-    protected override void BuildPrefix(ISite model, string htmlFieldPrefix)
-    {
-        Prefix = typeof(AzureAISearchSettings).Name;
-
-        if (!string.IsNullOrEmpty(htmlFieldPrefix))
-        {
-            Prefix = htmlFieldPrefix + "." + Prefix;
-        }
     }
 
     private static bool AreTheSame(string[] a, string[] b)

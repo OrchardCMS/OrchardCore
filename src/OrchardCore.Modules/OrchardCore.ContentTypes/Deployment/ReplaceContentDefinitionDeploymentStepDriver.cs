@@ -33,8 +33,8 @@ namespace OrchardCore.ContentTypes.Deployment
         public override async Task<IDisplayResult> UpdateAsync(ReplaceContentDefinitionDeploymentStep step, IUpdateModel updater)
         {
             // Initializes the value to empty otherwise the model is not updated if no type is selected.
-            step.ContentTypes = Array.Empty<string>();
-            step.ContentParts = Array.Empty<string>();
+            step.ContentTypes = [];
+            step.ContentParts = [];
 
             await updater.TryUpdateModelAsync(
                 step,
@@ -46,8 +46,8 @@ namespace OrchardCore.ContentTypes.Deployment
             // don't have the selected option if include all
             if (step.IncludeAll)
             {
-                step.ContentTypes = Array.Empty<string>();
-                step.ContentParts = Array.Empty<string>();
+                step.ContentTypes = [];
+                step.ContentParts = [];
             }
             else
             {

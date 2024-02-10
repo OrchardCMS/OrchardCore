@@ -39,9 +39,9 @@ namespace OrchardCore.ContentLocalization.Drivers
             );
         }
 
-        public override IDisplayResult Edit(LocalizationPart localizationPart)
+        public override IDisplayResult Edit(LocalizationPart localizationPart, BuildPartEditorContext context)
         {
-            return Initialize<LocalizationPartViewModel>("LocalizationPart_Edit", m => BuildViewModelAsync(m, localizationPart));
+            return Initialize<LocalizationPartViewModel>(GetEditorShapeType(context), m => BuildViewModelAsync(m, localizationPart));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(LocalizationPart model, IUpdateModel updater, UpdatePartEditorContext context)

@@ -6,6 +6,6 @@ using OrchardCore.Modules.Manifest;
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
     Description = "The alias module enables content items to have custom logical identifier.",
-    Dependencies = new[] { "OrchardCore.ContentTypes" },
+    Dependencies = ["OrchardCore.ContentTypes"],
     Category = "Content Management"
 )]

@@ -1,6 +1,5 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.Deployment;
 
@@ -24,18 +23,16 @@ namespace OrchardCore.AdminMenu.Deployment
                 return;
             }
 
-            var data = new JArray();
-            result.Steps.Add(new JObject(
-                new JProperty("name", "AdminMenu"),
-                new JProperty("data", data)
-            ));
-
-            // For each AdminNode, store info about its concrete type: linkAdminNode, contentTypesAdminNode etc...
-            var serializer = new JsonSerializer() { TypeNameHandling = TypeNameHandling.Auto };
+            var data = new JsonArray();
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "AdminMenu",
+                ["data"] = data,
+            });
 
             foreach (var adminMenu in (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu)
             {
-                var objectData = JObject.FromObject(adminMenu, serializer);
+                var objectData = JObject.FromObject(adminMenu);
                 data.Add(objectData);
             }
 

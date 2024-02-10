@@ -1,12 +1,19 @@
-using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
+using OrchardCore.ReverseProxy.Drivers;
 
 namespace OrchardCore.ReverseProxy
 {
     public class AdminMenu : INavigationProvider
     {
+        private static readonly RouteValueDictionary _routeValues = new()
+        {
+            { "area", "OrchardCore.Settings" },
+            { "groupId", ReverseProxySettingsDisplayDriver.GroupId},
+        };
+
         protected readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
@@ -16,20 +23,23 @@ namespace OrchardCore.ReverseProxy
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!NavigationHelper.IsAdminMenu(name))
             {
-                builder
-                    .Add(S["Configuration"], configuration => configuration
-                        .Add(S["Settings"], settings => settings
-                            .Add(S["Reverse Proxy"], S["Reverse Proxy"].PrefixPosition(), entry => entry
-                            .AddClass("reverseproxy").Id("reverseproxy")
-                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "ReverseProxy" })
-                                .Permission(Permissions.ManageReverseProxySettings)
-                                .LocalNav()
-                            )
-                        )
-                    );
+                return Task.CompletedTask;
             }
+
+            builder
+                .Add(S["Configuration"], configuration => configuration
+                    .Add(S["Settings"], settings => settings
+                        .Add(S["Reverse Proxy"], S["Reverse Proxy"].PrefixPosition(), entry => entry
+                        .AddClass("reverseproxy")
+                        .Id("reverseproxy")
+                            .Action("Index", "Admin", _routeValues)
+                            .Permission(Permissions.ManageReverseProxySettings)
+                            .LocalNav()
+                        )
+                    )
+                );
 
             return Task.CompletedTask;
         }

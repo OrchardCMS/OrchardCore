@@ -10,6 +10,8 @@ namespace OrchardCore.Widgets.Settings
 {
     public class WidgetsListPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<WidgetsListPart>
     {
+        private static readonly char[] _separator = [',', ' '];
+
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
             return Initialize<WidgetsListPartSettingsViewModel>("WidgetsPartSettings_Edit", model =>
@@ -27,7 +29,7 @@ namespace OrchardCore.Widgets.Settings
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Zones))
             {
-                context.Builder.WithSettings(new WidgetsListPartSettings { Zones = (model.Zones ?? "").Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries) });
+                context.Builder.WithSettings(new WidgetsListPartSettings { Zones = (model.Zones ?? string.Empty).Split(_separator, StringSplitOptions.RemoveEmptyEntries) });
             }
 
             return Edit(contentTypePartDefinition, context.Updater);

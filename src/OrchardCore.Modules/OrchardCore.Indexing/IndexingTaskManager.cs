@@ -30,7 +30,7 @@ namespace OrchardCore.Indexing.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
 
-        private readonly List<IndexingTask> _tasksQueue = new();
+        private readonly List<IndexingTask> _tasksQueue = [];
 
         public IndexingTaskManager(
             IClock clock,
@@ -48,10 +48,7 @@ namespace OrchardCore.Indexing.Services
 
         public Task CreateTaskAsync(ContentItem contentItem, IndexingTaskTypes type)
         {
-            if (contentItem == null)
-            {
-                throw new ArgumentNullException(nameof(contentItem));
-            }
+            ArgumentNullException.ThrowIfNull(contentItem);
 
             // Do not index a preview content item.
             if (_httpContextAccessor.HttpContext?.Features.Get<ContentPreviewFeature>()?.Previewing == true)

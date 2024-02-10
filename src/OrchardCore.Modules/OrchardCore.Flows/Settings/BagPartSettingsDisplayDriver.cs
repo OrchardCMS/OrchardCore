@@ -35,9 +35,9 @@ namespace OrchardCore.Flows.Settings
                 model.BagPartSettings = settings;
                 model.ContainedContentTypes = model.BagPartSettings.ContainedContentTypes;
                 model.DisplayType = model.BagPartSettings.DisplayType;
-                model.ContentTypes = new NameValueCollection();
+                model.ContentTypes = [];
                 model.Source = settings.ContainedStereotypes != null && settings.ContainedStereotypes.Length > 0 ? BagPartSettingType.Stereotypes : BagPartSettingType.ContentTypes;
-                model.Stereotypes = string.Join(',', settings.ContainedStereotypes ?? Array.Empty<string>());
+                model.Stereotypes = string.Join(',', settings.ContainedStereotypes ?? []);
                 foreach (var contentTypeDefinition in await _contentDefinitionManager.ListTypeDefinitionsAsync())
                 {
                     model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
@@ -78,7 +78,7 @@ namespace OrchardCore.Flows.Settings
 
             context.Builder.WithSettings(new BagPartSettings
             {
-                ContainedContentTypes = Array.Empty<string>(),
+                ContainedContentTypes = [],
                 ContainedStereotypes = model.Stereotypes.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries),
                 DisplayType = model.DisplayType
             });
@@ -96,7 +96,7 @@ namespace OrchardCore.Flows.Settings
             context.Builder.WithSettings(new BagPartSettings
             {
                 ContainedContentTypes = model.ContainedContentTypes,
-                ContainedStereotypes = Array.Empty<string>(),
+                ContainedStereotypes = [],
                 DisplayType = model.DisplayType
             });
         }

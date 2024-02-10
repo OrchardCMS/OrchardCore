@@ -18,7 +18,6 @@ public class AdminController : Controller
     private readonly INotifier _notifier;
     private readonly IAuthorizationService _authorizationService;
     private readonly ISmsProviderResolver _smsProviderResolver;
-    private readonly ISmsService _smsService;
 
     protected readonly IHtmlLocalizer H;
     protected readonly IStringLocalizer S;
@@ -27,7 +26,6 @@ public class AdminController : Controller
         IOptions<SmsProviderOptions> smsProviderOptions,
         IPhoneFormatValidator phoneFormatValidator,
         ISmsProviderResolver smsProviderResolver,
-        ISmsService smsService,
         INotifier notifier,
         IAuthorizationService authorizationService,
         IHtmlLocalizer<AdminController> htmlLocalizer,
@@ -36,7 +34,6 @@ public class AdminController : Controller
         _smsProviderOptions = smsProviderOptions.Value;
         _phoneFormatValidator = phoneFormatValidator;
         _smsProviderResolver = smsProviderResolver;
-        _smsService = smsService;
         _notifier = notifier;
         _authorizationService = authorizationService;
         H = htmlLocalizer;
@@ -72,7 +69,7 @@ public class AdminController : Controller
 
             if (provider is null)
             {
-                ModelState.AddModelError(nameof(model.PhoneNumber), S["Please select a valid provider."]);
+                ModelState.AddModelError(nameof(model.Provider), S["Please select a valid provider."]);
             }
             else if (!_phoneFormatValidator.IsValid(model.PhoneNumber))
             {
@@ -80,11 +77,11 @@ public class AdminController : Controller
             }
             else
             {
-                var result = await _smsService.SendAsync(new SmsMessage()
+                var result = await provider.SendAsync(new SmsMessage()
                 {
                     To = model.PhoneNumber,
                     Body = S["This is a test SMS message."]
-                }, provider);
+                });
 
                 if (result.Succeeded)
                 {

@@ -23,7 +23,7 @@ public sealed class JsonConfigurationParser
     public static Task<IDictionary<string, string?>> ParseAsync(Stream input)
         => new JsonConfigurationParser().ParseStreamAsync(input);
 
-    private IDictionary<string, string?> ParseStream(Stream input)
+    private Dictionary<string, string?> ParseStream(Stream input)
     {
         var jsonDocumentOptions = new JsonDocumentOptions
         {

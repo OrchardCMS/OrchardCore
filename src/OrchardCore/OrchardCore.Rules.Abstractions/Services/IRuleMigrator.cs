@@ -1,4 +1,4 @@
-namespace OrchardCore.Rules
+namespace OrchardCore.Rules.Services
 {
     /// <comment>
     /// Migrates existing script rules to rules.

@@ -8,12 +8,12 @@ namespace OrchardCore.Widgets.ViewModels
 {
     public class WidgetsListPartEditViewModel
     {
-        public string[] AvailableZones { get; set; } = Array.Empty<string>();
+        public string[] AvailableZones { get; set; } = [];
 
-        public string[] Zones { get; set; } = Array.Empty<string>();
-        public string[] Prefixes { get; set; } = Array.Empty<string>();
-        public string[] ContentTypes { get; set; } = Array.Empty<string>();
-        public string[] ContentItems { get; set; } = Array.Empty<string>();
+        public string[] Zones { get; set; } = [];
+        public string[] Prefixes { get; set; } = [];
+        public string[] ContentTypes { get; set; } = [];
+        public string[] ContentItems { get; set; } = [];
 
         public WidgetsListPart WidgetsListPart { get; set; }
 

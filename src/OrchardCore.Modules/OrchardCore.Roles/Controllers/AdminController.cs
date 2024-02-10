@@ -248,9 +248,9 @@ namespace OrchardCore.Roles.Controllers
                 {
                     var groupKey = GetGroupKey(feature, permission.Category);
 
-                    if (installedPermissions.ContainsKey(groupKey))
+                    if (installedPermissions.TryGetValue(groupKey, out var value))
                     {
-                        installedPermissions[groupKey] = installedPermissions[groupKey].Concat(new[] { permission });
+                        installedPermissions[groupKey] = value.Concat(new[] { permission });
 
                         continue;
                     }
@@ -282,7 +282,7 @@ namespace OrchardCore.Roles.Controllers
             // Create a fake user to check the actual permissions. If the role is anonymous
             // IsAuthenticated needs to be false.
             var fakeIdentity = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Role, role.RoleName) },
-                role.RoleName != "Anonymous" ? "FakeAuthenticationType" : null);
+                !string.Equals(role.RoleName, "Anonymous", StringComparison.OrdinalIgnoreCase) ? "FakeAuthenticationType" : null);
 
             // Add role claims
             fakeIdentity.AddClaims(role.RoleClaims.Select(c => c.ToClaim()));

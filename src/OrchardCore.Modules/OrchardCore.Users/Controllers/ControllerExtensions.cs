@@ -49,7 +49,7 @@ namespace OrchardCore.Users.Controllers
         }
 
         /// <summary>
-        /// Returns the created user, otherwise returns null
+        /// Returns the created user, otherwise returns null.
         /// </summary>
         /// <param name="controller"></param>
         /// <param name="model"></param>

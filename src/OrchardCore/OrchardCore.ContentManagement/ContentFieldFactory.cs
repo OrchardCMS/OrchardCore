@@ -16,7 +16,7 @@ namespace OrchardCore.ContentManagement
 
         public ContentFieldFactory(IOptions<ContentOptions> contentOptions)
         {
-            _contentFieldActivators = new Dictionary<string, ITypeActivator<ContentField>>();
+            _contentFieldActivators = [];
 
             // Check content options for configured fields.
             foreach (var fieldOption in contentOptions.Value.ContentFieldOptions)

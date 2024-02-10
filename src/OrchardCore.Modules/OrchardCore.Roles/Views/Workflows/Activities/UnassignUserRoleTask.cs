@@ -55,7 +55,7 @@ public class UnassignUserRoleTask : TaskActivity<UnassignUserRoleTask>
 
         if (u is User user)
         {
-            foreach(var role in Roles)
+            foreach (var role in Roles)
             {
                 if (user.RoleNames.Contains(role))
                 {

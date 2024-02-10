@@ -253,7 +253,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                         await _notifier.SuccessAsync(H["Remote clients successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
+                        return BadRequest();
                 }
             }
 

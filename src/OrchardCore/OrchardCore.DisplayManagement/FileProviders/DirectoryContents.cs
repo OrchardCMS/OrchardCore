@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.Mime;
 using Microsoft.Extensions.FileProviders;
 
 namespace OrchardCore.DisplayManagement.FileProviders
@@ -11,7 +12,9 @@ namespace OrchardCore.DisplayManagement.FileProviders
 
         public DirectoryContents(IEnumerable<IFileInfo> entries)
         {
-            _entries = entries ?? throw new ArgumentNullException(nameof(entries));
+            ArgumentNullException.ThrowIfNull(entries);
+
+            _entries = entries;
         }
 
         public bool Exists

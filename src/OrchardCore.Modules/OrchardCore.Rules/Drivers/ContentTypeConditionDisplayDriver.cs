@@ -48,7 +48,7 @@ namespace OrchardCore.Rules.Drivers
                 condition.Value = model.Value;
                 if (!string.IsNullOrEmpty(model.SelectedOperation) && _options.Factories.TryGetValue(model.SelectedOperation, out var factory))
                 {
-                    condition.Operation = factory.Create() as StringOperator;
+                    condition.Operation = factory.Create();
                 }
             }
 

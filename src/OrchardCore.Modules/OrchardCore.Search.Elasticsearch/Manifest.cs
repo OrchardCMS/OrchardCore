@@ -11,11 +11,11 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Search.Elasticsearch",
     Name = "Elasticsearch",
     Description = "Creates Elasticsearch indexes to support search scenarios, introduces a preconfigured container-enabled content type.",
-    Dependencies = new[]
-    {
+    Dependencies =
+    [
         "OrchardCore.Indexing",
         "OrchardCore.ContentTypes"
-    },
+    ],
     Category = "Search"
 )]
 
@@ -23,7 +23,7 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Search.Elasticsearch.Worker",
     Name = "Elasticsearch Worker",
     Description = "Provides a background task to keep indices in sync with other instances.",
-    Dependencies = new[] { "OrchardCore.Search.Elasticsearch" },
+    Dependencies = ["OrchardCore.Search.Elasticsearch"],
     Category = "Search"
 )]
 
@@ -31,6 +31,6 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Search.Elasticsearch.ContentPicker",
     Name = "Elasticsearch Content Picker",
     Description = "Provides a Elasticsearch content picker field editor.",
-    Dependencies = new[] { "OrchardCore.Search.Elasticsearch", "OrchardCore.ContentFields" },
+    Dependencies = ["OrchardCore.Search.Elasticsearch", "OrchardCore.ContentFields"],
     Category = "Search"
 )]

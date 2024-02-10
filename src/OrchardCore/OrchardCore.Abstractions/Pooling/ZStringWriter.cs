@@ -45,50 +45,30 @@ namespace OrchardCore.Abstractions.Pooling
         //
         public override void Write(char value)
         {
-            if (!_isOpen)
-            {
-                throw new ObjectDisposedException(nameof(_sb));
-            }
+            ObjectDisposedException.ThrowIf(!_isOpen, nameof(_sb));
 
             _sb.Append(value);
         }
 
         public override void Write(char[] buffer, int index, int count)
         {
-            if (buffer == null)
-            {
-                throw new ArgumentNullException(nameof(buffer));
-            }
+            ArgumentNullException.ThrowIfNull(buffer);
 
-            if (index < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(index));
-            }
-
-            if (count < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(count));
-            }
-
+            ArgumentOutOfRangeException.ThrowIfLessThan(index, 0);
+            ArgumentOutOfRangeException.ThrowIfLessThan(count, 0);
             if (buffer.Length - index < count)
             {
                 throw new ArgumentException("Buffer overflow.");
             }
 
-            if (!_isOpen)
-            {
-                throw new ObjectDisposedException(nameof(_sb));
-            }
+            ObjectDisposedException.ThrowIf(!_isOpen, nameof(_sb));
 
             _sb.Append(buffer.AsSpan(index, count));
         }
 
         public override void Write(ReadOnlySpan<char> buffer)
         {
-            if (!_isOpen)
-            {
-                throw new ObjectDisposedException(nameof(_sb));
-            }
+            ObjectDisposedException.ThrowIf(!_isOpen, nameof(_sb));
 
             _sb.Append(buffer);
         }
@@ -98,10 +78,7 @@ namespace OrchardCore.Abstractions.Pooling
         //
         public override void Write(string value)
         {
-            if (!_isOpen)
-            {
-                throw new ObjectDisposedException(nameof(_sb));
-            }
+            ObjectDisposedException.ThrowIf(!_isOpen, nameof(_sb));
 
             if (value != null)
             {
@@ -111,20 +88,14 @@ namespace OrchardCore.Abstractions.Pooling
 
         public override void Write(StringBuilder value)
         {
-            if (!_isOpen)
-            {
-                throw new ObjectDisposedException(nameof(_sb));
-            }
+            ObjectDisposedException.ThrowIf(!_isOpen, nameof(_sb));
 
             _sb.Append(value);
         }
 
         public override void WriteLine(ReadOnlySpan<char> buffer)
         {
-            if (!_isOpen)
-            {
-                throw new ObjectDisposedException(nameof(_sb));
-            }
+            ObjectDisposedException.ThrowIf(!_isOpen, nameof(_sb));
 
             _sb.Append(buffer);
             WriteLine();
@@ -132,10 +103,7 @@ namespace OrchardCore.Abstractions.Pooling
 
         public override void WriteLine(StringBuilder value)
         {
-            if (!_isOpen)
-            {
-                throw new ObjectDisposedException(nameof(_sb));
-            }
+            ObjectDisposedException.ThrowIf(!_isOpen, nameof(_sb));
 
             _sb.Append(value);
             WriteLine();
@@ -177,10 +145,7 @@ namespace OrchardCore.Abstractions.Pooling
                 return Task.FromCanceled(cancellationToken);
             }
 
-            if (!_isOpen)
-            {
-                throw new ObjectDisposedException(nameof(_sb));
-            }
+            ObjectDisposedException.ThrowIf(!_isOpen, nameof(_sb));
 
             _sb.Append(value);
             return Task.CompletedTask;
@@ -205,10 +170,7 @@ namespace OrchardCore.Abstractions.Pooling
                 return Task.FromCanceled(cancellationToken);
             }
 
-            if (!_isOpen)
-            {
-                throw new ObjectDisposedException(nameof(_sb));
-            }
+            ObjectDisposedException.ThrowIf(!_isOpen, nameof(_sb));
 
             _sb.Append(value);
             WriteLine();

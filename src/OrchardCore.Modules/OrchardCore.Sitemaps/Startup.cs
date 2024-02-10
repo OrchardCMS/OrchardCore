@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -91,6 +92,10 @@ namespace OrchardCore.Sitemaps
             services.AddScoped<ISitemapSourceFactory, SitemapSourceFactory<CustomPathSitemapSource>>();
 
             services.AddRecipeExecutionStep<SitemapsStep>();
+
+            // Allows to serialize 'SitemapType' derived types.
+            services.AddJsonDerivedTypeInfo<Sitemap, SitemapType>();
+            services.AddJsonDerivedTypeInfo<SitemapIndex, SitemapType>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

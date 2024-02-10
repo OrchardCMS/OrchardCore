@@ -1,6 +1,6 @@
 using System;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.Search.Lucene.Deployment
@@ -16,13 +16,14 @@ namespace OrchardCore.Search.Lucene.Deployment
                 return Task.CompletedTask;
             }
 
-            var indicesToReset = luceneIndexResetStep.IncludeAll ? Array.Empty<string>() : luceneIndexResetStep.IndexNames;
+            var indicesToReset = luceneIndexResetStep.IncludeAll ? [] : luceneIndexResetStep.IndexNames;
 
-            result.Steps.Add(new JObject(
-                new JProperty("name", "lucene-index-reset"),
-                new JProperty("includeAll", luceneIndexResetStep.IncludeAll),
-                new JProperty("Indices", new JArray(indicesToReset))
-            ));
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "lucene-index-reset",
+                ["includeAll"] = luceneIndexResetStep.IncludeAll,
+                ["Indices"] = JArray.FromObject(indicesToReset),
+            });
 
             return Task.CompletedTask;
         }
