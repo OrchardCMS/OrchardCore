@@ -44,7 +44,7 @@ namespace OrchardCore.Admin
             }
 
             routes.MapAreaControllerRoute(
-                name: name ?? $"Admin Route for {descriptor.DisplayName}",
+                name: name ?? descriptor.DisplayName,
                 areaName: descriptor.RouteValues["area"],
                 pattern: $"{_adminUrlPrefix}/{pattern.TrimStart('/').Replace("{action}", descriptor.ActionName)}",
                 defaults: new { controller = descriptor.ControllerName, action = descriptor.ActionName }
