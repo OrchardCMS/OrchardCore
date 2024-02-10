@@ -27,7 +27,7 @@ using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Controllers
 {
-    [Admin("Tenants/{action}/{id?}")]
+    [Admin("Tenants/{action}/{id?}", "Tenants{action}")]
     public class AdminController : Controller
     {
         private readonly IShellHost _shellHost;
@@ -90,7 +90,7 @@ namespace OrchardCore.Tenants.Controllers
             H = htmlLocalizer;
         }
 
-        [Admin("Tenants")]
+        [Admin("Tenants", "Tenants")]
         public async Task<IActionResult> Index(TenantIndexOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))

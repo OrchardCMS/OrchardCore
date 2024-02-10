@@ -23,7 +23,7 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.Placements.Controllers
 {
-    [Admin("Placements/{action}/{shapeType?}")]
+    [Admin("Placements/{action}/{shapeType?}", "Placements.{action}")]
     public class AdminController : Controller
     {
         private const string _optionsSearch = "Options.Search";
@@ -59,7 +59,7 @@ namespace OrchardCore.Placements.Controllers
             S = stringLocalizer;
         }
 
-        [Admin("Placements")]
+        [Admin("Placements", "Placements.Index")]
         public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManagePlacements))

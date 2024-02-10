@@ -35,7 +35,7 @@ namespace OrchardCore.ContentLocalization.Controllers
         }
 
         [HttpPost]
-        [Admin("ContentLocalization")]
+        [Admin("ContentLocalization", "ContentLocalization.Localize")]
         public async Task<IActionResult> Localize(string contentItemId, string targetCulture)
         {
             // Invariant culture name is empty so a null value is bound.

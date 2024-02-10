@@ -16,7 +16,7 @@ using OrchardCore.Rules.Services;
 
 namespace OrchardCore.Layers.Controllers
 {
-    [Admin("Layers/Rules/{action}")]
+    [Admin("Layers/Rules/{action}", "Layers.Rules.{action}")]
     public class LayerRuleController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
@@ -238,7 +238,7 @@ namespace OrchardCore.Layers.Controllers
             return RedirectToAction(nameof(Edit), "Admin", new { name });
         }
 
-        [Admin("Layers/Rules/Order")]
+        [Admin("Layers/Rules/Order", "Layers.Rules.Order")]
         public async Task<IActionResult> UpdateOrder(string name, string conditionId, string toConditionId, int toPosition)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))

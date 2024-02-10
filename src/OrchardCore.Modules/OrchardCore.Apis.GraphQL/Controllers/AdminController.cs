@@ -6,7 +6,7 @@ namespace OrchardCore.Apis.GraphQL.Controllers
     public class AdminController : Controller
     {
         [HttpGet]
-        [Admin("GraphQL")]
+        [Admin("GraphQL", "GraphQL")]
         public IActionResult Index()
         {
             return View();

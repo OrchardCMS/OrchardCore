@@ -19,7 +19,7 @@ using OrchardCore.Security;
 
 namespace OrchardCore.Recipes.Controllers
 {
-    [Admin("Recipes/{action}")]
+    [Admin("Recipes/{action}", "Recipes{action}")]
     public class AdminController : Controller
     {
         private readonly IShellHost _shellHost;

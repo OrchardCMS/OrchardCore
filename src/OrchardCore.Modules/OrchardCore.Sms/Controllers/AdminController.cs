@@ -41,7 +41,7 @@ public class AdminController : Controller
         S = stringLocalizer;
     }
 
-    [Admin("sms/test")]
+    [Admin("sms/test", "SmsProviderTest")]
     public async Task<IActionResult> Test()
     {
         if (!await _authorizationService.AuthorizeAsync(User, SmsPermissions.ManageSmsSettings))

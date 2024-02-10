@@ -63,7 +63,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
         #region Types
 
-        [Admin("ContentTypes/List")]
+        [Admin("ContentTypes/List", "ListContentTypes")]
         public async Task<ActionResult> List()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContentTypes))
@@ -77,7 +77,7 @@ namespace OrchardCore.ContentTypes.Controllers
             });
         }
 
-        [Admin("ContentTypes/Create")]
+        [Admin("ContentTypes/Create", "CreateType")]
         public async Task<ActionResult> Create(string suggestion)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
@@ -150,7 +150,7 @@ namespace OrchardCore.ContentTypes.Controllers
             return RedirectToAction("AddPartsTo", new { id = typeViewModel.Name });
         }
 
-        [Admin("ContentTypes/Edit/{id}")]
+        [Admin("ContentTypes/Edit/{id}", "EditType")]
         public async Task<ActionResult> Edit(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
@@ -234,7 +234,7 @@ namespace OrchardCore.ContentTypes.Controllers
             return RedirectToAction(nameof(List));
         }
 
-        [Admin("ContentTypes/AddPartsTo/{id}")]
+        [Admin("ContentTypes/AddPartsTo/{id}", "AddPartsTo")]
         public async Task<ActionResult> AddPartsTo(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
@@ -263,7 +263,7 @@ namespace OrchardCore.ContentTypes.Controllers
             return View(viewModel);
         }
 
-        [Admin("ContentTypes/AddReusablePartTo/{id}")]
+        [Admin("ContentTypes/AddReusablePartTo/{id}", "AddReusablePartTo")]
         public async Task<ActionResult> AddReusablePartTo(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
@@ -407,7 +407,7 @@ namespace OrchardCore.ContentTypes.Controllers
         }
 
         [HttpPost, ActionName("RemovePart")]
-        [Admin("ContentTypes/{id}/ContentParts/{name}/Remove")]
+        [Admin("ContentTypes/{id}/ContentParts/{name}/Remove", "RemovePart")]
         public async Task<ActionResult> RemovePart(string id, string name)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
@@ -433,7 +433,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
         #region Parts
 
-        [Admin("ContentTypes/ListParts")]
+        [Admin("ContentTypes/ListParts", "ListContentParts")]
         public async Task<ActionResult> ListParts()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContentTypes))
@@ -448,7 +448,7 @@ namespace OrchardCore.ContentTypes.Controllers
             });
         }
 
-        [Admin("ContentParts/Create")]
+        [Admin("ContentParts/Create", "CreatePart")]
         public async Task<ActionResult> CreatePart(string suggestion)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
@@ -512,7 +512,7 @@ namespace OrchardCore.ContentTypes.Controllers
             return RedirectToAction(nameof(EditPart), new { id = partViewModel.Name });
         }
 
-        [Admin("ContentParts/Edit/{id}")]
+        [Admin("ContentParts/Edit/{id}", "EditPart")]
         public async Task<ActionResult> EditPart(string id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
@@ -593,7 +593,7 @@ namespace OrchardCore.ContentTypes.Controllers
             return RedirectToAction(nameof(ListParts));
         }
 
-        [Admin("ContentTypes/AddFieldsTo/{id}")]
+        [Admin("ContentTypes/AddFieldsTo/{id}", "AddFieldsTo")]
         public async Task<ActionResult> AddFieldTo(string id, string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
@@ -709,7 +709,7 @@ namespace OrchardCore.ContentTypes.Controllers
             }
         }
 
-        [Admin("ContentParts/{id}/Fields/{name}/Edit")]
+        [Admin("ContentParts/{id}/Fields/{name}/Edit", "EditField")]
         public async Task<ActionResult> EditField(string id, string name, string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
@@ -878,7 +878,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
         #region Type Parts
 
-        [Admin("ContentTypes/{id}/ContentParts/{name}/Edit")]
+        [Admin("ContentTypes/{id}/ContentParts/{name}/Edit", "EditTypePart")]
         public async Task<ActionResult> EditTypePart(string id, string name)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))

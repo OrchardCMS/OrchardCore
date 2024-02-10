@@ -17,7 +17,7 @@ using OrchardCore.Media.ViewModels;
 
 namespace OrchardCore.Media.Controllers
 {
-    [Admin("Media/{action}")]
+    [Admin("Media/{action}", "Media.{action}")]
     public class AdminController : Controller
     {
         private static readonly char[] _invalidFolderNameCharacters = ['\\', '/'];
@@ -56,7 +56,7 @@ namespace OrchardCore.Media.Controllers
             _chunkFileUploadService = chunkFileUploadService;
         }
 
-        [Admin("Media")]
+        [Admin("Media", "Media.Index")]
         public async Task<IActionResult> Index()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))

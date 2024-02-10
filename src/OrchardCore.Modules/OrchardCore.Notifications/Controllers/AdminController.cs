@@ -72,7 +72,7 @@ public class AdminController : Controller, IUpdateModel
         H = htmlLocalizer;
     }
 
-    [Admin("notifications")]
+    [Admin("notifications", "ListNotifications")]
     public async Task<IActionResult> List(
         [ModelBinder(BinderType = typeof(NotificationFilterEngineModelBinder), Name = "q")] QueryFilterResult<Notification> queryFilterResult,
         PagerParameters pagerParameters,

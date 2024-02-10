@@ -35,7 +35,7 @@ using YesSql;
 
 namespace OrchardCore.Search.Elasticsearch
 {
-    [Admin("elasticsearch/{action}/{id?}")]
+    [Admin("elasticsearch/{action}/{id?}", "Elasticsearch.{action}")]
     public class AdminController : Controller
     {
         private const string _optionsSearch = "Options.Search";

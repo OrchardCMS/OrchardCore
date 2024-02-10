@@ -9,7 +9,7 @@ using OrchardCore.Modules;
 namespace OrchardCore.Media.Azure
 {
     [Feature("OrchardCore.Media.Azure.Storage")]
-    [Admin("MediaAzureBlob/{action}")]
+    [Admin("MediaAzureBlob/{action}", "AzureBlob.{action}")]
     public class AdminController : Controller
     {
         private readonly IAuthorizationService _authorizationService;

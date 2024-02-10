@@ -10,7 +10,7 @@ using OrchardCore.Sitemaps.ViewModels;
 
 namespace OrchardCore.Sitemaps.Controllers
 {
-    [Admin("SitemapsCache/{action}/{cacheFileName?}")]
+    [Admin("SitemapsCache/{action}/{cacheFileName?}", "SitemapsCache{action}")]
     public class SitemapCacheController : Controller
     {
         private readonly IAuthorizationService _authorizationService;

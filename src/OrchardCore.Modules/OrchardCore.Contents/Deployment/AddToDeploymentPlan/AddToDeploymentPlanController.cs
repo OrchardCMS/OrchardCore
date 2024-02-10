@@ -16,7 +16,7 @@ using YesSql.Services;
 namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
 {
     [Feature("OrchardCore.Contents.Deployment.AddToDeploymentPlan")]
-    [Admin("AddToDeploymentPlan/{action}/{deploymentPlanId}")]
+    [Admin("AddToDeploymentPlan/{action}/{deploymentPlanId}", AdminAttribute.NameFromControllerAndAction)]
     public class AddToDeploymentPlanController : Controller
     {
         private readonly IAuthorizationService _authorizationService;

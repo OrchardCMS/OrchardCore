@@ -27,7 +27,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.AzureAI.Controllers;
 
-[Admin("azure-search/{action}/{indexName?}")]
+[Admin("azure-search/{action}/{indexName?}", "AzureAISearch.{action}")]
 public class AdminController : Controller
 {
     private const string _optionsSearch = "Options.Search";

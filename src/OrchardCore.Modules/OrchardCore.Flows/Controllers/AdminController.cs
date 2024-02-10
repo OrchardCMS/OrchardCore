@@ -15,7 +15,7 @@ using OrchardCore.Flows.ViewModels;
 
 namespace OrchardCore.Flows.Controllers
 {
-    [Admin("Flows/{action}")]
+    [Admin("Flows/{action}", "Flows.{action}")]
     public class AdminController : Controller
     {
         private readonly IContentManager _contentManager;

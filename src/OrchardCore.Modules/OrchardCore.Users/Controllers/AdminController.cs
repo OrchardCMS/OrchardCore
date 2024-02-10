@@ -29,7 +29,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Users.Controllers
 {
-    [Admin("Users/{action}/{id?}")]
+    [Admin("Users/{action}/{id?}", "Users{action}")]
     public class AdminController : Controller
     {
         private readonly UserManager<IUser> _userManager;

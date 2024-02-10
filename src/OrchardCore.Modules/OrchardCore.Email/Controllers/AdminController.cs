@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +9,7 @@ using OrchardCore.Email.ViewModels;
 
 namespace OrchardCore.Email.Controllers
 {
-    [Admin("Email/{action}/{id?}")]
+    [Admin("Email/{action}/{id?}", "Email{action}")]
     public class AdminController : Controller
     {
         private readonly IAuthorizationService _authorizationService;

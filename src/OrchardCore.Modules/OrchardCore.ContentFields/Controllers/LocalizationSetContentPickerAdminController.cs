@@ -46,7 +46,7 @@ namespace OrchardCore.ContentFields.Controllers
         }
 
         [HttpGet]
-        [Admin("ContentFields/SearchLocalizationSets")]
+        [Admin("ContentFields/SearchLocalizationSets", "SearchLocalizationSets")]
         public async Task<IActionResult> SearchLocalizationSets(string part, string field, string query)
         {
             if (string.IsNullOrWhiteSpace(part) || string.IsNullOrWhiteSpace(field))

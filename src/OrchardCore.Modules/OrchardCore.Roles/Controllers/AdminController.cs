@@ -20,7 +20,7 @@ using OrchardCore.Security.Services;
 
 namespace OrchardCore.Roles.Controllers
 {
-    [Admin("Roles/{action}/{id?}")]
+    [Admin("Roles/{action}/{id?}", "Roles{action}")]
     public class AdminController : Controller
     {
         private readonly IDocumentStore _documentStore;

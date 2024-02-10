@@ -27,7 +27,7 @@ using YesSql;
 
 namespace OrchardCore.Layers.Controllers
 {
-    [Admin("Layers/{action}/{id?}")]
+    [Admin("Layers/{action}/{id?}", "Layers.{action}")]
     public class AdminController : Controller
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
@@ -86,7 +86,7 @@ namespace OrchardCore.Layers.Controllers
             _logger = logger;
         }
 
-        [Admin("Layers")]
+        [Admin("Layers", "Layers.Index")]
         public async Task<IActionResult> Index()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))

@@ -27,7 +27,7 @@ namespace OrchardCore.ContentFields.Controllers
             _resultProviders = resultProviders;
         }
 
-        [Admin("ContentFields/SearchContentItems")]
+        [Admin("ContentFields/SearchContentItems", "ContentPicker")]
         public async Task<IActionResult> SearchContentItems(string part, string field, string query)
         {
             if (string.IsNullOrWhiteSpace(part) || string.IsNullOrWhiteSpace(field))

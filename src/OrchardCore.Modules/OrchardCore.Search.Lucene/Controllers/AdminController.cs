@@ -33,7 +33,7 @@ using YesSql;
 
 namespace OrchardCore.Search.Lucene.Controllers
 {
-    [Admin("Lucene/{action}/{id?}")]
+    [Admin("Lucene/{action}/{id?}", "Lucene.{action}")]
     public class AdminController : Controller
     {
         private const string _optionsSearch = "Options.Search";

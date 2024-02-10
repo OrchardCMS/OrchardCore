@@ -12,7 +12,7 @@ using OrchardCore.Modules;
 namespace OrchardCore.Media.Controllers
 {
     [Feature("OrchardCore.Media.Cache")]
-    [Admin("MediaCache/{action}")]
+    [Admin("MediaCache/{action}", AdminAttribute.NameFromControllerAndActionDotSeparated)]
     public class MediaCacheController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
@@ -34,7 +34,7 @@ namespace OrchardCore.Media.Controllers
             H = htmlLocalizer;
         }
 
-        [Admin("MediaCache")]
+        [Admin("MediaCache", "MediaCache.Index")]
         public async Task<IActionResult> Index()
         {
             if (!await _authorizationService.AuthorizeAsync(User, MediaCachePermissions.ManageAssetCache))

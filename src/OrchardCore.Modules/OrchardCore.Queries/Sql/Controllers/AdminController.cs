@@ -20,7 +20,6 @@ using YesSql;
 namespace OrchardCore.Queries.Sql.Controllers
 {
     [Feature("OrchardCore.Queries.Sql")]
-    [Admin("Queries/Sql/{action}")]
     public class AdminController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
@@ -44,6 +43,7 @@ namespace OrchardCore.Queries.Sql.Controllers
             _templateOptions = templateOptions.Value;
         }
 
+        [Admin("Queries/Sql/Query", "QueriesRunSql")]
         public Task<IActionResult> Query(string query)
         {
             query = string.IsNullOrWhiteSpace(query) ? "" : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query));

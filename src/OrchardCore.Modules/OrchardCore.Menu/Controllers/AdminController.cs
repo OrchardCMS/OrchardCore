@@ -17,7 +17,7 @@ using YesSql;
 
 namespace OrchardCore.Menu.Controllers
 {
-    [Admin("Menu/{action}/{id?}")]
+    [Admin("Menu/{action}/{id?}", "Menu{action}")]
     public class AdminController : Controller
     {
         private readonly IContentManager _contentManager;

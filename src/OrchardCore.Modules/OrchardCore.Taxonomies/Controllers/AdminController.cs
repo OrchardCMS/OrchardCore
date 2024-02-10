@@ -49,7 +49,7 @@ namespace OrchardCore.Taxonomies.Controllers
             H = localizer;
         }
 
-        [Admin("Taxonomies/Create/{id}")]
+        [Admin("Taxonomies/Create/{id}", "Taxonomies.Create")]
         public async Task<IActionResult> Create(string id, string taxonomyContentItemId, string taxonomyItemId)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -161,7 +161,7 @@ namespace OrchardCore.Taxonomies.Controllers
             return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = taxonomyContentItemId });
         }
 
-        [Admin("Taxonomies/Edit/{taxonomyContentItemId}/{taxonomyItemId}")]
+        [Admin("Taxonomies/Edit/{taxonomyContentItemId}/{taxonomyItemId}", "Taxonomies.Create")]
         public async Task<IActionResult> Edit(string taxonomyContentItemId, string taxonomyItemId)
         {
             if (string.IsNullOrWhiteSpace(taxonomyContentItemId) || string.IsNullOrWhiteSpace(taxonomyItemId))
@@ -278,7 +278,7 @@ namespace OrchardCore.Taxonomies.Controllers
         }
 
         [HttpPost]
-        [Admin("Taxonomies/Delete/{taxonomyContentItemId}/{taxonomyItemId}")]
+        [Admin("Taxonomies/Delete/{taxonomyContentItemId}/{taxonomyItemId}", "Taxonomies.Delete")]
         public async Task<IActionResult> Delete(string taxonomyContentItemId, string taxonomyItemId)
         {
             if (string.IsNullOrWhiteSpace(taxonomyContentItemId) || string.IsNullOrWhiteSpace(taxonomyItemId))

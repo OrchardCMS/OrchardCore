@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Widgets.Controllers
 {
-    [Admin("Widgets/{action}/{id?}")]
+    [Admin("Widgets/{action}/{id?}", "Widgets.{action}")]
     public class AdminController : Controller
     {
         private readonly IContentManager _contentManager;

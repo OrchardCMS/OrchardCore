@@ -19,7 +19,7 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.Queries.Controllers
 {
-    [Admin("Queries/{action}/{id?}")]
+    [Admin("Queries/{action}/{id?}", "Queries{action}")]
     public class AdminController : Controller
     {
         private const string _optionsSearch = "Options.Search";
