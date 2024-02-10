@@ -1,25 +1,27 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Security
+namespace OrchardCore.Security;
+
+public class SecurityPermissions : IPermissionProvider
 {
-    public class SecurityPermissions : IPermissionProvider
-    {
-        public static readonly Permission ManageSecurityHeadersSettings = new("ManageSecurityHeadersSettings", "Manage Security Headers Settings");
+    public static readonly Permission ManageSecurityHeadersSettings = new("ManageSecurityHeadersSettings", "Manage Security Headers Settings");
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
-            => Task.FromResult(new[] { ManageSecurityHeadersSettings }.AsEnumerable());
+    private readonly IEnumerable<Permission> _allPermissions =
+    [
+        ManageSecurityHeadersSettings,
+    ];
 
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-            => new[]
-                {
-                    new PermissionStereotype
-                    {
-                        Name = "Administrator",
-                        Permissions = new[] { ManageSecurityHeadersSettings },
-                    },
-                };
-    }
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
+    [
+        new PermissionStereotype
+        {
+            Name = "Administrator",
+            Permissions = _allPermissions,
+        },
+    ];
 }

@@ -22,13 +22,13 @@ namespace OrchardCore.Flows.Settings
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            return Initialize<FlowPartSettingsViewModel>("FlowPartSettings_Edit", model =>
+            return Initialize<FlowPartSettingsViewModel>("FlowPartSettings_Edit", async model =>
             {
                 model.FlowPartSettings = contentTypePartDefinition.GetSettings<FlowPartSettings>();
                 model.ContainedContentTypes = model.FlowPartSettings.ContainedContentTypes;
-                model.ContentTypes = new NameValueCollection();
+                model.ContentTypes = [];
 
-                foreach (var contentTypeDefinition in _contentDefinitionManager.ListTypeDefinitions().Where(t => t.GetStereotype() == "Widget"))
+                foreach (var contentTypeDefinition in (await _contentDefinitionManager.ListTypeDefinitionsAsync()).Where(t => t.GetStereotype() == "Widget"))
                 {
                     model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
                 }

@@ -39,8 +39,8 @@ namespace OrchardCore.DisplayManagement.Zones
                 ? "before."
                 : y.Trim().Length == 0 ? "0" : y.Trim(':').TrimEnd('.');
 
-            var xParts = x.Split(new[] { '.', ':' });
-            var yParts = y.Split(new[] { '.', ':' });
+            var xParts = x.Split(['.', ':']);
+            var yParts = y.Split(['.', ':']);
             for (var i = 0; i < xParts.Length; i++)
             {
                 // x is further defined meaning it comes after y (e.g. x == 1.2.3 and y == 1.2)

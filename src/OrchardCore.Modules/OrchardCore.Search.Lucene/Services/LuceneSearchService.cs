@@ -1,8 +1,6 @@
-using System;
 using System.Threading.Tasks;
 using Lucene.Net.QueryParsers.Classic;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Entities;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Settings;
@@ -11,6 +9,8 @@ namespace OrchardCore.Search.Lucene.Services;
 
 public class LuceneSearchService : ISearchService
 {
+    public const string Key = "Lucene";
+
     private readonly ISiteService _siteService;
     private readonly LuceneIndexManager _luceneIndexManager;
     private readonly LuceneIndexingService _luceneIndexingService;
@@ -37,7 +37,7 @@ public class LuceneSearchService : ISearchService
         _logger = logger;
     }
 
-    public string Name => "Lucene";
+    public string Name => Key;
 
     public async Task<SearchResult> SearchAsync(string indexName, string term, int start, int size)
     {
@@ -47,7 +47,7 @@ public class LuceneSearchService : ISearchService
 
         if (index == null || !_luceneIndexManager.Exists(index))
         {
-            _logger.LogWarning("Lucene: Couldn't execute search. The search index doesn't exist.");
+            _logger.LogWarning("Lucene: Couldn't execute search. Lucene has not been configured yet.");
 
             return result;
         }
@@ -56,7 +56,7 @@ public class LuceneSearchService : ISearchService
 
         if (defaultSearchFields == null || defaultSearchFields.Length == 0)
         {
-            _logger.LogWarning("Lucene: Couldn't execute search. No serach provider settings was defined.");
+            _logger.LogWarning("Lucene: Couldn't execute search. No search provider settings was defined.");
 
             return result;
         }
@@ -89,6 +89,6 @@ public class LuceneSearchService : ISearchService
     {
         var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
 
-        return luceneSettings?.DefaultSearchFields ?? Array.Empty<string>();
+        return luceneSettings?.DefaultSearchFields ?? [];
     }
 }

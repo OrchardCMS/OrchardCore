@@ -23,7 +23,7 @@ namespace OrchardCore.ContentFields.ViewModels
         public ContentTypePartDefinition TypePartDefinition { get; set; }
 
         [BindNever]
-        public IList<VueMultiselectUserViewModel> SelectedUsers { get; set; } = new List<VueMultiselectUserViewModel>();
+        public IList<VueMultiselectUserViewModel> SelectedUsers { get; set; } = [];
     }
 
     public class VueMultiselectUserViewModel

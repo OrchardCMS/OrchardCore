@@ -1,5 +1,4 @@
 using OrchardCore.OpenId.Abstractions.Descriptors;
-using static OpenIddict.Abstractions.OpenIddictConstants.Permissions;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
 {
@@ -14,20 +13,20 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 {
                     ClientId = "a1",
                     ClientSecret = "test-secret",
+                    ClientType = "confidential",
                     ConsentType = "explicit",
-                    DisplayName = "Test Application",
-                    Type = "confidential",
+                    DisplayName = "Test Application"
                 },
                 new[] { new Uri("https://localhost:111/logout-redirect"), new Uri("https://localhost:222/logout-redirect") },
                 new[] { new Uri("https://localhost:111/redirect"), new Uri("https://localhost:222/redirect") },
                 null,
                 new[] {
-                    GrantTypes.AuthorizationCode,
-                    GrantTypes.RefreshToken,
-                    Endpoints.Authorization,
-                    Endpoints.Logout,
-                    Endpoints.Token,
-                    ResponseTypes.Code,
+                    OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode,
+                    OpenIddictConstants.Permissions.GrantTypes.RefreshToken,
+                    OpenIddictConstants.Permissions.Endpoints.Authorization,
+                    OpenIddictConstants.Permissions.Endpoints.Logout,
+                    OpenIddictConstants.Permissions.Endpoints.Token,
+                    OpenIddictConstants.Permissions.ResponseTypes.Code,
                 });
 
             AddWithHashsets(
@@ -36,17 +35,17 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 {
                     ClientId = "a2",
                     ClientSecret = "test-secret",
+                    ClientType = "confidential",
                     ConsentType = "explicit",
-                    DisplayName = "Test Application",
-                    Type = "confidential",
+                    DisplayName = "Test Application"
                 },
                 new[] { new Uri("https://localhost/logout-redirect") },
                 new[] { new Uri("https://localhost/redirect") },
                 new[] { "role1", "role2" },
                 new[] {
-                    GrantTypes.ClientCredentials,
-                    Endpoints.Token,
-                    $"{Prefixes.Scope}scope1"
+                    OpenIddictConstants.Permissions.GrantTypes.ClientCredentials,
+                    OpenIddictConstants.Permissions.Endpoints.Token,
+                    $"{OpenIddictConstants.Permissions.Prefixes.Scope}scope1"
                 });
         }
 

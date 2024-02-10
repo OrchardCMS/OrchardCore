@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using System.Threading.Tasks;
 using Dapper;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -16,7 +17,7 @@ internal class ShellDbTablesInfo : ISchemaBuilder
 {
     private ICommandInterpreter _commandInterpreter;
     public string TablePrefix { get; set; }
-    public IEnumerable<string> TableNames { get; set; } = Enumerable.Empty<string>();
+    public IEnumerable<string> TableNames { get; set; } = [];
     public ISqlDialect Dialect { get; private set; }
     public ITableNameConvention TableNameConvention { get; private set; }
     public DbConnection Connection { get; set; }
@@ -25,14 +26,14 @@ internal class ShellDbTablesInfo : ISchemaBuilder
     public ILogger _logger { get; set; } = NullLogger.Instance;
 
     public HashSet<(string Name, Type Type, string Collection)> MapIndexTables { get; private set; } =
-        new HashSet<(string Name, Type Type, string Collection)>();
+        [];
 
     public HashSet<(string Name, Type Type, string Collection)> ReduceIndexTables { get; private set; } =
-        new HashSet<(string Name, Type Type, string Collection)>();
+        [];
 
-    public HashSet<string> BridgeTables { get; private set; } = new HashSet<string>();
-    public HashSet<string> DocumentTables { get; private set; } = new HashSet<string>();
-    public HashSet<string> Tables { get; private set; } = new HashSet<string>();
+    public HashSet<string> BridgeTables { get; private set; } = [];
+    public HashSet<string> DocumentTables { get; private set; } = [];
+    public HashSet<string> Tables { get; private set; } = [];
 
     public ShellDbTablesInfo Configure(IConfiguration configuration)
     {
@@ -67,16 +68,29 @@ internal class ShellDbTablesInfo : ISchemaBuilder
 
     public ISchemaBuilder CreateMapIndexTable(Type indexType, Action<ICreateTableCommand> table, string collection)
     {
+        CreateMapIndexTableAsync(indexType, table, collection).GetAwaiter().GetResult();
+        return this;
+    }
+
+    public Task CreateMapIndexTableAsync(Type indexType, Action<ICreateTableCommand> table, string collection)
+    {
         var indexTable = TableNameConvention.GetIndexTable(indexType, collection);
         var documentTable = TableNameConvention.GetDocumentTable(collection);
 
         MapIndexTables.Add((indexTable, indexType, collection));
         DocumentTables.Add(documentTable);
 
-        return this;
+        return Task.CompletedTask;
     }
 
     public ISchemaBuilder CreateReduceIndexTable(Type indexType, Action<ICreateTableCommand> table, string collection = null)
+    {
+        CreateReduceIndexTableAsync(indexType, table, collection).GetAwaiter().GetResult();
+
+        return this;
+    }
+
+    public Task CreateReduceIndexTableAsync(Type indexType, Action<ICreateTableCommand> table, string collection = null)
     {
         var indexTable = TableNameConvention.GetIndexTable(indexType, collection);
         var documentTable = TableNameConvention.GetDocumentTable(collection);
@@ -86,28 +100,58 @@ internal class ShellDbTablesInfo : ISchemaBuilder
         DocumentTables.Add(documentTable);
         BridgeTables.Add(bridgeTable);
 
-        return this;
+        return Task.CompletedTask;
     }
 
     public ISchemaBuilder CreateTable(string name, Action<ICreateTableCommand> table)
     {
-        Tables.Add(name);
+        CreateTableAsync(name, table).GetAwaiter().GetResult();
 
         return this;
     }
 
-    public ISchemaBuilder AlterIndexTable(Type indexType, Action<IAlterTableCommand> table, string collection) => this;
-    public ISchemaBuilder AlterTable(string name, Action<IAlterTableCommand> table) => this;
+    public Task CreateTableAsync(string name, Action<ICreateTableCommand> table)
+    {
+        Tables.Add(name);
+
+        return Task.CompletedTask;
+    }
+
+    public ISchemaBuilder AlterIndexTable(Type indexType, Action<IAlterTableCommand> table, string collection)
+        => this;
+
+    public Task AlterIndexTableAsync(Type indexType, Action<IAlterTableCommand> table, string collection)
+        => Task.CompletedTask;
+
+    public ISchemaBuilder AlterTable(string name, Action<IAlterTableCommand> table)
+        => this;
+
+    public Task AlterTableAsync(string name, Action<IAlterTableCommand> table)
+        => Task.CompletedTask;
 
     public ISchemaBuilder DropMapIndexTable(Type indexType, string collection = null)
+    {
+        DropMapIndexTableAsync(indexType, collection).GetAwaiter().GetResult();
+
+        return this;
+    }
+
+    public Task DropMapIndexTableAsync(Type indexType, string collection = null)
     {
         var indexTable = TableNameConvention.GetIndexTable(indexType, collection);
         MapIndexTables.Remove((indexTable, indexType, collection));
 
-        return this;
+        return Task.CompletedTask;
     }
 
     public ISchemaBuilder DropReduceIndexTable(Type indexType, string collection = null)
+    {
+        DropReduceIndexTableAsync(indexType, collection).GetAwaiter().GetResult();
+
+        return this;
+    }
+
+    public Task DropReduceIndexTableAsync(Type indexType, string collection = null)
     {
         var indexTable = TableNameConvention.GetIndexTable(indexType, collection);
         var documentTable = TableNameConvention.GetDocumentTable(collection);
@@ -116,14 +160,21 @@ internal class ShellDbTablesInfo : ISchemaBuilder
         ReduceIndexTables.Remove((indexTable, indexType, collection));
         BridgeTables.Remove(bridgeTable);
 
-        return this;
+        return Task.CompletedTask;
     }
 
     public ISchemaBuilder DropTable(string name)
     {
-        Tables.Remove(name);
+        DropTableAsync(name).GetAwaiter().GetResult();
 
         return this;
+    }
+
+    public Task DropTableAsync(string name)
+    {
+        Tables.Remove(name);
+
+        return Task.CompletedTask;
     }
 
     public void RemoveAllTables()
@@ -209,9 +260,20 @@ internal class ShellDbTablesInfo : ISchemaBuilder
         }
     }
 
-    public ISchemaBuilder CreateForeignKey(string name, string srcTable, string[] srcColumns, string destTable, string[] destColumns) => this;
+    public ISchemaBuilder CreateForeignKey(string name, string srcTable, string[] srcColumns, string destTable, string[] destColumns)
+        => this;
+
+    public Task CreateForeignKeyAsync(string name, string srcTable, string[] srcColumns, string destTable, string[] destColumns)
+        => Task.CompletedTask;
 
     public ISchemaBuilder DropForeignKey(string srcTable, string name)
+    {
+        DropForeignKeyAsync(srcTable, name).GetAwaiter().GetResult();
+
+        return this;
+    }
+
+    public Task DropForeignKeyAsync(string srcTable, string name)
     {
         try
         {
@@ -228,10 +290,14 @@ internal class ShellDbTablesInfo : ISchemaBuilder
             _logger.LogError(ex, "Failed to drop foreign key {KeyName}.", Prefix(name));
         }
 
-        return this;
+        return Task.CompletedTask;
     }
 
-    public ISchemaBuilder CreateSchema(string schema) => this;
+    public ISchemaBuilder CreateSchema(string schema)
+        => this;
+
+    public Task CreateSchemaAsync(string schema)
+        => Task.CompletedTask;
 
     private void Execute(IEnumerable<string> statements)
     {

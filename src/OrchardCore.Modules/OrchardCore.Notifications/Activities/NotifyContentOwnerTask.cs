@@ -15,7 +15,7 @@ using YesSql;
 
 namespace OrchardCore.Notifications.Activities;
 
-public class NotifyContentOwnerTask : NotifyUserTaskActivity
+public class NotifyContentOwnerTask : NotifyUserTaskActivity<NotifyContentOwnerTask>
 {
     private readonly ISession _session;
 
@@ -34,8 +34,6 @@ public class NotifyContentOwnerTask : NotifyUserTaskActivity
     {
         _session = session;
     }
-
-    public override string Name => nameof(NotifyContentOwnerTask);
 
     public override LocalizedString DisplayText => S["Notify Content's Owner Task"];
 
@@ -60,6 +58,6 @@ public class NotifyContentOwnerTask : NotifyUserTaskActivity
             }
         }
 
-        return Enumerable.Empty<IUser>();
+        return [];
     }
 }

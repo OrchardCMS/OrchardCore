@@ -3,11 +3,8 @@
 
 @{
     var dashboardPart = Model.Dashboard.As<DashboardPart>();
-    var position = dashboardPart.Position;
-    var width = dashboardPart.Width;
-    var height = dashboardPart.Height;
-    var contentItemId = Model.Dashboard.ContentItemId; 
 }
-<div style="--dashboard-width: @(width); --dashboard-height:@(height)" class="dashboard-wrapper" id="@(contentItemId)" >
+
+<div style="--dashboard-width: @(dashboardPart.Width); --dashboard-height: @(dashboardPart.Height);" class="dashboard-wrapper rounded" id="@(Model.Dashboard.ContentItemId)">
     @await DisplayAsync(Model.Content)
 </div>

@@ -1,11 +1,9 @@
 using OrchardCore.FileStorage;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Media.Core;
-using OrchardCore.Media.Events;
 using OrchardCore.Media.Shortcodes;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Shortcodes.Services;
-using Shortcodes;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media
 {
@@ -46,9 +44,11 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
                 Mock.Of<IFileStore>(),
                 "/media",
                 cdnBaseUrl,
-                Enumerable.Empty<IMediaEventHandler>(),
-                Enumerable.Empty<IMediaCreatingEventHandler>(),
+                [],
+                [],
                 Mock.Of<ILogger<DefaultMediaFileStore>>());
+
+            var fileVersionProvider = Mock.Of<IFileVersionProvider>();
 
             var sanitizer = new HtmlSanitizerService(Options.Create(sanitizerOptions));
 
@@ -58,9 +58,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
 
             var options = Options.Create(new ResourceManagementOptions { CdnBaseUrl = cdnBaseUrl });
 
-            var imageProvider = new ImageShortcodeProvider(fileStore, sanitizer, httpContextAccessor, options);
+            var imageProvider = new ImageShortcodeProvider(fileStore, sanitizer, httpContextAccessor, options, fileVersionProvider);
 
-            var processor = new ShortcodeService(new IShortcodeProvider[] { imageProvider }, Enumerable.Empty<IShortcodeContextProvider>());
+            var processor = new ShortcodeService(new IShortcodeProvider[] { imageProvider }, []);
 
             var processed = await processor.ProcessAsync(text);
             Assert.Equal(expected, processed);

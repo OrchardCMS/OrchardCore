@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -23,6 +22,7 @@ using OrchardCore.Search.Lucene.Services;
 using Spatial4n.Context;
 using Directory = System.IO.Directory;
 using LDirectory = Lucene.Net.Store.Directory;
+using LuceneLock = Lucene.Net.Store.Lock;
 
 namespace OrchardCore.Search.Lucene
 {
@@ -186,14 +186,6 @@ namespace OrchardCore.Search.Lucene
             }
         }
 
-        /// <summary>
-        /// Returns a list of open indices and the last time they were accessed.
-        /// </summary>
-        public IReadOnlyDictionary<string, DateTime> GetTimestamps()
-        {
-            return new ReadOnlyDictionary<string, DateTime>(_timestamps);
-        }
-
         private Document CreateLuceneDocument(DocumentIndex documentIndex, LuceneIndexSettings indexSettings)
         {
             var doc = new Document
@@ -202,14 +194,14 @@ namespace OrchardCore.Search.Lucene
                 // These fields need to be indexed as a StringField because it needs to be searchable for the writer.DeleteDocuments method.
                 // Else it won't be able to prune oldest draft from the indexes.
                 // Maybe eventually find a way to remove a document from a StoredDocument.
-                new StringField("ContentItemId", documentIndex.ContentItemId.ToString(), Field.Store.YES),
-                new StringField("ContentItemVersionId", documentIndex.ContentItemVersionId.ToString(), Field.Store.YES),
+                new StringField(IndexingConstants.ContentItemIdKey, documentIndex.ContentItemId.ToString(), Field.Store.YES),
+                new StringField(IndexingConstants.ContentItemVersionIdKey, documentIndex.ContentItemVersionId.ToString(), Field.Store.YES),
             };
 
             if (indexSettings.StoreSourceData)
             {
-                doc.Add(new StoredField(IndexingConstants.SourceKey + "ContentItemId", documentIndex.ContentItemId.ToString()));
-                doc.Add(new StoredField(IndexingConstants.SourceKey + "ContentItemVersionId", documentIndex.ContentItemVersionId.ToString()));
+                doc.Add(new StoredField(IndexingConstants.SourceKey + IndexingConstants.ContentItemIdKey, documentIndex.ContentItemId.ToString()));
+                doc.Add(new StoredField(IndexingConstants.SourceKey + IndexingConstants.ContentItemVersionIdKey, documentIndex.ContentItemVersionId.ToString()));
             }
 
             foreach (var entry in documentIndex.Entries)
@@ -221,7 +213,7 @@ namespace OrchardCore.Search.Lucene
                 switch (entry.Type)
                 {
                     case DocumentIndex.Types.Boolean:
-                        // Store "true"/"false" for booleans.
+                        // Store "true"/"false" for boolean.
                         doc.Add(new StringField(entry.Name, Convert.ToString(entry.Value).ToLowerInvariant(), store));
 
                         if (indexSettings.StoreSourceData)
@@ -256,7 +248,7 @@ namespace OrchardCore.Search.Lucene
                         }
                         else
                         {
-                            doc.Add(new StringField(entry.Name, "NULL", store));
+                            doc.Add(new StringField(entry.Name, IndexingConstants.NullValue, store));
                         }
                         break;
 
@@ -272,7 +264,7 @@ namespace OrchardCore.Search.Lucene
                         }
                         else
                         {
-                            doc.Add(new StringField(entry.Name, "NULL", store));
+                            doc.Add(new StringField(entry.Name, IndexingConstants.NullValue, store));
                         }
 
                         break;
@@ -289,7 +281,7 @@ namespace OrchardCore.Search.Lucene
                         }
                         else
                         {
-                            doc.Add(new StringField(entry.Name, "NULL", store));
+                            doc.Add(new StringField(entry.Name, IndexingConstants.NullValue, store));
                         }
                         break;
 
@@ -324,11 +316,11 @@ namespace OrchardCore.Search.Lucene
                         {
                             if (entry.Options.HasFlag(DocumentIndexOptions.Keyword))
                             {
-                                doc.Add(new StringField(entry.Name, "NULL", store));
+                                doc.Add(new StringField(entry.Name, IndexingConstants.NullValue, store));
                             }
                             else
                             {
-                                doc.Add(new TextField(entry.Name, "NULL", store));
+                                doc.Add(new TextField(entry.Name, IndexingConstants.NullValue, store));
                             }
                         }
                         break;
@@ -353,7 +345,7 @@ namespace OrchardCore.Search.Lucene
                         }
                         else
                         {
-                            doc.Add(new StoredField(strategy.FieldName, "NULL"));
+                            doc.Add(new StoredField(strategy.FieldName, IndexingConstants.NullValue));
                         }
                         break;
                 }
@@ -362,7 +354,7 @@ namespace OrchardCore.Search.Lucene
             return doc;
         }
 
-        private BaseDirectory CreateDirectory(string indexName)
+        private FSDirectory CreateDirectory(string indexName)
         {
             lock (this)
             {
@@ -395,7 +387,7 @@ namespace OrchardCore.Search.Lucene
                         var config = new IndexWriterConfig(LuceneSettings.DefaultVersion, analyzer)
                         {
                             OpenMode = OpenMode.CREATE_OR_APPEND,
-                            WriteLockTimeout = Lock.LOCK_POLL_INTERVAL * 3
+                            WriteLockTimeout = LuceneLock.LOCK_POLL_INTERVAL * 3
                         };
 
                         writer = new IndexWriterWrapper(directory, config);

@@ -105,9 +105,10 @@ namespace OrchardCore.Tenants.Controllers
                 if (model.IsNewTenant)
                 {
                     // Creates a default shell settings based on the configuration.
-                    var shellSettings = _shellSettingsManager
+                    using var shellSettings = _shellSettingsManager
                         .CreateDefaultSettings()
-                        .AsUninitialized();
+                        .AsUninitialized()
+                        .AsDisposable();
 
                     shellSettings.Name = model.Name;
                     shellSettings.RequestUrlHost = model.RequestUrlHost;
@@ -121,17 +122,18 @@ namespace OrchardCore.Tenants.Controllers
                     shellSettings["DatabaseProvider"] = model.DatabaseProvider;
                     shellSettings["Secret"] = Guid.NewGuid().ToString();
                     shellSettings["RecipeName"] = model.RecipeName;
-                    shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
+                    shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? []);
 
                     await _shellHost.UpdateShellSettingsAsync(shellSettings);
+                    var reloadedSettings = _shellHost.GetSettings(shellSettings.Name);
 
-                    var token = CreateSetupToken(shellSettings);
+                    var token = CreateSetupToken(reloadedSettings);
 
-                    return Ok(GetEncodedUrl(shellSettings, token));
+                    return Ok(GetEncodedUrl(reloadedSettings, token));
                 }
                 else
                 {
-                    // Site already exists, return 201 for indempotency purposes.
+                    // Site already exists, return 201 for idempotency purposes.
 
                     var token = CreateSetupToken(settings);
 
@@ -172,7 +174,7 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings["Category"] = model.Category;
                 shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
-                shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
+                shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? []);
 
                 if (shellSettings.IsUninitialized())
                 {
@@ -293,7 +295,7 @@ namespace OrchardCore.Tenants.Controllers
 
         [HttpPost]
         [Route("setup")]
-        public async Task<ActionResult> Setup(SetupApiViewModel model)
+        public async Task<ActionResult> Setup(SetupApiViewModel model, [FromForm] IFormFile recipe = null)
         {
             if (!_currentShellSettings.IsDefaultShell())
             {
@@ -391,16 +393,16 @@ namespace OrchardCore.Tenants.Controllers
 
             if (string.IsNullOrEmpty(recipeName))
             {
-                if (model.Recipe == null)
+                if (recipe == null)
                 {
-                    return BadRequest(S["Either 'Recipe' or 'RecipeName' is required."]);
+                    return BadRequest(S["Either a 'recipe' file or 'RecipeName' is required."]);
                 }
 
                 var tempFilename = Path.GetTempFileName();
 
                 using (var fs = System.IO.File.Create(tempFilename))
                 {
-                    await model.Recipe.CopyToAsync(fs);
+                    await recipe.CopyToAsync(fs);
                 }
 
                 var fileProvider = new PhysicalFileProvider(Path.GetDirectoryName(tempFilename));
