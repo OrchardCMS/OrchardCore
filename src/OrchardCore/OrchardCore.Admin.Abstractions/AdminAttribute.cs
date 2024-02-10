@@ -2,7 +2,9 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Primitives;
 
 namespace OrchardCore.Admin
 {
@@ -13,6 +15,8 @@ namespace OrchardCore.Admin
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class AdminAttribute : Attribute, IAsyncResourceFilter
     {
+        public const string NameFromControllerAndAction = "{controller}{action}";
+
         /// <summary>
         /// Gets or sets the pattern which should be used as the path after the admin suffix. This is similar to the
         /// <see cref="RouteAttribute.Template"/>. When applying to a controller with multiple actions, the template
@@ -23,14 +27,25 @@ namespace OrchardCore.Admin
         public string Template { get; set; }
 
         /// <summary>
-        /// Gets or sets the name used when mapping the admin route. If empty,
+        /// Gets or sets the name used when mapping the admin route. If empty for the attribute whose <see
+        /// cref="Template"/> is used, the fallback is <see cref="ControllerActionDescriptor.DisplayName"/>.
         /// </summary>
         public string RouteName { get; set; }
 
-        public AdminAttribute(string template = null, string routeName = null)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AdminAttribute"/> class.
+        /// </summary>
+        /// <param name="template">If not <see langword="null"/> or empty, it's used as the route template.</param>
+        /// <param name="routeName">If not <see langword="null"/> or empty, it's used as the route name.</param>
+        /// <param name="nameFromControllerAndAction">
+        /// If <see langword="true"/>, the <paramref name="routeName"/> parameter is ignored and <see cref="RouteName"/>
+        /// is set to the concatenation of the controller and action names (e.g. the route name for
+        /// <c>~/Admin/AdminMenu/List</c> becomes <c>AdminMenuList</c>).
+        /// </param>
+        public AdminAttribute(string template = null, string routeName = null, bool nameFromControllerAndAction = false)
         {
             Template = template;
-            RouteName = routeName;
+            RouteName = nameFromControllerAndAction ? NameFromControllerAndAction : routeName;
         }
 
         public Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
