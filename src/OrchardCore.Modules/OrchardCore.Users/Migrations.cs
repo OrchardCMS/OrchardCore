@@ -245,7 +245,9 @@ namespace OrchardCore.Users
             return 12;
         }
 
+#pragma warning disable CA1822 // Mark members as static
         public int UpdateFrom12()
+#pragma warning restore CA1822 // Mark members as static
         {
             ShellScope.AddDeferredTask(async scope =>
             {

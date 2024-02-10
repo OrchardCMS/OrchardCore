@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -12,7 +11,7 @@ namespace OrchardCore.AutoSetup.Options
     /// <summary>
     /// The tenant setup options.
     /// </summary>
-    public class TenantSetupOptions
+    public partial class TenantSetupOptions
     {
         private readonly string _requiredErrorMessageFormat = "The {0} field is required.";
 
@@ -101,7 +100,7 @@ namespace OrchardCore.AutoSetup.Options
         /// <returns> The collection of errors. </returns>
         public virtual IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (string.IsNullOrEmpty(ShellName) || !Regex.IsMatch(ShellName, @"^\w+$"))
+            if (string.IsNullOrEmpty(ShellName) || !TenantNameRegex().IsMatch(ShellName))
             {
                 yield return new ValidationResult("ShellName Can not be empty and must contain characters only and no spaces.");
             }
@@ -157,5 +156,8 @@ namespace OrchardCore.AutoSetup.Options
                 yield return new ValidationResult(string.Format(_requiredErrorMessageFormat, nameof(SiteTimeZone)));
             }
         }
+
+        [GeneratedRegex(@"^\w+$")]
+        private static partial Regex TenantNameRegex();
     }
 }

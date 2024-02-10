@@ -171,7 +171,7 @@ namespace OrchardCore.Apis.GraphQL
             await _serializer.WriteAsync(context.Response.Body, result);
         }
 
-        private GraphQLNamedQueryRequest CreateRequestFromQueryString(HttpContext context, bool validateQueryKey = false)
+        private static GraphQLNamedQueryRequest CreateRequestFromQueryString(HttpContext context, bool validateQueryKey = false)
         {
             if (!context.Request.Query.ContainsKey("query"))
             {
