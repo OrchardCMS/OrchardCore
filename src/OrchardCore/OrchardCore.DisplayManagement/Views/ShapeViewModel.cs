@@ -81,13 +81,13 @@ namespace OrchardCore.DisplayManagement.Views
             _sorted = false;
             _items ??= [];
 
-            if (item is IHtmlContent)
+            if (item is IHtmlContent htmlContent)
             {
-                _items.Add(new PositionWrapper((IHtmlContent)item, position));
+                _items.Add(PositionWrapper.TryWrap(htmlContent, position));
             }
-            else if (item is string)
+            else if (item is string stringContent)
             {
-                _items.Add(new PositionWrapper((string)item, position));
+                _items.Add(PositionWrapper.TryWrap(stringContent, position));
             }
             else
             {
