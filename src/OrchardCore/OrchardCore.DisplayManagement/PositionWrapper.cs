@@ -69,8 +69,6 @@ namespace OrchardCore.DisplayManagement
         }
 
         public static IHtmlContent UnWrap(PositionWrapper wrapper)
-        {
-            return wrapper._value;
-        }
+            => wrapper._value;
     }
 }
