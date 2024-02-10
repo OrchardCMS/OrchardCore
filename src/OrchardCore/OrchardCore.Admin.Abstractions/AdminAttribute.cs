@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Primitives;
 
 namespace OrchardCore.Admin
 {
@@ -27,25 +26,17 @@ namespace OrchardCore.Admin
         public string Template { get; set; }
 
         /// <summary>
-        /// Gets or sets the name used when mapping the admin route. If empty for the attribute whose <see
-        /// cref="Template"/> is used, the fallback is <see cref="ControllerActionDescriptor.DisplayName"/>.
+        /// Gets or sets the name used when mapping the admin route. You can use <c>{area}</c>, <c>{controller}</c>,
+        /// <c>{action}</c> in the, which will be substituted. For performance reasons these values are exact and
+        /// shouldn't contain spaces. If empty for the attribute whose <see  cref="Template"/> is used, the fallback is
+        /// <see cref="ControllerActionDescriptor.DisplayName"/>.
         /// </summary>
         public string RouteName { get; set; }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AdminAttribute"/> class.
-        /// </summary>
-        /// <param name="template">If not <see langword="null"/> or empty, it's used as the route template.</param>
-        /// <param name="routeName">If not <see langword="null"/> or empty, it's used as the route name.</param>
-        /// <param name="nameFromControllerAndAction">
-        /// If <see langword="true"/>, the <paramref name="routeName"/> parameter is ignored and <see cref="RouteName"/>
-        /// is set to the concatenation of the controller and action names (e.g. the route name for
-        /// <c>~/Admin/AdminMenu/List</c> becomes <c>AdminMenuList</c>).
-        /// </param>
-        public AdminAttribute(string template = null, string routeName = null, bool nameFromControllerAndAction = false)
+        public AdminAttribute(string template = null, string routeName = null)
         {
             Template = template;
-            RouteName = nameFromControllerAndAction ? NameFromControllerAndAction : routeName;
+            RouteName = routeName;
         }
 
         public Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
