@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Microsoft.Extensions.Options;
 using OrchardCore.Rules.Models;
 

@@ -1,7 +1,6 @@
 using GraphQL.Types;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Media.Fields;
-using OrchardCore.ResourceManagement;
 using OrchardCore.Seo.Models;
 
 namespace OrchardCore.Seo.GraphQL;
