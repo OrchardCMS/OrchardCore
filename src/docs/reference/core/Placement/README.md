@@ -175,6 +175,26 @@ Metadata tag helper example:
 </menu>
 ```
 
+#### Adding properties with child tag helpers
+
+Properties can be passed to a shape by adding attributes to the shape tag helper, as mentioned above. But you can also use the `<add-property>` tag helper inside `<shape>`. This even lets you pass Razor code as properties with `IHtmlContent` value, if you omit the `value` attribute. Something that can't be easily done otherwise.
+
+```razor
+<shape type="MyShape">
+    <add-property name="foo" value="1" />
+    <add-property name="bar" value="a" />
+    <add-property name="content">
+        <h2>Some complicated HTML</h2>
+        <div>
+            You can even include shapes:
+            <shape type="AnotherShape" prop-count="10" />
+        </div>
+    </add-property>
+</shape>
+```
+
+This is the same as `<shape type="MyShape" foo="1" bar="a" prop-content="@someHtmlContentVariable" />` where you'd have to construct `someHtmlContentVariable` separately. Of course you can mix and match the different formats, for example to only use `<add-property>` when you want to pass HTML content as property.
+
 ### Date Time shapes
 
 #### `DateTime`
