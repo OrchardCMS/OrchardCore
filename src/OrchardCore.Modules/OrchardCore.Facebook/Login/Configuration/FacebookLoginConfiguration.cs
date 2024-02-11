@@ -43,6 +43,13 @@ namespace OrchardCore.Facebook.Login.Configuration
                 return;
             }
 
+            if (string.IsNullOrWhiteSpace(_facebookSettings.AppId) || string.IsNullOrWhiteSpace(_facebookSettings.AppSecret))
+            {
+                _logger.LogWarning("The Facebook login provider is enabled but not configured.");
+
+                return;
+            }
+
             var loginSettings = GetFacebookLoginSettingsAsync().GetAwaiter().GetResult();
             if (loginSettings == null)
             {
