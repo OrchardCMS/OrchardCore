@@ -17,9 +17,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly GraphQLContentOptions _contentOptions;
-        private static readonly ConcurrentDictionary<string, Type> PartTypes = new();
-        private static readonly ConcurrentDictionary<string, IObjectGraphType> PartObjectGraphTypes = new();
-        private static readonly ConcurrentDictionary<string, IInputObjectGraphType> PartInputObjectGraphTypes = new();
+        private static readonly ConcurrentDictionary<string, Type> _partTypes = new();
+        private static readonly ConcurrentDictionary<string, IObjectGraphType> _partObjectGraphTypes = new();
+        private static readonly ConcurrentDictionary<string, IInputObjectGraphType> _partInputObjectGraphTypes = new();
 
         public TypedContentTypeBuilder(IHttpContextAccessor httpContextAccessor,
             IOptions<GraphQLContentOptions> contentOptionsAccessor)
@@ -54,8 +54,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     continue;
                 }
 
-                var partType = PartTypes.GetOrAdd(part.PartDefinition.Name, key => typeActivator.GetTypeActivator(key).Type);
-                var queryGraphType = PartObjectGraphTypes.GetOrAdd(part.PartDefinition.Name,
+                var partType = _partTypes.GetOrAdd(part.PartDefinition.Name, key => typeActivator.GetTypeActivator(key).Type);
+                var queryGraphType = _partObjectGraphTypes.GetOrAdd(part.PartDefinition.Name,
                                                                     partName =>
                                                                     {
                                                                         queryObjectGraphTypes ??= serviceProvider.GetService<IEnumerable<IObjectGraphType>>();
@@ -121,7 +121,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
 
 
-                var inputGraphTypeResolved = PartInputObjectGraphTypes.GetOrAdd(part.PartDefinition.Name, partName =>
+                var inputGraphTypeResolved = _partInputObjectGraphTypes.GetOrAdd(part.PartDefinition.Name, partName =>
                 {
                     queryInputGraphTypes ??= serviceProvider.GetService<IEnumerable<IInputObjectGraphType>>();
                     return queryInputGraphTypes?.FirstOrDefault(x => x.GetType().BaseType.GetGenericArguments().FirstOrDefault()?.Name == part.PartDefinition.Name);

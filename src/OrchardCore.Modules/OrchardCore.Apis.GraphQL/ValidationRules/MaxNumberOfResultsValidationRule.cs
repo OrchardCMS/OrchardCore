@@ -52,19 +52,17 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
 
                     if (value.HasValue && value > _maxNumberOfResults)
                     {
-                        var errorMessage = S["'{0}' exceeds the maximum number of results for '{1}' ({2})", value.Value, arg.Name, _maxNumberOfResults];
-
                         if (_maxNumberOfResultsValidationMode == MaxNumberOfResultsValidationMode.Enabled)
                         {
                             validationContext.ReportError(new ValidationError(
                                 validationContext.Document.Source,
                                 "ArgumentInputError",
-                                errorMessage,
+                                S["'{0}' exceeds the maximum number of results for '{1}' ({2})", value.Value, arg.Name, _maxNumberOfResults],
                                 arg));
                         }
                         else
                         {
-                            _logger.LogInformation(errorMessage);
+                            _logger.LogInformation("'{value}' exceeds the maximum number of results for '{name}' ({total})", value.Value, arg.Name, _maxNumberOfResults);
 
                             arg = new GraphQLArgument(arg.Name, new GraphQLIntValue(_maxNumberOfResults)); // if disabled mode we just log info and override the arg to be maxvalue
                         }
