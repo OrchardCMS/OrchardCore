@@ -21,10 +21,10 @@
     <PackageManagement Include="Castle.Core" Version="5.1.1" />
     <PackageManagement Include="DocumentFormat.OpenXml" Version="3.0.1" />
     <PackageManagement Include="Fluid.Core" Version="2.5.0" />
-    <PackageManagement Include="GraphQL" Version="7.7.2" />
-    <PackageManagement Include="GraphQL.DataLoader" Version="7.7.2" />
-    <PackageManagement Include="GraphQL.MicrosoftDI" Version="7.7.2" />
-    <PackageManagement Include="GraphQL.SystemTextJson" Version="7.7.2" />
+    <PackageManagement Include="GraphQL" Version="7.8.0" />
+    <PackageManagement Include="GraphQL.DataLoader" Version="7.8.0" />
+    <PackageManagement Include="GraphQL.MicrosoftDI" Version="7.8.0" />
+    <PackageManagement Include="GraphQL.SystemTextJson" Version="7.8.0" />
     <PackageManagement Include="Jint" Version="3.0.0" />
     <PackageManagement Include="HtmlSanitizer" Version="8.1.839-beta" />
     <PackageManagement Include="Irony.Core" Version="1.0.7" />
