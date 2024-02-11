@@ -17,7 +17,9 @@ public class HtmlContentTagHelper : TagHelper
         if (!string.IsNullOrWhiteSpace(Name))
         {
             var content = await output.GetChildContentAsync(useCachedResult: false);
-            shape.Properties[Name.Trim()] = new HtmlString(content.GetContent());
+            shape.Properties[Name.Trim()] = output.Attributes.ContainsName("value")
+                ? output.Attributes["value"].Value
+                : new HtmlString(content.GetContent());
         }
 
         output.SuppressOutput();

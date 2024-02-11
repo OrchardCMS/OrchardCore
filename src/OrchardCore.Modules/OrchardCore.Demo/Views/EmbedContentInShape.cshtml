@@ -5,6 +5,11 @@
     <p>@Model.HtmlContent</p>
     <p>The content is inserted above this line.</p>
 
+    @if (Model.SomeProperty != null)
+    {
+        <p>And here is another property: @Model.SomeProperty.</p>
+    }
+
     @if (Model.OtherContent is IHtmlContent otherContent)
     {
 
