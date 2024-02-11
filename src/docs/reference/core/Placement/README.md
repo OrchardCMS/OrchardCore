@@ -175,7 +175,7 @@ Metadata tag helper example:
 </menu>
 ```
 
-#### Adding properties with child tag helpers
+#### Adding properties with additional tag helpers
 
 Properties can be passed to a shape by adding attributes to the shape tag helper, as mentioned above. But you can also use the `<add-property>` tag helper inside `<shape>`. This even lets you pass Razor code as properties with `IHtmlContent` value, if you omit the `value` attribute. Something that can't be easily done otherwise.
 
