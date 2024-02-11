@@ -31,6 +31,11 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
                 return;
             }
 
+            if (string.IsNullOrWhiteSpace(settings.AppId) || string.IsNullOrWhiteSpace(settings.TenantId))
+            {
+                return;
+            }
+
             // Register the OpenID Connect client handler in the authentication handlers collection.
             options.AddScheme(Constants.AzureAd, builder =>
             {

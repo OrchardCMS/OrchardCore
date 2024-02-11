@@ -59,6 +59,12 @@ namespace OrchardCore.Twitter.Signin.Configuration
                 return;
             }
 
+            if (string.IsNullOrWhiteSpace(settings.Item1.ConsumerKey) ||
+                string.IsNullOrWhiteSpace(settings.Item1.ConsumerSecret))
+            {
+                return;
+            }
+
             options.AddScheme(TwitterDefaults.AuthenticationScheme, builder =>
             {
                 builder.DisplayName = "Twitter";

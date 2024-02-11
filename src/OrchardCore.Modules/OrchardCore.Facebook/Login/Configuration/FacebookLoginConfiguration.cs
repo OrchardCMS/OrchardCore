@@ -43,6 +43,11 @@ namespace OrchardCore.Facebook.Login.Configuration
                 return;
             }
 
+            if (string.IsNullOrWhiteSpace(_facebookSettings.AppId) || string.IsNullOrWhiteSpace(_facebookSettings.AppSecret))
+            {
+                return;
+            }
+
             var loginSettings = GetFacebookLoginSettingsAsync().GetAwaiter().GetResult();
             if (loginSettings == null)
             {
