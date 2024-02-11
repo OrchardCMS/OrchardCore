@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
@@ -60,7 +59,7 @@ namespace OrchardCore.ContentLocalization.Services
                 }
             }
 
-            if (String.IsNullOrEmpty(contentItemId))
+            if (string.IsNullOrEmpty(contentItemId))
             {
                 return null;
             }
@@ -72,7 +71,7 @@ namespace OrchardCore.ContentLocalization.Services
         {
             var contentItemId = await GetContentItemIdFromRouteAsync(url);
 
-            if (!String.IsNullOrEmpty(contentItemId))
+            if (!string.IsNullOrEmpty(contentItemId))
             {
                 (var found, var localization) = await _localizationEntries.TryGetLocalizationAsync(contentItemId);
 
@@ -89,7 +88,7 @@ namespace OrchardCore.ContentLocalization.Services
         {
             var contentItemId = await GetContentItemIdFromRouteAsync(url);
 
-            if (!String.IsNullOrEmpty(contentItemId))
+            if (!string.IsNullOrEmpty(contentItemId))
             {
                 (var found, var localization) = await _localizationEntries.TryGetLocalizationAsync(contentItemId);
 
@@ -99,7 +98,7 @@ namespace OrchardCore.ContentLocalization.Services
                 }
             }
 
-            return Enumerable.Empty<LocalizationEntry>();
+            return [];
         }
 
         public void SetContentCulturePickerCookie(string targetCulture)

@@ -33,7 +33,7 @@ public class SmsAuthenticatorLoginSettingsDisplayDriver : SectionDisplayDriver<I
     {
         return Initialize<SmsAuthenticatorLoginSettings>("SmsAuthenticatorLoginSettings_Edit", model =>
         {
-            model.Body = String.IsNullOrWhiteSpace(settings.Body)
+            model.Body = string.IsNullOrWhiteSpace(settings.Body)
             ? EmailAuthenticatorLoginSettings.DefaultBody
             : settings.Body;
         }).Location("Content:15#Two-Factor Authentication")
@@ -53,7 +53,7 @@ public class SmsAuthenticatorLoginSettingsDisplayDriver : SectionDisplayDriver<I
 
         if (!_liquidTemplateManager.Validate(settings.Body, out var bodyErrors))
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(settings.Body), String.Join(' ', bodyErrors));
+            context.Updater.ModelState.AddModelError(Prefix, nameof(settings.Body), string.Join(' ', bodyErrors));
         }
 
         return Edit(settings);

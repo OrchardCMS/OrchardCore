@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -77,7 +78,8 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
                     {
                         Name = nameof(UserTaskEvent),
                         ContentType = model.ContentType,
-                        ContentItemId = model.ContentItemId
+                        ContentItemId = model.ContentItemId,
+                        ContentItemVersionId = model.ContentItemVersionId,
                     };
 
                     var input = new Dictionary<string, object>

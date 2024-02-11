@@ -32,7 +32,7 @@ public class SearchFormPartDisplayDriver : ContentPartDisplayDriver<SearchFormPa
         if (await updater.TryUpdateModelAsync(model, Prefix))
         {
             part.Placeholder = model.Placeholder;
-            part.IndexName = String.IsNullOrWhiteSpace(model.IndexName) ? null : model.IndexName.Trim();
+            part.IndexName = string.IsNullOrWhiteSpace(model.IndexName) ? null : model.IndexName.Trim();
         }
 
         return Edit(part);

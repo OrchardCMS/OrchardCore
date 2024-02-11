@@ -10,14 +10,17 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 {
     public class GraphQLContentOptions
     {
-        public IEnumerable<GraphQLContentTypeOption> ContentTypeOptions { get; set; }
-            = Enumerable.Empty<GraphQLContentTypeOption>();
+        public IEnumerable<GraphQLContentTypeOption> ContentTypeOptions { get; set; } = [];
 
-        public IEnumerable<GraphQLContentPartOption> PartOptions { get; set; }
-            = Enumerable.Empty<GraphQLContentPartOption>();
+        public IEnumerable<GraphQLContentPartOption> PartOptions { get; set; } = [];
 
-        public IEnumerable<GraphQLField> HiddenFields { get; set; }
-            = Enumerable.Empty<GraphQLField>();
+        public IEnumerable<GraphQLField> HiddenFields { get; set; } = [];
+
+        /// <summary>
+        /// By default, only content types without stereotypes are included.
+        /// This option enables you to explicitly add additional stereotypes for discovery.
+        /// </summary>
+        public HashSet<string> DiscoverableSterotypes { get; } = new(StringComparer.OrdinalIgnoreCase);
 
         public GraphQLContentOptions ConfigureContentType(string contentType, Action<GraphQLContentTypeOption> action)
         {
@@ -25,7 +28,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
             action(option);
 
-            ContentTypeOptions = ContentTypeOptions.Union(new[] { option });
+            ContentTypeOptions = ContentTypeOptions.Union([option]);
 
             return this;
         }
@@ -37,7 +40,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
             action(option);
 
-            PartOptions = PartOptions.Union(new[] { option });
+            PartOptions = PartOptions.Union([option]);
 
             return this;
         }
@@ -48,25 +51,21 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
             action(option);
 
-            PartOptions = PartOptions.Union(new[] { option });
+            PartOptions = PartOptions.Union([option]);
 
             return this;
         }
 
         public GraphQLContentOptions IgnoreField<TGraphType>(string fieldName) where TGraphType : IObjectGraphType
         {
-            HiddenFields = HiddenFields.Union(new[] {
-                new GraphQLField<TGraphType>(fieldName),
-            });
+            HiddenFields = HiddenFields.Union([new GraphQLField<TGraphType>(fieldName)]);
 
             return this;
         }
 
         public GraphQLContentOptions IgnoreField(Type fieldType, string fieldName)
         {
-            HiddenFields = HiddenFields.Union(new[] {
-                new GraphQLField(fieldType, fieldName),
-            });
+            HiddenFields = HiddenFields.Union([new GraphQLField(fieldType, fieldName)]);
 
             return this;
         }
@@ -159,10 +158,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
         public bool IsHiddenByDefault(string contentType)
         {
-            if (String.IsNullOrEmpty(contentType))
-            {
-                throw new ArgumentNullException(nameof(contentType));
-            }
+            ArgumentException.ThrowIfNullOrEmpty(contentType);
 
             var contentTypeOption = ContentTypeOptions.FirstOrDefault(ctp => ctp.ContentType == contentType);
 
@@ -171,10 +167,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
         public bool ShouldHide(ContentTypeDefinition definition)
         {
-            if (definition == null)
-            {
-                throw new ArgumentNullException(nameof(definition));
-            }
+            ArgumentNullException.ThrowIfNull(definition);
 
             var settings = definition.GetSettings<GraphQLContentTypeSettings>();
 

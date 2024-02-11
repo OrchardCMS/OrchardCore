@@ -46,7 +46,7 @@ public class RobotsMiddleware
             {
                 var item = (await provider.GetContentAsync())?.Trim();
 
-                if (String.IsNullOrEmpty(item))
+                if (string.IsNullOrEmpty(item))
                 {
                     continue;
                 }

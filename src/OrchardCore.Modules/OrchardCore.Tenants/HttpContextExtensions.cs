@@ -23,13 +23,13 @@ public static class HttpContextExtensions
         }
 
         var pathString = httpContext.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? PathString.Empty;
-        if (!String.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
+        if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
         {
             pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
         }
 
         var queryString = QueryString.Empty;
-        if (appendQuery && !String.IsNullOrEmpty(entry.Token))
+        if (appendQuery && !string.IsNullOrEmpty(entry.Token))
         {
             queryString = QueryString.Create("token", entry.Token);
         }

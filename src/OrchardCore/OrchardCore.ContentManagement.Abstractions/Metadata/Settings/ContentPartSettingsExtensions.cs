@@ -56,7 +56,7 @@ namespace OrchardCore.ContentManagement.Metadata.Settings
         {
             var displayName = part.GetSettings<ContentPartSettings>().DisplayName;
 
-            if (String.IsNullOrEmpty(displayName))
+            if (string.IsNullOrEmpty(displayName))
             {
                 displayName = part.Name.TrimEnd("Part");
             }

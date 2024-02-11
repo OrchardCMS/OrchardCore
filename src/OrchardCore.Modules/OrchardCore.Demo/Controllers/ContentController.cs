@@ -96,7 +96,7 @@ namespace OrchardCore.Demo.Controllers
                 return View(nameof(Edit), shape);
             }
 
-            _session.Save(contentItem);
+            await _session.SaveAsync(contentItem);
             return RedirectToAction(nameof(Edit), contentItemId);
         }
     }

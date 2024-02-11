@@ -8,7 +8,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 {
     public class Composite : DynamicObject
     {
-        protected readonly Dictionary<string, object> _properties = new();
+        protected readonly Dictionary<string, object> _properties = [];
 
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
@@ -55,7 +55,7 @@ namespace OrchardCore.DisplayManagement.Shapes
             {
                 if (binder.Name == "ToString")
                 {
-                    result = String.Empty;
+                    result = string.Empty;
                     return true;
                 }
 
@@ -243,7 +243,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public override string ToString()
         {
-            return String.Empty;
+            return string.Empty;
         }
     }
 }

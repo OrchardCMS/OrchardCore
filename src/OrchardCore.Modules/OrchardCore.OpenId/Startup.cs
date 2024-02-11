@@ -20,6 +20,7 @@ using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
@@ -197,7 +198,7 @@ namespace OrchardCore.OpenId
             });
         }
 
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        public override async ValueTask ConfigureAsync(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var options = serviceProvider.GetRequiredService<IOptions<AdminOptions>>().Value;
 
@@ -208,7 +209,7 @@ namespace OrchardCore.OpenId
                 defaults: new { controller = typeof(ServerConfigurationController).ControllerName(), action = nameof(ServerConfigurationController.Index) }
             );
 
-            var settings = GetServerSettingsAsync().GetAwaiter().GetResult();
+            var settings = await GetServerSettingsAsync();
             if (settings == null)
             {
                 return;
@@ -276,9 +277,7 @@ namespace OrchardCore.OpenId
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDisplayDriver<DeploymentStep>, OpenIdServerDeploymentStepDriver>();
-            services.AddTransient<IDeploymentSource, OpenIdServerDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<OpenIdServerDeploymentStep>>();
+            services.AddDeployment<OpenIdServerDeploymentSource, OpenIdServerDeploymentStep, OpenIdServerDeploymentStepDriver>();
         }
     }
 
@@ -338,9 +337,7 @@ namespace OrchardCore.OpenId
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IDisplayDriver<DeploymentStep>, OpenIdValidationDeploymentStepDriver>();
-            services.AddTransient<IDeploymentSource, OpenIdValidationDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory, DeploymentStepFactory<OpenIdValidationDeploymentStep>>();
+            services.AddDeployment<OpenIdValidationDeploymentSource, OpenIdValidationDeploymentStep, OpenIdValidationDeploymentStepDriver>();
         }
     }
 
@@ -355,7 +352,7 @@ namespace OrchardCore.OpenId
             for (var index = services.Count - 1; index >= 0; index--)
             {
                 var descriptor = services[index];
-                if (descriptor.ServiceType == serviceType && descriptor.ImplementationType == implementationType)
+                if (descriptor.ServiceType == serviceType && descriptor.GetImplementationType() == implementationType)
                 {
                     services.RemoveAt(index);
                 }

@@ -51,17 +51,17 @@ namespace OrchardCore.Users.Services
 
             if (disableLocalLogin)
             {
-                reportError(String.Empty, S["Local login is disabled."]);
+                reportError(string.Empty, S["Local login is disabled."]);
                 return null;
             }
 
-            if (String.IsNullOrWhiteSpace(userName))
+            if (string.IsNullOrWhiteSpace(userName))
             {
                 reportError("UserName", S["A user name is required."]);
                 return null;
             }
 
-            if (String.IsNullOrWhiteSpace(password))
+            if (string.IsNullOrWhiteSpace(password))
             {
                 reportError("Password", S["A password is required."]);
                 return null;
@@ -70,7 +70,7 @@ namespace OrchardCore.Users.Services
             var user = await GetUserAsync(userName);
             if (user == null)
             {
-                reportError(String.Empty, S["The specified username/password couple is invalid."]);
+                reportError(string.Empty, S["The specified username/password couple is invalid."]);
                 return null;
             }
 
@@ -78,28 +78,28 @@ namespace OrchardCore.Users.Services
 
             if (result.IsLockedOut)
             {
-                reportError(String.Empty, S["The user is locked out."]);
+                reportError(string.Empty, S["The user is locked out."]);
                 return null;
             }
             else if (result.IsNotAllowed)
             {
-                reportError(String.Empty, S["The specified user is not allowed to sign in."]);
+                reportError(string.Empty, S["The specified user is not allowed to sign in."]);
                 return null;
             }
             else if (result.RequiresTwoFactor)
             {
-                reportError(String.Empty, S["The specified user is not allowed to sign in using password authentication."]);
+                reportError(string.Empty, S["The specified user is not allowed to sign in using password authentication."]);
                 return null;
             }
             else if (!result.Succeeded)
             {
-                reportError(String.Empty, S["The specified username/password couple is invalid."]);
+                reportError(string.Empty, S["The specified username/password couple is invalid."]);
                 return null;
             }
 
             if (!(user as User).IsEnabled)
             {
-                reportError(String.Empty, S["The specified user is not allowed to sign in."]);
+                reportError(string.Empty, S["The specified user is not allowed to sign in."]);
 
                 return null;
             }
@@ -115,7 +115,7 @@ namespace OrchardCore.Users.Services
             }
 
             // Accounts can be created with no password.
-            var identityResult = String.IsNullOrWhiteSpace(password)
+            var identityResult = string.IsNullOrWhiteSpace(password)
                 ? await _userManager.CreateAsync(user)
                 : await _userManager.CreateAsync(user, password);
             if (!identityResult.Succeeded)
@@ -164,7 +164,7 @@ namespace OrchardCore.Users.Services
 
         public async Task<IUser> GetForgotPasswordUserAsync(string userIdentifier)
         {
-            if (String.IsNullOrWhiteSpace(userIdentifier))
+            if (string.IsNullOrWhiteSpace(userIdentifier))
             {
                 return await Task.FromResult<IUser>(null);
             }
@@ -184,19 +184,19 @@ namespace OrchardCore.Users.Services
         public async Task<bool> ResetPasswordAsync(string emailAddress, string resetToken, string newPassword, Action<string, string> reportError)
         {
             var result = true;
-            if (String.IsNullOrWhiteSpace(emailAddress))
+            if (string.IsNullOrWhiteSpace(emailAddress))
             {
                 reportError("UserName", S["A email address is required."]);
                 result = false;
             }
 
-            if (String.IsNullOrWhiteSpace(newPassword))
+            if (string.IsNullOrWhiteSpace(newPassword))
             {
                 reportError("Password", S["A password is required."]);
                 result = false;
             }
 
-            if (String.IsNullOrWhiteSpace(resetToken))
+            if (string.IsNullOrWhiteSpace(resetToken))
             {
                 reportError("Token", S["A token is required."]);
                 result = false;
@@ -292,9 +292,11 @@ namespace OrchardCore.Users.Services
                     case "InvalidEmail":
                         reportError("Email", S["Email '{0}' is invalid.", user.Email]);
                         break;
-
+                    case "InvalidToken":
+                        reportError(string.Empty, S["The reset token is invalid. Please request a new token."]);
+                        break;
                     default:
-                        reportError(String.Empty, S["Unexpected error: '{0}'.", error.Code]);
+                        reportError(string.Empty, S["Unexpected error: '{0}'.", error.Code]);
                         break;
                 }
             }

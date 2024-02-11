@@ -62,7 +62,7 @@ namespace OrchardCore.Users.Services
 
                 var adminThemeName = await _adminThemeService.GetAdminThemeNameAsync();
 
-                if (String.IsNullOrEmpty(adminThemeName))
+                if (string.IsNullOrEmpty(adminThemeName))
                 {
                     return null;
                 }

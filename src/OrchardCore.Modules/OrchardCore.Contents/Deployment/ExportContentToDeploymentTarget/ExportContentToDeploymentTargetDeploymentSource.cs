@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Deployment;
@@ -37,16 +37,17 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
                 return;
             }
 
-            var data = new JArray();
-            result.Steps.Add(new JObject(
-                new JProperty("name", "Content"),
-                new JProperty("data", data)
-            ));
+            var data = new JsonArray();
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "Content",
+                ["data"] = data,
+            });
 
             var model = new ExportContentToDeploymentTargetModel();
             await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(model, "ExportContentToDeploymentTarget", m => m.ItemIds, m => m.Latest, m => m.ContentItemId);
 
-            if (!String.IsNullOrEmpty(model.ContentItemId))
+            if (!string.IsNullOrEmpty(model.ContentItemId))
             {
                 var contentItem = await _contentManager.GetAsync(model.ContentItemId, model.Latest ? VersionOptions.Latest : VersionOptions.Published);
                 if (contentItem != null)

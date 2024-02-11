@@ -50,8 +50,8 @@ namespace OrchardCore.Liquid
                         var shellConfiguration = httpContext.RequestServices.GetRequiredService<IShellConfiguration>();
                         cacheControl = shellConfiguration.GetValue("StaticFileOptions:CacheControl", cacheControl);
 
-                        var filters = String.Join(',', templateOptions.Value.Filters.Select(x => $"'{x.Key}'"));
-                        var tags = String.Join(',', liquidViewParser.RegisteredTags.Select(x => $"'{x.Key}'"));
+                        var filters = string.Join(',', templateOptions.Value.Filters.Select(x => $"'{x.Key}'"));
+                        var tags = string.Join(',', liquidViewParser.RegisteredTags.Select(x => $"'{x.Key}'"));
 
                         var script = $@"[{filters}].forEach(value=>{{if(!liquidFilters.includes(value)){{ liquidFilters.push(value);}}}});
                                 [{tags}].forEach(value=>{{if(!liquidTags.includes(value)){{ liquidTags.push(value);}}}});";

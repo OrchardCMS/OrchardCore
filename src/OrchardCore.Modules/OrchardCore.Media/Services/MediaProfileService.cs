@@ -47,7 +47,7 @@ namespace OrchardCore.Media.Services
                     commands["quality"] = mediaProfile.Quality.ToString();
                 }
 
-                if (!String.IsNullOrEmpty(mediaProfile.BackgroundColor))
+                if (!string.IsNullOrEmpty(mediaProfile.BackgroundColor))
                 {
                     commands["bgcolor"] = mediaProfile.BackgroundColor;
                 }

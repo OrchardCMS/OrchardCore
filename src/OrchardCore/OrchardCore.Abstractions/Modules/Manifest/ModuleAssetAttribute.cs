@@ -10,7 +10,7 @@ namespace OrchardCore.Modules.Manifest
     {
         public ModuleAssetAttribute(string asset)
         {
-            Asset = asset ?? String.Empty;
+            Asset = asset ?? string.Empty;
         }
 
         /// <Summary>

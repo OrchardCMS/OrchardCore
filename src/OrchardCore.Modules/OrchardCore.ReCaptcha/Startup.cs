@@ -47,7 +47,7 @@ namespace OrchardCore.ReCaptcha
             services.AddScoped<IPasswordRecoveryFormEvents, PasswordRecoveryFormEventEventHandler>();
             services.Configure<MvcOptions>((options) =>
             {
-                options.Filters.Add(typeof(ReCaptchaLoginFilter));
+                options.Filters.Add<ReCaptchaLoginFilter>();
             });
         }
     }

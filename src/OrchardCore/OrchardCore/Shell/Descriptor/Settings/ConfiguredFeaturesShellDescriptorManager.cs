@@ -66,7 +66,7 @@ namespace OrchardCore.Environment.Shell.Descriptor.Settings
 
         private class ConfiguredFeatures
         {
-            public string[] Features { get; set; } = Array.Empty<string>();
+            public string[] Features { get; set; } = [];
         }
     }
 }

@@ -68,7 +68,7 @@ namespace OrchardCore.ContentLocalization.Controllers
             {
                 if (localizationEntries.Any())
                 {
-                    var localization = localizationEntries.SingleOrDefault(e => String.Equals(e.Culture, targetCulture, StringComparison.OrdinalIgnoreCase));
+                    var localization = localizationEntries.SingleOrDefault(e => string.Equals(e.Culture, targetCulture, StringComparison.OrdinalIgnoreCase));
 
                     if (localization != null)
                     {

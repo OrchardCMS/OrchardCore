@@ -37,7 +37,7 @@ namespace OrchardCore.Modules.Manifest
         }
 
         /// <summary>
-        /// Verify the <see cref="FeatureAttribute(String, String, String, Boolean, Boolean, Boolean)"/>
+        /// Verify the <see cref="FeatureAttribute(string, string, string, bool, bool, bool)"/>
         /// ctor, arguments
         /// <c>id, description, featureDependencies, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -51,7 +51,7 @@ namespace OrchardCore.Modules.Manifest
             const bool alwaysEnabled = default;
             const bool enabledByDependencyOnly = default;
 
-            var depString = String.Join(';', deps);
+            var depString = string.Join(';', deps);
 
             ReportKeyValuePairs(
                 new RenderKeyValuePair(nameof(id), id),
@@ -72,7 +72,7 @@ namespace OrchardCore.Modules.Manifest
             Assert.Equal(description, feature.Description);
 
             Assert.Null(feature.InternalPriority);
-            Assert.Equal(String.Empty, feature.Priority);
+            Assert.Equal(string.Empty, feature.Priority);
 
             Assert.NotNull(feature.Dependencies);
             Assert.Equal(deps, feature.Dependencies);
@@ -82,7 +82,7 @@ namespace OrchardCore.Modules.Manifest
         }
 
         /// <summary>
-        /// Verify the <see cref="FeatureAttribute(String, String, String, String, Boolean, Boolean, Boolean)"/>
+        /// Verify the <see cref="FeatureAttribute(string, string, string, string, bool, bool, bool)"/>
         /// ctor, arguments
         /// <c>id, name, description, featureDependencies, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -97,7 +97,7 @@ namespace OrchardCore.Modules.Manifest
             const bool alwaysEnabled = default;
             const bool enabledByDependencyOnly = default;
 
-            var depString = String.Join(';', deps);
+            var depString = string.Join(';', deps);
 
             ReportKeyValuePairs(
                 new RenderKeyValuePair(nameof(id), id),
@@ -119,7 +119,7 @@ namespace OrchardCore.Modules.Manifest
             Assert.Equal(description, feature.Description);
 
             Assert.Null(feature.InternalPriority);
-            Assert.Equal(String.Empty, feature.Priority);
+            Assert.Equal(string.Empty, feature.Priority);
 
             Assert.NotNull(feature.Dependencies);
             Assert.Equal(deps, feature.Dependencies);
@@ -129,7 +129,7 @@ namespace OrchardCore.Modules.Manifest
         }
 
         /// <summary>
-        /// Verify the <see cref="FeatureAttribute(String, String, String, String, String, String, Boolean, Boolean, Boolean)"/>
+        /// Verify the <see cref="FeatureAttribute(string, string, string, string, string, string, bool, bool, bool)"/>
         /// ctor, arguments
         /// <c>id, name, category, priority, description, featureDependencies, defaultTenant, alwaysEnabled, enabledByDependencyOnly</c>.
         /// </summary>
@@ -146,7 +146,7 @@ namespace OrchardCore.Modules.Manifest
             const bool alwaysEnabled = default;
             const bool enabledByDependencyOnly = default;
 
-            var depString = String.Join(';', deps);
+            var depString = string.Join(';', deps);
             var priString = $"{priority}";
 
             ReportKeyValuePairs(
@@ -284,7 +284,7 @@ namespace OrchardCore.Modules.Manifest
                 LoremWords(1),
                 name,
                 category,
-                priString ?? String.Empty,
+                priString ?? string.Empty,
                 description,
                 depString,
                 defaultTenant,
@@ -399,7 +399,7 @@ namespace OrchardCore.Modules.Manifest
         public virtual void Dependencies(char delim)
         {
             var deps = LoremWords(5).Split(' ');
-            var depString = String.Join(delim, deps);
+            var depString = string.Join(delim, deps);
 
             var listDelims = FeatureAttribute.ListDelims;
 

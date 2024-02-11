@@ -1,6 +1,6 @@
 using System.Collections.Immutable;
 using System.Globalization;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 
 namespace OrchardCore.OpenId.YesSql.Models
 {
@@ -51,12 +51,11 @@ namespace OrchardCore.OpenId.YesSql.Models
         /// <summary>
         /// Gets or sets the additional properties associated with the current scope.
         /// </summary>
-        public JObject Properties { get; set; }
+        public JsonObject Properties { get; set; }
 
         /// <summary>
         /// Gets or sets the resources associated with the current scope.
         /// </summary>
-        public ImmutableArray<string> Resources { get; set; }
-            = ImmutableArray.Create<string>();
+        public ImmutableArray<string> Resources { get; set; } = [];
     }
 }

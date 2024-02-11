@@ -11,8 +11,8 @@ namespace OrchardCore.Modules
 
             if (index == -1)
             {
-                ModuleAssetPath = String.Empty;
-                ProjectAssetPath = String.Empty;
+                ModuleAssetPath = string.Empty;
+                ProjectAssetPath = string.Empty;
             }
             else
             {

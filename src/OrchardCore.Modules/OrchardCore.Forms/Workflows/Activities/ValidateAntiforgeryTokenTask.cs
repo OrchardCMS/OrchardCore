@@ -9,7 +9,7 @@ using OrchardCore.Workflows.Models;
 
 namespace OrchardCore.Forms.Workflows.Activities
 {
-    public class ValidateAntiforgeryTokenTask : TaskActivity
+    public class ValidateAntiforgeryTokenTask : TaskActivity<ValidateAntiforgeryTokenTask>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAntiforgery _antiforgery;
@@ -25,8 +25,6 @@ namespace OrchardCore.Forms.Workflows.Activities
             _antiforgery = antiforgery;
             S = localizer;
         }
-
-        public override string Name => nameof(ValidateAntiforgeryTokenTask);
 
         public override LocalizedString DisplayText => S["Validate Antiforgery Token Task"];
 

@@ -13,39 +13,18 @@ namespace OrchardCore.Modules.Manifest
     [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true, Inherited = false)]
     public class FeatureAttribute : Attribute
     {
-        /// <summary>
-        /// &quot;&quot;
-        /// </summary>
         protected internal const string DefaultName = "";
 
-        /// <summary>
-        /// &quot;&quot;
-        /// </summary>
         protected internal const string DefaultDescription = "";
 
-        /// <summary>
-        /// &quot;Uncategorized&quot;
-        /// </summary>
         protected internal const string Uncategorized = nameof(Uncategorized);
 
-        /// <summary>
-        /// &quot;&quot;
-        /// </summary>
         protected internal const string DefaultCategory = "";
 
-        /// <summary>
-        /// &quot;&quot;
-        /// </summary>
         protected internal const string DefaultFeatureDependencies = "";
 
-        /// <summary>
-        /// <c>false</c>
-        /// </summary>
         protected internal const bool DefaultDefaultTenantOnly = false;
 
-        /// <summary>
-        /// <c>false</c>
-        /// </summary>
         protected internal const bool DefaultAlwaysEnabled = false;
 
         /// <summary>
@@ -67,7 +46,7 @@ namespace OrchardCore.Modules.Manifest
         /// <param name="defaultTenant">Whether considered default tenant only.</param>
         /// <param name="alwaysEnabled">Whether feature is always enabled.</param>
         /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
-        /// Supported types are <see cref="String"/> and <see cref="Boolean"/> only.</param>
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public FeatureAttribute(
             string id,
             string description,
@@ -99,11 +78,11 @@ namespace OrchardCore.Modules.Manifest
         /// <param name="featureDependencies">Zero or more delimited feature dependencies,
         /// corresponding to each of the feature <see cref="Name"/> properties.</param>
         /// <param name="defaultTenant">Whether considered default tenant only.
-        /// Supported types are <see cref="String"/> and <see cref="Boolean"/> only.</param>
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         /// <param name="alwaysEnabled">Whether feature is always enabled.
-        /// Supported types are <see cref="String"/> and <see cref="Boolean"/> only.</param>
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
-        /// Supported types are <see cref="String"/> and <see cref="Boolean"/> only.</param>
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public FeatureAttribute(
             string id,
             string name,
@@ -138,11 +117,11 @@ namespace OrchardCore.Modules.Manifest
         /// <param name="featureDependencies">Zero or more delimited feature dependencies,
         /// corresponding to each of the feature <see cref="Name"/> properties.</param>
         /// <param name="defaultTenant">Whether considered default tenant only.
-        /// Supported types are <see cref="String"/> and <see cref="Boolean"/> only.</param>
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         /// <param name="alwaysEnabled">Whether feature is always enabled.
-        /// Supported types are <see cref="String"/> and <see cref="Boolean"/> only.</param>
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
-        /// Supported types are <see cref="String"/> and <see cref="Boolean"/> only.</param>
+        /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         public FeatureAttribute(
             string id,
             string name,
@@ -158,7 +137,7 @@ namespace OrchardCore.Modules.Manifest
             Id = id;
             Name = name;
             Category = category ?? DefaultCategory;
-            Priority = priority ?? String.Empty;
+            Priority = priority ?? string.Empty;
             Description = description ?? DefaultDescription;
             DelimitedDependencies = featureDependencies ?? DefaultFeatureDependencies;
 
@@ -173,7 +152,7 @@ namespace OrchardCore.Modules.Manifest
         /// <summary>
         /// Whether the feature exists based on the <see cref="Id"/>.
         /// </summary>
-        public virtual bool Exists => !String.IsNullOrEmpty(Id);
+        public virtual bool Exists => !string.IsNullOrEmpty(Id);
 
         private string _id;
 
@@ -186,7 +165,7 @@ namespace OrchardCore.Modules.Manifest
             set
             {
                 // Guards setting Id with strictly invalid values.
-                if (String.IsNullOrEmpty(value))
+                if (string.IsNullOrEmpty(value))
                 {
                     throw new InvalidOperationException($"When '{nameof(Id)}' has been provided it should not be null or empty.")
                     {
@@ -201,13 +180,13 @@ namespace OrchardCore.Modules.Manifest
         private string _name;
 
         /// <summary>
-        /// Returns the <see cref="String"/> <paramref name="s"/> as is, or <c>null</c> when that
-        /// or <see cref="String.Empty"/>.
+        /// Returns the <see cref="string"/> <paramref name="s"/> as is, or <c>null</c> when that
+        /// or <see cref="string.Empty"/>.
         /// </summary>
         /// <param name="s">The string value to consider.</param>
         /// <returns>The <paramref name="s"/> value as is, or Null when either that or Empty.</returns>
-        /// <see cref="String.IsNullOrEmpty(String?)"/>
-        internal static string StringOrNull(string s) => String.IsNullOrEmpty(s) ? null : s;
+        /// <see cref="string.IsNullOrEmpty(string?)"/>
+        internal static string StringOrNull(string s) => string.IsNullOrEmpty(s) ? null : s;
 
         /// <summary>
         /// Gets or sets the human readable or canonical feature name. <see cref="Id"/> will be
@@ -246,7 +225,7 @@ namespace OrchardCore.Modules.Manifest
         /// <returns>The first or default Description with optional back stop features.</returns>
         internal virtual string Describe(params FeatureAttribute[] additionalFeatures)
         {
-            static bool IsNotNullOrEmpty(string s) => !String.IsNullOrEmpty(s);
+            static bool IsNotNullOrEmpty(string s) => !string.IsNullOrEmpty(s);
             var firstOrDefaultResult = GetValues(this).Concat(additionalFeatures)
                 .Select(feature => feature.Description)
                 .FirstOrDefault(IsNotNullOrEmpty);
@@ -265,7 +244,7 @@ namespace OrchardCore.Modules.Manifest
         /// perspective. Also common are comma (&apos;,&apos;) and space (&apos; &apos;)
         /// delimiters.
         /// </summary>
-        /// <see cref="String.Split(Char[], StringSplitOptions)"/>
+        /// <see cref="string.Split(char[], StringSplitOptions)"/>
         internal protected static char[] ListDelims { get; } = GetValues(';', ',', ' ').ToArray();
 
         /// <summary>
@@ -288,9 +267,6 @@ namespace OrchardCore.Modules.Manifest
             set => _dependencies = (value ?? GetValues<string>()).Select(_ => _.Trim()).ToArray();
         }
 
-        /// <summary>
-        /// 0
-        /// </summary>
         protected internal const int DefaultPriority = 0;
 
         /// <summary>
@@ -304,9 +280,9 @@ namespace OrchardCore.Modules.Manifest
 
         /// <summary>
         /// Gets the <see cref="Priority"/>, parsed and ready to go for Internal use. May yield
-        /// <c>null</c> when failing to <see cref="Int32.TryParse(String, out Int32)"/>.
+        /// <c>null</c> when failing to <see cref="int.TryParse(string, out int)"/>.
         /// </summary>
-        internal virtual int? InternalPriority => Int32.TryParse(Priority, out var result) ? result : null;
+        internal virtual int? InternalPriority => int.TryParse(Priority, out var result) ? result : null;
 
         /// <summary>
         /// Prioritizes the Features starting with This one, concatenating
@@ -344,7 +320,7 @@ namespace OrchardCore.Modules.Manifest
         /// <returns>The Category normalized across This instance and optional Module.</returns>
         internal virtual string Categorize(params FeatureAttribute[] additionalFeatures)
         {
-            static bool IsNotNullOrEmpty(string s) => !String.IsNullOrEmpty(s);
+            static bool IsNotNullOrEmpty(string s) => !string.IsNullOrEmpty(s);
             var categories = GetValues(this).Concat(additionalFeatures).Select(feature => feature.Category);
             var category = categories.FirstOrDefault(IsNotNullOrEmpty);
             // TODO: MWP: 'Uncategorized'? or is empty acceptable here?

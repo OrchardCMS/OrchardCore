@@ -34,7 +34,7 @@ namespace OrchardCore.Taxonomies.Services
                 if (await updater.TryUpdateModelAsync(viewModel, "Taxonomy" + contentItemId))
                 {
                     // Show all items categorized by the taxonomy
-                    if (!String.IsNullOrEmpty(viewModel.SelectedContentItemId))
+                    if (!string.IsNullOrEmpty(viewModel.SelectedContentItemId))
                     {
                         if (viewModel.SelectedContentItemId.StartsWith("Taxonomy:", StringComparison.OrdinalIgnoreCase))
                         {

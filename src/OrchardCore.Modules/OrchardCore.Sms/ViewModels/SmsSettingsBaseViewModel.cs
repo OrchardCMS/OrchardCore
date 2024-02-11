@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Sms.ViewModels;
+namespace OrchardCore.Sms.ViewModels;
 
 public class SmsSettingsBaseViewModel
 {

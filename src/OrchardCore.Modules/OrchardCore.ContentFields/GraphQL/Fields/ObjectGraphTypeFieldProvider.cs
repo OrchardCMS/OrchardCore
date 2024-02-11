@@ -1,4 +1,5 @@
-using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using GraphQL.Resolvers;
 using GraphQL.Types;
@@ -13,6 +14,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
     public class ObjectGraphTypeFieldProvider : IContentFieldProvider
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private static readonly ConcurrentDictionary<string, IObjectGraphType> PartObjectGraphTypes = new();
 
         public ObjectGraphTypeFieldProvider(IHttpContextAccessor httpContextAccessor)
         {
@@ -21,13 +23,15 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
 
         public FieldType GetField(ContentPartFieldDefinition field, string namedPartTechnicalName, string customFieldName)
         {
-            if (HasField(field))
+            var queryGraphType = GetObjectGraphType(field);
+
+            if (queryGraphType != null)
             {
                 return new FieldType
                 {
                     Name = customFieldName ?? field.Name,
                     Description = field.FieldDefinition.Name,
-                    Type = GetQueryGraphType(field),
+                    Type = queryGraphType.GetType(),
                     Resolver = new FuncFieldResolver<ContentElement, ContentElement>(context =>
                     {
                         var typeToResolve = context.FieldDefinition.ResolvedType.GetType().BaseType.GetGenericArguments().First();
@@ -47,21 +51,19 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
             return null;
         }
 
-        private Type GetQueryGraphType(ContentPartFieldDefinition field)
+        private IObjectGraphType GetObjectGraphType(ContentPartFieldDefinition field)
         {
             var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
-            var typeActivator = serviceProvider.GetService<ITypeActivatorFactory<ContentField>>();
-            var activator = typeActivator.GetTypeActivator(field.FieldDefinition.Name);
-            var queryGraphType = typeof(ObjectGraphType<>).MakeGenericType(activator.Type);
 
-            return queryGraphType;
+            return PartObjectGraphTypes.GetOrAdd(field.FieldDefinition.Name,
+                partName => serviceProvider.GetService<IEnumerable<IObjectGraphType>>()?
+                    .FirstOrDefault(x => x.GetType().BaseType.GetGenericArguments().First().Name == partName)
+                );
         }
 
         public bool HasField(ContentPartFieldDefinition field)
         {
-            var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
-
-            return serviceProvider.GetService(GetQueryGraphType(field)) is IObjectGraphType;
+            return GetObjectGraphType(field) != null;
         }
     }
 }

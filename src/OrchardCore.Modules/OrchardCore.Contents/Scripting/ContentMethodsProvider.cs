@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Nodes;
+using System.Text.Json.Settings;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Scripting;
 
@@ -44,7 +45,7 @@ namespace OrchardCore.Contents.Scripting
                     }
                     else
                     {
-                        throw new ValidationException(String.Join(", ", result.Errors));
+                        throw new ValidationException(string.Join(", ", result.Errors));
                     }
                 }),
             };
@@ -60,7 +61,7 @@ namespace OrchardCore.Contents.Scripting
                     var result = contentManager.ValidateAsync(contentItem).GetAwaiter().GetResult();
                     if (!result.Succeeded)
                     {
-                        throw new ValidationException(String.Join(", ", result.Errors));
+                        throw new ValidationException(string.Join(", ", result.Errors));
                     }
                 }),
             };

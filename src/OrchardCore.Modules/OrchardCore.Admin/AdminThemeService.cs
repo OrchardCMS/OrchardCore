@@ -20,8 +20,8 @@ namespace OrchardCore.Admin
 
         public async Task<IExtensionInfo> GetAdminThemeAsync()
         {
-            string currentThemeName = await GetAdminThemeNameAsync();
-            if (String.IsNullOrEmpty(currentThemeName))
+            var currentThemeName = await GetAdminThemeNameAsync();
+            if (string.IsNullOrEmpty(currentThemeName))
             {
                 return null;
             }

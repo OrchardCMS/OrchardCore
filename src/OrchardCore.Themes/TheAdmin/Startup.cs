@@ -20,7 +20,6 @@ namespace OrchardCore.Themes.TheAdmin
         {
             services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
             services.Configure<TheAdminThemeOptions>(_configuration.GetSection("TheAdminTheme:StyleSettings"));
-
         }
     }
 }

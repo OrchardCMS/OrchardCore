@@ -49,7 +49,7 @@ namespace OrchardCore.Media.TagHelpers
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            if (String.IsNullOrEmpty(AssetSrc))
+            if (string.IsNullOrEmpty(AssetSrc))
             {
                 return;
             }

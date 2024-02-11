@@ -22,7 +22,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             {
                 var itemKey = (await argument.EvaluateAsync(context)).ToStringValue();
 
-                if (!String.IsNullOrEmpty(itemKey))
+                if (!string.IsNullOrEmpty(itemKey))
                 {
                     httpContext.Items.Remove(itemKey);
                 }

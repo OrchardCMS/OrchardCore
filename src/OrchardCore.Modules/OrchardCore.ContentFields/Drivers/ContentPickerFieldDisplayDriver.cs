@@ -53,13 +53,13 @@ namespace OrchardCore.ContentFields.Drivers
         {
             return Initialize<EditContentPickerFieldViewModel>(GetEditorShapeType(context), async model =>
             {
-                model.ContentItemIds = String.Join(",", field.ContentItemIds);
+                model.ContentItemIds = string.Join(",", field.ContentItemIds);
 
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
 
-                model.SelectedItems = new List<VueMultiselectItemViewModel>();
+                model.SelectedItems = [];
                 var settings = context.PartFieldDefinition.GetSettings<ContentPickerFieldSettings>();
 
                 foreach (var contentItemId in field.ContentItemIds)
@@ -99,7 +99,7 @@ namespace OrchardCore.ContentFields.Drivers
             }
 
             field.ContentItemIds = viewModel.ContentItemIds == null
-                ? Array.Empty<string>() : viewModel.ContentItemIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                ? [] : viewModel.ContentItemIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
             var settings = context.PartFieldDefinition.GetSettings<ContentPickerFieldSettings>();
 

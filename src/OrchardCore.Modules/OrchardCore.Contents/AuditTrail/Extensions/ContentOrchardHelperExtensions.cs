@@ -20,7 +20,7 @@ namespace OrchardCore.Contents.AuditTrail.Extensions
             var contentManager = orchardHelper.HttpContext.RequestServices.GetRequiredService<IContentManager>();
             var metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
 
-            if (String.IsNullOrEmpty(linkText))
+            if (string.IsNullOrEmpty(linkText))
             {
                 linkText = contentItem.ContentType;
             }

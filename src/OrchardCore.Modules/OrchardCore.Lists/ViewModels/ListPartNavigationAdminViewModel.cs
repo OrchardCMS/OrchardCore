@@ -12,5 +12,5 @@ public class ListPartNavigationAdminViewModel
 
     public bool EnableOrdering { get; set; }
 
-    public ContentTypeDefinition[] ContainedContentTypeDefinitions { get; set; } = Array.Empty<ContentTypeDefinition>();
+    public ContentTypeDefinition[] ContainedContentTypeDefinitions { get; set; } = [];
 }

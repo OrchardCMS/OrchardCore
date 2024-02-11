@@ -71,7 +71,7 @@ namespace OrchardCore.Contents.Services
                             return (true, model.ContentsStatus.ToString());
                         }
 
-                        return (false, String.Empty);
+                        return (false, string.Empty);
                     })
                     .AlwaysRun()
                 )
@@ -118,7 +118,7 @@ namespace OrchardCore.Contents.Services
                             return (true, model.OrderBy.ToString());
                         }
 
-                        return (false, String.Empty);
+                        return (false, string.Empty);
                     })
                     .AlwaysRun()
                 )
@@ -133,9 +133,9 @@ namespace OrchardCore.Contents.Services
                         var userNameIdentifier = user?.FindFirstValue(ClaimTypes.NameIdentifier);
 
                         // Filter for a specific type.
-                        if (!String.IsNullOrEmpty(contentType))
+                        if (!string.IsNullOrEmpty(contentType))
                         {
-                            var contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(contentType);
+                            var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentType);
                             if (contentTypeDefinition != null)
                             {
                                 // We display a specific type even if it's not listable so that admin pages
@@ -156,7 +156,7 @@ namespace OrchardCore.Contents.Services
                         var listAnyContentTypes = new List<string>();
                         var listOwnContentTypes = new List<string>();
 
-                        foreach (var ctd in contentDefinitionManager.ListTypeDefinitions())
+                        foreach (var ctd in await contentDefinitionManager.ListTypeDefinitionsAsync())
                         {
                             if (!ctd.IsListable())
                             {
@@ -184,19 +184,19 @@ namespace OrchardCore.Contents.Services
                     })
                     .MapTo<ContentOptionsViewModel>((val, model) =>
                     {
-                        if (!String.IsNullOrEmpty(val))
+                        if (!string.IsNullOrEmpty(val))
                         {
                             model.SelectedContentType = val;
                         }
                     })
                     .MapFrom<ContentOptionsViewModel>((model) =>
                     {
-                        if (!String.IsNullOrEmpty(model.SelectedContentType))
+                        if (!string.IsNullOrEmpty(model.SelectedContentType))
                         {
                             return (true, model.SelectedContentType);
                         }
 
-                        return (false, String.Empty);
+                        return (false, string.Empty);
                     })
                     .AlwaysRun()
                 )
@@ -209,9 +209,9 @@ namespace OrchardCore.Contents.Services
                         var contentDefinitionManager = context.ServiceProvider.GetRequiredService<IContentDefinitionManager>();
 
                         // Filter for a specific stereotype.
-                        if (!String.IsNullOrEmpty(stereotype))
+                        if (!string.IsNullOrEmpty(stereotype))
                         {
-                            var contentTypeDefinitionNames = contentDefinitionManager.ListTypeDefinitions()
+                            var contentTypeDefinitionNames = (await contentDefinitionManager.ListTypeDefinitionsAsync())
                                 .Where(definition => definition.StereotypeEquals(stereotype, StringComparison.OrdinalIgnoreCase))
                                 .Select(definition => definition.Name)
                                 .ToList();

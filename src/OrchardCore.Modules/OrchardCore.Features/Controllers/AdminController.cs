@@ -179,7 +179,7 @@ namespace OrchardCore.Features.Controllers
         private async Task ExecuteAsync(string tenant, Func<FeatureService, ShellSettings, bool, Task> action)
         {
             if (_shellSettings.IsDefaultShell() &&
-                !String.IsNullOrWhiteSpace(tenant) &&
+                !string.IsNullOrWhiteSpace(tenant) &&
                 _shellHost.TryGetSettings(tenant, out var settings) &&
                 !settings.IsDefaultShell() &&
                 settings.IsRunning())
@@ -213,7 +213,7 @@ namespace OrchardCore.Features.Controllers
 
             ShellSettings settings = null;
 
-            if (!String.IsNullOrWhiteSpace(tenant))
+            if (!string.IsNullOrWhiteSpace(tenant))
             {
                 _shellHost.TryGetSettings(tenant, out settings);
             }

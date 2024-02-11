@@ -7,5 +7,5 @@ public class RoleLoginSettingsViewModel
 {
     public bool RequireTwoFactorAuthenticationForSpecificRoles { get; set; }
 
-    public RoleEntry[] Roles { get; set; } = Array.Empty<RoleEntry>();
+    public RoleEntry[] Roles { get; set; } = [];
 }

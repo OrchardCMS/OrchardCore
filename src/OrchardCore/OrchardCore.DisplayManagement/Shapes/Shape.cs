@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using Newtonsoft.Json;
 using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.DisplayManagement.Shapes
@@ -22,17 +22,17 @@ namespace OrchardCore.DisplayManagement.Shapes
         public string TagName { get; set; }
 
         private List<string> _classes;
-        public IList<string> Classes => _classes ??= new List<string>();
+        public IList<string> Classes => _classes ??= [];
 
         private Dictionary<string, string> _attributes;
-        public IDictionary<string, string> Attributes => _attributes ??= new Dictionary<string, string>();
+        public IDictionary<string, string> Attributes => _attributes ??= [];
 
         private List<IPositioned> _items;
         public IReadOnlyList<IPositioned> Items
         {
             get
             {
-                _items ??= new List<IPositioned>();
+                _items ??= [];
 
                 if (!_sorted)
                 {
@@ -63,7 +63,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
             _sorted = false;
 
-            _items ??= new List<IPositioned>();
+            _items ??= [];
 
             if (item is IHtmlContent)
             {
@@ -248,7 +248,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
                 if (value is string stringValue)
                 {
-                    attributes = JsonConvert.DeserializeObject<Dictionary<string, string>>(stringValue);
+                    attributes = JConvert.DeserializeObject<Dictionary<string, string>>(stringValue);
 
                     foreach (var attribute in attributes)
                     {

@@ -63,7 +63,7 @@ namespace OrchardCore.ResourceManagement
 
         public IHtmlContent GetTag()
         {
-            if (!String.IsNullOrEmpty(Condition))
+            if (!string.IsNullOrEmpty(Condition))
             {
                 var htmlBuilder = new HtmlContentBuilder();
                 htmlBuilder.AppendHtml("<!--[if " + Condition + "]>");

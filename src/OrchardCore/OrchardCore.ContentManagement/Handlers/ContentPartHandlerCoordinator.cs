@@ -259,7 +259,7 @@ namespace OrchardCore.ContentManagement.Handlers
 
         public override async Task GetContentItemAspectAsync(ContentItemAspectContext context)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
             {
                 return;
@@ -328,7 +328,7 @@ namespace OrchardCore.ContentManagement.Handlers
             where TContext : ContentContextBase
             where TFieldContext : ContentFieldContextBase
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
             {
                 return;
@@ -397,7 +397,7 @@ namespace OrchardCore.ContentManagement.Handlers
             where TFieldContext : VersionContentFieldContext
 
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
             {
                 return;
@@ -453,7 +453,7 @@ namespace OrchardCore.ContentManagement.Handlers
             Func<IContentFieldHandler, ValidateContentFieldContext, ContentField, Task> fieldHandlerAction)
             where TContext : ValidateContentContext
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
             {
                 return;

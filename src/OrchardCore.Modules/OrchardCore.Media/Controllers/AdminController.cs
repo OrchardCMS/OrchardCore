@@ -18,9 +18,8 @@ namespace OrchardCore.Media.Controllers
 {
     public class AdminController : Controller
     {
-        private static readonly char[] InvalidFolderNameCharacters = new char[] { '\\', '/' };
-        private static readonly char[] ExtensionSeperator = new char[] { ' ', ',' };
-        private static readonly HashSet<string> EmptySet = new();
+        private static readonly char[] _invalidFolderNameCharacters = ['\\', '/'];
+        private static readonly char[] _extensionSeperator = [' ', ','];
 
         private readonly IMediaFileStore _mediaFileStore;
         private readonly IMediaNameNormalizerService _mediaNameNormalizerService;
@@ -72,9 +71,9 @@ namespace OrchardCore.Media.Controllers
                 return Forbid();
             }
 
-            if (String.IsNullOrEmpty(path))
+            if (string.IsNullOrEmpty(path))
             {
-                path = String.Empty;
+                path = string.Empty;
             }
 
             if (await _mediaFileStore.GetDirectoryInfoAsync(path) == null)
@@ -97,9 +96,9 @@ namespace OrchardCore.Media.Controllers
 
         public async Task<ActionResult<IEnumerable<object>>> GetMediaItems(string path, string extensions)
         {
-            if (String.IsNullOrEmpty(path))
+            if (string.IsNullOrEmpty(path))
             {
-                path = String.Empty;
+                path = string.Empty;
             }
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
@@ -129,7 +128,7 @@ namespace OrchardCore.Media.Controllers
                 return Forbid();
             }
 
-            if (String.IsNullOrEmpty(path))
+            if (string.IsNullOrEmpty(path))
             {
                 return NotFound();
             }
@@ -162,9 +161,9 @@ namespace OrchardCore.Media.Controllers
                 (_, _, _) => Task.FromResult<IActionResult>(Ok(new { })),
                 async (files) =>
                 {
-                    if (String.IsNullOrEmpty(path))
+                    if (string.IsNullOrEmpty(path))
                     {
-                        path = String.Empty;
+                        path = string.Empty;
                     }
 
                     var result = new List<object>();
@@ -236,7 +235,7 @@ namespace OrchardCore.Media.Controllers
                 return Forbid();
             }
 
-            if (String.IsNullOrEmpty(path))
+            if (string.IsNullOrEmpty(path))
             {
                 return StatusCode(StatusCodes.Status403Forbidden, S["Cannot delete root media folder"]);
             }
@@ -264,7 +263,7 @@ namespace OrchardCore.Media.Controllers
                 return Forbid();
             }
 
-            if (String.IsNullOrEmpty(path))
+            if (string.IsNullOrEmpty(path))
             {
                 return NotFound();
             }
@@ -286,7 +285,7 @@ namespace OrchardCore.Media.Controllers
                 return Forbid();
             }
 
-            if (String.IsNullOrEmpty(oldPath) || String.IsNullOrEmpty(newPath))
+            if (string.IsNullOrEmpty(oldPath) || string.IsNullOrEmpty(newPath))
             {
                 return NotFound();
             }
@@ -356,14 +355,14 @@ namespace OrchardCore.Media.Controllers
             }
 
             if ((mediaNames == null) || (mediaNames.Length < 1)
-                || String.IsNullOrEmpty(sourceFolder)
-                || String.IsNullOrEmpty(targetFolder))
+                || string.IsNullOrEmpty(sourceFolder)
+                || string.IsNullOrEmpty(targetFolder))
             {
                 return NotFound();
             }
 
-            sourceFolder = sourceFolder == "root" ? String.Empty : sourceFolder;
-            targetFolder = targetFolder == "root" ? String.Empty : targetFolder;
+            sourceFolder = sourceFolder == "root" ? string.Empty : sourceFolder;
+            targetFolder = targetFolder == "root" ? string.Empty : targetFolder;
 
             var filesOnError = new List<string>();
 
@@ -383,7 +382,7 @@ namespace OrchardCore.Media.Controllers
 
             if (filesOnError.Count > 0)
             {
-                return BadRequest(S["Error when moving files. Maybe they already exist on the target folder? Files on error: {0}", String.Join(",", filesOnError)].ToString());
+                return BadRequest(S["Error when moving files. Maybe they already exist on the target folder? Files on error: {0}", string.Join(",", filesOnError)].ToString());
             }
 
             return Ok();
@@ -394,14 +393,14 @@ namespace OrchardCore.Media.Controllers
             string path, string name,
             [FromServices] IAuthorizationService authorizationService)
         {
-            if (String.IsNullOrEmpty(path))
+            if (string.IsNullOrEmpty(path))
             {
-                path = String.Empty;
+                path = string.Empty;
             }
 
             name = _mediaNameNormalizerService.NormalizeFolderName(name);
 
-            if (InvalidFolderNameCharacters.Any(invalidChar => name.Contains(invalidChar)))
+            if (_invalidFolderNameCharacters.Any(invalidChar => name.Contains(invalidChar)))
             {
                 return BadRequest(S["Cannot create folder because the folder name contains invalid characters"]);
             }
@@ -446,9 +445,9 @@ namespace OrchardCore.Media.Controllers
                 url = _mediaFileStore.MapPathToPublicUrl(mediaFile.Path),
                 mediaPath = mediaFile.Path,
                 mime = contentType ?? "application/octet-stream",
-                mediaText = String.Empty,
+                mediaText = string.Empty,
                 anchor = new { x = 0.5f, y = 0.5f },
-                attachedFileName = String.Empty
+                attachedFileName = string.Empty
             };
         }
 
@@ -469,9 +468,9 @@ namespace OrchardCore.Media.Controllers
 
         private HashSet<string> GetRequestedExtensions(string exts, bool fallback)
         {
-            if (!String.IsNullOrWhiteSpace(exts))
+            if (!string.IsNullOrWhiteSpace(exts))
             {
-                var extensions = exts.Split(ExtensionSeperator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                var extensions = exts.Split(_extensionSeperator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
                 var requestedExtensions = _mediaOptions.AllowedFileExtensions
                     .Intersect(extensions)
@@ -489,7 +488,7 @@ namespace OrchardCore.Media.Controllers
                     .ToHashSet(StringComparer.OrdinalIgnoreCase);
             }
 
-            return EmptySet;
+            return [];
         }
     }
 }

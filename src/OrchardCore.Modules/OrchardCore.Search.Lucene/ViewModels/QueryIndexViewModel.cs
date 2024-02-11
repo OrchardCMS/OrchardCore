@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Lucene.Net.Documents;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
@@ -15,6 +14,6 @@ namespace OrchardCore.Search.Lucene.ViewModels
         public TimeSpan Duration { get; set; }
 
         [BindNever]
-        public IEnumerable<Document> Documents { get; set; } = Enumerable.Empty<Document>();
+        public IEnumerable<Document> Documents { get; set; } = [];
     }
 }

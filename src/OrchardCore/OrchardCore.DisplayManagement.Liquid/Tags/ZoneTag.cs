@@ -33,7 +33,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             {
                 var argument = argumentsList[i];
                 // check common case
-                if (String.IsNullOrEmpty(argument.Name) && argument.Expression is LiteralExpression literalExpression)
+                if (string.IsNullOrEmpty(argument.Name) && argument.Expression is LiteralExpression literalExpression)
                 {
                     name = literalExpression.Value.ToStringValue();
                     continue;

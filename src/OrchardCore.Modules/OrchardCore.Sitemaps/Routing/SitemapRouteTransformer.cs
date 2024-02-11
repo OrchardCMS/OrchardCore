@@ -23,7 +23,7 @@ namespace OrchardCore.Sitemaps.Routing
             // Use route value provided by SitemapTransformer template.
             var path = values["sitemap"] as string;
 
-            if (!String.IsNullOrEmpty(path))
+            if (!string.IsNullOrEmpty(path))
             {
                 (var found, var sitemapId) = await _entries.TryGetSitemapIdByPathAsync(path);
 

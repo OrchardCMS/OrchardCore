@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Scope;
@@ -43,7 +44,8 @@ namespace OrchardCore.Recipes
 
                 // Assert
                 var recipeStep = (recipeEventHandlers.Single() as RecipeEventHandler).Context.Step;
-                Assert.Equal(expected, recipeStep.SelectToken("data.[0].TitlePart.Title").ToString());
+
+                Assert.Equal(expected, recipeStep.SelectNode("data[0].TitlePart.Title").ToString());
             });
         }
 
@@ -75,7 +77,7 @@ namespace OrchardCore.Recipes
 
             public Task RecipeStepExecutedAsync(RecipeExecutionContext context)
             {
-                if (String.Equals(context.Name, "Content", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(context.Name, "Content", StringComparison.OrdinalIgnoreCase))
                 {
                     Context = context;
                 }

@@ -48,7 +48,7 @@ namespace OrchardCore.Localization
         /// <returns>The resource key.</returns>
         public static CultureDictionaryRecordKey GetKey(string messageId, string context)
         {
-            if (String.IsNullOrEmpty(messageId))
+            if (string.IsNullOrEmpty(messageId))
             {
                 throw new ArgumentException("MessageId can't be empty.", nameof(messageId));
             }

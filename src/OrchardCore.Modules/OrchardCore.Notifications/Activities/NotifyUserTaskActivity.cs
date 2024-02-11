@@ -63,9 +63,7 @@ public abstract class NotifyUserTaskActivity : TaskActivity
     }
 
     public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-    {
-        return Outcomes(S["Done"], S["Failed"], S["Failed: no user found"]);
-    }
+        => Outcomes(S["Done"], S["Failed"], S["Failed: no user found"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
@@ -111,4 +109,20 @@ public abstract class NotifyUserTaskActivity : TaskActivity
     abstract public override LocalizedString DisplayText { get; }
 
     abstract protected Task<IEnumerable<IUser>> GetUsersAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext);
+}
+
+public abstract class NotifyUserTaskActivity<TActivity> : NotifyUserTaskActivity where TActivity : ITask
+{
+    protected NotifyUserTaskActivity(
+        INotificationService notificationService,
+        IWorkflowExpressionEvaluator expressionEvaluator,
+        HtmlEncoder htmlEncoder,
+        ILogger logger,
+        IStringLocalizer localizer)
+        : base(notificationService, expressionEvaluator, htmlEncoder, logger, localizer)
+    {
+    }
+
+    // The technical name of the activity. Within a workflow definition, activities make use of this name.
+    public override string Name => typeof(TActivity).Name;
 }

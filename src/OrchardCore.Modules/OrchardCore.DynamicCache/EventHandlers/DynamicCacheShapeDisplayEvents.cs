@@ -15,8 +15,8 @@ namespace OrchardCore.DynamicCache.EventHandlers
     /// </summary>
     public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents
     {
-        private readonly Dictionary<string, CacheContext> _cached = new();
-        private readonly Dictionary<string, CacheContext> _openScopes = new();
+        private readonly Dictionary<string, CacheContext> _cached = [];
+        private readonly Dictionary<string, CacheContext> _openScopes = [];
 
         private readonly IDynamicCacheService _dynamicCacheService;
         private readonly ICacheScopeManager _cacheScopeManager;

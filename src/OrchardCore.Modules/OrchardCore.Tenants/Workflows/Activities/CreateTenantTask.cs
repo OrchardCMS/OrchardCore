@@ -97,7 +97,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
             var tenantName = (await ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext, null))?.Trim();
 
-            if (String.IsNullOrEmpty(tenantName))
+            if (string.IsNullOrEmpty(tenantName))
             {
                 return Outcomes("Failed");
             }
@@ -118,53 +118,56 @@ namespace OrchardCore.Tenants.Workflows.Activities
             var featureProfile = (await ExpressionEvaluator.EvaluateAsync(FeatureProfile, workflowContext, null))?.Trim();
 
             // Creates a default shell settings based on the configuration.
-            var shellSettings = ShellSettingsManager.CreateDefaultSettings();
+            using var shellSettings = ShellSettingsManager
+                .CreateDefaultSettings()
+                .AsUninitialized()
+                .AsDisposable();
 
             shellSettings.Name = tenantName;
 
-            if (!String.IsNullOrEmpty(description))
+            if (!string.IsNullOrEmpty(description))
             {
                 shellSettings["Description"] = description;
             }
 
-            if (!String.IsNullOrEmpty(requestUrlHost))
+            if (!string.IsNullOrEmpty(requestUrlHost))
             {
                 shellSettings.RequestUrlHost = requestUrlHost;
             }
 
-            if (!String.IsNullOrEmpty(requestUrlPrefix))
+            if (!string.IsNullOrEmpty(requestUrlPrefix))
             {
                 shellSettings.RequestUrlPrefix = requestUrlPrefix;
             }
 
             shellSettings.AsUninitialized();
 
-            if (!String.IsNullOrEmpty(connectionString))
+            if (!string.IsNullOrEmpty(connectionString))
             {
                 shellSettings["ConnectionString"] = connectionString;
             }
 
-            if (!String.IsNullOrEmpty(tablePrefix))
+            if (!string.IsNullOrEmpty(tablePrefix))
             {
                 shellSettings["TablePrefix"] = tablePrefix;
             }
 
-            if (!String.IsNullOrEmpty(schema))
+            if (!string.IsNullOrEmpty(schema))
             {
                 shellSettings["Schema"] = schema;
             }
 
-            if (!String.IsNullOrEmpty(databaseProvider))
+            if (!string.IsNullOrEmpty(databaseProvider))
             {
                 shellSettings["DatabaseProvider"] = databaseProvider;
             }
 
-            if (!String.IsNullOrEmpty(recipeName))
+            if (!string.IsNullOrEmpty(recipeName))
             {
                 shellSettings["RecipeName"] = recipeName;
             }
 
-            if (!String.IsNullOrEmpty(featureProfile))
+            if (!string.IsNullOrEmpty(featureProfile))
             {
                 shellSettings["FeatureProfile"] = featureProfile;
             }
@@ -172,9 +175,10 @@ namespace OrchardCore.Tenants.Workflows.Activities
             shellSettings["Secret"] = Guid.NewGuid().ToString();
 
             await ShellHost.UpdateShellSettingsAsync(shellSettings);
+            var reloadedSettings = ShellHost.GetSettings(shellSettings.Name);
 
-            workflowContext.LastResult = shellSettings;
-            workflowContext.CorrelationId = shellSettings.Name;
+            workflowContext.LastResult = reloadedSettings;
+            workflowContext.CorrelationId = reloadedSettings.Name;
 
             return Outcomes("Done");
         }

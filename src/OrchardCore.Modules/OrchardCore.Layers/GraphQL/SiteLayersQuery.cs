@@ -27,7 +27,7 @@ namespace OrchardCore.Layers.GraphQL
             _graphQLContentOptions = graphQLContentOptions.Value;
         }
 
-        public Task<string> GetIdentifierAsync() => Task.FromResult(String.Empty);
+        public Task<string> GetIdentifierAsync() => Task.FromResult(string.Empty);
 
         public Task BuildAsync(ISchema schema)
         {
@@ -49,7 +49,7 @@ namespace OrchardCore.Layers.GraphQL
             return Task.CompletedTask;
         }
 
-        private async Task<IEnumerable<Layer>> ResolveAsync(IResolveFieldContext resolveContext)
+        private async ValueTask<IEnumerable<Layer>> ResolveAsync(IResolveFieldContext resolveContext)
         {
             var layerService = resolveContext.RequestServices.GetService<ILayerService>();
             var allLayers = await layerService.GetLayersAsync();

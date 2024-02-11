@@ -14,7 +14,7 @@ namespace OrchardCore.ContentTypes.Editors
         {
             Prefix = $"{model.PartDefinition.Name}.{model.Name}";
 
-            if (!String.IsNullOrEmpty(htmlFieldPrefix))
+            if (!string.IsNullOrEmpty(htmlFieldPrefix))
             {
                 Prefix = htmlFieldPrefix + "." + Prefix;
             }

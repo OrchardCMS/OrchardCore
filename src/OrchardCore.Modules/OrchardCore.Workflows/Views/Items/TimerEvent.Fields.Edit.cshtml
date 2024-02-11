@@ -2,7 +2,7 @@
 @model TimerEventViewModel
 
 <div class="mb-3" asp-validation-class-for="CronExpression">
-    <label asp-for="CronExpression">@T["CRON Expression"]</label>
+    <label asp-for="CronExpression" class="form-label">@T["CRON Expression"]</label>
     <input type="text" asp-for="CronExpression" class="form-control" autofocus />
     <span asp-validation-for="CronExpression"></span>
     <span class="hint">@T["The CRON expression."]</span>

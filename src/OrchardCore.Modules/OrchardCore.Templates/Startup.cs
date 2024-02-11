@@ -7,7 +7,6 @@ using OrchardCore.Admin;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
@@ -47,9 +46,7 @@ namespace OrchardCore.Templates
             services.AddScoped<IContentTypeDefinitionDisplayDriver, TemplateContentTypeDefinitionDriver>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, TemplateContentTypePartDefinitionDriver>();
 
-            services.AddTransient<IDeploymentSource, AllTemplatesDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllTemplatesDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllTemplatesDeploymentStepDriver>();
+            services.AddDeployment<AllTemplatesDeploymentSource, AllTemplatesDeploymentStep, AllTemplatesDeploymentStepDriver>();
 
             services.AddScoped<AdminTemplatesManager>();
             services.AddScoped<IPermissionProvider, AdminTemplatesPermissions>();
@@ -105,10 +102,7 @@ namespace OrchardCore.Templates
             services.AddScoped<AdminPreviewTemplatesProvider>();
             services.AddScoped<INavigationProvider, AdminTemplatesAdminMenu>();
             services.AddRecipeExecutionStep<AdminTemplateStep>();
-
-            services.AddTransient<IDeploymentSource, AllAdminTemplatesDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllAdminTemplatesDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllAdminTemplatesDeploymentStepDriver>();
+            services.AddDeployment<AllAdminTemplatesDeploymentSource, AllAdminTemplatesDeploymentStep, AllAdminTemplatesDeploymentStepDriver>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

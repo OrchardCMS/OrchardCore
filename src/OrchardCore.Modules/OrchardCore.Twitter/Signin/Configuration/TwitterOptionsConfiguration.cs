@@ -68,7 +68,7 @@ namespace OrchardCore.Twitter.Signin.Configuration
 
         public void Configure(string name, TwitterOptions options)
         {
-            if (!String.Equals(name, TwitterDefaults.AuthenticationScheme))
+            if (!string.Equals(name, TwitterDefaults.AuthenticationScheme))
             {
                 return;
             }

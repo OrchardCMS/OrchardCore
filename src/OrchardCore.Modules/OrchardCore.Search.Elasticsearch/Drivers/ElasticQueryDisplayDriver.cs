@@ -43,7 +43,7 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
                 model.Indices = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
 
                 // Extract query from the query string if we come from the main query editor
-                if (String.IsNullOrEmpty(query.Template))
+                if (string.IsNullOrEmpty(query.Template))
                 {
                     await updater.TryUpdateModelAsync(model, "", m => m.Query);
                 }
@@ -60,12 +60,12 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
                 model.ReturnContentItems = viewModel.ReturnContentItems;
             }
 
-            if (String.IsNullOrWhiteSpace(model.Template))
+            if (string.IsNullOrWhiteSpace(model.Template))
             {
                 updater.ModelState.AddModelError(nameof(model.Template), S["The query field is required"]);
             }
 
-            if (String.IsNullOrWhiteSpace(model.Index))
+            if (string.IsNullOrWhiteSpace(model.Index))
             {
                 updater.ModelState.AddModelError(nameof(model.Index), S["The index field is required"]);
             }

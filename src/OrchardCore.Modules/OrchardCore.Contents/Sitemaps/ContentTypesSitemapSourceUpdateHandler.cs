@@ -52,12 +52,12 @@ namespace OrchardCore.Contents.Sitemaps
                         sitemap.Identifier = IdGenerator.GenerateId();
                         break;
                     }
-                    else if (source.LimitItems && String.Equals(source.LimitedContentType.ContentTypeName, contentTypeName))
+                    else if (source.LimitItems && string.Equals(source.LimitedContentType.ContentTypeName, contentTypeName))
                     {
                         sitemap.Identifier = IdGenerator.GenerateId();
                         break;
                     }
-                    else if (source.ContentTypes.Any(ct => String.Equals(ct.ContentTypeName, contentTypeName)))
+                    else if (source.ContentTypes.Any(ct => string.Equals(ct.ContentTypeName, contentTypeName)))
                     {
                         sitemap.Identifier = IdGenerator.GenerateId();
                         break;

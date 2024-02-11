@@ -28,17 +28,17 @@ namespace OrchardCore.Flows.Settings
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            return Initialize<BagPartSettingsViewModel>("BagPartSettings_Edit", model =>
+            return Initialize<BagPartSettingsViewModel>("BagPartSettings_Edit", async model =>
             {
                 var settings = contentTypePartDefinition.GetSettings<BagPartSettings>();
 
                 model.BagPartSettings = settings;
                 model.ContainedContentTypes = model.BagPartSettings.ContainedContentTypes;
                 model.DisplayType = model.BagPartSettings.DisplayType;
-                model.ContentTypes = new NameValueCollection();
+                model.ContentTypes = [];
                 model.Source = settings.ContainedStereotypes != null && settings.ContainedStereotypes.Length > 0 ? BagPartSettingType.Stereotypes : BagPartSettingType.ContentTypes;
-                model.Stereotypes = String.Join(',', settings.ContainedStereotypes ?? Array.Empty<string>());
-                foreach (var contentTypeDefinition in _contentDefinitionManager.ListTypeDefinitions())
+                model.Stereotypes = string.Join(',', settings.ContainedStereotypes ?? []);
+                foreach (var contentTypeDefinition in await _contentDefinitionManager.ListTypeDefinitionsAsync())
                 {
                     model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
                 }
@@ -69,7 +69,7 @@ namespace OrchardCore.Flows.Settings
 
         private void SetStereoTypes(UpdateTypePartEditorContext context, BagPartSettingsViewModel model)
         {
-            if (String.IsNullOrEmpty(model.Stereotypes))
+            if (string.IsNullOrEmpty(model.Stereotypes))
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.Stereotypes), S["Please provide a Stereotype."]);
 
@@ -78,7 +78,7 @@ namespace OrchardCore.Flows.Settings
 
             context.Builder.WithSettings(new BagPartSettings
             {
-                ContainedContentTypes = Array.Empty<string>(),
+                ContainedContentTypes = [],
                 ContainedStereotypes = model.Stereotypes.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries),
                 DisplayType = model.DisplayType
             });
@@ -96,7 +96,7 @@ namespace OrchardCore.Flows.Settings
             context.Builder.WithSettings(new BagPartSettings
             {
                 ContainedContentTypes = model.ContainedContentTypes,
-                ContainedStereotypes = Array.Empty<string>(),
+                ContainedStereotypes = [],
                 DisplayType = model.DisplayType
             });
         }

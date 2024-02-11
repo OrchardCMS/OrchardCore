@@ -81,17 +81,17 @@ namespace OrchardCore.Email.Controllers
                 ReplyTo = testSettings.ReplyTo
             };
 
-            if (!String.IsNullOrWhiteSpace(testSettings.Sender))
+            if (!string.IsNullOrWhiteSpace(testSettings.Sender))
             {
                 message.Sender = testSettings.Sender;
             }
 
-            if (!String.IsNullOrWhiteSpace(testSettings.Subject))
+            if (!string.IsNullOrWhiteSpace(testSettings.Subject))
             {
                 message.Subject = testSettings.Subject;
             }
 
-            if (!String.IsNullOrWhiteSpace(testSettings.Body))
+            if (!string.IsNullOrWhiteSpace(testSettings.Body))
             {
                 message.Body = testSettings.Body;
             }

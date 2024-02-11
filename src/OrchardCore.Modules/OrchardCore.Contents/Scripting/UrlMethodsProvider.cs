@@ -25,7 +25,7 @@ namespace OrchardCore.Contents.Scripting
                         pathBase = "/";
                     }
 
-                    path = path?.Trim(' ', '/') ?? String.Empty;
+                    path = path?.Trim(' ', '/') ?? string.Empty;
                     if (path.Length > 0)
                     {
                         pathBase = pathBase.Add($"/{path}");

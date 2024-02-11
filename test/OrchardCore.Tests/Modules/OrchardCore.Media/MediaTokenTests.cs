@@ -1,7 +1,7 @@
 using OrchardCore.Media;
 using OrchardCore.Media.Processing;
 using OrchardCore.Settings;
-using SixLabors.ImageSharp.Web.Processors;
+using OrchardCore.Tests.Utilities;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media
 {
@@ -11,11 +11,72 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
 
         // use static value for repeatable tests
         private readonly byte[] _hashKey =
-        {
-            88, 204, 124, 2, 54, 72, 44, 8, 207, 85, 88, 9, 245, 129, 200, 41, 13, 169, 54, 213, 202, 118, 197, 9, 26,
-            20, 108, 197, 123, 168, 140, 79, 32, 184, 144, 72, 254, 201, 91, 73, 230, 56, 190, 40, 11, 21, 229, 94, 118,
-            120, 84, 75, 174, 181, 168, 94, 30, 191, 169, 41, 222, 12, 239, 106
-        };
+        [
+            88,
+            204,
+            124,
+            2,
+            54,
+            72,
+            44,
+            8,
+            207,
+            85,
+            88,
+            9,
+            245,
+            129,
+            200,
+            41,
+            13,
+            169,
+            54,
+            213,
+            202,
+            118,
+            197,
+            9,
+            26,
+            20,
+            108,
+            197,
+            123,
+            168,
+            140,
+            79,
+            32,
+            184,
+            144,
+            72,
+            254,
+            201,
+            91,
+            73,
+            230,
+            56,
+            190,
+            40,
+            11,
+            21,
+            229,
+            94,
+            118,
+            120,
+            84,
+            75,
+            174,
+            181,
+            168,
+            94,
+            30,
+            191,
+            169,
+            41,
+            222,
+            12,
+            239,
+            106
+        ];
 
         public MediaTokenTests()
         {
@@ -71,15 +132,13 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
         {
             var services = new ServiceCollection();
 
-            var mockSiteService = Mock.Of<ISiteService>(ss =>
-                ss.GetSiteSettingsAsync() == Task.FromResult(
-                    Mock.Of<ISite>(s => s.Properties == JObject.FromObject(new { MediaTokenSettings = _mediaTokenSettings }))
-                )
-            );
+            var mockSite = SiteMockHelper.GetSite(_mediaTokenSettings);
+
+            var mockSiteService = Mock.Of<ISiteService>(ss => ss.GetSiteSettingsAsync() == Task.FromResult(mockSite.Object));
 
             services.AddMemoryCache();
 
-            services.AddSingleton<ISiteService>(mockSiteService);
+            services.AddSingleton(mockSiteService);
             services.AddSingleton<IImageWebProcessor, TokenCommandProcessor>();
             services.AddSingleton<IImageWebProcessor, TokenCommandProcessor>();
             services.AddSingleton<IImageWebProcessor, ResizeWebProcessor>();

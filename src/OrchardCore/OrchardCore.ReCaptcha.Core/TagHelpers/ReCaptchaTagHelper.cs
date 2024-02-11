@@ -90,7 +90,7 @@ namespace OrchardCore.ReCaptcha.TagHelpers
             var language = Language;
             CultureInfo culture = null;
 
-            if (String.IsNullOrWhiteSpace(language))
+            if (string.IsNullOrWhiteSpace(language))
             {
                 language = await _localizationService.GetDefaultCultureAsync();
             }

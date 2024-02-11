@@ -8,7 +8,7 @@ namespace OrchardCore.Environment.Extensions.Features
         {
             Id = Name = id;
             Extension = extensionInfo;
-            Dependencies = Array.Empty<string>();
+            Dependencies = [];
         }
 
         public FeatureInfo(

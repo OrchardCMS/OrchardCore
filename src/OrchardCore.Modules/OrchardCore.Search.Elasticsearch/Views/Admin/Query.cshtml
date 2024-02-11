@@ -12,7 +12,7 @@
 }
 
 <style asp-name="codemirror"></style>
-<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Elasticsearch Query"])</h1></zone>
@@ -20,7 +20,7 @@
 <form asp-action="Query" method="post">
     <div asp-validation-summary="All"></div>
     <div class="mb-3">
-        <label asp-for="IndexName">@T["Index"]</label>
+        <label asp-for="IndexName" class="form-label">@T["Index"]</label>
         <select asp-for="IndexName" class="form-control">
             @foreach (var index in Model.Indices)
             {
@@ -31,14 +31,14 @@
     </div>
 
     <div class="mb-3">
-        <label asp-for="DecodedQuery">@T["Template"]</label>
+        <label asp-for="DecodedQuery" class="form-label">@T["Template"]</label>
         <textarea asp-for="DecodedQuery" rows="12" class="form-control"></textarea>
         <span class="hint">@T["You can use the <a href=\"{0}\">Match All query</a> to search all documents.", Html.Raw(Url.Action("Query", "Admin", new { area = "OrchardCore.Search.Elasticsearch", Query = matchAllQuery, IndexName = Model.IndexName }))]</span>
         <span class="hint">@T["The search query uses the Elasticsearch format. Some documentation can be found here <a target=\"_blank\" href=\"https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html\">https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html</a>"]</span>
     </div>
 
     <div class="mb-3">
-        <label asp-for="Parameters">@T["Parameters"]</label>
+        <label asp-for="Parameters" class="form-label">@T["Parameters"]</label>
         <textarea asp-for="Parameters" rows="6" class="form-control"></textarea>
         <span class="hint">@T["An optional Json object containing the parameter values for this query."]</span>
     </div>
@@ -58,7 +58,7 @@
 {
     <div class="mb-3">
         <a href="@Url.Action("Create", "Admin", new { area = "OrchardCore.Queries", id = "Elasticsearch", query = Model.DecodedQuery })" class="btn btn-success">@T["Create"]</a>
-    </div>    
+    </div>
 }
 @if (Model.Documents.Any())
 {
@@ -88,7 +88,7 @@
                         <th scope="row">@(row++)</th>
                         @foreach (var name in fieldNames)
                         {
-                            <td>@(document.GetValueOrDefault(name)?.ToString()?? String.Empty)</td>
+                            <td>@(document.GetValueOrDefault(name)?.ToString() ?? string.Empty)</td>
                         }
                     </tr>
                 }
@@ -131,7 +131,7 @@
                             if (hitValues != null)
                             {
                                 var value = hitValues.First();
-                                var item = !String.IsNullOrEmpty(value) ? value : "NULL";
+                                var item = !string.IsNullOrEmpty(value) ? value : "NULL";
 
                                 <td>
                                     @item
@@ -149,7 +149,7 @@
     </div>
 }
 <script at="Foot">
-    $(function() {
+    $(function () {
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.DecodedQuery)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.Parameters)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
     });

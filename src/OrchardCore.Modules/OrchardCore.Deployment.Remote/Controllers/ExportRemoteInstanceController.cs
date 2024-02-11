@@ -117,7 +117,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 System.IO.File.Delete(archiveFileName);
             }
 
-            if (!String.IsNullOrEmpty(returnUrl))
+            if (!string.IsNullOrEmpty(returnUrl))
             {
                 return this.LocalRedirect(returnUrl, true);
             }

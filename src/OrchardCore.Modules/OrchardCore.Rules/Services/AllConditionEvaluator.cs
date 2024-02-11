@@ -18,13 +18,13 @@ namespace OrchardCore.Rules.Services
             foreach (var childCondition in condition.Conditions)
             {
                 var evaluator = _conditionResolver.GetConditionEvaluator(childCondition);
-                if (!await evaluator.EvaluateAsync(childCondition))
+                if (evaluator is null || !await evaluator.EvaluateAsync(childCondition))
                 {
                     return false;
                 }
             }
 
-            if (condition.Conditions.Any())
+            if (condition.Conditions.Count > 0)
             {
                 return true;
             }

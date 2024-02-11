@@ -52,7 +52,7 @@ namespace OrchardCore.Documents
             get
             {
                 var documentStore = (IDocumentStore)ShellScope.Get(DocumentStoreServiceType);
-                if (documentStore == null)
+                if (documentStore is null)
                 {
                     documentStore = (IDocumentStore)ShellScope.Services.GetRequiredService(DocumentStoreServiceType);
                     ShellScope.Set(DocumentStoreServiceType, documentStore);
@@ -78,7 +78,7 @@ namespace OrchardCore.Documents
             else
             {
                 var volatileCache = ShellScope.Get<TDocument>(typeof(TDocument));
-                if (volatileCache != null)
+                if (volatileCache is not null)
                 {
                     document = volatileCache;
                 }
@@ -93,6 +93,7 @@ namespace OrchardCore.Documents
             }
 
             document.Identifier = IdGenerator.GenerateId();
+            document.IsReadOnly = false;
 
             return document;
         }
@@ -133,7 +134,7 @@ namespace OrchardCore.Documents
                 });
             }
 
-            if (document == null)
+            if (document is null)
             {
                 var cacheable = true;
 
@@ -186,7 +187,8 @@ namespace OrchardCore.Documents
             {
                 await DocumentStore.UpdateAsync(document, async document =>
                 {
-                    await SetInternalAsync(document);
+                    // A non volatile document can be invalidated.
+                    await InvalidateInternalAsync(document);
 
                     if (afterUpdateAsync != null)
                     {
@@ -204,9 +206,10 @@ namespace OrchardCore.Documents
             // But still update the shared cache after committing.
             DocumentStore.AfterCommitSuccess<TDocument>(async () =>
             {
+                // A volatile document can't be invalidated.
                 await SetInternalAsync(document);
 
-                if (afterUpdateAsync != null)
+                if (afterUpdateAsync is not null)
                 {
                     await afterUpdateAsync(document);
                 }
@@ -239,7 +242,7 @@ namespace OrchardCore.Documents
                 id = _memoryCache.Get<string>(_options.CacheIdKey);
             }
 
-            if (id == null)
+            if (id is null)
             {
                 return null;
             }
@@ -279,7 +282,7 @@ namespace OrchardCore.Documents
 
             document = await GetFromDistributedCacheAsync();
 
-            if (document == null)
+            if (document is null)
             {
                 return null;
             }
@@ -304,6 +307,8 @@ namespace OrchardCore.Documents
 
         protected async Task SetInternalAsync(TDocument document, bool failover = false)
         {
+            document.IsReadOnly = true;
+
             if (!failover)
             {
                 await UpdateDistributedCacheAsync(document);
@@ -340,15 +345,20 @@ namespace OrchardCore.Documents
 
                 if (stored.Identifier != document.Identifier)
                 {
-                    if (_isDistributed)
-                    {
-                        await _distributedCache.RemoveAsync(_options.CacheIdKey);
-                    }
-                    else
-                    {
-                        _memoryCache.Remove(_options.CacheIdKey);
-                    }
+                    await InvalidateInternalAsync(document);
                 }
+            }
+        }
+
+        protected async Task InvalidateInternalAsync(TDocument document, bool failover = false)
+        {
+            if (_isDistributed)
+            {
+                await _distributedCache.RemoveAsync(_options.CacheIdKey);
+            }
+            else
+            {
+                _memoryCache.Remove(_options.CacheIdKey);
             }
         }
 

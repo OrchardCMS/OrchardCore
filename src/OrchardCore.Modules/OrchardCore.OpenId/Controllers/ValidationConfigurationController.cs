@@ -82,7 +82,7 @@ namespace OrchardCore.OpenId.Controllers
             {
                 if (result != ValidationResult.Success)
                 {
-                    var key = result.MemberNames.FirstOrDefault() ?? String.Empty;
+                    var key = result.MemberNames.FirstOrDefault() ?? string.Empty;
                     ModelState.AddModelError(key, result.ErrorMessage);
                 }
             }

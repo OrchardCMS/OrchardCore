@@ -32,7 +32,7 @@ namespace OrchardCore.Contents.Liquid
 
             if (contentItem == null)
             {
-                if (String.IsNullOrEmpty(input.ToStringValue()))
+                if (string.IsNullOrEmpty(input.ToStringValue()))
                 {
                     return StringValue.Empty;
                 }

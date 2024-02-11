@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Entities;
 using OrchardCore.Facebook.Settings;
 using OrchardCore.Settings;
@@ -31,10 +31,7 @@ namespace OrchardCore.Facebook.Services
 
         public async Task UpdateSettingsAsync(FacebookSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
             container.Properties[nameof(FacebookSettings)] = JObject.FromObject(settings);
@@ -43,14 +40,11 @@ namespace OrchardCore.Facebook.Services
 
         public IEnumerable<ValidationResult> ValidateSettings(FacebookSettings settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var results = new List<ValidationResult>();
 
-            if (String.IsNullOrEmpty(settings.AppId))
+            if (string.IsNullOrEmpty(settings.AppId))
             {
                 results.Add(new ValidationResult(S["The AppId is required."], new[]
                 {
@@ -58,7 +52,7 @@ namespace OrchardCore.Facebook.Services
                 }));
             }
 
-            if (String.IsNullOrEmpty(settings.AppSecret))
+            if (string.IsNullOrEmpty(settings.AppSecret))
             {
                 results.Add(new ValidationResult(S["The App Secret is required."], new[]
                 {

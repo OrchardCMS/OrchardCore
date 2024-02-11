@@ -91,7 +91,7 @@ namespace OrchardCore.AuditTrail
                 options
                     .ForSort("time-desc", b => b
                         .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderByDescending(i => i.CreatedUtc))
-                        .WithSelectListItem<Startup>((S, opt, model) => new SelectListItem(S["Newest"], opt.Value, model.Sort == String.Empty))
+                        .WithSelectListItem<Startup>((S, opt, model) => new SelectListItem(S["Newest"], opt.Value, model.Sort == string.Empty))
                         .AsDefault())
 
                     .ForSort("time-asc", b => b

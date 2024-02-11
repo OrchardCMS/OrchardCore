@@ -44,13 +44,13 @@ namespace OrchardCore.Workflows.Http.Filters
 
             if (workflowTypeEntries.Any())
             {
-                var workflowTypeIds = workflowTypeEntries.Select(x => Int64.Parse(x.WorkflowId)).ToList();
+                var workflowTypeIds = workflowTypeEntries.Select(x => long.Parse(x.WorkflowId)).ToList();
                 var workflowTypes = (await _workflowTypeStore.GetAsync(workflowTypeIds)).ToDictionary(x => x.Id);
                 var correlationId = routeValues.GetValue<string>("correlationid");
 
                 foreach (var entry in workflowTypeEntries)
                 {
-                    if (workflowTypes.TryGetValue(Int64.Parse(entry.WorkflowId), out var workflowType))
+                    if (workflowTypes.TryGetValue(long.Parse(entry.WorkflowId), out var workflowType))
                     {
                         var activity = workflowType.Activities.Single(x => x.ActivityId == entry.ActivityId);
 
@@ -86,7 +86,7 @@ namespace OrchardCore.Workflows.Http.Filters
                 foreach (var entry in workflowEntries)
                 {
                     if (workflows.TryGetValue(entry.WorkflowId, out var workflow) &&
-                        (String.IsNullOrWhiteSpace(correlationId) ||
+                        (string.IsNullOrWhiteSpace(correlationId) ||
                         workflow.CorrelationId == correlationId))
                     {
                         // If atomic, try to acquire a lock per workflow instance.
@@ -100,7 +100,7 @@ namespace OrchardCore.Workflows.Http.Filters
 
                         // If atomic, check if the workflow still exists and is still correlated.
                         var haltedWorkflow = workflow.IsAtomic ? await _workflowStore.GetAsync(workflow.Id) : workflow;
-                        if (haltedWorkflow == null || (!String.IsNullOrWhiteSpace(correlationId) && haltedWorkflow.CorrelationId != correlationId))
+                        if (haltedWorkflow == null || (!string.IsNullOrWhiteSpace(correlationId) && haltedWorkflow.CorrelationId != correlationId))
                         {
                             continue;
                         }

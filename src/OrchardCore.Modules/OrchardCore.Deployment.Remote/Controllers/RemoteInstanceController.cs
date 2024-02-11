@@ -22,12 +22,14 @@ namespace OrchardCore.Deployment.Remote.Controllers
     [Admin]
     public class RemoteInstanceController : Controller
     {
+        private const string _optionsSearch = "Options.Search";
+
         private readonly IAuthorizationService _authorizationService;
         private readonly PagerOptions _pagerOptions;
+        private readonly IShapeFactory _shapeFactory;
         private readonly INotifier _notifier;
         private readonly RemoteInstanceService _service;
 
-        protected readonly dynamic New;
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
 
@@ -43,7 +45,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         {
             _authorizationService = authorizationService;
             _pagerOptions = pagerOptions.Value;
-            New = shapeFactory;
+            _shapeFactory = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
             _notifier = notifier;
@@ -61,7 +63,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             var remoteInstances = (await _service.GetRemoteInstanceListAsync()).RemoteInstances;
 
-            if (!String.IsNullOrWhiteSpace(options.Search))
+            if (!string.IsNullOrWhiteSpace(options.Search))
             {
                 remoteInstances = remoteInstances.Where(x => x.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
@@ -69,11 +71,15 @@ namespace OrchardCore.Deployment.Remote.Controllers
             var startIndex = pager.GetStartIndex();
             var pageSize = pager.PageSize;
 
-            // Maintain previous route data when generating page links
+            // Maintain previous route data when generating page links.
             var routeData = new RouteData();
-            routeData.Values.Add("Options.Search", options.Search);
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(remoteInstances.Count).RouteData(routeData);
+            if (!string.IsNullOrEmpty(options.Search))
+            {
+                routeData.Values.TryAdd(_optionsSearch, options.Search);
+            }
+
+            var pagerShape = await _shapeFactory.PagerAsync(pager, remoteInstances.Count, routeData);
 
             var model = new RemoteInstanceIndexViewModel
             {
@@ -82,21 +88,21 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 Options = options
             };
 
-            model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
-            };
+            model.Options.ContentsBulkAction =
+            [
+                new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
+            ];
 
             return View(model);
         }
 
-        [HttpPost, ActionName("Index")]
+        [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
         public ActionResult IndexFilterPOST(RemoteInstanceIndexViewModel model)
-        {
-            return RedirectToAction(nameof(Index), new RouteValueDictionary {
-                { "Options.Search", model.Options.Search }
+            => RedirectToAction(nameof(Index), new RouteValueDictionary
+            {
+                { _optionsSearch, model.Options.Search }
             });
-        }
 
         public async Task<IActionResult> Create()
         {
@@ -242,7 +248,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                         await _notifier.SuccessAsync(H["Remote instances successfully removed."]);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(options.BulkAction), "Invalid bulk action.");
+                        return BadRequest();
                 }
             }
 
@@ -251,22 +257,22 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
         private void ValidateViewModel(EditRemoteInstanceViewModel model)
         {
-            if (String.IsNullOrWhiteSpace(model.Name))
+            if (string.IsNullOrWhiteSpace(model.Name))
             {
                 ModelState.AddModelError(nameof(EditRemoteInstanceViewModel.Name), S["The name is mandatory."]);
             }
 
-            if (String.IsNullOrWhiteSpace(model.ClientName))
+            if (string.IsNullOrWhiteSpace(model.ClientName))
             {
                 ModelState.AddModelError(nameof(EditRemoteInstanceViewModel.ClientName), S["The client name is mandatory."]);
             }
 
-            if (String.IsNullOrWhiteSpace(model.ApiKey))
+            if (string.IsNullOrWhiteSpace(model.ApiKey))
             {
                 ModelState.AddModelError(nameof(EditRemoteInstanceViewModel.ApiKey), S["The api key is mandatory."]);
             }
 
-            if (String.IsNullOrWhiteSpace(model.Url))
+            if (string.IsNullOrWhiteSpace(model.Url))
             {
                 ModelState.AddModelError(nameof(EditRemoteInstanceViewModel.Url), S["The url is mandatory."]);
             }

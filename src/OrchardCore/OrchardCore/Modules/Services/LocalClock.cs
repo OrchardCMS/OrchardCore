@@ -81,7 +81,7 @@ namespace OrchardCore.Modules
             {
                 var value = await result.TimeZoneId();
 
-                if (!String.IsNullOrEmpty(value))
+                if (!string.IsNullOrEmpty(value))
                 {
                     return _clock.GetTimeZone(value);
                 }

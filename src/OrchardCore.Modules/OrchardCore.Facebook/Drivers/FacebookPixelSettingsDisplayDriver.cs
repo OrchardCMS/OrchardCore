@@ -41,7 +41,7 @@ public class FacebookPixelSettingsDisplayDriver : SectionDisplayDriver<ISite, Fa
 
     public override async Task<IDisplayResult> UpdateAsync(FacebookPixelSettings settings, BuildEditorContext context)
     {
-        if (!String.Equals(FacebookConstants.PixelSettingsGroupId, context.GroupId, StringComparison.OrdinalIgnoreCase)
+        if (!string.Equals(FacebookConstants.PixelSettingsGroupId, context.GroupId, StringComparison.OrdinalIgnoreCase)
             || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageFacebookApp))
         {
             return null;

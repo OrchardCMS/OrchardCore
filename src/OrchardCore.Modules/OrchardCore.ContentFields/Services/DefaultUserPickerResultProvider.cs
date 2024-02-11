@@ -41,7 +41,7 @@ namespace OrchardCore.ContentFields.Services
                 query.With<UserByRoleNameIndex>(x => x.RoleName.IsIn(roles));
             }
 
-            if (!String.IsNullOrEmpty(searchContext.Query))
+            if (!string.IsNullOrEmpty(searchContext.Query))
             {
                 query.With<UserIndex>(x => x.NormalizedUserName.Contains(_userManager.NormalizeName(searchContext.Query)));
             }

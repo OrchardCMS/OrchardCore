@@ -117,7 +117,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     return next(context);
                 });
             },
-            order: Int32.MinValue);
+            order: int.MinValue);
 
             return builder;
         }

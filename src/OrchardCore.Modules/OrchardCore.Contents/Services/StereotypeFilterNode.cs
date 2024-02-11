@@ -11,8 +11,8 @@ public class StereotypeFilterNode : TermOperationNode
     }
 
     public override string ToNormalizedString()
-        => String.Empty;
+        => string.Empty;
 
     public override string ToString()
-        => String.Empty;
+        => string.Empty;
 }

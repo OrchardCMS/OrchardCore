@@ -33,7 +33,7 @@ namespace OrchardCore.ReCaptcha.ActionFilters.Detection
         {
             var address = _clientIpAddressAccessor.GetIPAddressAsync().GetAwaiter().GetResult();
 
-            return $"{IpAddressAbuseDetectorCacheKey}:{address?.ToString() ?? String.Empty}";
+            return $"{IpAddressAbuseDetectorCacheKey}:{address?.ToString() ?? string.Empty}";
         }
 
         public RobotDetectionResult DetectRobot()

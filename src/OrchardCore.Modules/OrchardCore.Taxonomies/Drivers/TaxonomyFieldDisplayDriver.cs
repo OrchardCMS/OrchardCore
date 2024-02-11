@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -74,9 +73,9 @@ namespace OrchardCore.Taxonomies.Drivers
                 field.TaxonomyContentItemId = settings.TaxonomyContentItemId;
                 field.TermContentItemIds = model.TermEntries.Where(x => x.Selected).Select(x => x.ContentItemId).ToArray();
 
-                if (settings.Unique && !String.IsNullOrEmpty(model.UniqueValue))
+                if (settings.Unique && !string.IsNullOrEmpty(model.UniqueValue))
                 {
-                    field.TermContentItemIds = new[] { model.UniqueValue };
+                    field.TermContentItemIds = [model.UniqueValue];
                 }
 
                 if (settings.Required && field.TermContentItemIds.Length == 0)

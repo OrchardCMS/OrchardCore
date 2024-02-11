@@ -71,7 +71,7 @@ namespace OrchardCore.Taxonomies
 
             // Taxonomy Field
             services.AddContentField<TaxonomyField>()
-                .UseDisplayDriver<TaxonomyFieldDisplayDriver>(d => !String.Equals(d, "Tags", StringComparison.OrdinalIgnoreCase))
+                .UseDisplayDriver<TaxonomyFieldDisplayDriver>(d => !string.Equals(d, "Tags", StringComparison.OrdinalIgnoreCase))
                 .AddHandler<TaxonomyFieldHandler>();
 
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TaxonomyFieldSettingsDriver>();
@@ -79,7 +79,7 @@ namespace OrchardCore.Taxonomies
 
             // Taxonomy Tags Display Mode and Editor.
             services.AddContentField<TaxonomyField>()
-                .UseDisplayDriver<TaxonomyFieldTagsDisplayDriver>(d => String.Equals(d, "Tags", StringComparison.OrdinalIgnoreCase));
+                .UseDisplayDriver<TaxonomyFieldTagsDisplayDriver>(d => string.Equals(d, "Tags", StringComparison.OrdinalIgnoreCase));
 
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TaxonomyFieldTagsEditorSettingsDriver>();
 

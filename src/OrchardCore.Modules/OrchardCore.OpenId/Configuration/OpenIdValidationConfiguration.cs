@@ -174,13 +174,13 @@ namespace OrchardCore.OpenId.Configuration
                 {
                     options.TokenValidationParameters.IssuerValidator = (issuer, token, parameters) =>
                     {
-                        if (!Uri.TryCreate(issuer, UriKind.Absolute, out Uri uri))
+                        if (!Uri.TryCreate(issuer, UriKind.Absolute, out var uri))
                         {
                             throw new SecurityTokenInvalidIssuerException("The token issuer is not valid.");
                         }
 
                         var tenant = _runningShellTable.Match(HostString.FromUriComponent(uri), uri.AbsolutePath);
-                        if (tenant == null || !String.Equals(tenant.Name, settings.Tenant))
+                        if (tenant == null || !string.Equals(tenant.Name, settings.Tenant))
                         {
                             throw new SecurityTokenInvalidIssuerException("The token issuer is not valid.");
                         }
@@ -201,8 +201,8 @@ namespace OrchardCore.OpenId.Configuration
 
             // If the tokens are issued by an authorization server located in a separate tenant,
             // resolve the isolated data protection provider associated with the specified tenant.
-            if (!String.IsNullOrEmpty(settings.Tenant) &&
-                !String.Equals(settings.Tenant, _shellSettings.Name))
+            if (!string.IsNullOrEmpty(settings.Tenant) &&
+                !string.Equals(settings.Tenant, _shellSettings.Name))
             {
                 CreateTenantScope(settings.Tenant).UsingAsync(async scope =>
                 {
@@ -235,7 +235,7 @@ namespace OrchardCore.OpenId.Configuration
         private ShellScope CreateTenantScope(string tenant)
         {
             // Optimization: if the specified name corresponds to the current tenant, use the current 'ShellScope'.
-            if (String.IsNullOrEmpty(tenant) || String.Equals(tenant, _shellSettings.Name))
+            if (string.IsNullOrEmpty(tenant) || string.Equals(tenant, _shellSettings.Name))
             {
                 return ShellScope.Current;
             }

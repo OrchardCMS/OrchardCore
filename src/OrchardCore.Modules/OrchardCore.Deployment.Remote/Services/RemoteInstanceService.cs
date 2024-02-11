@@ -76,6 +76,6 @@ namespace OrchardCore.Deployment.Remote.Services
         }
 
         private static RemoteInstance FindRemoteInstance(RemoteInstanceList remoteInstanceList, string id) =>
-            remoteInstanceList.RemoteInstances.FirstOrDefault(x => String.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase));
+            remoteInstanceList.RemoteInstances.FirstOrDefault(x => string.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase));
     }
 }

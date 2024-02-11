@@ -62,7 +62,7 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
 
         var model = new ShowRecoveryCodesViewModel()
         {
-            RecoveryCodes = codes ?? Array.Empty<string>(),
+            RecoveryCodes = codes ?? [],
         };
 
         var data = JsonSerializer.SerializeToUtf8Bytes(model);
@@ -169,7 +169,7 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
         => NotFound("Unable to load user.");
 
     protected static string StripToken(string code)
-        => code.Replace(" ", String.Empty).Replace("-", String.Empty);
+        => code.Replace(" ", string.Empty).Replace("-", string.Empty);
 
     protected static string GetRecoveryCodesCacheKey(string userId)
         => $"TwoFactorAuthenticationRecoveryCodes_{userId}";

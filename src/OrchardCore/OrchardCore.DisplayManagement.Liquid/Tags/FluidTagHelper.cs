@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
@@ -15,12 +14,12 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
     public class FluidTagHelper
     {
-        public static readonly Dictionary<string, string> DefaultArgumentsMapping = new();
+        public static readonly Dictionary<string, string> DefaultArgumentsMapping = [];
         private static long _uniqueId;
 
         public static ValueTask<Completion> WriteArgumentsTagHelperAsync(List<FilterArgument> arguments, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            return WriteToAsync(null, arguments, Array.Empty<Statement>(), writer, encoder, context);
+            return WriteToAsync(null, arguments, [], writer, encoder, context);
         }
 
         public static ValueTask<Completion> WriteArgumentsBlockHelperAsync(List<FilterArgument> arguments, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
@@ -79,7 +78,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 }
             }
 
-            Interlocked.CompareExchange(ref _uniqueId, Int64.MaxValue, 0);
+            Interlocked.CompareExchange(ref _uniqueId, long.MaxValue, 0);
             var id = Interlocked.Increment(ref _uniqueId);
 
             var tagHelperContext = new TagHelperContext(contextAttributes, new Dictionary<object, object>(), id.ToString());

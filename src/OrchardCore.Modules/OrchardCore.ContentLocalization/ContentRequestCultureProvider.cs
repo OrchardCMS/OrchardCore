@@ -17,10 +17,7 @@ namespace OrchardCore.ContentLocalization
     {
         public override async Task<ProviderCultureResult> DetermineProviderCultureResult(HttpContext httpContext)
         {
-            if (httpContext == null)
-            {
-                throw new ArgumentNullException(nameof(httpContext));
-            }
+            ArgumentNullException.ThrowIfNull(httpContext);
 
             var culturePickerService = httpContext.RequestServices.GetService<IContentCulturePickerService>();
             var siteService = httpContext.RequestServices.GetService<ISiteService>();

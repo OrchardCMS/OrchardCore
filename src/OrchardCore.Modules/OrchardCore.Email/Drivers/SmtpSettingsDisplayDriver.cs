@@ -62,6 +62,7 @@ namespace OrchardCore.Email.Drivers
                     model.UseDefaultCredentials = settings.UseDefaultCredentials;
                     model.UserName = settings.UserName;
                     model.Password = settings.Password;
+                    model.IgnoreInvalidSslCertificate = settings.IgnoreInvalidSslCertificate;
                 }).Location("Content:5").OnGroup(GroupId),
             };
 
@@ -88,7 +89,7 @@ namespace OrchardCore.Email.Drivers
                 await context.Updater.TryUpdateModelAsync(section, Prefix);
 
                 // Restore password if the input is empty, meaning that it has not been reset.
-                if (String.IsNullOrWhiteSpace(section.Password))
+                if (string.IsNullOrWhiteSpace(section.Password))
                 {
                     section.Password = previousPassword;
                 }
