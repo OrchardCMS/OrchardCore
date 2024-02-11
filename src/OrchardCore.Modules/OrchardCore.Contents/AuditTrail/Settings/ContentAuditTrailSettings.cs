@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Contents.AuditTrail.Settings
 {
     public class ContentAuditTrailSettings

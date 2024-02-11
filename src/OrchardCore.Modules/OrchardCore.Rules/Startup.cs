@@ -4,7 +4,6 @@ using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
-using OrchardCore.Queries;
 using OrchardCore.Rules.Drivers;
 using OrchardCore.Rules.Models;
 using OrchardCore.Rules.Services;
