@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+using System;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Shapes;
 
@@ -44,7 +43,7 @@ namespace OrchardCore.DisplayManagement.Zones
             var name = binder.Name;
 
             // NilBehavior.
-            if (!args.Any() && name != "ToString")
+            if (args.Length == 0 && name != "ToString")
             {
                 result = Nil.Instance;
                 return true;

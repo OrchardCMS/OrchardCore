@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -438,10 +437,10 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
         {
             var model = JsonSerializer.Deserialize<ShowRecoveryCodesViewModel>(data);
 
-            return model?.RecoveryCodes ?? Array.Empty<string>();
+            return model?.RecoveryCodes ?? [];
         }
 
-        return Array.Empty<string>();
+        return [];
     }
 
     private static string GetProvider(IList<string> providers, IUser user, string provider = null, bool next = false)

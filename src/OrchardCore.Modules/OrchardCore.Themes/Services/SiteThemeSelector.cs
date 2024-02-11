@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Theming;
 
@@ -20,7 +19,7 @@ namespace OrchardCore.Themes.Services
 
         public async Task<ThemeSelectorResult> GetThemeAsync()
         {
-            string currentThemeName = await _siteThemeService.GetSiteThemeNameAsync();
+            var currentThemeName = await _siteThemeService.GetSiteThemeNameAsync();
             if (string.IsNullOrEmpty(currentThemeName))
             {
                 return null;

@@ -1,5 +1,6 @@
 using System;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace OrchardCore.Entities
 {
@@ -26,11 +27,10 @@ namespace OrchardCore.Entities
         /// <returns>A new instance of the requested type if the property was not found.</returns>
         public static T As<T>(this IEntity entity, string name) where T : new()
         {
-            JToken value;
-
-            if (entity.Properties.TryGetValue(name, out value))
+            JsonNode value;
+            if (entity.Properties.TryGetPropertyValue(name, out value))
             {
-                return value.ToObject<T>();
+                return value.Deserialize<T>(JOptions.Default);
             }
 
             return new T();
@@ -62,7 +62,7 @@ namespace OrchardCore.Entities
 
         public static bool TryGet<T>(this IEntity entity, out T aspect) where T : new()
         {
-            if (entity.Properties.TryGetValue(typeof(T).Name, out var value))
+            if (entity.Properties.TryGetPropertyValue(typeof(T).Name, out var value))
             {
                 aspect = value.ToObject<T>();
 
@@ -89,16 +89,16 @@ namespace OrchardCore.Entities
         /// <returns>The current <see cref="IEntity"/> instance.</returns>
         public static IEntity Alter<TAspect>(this IEntity entity, string name, Action<TAspect> action) where TAspect : new()
         {
-            JToken value;
+            JsonNode value;
             TAspect obj;
 
-            if (!entity.Properties.TryGetValue(name, out value))
+            if (!entity.Properties.TryGetPropertyValue(name, out value))
             {
                 obj = new TAspect();
             }
             else
             {
-                obj = value.ToObject<TAspect>();
+                obj = value.Deserialize<TAspect>(JOptions.Default);
             }
 
             action?.Invoke(obj);

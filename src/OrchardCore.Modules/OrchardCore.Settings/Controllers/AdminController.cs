@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -79,10 +80,11 @@ namespace OrchardCore.Settings.Controllers
                 await _siteService.UpdateSiteSettingsAsync(site);
 
                 string culture = null;
-                if (site.Properties.TryGetValue("LocalizationSettings", out var settings))
+                if (site.Properties.TryGetPropertyValue("LocalizationSettings", out var settings))
                 {
                     culture = settings.Value<string>("DefaultCulture");
                 }
+
                 // We create a transient scope with the newly selected culture to create a notification that will use it instead of the previous culture
                 using (culture != null ? CultureScope.Create(culture, ignoreSystemSettings: _cultureOptions.IgnoreSystemSettings) : null)
                 {

@@ -1,5 +1,5 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.Search.AzureAI.Models;
 using OrchardCore.Settings;
@@ -23,9 +23,10 @@ public class AzureAISearchSettingsDeploymentSource(ISiteService siteService) : I
 
         var settings = site.As<AzureAISearchSettings>();
 
-        result.Steps.Add(new JObject(
-            new JProperty("name", "Settings"),
-            new JProperty(nameof(AzureAISearchSettings), JObject.FromObject(settings))
-        ));
+        result.Steps.Add(new JsonObject
+        {
+            ["name"] = "Settings",
+            [nameof(AzureAISearchSettings)] = JObject.FromObject(settings),
+        });
     }
 }

@@ -195,12 +195,11 @@ namespace OrchardCore.Media.Controllers
 
             var mediaProfilesDocument = await _mediaProfilesManager.GetMediaProfilesDocumentAsync();
 
-            if (!mediaProfilesDocument.MediaProfiles.ContainsKey(name))
+            if (!mediaProfilesDocument.MediaProfiles.TryGetValue(name, out var mediaProfile))
             {
                 return RedirectToAction(nameof(Create), new { name });
             }
 
-            var mediaProfile = mediaProfilesDocument.MediaProfiles[name];
             // Is a custom width if the width is not 0 and it is not in the array of supported sizes.
             var isCustomWidth = mediaProfile.Width != 0 && Array.BinarySearch(_mediaOptions.SupportedSizes, mediaProfile.Width) < 0;
             var isCustomHeight = mediaProfile.Height != 0 && Array.BinarySearch(_mediaOptions.SupportedSizes, mediaProfile.Height) < 0;

@@ -19,7 +19,7 @@ using OrchardCore.Security.Permissions;
 namespace OrchardCore.Features
 {
     /// <summary>
-    /// These services are registered on the tenant service collection
+    /// These services are registered on the tenant service collection.
     /// </summary>
     public class Startup : StartupBase
     {

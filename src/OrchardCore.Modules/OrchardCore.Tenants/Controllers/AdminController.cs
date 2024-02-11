@@ -247,7 +247,7 @@ namespace OrchardCore.Tenants.Controllers
 
             var allSettings = _shellHost.GetAllSettings();
 
-            foreach (var tenantName in model.TenantNames ?? Enumerable.Empty<string>())
+            foreach (var tenantName in model.TenantNames ?? [])
             {
                 if (!_shellHost.TryGetSettings(tenantName, out var shellSettings))
                 {
@@ -377,7 +377,7 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings["DatabaseProvider"] = model.DatabaseProvider;
                 shellSettings["Secret"] = Guid.NewGuid().ToString();
                 shellSettings["RecipeName"] = model.RecipeName;
-                shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
+                shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? []);
 
                 await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
@@ -473,7 +473,7 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings["Category"] = model.Category;
                 shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
                 shellSettings.RequestUrlHost = model.RequestUrlHost;
-                shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? Array.Empty<string>());
+                shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? []);
 
                 // The user can change the 'preset' database information only if the
                 // tenant has not been initialized yet

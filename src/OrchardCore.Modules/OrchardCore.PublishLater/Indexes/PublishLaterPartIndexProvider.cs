@@ -15,7 +15,7 @@ namespace OrchardCore.PublishLater.Indexes;
 public class PublishLaterPartIndexProvider : ContentHandlerBase, IIndexProvider, IScopedIndexProvider
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly HashSet<string> _partRemoved = new();
+    private readonly HashSet<string> _partRemoved = [];
     private IContentDefinitionManager _contentDefinitionManager;
 
     public PublishLaterPartIndexProvider(IServiceProvider serviceProvider)

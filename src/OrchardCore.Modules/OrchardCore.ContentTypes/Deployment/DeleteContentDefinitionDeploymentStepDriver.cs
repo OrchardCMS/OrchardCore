@@ -10,6 +10,8 @@ namespace OrchardCore.ContentTypes.Deployment
 {
     public class DeleteContentDefinitionDeploymentStepDriver : DisplayDriver<DeploymentStep, DeleteContentDefinitionDeploymentStep>
     {
+        private static readonly char[] _separator = [' ', ','];
+
         public override IDisplayResult Display(DeleteContentDefinitionDeploymentStep step)
         {
             return
@@ -34,8 +36,8 @@ namespace OrchardCore.ContentTypes.Deployment
 
             if (await updater.TryUpdateModelAsync(model, Prefix))
             {
-                step.ContentTypes = model.ContentTypes.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
-                step.ContentParts = model.ContentParts.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
+                step.ContentTypes = model.ContentTypes.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
+                step.ContentParts = model.ContentParts.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
             }
 
             return Edit(step);

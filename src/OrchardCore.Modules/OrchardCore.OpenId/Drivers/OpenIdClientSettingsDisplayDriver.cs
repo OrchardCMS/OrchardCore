@@ -1,14 +1,13 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -24,10 +23,7 @@ namespace OrchardCore.OpenId.Drivers
     public class OpenIdClientSettingsDisplayDriver : SectionDisplayDriver<ISite, OpenIdClientSettings>
     {
         private const string SettingsGroupId = "OrchardCore.OpenId.Client";
-        private static readonly JsonSerializerSettings _jsonSerializerSettings = new()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-        };
+        private static readonly char[] _separator = [' ', ','];
 
         private readonly IAuthorizationService _authorizationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -101,7 +97,7 @@ namespace OrchardCore.OpenId.Drivers
                     model.UseIdTokenTokenFlow = true;
                 }
 
-                model.Parameters = JsonConvert.SerializeObject(settings.Parameters, _jsonSerializerSettings);
+                model.Parameters = JConvert.SerializeObject(settings.Parameters, JOptions.CamelCase);
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
@@ -122,7 +118,7 @@ namespace OrchardCore.OpenId.Drivers
                 model.Scopes ??= string.Empty;
 
                 settings.DisplayName = model.DisplayName;
-                settings.Scopes = model.Scopes.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
+                settings.Scopes = model.Scopes.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
                 settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
                 settings.CallbackPath = model.CallbackPath;
                 settings.ClientId = model.ClientId;
@@ -168,8 +164,8 @@ namespace OrchardCore.OpenId.Drivers
                 try
                 {
                     settings.Parameters = string.IsNullOrWhiteSpace(model.Parameters)
-                        ? Array.Empty<ParameterSetting>()
-                        : JsonConvert.DeserializeObject<ParameterSetting[]>(model.Parameters);
+                        ? []
+                        : JConvert.DeserializeObject<ParameterSetting[]>(model.Parameters);
                 }
                 catch
                 {

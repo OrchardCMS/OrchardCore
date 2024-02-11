@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
@@ -25,8 +26,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
                         .WithField("contentItemId");
                 });
 
-            Assert.Single(result["data"]["blog"].Children()["contentItemId"]
-                .Where(b => b.ToString() == context.BlogContentItemId));
+            Assert.Single(
+                result["data"]["blog"].AsArray().Where(node => node["contentItemId"].ToString() == context.BlogContentItemId));
         }
 
         [Fact]
@@ -182,19 +183,19 @@ namespace OrchardCore.Tests.Apis.GraphQL
             var result = await context.GraphQLClient.Content
                 .Query("blogPost(status: PUBLISHED) { displayText, published }");
 
-            Assert.Single(result["data"]["blogPost"]);
-            Assert.Equal(true, result["data"]["blogPost"][0]["published"]);
+            Assert.Single(result["data"]["blogPost"].AsArray());
+            Assert.True(result["data"]["blogPost"][0]["published"].Value<bool>());
 
             result = await context.GraphQLClient.Content
                 .Query("blogPost(status: DRAFT) { displayText, published }");
 
-            Assert.Single(result["data"]["blogPost"]);
-            Assert.Equal(false, result["data"]["blogPost"][0]["published"]);
+            Assert.Single(result["data"]["blogPost"].AsArray());
+            Assert.False(result["data"]["blogPost"][0]["published"].Value<bool>());
 
             result = await context.GraphQLClient.Content
                 .Query("blogPost(status: LATEST) { displayText, published }");
 
-            Assert.Equal(2, result["data"]["blogPost"].Count());
+            Assert.Equal(2, result["data"]["blogPost"].AsArray().Count());
         }
 
         [Fact]
@@ -206,7 +207,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             await context.InitializeAsync();
 
             var response = await context.GraphQLClient.Client.GetAsync("api/graphql");
-            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         [Fact]
@@ -231,7 +232,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                     builder.WithField("contentItemId");
                 });
 
-            Assert.NotEmpty(result["data"]["blog"]);
+            Assert.NotEmpty(result["data"]["blog"].AsArray());
         }
 
         [Fact]
@@ -256,7 +257,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                     builder.WithField("contentItemId");
                 });
 
-            Assert.Empty(result["data"]["blog"]);
+            Assert.Empty(result["data"]["blog"].AsArray());
         }
 
         [Fact]
