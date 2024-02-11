@@ -11,7 +11,9 @@ public class HtmlContentTagHelper : TagHelper
     public string Name { get; set; }
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        if (context.Items[typeof(IShape)] is IShape shape && !string.IsNullOrWhiteSpace(Name))
+        var shape = (IShape)context.Items[typeof(IShape)];
+
+        if (!string.IsNullOrWhiteSpace(Name))
         {
             var content = await output.GetChildContentAsync(useCachedResult: false);
             shape.Properties[Name.Trim()] = new HtmlString(content.GetContent());
