@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace OrchardCore.DisplayManagement.TagHelpers;
 
 [HtmlTargetElement("add-property", Attributes = "name", TagStructure = TagStructure.NormalOrSelfClosing)]
-public class HtmlContentTagHelper : TagHelper
+public class AddPropertyTagHelper : TagHelper
 {
     [HtmlAttributeName("name")]
     public string Name { get; set; }
