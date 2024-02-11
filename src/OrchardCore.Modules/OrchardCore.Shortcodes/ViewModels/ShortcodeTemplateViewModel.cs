@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Shortcodes.ViewModels
 {
     public class ShortcodeTemplateViewModel
