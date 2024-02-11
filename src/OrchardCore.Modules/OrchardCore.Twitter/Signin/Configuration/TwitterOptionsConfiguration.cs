@@ -62,6 +62,8 @@ namespace OrchardCore.Twitter.Signin.Configuration
             if (string.IsNullOrWhiteSpace(settings.Item1.ConsumerKey) ||
                 string.IsNullOrWhiteSpace(settings.Item1.ConsumerSecret))
             {
+                _logger.LogWarning("The Twitter login provider is enabled but not configured.");
+
                 return;
             }
 

@@ -45,6 +45,8 @@ namespace OrchardCore.Facebook.Login.Configuration
 
             if (string.IsNullOrWhiteSpace(_facebookSettings.AppId) || string.IsNullOrWhiteSpace(_facebookSettings.AppSecret))
             {
+                _logger.LogWarning("The Facebook login provider is enabled but not configured.");
+
                 return;
             }
 

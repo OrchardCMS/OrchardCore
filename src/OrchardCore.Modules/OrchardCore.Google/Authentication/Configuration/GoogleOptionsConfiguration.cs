@@ -36,6 +36,8 @@ namespace OrchardCore.Google.Authentication.Configuration
             if (string.IsNullOrWhiteSpace(_googleAuthenticationSettings.ClientID) ||
                 string.IsNullOrWhiteSpace(_googleAuthenticationSettings.ClientSecret))
             {
+                _logger.LogWarning("The Google login provider is enabled but not configured.");
+
                 return;
             }
 
