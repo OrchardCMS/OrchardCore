@@ -4,11 +4,12 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.DisplayManagement.TagHelpers;
 
-[HtmlTargetElement("html-content", Attributes = "name", TagStructure = TagStructure.NormalOrSelfClosing)]
+[HtmlTargetElement("add-property", Attributes = "name", TagStructure = TagStructure.NormalOrSelfClosing)]
 public class HtmlContentTagHelper : TagHelper
 {
     [HtmlAttributeName("name")]
     public string Name { get; set; }
+
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var shape = (IShape)context.Items[typeof(IShape)];
