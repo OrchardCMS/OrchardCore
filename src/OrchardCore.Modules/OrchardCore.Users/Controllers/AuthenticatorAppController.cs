@@ -12,7 +12,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Settings;

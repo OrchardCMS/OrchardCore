@@ -14,9 +14,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.BackgroundJobs;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
@@ -325,7 +327,7 @@ namespace OrchardCore.Search.Elasticsearch
             }
 
             await _elasticIndexingService.ResetIndexAsync(id);
-            await _elasticIndexingService.ProcessContentItemsAsync(id);
+            await ProcessContentItemsAsync(id);
 
             await _notifier.SuccessAsync(H["Index <em>{0}</em> reset successfully.", id]);
 
@@ -363,7 +365,7 @@ namespace OrchardCore.Search.Elasticsearch
                 await _elasticIndexSettingsService.UpdateIndexAsync(settings);
             }
 
-            await _elasticIndexingService.ProcessContentItemsAsync(id);
+            await ProcessContentItemsAsync(id);
 
             await _notifier.SuccessAsync(H["Index <em>{0}</em> rebuilt successfully.", id]);
 
@@ -577,7 +579,7 @@ namespace OrchardCore.Search.Elasticsearch
                             }
 
                             await _elasticIndexingService.ResetIndexAsync(item.IndexName);
-                            await _elasticIndexingService.ProcessContentItemsAsync(item.IndexName);
+                            await ProcessContentItemsAsync(item.IndexName);
 
                             await _notifier.SuccessAsync(H["Index <em>{0}</em> reset successfully.", item.IndexName]);
                         }
@@ -591,7 +593,8 @@ namespace OrchardCore.Search.Elasticsearch
                             }
 
                             await _elasticIndexingService.RebuildIndexAsync(await _elasticIndexSettingsService.GetSettingsAsync(item.IndexName));
-                            await _elasticIndexingService.ProcessContentItemsAsync(item.IndexName);
+
+                            await ProcessContentItemsAsync(item.IndexName);
                             await _notifier.SuccessAsync(H["Index <em>{0}</em> rebuilt successfully.", item.IndexName]);
                         }
                         break;
@@ -636,5 +639,12 @@ namespace OrchardCore.Search.Elasticsearch
 
         private ViewResult NotConfigured()
             => View("NotConfigured");
+
+        private static Task ProcessContentItemsAsync(string indexName)
+            => HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("sync-content-items-elasticsearch-" + indexName, async (scope) =>
+            {
+                var indexingService = scope.ServiceProvider.GetRequiredService<ElasticIndexingService>();
+                await indexingService.ProcessContentItemsAsync(indexName);
+            });
     }
 }

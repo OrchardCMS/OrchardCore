@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Shortcodes
 {
     public class ShortcodeOption
