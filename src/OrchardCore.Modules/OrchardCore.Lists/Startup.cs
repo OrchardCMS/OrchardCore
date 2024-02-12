@@ -70,7 +70,7 @@ namespace OrchardCore.Lists
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddAdminMenu<ListsAdminNode, ListsAdminNodeNavigationBuilder, ListsAdminNodeDriver>();
+            services.AddAdminNode<ListsAdminNode, ListsAdminNodeNavigationBuilder, ListsAdminNodeDriver>();
         }
     }
 
