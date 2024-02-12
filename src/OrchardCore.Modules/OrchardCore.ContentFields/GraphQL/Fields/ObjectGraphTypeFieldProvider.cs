@@ -14,7 +14,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
     public class ObjectGraphTypeFieldProvider : IContentFieldProvider
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private static readonly ConcurrentDictionary<string, IObjectGraphType> PartObjectGraphTypes = new();
+        private static readonly ConcurrentDictionary<string, IObjectGraphType> _partObjectGraphTypes = new();
 
         public ObjectGraphTypeFieldProvider(IHttpContextAccessor httpContextAccessor)
         {
@@ -55,7 +55,7 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
         {
             var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
 
-            return PartObjectGraphTypes.GetOrAdd(field.FieldDefinition.Name,
+            return _partObjectGraphTypes.GetOrAdd(field.FieldDefinition.Name,
                 partName => serviceProvider.GetService<IEnumerable<IObjectGraphType>>()?
                     .FirstOrDefault(x => x.GetType().BaseType.GetGenericArguments().First().Name == partName)
                 );

@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Contents.AdminNodes
 {
     public class ContentTypesAdminNodeViewModel

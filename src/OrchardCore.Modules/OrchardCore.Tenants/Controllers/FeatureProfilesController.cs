@@ -24,7 +24,7 @@ using OrchardCore.Tenants.ViewModels;
 namespace OrchardCore.Tenants.Controllers
 {
     [Feature("OrchardCore.Tenants.FeatureProfiles")]
-    [Admin]
+    [Admin("TenantFeatureProfiles/{action}/{id?}", "TenantFeatureProfiles{action}")]
     public class FeatureProfilesController : Controller
     {
         private const string _optionsSearch = "Options.Search";
@@ -57,6 +57,7 @@ namespace OrchardCore.Tenants.Controllers
             H = htmlLocalizer;
         }
 
+        [Admin("TenantFeatureProfiles", "TenantFeatureProfilesIndex")]
         public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenantFeatureProfiles))

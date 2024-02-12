@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Infrastructure.Html;
@@ -63,6 +64,7 @@ namespace OrchardCore.Shortcodes.Controllers
             _htmlSanitizerService = htmlSanitizerService;
         }
 
+        [Admin("Shortcodes", "Shortcodes.Index")]
         public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
@@ -119,6 +121,7 @@ namespace OrchardCore.Shortcodes.Controllers
                 { _optionsSearch, model.Options.Search }
             });
 
+        [Admin("Shortcodes/Create", "Shortcodes.Create")]
         public async Task<IActionResult> Create()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
@@ -192,6 +195,7 @@ namespace OrchardCore.Shortcodes.Controllers
             return View(model);
         }
 
+        [Admin("Shortcodes/Edit/{name}", "Shortcodes.Edit")]
         public async Task<IActionResult> Edit(string name)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))

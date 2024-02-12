@@ -1,5 +1,3 @@
-using System;
-using System.IO;
 using Fluid;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -10,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -24,7 +21,6 @@ using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.FileSystem;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
-using OrchardCore.Media.Controllers;
 using OrchardCore.Media.Core;
 using OrchardCore.Media.Deployment;
 using OrchardCore.Media.Drivers;
@@ -43,7 +39,6 @@ using OrchardCore.Media.TagHelpers;
 using OrchardCore.Media.ViewModels;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
-using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.ResourceManagement;
@@ -53,6 +48,8 @@ using SixLabors.ImageSharp.Web.Caching;
 using SixLabors.ImageSharp.Web.DependencyInjection;
 using SixLabors.ImageSharp.Web.Middleware;
 using SixLabors.ImageSharp.Web.Providers;
+using System;
+using System.IO;
 
 namespace OrchardCore.Media
 {
@@ -60,12 +57,10 @@ namespace OrchardCore.Media
     {
         private const string ImageSharpCacheFolder = "is-cache";
 
-        private readonly AdminOptions _adminOptions;
         private readonly ShellSettings _shellSettings;
 
-        public Startup(IOptions<AdminOptions> adminOptions, ShellSettings shellSettings)
+        public Startup(ShellSettings shellSettings)
         {
-            _adminOptions = adminOptions.Value;
             _shellSettings = shellSettings;
         }
 
@@ -216,145 +211,6 @@ namespace OrchardCore.Media
 
             // Use services.PostConfigure<MediaOptions>() to alter the media static file options event handlers.
             app.UseStaticFiles(mediaOptions.StaticFileOptions);
-
-            var adminControllerName = typeof(AdminController).ControllerName();
-
-            routes.MapAreaControllerRoute(
-                name: "Media.Index",
-                areaName: "OrchardCore.Media",
-                pattern: _adminOptions.AdminUrlPrefix + "/Media",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Index) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Media.MediaApplication",
-                areaName: "OrchardCore.Media",
-                pattern: _adminOptions.AdminUrlPrefix + "/Media/MediaApplication",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.MediaApplication) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Media.GetFolders",
-                areaName: "OrchardCore.Media",
-                pattern: _adminOptions.AdminUrlPrefix + "/Media/GetFolders",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.GetFolders) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Media.GetMediaItems",
-                areaName: "OrchardCore.Media",
-                pattern: _adminOptions.AdminUrlPrefix + "/Media/GetMediaItems",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.GetMediaItems) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Media.GetMediaItem",
-                areaName: "OrchardCore.Media",
-                pattern: _adminOptions.AdminUrlPrefix + "/Media/GetMediaItem",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.GetMediaItem) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Media.Upload",
-                areaName: "OrchardCore.Media",
-                pattern: _adminOptions.AdminUrlPrefix + "/Media/Upload",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Upload) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Media.DeleteFolder",
-                areaName: "OrchardCore.Media",
-                pattern: _adminOptions.AdminUrlPrefix + "/Media/DeleteFolder",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.DeleteFolder) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Media.DeleteMedia",
-                areaName: "OrchardCore.Media",
-                pattern: _adminOptions.AdminUrlPrefix + "/Media/DeleteMedia",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.DeleteMedia) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Media.MoveMedia",
-                areaName: "OrchardCore.Media",
-                pattern: _adminOptions.AdminUrlPrefix + "/Media/MoveMedia",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.MoveMedia) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Media.DeleteMediaList",
-                areaName: "OrchardCore.Media",
-                pattern: _adminOptions.AdminUrlPrefix + "/Media/DeleteMediaList",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.DeleteMediaList) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Media.MoveMediaList",
-                areaName: "OrchardCore.Media",
-                pattern: _adminOptions.AdminUrlPrefix + "/Media/MoveMediaList",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.MoveMediaList) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Media.CreateFolder",
-                areaName: "OrchardCore.Media",
-                pattern: _adminOptions.AdminUrlPrefix + "/Media/CreateFolder",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.CreateFolder) }
-            );
-
-            var mediaCacheControllerName = typeof(MediaCacheController).ControllerName();
-
-            routes.MapAreaControllerRoute(
-                name: "MediaCache.Index",
-                areaName: "OrchardCore.Media",
-                pattern: _adminOptions.AdminUrlPrefix + "/MediaCache",
-                defaults: new { controller = mediaCacheControllerName, action = nameof(MediaCacheController.Index) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "MediaCache.Purge",
-                areaName: "OrchardCore.Media",
-                pattern: _adminOptions.AdminUrlPrefix + "/MediaCache/Purge",
-                defaults: new { controller = mediaCacheControllerName, action = nameof(MediaCacheController.Purge) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Media.Options",
-                areaName: "OrchardCore.Media",
-                pattern: _adminOptions.AdminUrlPrefix + "/Media/Options",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Options) }
-            );
-
-            var mediaProfilesControllerName = typeof(MediaProfilesController).ControllerName();
-
-            routes.MapAreaControllerRoute(
-                name: "MediaProfiles.Index",
-                areaName: "OrchardCore.Media",
-                pattern: _adminOptions.AdminUrlPrefix + "/MediaProfiles",
-                defaults: new { controller = mediaProfilesControllerName, action = nameof(MediaProfilesController.Index) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "MediaProfiles.Create",
-                areaName: "OrchardCore.Media",
-                pattern: _adminOptions.AdminUrlPrefix + "/MediaProfiles/Create",
-                defaults: new { controller = mediaProfilesControllerName, action = nameof(MediaProfilesController.Create) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "MediaProfiles.Edit",
-                areaName: "OrchardCore.Media",
-                pattern: _adminOptions.AdminUrlPrefix + "/MediaProfiles/Edit",
-                defaults: new { controller = mediaProfilesControllerName, action = nameof(MediaProfilesController.Edit) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "MediaProfiles.Delete",
-                areaName: "OrchardCore.Media",
-                pattern: _adminOptions.AdminUrlPrefix + "/MediaProfiles/Delete",
-                defaults: new { controller = mediaProfilesControllerName, action = nameof(MediaProfilesController.Delete) }
-            );
         }
 
         private static string GetMediaPath(ShellOptions shellOptions, ShellSettings shellSettings, string assetsPath)
