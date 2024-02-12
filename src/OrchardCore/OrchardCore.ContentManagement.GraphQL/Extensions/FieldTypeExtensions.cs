@@ -14,7 +14,7 @@ namespace OrchardCore.ContentManagement.GraphQL
             return fieldType.WithMetaData("PartName", partName);
         }
 
-        internal static FieldType WithMetaData(this FieldType fieldType, string name, object value)
+        private static FieldType WithMetaData(this FieldType fieldType, string name, object value)
         {
             if (fieldType == null)
             {
