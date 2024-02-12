@@ -5,14 +5,10 @@ namespace OrchardCore.ContentManagement.GraphQL;
 public static class FieldTypeExtensions
 {
     public static FieldType WithPartCollapsedMetaData(this FieldType fieldType, bool collapsed = true)
-    {
-        return fieldType.WithMetaData("PartCollapsed", collapsed);
-    }
+        => fieldType.WithMetaData("PartCollapsed", collapsed);
 
     public static FieldType WithPartNameMetaData(this FieldType fieldType, string partName)
-    {
-        return fieldType.WithMetaData("PartName", partName);
-    }
+        => fieldType.WithMetaData("PartName", partName);
 
     private static FieldType WithMetaData(this FieldType fieldType, string name, object value)
     {
