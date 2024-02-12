@@ -16,11 +16,6 @@ public static class FieldTypeExtensions
 
     private static FieldType WithMetaData(this FieldType fieldType, string name, object value)
     {
-        if (fieldType == null)
-        {
-            return null;
-        }
-
         lock (fieldType.Metadata)
         {
             fieldType.Metadata.TryAdd(name, value);
