@@ -31,9 +31,9 @@ namespace OrchardCore.Admin
 
         /// <summary>
         /// Gets or sets the name used when mapping the admin route. You can use <c>{area}</c>, <c>{controller}</c>,
-        /// <c>{action}</c> in the, which will be substituted. For performance reasons these values are exact and
-        /// shouldn't contain spaces. If empty for the attribute whose <see  cref="Template"/> is used, the fallback is
-        /// <see cref="ControllerActionDescriptor.DisplayName"/>.
+        /// <c>{action}</c> in the string, which will be substituted. For performance reasons, these values are exact
+        /// and shouldn't contain spaces. If empty when <see cref="Template"/> is used, the fallback is <see
+        /// cref="ControllerActionDescriptor.DisplayName"/>.
         /// </summary>
         public string RouteName { get; set; }
 
