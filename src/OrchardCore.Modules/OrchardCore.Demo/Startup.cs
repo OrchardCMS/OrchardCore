@@ -66,7 +66,7 @@ namespace OrchardCore.Demo
 
             // While you can define admin routes like this, we suggest adding the [Admin("path after the admin prefix")]
             // attribute to the action's method instead. That way the route is visible right next to the action which
-            // makes the code easier to understand. You can find an example in this module in ContentController.Edit.
+            // makes the code easier to understand. You can find an example in this module at ContentController.Edit.
             routes.MapAreaControllerRoute(
                 name: "Demo.Admin",
                 areaName: "OrchardCore.Demo",
