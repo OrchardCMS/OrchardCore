@@ -35,21 +35,19 @@ Here is and example of how we register the SMTP complex provider:
 ```csharp
 public class SmtpProviderOptionsConfigurations : IConfigureOptions<EmailProviderOptions>
 {
-    private readonly ISiteService _siteService;
+    private readonly SmtpOptions _smtpOptions;
 
-    public SmtpProviderOptionsConfigurations(ISiteService siteService)
+    public SmtpProviderOptionsConfigurations(IOptions<SmtpOptions> smtpOptions)
     {
-        _siteService = siteService;
+        _smtpOptions = smtpOptions.Value;
     }
 
     public void Configure(EmailProviderOptions options)
     {
-        var typeOptions = new EmailProviderTypeOptions(typeof(SmtpEmailProvider));
-
-        var site = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
-        var settings = site.As<SmtpSettings>();
-
-        typeOptions.IsEnabled = settings.IsEnabled;
+        var typeOptions = new EmailProviderTypeOptions(typeof(SmtpEmailProvider))
+        {
+            IsEnabled = _smtpOptions.IsEnabled
+        };
 
         options.TryAddProvider(SmtpEmailProvider.TechnicalName, typeOptions);
     }

@@ -27,10 +27,7 @@ public class EmailProviderOptions
     /// <exception cref="ArgumentException"></exception>
     public EmailProviderOptions TryAddProvider(string name, EmailProviderTypeOptions options)
     {
-        if (string.IsNullOrEmpty(name))
-        {
-            throw new ArgumentException($"'{nameof(name)}' cannot be null or empty.");
-        }
+        ArgumentException.ThrowIfNullOrEmpty(name);
 
         if (_providers.ContainsKey(name))
         {
@@ -51,10 +48,7 @@ public class EmailProviderOptions
     /// <exception cref="ArgumentException"></exception>
     public EmailProviderOptions RemoveProvider(string name)
     {
-        if (string.IsNullOrEmpty(name))
-        {
-            throw new ArgumentException($"'{nameof(name)}' cannot be null or empty.");
-        }
+        ArgumentException.ThrowIfNullOrEmpty(name);
 
         if (_providers.Remove(name))
         {
