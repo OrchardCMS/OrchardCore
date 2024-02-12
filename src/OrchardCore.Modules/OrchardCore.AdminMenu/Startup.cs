@@ -27,10 +27,10 @@ namespace OrchardCore.AdminMenu
             services.AddDeployment<AdminMenuDeploymentSource, AdminMenuDeploymentStep, AdminMenuDeploymentStepDriver>();
 
             // placeholder treeNode
-            services.AddAdminMenu<PlaceholderAdminNode, PlaceholderAdminNodeNavigationBuilder, PlaceholderAdminNodeDriver>();
+            services.AddAdminNode<PlaceholderAdminNode, PlaceholderAdminNodeNavigationBuilder, PlaceholderAdminNodeDriver>();
 
             // link treeNode
-            services.AddAdminMenu<LinkAdminNode, LinkAdminNodeNavigationBuilder, LinkAdminNodeDriver>();
+            services.AddAdminNode<LinkAdminNode, LinkAdminNodeNavigationBuilder, LinkAdminNodeDriver>();
         }
     }
 }
