@@ -43,6 +43,7 @@ public class AdminController : Controller
         S = stringLocalizer;
     }
 
+    [Admin("Email/Test", "EmailTest")]
     public async Task<IActionResult> Test()
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageEmailSettings))

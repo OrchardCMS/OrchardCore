@@ -1,14 +1,16 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Widgets.Models;
 using OrchardCore.Widgets.ViewModels;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Widgets.Controllers
 {
+    [Admin("Widgets/{action}/{id?}", "Widgets.{action}")]
     public class AdminController : Controller
     {
         private readonly IContentManager _contentManager;

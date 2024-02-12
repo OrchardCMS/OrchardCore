@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
@@ -32,6 +33,7 @@ using YesSql;
 
 namespace OrchardCore.Search.Lucene.Controllers
 {
+    [Admin("Lucene/{action}/{id?}", "Lucene.{action}")]
     public class AdminController : Controller
     {
         private const string _optionsSearch = "Options.Search";

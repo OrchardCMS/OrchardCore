@@ -1,16 +1,8 @@
-using System;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using GraphQL;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Nest;
-using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentTypes.Editors;
@@ -19,7 +11,6 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
-using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Queries;
 using OrchardCore.Search.Abstractions;
@@ -32,22 +23,18 @@ using OrchardCore.Search.Elasticsearch.Services;
 using OrchardCore.Search.Lucene.Handler;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace OrchardCore.Search.Elasticsearch
 {
     public class Startup : StartupBase
     {
-        private readonly AdminOptions _adminOptions;
         private readonly IShellConfiguration _shellConfiguration;
-        private readonly ILogger<Startup> _logger;
 
-        public Startup(IOptions<AdminOptions> adminOptions,
-            IShellConfiguration shellConfiguration,
-            ILogger<Startup> logger)
+        public Startup(IShellConfiguration shellConfiguration)
         {
-            _adminOptions = adminOptions.Value;
             _shellConfiguration = shellConfiguration;
-            _logger = logger;
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -107,53 +94,6 @@ namespace OrchardCore.Search.Elasticsearch
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IDisplayDriver<Query>, ElasticQueryDisplayDriver>();
-        }
-
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            var adminControllerName = typeof(AdminController).ControllerName();
-
-            routes.MapAreaControllerRoute(
-                name: "Elasticsearch.Index",
-                areaName: "OrchardCore.Search.Elasticsearch",
-                pattern: _adminOptions.AdminUrlPrefix + "/elasticsearch/Index",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Index) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Elasticsearch.Delete",
-                areaName: "OrchardCore.Search.Elasticsearch",
-                pattern: _adminOptions.AdminUrlPrefix + "/elasticsearch/Delete/{id}",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Delete) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Elasticsearch.Query",
-                areaName: "OrchardCore.Search.Elasticsearch",
-                pattern: _adminOptions.AdminUrlPrefix + "/elasticsearch/Query",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Query) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Elasticsearch.Rebuild",
-                areaName: "OrchardCore.Search.Elasticsearch",
-                pattern: _adminOptions.AdminUrlPrefix + "/elasticsearch/Rebuild/{id}",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Rebuild) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Elasticsearch.Reset",
-                areaName: "OrchardCore.Search.Elasticsearch",
-                pattern: _adminOptions.AdminUrlPrefix + "/elasticsearch/Reset/{id}",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Reset) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "Elasticsearch.SyncSettings",
-                areaName: "OrchardCore.Search.Elasticsearch",
-                pattern: _adminOptions.AdminUrlPrefix + "/elasticsearch/SyncSettings",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.SyncSettings) }
-            );
         }
     }
 

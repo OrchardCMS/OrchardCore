@@ -36,14 +36,6 @@ namespace OrchardCore.Lists
 {
     public class Startup : StartupBase
     {
-        private readonly AdminOptions _adminOptions;
-
-
-        public Startup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
             services.Configure<TemplateOptions>(o =>
@@ -70,16 +62,6 @@ namespace OrchardCore.Lists
             services.AddDataMigration<Migrations>();
             services.AddScoped<IContentItemIndexHandler, ContainedPartContentIndexHandler>();
             services.AddScoped<IContainerService, ContainerService>();
-        }
-
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapAreaControllerRoute(
-                name: "ListOrder",
-                areaName: "OrchardCore.Lists",
-                pattern: _adminOptions.AdminUrlPrefix + "/Lists/Order/{containerId?}",
-                defaults: new { controller = "Order", action = "UpdateContentItemOrders" }
-            );
         }
     }
 

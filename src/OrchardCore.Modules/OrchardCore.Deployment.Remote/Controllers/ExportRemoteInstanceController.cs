@@ -17,7 +17,7 @@ using YesSql;
 
 namespace OrchardCore.Deployment.Remote.Controllers
 {
-    [Admin]
+    [Admin("Deployment/ExportRemoteInstance/{action}/{id?}", "DeploymentExportRemoteInstance{action}")]
     public class ExportRemoteInstanceController : Controller
     {
         private static readonly HttpClient _httpClient = new();
