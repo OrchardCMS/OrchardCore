@@ -9,5 +9,5 @@ public class UserLocalizationViewModel
     public string SelectedCulture { get; set; }
 
     [BindNever]
-    public IEnumerable<SelectListItem> CultureList { get; set; } = new List<SelectListItem>();
+    public List<SelectListItem> CultureList { get; set; } = [];
 }
