@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using OrchardCore.Email;
+using OrchardCore.Email.Services;
 using OrchardCore.Environment.Shell.Configuration;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -12,7 +13,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ConfigureServices((tenantServices, serviceProvider) =>
             {
-                var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_Email");
+                var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection(SmtpOptionsConfiguration.SectionName);
 
                 tenantServices.PostConfigure<SmtpOptions>(settings => configurationSection.Bind(settings));
             });

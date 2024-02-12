@@ -103,7 +103,7 @@ public class AzureEmailProvider : IEmailProvider
     /// <summary>
     /// The name of the provider.
     /// </summary>
-    public LocalizedString Name => S["Azure"];
+    public LocalizedString Name => S["Azure Communication Service"];
 
     public async Task<EmailResult> SendAsync(MailMessage message)
     {

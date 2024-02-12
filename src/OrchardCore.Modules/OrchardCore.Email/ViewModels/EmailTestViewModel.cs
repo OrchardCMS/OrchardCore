@@ -3,30 +3,31 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace OrchardCore.Email.ViewModels
+namespace OrchardCore.Email.ViewModels;
+
+public class EmailTestViewModel
 {
-    public class EmailTestViewModel
-    {
-        [Required]
-        public string Provider { get; set; }
+    [Required]
+    public string Provider { get; set; }
 
-        [Required(AllowEmptyStrings = false)]
-        public string To { get; set; }
+    [Required(AllowEmptyStrings = false)]
+    public string To { get; set; }
 
-        [EmailAddress(ErrorMessage = "Invalid Email.")]
-        public string Sender { get; set; }
+    [EmailAddress(ErrorMessage = "Invalid Email.")]
+    public string Sender { get; set; }
 
-        public string Bcc { get; set; }
+    public string Bcc { get; set; }
 
-        public string Cc { get; set; }
+    public string Cc { get; set; }
 
-        public string ReplyTo { get; set; }
+    public string ReplyTo { get; set; }
 
-        public string Subject { get; set; }
+    [Required]
+    public string Subject { get; set; }
 
-        public string Body { get; set; }
+    [Required]
+    public string Body { get; set; }
 
-        [BindNever]
-        public IList<SelectListItem> Providers { get; set; }
-    }
+    [BindNever]
+    public IList<SelectListItem> Providers { get; set; }
 }

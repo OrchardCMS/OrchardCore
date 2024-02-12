@@ -9,7 +9,8 @@ namespace OrchardCore.Email.Services;
 
 public class SmtpOptionsConfiguration : IConfigureOptions<SmtpOptions>
 {
-    private const string SectionName = "OrchardCore_Email";
+    public const string ProtectorName = "SmtpSettingsConfiguration";
+    public const string SectionName = "OrchardCore_Email";
 
     private readonly ISiteService _siteService;
     private readonly IShellConfiguration _shellConfiguration;
@@ -73,7 +74,7 @@ public class SmtpOptionsConfiguration : IConfigureOptions<SmtpOptions>
         {
             try
             {
-                var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpOptionsConfiguration));
+                var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
                 options.Password = protector.Unprotect(settings.Password);
             }
             catch

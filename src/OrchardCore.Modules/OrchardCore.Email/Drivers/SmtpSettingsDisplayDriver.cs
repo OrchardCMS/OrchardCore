@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -14,6 +15,7 @@ using OrchardCore.Email.Services;
 using OrchardCore.Email.ViewModels;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Drivers
@@ -32,6 +34,7 @@ namespace OrchardCore.Email.Drivers
         private readonly IAuthorizationService _authorizationService;
 
         protected readonly IHtmlLocalizer H;
+        protected readonly IStringLocalizer S;
 
         public SmtpSettingsDisplayDriver(
             IDataProtectionProvider dataProtectionProvider,
@@ -40,8 +43,9 @@ namespace OrchardCore.Email.Drivers
             IHttpContextAccessor httpContextAccessor,
             IOptions<SmtpOptions> options,
             INotifier notifier,
+            IAuthorizationService authorizationService,
             IHtmlLocalizer<SmtpSettingsDisplayDriver> htmlLocalizer,
-            IAuthorizationService authorizationService)
+            IStringLocalizer<SmtpSettingsDisplayDriver> stringLocalizer)
         {
             _dataProtectionProvider = dataProtectionProvider;
             _shellHost = shellHost;
@@ -51,6 +55,7 @@ namespace OrchardCore.Email.Drivers
             _notifier = notifier;
             _authorizationService = authorizationService;
             H = htmlLocalizer;
+            S = stringLocalizer;
         }
 
         public override async Task<IDisplayResult> EditAsync(SmtpSettings settings, BuildEditorContext context)
@@ -127,6 +132,23 @@ namespace OrchardCore.Email.Drivers
                         await _notifier.WarningAsync(H["No designated default email provider is currently enabled. Please select and set one of the available email providers as the default."]);
                     }
 
+                    if (model.DeliveryMethod == SmtpDeliveryMethod.Network)
+                    {
+                        if (string.IsNullOrEmpty(model.Host))
+                        {
+                            updater.ModelState.AddModelError(Prefix, nameof(model.Host), S["The {0} field is required.", "Host name"]);
+                        }
+                        else if (!Uri.TryCreate(model.Host, UriKind.Absolute, out _))
+                        {
+                            updater.ModelState.AddModelError(Prefix, nameof(model.Host), S["Invalid value provided for the '{0}' field.", "Host name"]);
+                        }
+                    }
+                    else if (model.DeliveryMethod == SmtpDeliveryMethod.SpecifiedPickupDirectory
+                        && string.IsNullOrWhiteSpace(model.PickupDirectoryLocation))
+                    {
+                        updater.ModelState.AddModelError(Prefix, nameof(model.PickupDirectoryLocation), S["The {0} field is required.", "Pickup directory location"]);
+                    }
+
                     hasChanges |= model.Host != settings.Host;
                     hasChanges |= model.Port != settings.Port;
                     hasChanges |= model.AutoSelectEncryption != settings.AutoSelectEncryption;
@@ -140,11 +162,11 @@ namespace OrchardCore.Email.Drivers
                     hasChanges |= model.DeliveryMethod != settings.DeliveryMethod;
                     hasChanges |= model.PickupDirectoryLocation != settings.PickupDirectoryLocation;
 
-                    // Restore password if the input is empty, meaning that it has not been reset.
+                    // Store the password when there is a new value.
                     if (!string.IsNullOrWhiteSpace(model.Password))
                     {
                         // Encrypt the password.
-                        var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpOptionsConfiguration));
+                        var protector = _dataProtectionProvider.CreateProtector(SmtpOptionsConfiguration.ProtectorName);
 
                         var protectedPassword = protector.Protect(model.Password);
 

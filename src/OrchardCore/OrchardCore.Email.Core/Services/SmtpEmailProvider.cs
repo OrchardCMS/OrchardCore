@@ -20,7 +20,7 @@ namespace OrchardCore.Email.Services;
 /// </summary>
 public class SmtpEmailProvider : IEmailProvider
 {
-    public const string TechnicalName = "Smtp";
+    public const string TechnicalName = "SMTP";
 
     private const string EmailExtension = ".eml";
 
@@ -49,7 +49,7 @@ public class SmtpEmailProvider : IEmailProvider
     /// <summary>
     /// The name of the provider.
     /// </summary>
-    public LocalizedString Name => S["SMTP"];
+    public LocalizedString Name => S["Simple Mail Transfer Protocol (SMTP)"];
 
     /// <summary>
     /// Sends the specified message to an SMTP server for delivery.

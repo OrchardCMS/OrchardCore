@@ -1,12 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Email.ViewModels;
 
-public class SmtpSettingsViewModel : IValidatableObject
+public class SmtpSettingsViewModel
 {
     public bool IsEnabled { get; set; }
 
@@ -40,27 +37,4 @@ public class SmtpSettingsViewModel : IValidatableObject
     public SmtpDeliveryMethod DeliveryMethod { get; set; }
 
     public string PickupDirectoryLocation { get; set; }
-
-    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-    {
-        var S = validationContext.GetService<IStringLocalizer<SmtpSettingsViewModel>>();
-
-        switch (DeliveryMethod)
-        {
-            case SmtpDeliveryMethod.Network:
-                if (string.IsNullOrEmpty(Host))
-                {
-                    yield return new ValidationResult(S["The {0} field is required.", "Host name"], new[] { nameof(Host) });
-                }
-                break;
-            case SmtpDeliveryMethod.SpecifiedPickupDirectory:
-                if (string.IsNullOrEmpty(PickupDirectoryLocation))
-                {
-                    yield return new ValidationResult(S["The {0} field is required.", "Pickup directory location"], new[] { nameof(PickupDirectoryLocation) });
-                }
-                break;
-            default:
-                throw new NotSupportedException(S["The '{0}' delivery method is not supported.", DeliveryMethod]);
-        }
-    }
 }
