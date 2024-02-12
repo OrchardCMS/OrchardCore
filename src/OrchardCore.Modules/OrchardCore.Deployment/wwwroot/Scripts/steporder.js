@@ -22,14 +22,15 @@ function updateStepOrders(oldIndex, newIndex) {
 }
 $(function () {
   var sortable = document.getElementById("stepOrder");
-  if (sortable) {
-    var sortable = Sortable.create(sortable, {
-      handle: ".ui-sortable-handle",
-      onSort: function onSort(evt) {
-        var oldIndex = evt.oldIndex;
-        var newIndex = evt.newIndex;
-        updateStepOrders(oldIndex, newIndex);
-      }
-    });
+  if (!sortable) {
+    return;
   }
+  var sortable = Sortable.create(sortable, {
+    handle: ".ui-sortable-handle",
+    onSort: function onSort(evt) {
+      var oldIndex = evt.oldIndex;
+      var newIndex = evt.newIndex;
+      updateStepOrders(oldIndex, newIndex);
+    }
+  });
 });
