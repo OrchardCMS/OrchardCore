@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
 using OrchardCore.Microsoft.Authentication.Settings;
@@ -17,10 +18,12 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
         public const string AzureAdOpenIdConnectScheme = MicrosoftIdentityDefaults.AzureAd + OpenIdConnectDefaults.AuthenticationScheme;
 
         private readonly AzureADSettings _azureADSettings;
+        private readonly ILogger _logger;
 
-        public AzureADOptionsConfiguration(IOptions<AzureADSettings> azureADSettings)
+        public AzureADOptionsConfiguration(IOptions<AzureADSettings> azureADSettings, ILogger<AzureADOptionsConfiguration> logger)
         {
             _azureADSettings = azureADSettings.Value;
+            _logger = logger;
         }
 
         public void Configure(AuthenticationOptions options)
@@ -28,6 +31,13 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             var settings = _azureADSettings;
             if (settings == null)
             {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(settings.AppId) || string.IsNullOrWhiteSpace(settings.TenantId))
+            {
+                _logger.LogWarning("The AzureAD login provider is enabled but not configured.");
+
                 return;
             }
 
