@@ -27,6 +27,8 @@ namespace OrchardCore.Email
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.ConfigureEmailSettings();
+
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IDisplayDriver<ISite>, SmtpSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();

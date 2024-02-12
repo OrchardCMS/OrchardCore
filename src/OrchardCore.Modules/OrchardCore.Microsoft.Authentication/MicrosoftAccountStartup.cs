@@ -26,6 +26,8 @@ namespace OrchardCore.Microsoft.Authentication
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.ConfigureMicrosoftAccountSettings();
+
             services.TryAddEnumerable(new ServiceDescriptor(typeof(IPermissionProvider), typeof(Permissions), ServiceLifetime.Scoped));
 
             services.AddSingleton<IMicrosoftAccountService, MicrosoftAccountService>();
@@ -52,6 +54,8 @@ namespace OrchardCore.Microsoft.Authentication
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.ConfigureAzureADSettings();
+
             services.TryAddEnumerable(new ServiceDescriptor(typeof(IPermissionProvider), typeof(Permissions), ServiceLifetime.Scoped));
 
             services.AddSingleton<IAzureADService, AzureADService>();

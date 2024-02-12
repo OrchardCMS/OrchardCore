@@ -28,6 +28,8 @@ namespace OrchardCore.ReverseProxy
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.ConfigureReverseProxySettings();
+
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IDisplayDriver<ISite>, ReverseProxySettingsDisplayDriver>();
