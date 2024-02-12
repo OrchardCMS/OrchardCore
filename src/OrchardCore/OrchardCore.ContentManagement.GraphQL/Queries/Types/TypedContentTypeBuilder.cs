@@ -37,8 +37,10 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             {
                 return;
             }
+
             IEnumerable<IObjectGraphType> queryObjectGraphTypes = null;
             IEnumerable<IInputObjectGraphType> queryInputGraphTypes = null;
+
             foreach (var part in contentTypeDefinition.Parts)
             {
                 if (_contentOptions.ShouldSkip(part))
@@ -118,8 +120,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                                        });
                     }
                 }
-
-
 
                 var inputGraphTypeResolved = _partInputObjectGraphTypes.GetOrAdd(part.PartDefinition.Name, partName =>
                 {

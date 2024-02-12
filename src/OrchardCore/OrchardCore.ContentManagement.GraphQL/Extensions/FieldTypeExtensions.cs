@@ -21,9 +21,9 @@ namespace OrchardCore.ContentManagement.GraphQL
                 return null;
             }
 
-            if (!fieldType.HasMetadata(name))
+            lock (fieldType.Metadata)
             {
-                fieldType.Metadata.Add(name, value);
+                fieldType.Metadata.TryAdd(name, value);
             }
 
             return fieldType;
