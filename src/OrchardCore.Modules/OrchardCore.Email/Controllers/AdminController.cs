@@ -2,12 +2,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email.Drivers;
 using OrchardCore.Email.ViewModels;
 
 namespace OrchardCore.Email.Controllers
 {
+    [Admin("Email/{action}/{id?}", "Email{action}")]
     public class AdminController : Controller
     {
         private readonly IAuthorizationService _authorizationService;

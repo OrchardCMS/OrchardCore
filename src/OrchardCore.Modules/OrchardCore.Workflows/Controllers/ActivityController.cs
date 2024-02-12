@@ -49,6 +49,7 @@ namespace OrchardCore.Workflows.Controllers
             H = h;
         }
 
+        [Admin("Workflows/Types/{workflowTypeId}/Activity/{activityName}/Add", "AddActivity")]
         public async Task<IActionResult> Create(string activityName, long workflowTypeId, string returnUrl)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
@@ -114,6 +115,7 @@ namespace OrchardCore.Workflows.Controllers
             return Url.IsLocalUrl(model.ReturnUrl) ? (IActionResult)this.Redirect(model.ReturnUrl, true) : RedirectToAction(nameof(Edit), "WorkflowType", new { id = model.WorkflowTypeId });
         }
 
+        [Admin("Workflows/Types/{workflowTypeId}/Activity/{activityId}/Edit", "EditActivity")]
         public async Task<IActionResult> Edit(long workflowTypeId, string activityId, string returnUrl)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
