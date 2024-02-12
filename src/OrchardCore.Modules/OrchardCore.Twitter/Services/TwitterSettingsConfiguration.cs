@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
@@ -26,33 +25,36 @@ public class TwitterSettingsConfiguration : IConfigureOptions<TwitterSettings>
 
     public void Configure(TwitterSettings options)
     {
-        var settings = GetTwitterSettingsAsync()
+        var settings = _twitterSettingsService.GetSettingsAsync()
             .GetAwaiter()
             .GetResult();
 
-        if (settings != null)
+        if (IsSettingsValid(settings))
         {
             options.ConsumerKey = settings.ConsumerKey;
             options.ConsumerSecret = settings.ConsumerSecret;
             options.AccessToken = settings.AccessToken;
             options.AccessTokenSecret = settings.AccessTokenSecret;
         }
-    }
-
-    private async Task<TwitterSettings> GetTwitterSettingsAsync()
-    {
-        var settings = await _twitterSettingsService.GetSettingsAsync();
-
-        if ((_twitterSettingsService.ValidateSettings(settings)).Any(result => result != ValidationResult.Success))
+        else
         {
-            if (_shellSettings.IsRunning())
+            if (!IsSettingsValid(options))
             {
                 _logger.LogWarning("Twitter is not correctly configured.");
             }
+        }
+    }
 
-            return null;
+    private bool IsSettingsValid(TwitterSettings settings)
+    {
+        if (_twitterSettingsService.ValidateSettings(settings).Any(result => result != ValidationResult.Success))
+        {
+            if (_shellSettings.IsRunning())
+            {
+                return false;
+            }
         }
 
-        return settings;
+        return true;
     }
 }

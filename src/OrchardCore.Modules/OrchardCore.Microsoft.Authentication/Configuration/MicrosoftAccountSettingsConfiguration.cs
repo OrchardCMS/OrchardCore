@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
@@ -27,32 +26,36 @@ public class MicrosoftAccountSettingsConfiguration : IConfigureOptions<Microsoft
 
     public void Configure(MicrosoftAccountSettings options)
     {
-        var settings = GetMicrosoftAccountSettingsAsync()
+        var settings = _microsoftAccountService.GetSettingsAsync()
             .GetAwaiter()
             .GetResult();
 
-        if (settings != null)
+        if (IsSettingsValid(settings))
         {
             options.AppId = settings.AppId;
             options.AppSecret = settings.AppSecret;
             options.CallbackPath = settings.CallbackPath;
             options.SaveTokens = settings.SaveTokens;
         }
+        else
+        {
+            if (!IsSettingsValid(options))
+            {
+                _logger.LogWarning("The Microsoft Account Authentication is not correctly configured.");
+            }
+        }
     }
 
-    private async Task<MicrosoftAccountSettings> GetMicrosoftAccountSettingsAsync()
+    private bool IsSettingsValid(MicrosoftAccountSettings settings)
     {
-        var settings = await _microsoftAccountService.GetSettingsAsync();
         if (_microsoftAccountService.ValidateSettings(settings).Any(result => result != ValidationResult.Success))
         {
             if (_shellSettings.IsRunning())
             {
-                _logger.LogWarning("The Microsoft Account Authentication is not correctly configured.");
+                return false;
             }
-
-            return null;
         }
 
-        return settings;
+        return true;
     }
 }

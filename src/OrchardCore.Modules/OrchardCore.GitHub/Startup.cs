@@ -29,6 +29,8 @@ namespace OrchardCore.GitHub
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.ConfigureGitHubSettings();
+
             services.AddSingleton<IGitHubAuthenticationService, GitHubAuthenticationService>();
             services.AddScoped<IDisplayDriver<ISite>, GitHubAuthenticationSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenuGitHubLogin>();

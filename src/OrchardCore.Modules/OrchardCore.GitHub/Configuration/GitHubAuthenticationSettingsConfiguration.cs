@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
@@ -27,33 +26,36 @@ public class GitHubAuthenticationSettingsConfiguration : IConfigureOptions<GitHu
 
     public void Configure(GitHubAuthenticationSettings options)
     {
-        var settings = GetGitHubAuthenticationSettingsAsync()
+        var settings = _gitHubAuthenticationService.GetSettingsAsync()
             .GetAwaiter()
             .GetResult();
 
-        if (settings != null)
+        if (IsSettingsValid(settings))
         {
             options.CallbackPath = settings.CallbackPath;
             options.ClientID = settings.ClientID;
             options.ClientSecret = settings.ClientSecret;
             options.SaveTokens = settings.SaveTokens;
         }
-    }
-
-    private async Task<GitHubAuthenticationSettings> GetGitHubAuthenticationSettingsAsync()
-    {
-        var settings = await _gitHubAuthenticationService.GetSettingsAsync();
-
-        if ((_gitHubAuthenticationService.ValidateSettings(settings)).Any(result => result != ValidationResult.Success))
+        else
         {
-            if (_shellSettings.IsRunning())
+            if (!IsSettingsValid(options))
             {
                 _logger.LogWarning("GitHub Authentication is not correctly configured.");
             }
+        }
+    }
 
-            return null;
+    private bool IsSettingsValid(GitHubAuthenticationSettings settings)
+    {
+        if (_gitHubAuthenticationService.ValidateSettings(settings).Any(result => result != ValidationResult.Success))
+        {
+            if (_shellSettings.IsRunning())
+            {
+                return false;
+            }
         }
 
-        return settings;
+        return true;
     }
 }
