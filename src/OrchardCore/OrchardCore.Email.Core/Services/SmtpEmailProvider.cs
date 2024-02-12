@@ -26,7 +26,7 @@ public class SmtpEmailProvider : IEmailProvider
 
     private static readonly char[] _emailsSeparator = [',', ';'];
 
-    private readonly SmtpSettings _providerOptions;
+    private readonly SmtpOptions _providerOptions;
     private readonly ILogger _logger;
     protected readonly IStringLocalizer S;
 
@@ -37,7 +37,7 @@ public class SmtpEmailProvider : IEmailProvider
     /// <param name="logger">The <see cref="ILogger{SmtpService}"/>.</param>
     /// <param name="stringLocalizer">The <see cref="IStringLocalizer{SmtpService}"/>.</param>
     public SmtpEmailProvider(
-        IOptions<SmtpSettings> options,
+        IOptions<SmtpOptions> options,
         ILogger<SmtpEmailProvider> logger,
         IStringLocalizer<SmtpEmailProvider> stringLocalizer)
     {
@@ -59,7 +59,7 @@ public class SmtpEmailProvider : IEmailProvider
     /// <remarks>This method allows to send an email without setting <see cref="MailMessage.To"/> if <see cref="MailMessage.Cc"/> or <see cref="MailMessage.Bcc"/> is provided.</remarks>
     public async Task<EmailResult> SendAsync(MailMessage message)
     {
-        if (!(_providerOptions.IsEnabled ?? _providerOptions.HasValidSettings()))
+        if (!_providerOptions.IsEnabled)
         {
             return EmailResult.FailedResult(S["The SMTP Email Provider is disabled."]);
         }

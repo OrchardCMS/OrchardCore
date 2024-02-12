@@ -1,26 +1,23 @@
 using Microsoft.Extensions.Options;
 using OrchardCore.Email.Core.Services;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Services;
 
 public class SmtpProviderOptionsConfigurations : IConfigureOptions<EmailProviderOptions>
 {
-    private readonly ISiteService _siteService;
+    private readonly SmtpOptions _smtpOptions;
 
-    public SmtpProviderOptionsConfigurations(ISiteService siteService)
+    public SmtpProviderOptionsConfigurations(IOptions<SmtpOptions> smtpOptions)
     {
-        _siteService = siteService;
+        _smtpOptions = smtpOptions.Value;
     }
 
     public void Configure(EmailProviderOptions options)
     {
-        var typeOptions = new EmailProviderTypeOptions(typeof(SmtpEmailProvider));
-
-        var site = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
-        var settings = site.As<SmtpSettings>();
-
-        typeOptions.IsEnabled = settings.IsEnabled ?? settings.HasValidSettings();
+        var typeOptions = new EmailProviderTypeOptions(typeof(SmtpEmailProvider))
+        {
+            IsEnabled = _smtpOptions.IsEnabled
+        };
 
         options.TryAddProvider(SmtpEmailProvider.TechnicalName, typeOptions);
     }

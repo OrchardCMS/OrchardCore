@@ -27,7 +27,7 @@ namespace OrchardCore.Email.Drivers
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly SmtpSettings _smtpOptions;
+        private readonly SmtpOptions _smtpOptions;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
 
@@ -38,7 +38,7 @@ namespace OrchardCore.Email.Drivers
             IShellHost shellHost,
             ShellSettings shellSettings,
             IHttpContextAccessor httpContextAccessor,
-            IOptions<SmtpSettings> options,
+            IOptions<SmtpOptions> options,
             INotifier notifier,
             IHtmlLocalizer<SmtpSettingsDisplayDriver> htmlLocalizer,
             IAuthorizationService authorizationService)
@@ -66,7 +66,7 @@ namespace OrchardCore.Email.Drivers
             {
                 // when IsEnabled is not set, we fall back on loaded SmtpOption to see if the settings were loaded via appsettings.
 
-                model.IsEnabled = settings.IsEnabled ?? _smtpOptions.HasValidSettings();
+                model.IsEnabled = settings.IsEnabled ?? _smtpOptions.IsEnabled;
                 model.DefaultSender = settings.DefaultSender;
                 model.DeliveryMethod = settings.DeliveryMethod;
                 model.PickupDirectoryLocation = settings.PickupDirectoryLocation;
@@ -144,7 +144,7 @@ namespace OrchardCore.Email.Drivers
                     if (!string.IsNullOrWhiteSpace(model.Password))
                     {
                         // Encrypt the password.
-                        var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration));
+                        var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpOptionsConfiguration));
 
                         var protectedPassword = protector.Protect(model.Password);
 

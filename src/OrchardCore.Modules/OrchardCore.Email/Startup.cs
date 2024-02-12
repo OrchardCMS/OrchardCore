@@ -34,7 +34,7 @@ namespace OrchardCore.Email
 
             services.AddSmtpEmailProvider()
                 .AddScoped<IDisplayDriver<ISite>, SmtpSettingsDisplayDriver>()
-                .AddTransient<IConfigureOptions<SmtpSettings>, SmtpSettingsConfiguration>();
+                .AddTransient<IConfigureOptions<SmtpOptions>, SmtpOptionsConfiguration>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
