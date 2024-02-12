@@ -12,7 +12,7 @@ public static class FieldTypeExtensions
 
     private static FieldType WithMetaData(this FieldType fieldType, string name, object value)
     {
-        // TODO: Understand if this is the best solution to https://github.com/OrchardCMS/OrchardCore/issues/15308
+        // TODO: Understand if locking is the best solution to https://github.com/OrchardCMS/OrchardCore/issues/15308
         lock (fieldType.Metadata)
         {
             fieldType.Metadata.TryAdd(name, value);
