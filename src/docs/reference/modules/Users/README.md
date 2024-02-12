@@ -23,7 +23,9 @@ Starting with version 1.7, OrchardCore is shipped with everything you need to se
 
 ## User Localization
 
-This feature adds a `RequestCultureProvider` that will retrieve the current user culture from it's claims. This feature will set a new user claim with a `CultureClaimType` named "culture". The feature adds the ability to configure the culture per user from the admin UI. It also have a culture option to fallback to other ASP.NET Request Culture Providers by simply setting the user culture to "Use site's culture" which will also be the selected default value.
+The feature adds the ability to configure the culture per user from the admin UI.
+
+This feature adds a `RequestCultureProvider` to retrieve the current user culture from its claims. This feature will set a new user claim with a `CultureClaimType` named "culture". It also has a culture option to fall back to other ASP.NET Request Culture Providers by simply setting the user culture to "Use site's culture" which will also be the selected default value.
 
 ## Custom Paths
 
