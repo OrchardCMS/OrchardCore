@@ -43,9 +43,10 @@ public class UserLocalizationDisplayDriver : SectionDisplayDriver<User, UserLoca
             cultureList.Insert(0, new SelectListItem() { Text = S["Use site's culture"], Value = "none" });
 
             // If Invariant Culture is installed as a supported culture we bind it to a different culture code than String.Empty.
-            if (cultureList.Where(c => c.Value == "").Any())
+            var emptyCulture = cultureList.FirstOrDefault(c => c.Value == "");
+            if (emptyCulture != null)
             {
-                cultureList.Where(c => c.Value == "").FirstOrDefault().Value = UserLocalizationConstants.Invariant;
+                emptyCulture.Value = UserLocalizationConstants.Invariant;
             }
 
             model.SelectedCulture = section.Culture;
