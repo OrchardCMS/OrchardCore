@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -21,11 +20,6 @@ namespace OrchardCore.Taxonomies.Drivers
 {
     public class TaxonomyFieldTagsDisplayDriver : ContentFieldDisplayDriver<TaxonomyField>
     {
-        private static readonly JsonSerializerSettings _serializerSettings = new()
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-        };
-
         private readonly IContentManager _contentManager;
         protected readonly IStringLocalizer S;
 
@@ -68,7 +62,7 @@ namespace OrchardCore.Taxonomies.Drivers
                         IsLeaf = te.IsLeaf
                     });
 
-                    model.TagTermEntries = JsonConvert.SerializeObject(tagTermEntries, _serializerSettings);
+                    model.TagTermEntries = JNode.FromObject(tagTermEntries, JOptions.CamelCase).ToJsonString(JOptions.Default);
                 }
 
                 model.Field = field;
@@ -109,7 +103,10 @@ namespace OrchardCore.Taxonomies.Drivers
 
                 foreach (var termContentItemId in field.TermContentItemIds)
                 {
-                    var term = TaxonomyOrchardHelperExtensions.FindTerm(taxonomy.Content.TaxonomyPart.Terms as JArray, termContentItemId);
+                    var term = TaxonomyOrchardHelperExtensions.FindTerm(
+                        (JsonArray)taxonomy.Content["TaxonomyPart"]["Terms"],
+                        termContentItemId);
+
                     terms.Add(term);
                 }
 

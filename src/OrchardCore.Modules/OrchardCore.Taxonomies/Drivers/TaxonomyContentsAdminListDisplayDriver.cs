@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Cysharp.Text;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Contents.ViewModels;
@@ -138,7 +138,7 @@ namespace OrchardCore.Taxonomies.Drivers
             {
                 var children = Array.Empty<ContentItem>();
 
-                if (contentItem.Content.Terms is JArray termsArray)
+                if (((JsonObject)contentItem.Content)["Terms"] is JsonArray termsArray)
                 {
                     children = termsArray.ToObject<ContentItem[]>();
                 }

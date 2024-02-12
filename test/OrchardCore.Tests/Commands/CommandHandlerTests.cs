@@ -5,7 +5,7 @@ namespace OrchardCore.Tests.Commands
 {
     public class CommandsTests
     {
-        private readonly ICommandHandler _handler;
+        private readonly StubCommandHandler _handler;
 
         public CommandsTests()
         {

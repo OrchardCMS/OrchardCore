@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using Newtonsoft.Json;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Environment.Cache;
 
@@ -17,7 +17,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         {
             Wrappers = [];
             Alternates = [];
-            BindingSources = new List<string>();
+            BindingSources = [];
             Displaying = [];
             Displayed = [];
             ProcessingAsync = [];

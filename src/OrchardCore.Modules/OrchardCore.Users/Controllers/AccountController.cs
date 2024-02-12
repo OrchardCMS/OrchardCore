@@ -672,7 +672,7 @@ namespace OrchardCore.Users.Controllers
                 .Where(auth => model.CurrentLogins.All(ul => auth.Name != ul.LoginProvider))
                 .ToList();
             model.ShowRemoveButton = await _userManager.HasPasswordAsync(user) || model.CurrentLogins.Count > 1;
-            //model.StatusMessage = StatusMessage;
+            // model.StatusMessage = StatusMessage;
 
             CopyTempDataErrorsToModelState();
 
@@ -724,7 +724,7 @@ namespace OrchardCore.Users.Controllers
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
             // Perform External Login SignIn.
             await ExternalLoginSignInAsync(user, info);
-            //StatusMessage = "The external login was added.";
+            // StatusMessage = "The external login was added.";
 
             return RedirectToAction(nameof(ExternalLogins));
         }
@@ -759,7 +759,7 @@ namespace OrchardCore.Users.Controllers
             }
 
             await _signInManager.SignInAsync(user, isPersistent: false);
-            //StatusMessage = "The external login was removed.";
+            // StatusMessage = "The external login was removed.";
             return RedirectToAction(nameof(ExternalLogins));
         }
 

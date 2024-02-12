@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Handlers;
 
 namespace OrchardCore.ContentManagement
@@ -239,8 +239,8 @@ namespace OrchardCore.ContentManagement
             // It represents a contained content item
             if (!string.IsNullOrEmpty(jsonPath))
             {
-                var root = contentItem.Content as JObject;
-                contentItem = root.SelectToken(jsonPath)?.ToObject<ContentItem>();
+                var root = (JsonObject)contentItem.Content;
+                contentItem = root.SelectNode(jsonPath)?.ToObject<ContentItem>();
 
                 return contentItem;
             }

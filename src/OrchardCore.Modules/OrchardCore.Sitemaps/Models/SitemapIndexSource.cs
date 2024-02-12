@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Sitemaps.Models
 {
     // This is a single use Sitemap Index Source.

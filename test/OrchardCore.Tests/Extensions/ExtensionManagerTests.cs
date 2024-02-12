@@ -13,10 +13,7 @@ namespace OrchardCore.Tests.Extensions
             = new StubHostingEnvironment();
 
         private static readonly IApplicationContext _applicationContext
-            = new ModularApplicationContext(_hostingEnvironment, new List<IModuleNamesProvider>()
-            {
-                new ModuleNamesProvider()
-            });
+            = new ModularApplicationContext(_hostingEnvironment, [new ModuleNamesProvider()]);
 
         private static readonly IFeaturesProvider _moduleFeatureProvider =
             new FeaturesProvider(new[] { new ThemeFeatureBuilderEvents() });
@@ -24,9 +21,9 @@ namespace OrchardCore.Tests.Extensions
         private static readonly IFeaturesProvider _themeFeatureProvider =
             new FeaturesProvider(new[] { new ThemeFeatureBuilderEvents() });
 
-        private readonly IExtensionManager _moduleScopedExtensionManager;
-        private readonly IExtensionManager _themeScopedExtensionManager;
-        private readonly IExtensionManager _moduleThemeScopedExtensionManager;
+        private readonly ExtensionManager _moduleScopedExtensionManager;
+        private readonly ExtensionManager _themeScopedExtensionManager;
+        private readonly ExtensionManager _moduleThemeScopedExtensionManager;
 
         public ExtensionManagerTests()
         {

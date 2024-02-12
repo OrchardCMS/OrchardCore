@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Dapper;
 using Fluid;
 using Fluid.Values;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Data;
 using OrchardCore.Liquid;
@@ -79,8 +79,7 @@ namespace OrchardCore.Queries.Sql
                 using var transaction = await connection.BeginTransactionAsync(_session.Store.Configuration.IsolationLevel);
                 queryResults = await connection.QueryAsync(rawQuery, parameters, transaction);
 
-                var results = new List<JObject>();
-
+                var results = new List<JsonObject>();
                 foreach (var document in queryResults)
                 {
                     results.Add(JObject.FromObject(document));

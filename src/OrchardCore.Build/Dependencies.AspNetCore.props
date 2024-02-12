@@ -39,7 +39,6 @@
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(AspNetCorePackagesVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.Twitter" Version="$(AspNetCorePackagesVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="$(AspNetCorePackagesVersion)" />
-    <PackageManagement Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(AspNetCorePackagesVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="$(AspNetCorePackagesVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(AspNetCorePackagesVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Owin" Version="$(AspNetCorePackagesVersion)" />

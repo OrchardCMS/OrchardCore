@@ -109,7 +109,7 @@ namespace OrchardCore.Email.Services
             return result;
         }
 
-        private MimeMessage FromMailMessage(MailMessage message, IList<LocalizedString> errors)
+        private MimeMessage FromMailMessage(MailMessage message, List<LocalizedString> errors)
         {
             var submitterAddress = string.IsNullOrWhiteSpace(message.Sender)
                 ? _options.DefaultSender

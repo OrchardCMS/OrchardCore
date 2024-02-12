@@ -119,7 +119,7 @@ namespace OrchardCore.Localization.PortableObject
             }
         }
 
-        private IEnumerable<LocalizedString> GetAllStringsFromCultureHierarchy(CultureInfo culture)
+        private List<LocalizedString> GetAllStringsFromCultureHierarchy(CultureInfo culture)
         {
             var currentCulture = culture;
             var allLocalizedStrings = new List<LocalizedString>();

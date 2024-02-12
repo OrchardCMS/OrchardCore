@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data;
@@ -80,21 +80,19 @@ namespace OrchardCore.Taxonomies.Indexing
                     // Get all field values
                     foreach (var fieldDefinition in fieldDefinitions)
                     {
-                        var jPart = (JObject)contentItem.Content[fieldDefinition.PartDefinition.Name];
-
-                        if (jPart == null)
+                        var jPart = contentItem.Content[fieldDefinition.PartDefinition.Name];
+                        if (jPart is null)
                         {
                             continue;
                         }
 
-                        var jField = jPart[fieldDefinition.Name] as JObject;
-
-                        if (jField == null)
+                        var jField = jPart[fieldDefinition.Name];
+                        if (jField is null)
                         {
                             continue;
                         }
 
-                        var field = jField.ToObject<TaxonomyField>();
+                        var field = ((JsonObject)jField).ToObject<TaxonomyField>();
 
                         foreach (var termContentItemId in field.TermContentItemIds)
                         {

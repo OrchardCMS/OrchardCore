@@ -58,13 +58,10 @@ namespace OrchardCore.DisplayManagement
 
             public NamedEnumerable(IEnumerable<T> arguments, IEnumerable<string> names)
             {
-                if (arguments.Count() < names.Count())
-                {
-                    throw new ArgumentException("arguments.Count() < names.Count()");
-                }
-
                 _arguments = arguments.ToList();
                 _names = names.ToList();
+
+                ArgumentOutOfRangeException.ThrowIfLessThan(_arguments.Count, _names.Count);
 
                 _positional = [];
 
@@ -190,7 +187,7 @@ namespace OrchardCore.DisplayManagement
                     return pair.Key != null;
                 }
 
-                //TBD
+                // TBD
                 T IDictionary<string, T>.this[string key]
                 {
                     get

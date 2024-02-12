@@ -1,5 +1,5 @@
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 using OrchardCore.Media.Services;
 
@@ -25,10 +25,11 @@ namespace OrchardCore.Media.Deployment
 
             var mediaProfiles = await _mediaProfilesManager.GetMediaProfilesDocumentAsync();
 
-            result.Steps.Add(new JObject(
-                new JProperty("name", "MediaProfiles"),
-                new JProperty("MediaProfiles", JObject.FromObject(mediaProfiles.MediaProfiles))
-            ));
+            result.Steps.Add(new JsonObject
+            {
+                ["name"] = "MediaProfiles",
+                ["MediaProfiles"] = JObject.FromObject(mediaProfiles.MediaProfiles),
+            });
         }
     }
 }

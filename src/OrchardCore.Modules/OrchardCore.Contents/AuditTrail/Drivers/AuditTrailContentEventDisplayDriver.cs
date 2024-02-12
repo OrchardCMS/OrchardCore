@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using OrchardCore.AuditTrail.Drivers;
 using OrchardCore.AuditTrail.Indexes;
 using OrchardCore.AuditTrail.Models;

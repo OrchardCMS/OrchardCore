@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
@@ -105,7 +106,7 @@ public class CustomUserSettingsService
     {
         ContentItem contentItem;
 
-        if (user.Properties.TryGetValue(settingsType.Name, out var property))
+        if (user.Properties.TryGetPropertyValue(settingsType.Name, out var property))
         {
             var existing = property.ToObject<ContentItem>();
 

@@ -96,7 +96,7 @@ namespace OrchardCore.Roles.Services
                 handler.RoleRemovedAsync(roleToRemove.RoleName), roleToRemove, _logger);
 
             var roles = await LoadRolesAsync();
-            roleToRemove = roles.Roles.FirstOrDefault(r => r.RoleName == roleToRemove.RoleName);
+            roleToRemove = roles.Roles.FirstOrDefault(r => string.Equals(r.RoleName, roleToRemove.RoleName, StringComparison.OrdinalIgnoreCase));
             roles.Roles.Remove(roleToRemove);
 
             await UpdateRolesAsync(roles);
@@ -109,7 +109,7 @@ namespace OrchardCore.Roles.Services
             // While updating find a role from the loaded document being mutated.
             var roles = _updating ? await LoadRolesAsync() : await GetRolesAsync();
 
-            var role = roles.Roles.FirstOrDefault(x => x.RoleName == roleId);
+            var role = roles.Roles.FirstOrDefault(x => string.Equals(x.RoleName, roleId, StringComparison.OrdinalIgnoreCase));
 
             if (role == null)
             {
@@ -178,7 +178,7 @@ namespace OrchardCore.Roles.Services
             ArgumentNullException.ThrowIfNull(role);
 
             var roles = await LoadRolesAsync();
-            var existingRole = roles.Roles.FirstOrDefault(x => x.RoleName == role.RoleName);
+            var existingRole = roles.Roles.FirstOrDefault(x => string.Equals(x.RoleName, role.RoleName, StringComparison.OrdinalIgnoreCase));
             roles.Roles.Remove(existingRole);
             roles.Roles.Add((Role)role);
 

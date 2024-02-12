@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Newtonsoft.Json;
 using OrchardCore.Admin;
 using OrchardCore.Cors.Services;
 using OrchardCore.Cors.Settings;
@@ -42,6 +42,7 @@ namespace OrchardCore.Cors.Controllers
         }
 
         [HttpGet]
+        [Admin("Cors", "CorsIndex")]
         public async Task<ActionResult> Index()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageCorsSettings))
@@ -93,7 +94,7 @@ namespace OrchardCore.Cors.Controllers
 
             var model = new CorsSettingsViewModel();
             var configJson = Request.Form["CorsSettings"].First();
-            model.Policies = JsonConvert.DeserializeObject<CorsPolicyViewModel[]>(configJson);
+            model.Policies = JConvert.DeserializeObject<CorsPolicyViewModel[]>(configJson);
 
             var corsPolicies = new List<CorsPolicySetting>();
 
