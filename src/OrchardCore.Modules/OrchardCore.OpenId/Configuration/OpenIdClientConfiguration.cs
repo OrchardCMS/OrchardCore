@@ -1,7 +1,5 @@
 using System;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -23,30 +21,32 @@ namespace OrchardCore.OpenId.Configuration
         private readonly IOpenIdClientService _clientService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly ShellSettings _shellSettings;
+        private readonly OpenIdClientSettings _openIdClientSettings;
         private readonly ILogger _logger;
 
         public OpenIdClientConfiguration(
             IOpenIdClientService clientService,
             IDataProtectionProvider dataProtectionProvider,
             ShellSettings shellSettings,
+            IOptions<OpenIdClientSettings> openIdClientSettings,
             ILogger<OpenIdClientConfiguration> logger)
         {
             _clientService = clientService;
             _dataProtectionProvider = dataProtectionProvider;
             _shellSettings = shellSettings;
+            _openIdClientSettings = openIdClientSettings.Value;
             _logger = logger;
         }
 
         public void Configure(AuthenticationOptions options)
         {
-            var settings = GetClientSettingsAsync().GetAwaiter().GetResult();
-            if (settings == null)
+            if (_openIdClientSettings == null)
             {
                 return;
             }
 
             // Register the OpenID Connect client handler in the authentication handlers collection.
-            options.AddScheme<OpenIdConnectHandler>(OpenIdConnectDefaults.AuthenticationScheme, settings.DisplayName);
+            options.AddScheme<OpenIdConnectHandler>(OpenIdConnectDefaults.AuthenticationScheme, _openIdClientSettings.DisplayName);
         }
 
         public void Configure(string name, OpenIdConnectOptions options)
@@ -57,39 +57,38 @@ namespace OrchardCore.OpenId.Configuration
                 return;
             }
 
-            var settings = GetClientSettingsAsync().GetAwaiter().GetResult();
-            if (settings == null)
+            if (_openIdClientSettings == null)
             {
                 return;
             }
 
-            options.Authority = settings.Authority.AbsoluteUri;
-            options.ClientId = settings.ClientId;
-            options.SignedOutRedirectUri = settings.SignedOutRedirectUri ?? options.SignedOutRedirectUri;
-            options.SignedOutCallbackPath = settings.SignedOutCallbackPath ?? options.SignedOutCallbackPath;
-            options.RequireHttpsMetadata = string.Equals(settings.Authority.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase);
+            options.Authority = _openIdClientSettings.Authority.AbsoluteUri;
+            options.ClientId = _openIdClientSettings.ClientId;
+            options.SignedOutRedirectUri = _openIdClientSettings.SignedOutRedirectUri ?? options.SignedOutRedirectUri;
+            options.SignedOutCallbackPath = _openIdClientSettings.SignedOutCallbackPath ?? options.SignedOutCallbackPath;
+            options.RequireHttpsMetadata = string.Equals(_openIdClientSettings.Authority.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase);
             options.GetClaimsFromUserInfoEndpoint = true;
-            options.ResponseMode = settings.ResponseMode;
-            options.ResponseType = settings.ResponseType;
-            options.SaveTokens = settings.StoreExternalTokens;
+            options.ResponseMode = _openIdClientSettings.ResponseMode;
+            options.ResponseType = _openIdClientSettings.ResponseType;
+            options.SaveTokens = _openIdClientSettings.StoreExternalTokens;
 
-            options.CallbackPath = settings.CallbackPath ?? options.CallbackPath;
+            options.CallbackPath = _openIdClientSettings.CallbackPath ?? options.CallbackPath;
 
-            if (settings.Scopes != null)
+            if (_openIdClientSettings.Scopes != null)
             {
-                foreach (var scope in settings.Scopes)
+                foreach (var scope in _openIdClientSettings.Scopes)
                 {
                     options.Scope.Add(scope);
                 }
             }
 
-            if (!string.IsNullOrEmpty(settings.ClientSecret))
+            if (!string.IsNullOrEmpty(_openIdClientSettings.ClientSecret))
             {
                 var protector = _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration));
 
                 try
                 {
-                    options.ClientSecret = protector.Unprotect(settings.ClientSecret);
+                    options.ClientSecret = protector.Unprotect(_openIdClientSettings.ClientSecret);
                 }
                 catch
                 {
@@ -97,9 +96,9 @@ namespace OrchardCore.OpenId.Configuration
                 }
             }
 
-            if (settings.Parameters != null && settings.Parameters.Length > 0)
+            if (_openIdClientSettings.Parameters != null && _openIdClientSettings.Parameters.Length > 0)
             {
-                var parameters = settings.Parameters;
+                var parameters = _openIdClientSettings.Parameters;
                 options.Events.OnRedirectToIdentityProvider = (context) =>
                 {
                     foreach (var parameter in parameters)
@@ -113,21 +112,5 @@ namespace OrchardCore.OpenId.Configuration
         }
 
         public void Configure(OpenIdConnectOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
-
-        private async Task<OpenIdClientSettings> GetClientSettingsAsync()
-        {
-            var settings = await _clientService.GetSettingsAsync();
-            if ((await _clientService.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))
-            {
-                if (_shellSettings.IsRunning())
-                {
-                    _logger.LogWarning("The OpenID Connect module is not correctly configured.");
-                }
-
-                return null;
-            }
-
-            return settings;
-        }
     }
 }

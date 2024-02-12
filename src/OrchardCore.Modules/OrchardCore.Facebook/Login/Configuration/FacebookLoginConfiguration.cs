@@ -1,7 +1,4 @@
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.DataProtection;
@@ -20,17 +17,20 @@ namespace OrchardCore.Facebook.Login.Configuration
         IConfigureNamedOptions<FacebookOptions>
     {
         private readonly FacebookSettings _facebookSettings;
+        private readonly FacebookLoginSettings _facebookLoginSettings;
         private readonly IFacebookLoginService _loginService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly ILogger _logger;
 
         public FacebookLoginConfiguration(
             IOptions<FacebookSettings> facebookSettings,
+            IOptions<FacebookLoginSettings> facebookLoginSettings,
             IFacebookLoginService loginService,
             IDataProtectionProvider dataProtectionProvider,
             ILogger<FacebookLoginConfiguration> logger)
         {
             _facebookSettings = facebookSettings.Value;
+            _facebookLoginSettings = facebookLoginSettings.Value;
             _loginService = loginService;
             _dataProtectionProvider = dataProtectionProvider;
             _logger = logger;
@@ -38,7 +38,7 @@ namespace OrchardCore.Facebook.Login.Configuration
 
         public void Configure(AuthenticationOptions options)
         {
-            if (_facebookSettings == null)
+            if (_facebookSettings == null || _facebookLoginSettings == null)
             {
                 return;
             }
@@ -47,12 +47,6 @@ namespace OrchardCore.Facebook.Login.Configuration
             {
                 _logger.LogWarning("The Facebook login provider is enabled but not configured.");
 
-                return;
-            }
-
-            var loginSettings = GetFacebookLoginSettingsAsync().GetAwaiter().GetResult();
-            if (loginSettings == null)
-            {
                 return;
             }
 
@@ -72,13 +66,7 @@ namespace OrchardCore.Facebook.Login.Configuration
                 return;
             }
 
-            if (_facebookSettings == null)
-            {
-                return;
-            }
-
-            var loginSettings = GetFacebookLoginSettingsAsync().GetAwaiter().GetResult();
-            if (loginSettings == null)
+            if (_facebookSettings == null || _facebookLoginSettings == null)
             {
                 return;
             }
@@ -94,27 +82,14 @@ namespace OrchardCore.Facebook.Login.Configuration
                 _logger.LogError("The Facebook secret key could not be decrypted. It may have been encrypted using a different key.");
             }
 
-            if (loginSettings.CallbackPath.HasValue)
+            if (_facebookLoginSettings.CallbackPath.HasValue)
             {
-                options.CallbackPath = loginSettings.CallbackPath;
+                options.CallbackPath = _facebookLoginSettings.CallbackPath;
             }
 
-            options.SaveTokens = loginSettings.SaveTokens;
+            options.SaveTokens = _facebookLoginSettings.SaveTokens;
         }
 
         public void Configure(FacebookOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
-
-        private async Task<FacebookLoginSettings> GetFacebookLoginSettingsAsync()
-        {
-            var settings = await _loginService.GetSettingsAsync();
-            if ((await _loginService.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))
-            {
-                _logger.LogWarning("The Facebook Login module is not correctly configured.");
-
-                return null;
-            }
-
-            return settings;
-        }
     }
 }

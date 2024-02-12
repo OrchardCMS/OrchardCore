@@ -1,8 +1,5 @@
 using System;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -10,7 +7,6 @@ using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Server;
 using OpenIddict.Server.AspNetCore;
 using OpenIddict.Server.DataProtection;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
@@ -25,23 +21,22 @@ namespace OrchardCore.OpenId.Configuration
         IConfigureNamedOptions<OpenIddictServerAspNetCoreOptions>
     {
         private readonly IOpenIdServerService _serverService;
-        private readonly ShellSettings _shellSettings;
+        private readonly OpenIdServerSettings _openIdServerSettings;
         private readonly ILogger _logger;
 
         public OpenIdServerConfiguration(
             IOpenIdServerService serverService,
-            ShellSettings shellSettings,
+            IOptions<OpenIdServerSettings> openIdServerSettings,
             ILogger<OpenIdServerConfiguration> logger)
         {
             _serverService = serverService;
-            _shellSettings = shellSettings;
+            _openIdServerSettings = openIdServerSettings.Value;
             _logger = logger;
         }
 
         public void Configure(AuthenticationOptions options)
         {
-            var settings = GetServerSettingsAsync().GetAwaiter().GetResult();
-            if (settings == null)
+            if (_openIdServerSettings == null)
             {
                 return;
             }
@@ -52,16 +47,15 @@ namespace OrchardCore.OpenId.Configuration
 
         public void Configure(OpenIddictServerOptions options)
         {
-            var settings = GetServerSettingsAsync().GetAwaiter().GetResult();
-            if (settings == null)
+            if (_openIdServerSettings == null)
             {
                 return;
             }
 
-            options.Issuer = settings.Authority;
-            options.DisableAccessTokenEncryption = settings.DisableAccessTokenEncryption;
-            options.DisableRollingRefreshTokens = settings.DisableRollingRefreshTokens;
-            options.UseReferenceAccessTokens = settings.UseReferenceAccessTokens;
+            options.Issuer = _openIdServerSettings.Authority;
+            options.DisableAccessTokenEncryption = _openIdServerSettings.DisableAccessTokenEncryption;
+            options.DisableRollingRefreshTokens = _openIdServerSettings.DisableRollingRefreshTokens;
+            options.UseReferenceAccessTokens = _openIdServerSettings.UseReferenceAccessTokens;
 
             foreach (var key in _serverService.GetEncryptionKeysAsync().GetAwaiter().GetResult())
             {
@@ -80,45 +74,45 @@ namespace OrchardCore.OpenId.Configuration
             // multi-tenancy support), the leading '/' that is always present in PathString
             // instances is manually removed from the endpoint path before URIs are created.
 
-            if (settings.AuthorizationEndpointPath.HasValue)
+            if (_openIdServerSettings.AuthorizationEndpointPath.HasValue)
             {
                 options.AuthorizationEndpointUris.Add(new Uri(
-                    settings.AuthorizationEndpointPath.ToUriComponent()[1..], UriKind.Relative));
+                    _openIdServerSettings.AuthorizationEndpointPath.ToUriComponent()[1..], UriKind.Relative));
             }
 
-            if (settings.LogoutEndpointPath.HasValue)
+            if (_openIdServerSettings.LogoutEndpointPath.HasValue)
             {
                 options.LogoutEndpointUris.Add(new Uri(
-                    settings.LogoutEndpointPath.ToUriComponent()[1..], UriKind.Relative));
+                    _openIdServerSettings.LogoutEndpointPath.ToUriComponent()[1..], UriKind.Relative));
             }
 
-            if (settings.TokenEndpointPath.HasValue)
+            if (_openIdServerSettings.TokenEndpointPath.HasValue)
             {
                 options.TokenEndpointUris.Add(new Uri(
-                    settings.TokenEndpointPath.ToUriComponent()[1..], UriKind.Relative));
+                    _openIdServerSettings.TokenEndpointPath.ToUriComponent()[1..], UriKind.Relative));
             }
 
-            if (settings.UserinfoEndpointPath.HasValue)
+            if (_openIdServerSettings.UserinfoEndpointPath.HasValue)
             {
                 options.UserinfoEndpointUris.Add(new Uri(
-                    settings.UserinfoEndpointPath.ToUriComponent()[1..], UriKind.Relative));
+                    _openIdServerSettings.UserinfoEndpointPath.ToUriComponent()[1..], UriKind.Relative));
             }
 
-            if (settings.IntrospectionEndpointPath.HasValue)
+            if (_openIdServerSettings.IntrospectionEndpointPath.HasValue)
             {
                 options.IntrospectionEndpointUris.Add(new Uri(
-                    settings.IntrospectionEndpointPath.ToUriComponent()[1..], UriKind.Relative));
+                    _openIdServerSettings.IntrospectionEndpointPath.ToUriComponent()[1..], UriKind.Relative));
             }
 
-            if (settings.RevocationEndpointPath.HasValue)
+            if (_openIdServerSettings.RevocationEndpointPath.HasValue)
             {
                 options.RevocationEndpointUris.Add(new Uri(
-                    settings.RevocationEndpointPath.ToUriComponent()[1..], UriKind.Relative));
+                    _openIdServerSettings.RevocationEndpointPath.ToUriComponent()[1..], UriKind.Relative));
             }
 
             // For now, response types and response modes are not directly
             // configurable and are inferred from the selected flows.
-            if (settings.AllowAuthorizationCodeFlow)
+            if (_openIdServerSettings.AllowAuthorizationCodeFlow)
             {
                 options.CodeChallengeMethods.Add(CodeChallengeMethods.Plain);
                 options.CodeChallengeMethods.Add(CodeChallengeMethods.Sha256);
@@ -132,12 +126,12 @@ namespace OrchardCore.OpenId.Configuration
                 options.ResponseTypes.Add(ResponseTypes.Code);
             }
 
-            if (settings.AllowClientCredentialsFlow)
+            if (_openIdServerSettings.AllowClientCredentialsFlow)
             {
                 options.GrantTypes.Add(GrantTypes.ClientCredentials);
             }
 
-            if (settings.AllowHybridFlow)
+            if (_openIdServerSettings.AllowHybridFlow)
             {
                 options.CodeChallengeMethods.Add(CodeChallengeMethods.Plain);
                 options.CodeChallengeMethods.Add(CodeChallengeMethods.Sha256);
@@ -153,7 +147,7 @@ namespace OrchardCore.OpenId.Configuration
                 options.ResponseTypes.Add(ResponseTypes.Code + ' ' + ResponseTypes.Token);
             }
 
-            if (settings.AllowImplicitFlow)
+            if (_openIdServerSettings.AllowImplicitFlow)
             {
                 options.GrantTypes.Add(GrantTypes.Implicit);
 
@@ -165,19 +159,19 @@ namespace OrchardCore.OpenId.Configuration
                 options.ResponseTypes.Add(ResponseTypes.Token);
             }
 
-            if (settings.AllowPasswordFlow)
+            if (_openIdServerSettings.AllowPasswordFlow)
             {
                 options.GrantTypes.Add(GrantTypes.Password);
             }
 
-            if (settings.AllowRefreshTokenFlow)
+            if (_openIdServerSettings.AllowRefreshTokenFlow)
             {
                 options.GrantTypes.Add(GrantTypes.RefreshToken);
 
                 options.Scopes.Add(Scopes.OfflineAccess);
             }
 
-            options.RequireProofKeyForCodeExchange = settings.RequireProofKeyForCodeExchange;
+            options.RequireProofKeyForCodeExchange = _openIdServerSettings.RequireProofKeyForCodeExchange;
 
             options.Scopes.Add(Scopes.Email);
             options.Scopes.Add(Scopes.Phone);
@@ -187,15 +181,14 @@ namespace OrchardCore.OpenId.Configuration
 
         public void Configure(OpenIddictServerDataProtectionOptions options)
         {
-            var settings = GetServerSettingsAsync().GetAwaiter().GetResult();
-            if (settings == null)
+            if (_openIdServerSettings == null)
             {
                 return;
             }
 
             // All the tokens produced by the server feature use ASP.NET Core Data Protection as the default
             // token format, but an option is provided to allow switching to JWT for access tokens only.
-            options.PreferDefaultAccessTokenFormat = settings.AccessTokenFormat == OpenIdServerSettings.TokenFormat.JsonWebToken;
+            options.PreferDefaultAccessTokenFormat = _openIdServerSettings.AccessTokenFormat == OpenIdServerSettings.TokenFormat.JsonWebToken;
         }
 
         public void Configure(string name, OpenIddictServerAspNetCoreOptions options)
@@ -226,21 +219,5 @@ namespace OrchardCore.OpenId.Configuration
 
         public void Configure(OpenIddictServerAspNetCoreOptions options)
             => Debug.Fail("This infrastructure method shouldn't be called.");
-
-        private async Task<OpenIdServerSettings> GetServerSettingsAsync()
-        {
-            var settings = await _serverService.GetSettingsAsync();
-            if ((await _serverService.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))
-            {
-                if (_shellSettings.IsRunning())
-                {
-                    _logger.LogWarning("The OpenID Connect module is not correctly configured.");
-                }
-
-                return null;
-            }
-
-            return settings;
-        }
     }
 }
