@@ -143,8 +143,8 @@ namespace OrchardCore.Environment.Shell
                 ArgumentNullException.ThrowIfNull(settings);
 
                 var configuration = new ConfigurationBuilder()
-                    .AddConfiguration(_configuration)
                     .AddConfiguration(_configuration.GetSection(settings.Name))
+                    .AddConfiguration(_configuration)
                     .Build();
 
                 var shellSettings = new ShellSettings()
