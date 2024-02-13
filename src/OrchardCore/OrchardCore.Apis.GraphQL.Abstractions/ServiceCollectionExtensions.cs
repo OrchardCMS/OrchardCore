@@ -15,11 +15,9 @@ namespace OrchardCore.Apis
             where TObject : class
             where TObjectType : InputObjectGraphType<TObject>
         {
-            // Instances are registered as singletons as their constructor holds the logic to configure the type
-            // and doesn't need to run every time
-            services.AddSingleton<TObjectType>();
-            services.AddSingleton<InputObjectGraphType<TObject>, TObjectType>(s => s.GetRequiredService<TObjectType>());
-            services.AddSingleton<IInputObjectGraphType, TObjectType>(s => s.GetRequiredService<TObjectType>());
+            services.AddScoped<TObjectType>();
+            services.AddScoped<InputObjectGraphType<TObject>, TObjectType>(s => s.GetRequiredService<TObjectType>());
+            services.AddScoped<IInputObjectGraphType, TObjectType>(s => s.GetRequiredService<TObjectType>());
         }
 
         /// <summary>
@@ -34,9 +32,9 @@ namespace OrchardCore.Apis
         {
             // Instances are registered as singletons as their constructor holds the logic to configure the type
             // and doesn't need to run every time
-            services.AddSingleton<TInputType>();
-            services.AddSingleton<ObjectGraphType<TInput>, TInputType>(s => s.GetRequiredService<TInputType>());
-            services.AddSingleton<IObjectGraphType, TInputType>(s => s.GetRequiredService<TInputType>());
+            services.AddScoped<TInputType>();
+            services.AddScoped<ObjectGraphType<TInput>, TInputType>(s => s.GetRequiredService<TInputType>());
+            services.AddScoped<IObjectGraphType, TInputType>(s => s.GetRequiredService<TInputType>());
         }
     }
 }
