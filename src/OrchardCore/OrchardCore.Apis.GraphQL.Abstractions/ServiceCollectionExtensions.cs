@@ -16,8 +16,8 @@ public static class ServiceCollectionExtensions
         where TObjectType : InputObjectGraphType<TObject>
     {
         services.AddScoped<TObjectType>();
-        services.AddScoped<InputObjectGraphType<TObject>, TObjectType>(s => s.GetRequiredService<TObjectType>());
-        services.AddScoped<IInputObjectGraphType, TObjectType>(s => s.GetRequiredService<TObjectType>());
+        services.AddTransient<InputObjectGraphType<TObject>, TObjectType>(s => s.GetRequiredService<TObjectType>());
+        services.AddTransient<IInputObjectGraphType, TObjectType>(s => s.GetRequiredService<TObjectType>());
     }
 
     /// <summary>
@@ -31,7 +31,7 @@ public static class ServiceCollectionExtensions
         where TInputType : ObjectGraphType<TInput>
     {
         services.AddScoped<TInputType>();
-        services.AddScoped<ObjectGraphType<TInput>, TInputType>(s => s.GetRequiredService<TInputType>());
-        services.AddScoped<IObjectGraphType, TInputType>(s => s.GetRequiredService<TInputType>());
+        services.AddTransient<ObjectGraphType<TInput>, TInputType>(s => s.GetRequiredService<TInputType>());
+        services.AddTransient<IObjectGraphType, TInputType>(s => s.GetRequiredService<TInputType>());
     }
 }
