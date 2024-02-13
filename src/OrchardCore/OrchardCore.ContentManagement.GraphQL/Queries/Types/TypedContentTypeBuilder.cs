@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using GraphQL;
 using GraphQL.Resolvers;
@@ -39,9 +38,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 return;
             }
 
-            IEnumerable<IObjectGraphType> queryObjectGraphTypes = null;
-            IEnumerable<IInputObjectGraphType> queryInputGraphTypes = null;
-
             foreach (var part in contentTypeDefinition.Parts)
             {
                 if (_contentOptions.ShouldSkip(part))
@@ -62,7 +58,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     .GetOrAdd(part.PartDefinition.Name,
                         partName =>
                         {
-                            queryObjectGraphTypes ??= serviceProvider.GetServices<IObjectGraphType>();
+                            var queryObjectGraphTypes = serviceProvider.GetServices<IObjectGraphType>();
                             return queryObjectGraphTypes?.FirstOrDefault(x => x.GetType().BaseType.GetGenericArguments().First().Name == partName);
                         }
                     );
@@ -128,7 +124,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
                 var inputGraphTypeResolved = _partInputObjectGraphTypes.GetOrAdd(part.PartDefinition.Name, partName =>
                 {
-                    queryInputGraphTypes ??= serviceProvider.GetServices<IInputObjectGraphType>();
+                    var queryInputGraphTypes = serviceProvider.GetServices<IInputObjectGraphType>();
                     return queryInputGraphTypes?.FirstOrDefault(x => x.GetType().BaseType.GetGenericArguments().FirstOrDefault()?.Name == part.PartDefinition.Name);
                 });
 
