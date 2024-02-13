@@ -113,8 +113,8 @@ namespace OrchardCore.Cors.Controllers
                     AllowedMethods = settingViewModel.AllowedMethods,
                     AllowedOrigins = settingViewModel.AllowedOrigins,
                     IsDefaultPolicy = settingViewModel.IsDefaultPolicy
-
                 });
+                
                 if (settingViewModel.AllowAnyOrigin && settingViewModel.AllowCredentials)
                 {
                     policyWarnings.Add($"{settingViewModel.Name}");
