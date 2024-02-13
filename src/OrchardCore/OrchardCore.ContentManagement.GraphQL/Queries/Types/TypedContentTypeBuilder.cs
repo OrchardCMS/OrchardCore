@@ -38,6 +38,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 return;
             }
 
+            var queryObjectGraphTypes = serviceProvider.GetServices<IObjectGraphType>();
+            var queryInputGraphTypes = serviceProvider.GetServices<IInputObjectGraphType>();
+
             foreach (var part in contentTypeDefinition.Parts)
             {
                 if (_contentOptions.ShouldSkip(part))
@@ -58,8 +61,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     .GetOrAdd(part.PartDefinition.Name,
                         partName =>
                         {
-                            var queryObjectGraphTypes = serviceProvider.GetServices<IObjectGraphType>();
-                            return queryObjectGraphTypes?.FirstOrDefault(x => x.GetType().BaseType.GetGenericArguments().First().Name == partName);
+                            return queryObjectGraphTypes.FirstOrDefault(x => x.GetType().BaseType.GetGenericArguments().First().Name == partName);
                         }
                     );
 
@@ -124,8 +126,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
 
                 var inputGraphTypeResolved = _partInputObjectGraphTypes.GetOrAdd(part.PartDefinition.Name, partName =>
                 {
-                    var queryInputGraphTypes = serviceProvider.GetServices<IInputObjectGraphType>();
-                    return queryInputGraphTypes?.FirstOrDefault(x => x.GetType().BaseType.GetGenericArguments().FirstOrDefault()?.Name == part.PartDefinition.Name);
+                    return queryInputGraphTypes.FirstOrDefault(x => x.GetType().BaseType.GetGenericArguments().FirstOrDefault()?.Name == part.PartDefinition.Name);
                 });
 
                 if (inputGraphTypeResolved != null)
