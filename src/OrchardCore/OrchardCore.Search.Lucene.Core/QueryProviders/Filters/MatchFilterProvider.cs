@@ -52,7 +52,7 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
 
                     var terms = LuceneQueryService.Tokenize(first.Key, value, context.DefaultAnalyzer);
 
-                    if (!terms.Any())
+                    if (terms.Count == 0)
                     {
                         if (obj.TryGetPropertyValue("zero_terms_query", out var zeroTermsQuery))
                         {

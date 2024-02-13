@@ -21,7 +21,7 @@ public class ContentElement : IContent
     internal ContentElement(JsonObject data) => Data = data;
 
     [JsonIgnore]
-    protected internal Dictionary<string, ContentElement> Elements => _elements ??= new Dictionary<string, ContentElement>();
+    protected internal Dictionary<string, ContentElement> Elements => _elements ??= [];
 
     [JsonIgnore]
     public dynamic Content => _dynamicObject ??= Data;

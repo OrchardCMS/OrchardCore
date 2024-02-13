@@ -15,7 +15,7 @@ using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Deployment.Controllers
 {
-    [Admin]
+    [Admin("DeploymentPlan/Import/{action}", "DeploymentPlanImport{action}")]
     public class ImportController : Controller
     {
         private readonly IDeploymentManager _deploymentManager;

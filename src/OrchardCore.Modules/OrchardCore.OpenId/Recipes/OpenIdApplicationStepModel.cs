@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.OpenId.Recipes
 {
     public class OpenIdApplicationStepModel

@@ -21,7 +21,7 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.Media.Controllers
 {
-    [Admin]
+    [Admin("MediaProfiles/{action}", "MediaProfiles.{action}")]
     public class MediaProfilesController : Controller
     {
         private const string _optionsSearch = "Options.Search";
@@ -57,6 +57,7 @@ namespace OrchardCore.Media.Controllers
             H = htmlLocalizer;
         }
 
+        [Admin("MediaProfiles", "MediaProfiles.Index")]
         public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaProfiles))

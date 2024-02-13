@@ -350,7 +350,9 @@ namespace OrchardCore.Documents
             }
         }
 
+#pragma warning disable IDE0060 // Remove unused parameter
         protected async Task InvalidateInternalAsync(TDocument document, bool failover = false)
+#pragma warning restore IDE0060 // Remove unused parameter
         {
             if (_isDistributed)
             {

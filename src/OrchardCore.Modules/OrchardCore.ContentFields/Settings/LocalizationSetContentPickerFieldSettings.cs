@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.Modules;
 
 namespace OrchardCore.ContentFields.Settings

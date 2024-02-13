@@ -163,7 +163,7 @@ namespace OrchardCore.Environment.Shell
         /// <param name="enabledFeatureIds">The list of feature ids which are currently enabled.</param>
         /// <param name="force">Boolean parameter indicating if the feature should enable it's dependencies.</param>
         /// <returns>An enumeration of the features to disable, empty if 'force' = true and a dependency is disabled.</returns>
-        private IEnumerable<IFeatureInfo> GetFeaturesToEnable(IFeatureInfo featureInfo, IEnumerable<string> enabledFeatureIds, bool force)
+        private List<IFeatureInfo> GetFeaturesToEnable(IFeatureInfo featureInfo, IEnumerable<string> enabledFeatureIds, bool force)
         {
             var featuresToEnable = _extensionManager
                 .GetFeatureDependencies(featureInfo.Id)

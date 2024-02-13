@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
@@ -16,7 +15,7 @@ using Spatial4n.Util;
 
 namespace OrchardCore.Search.Lucene.QueryProviders.Filters
 {
-    public class GeoDistanceFilterProvider : ILuceneBooleanFilterProvider
+    public partial class GeoDistanceFilterProvider : ILuceneBooleanFilterProvider
     {
         public FilteredQuery CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JsonNode filter, Query toFilter)
         {
@@ -32,7 +31,7 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
 
             var queryObj = filter.AsObject();
 
-            if (queryObj.Count() != 2)
+            if (queryObj.Count != 2)
             {
                 return null;
             }
@@ -93,7 +92,7 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
         {
             distanceDegrees = -1;
 
-            var distanceString = Regex.Match(distanceValue, @"^((\d+(\.\d*)?)|(\.\d+))").Value;
+            var distanceString = StringDistanceRegex().Match(distanceValue).Value;
 
             if (string.IsNullOrEmpty(distanceString))
             {
@@ -206,5 +205,8 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
                 default: throw new ArgumentException("Invalid geo point representation");
             }
         }
+
+        [GeneratedRegex(@"^((\d+(\.\d*)?)|(\.\d+))")]
+        private static partial Regex StringDistanceRegex();
     }
 }

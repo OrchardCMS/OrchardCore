@@ -1,15 +1,10 @@
-using System;
-using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
 using OrchardCore.AdminMenu;
-using OrchardCore.AdminMenu.Services;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -55,19 +50,14 @@ using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Handlers;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
+using System;
+using System.Threading.Tasks;
 using YesSql.Filters.Query;
 
 namespace OrchardCore.Contents
 {
     public class Startup : StartupBase
     {
-        private readonly AdminOptions _adminOptions;
-
-        public Startup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IAnchorTag, ContentAnchorTag>();
@@ -218,9 +208,6 @@ namespace OrchardCore.Contents
             });
 
             services.AddTransient<IContentsAdminListFilterProvider, DefaultContentsAdminListFilterProvider>();
-
-            // Allows to serialize 'AdminNode' derived types.
-            services.AddAdminNode<ContentTypesAdminNode>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -247,72 +234,6 @@ namespace OrchardCore.Contents
                 pattern: "Contents/ContentItems/{contentItemId}/Version/{version}/Preview",
                 defaults: new { controller = itemControllerName, action = nameof(ItemController.Preview) }
             );
-
-            // Admin
-            var adminControllerName = typeof(AdminController).ControllerName();
-
-            routes.MapAreaControllerRoute(
-                name: "EditContentItem",
-                areaName: "OrchardCore.Contents",
-                pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentItems/{contentItemId}/Edit",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Edit) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "CreateContentItem",
-                areaName: "OrchardCore.Contents",
-                pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentTypes/{id}/Create",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Create) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "AdminContentItem",
-                areaName: "OrchardCore.Contents",
-                pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentItems/{contentItemId}/Display",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Display) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "ListContentItems",
-                areaName: "OrchardCore.Contents",
-                pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentItems/{contentTypeId?}",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.List) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "AdminPublishContentItem",
-                areaName: "OrchardCore.Contents",
-                pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentItems/{contentItemId}/Publish",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Publish) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "AdminDiscardDraftContentItem",
-                areaName: "OrchardCore.Contents",
-                pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentItems/{contentItemId}/DiscardDraft",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.DiscardDraft) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "AdminDeleteContentItem",
-                areaName: "OrchardCore.Contents",
-                pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentItems/{contentItemId}/Delete",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Remove) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "AdminCloneContentItem",
-                areaName: "OrchardCore.Contents",
-                pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentItems/{contentItemId}/Clone",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Clone) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "AdminUnpublishContentItem",
-                areaName: "OrchardCore.Contents",
-                pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentItems/{contentItemId}/Unpublish",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Unpublish) }
-            );
         }
     }
 
@@ -332,9 +253,7 @@ namespace OrchardCore.Contents
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IAdminNodeProviderFactory>(new AdminNodeProviderFactory<ContentTypesAdminNode>());
-            services.AddScoped<IAdminNodeNavigationBuilder, ContentTypesAdminNodeNavigationBuilder>();
-            services.AddScoped<IDisplayDriver<MenuItem>, ContentTypesAdminNodeDriver>();
+            services.AddAdminNode<ContentTypesAdminNode, ContentTypesAdminNodeNavigationBuilder, ContentTypesAdminNodeDriver>();
         }
     }
 
