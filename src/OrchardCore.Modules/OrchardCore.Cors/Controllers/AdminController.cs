@@ -118,7 +118,7 @@ namespace OrchardCore.Cors.Controllers
                 
                 if (settingViewModel.AllowAnyOrigin && settingViewModel.AllowCredentials)
                 {
-                    policyWarnings.Add($"{settingViewModel.Name}");
+                    policyWarnings.Add(settingViewModel.Name);
                 }
             }
             var corsSettings = new CorsSettings()
