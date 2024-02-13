@@ -97,9 +97,7 @@ namespace OrchardCore.Cors.Controllers
 
             var corsPolicies = new List<CorsPolicySetting>();
 
-            //For each policy check the following validation rule :
-            //If allow origin and allow credentials are both true create a warning message that cors will not work .
-            //Warn user.
+            // If "allow origin" and "allow credentials" are both true, issue a warning about CORS functionality. Inform the user.
             var policyWarnings = new List<string>();
 
             foreach (var settingViewModel in model.Policies)
