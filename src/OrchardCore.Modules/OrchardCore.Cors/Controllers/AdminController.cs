@@ -130,7 +130,7 @@ namespace OrchardCore.Cors.Controllers
             await _shellHost.ReleaseShellContextAsync(_shellSettings);
 
             await _notifier.SuccessAsync(H["The CORS settings have updated successfully."]);
-            if (policyWarnings.Any())
+            if (policyWarnings.Count > 0)
             {
                 var warning1 =  "Specifying AllowAnyOrigin and AllowCredentials is an insecure configuration and can result in cross-site request forgery. The CORS service returns an invalid CORS response when an app is configured with both methods.";
                 var warning2 = "<strong>Affected policies: " + string.Join(", ", policyWarnings) + "</strong>";
