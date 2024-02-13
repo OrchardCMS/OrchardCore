@@ -52,7 +52,7 @@ namespace OrchardCore.Layers.Recipes
                 return;
             }
 
-            // The recipe step contains polymorphic types (menu items) which need to be resolved
+            // The recipe step contains polymorphic types which need to be resolved
             var model = context.Step.ToObject<LayersStepModel>(_serializationOptions);
 
             var allLayers = await _layerService.LoadLayersAsync();
