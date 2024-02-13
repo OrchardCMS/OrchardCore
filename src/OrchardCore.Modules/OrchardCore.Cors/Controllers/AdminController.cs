@@ -133,11 +133,7 @@ namespace OrchardCore.Cors.Controllers
             await _notifier.SuccessAsync(H["The CORS settings have updated successfully."]);
             if (policyWarnings.Count > 0)
             {
-                var warning1 =  "Specifying AllowAnyOrigin and AllowCredentials is an insecure configuration and can result in cross-site request forgery. The CORS service returns an invalid CORS response when an app is configured with both methods.";
-                var warning2 = "<strong>Affected policies: " + string.Join(", ", policyWarnings) + "</strong>";
-                var warning3 =  "Refer to docs:<a href='https://learn.microsoft.com/en-us/aspnet/core/security/cors' target='_blank'>https://learn.microsoft.com/en-us/aspnet/core/security/cors</a>";
-                var allWarnings = $"{warning1}<br />{warning2}<br />{warning3}";
-                await _notifier.WarningAsync(H[allWarnings]);
+                await _notifier.WarningAsync(H["Specifying AllowAnyOrigin and AllowCredentials is an insecure configuration and can result in cross-site request forgery. The CORS service returns an invalid CORS response when an app is configured with both methods.<br /><strong>Affected policies: {0} </strong><br />Refer to docs:<a href='https://learn.microsoft.com/en-us/aspnet/core/security/cors' target='_blank'>https://learn.microsoft.com/en-us/aspnet/core/security/cors</a>",  string.Join(", ", policyWarnings) ]);
             }
 
             return View(model);
