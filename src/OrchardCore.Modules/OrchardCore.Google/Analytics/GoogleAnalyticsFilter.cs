@@ -1,10 +1,8 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc.Filters;
 using OrchardCore.Admin;
-using OrchardCore.Entities;
 using OrchardCore.Google.Analytics.Settings;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Settings;

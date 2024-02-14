@@ -166,7 +166,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         return DbConnectionValidatorResult.DocumentTableFound;
     }
 
-    private static string GetDocumentCommandText(ISqlBuilder sqlBuilder, string documentTable, string schema, bool isShellDescriptorDocument = false)
+    private static string GetDocumentCommandText(SqlBuilder sqlBuilder, string documentTable, string schema, bool isShellDescriptorDocument = false)
     {
         sqlBuilder.Select();
         sqlBuilder.Selector("*");

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
@@ -16,6 +17,7 @@ using YesSql;
 
 namespace OrchardCore.Taxonomies.Controllers
 {
+    [Admin]
     public class AdminController : Controller
     {
         private readonly IContentManager _contentManager;
@@ -47,6 +49,7 @@ namespace OrchardCore.Taxonomies.Controllers
             H = localizer;
         }
 
+        [Admin("Taxonomies/Create/{id}", "Taxonomies.Create")]
         public async Task<IActionResult> Create(string id, string taxonomyContentItemId, string taxonomyItemId)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -158,6 +161,7 @@ namespace OrchardCore.Taxonomies.Controllers
             return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = taxonomyContentItemId });
         }
 
+        [Admin("Taxonomies/Edit/{taxonomyContentItemId}/{taxonomyItemId}", "Taxonomies.Create")]
         public async Task<IActionResult> Edit(string taxonomyContentItemId, string taxonomyItemId)
         {
             if (string.IsNullOrWhiteSpace(taxonomyContentItemId) || string.IsNullOrWhiteSpace(taxonomyItemId))
@@ -274,6 +278,7 @@ namespace OrchardCore.Taxonomies.Controllers
         }
 
         [HttpPost]
+        [Admin("Taxonomies/Delete/{taxonomyContentItemId}/{taxonomyItemId}", "Taxonomies.Delete")]
         public async Task<IActionResult> Delete(string taxonomyContentItemId, string taxonomyItemId)
         {
             if (string.IsNullOrWhiteSpace(taxonomyContentItemId) || string.IsNullOrWhiteSpace(taxonomyItemId))

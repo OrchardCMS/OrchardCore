@@ -1,18 +1,11 @@
-using System;
 using Fluid;
 using Fluid.Values;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
-using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
-using OrchardCore.Queries.Controllers;
 using OrchardCore.Queries.Deployment;
 using OrchardCore.Queries.Drivers;
 using OrchardCore.Queries.Liquid;
@@ -29,13 +22,6 @@ namespace OrchardCore.Queries
     /// </summary>
     public class Startup : StartupBase
     {
-        private readonly AdminOptions _adminOptions;
-
-        public Startup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<INavigationProvider, AdminMenu>();
@@ -58,46 +44,6 @@ namespace OrchardCore.Queries
                 });
             })
             .AddLiquidFilter<QueryFilter>("query");
-        }
-
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            var adminControllerName = typeof(AdminController).ControllerName();
-
-            routes.MapAreaControllerRoute(
-                name: "QueriesIndex",
-                areaName: "OrchardCore.Queries",
-                pattern: _adminOptions.AdminUrlPrefix + "/Queries/Index",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Index) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "QueriesCreate",
-                areaName: "OrchardCore.Queries",
-                pattern: _adminOptions.AdminUrlPrefix + "/Queries/Create/{id}",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Create) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "QueriesDelete",
-                areaName: "OrchardCore.Queries",
-                pattern: _adminOptions.AdminUrlPrefix + "/Queries/Delete/{id}",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Delete) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "QueriesEdit",
-                areaName: "OrchardCore.Queries",
-                pattern: _adminOptions.AdminUrlPrefix + "/Queries/Edit/{id}",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Edit) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "QueriesRunSql",
-                areaName: "OrchardCore.Queries",
-                pattern: _adminOptions.AdminUrlPrefix + "/Queries/Sql/Query",
-                defaults: new { controller = typeof(Sql.Controllers.AdminController).ControllerName(), action = nameof(Sql.Controllers.AdminController.Query) }
-            );
         }
     }
 
