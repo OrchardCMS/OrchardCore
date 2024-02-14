@@ -10,7 +10,7 @@ Enabling the `Email` feature will add a new settings page under `Configurations`
 
 | Provider | Description |
 | --- | --- |
-| `SMTP` | Opting for this provider enables the utilization of SMTP protocol for sending email messages. Edit the `SMTP` tab in the email settings to enable this provider. |
+| `SMTP` | Opting for this provider enables the utilization of the SMTP protocol for sending email messages. Edit the `SMTP` tab in the email settings to enable this provider. |
 | `Azure` | Opting for this provider enables the utilization of [Azure Communication Services Email](https://learn.microsoft.com/en-us/azure/communication-services/concepts/email/email-overview) for sending email messages. Edit the `Azure` tab in the email settings to enable this provider. This option is only available after enabling `OrchardCore.Email.Azure` feature. |
 
 
