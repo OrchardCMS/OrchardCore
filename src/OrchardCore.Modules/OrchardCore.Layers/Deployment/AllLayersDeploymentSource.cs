@@ -1,10 +1,8 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
-using OrchardCore.Json;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Services;
 using OrchardCore.Settings;
@@ -20,16 +18,13 @@ namespace OrchardCore.Layers.Deployment
         public AllLayersDeploymentSource(
             ILayerService layerService,
             ISiteService siteService,
-            IOptions<JsonDerivedTypesOptions> derivedTypesOptions)
+            IOptions<JsonSerializerOptions> serializationOptions)
         {
             _layerService = layerService;
             _siteService = siteService;
 
             // The recipe step contains polymorphic types which need to be resolved
-            _serializationOptions = new()
-            {
-                TypeInfoResolver = new PolymorphicJsonTypeInfoResolver(derivedTypesOptions.Value)
-            };
+            _serializationOptions = serializationOptions.Value;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)

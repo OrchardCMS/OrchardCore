@@ -1,6 +1,8 @@
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.Deployment;
 
@@ -9,10 +11,14 @@ namespace OrchardCore.ContentTypes.Deployment
     public class ContentDefinitionDeploymentSource : IDeploymentSource
     {
         private readonly IContentDefinitionStore _contentDefinitionStore;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public ContentDefinitionDeploymentSource(IContentDefinitionStore contentDefinitionStore)
+        public ContentDefinitionDeploymentSource(
+            IContentDefinitionStore contentDefinitionStore,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             _contentDefinitionStore = contentDefinitionStore;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
@@ -37,8 +43,8 @@ namespace OrchardCore.ContentTypes.Deployment
             result.Steps.Add(new JsonObject
             {
                 ["name"] = "ContentDefinition",
-                ["ContentTypes"] = JArray.FromObject(contentTypes),
-                ["ContentParts"] = JArray.FromObject(contentParts),
+                ["ContentTypes"] = JArray.FromObject(contentTypes, _jsonSerializerOptions),
+                ["ContentParts"] = JArray.FromObject(contentParts, _jsonSerializerOptions),
             });
         }
     }

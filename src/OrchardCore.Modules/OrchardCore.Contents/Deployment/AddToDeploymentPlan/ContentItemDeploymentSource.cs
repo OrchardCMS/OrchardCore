@@ -1,6 +1,8 @@
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.Deployment;
 
@@ -9,10 +11,14 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
     public class ContentItemDeploymentSource : IDeploymentSource
     {
         private readonly IContentManager _contentManager;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public ContentItemDeploymentSource(IContentManager contentManager)
+        public ContentItemDeploymentSource(
+            IContentManager contentManager,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             _contentManager = contentManager;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
@@ -31,7 +37,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
                 return;
             }
 
-            var jContentItem = JObject.FromObject(contentItem);
+            var jContentItem = JObject.FromObject(contentItem, _jsonSerializerOptions);
             jContentItem.Remove(nameof(ContentItem.Id));
 
             var contentStep = result.Steps.FirstOrDefault(s => s["name"]?.ToString() == "Content");
