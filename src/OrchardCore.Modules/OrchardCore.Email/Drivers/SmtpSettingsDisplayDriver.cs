@@ -132,16 +132,10 @@ namespace OrchardCore.Email.Drivers
                         await _notifier.WarningAsync(H["No designated default email provider is currently enabled. Please select and set one of the available email providers as the default."]);
                     }
 
-                    if (model.DeliveryMethod == SmtpDeliveryMethod.Network)
+                    if (model.DeliveryMethod == SmtpDeliveryMethod.Network
+                        && string.IsNullOrEmpty(model.Host))
                     {
-                        if (string.IsNullOrEmpty(model.Host))
-                        {
-                            updater.ModelState.AddModelError(Prefix, nameof(model.Host), S["The {0} field is required.", "Host name"]);
-                        }
-                        else if (!Uri.TryCreate(model.Host, UriKind.Absolute, out _))
-                        {
-                            updater.ModelState.AddModelError(Prefix, nameof(model.Host), S["Invalid value provided for the '{0}' field.", "Host name"]);
-                        }
+                        updater.ModelState.AddModelError(Prefix, nameof(model.Host), S["The {0} field is required.", "Host name"]);
                     }
                     else if (model.DeliveryMethod == SmtpDeliveryMethod.SpecifiedPickupDirectory
                         && string.IsNullOrWhiteSpace(model.PickupDirectoryLocation))

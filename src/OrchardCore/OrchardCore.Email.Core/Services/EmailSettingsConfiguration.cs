@@ -3,7 +3,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Core.Services;
 
-public class EmailSettingsConfiguration : IPostConfigureOptions<EmailSettings>
+public class EmailSettingsConfiguration : IConfigureOptions<EmailSettings>
 {
     private readonly ISiteService _siteService;
 
@@ -12,7 +12,7 @@ public class EmailSettingsConfiguration : IPostConfigureOptions<EmailSettings>
         _siteService = siteService;
     }
 
-    public void PostConfigure(string name, EmailSettings options)
+    public void Configure(EmailSettings options)
     {
         var site = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
 

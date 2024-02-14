@@ -1,6 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
@@ -24,18 +24,11 @@ public class SmtpEmailProvider : IEmailProvider
 
     private const string EmailExtension = ".eml";
 
-    private static readonly char[] _emailsSeparator = [',', ';'];
-
     private readonly SmtpOptions _providerOptions;
     private readonly ILogger _logger;
+
     protected readonly IStringLocalizer S;
 
-    /// <summary>
-    /// Initializes a new instance of a <see cref="SmtpEmailProvider"/>.
-    /// </summary>
-    /// <param name="options">The <see cref="IOptions{SmtpSettings}"/>.</param>
-    /// <param name="logger">The <see cref="ILogger{SmtpService}"/>.</param>
-    /// <param name="stringLocalizer">The <see cref="IStringLocalizer{SmtpService}"/>.</param>
     public SmtpEmailProvider(
         IOptions<SmtpOptions> options,
         ILogger<SmtpEmailProvider> logger,
@@ -59,6 +52,8 @@ public class SmtpEmailProvider : IEmailProvider
     /// <remarks>This method allows to send an email without setting <see cref="MailMessage.To"/> if <see cref="MailMessage.Cc"/> or <see cref="MailMessage.Bcc"/> is provided.</remarks>
     public async Task<EmailResult> SendAsync(MailMessage message)
     {
+        ArgumentNullException.ThrowIfNull(message);
+
         if (!_providerOptions.IsEnabled)
         {
             return EmailResult.FailedResult(S["The SMTP Email Provider is disabled."]);
@@ -68,7 +63,7 @@ public class SmtpEmailProvider : IEmailProvider
         var response = default(string);
         try
         {
-            // Set the MailMessage.From, to avoid the confusion between _options.DefaultSender (Author) and submitter (Sender)
+            // Set the MailMessage.From, to avoid the confusion between Options.DefaultSender (Author) and submitter (Sender).
             var senderAddress = string.IsNullOrWhiteSpace(message.From)
                 ? _providerOptions.DefaultSender
                 : message.From;
@@ -78,19 +73,7 @@ public class SmtpEmailProvider : IEmailProvider
                 message.From = senderAddress;
             }
 
-            var errors = new List<LocalizedString>();
-
-            var mimeMessage = FromMailMessage(message, errors);
-
-            if (errors.Count > 0)
-            {
-                return EmailResult.FailedResult(errors.ToArray());
-            }
-
-            if (mimeMessage.To.Count == 0 && mimeMessage.Cc.Count == 0 && mimeMessage.Bcc.Count == 0)
-            {
-                return EmailResult.FailedResult(S["The mail message should have at least one of these headers: To, Cc or Bcc."]);
-            }
+            var mimeMessage = FromMailMessage(message);
 
             switch (_providerOptions.DeliveryMethod)
             {
@@ -108,7 +91,7 @@ public class SmtpEmailProvider : IEmailProvider
         }
         catch (Exception ex)
         {
-            result = EmailResult.FailedResult(S["An error occurred while sending an email: '{0}'", ex.Message]);
+            result = EmailResult.FailedResult([S["An error occurred while sending an email: '{0}'", ex.Message]]);
         }
 
         result.Response = response;
@@ -116,108 +99,26 @@ public class SmtpEmailProvider : IEmailProvider
         return result;
     }
 
-    private MimeMessage FromMailMessage(MailMessage message, List<LocalizedString> errors)
+    private MimeMessage FromMailMessage(MailMessage message)
     {
+        var mimeMessage = new MimeMessage();
         var submitterAddress = string.IsNullOrWhiteSpace(message.Sender)
             ? _providerOptions.DefaultSender
             : message.Sender;
 
-        var mimeMessage = new MimeMessage();
-
         if (!string.IsNullOrEmpty(submitterAddress))
         {
-            if (MailboxAddress.TryParse(submitterAddress, out var mailBox))
-            {
-                mimeMessage.Sender = mailBox;
-
-            }
-            else
-            {
-                errors.Add(S["Invalid email address: '{0}'", submitterAddress]);
-            }
+            mimeMessage.Sender = MailboxAddress.Parse(submitterAddress);
         }
 
-        if (!string.IsNullOrWhiteSpace(message.From))
-        {
-            foreach (var address in message.From.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
-            {
-                if (MailboxAddress.TryParse(address, out var mailBox))
-                {
-                    mimeMessage.From.Add(mailBox);
-                }
-                else
-                {
-                    errors.Add(S["Invalid email address: '{0}'", address]);
-                }
-            }
-        }
+        mimeMessage.From.AddRange(message.GetSender().Select(MailboxAddress.Parse));
 
-        if (!string.IsNullOrWhiteSpace(message.To))
-        {
-            foreach (var address in message.To.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
-            {
-                if (MailboxAddress.TryParse(address, out var mailBox))
-                {
-                    mimeMessage.To.Add(mailBox);
-                }
-                else
-                {
-                    errors.Add(S["Invalid email address: '{0}'", address]);
-                }
-            }
-        }
+        var recipients = message.GetRecipients();
+        mimeMessage.To.AddRange(recipients.To.Select(MailboxAddress.Parse));
+        mimeMessage.Cc.AddRange(recipients.Cc.Select(MailboxAddress.Parse));
+        mimeMessage.Bcc.AddRange(recipients.Bcc.Select(MailboxAddress.Parse));
 
-        if (!string.IsNullOrWhiteSpace(message.Cc))
-        {
-            foreach (var address in message.Cc.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
-            {
-                if (MailboxAddress.TryParse(address, out var mailBox))
-                {
-                    mimeMessage.Cc.Add(mailBox);
-                }
-                else
-                {
-                    errors.Add(S["Invalid email address: '{0}'", address]);
-                }
-            }
-        }
-
-        if (!string.IsNullOrWhiteSpace(message.Bcc))
-        {
-            foreach (var address in message.Bcc.Split(_emailsSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
-            {
-                if (MailboxAddress.TryParse(address, out var mailBox))
-                {
-                    mimeMessage.Bcc.Add(mailBox);
-                }
-                else
-                {
-                    errors.Add(S["Invalid email address: '{0}'", address]);
-                }
-            }
-        }
-
-        if (string.IsNullOrWhiteSpace(message.ReplyTo))
-        {
-            foreach (var address in mimeMessage.From)
-            {
-                mimeMessage.ReplyTo.Add(address);
-            }
-        }
-        else
-        {
-            foreach (var address in message.ReplyTo.Split(_emailsSeparator, StringSplitOptions.RemoveEmptyEntries))
-            {
-                if (MailboxAddress.TryParse(address, out var mailBox))
-                {
-                    mimeMessage.ReplyTo.Add(mailBox);
-                }
-                else
-                {
-                    errors.Add(S["Invalid email address: '{0}'", address]);
-                }
-            }
-        }
+        mimeMessage.ReplyTo.AddRange(message.GetReplyTo().Select(MailboxAddress.Parse));
 
         mimeMessage.Subject = message.Subject;
 
@@ -246,8 +147,6 @@ public class SmtpEmailProvider : IEmailProvider
         return mimeMessage;
     }
 
-    protected virtual Task OnMessageSendingAsync(SmtpClient client, MimeMessage message) => Task.CompletedTask;
-
     private async Task<string> SendOnlineMessageAsync(MimeMessage message)
     {
         var secureSocketOptions = SecureSocketOptions.Auto;
@@ -267,15 +166,13 @@ public class SmtpEmailProvider : IEmailProvider
 
         client.ServerCertificateValidationCallback = CertificateValidationCallback;
 
-        await OnMessageSendingAsync(client, message);
-
         await client.ConnectAsync(_providerOptions.Host, _providerOptions.Port, secureSocketOptions);
 
         if (_providerOptions.RequireCredentials)
         {
             if (_providerOptions.UseDefaultCredentials)
             {
-                // There's no notion of 'UseDefaultCredentials' in MailKit, so empty credentials is passed in
+                // There's no notion of 'UseDefaultCredentials' in MailKit, so empty credentials is passed in.
                 await client.AuthenticateAsync(string.Empty, string.Empty);
             }
             else if (!string.IsNullOrWhiteSpace(_providerOptions.UserName))
@@ -299,19 +196,20 @@ public class SmtpEmailProvider : IEmailProvider
     private static Task SendOfflineMessageAsync(MimeMessage message, string pickupDirectory)
     {
         var mailPath = Path.Combine(pickupDirectory, Guid.NewGuid().ToString() + EmailExtension);
+
         return message.WriteToAsync(mailPath, CancellationToken.None);
     }
 
     private bool CertificateValidationCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
     {
-        const string logErrorMessage = "SMTP Server's certificate {CertificateSubject} issued by {CertificateIssuer} " +
-                                       "with thumbprint {CertificateThumbprint} and expiration date {CertificateExpirationDate} " +
-                                       "is considered invalid with {SslPolicyErrors} policy errors";
-
         if (sslPolicyErrors == SslPolicyErrors.None)
         {
             return true;
         }
+
+        const string logErrorMessage = "SMTP Server's certificate {CertificateSubject} issued by {CertificateIssuer} " +
+                               "with thumbprint {CertificateThumbprint} and expiration date {CertificateExpirationDate} " +
+                               "is considered invalid with {SslPolicyErrors} policy errors";
 
         _logger.LogError(logErrorMessage,
             certificate.Subject,

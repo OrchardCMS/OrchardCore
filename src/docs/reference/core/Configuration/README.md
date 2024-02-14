@@ -46,7 +46,7 @@ Each Orchard Core module has its own configuration section under the `OrchardCor
 
 See the `appsettings.json` file for more examples.
 
-### Tenant Preconfiguration
+### Tenant Pre-configuration
 
 To pre configure the setup values for a tenant before it has been created you can specify a section named for the tenant,
 with a `State` value of `Uninitialized`
@@ -66,7 +66,7 @@ with a `State` value of `Uninitialized`
 
 The preconfigured tenant will then appear in the `Tenants` list in the admin, and these values will be used when the tenant is setup.
 
-### Tenant Postconfiguration
+### Tenant Post-configuration
 
 To configure the values for a tenant after it has been created you can specify a section named for the tenant,
 without having to provide a state value.

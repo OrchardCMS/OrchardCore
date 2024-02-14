@@ -81,7 +81,7 @@ Here are the available SMTP settings
 
 ## Email Settings Configuration
 
-The `OrchardCore.Email` module allows the user to use configuration values to override the settings configured from the admin area by calling the `ConfigureEmailSettings()` extension method on `OrchardCoreBuilder` when initializing the app.
+The `OrchardCore.Email` module in Orchard Core CMS offers users the capability to configure email settings through various sources. By default, users can configure these settings using the admin area. However, the module also allows users to override these default settings by specifying configuration values in alternative sources, such as app settings or environment variables. In this configuration hierarchy, values provided in app settings or environment variables take precedence over those configured in the admin area. This design provides users with flexibility in managing email configurations based on their preferences and specific deployment environments.
 
 The following configuration values can be customized:
 

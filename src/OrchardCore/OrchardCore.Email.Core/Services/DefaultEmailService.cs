@@ -32,6 +32,8 @@ public class DefaultEmailService : IEmailService
 
         if (provider is null)
         {
+            _logger.LogError("Email settings must be configured before an Email message can be sent.");
+
             return EmailResult.FailedResult(S["Email settings must be configured before an Email message can be sent."]);
         }
 
