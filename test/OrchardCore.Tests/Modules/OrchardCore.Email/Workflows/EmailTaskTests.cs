@@ -12,7 +12,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email.Workflows
         private static readonly IDictionary<string, object> _emptyDictionary = new Dictionary<string, object>();
 
         [Fact]
-        public async Task ExecuteTask_WhenToAndCcAndBccAreNotSet_ShouldFails()
+        public async Task ExecuteTask_WhenToAndCcAndBccAreNotSet_ShouldFail()
         {
             // Arrange
             var emailService = CreateSmtpService(new SmtpOptions()
