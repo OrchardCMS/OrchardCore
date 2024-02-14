@@ -13,7 +13,7 @@ public interface IEmailProvider
     /// <summary>
     /// Send the given message.
     /// </summary>
-    /// <param name="message">The message to send.</param>
+    /// <param name="message">The email message to send.</param>
     /// <returns>EmailResult object.</returns>
     Task<EmailResult> SendAsync(MailMessage message);
 }
