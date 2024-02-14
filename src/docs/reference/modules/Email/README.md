@@ -108,7 +108,7 @@ For more information about configurations, please refer to [Configuration](../..
 
 ## Sending Email Messages
 
-An Email message can be send by injecting `IEmailService` and invoke the `SendAsync` method. For instance
+An Email message can be sent by injecting `IEmailService` and invoking the `SendAsync` method. For instance:
 
 ```csharp
 public class TestController
