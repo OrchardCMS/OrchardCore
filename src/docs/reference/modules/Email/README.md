@@ -106,7 +106,7 @@ The following configuration values can be customized:
 
 For more information about configurations, please refer to [Configuration](../../core/Configuration/README.md).
 
-## Sending SMS Message
+## Sending Email Messages
 
 An Email message can be send by injecting `IEmailService` and invoke the `SendAsync` method. For instance
 
