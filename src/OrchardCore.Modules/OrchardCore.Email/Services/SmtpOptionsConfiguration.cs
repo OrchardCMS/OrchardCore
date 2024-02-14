@@ -45,7 +45,7 @@ public class SmtpOptionsConfiguration : IConfigureOptions<SmtpOptions>
             }
             else
             {
-                _logger.LogWarning("The SMTP provider settings in the appsettings are invalid or are incomplete.");
+                _logger.LogWarning("The SMTP provider settings in the configuration provider are invalid or are incomplete.");
             }
         }
 

@@ -118,6 +118,8 @@ public class AzureEmailProvider : IEmailProvider
 
         try
         {
+            _logger.LogDebug("Attempting to send email to {Email}.", message.To);
+
             var senderAddress = string.IsNullOrWhiteSpace(message.From)
                 ? _providerOptions.DefaultSender
                 : message.From;

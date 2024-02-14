@@ -31,7 +31,7 @@ public class AzureEmailOptionsConfiguration : IConfigureOptions<AzureEmailOption
     {
         var section = _shellConfiguration.GetSection(SectionName);
 
-        // First we bind the options for the appsettings file, then we override the options from site settings.
+        // First we bind the options from the configuration provider, then we override the options from site settings.
         section.Bind(options);
 
         var settings = _siteService.GetSiteSettingsAsync()

@@ -69,7 +69,7 @@ namespace OrchardCore.Email.Drivers
 
             return Initialize<SmtpSettingsViewModel>("SmtpSettings_Edit", model =>
             {
-                // when IsEnabled is not set, we fall back on loaded SmtpOption to see if the settings were loaded via appsettings.
+                // When IsEnabled is not set, we fall back on loaded SmtpOption to see if the settings were loaded via a configuration provider.
 
                 model.IsEnabled = settings.IsEnabled ?? _smtpOptions.IsEnabled;
                 model.DefaultSender = settings.DefaultSender;
