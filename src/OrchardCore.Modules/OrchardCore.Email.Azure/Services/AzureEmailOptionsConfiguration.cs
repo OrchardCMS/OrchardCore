@@ -44,7 +44,7 @@ public class AzureEmailOptionsConfiguration : IConfigureOptions<AzureEmailOption
             options.DefaultSender = settings.DefaultSender;
         }
 
-        if (!options.PreventUIConnectionChange && !string.IsNullOrEmpty(settings.ConnectionString))
+        if (!options.PreventAdminSettingsOverride && !string.IsNullOrEmpty(settings.ConnectionString))
         {
             var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
 

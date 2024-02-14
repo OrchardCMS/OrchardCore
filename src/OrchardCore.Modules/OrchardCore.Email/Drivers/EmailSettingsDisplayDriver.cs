@@ -93,7 +93,7 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
 
             var provider = await _emailProviderResolver.GetAsync(entry.Key);
 
-            options.Add(new SelectListItem(provider.Name, entry.Key));
+            options.Add(new SelectListItem(provider.DisplayName, entry.Key));
         }
 
         return options.OrderBy(x => x.Text).ToArray();

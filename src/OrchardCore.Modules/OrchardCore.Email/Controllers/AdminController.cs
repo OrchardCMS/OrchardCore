@@ -89,11 +89,11 @@ public class AdminController : Controller
             }
             catch (InvalidEmailProviderException)
             {
-                ModelState.AddModelError(string.Empty, "The selected provider is invalid or no longer enabled.");
+                ModelState.AddModelError(string.Empty, S["The selected provider is invalid or no longer enabled."]);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                ModelState.AddModelError(string.Empty, ex.Message);
+                ModelState.AddModelError(string.Empty, S["Unable to send the message using the selected provider."]);
             }
         }
 
@@ -143,7 +143,7 @@ public class AdminController : Controller
 
             var provider = await _emailProviderResolver.GetAsync(entry.Key);
 
-            options.Add(new SelectListItem(provider.Name, entry.Key));
+            options.Add(new SelectListItem(provider.DisplayName, entry.Key));
         }
 
         model.Providers = options.OrderBy(x => x.Text).ToArray();

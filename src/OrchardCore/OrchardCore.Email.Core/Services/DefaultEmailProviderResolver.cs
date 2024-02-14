@@ -50,12 +50,10 @@ public class DefaultEmailProviderResolver : IEmailProviderResolver
         }
         else if (_providerOptions.Providers.Count > 0)
         {
-            return _serviceProvider.CreateInstance<IEmailProvider>(_providerOptions.Providers.Values.Last().Type);
-        }
+            var lastProvider = _providerOptions.Providers.Values.LastOrDefault(x => x.IsEnabled)
+                ?? _providerOptions.Providers.Values.Last();
 
-        if (_logger.IsEnabled(LogLevel.Error))
-        {
-            _logger.LogError("No Email provider registered to match the given name {name}.", name);
+            return _serviceProvider.CreateInstance<IEmailProvider>(lastProvider.Type);
         }
 
         return null;

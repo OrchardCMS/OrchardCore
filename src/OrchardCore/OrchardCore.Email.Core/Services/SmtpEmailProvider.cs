@@ -42,7 +42,7 @@ public class SmtpEmailProvider : IEmailProvider
     /// <summary>
     /// The name of the provider.
     /// </summary>
-    public LocalizedString Name => S["Simple Mail Transfer Protocol (SMTP)"];
+    public LocalizedString DisplayName => S["Simple Mail Transfer Protocol (SMTP)"];
 
     /// <summary>
     /// Sends the specified message to an SMTP server for delivery.

@@ -120,7 +120,7 @@ namespace OrchardCore.Email.Drivers
 
                         site.Put(emailSettings);
 
-                        await _notifier.WarningAsync(H["You have successfully disabled the default Email provider. The Email service is now disable and will remain disabled until you designate a new default provider."]);
+                        await _notifier.WarningAsync(H["You have successfully disabled the default Email provider. The Email service is now disabled and will remain disabled until you designate a new default provider."]);
                     }
 
                     settings.IsEnabled = false;
@@ -185,10 +185,22 @@ namespace OrchardCore.Email.Drivers
                     settings.PickupDirectoryLocation = model.PickupDirectoryLocation;
                 }
 
-                // Release the tenant to apply the settings when something changed.
-                if (context.Updater.ModelState.IsValid && hasChanges)
+                if (context.Updater.ModelState.IsValid)
                 {
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
+                    if (string.IsNullOrEmpty(emailSettings.DefaultProviderName))
+                    {
+                        // If we are enabling the only provider, set it as the default one.
+                        emailSettings.DefaultProviderName = SmtpEmailProvider.TechnicalName;
+                        site.Put(emailSettings);
+
+                        hasChanges = true;
+                    }
+
+                    if (hasChanges)
+                    {
+                        // Release the tenant to apply the settings when something changed.
+                        await _shellHost.ReleaseShellContextAsync(_shellSettings);
+                    }
                 }
             }
 

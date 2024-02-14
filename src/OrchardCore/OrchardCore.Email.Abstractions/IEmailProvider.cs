@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Email;
@@ -6,12 +6,12 @@ namespace OrchardCore.Email;
 public interface IEmailProvider
 {
     /// <summary>
-    /// The name of the provider.
+    /// The display name of the provider.
     /// </summary>
-    LocalizedString Name { get; }
+    LocalizedString DisplayName { get; }
 
     /// <summary>
-    /// Send the given message.
+    /// Send the given message via email.
     /// </summary>
     /// <param name="message">The email message to send.</param>
     /// <returns>EmailResult object.</returns>

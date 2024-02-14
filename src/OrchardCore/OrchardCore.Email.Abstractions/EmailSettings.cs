@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Email;
+namespace OrchardCore.Email;
 
 public class EmailSettings
 {
@@ -8,7 +8,7 @@ public class EmailSettings
     public const string GroupId = "email";
 
     /// <summary>
-    /// The name of the Email provider to use.
+    /// The name of the email provider to use by default.
     /// </summary>
     public string DefaultProviderName { get; set; }
 }

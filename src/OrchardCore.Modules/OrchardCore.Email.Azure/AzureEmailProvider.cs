@@ -103,7 +103,7 @@ public class AzureEmailProvider : IEmailProvider
     /// <summary>
     /// The name of the provider.
     /// </summary>
-    public LocalizedString Name => S["Azure Communication Service"];
+    public LocalizedString DisplayName => S["Azure Communication Service"];
 
     public async Task<EmailResult> SendAsync(MailMessage message)
     {
@@ -136,10 +136,10 @@ public class AzureEmailProvider : IEmailProvider
         }
         catch (Exception ex)
         {
-            // IMPORTANT, do not expose ex.Message as it could container the connection string in a raw format!
+            // IMPORTANT, do not expose ex.Message as it could contain the connection string in a raw format!
             result = EmailResult.FailedResult(S["An error occurred while sending an email."]);
 
-            _logger.LogError(ex, "An error occurred while sending an email using Azure Email Provider.");
+            _logger.LogError(ex, "An error occurred while sending an email using the Azure Email Provider.");
         }
 
         return result;

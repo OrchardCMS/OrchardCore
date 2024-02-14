@@ -77,9 +77,9 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
             model.IsEnabled = settings.IsEnabled ?? (hasFileConnectionString && !string.IsNullOrWhiteSpace(azureEmailOptions.DefaultSender));
 
             model.DefaultSender = settings.DefaultSender ?? azureEmailOptions.DefaultSender;
-            model.ConfigurationExists = !string.IsNullOrWhiteSpace(settings.ConnectionString);
+            model.ConfigurationExists = !string.IsNullOrWhiteSpace(settings.ConnectionString) && !string.IsNullOrWhiteSpace(settings.DefaultSender);
             model.FileConfigurationExists = hasFileConnectionString;
-            model.PreventAdminSettingsOverride = azureEmailOptions?.PreventUIConnectionChange ?? false;
+            model.PreventAdminSettingsOverride = azureEmailOptions?.PreventAdminSettingsOverride ?? false;
 
         }).Location("Content:5#Azure")
         .OnGroup(EmailSettings.GroupId);
@@ -109,8 +109,6 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
                     emailSettings.DefaultProviderName = null;
 
                     site.Put(emailSettings);
-
-                    await _notifier.WarningAsync(H["You have successfully disabled the default Email provider. The Email service is now disable and will remain disabled until you designate a new default provider."]);
                 }
 
                 settings.IsEnabled = false;
@@ -119,13 +117,14 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
             {
                 settings.IsEnabled = true;
 
-                hasChanges |= model.DefaultSender != settings.DefaultSender;
-
-                settings.DefaultSender = model.DefaultSender;
                 var azureEmailOptions = _shellConfiguration.GetSection(AzureEmailOptionsConfiguration.SectionName).Get<AzureEmailOptions>();
 
-                if (azureEmailOptions is null || !azureEmailOptions.PreventUIConnectionChange)
+                if (azureEmailOptions is null || !azureEmailOptions.PreventAdminSettingsOverride)
                 {
+                    hasChanges |= model.DefaultSender != settings.DefaultSender;
+
+                    settings.DefaultSender = model.DefaultSender;
+
                     if (string.IsNullOrWhiteSpace(model.ConnectionString) && settings.ConnectionString is null)
                     {
                         context.Updater.ModelState.AddModelError(Prefix, nameof(model.ConnectionString), S["Connection string is required."]);
@@ -145,10 +144,22 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
                 }
             }
 
-            // Release the tenant to apply the settings when something changed.
-            if (context.Updater.ModelState.IsValid && hasChanges)
+            if (context.Updater.ModelState.IsValid)
             {
-                await _shellHost.ReleaseShellContextAsync(_shellSettings);
+                if (string.IsNullOrEmpty(emailSettings.DefaultProviderName))
+                {
+                    // If we are enabling the only provider, set it as the default one.
+                    emailSettings.DefaultProviderName = SmtpEmailProvider.TechnicalName;
+                    site.Put(emailSettings);
+
+                    hasChanges = true;
+                }
+
+                if (hasChanges)
+                {
+                    // Release the tenant to apply the settings when something changed.
+                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
+                }
             }
         }
 

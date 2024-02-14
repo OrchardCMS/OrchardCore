@@ -26,7 +26,7 @@ namespace OrchardCore.Users.Workflows
     }
 
     [RequireFeatures("OrchardCore.Workflows", "OrchardCore.Email")]
-    public class EmailStartup : StartupBase
+    public class EmailWorkflowStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

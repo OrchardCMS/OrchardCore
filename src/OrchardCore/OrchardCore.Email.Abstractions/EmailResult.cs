@@ -19,7 +19,7 @@ public class EmailResult
     public IEnumerable<LocalizedString> Errors { get; protected set; }
 
     /// <summary>
-    /// Get or sets the response text from the SMTP server.
+    /// Get or sets the response text from the email sending service.
     /// </summary>
     public string Response { get; set; }
 
@@ -29,7 +29,7 @@ public class EmailResult
     public bool Succeeded { get; protected set; }
 
     /// <summary>
-    /// Creates an <see cref="EmailResult"/> indicating a failed Smtp operation, with a list of errors if applicable.
+    /// Creates an <see cref="EmailResult"/> indicating a failed email sending operation, with a list of errors if applicable.
     /// </summary>
     /// <param name="errors">An optional array of <see cref="LocalizedString"/> which caused the operation to fail.</param>
     public static EmailResult FailedResult(params LocalizedString[] errors)

@@ -23,8 +23,6 @@ public class EmailProviderOptions
     /// </summary>
     /// <param name="name">The technical name of the provider.</param>
     /// <param name="options">The type options of the provider.</param>
-    /// <returns cref="EmailProviderTypeOptions"></returns>
-    /// <exception cref="ArgumentException"></exception>
     public EmailProviderOptions TryAddProvider(string name, EmailProviderTypeOptions options)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
@@ -44,8 +42,6 @@ public class EmailProviderOptions
     /// Removes a provider if one exist.
     /// </summary>
     /// <param name="name">The technical name of the provider.</param>
-    /// <returns cref="EmailProviderTypeOptions"></returns>
-    /// <exception cref="ArgumentException"></exception>
     public EmailProviderOptions RemoveProvider(string name)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
@@ -63,8 +59,6 @@ public class EmailProviderOptions
     /// </summary>
     /// <param name="name">The technical name of the provider.</param>
     /// <param name="options">The type-options of the provider.</param>
-    /// <returns cref="EmailProviderTypeOptions"></returns>
-    /// <exception cref="ArgumentException"></exception>
     public EmailProviderOptions ReplaceProvider(string name, EmailProviderTypeOptions options)
     {
         _providers.Remove(name);

@@ -43,7 +43,11 @@ public class DefaultEmailService : IEmailService
 
         if (result.Succeeded)
         {
-            await _emailServiceEvents.InvokeAsync((e) => e.SentAsync(), _logger);
+            await _emailServiceEvents.InvokeAsync((e) => e.SentAsync(message), _logger);
+        }
+        else
+        {
+            await _emailServiceEvents.InvokeAsync((e) => e.FailedAsync(message), _logger);
         }
 
         return result;
