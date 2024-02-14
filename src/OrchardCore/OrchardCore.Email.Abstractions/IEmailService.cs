@@ -5,7 +5,7 @@ namespace OrchardCore.Email;
 public interface IEmailService
 {
     /// <summary>
-    /// Send the given message.
+    /// Send the given message as email.
     /// </summary>
     /// <param name="message">The message to send.</param>
     /// <param name="name">The key of the Email provider. When null or empty is provider, the default provider is used.</param>
