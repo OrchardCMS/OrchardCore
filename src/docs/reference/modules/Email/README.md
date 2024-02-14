@@ -24,7 +24,7 @@ If your provider does not require any settings, you may register it using the `A
 services.AddEmailProvider<YourCustomImplemenation>("A technical name for your implementation")
 ```
 
-However, if you have a complex provider like the included SMTP provider, you may implement `IConfigureOptions<EmailProviderOptions>` and register it using the `AddEmailProviderOptionsConfiguration<>` extensions. For instance:
+However, if you have a complex provider like the included SMTP one, you may implement `IConfigureOptions<EmailProviderOptions>` and register it using the `AddEmailProviderOptionsConfiguration<>` extension. For instance:
 
 ```csharp
 services.AddEmailProviderOptionsConfiguration<YourCustomImplemenation>()
