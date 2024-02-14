@@ -145,7 +145,7 @@ public class TestController
 
 ## Testing Provider
 
-After configuring a provider, you may test it by visiting `Configuration` >> `Settings` >> `Email Test`.
+After configuring a provider, you may test it by visiting `Configuration` → `Settings` → `Email Test`.
 
 
 ## Credits
