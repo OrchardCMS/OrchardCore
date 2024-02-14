@@ -119,8 +119,6 @@ namespace OrchardCore.Email.Drivers
                         emailSettings.DefaultProviderName = null;
 
                         site.Put(emailSettings);
-
-                        await _notifier.WarningAsync(H["You have successfully disabled the default Email provider. The Email service is now disabled and will remain disabled until you designate a new default provider."]);
                     }
 
                     settings.IsEnabled = false;
@@ -133,7 +131,7 @@ namespace OrchardCore.Email.Drivers
                     }
 
                     if (model.DeliveryMethod == SmtpDeliveryMethod.Network
-                        && string.IsNullOrEmpty(model.Host))
+                        && string.IsNullOrWhiteSpace(model.Host))
                     {
                         updater.ModelState.AddModelError(Prefix, nameof(model.Host), S["The {0} field is required.", "Host name"]);
                     }

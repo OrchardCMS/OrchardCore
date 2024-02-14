@@ -9,7 +9,6 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Email;
 using OrchardCore.Email.Azure;
@@ -32,7 +31,6 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
     private readonly IShellHost _shellHost;
     private readonly ShellSettings _shellSettings;
     private readonly IShellConfiguration _shellConfiguration;
-    private readonly INotifier _notifier;
 
     protected IStringLocalizer S;
     protected IHtmlLocalizer H;
@@ -44,7 +42,6 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
         IShellHost shellHost,
         ShellSettings shellSettings,
         IShellConfiguration shellConfiguration,
-        INotifier notifier,
         IStringLocalizer<AzureEmailSettingsDisplayDriver> stringLocalizer,
         IHtmlLocalizer<AzureEmailSettingsDisplayDriver> htmlLocalizer)
     {
@@ -54,7 +51,6 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
         _shellHost = shellHost;
         _shellSettings = shellSettings;
         _shellConfiguration = shellConfiguration;
-        _notifier = notifier;
         S = stringLocalizer;
         H = htmlLocalizer;
     }
@@ -149,7 +145,7 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
                 if (string.IsNullOrEmpty(emailSettings.DefaultProviderName))
                 {
                     // If we are enabling the only provider, set it as the default one.
-                    emailSettings.DefaultProviderName = SmtpEmailProvider.TechnicalName;
+                    emailSettings.DefaultProviderName = AzureEmailProvider.TechnicalName;
                     site.Put(emailSettings);
 
                     hasChanges = true;
