@@ -18,7 +18,7 @@ Enabling the `Email` feature will add a new settings page under `Configurations`
 
 The `OrchardCore.Email` module provides you with the capability to integrate additional providers for dispatching email messages. To achieve this, you can easily create an implementation of the `IEmailProvider` interface and then proceed to register it using one of the following approaches:
 
-If your provider does not require any settings, you may register using the `AddEmailProvider<>` extension. For instance:
+If your provider does not require any settings, you may register it using the `AddEmailProvider<>` extension. For instance:
 
 ```csharp
 services.AddEmailProvider<YourCustomImplemenation>("A technical name for your implementation")
