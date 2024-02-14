@@ -56,7 +56,7 @@ public class SmtpProviderOptionsConfigurations : IConfigureOptions<EmailProvider
 
 # Configuring SMTP Provider
 
-To enable the `SMTP` provider, navigate to `Configurations` >> `Settings` >> `Email`. Click on the `SMTP` tab, click the Enable checkbox and provider your SMTP configuration. Then in the `Providers` tab, select SMTP as your default provider.
+To enable the `SMTP` provider, navigate to `Configurations` → `Settings` → `Email`. Click on the `SMTP` tab, click the Enable checkbox, and provide your SMTP configuration. Then in the `Providers` tab, select SMTP as your default provider.
 
 Here are the available SMTP settings
 
