@@ -121,7 +121,9 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
 
                     settings.DefaultSender = model.DefaultSender;
 
-                    if (string.IsNullOrWhiteSpace(model.ConnectionString) && settings.ConnectionString is null)
+                    if (string.IsNullOrWhiteSpace(model.ConnectionString)
+                        && settings.ConnectionString is null
+                        && string.IsNullOrWhiteSpace(azureEmailOptions?.ConnectionString))
                     {
                         context.Updater.ModelState.AddModelError(Prefix, nameof(model.ConnectionString), S["Connection string is required."]);
                     }

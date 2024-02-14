@@ -7,7 +7,7 @@ public class SmtpSettingsViewModel
 {
     public bool IsEnabled { get; set; }
 
-    [Required(AllowEmptyStrings = false), EmailAddress]
+    [EmailAddress]
     public string DefaultSender { get; set; }
 
     public string Host { get; set; }
@@ -33,7 +33,6 @@ public class SmtpSettingsViewModel
 
     public bool IgnoreInvalidSslCertificate { get; set; }
 
-    [Required]
     public SmtpDeliveryMethod DeliveryMethod { get; set; }
 
     public string PickupDirectoryLocation { get; set; }
