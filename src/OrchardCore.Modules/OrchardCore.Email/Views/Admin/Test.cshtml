@@ -5,7 +5,7 @@
 @if (Model.Providers == null || Model.Providers.Count == 0)
 {
     <div class="alert alert-danger" role="alert">
-        @T["No Email providers are available. Enable at least one Email provider feature."]
+        @T["No email providers are currently enabled. Please enable at least one email provider feature."]
     </div>
 
     return;
@@ -28,6 +28,7 @@
             <span asp-validation-for="To"></span>
         </div>
     </div>
+
     <div class="mb-3">
         <div class="mb-3" asp-validation-class-for="Sender">
             <label asp-for="Sender" class="form-label">@T["Sender"]</label>
@@ -36,13 +37,7 @@
             <span class="hint">@T["The sender is optional, it is useful when the email author is different than the email submitter."]</span>
         </div>
     </div>
-    <div class="mb-3">
-        <div class="mb-3" asp-validation-class-for="Bcc">
-            <label asp-for="Bcc" class="form-label">@T["Bcc"]</label>
-            <input asp-for="Bcc" class="form-control" type="text" />
-            <span asp-validation-for="Bcc"></span>
-        </div>
-    </div>
+
     <div class="mb-3">
         <div class="mb-3" asp-validation-class-for="Cc">
             <label asp-for="Cc" class="form-label">@T["Cc"]</label>
@@ -50,6 +45,15 @@
             <span asp-validation-for="Cc"></span>
         </div>
     </div>
+
+    <div class="mb-3">
+        <div class="mb-3" asp-validation-class-for="Bcc">
+            <label asp-for="Bcc" class="form-label">@T["Bcc"]</label>
+            <input asp-for="Bcc" class="form-control" type="text" />
+            <span asp-validation-for="Bcc"></span>
+        </div>
+    </div>
+
     <div class="mb-3">
         <div class="mb-3" asp-validation-class-for="ReplyTo">
             <label asp-for="ReplyTo" class="form-label">@T["Reply To"]</label>
@@ -57,6 +61,7 @@
             <span asp-validation-for="ReplyTo"></span>
         </div>
     </div>
+
     <div class="mb-3">
         <div class="mb-3" asp-validation-class-for="Subject">
             <label asp-for="Subject" class="form-label">@T["Subject"]</label>
@@ -64,6 +69,7 @@
             <span asp-validation-for="Subject"></span>
         </div>
     </div>
+
     <div class="mb-3">
         <div class="mb-3" asp-validation-class-for="Body">
             <label asp-for="Body" class="form-label">@T["Body"]</label>
@@ -71,7 +77,8 @@
             <span asp-validation-for="Body"></span>
         </div>
     </div>
+
     <div class="mb-3">
-        <button type="submit" id="emailtestsend" class="btn btn-primary">@T["Send"]</button>
+        <button type="submit" class="btn btn-primary">@T["Send"]</button>
     </div>
 </form>
