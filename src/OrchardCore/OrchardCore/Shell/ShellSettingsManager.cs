@@ -115,9 +115,9 @@ namespace OrchardCore.Environment.Shell
                 await ReloadTenantsSettingsAsync();
 
                 var tenantSettingsBuilder = new ConfigurationBuilder()
-                    .AddConfiguration(_configuration)
                     .AddConfiguration(_configuration.GetSection(tenant))
-                    .AddConfiguration(_tenantsSettingsRoot.GetSection(tenant));
+                    .AddConfiguration(_tenantsSettingsRoot.GetSection(tenant))
+                    .AddConfiguration(_configuration);
 
                 var settings = new ShellConfiguration(tenantSettingsBuilder);
                 var configuration = new ShellConfiguration(tenant, _tenantConfigFactoryAsync);
@@ -276,8 +276,8 @@ namespace OrchardCore.Environment.Shell
                 try
                 {
                     var builder = await new ConfigurationBuilder()
-                        .AddConfiguration(_configuration)
                         .AddConfiguration(_configuration.GetSection(tenant))
+                        .AddConfiguration(_configuration)
                         .AddSourcesAsync(tenant, _tenantConfigSources);
 
                     configure(builder);
