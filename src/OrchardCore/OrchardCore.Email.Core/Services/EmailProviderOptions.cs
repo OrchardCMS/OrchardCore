@@ -11,9 +11,9 @@ public class EmailProviderOptions
     private FrozenDictionary<string, EmailProviderTypeOptions> _readonlyProviders;
 
     /// <summary>
-    /// This read-only collections contains all registered SMS providers.
+    /// This read-only collections contains all registered email providers.
     /// The 'Key' is the technical name of the provider.
-    /// The 'Value' is the type of the SMS provider. The type will always be an implementation of <see cref="IEmailProvider"></see> interface.
+    /// The 'Value' is the type of the email provider. The type will always be an implementation of <see cref="IEmailProvider"></see> interface.
     /// </summary>
     public IReadOnlyDictionary<string, EmailProviderTypeOptions> Providers
         => _readonlyProviders ??= _providers.ToFrozenDictionary(x => x.Key, x => x.Value);
