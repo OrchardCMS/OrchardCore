@@ -14,7 +14,7 @@ public class EmailResult
     public static readonly EmailResult SuccessResult = new() { Succeeded = true };
 
     /// <summary>
-    /// An <see cref="IEnumerable{LocalizedString}"/> containing an errors that occurred during the Smtp operation.
+    /// An <see cref="IEnumerable{LocalizedString}"/> containing errors that may occurred during the email sending operation.
     /// </summary>
     public IEnumerable<LocalizedString> Errors { get; protected set; }
 
