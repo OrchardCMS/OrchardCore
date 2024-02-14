@@ -5,7 +5,7 @@ This module provides the infrastructure necessary to send emails using multiple 
 
 ## SMTP Settings
 
-Enabling the `Email` feature will add a new settings page under `Configurations` >> `Settings` >> `Email`. You can utilize these settings to set up the default Email provider. The following are the providers that are readily accessible in OrchardCore:
+Enabling the `Email` feature will add a new settings page under `Configurations` → `Settings` → `Email`. You can utilize these settings to set up the default Email provider. The following are the providers that are readily accessible in OrchardCore:
 
 
 | Provider | Description |
