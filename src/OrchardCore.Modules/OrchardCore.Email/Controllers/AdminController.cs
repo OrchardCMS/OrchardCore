@@ -12,6 +12,7 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Email.Core.Services;
 using OrchardCore.Email.ViewModels;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Controllers;
 
@@ -22,7 +23,7 @@ public class AdminController : Controller
     private readonly EmailProviderOptions _providerOptions;
     private readonly IEmailService _emailService;
     private readonly IEmailProviderResolver _emailProviderResolver;
-
+    private readonly ISiteService _siteService;
     protected readonly IHtmlLocalizer H;
     protected readonly IStringLocalizer S;
 
@@ -32,6 +33,7 @@ public class AdminController : Controller
         IOptions<EmailProviderOptions> providerOptions,
         IEmailService emailService,
         IEmailProviderResolver emailProviderResolver,
+        ISiteService siteService,
         IHtmlLocalizer<AdminController> htmlLocalizer,
         IStringLocalizer<AdminController> stringLocalizer)
     {
@@ -40,6 +42,7 @@ public class AdminController : Controller
         _providerOptions = providerOptions.Value;
         _emailService = emailService;
         _emailProviderResolver = emailProviderResolver;
+        _siteService = siteService;
         H = htmlLocalizer;
         S = stringLocalizer;
     }
@@ -52,7 +55,12 @@ public class AdminController : Controller
             return Forbid();
         }
 
-        var model = new EmailTestViewModel();
+        var site = await _siteService.GetSiteSettingsAsync();
+
+        var model = new EmailTestViewModel()
+        {
+            Provider = site.As<EmailSettings>().DefaultProviderName,
+        };
 
         PopulateModel(model);
 

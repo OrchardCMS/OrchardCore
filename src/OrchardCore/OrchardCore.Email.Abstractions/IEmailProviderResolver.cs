@@ -10,6 +10,6 @@ public interface IEmailProviderResolver
     /// </summary>
     /// <param name="providerName">The technical name of the Email provider.</param>
     /// <returns>The matching <see cref="IEmailProvider"/> instance or <see langword="null"/> if no default service is available.</returns>
-    /// <exception cref="InvalidEmailProviderException">When invalid provider is given.</exception>
+    /// <exception cref="InvalidEmailProviderException"></exception>
     Task<IEmailProvider> GetAsync(string providerName = null);
 }
