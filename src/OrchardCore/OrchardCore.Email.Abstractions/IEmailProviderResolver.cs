@@ -5,7 +5,7 @@ namespace OrchardCore.Email;
 public interface IEmailProviderResolver
 {
     /// <summary>
-    /// Gets the Email provider for the technical given name.
+    /// Gets the Email provider for the given technical name.
     /// When null or empty string is provided, it returns the default email provider.
     /// </summary>
     /// <param name="name">The key of the Email provider.</param>
