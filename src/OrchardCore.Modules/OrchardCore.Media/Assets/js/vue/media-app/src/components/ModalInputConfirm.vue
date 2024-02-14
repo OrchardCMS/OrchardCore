@@ -19,9 +19,9 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <VueFinalModal v-model="showModal" :modal-id="modalName" class="flex justify-center items-center"
-    content-class="flex flex-column max-w-xl mx-4 p-4 bg-white dark:bg-gray-900 border dark:border-gray-700 rounded-lg space-y-2">
-    <div class="flex justify-content-between">
+  <VueFinalModal v-model="showModal" :modal-id="modalName" class="d-flex justify-center items-center"
+    content-class="d-flex flex-column max-w-xl mx-4 p-4 bg-white dark:bg-gray-900 border dark:border-gray-700 rounded-lg space-y-2">
+    <div class="d-flex justify-content-between">
       <span class="modal__title">
         {{ title }}
       </span>
@@ -31,13 +31,13 @@ const emit = defineEmits<{
     </div>
     <slot />
     <div>
-      <input class="p-inputtext p-component w-full" type="text" name="rename" v-model="newName" />
+      <input class="form-control w-100" type="text" name="rename" v-model="newName" />
     </div>
-    <div class="mt-3 flex flex-row justify-content-end">
+    <div class="mt-3 d-flex flex-row justify-content-end">
       <button class="btn btn-secondary" @click="showModal = false">
         {{ t.Cancel }}
       </button>
-      <button class="ml-2 btn btn-primary" @click="emit('confirm', newName)">
+      <button class="ms-2 btn btn-primary" @click="emit('confirm', newName)">
         {{ actionName }}
       </button>
     </div>

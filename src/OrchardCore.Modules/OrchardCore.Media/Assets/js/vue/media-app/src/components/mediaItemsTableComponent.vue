@@ -128,7 +128,7 @@
         return result;
       },
       buildMediaUrl: function (url: string | string[], thumbSize: Number) {
-        return url + (url.indexOf('?') == -1 ? '?' : '&') + 'width=' + thumbSize + '&height=' + thumbSize + '&rmode=crop';
+        return this.basePath + url + (url.indexOf('?') == -1 ? '?' : '&') + 'width=' + thumbSize + '&height=' + thumbSize + '&rmode=crop';
       },
       changeSort: function (newSort: any) {
         this.emitter.emit('sortChangeRequested', newSort);

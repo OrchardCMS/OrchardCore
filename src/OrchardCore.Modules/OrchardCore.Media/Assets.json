@@ -16,5 +16,19 @@
       "Assets/js/Shared/**/*.js"      
     ],
     "output": "wwwroot/Scripts/media.js"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "Assets/js/vue/media-app/dist/assets/index.js"
+    ],
+    "output": "wwwroot/Scripts/media2.js"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "Assets/js/vue/media-app/dist/assets/index.css"
+    ],
+    "output": "wwwroot/Styles/media2.css"
   }
 ]

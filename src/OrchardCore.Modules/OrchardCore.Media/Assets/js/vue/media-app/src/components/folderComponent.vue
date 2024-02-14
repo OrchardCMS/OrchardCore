@@ -49,8 +49,8 @@ import { useVfm } from 'vue-final-modal'
 import ModalConfirm from './ModalConfirm.vue'
 import ModalInputConfirm from './ModalInputConfirm.vue'
 import { MediaApiClient } from "../services/MediaApiClient";
-import { SeverityLevel } from "../interfaces/Interfaces"
-import { notify } from "../services/Notifier.js";
+import { SeverityLevel } from "../interfaces/interfaces"
+import { notify } from "../services/Notifier";
 
 const debug = dbg("oc:media-app");
 let moveAssetsState = <any>{};

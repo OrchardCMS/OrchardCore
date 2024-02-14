@@ -141,6 +141,7 @@ import { ModalsContainer, useVfm } from 'vue-final-modal'
 import ModalConfirm from './components/ModalConfirm.vue'
 import { MediaApiClient, MoveMedia } from "./services/MediaApiClient";
 import { notify, registerNotificationBus } from "./services/Notifier";
+import { SeverityLevel } from "./interfaces/interfaces"
 
 const debug = dbg("oc:media-app");
 const rootFolder = ref(null);
@@ -294,9 +295,6 @@ export default defineComponent({
             }
             return p;
         },
-        /*         root: function () {
-                    return this.$data.root;
-                }, */
         filteredMediaItems: function () {
             let self = this;
 
@@ -388,7 +386,7 @@ export default defineComponent({
                 dropZone: $('#mediaApp'),
                 limitConcurrentUploads: 20,
                 dataType: 'json',
-                url: me.uploadFilesUrl,
+                url: me.basePath + me.uploadFilesUrl,
                 maxChunkSize: me.maxUploadChunkSize,
                 formData: function () {
                     var antiForgeryToken = $("input[name=__RequestVerificationToken]").val();
