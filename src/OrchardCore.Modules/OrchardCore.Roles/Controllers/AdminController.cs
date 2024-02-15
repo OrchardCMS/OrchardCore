@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Admin;
 using OrchardCore.Data.Documents;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
@@ -19,6 +20,7 @@ using OrchardCore.Security.Services;
 
 namespace OrchardCore.Roles.Controllers
 {
+    [Admin("Roles/{action}/{id?}", "Roles{action}")]
     public class AdminController : Controller
     {
         private readonly IDocumentStore _documentStore;

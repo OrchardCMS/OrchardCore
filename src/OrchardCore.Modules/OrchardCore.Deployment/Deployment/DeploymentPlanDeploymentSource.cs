@@ -60,16 +60,14 @@ namespace OrchardCore.Deployment.Deployment
         /// A Site Settings Step is generic and the name is mapped to the <see cref="IDeploymentStepFactory.Name"/> so its 'Type' should be determined though a lookup.
         /// A normal steps name is not mapped to the <see cref="IDeploymentStepFactory.Name"/> and should use its type.
         /// </summary>
-        private static string GetStepType(IDictionary<string, IDeploymentStepFactory> deploymentStepFactories, DeploymentStep step)
+        private static string GetStepType(Dictionary<string, IDeploymentStepFactory> deploymentStepFactories, DeploymentStep step)
         {
             if (deploymentStepFactories.TryGetValue(step.Name, out var deploymentStepFactory))
             {
                 return deploymentStepFactory.Name;
             }
-            else
-            {
-                return step.GetType().Name;
-            }
+
+            return step.GetType().Name;
         }
     }
 }

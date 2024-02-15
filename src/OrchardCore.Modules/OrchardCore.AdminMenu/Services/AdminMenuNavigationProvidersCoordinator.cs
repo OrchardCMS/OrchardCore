@@ -34,11 +34,10 @@ namespace OrchardCore.AdminMenu.Services
             _logger = logger;
         }
 
-        // We only add them if the caller uses the string "adminMenu").
-        // todo: use a public constant for the string
         public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
-            if (!string.Equals(NavigationConstants.AdminMenuId, name))
+            // We only add them if the caller uses the string "adminMenu".
+            if (name != NavigationConstants.AdminMenuId)
             {
                 return;
             }

@@ -15,9 +15,9 @@ public class JsonDynamicArray : DynamicObject, IEnumerable<JsonNode?>
 {
     private readonly JsonArray _jsonArray;
 
-    public readonly Dictionary<int, object?> _dictionary = new();
+    public readonly Dictionary<int, object?> _dictionary = [];
 
-    public JsonDynamicArray() => _jsonArray = new JsonArray();
+    public JsonDynamicArray() => _jsonArray = [];
 
     public JsonDynamicArray(JsonArray jsonArray) => _jsonArray = jsonArray;
 

@@ -1,4 +1,3 @@
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
@@ -122,7 +121,7 @@ namespace OrchardCore.DisplayManagement.Entities
             return Task.FromResult<IDisplayResult>(null);
         }
 
-        private TSection GetSection(TModel model) 
+        private TSection GetSection(TModel model)
             => model.Properties.TryGetPropertyValue(PropertyName, out var property)
                 ? property.ToObject<TSection>()
                 : new TSection();

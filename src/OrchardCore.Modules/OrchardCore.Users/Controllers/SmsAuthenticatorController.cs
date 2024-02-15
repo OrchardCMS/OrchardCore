@@ -67,7 +67,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         _htmlEncoder = htmlEncoder;
     }
 
-    [Admin]
+    [Admin("Authenticator/Configure/Sms", "ConfigureSmsAuthenticator")]
     public async Task<IActionResult> Index()
     {
         var user = await UserManager.GetUserAsync(User);
@@ -144,6 +144,7 @@ public class SmsAuthenticatorController : TwoFactorAuthenticationBaseController
         return RedirectToAction(nameof(ValidateCode));
     }
 
+    [Admin("Authenticator/Configure/Sms/ValidateCode", "ConfigureSmsAuthenticatorValidateCode")]
     public async Task<IActionResult> ValidateCode()
     {
         var user = await UserManager.GetUserAsync(User);

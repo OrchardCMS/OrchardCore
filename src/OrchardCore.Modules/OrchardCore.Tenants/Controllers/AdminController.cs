@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.Data;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
@@ -26,6 +27,7 @@ using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Controllers
 {
+    [Admin("Tenants/{action}/{id?}", "Tenants{action}")]
     public class AdminController : Controller
     {
         private readonly IShellHost _shellHost;
@@ -88,6 +90,7 @@ namespace OrchardCore.Tenants.Controllers
             H = htmlLocalizer;
         }
 
+        [Admin("Tenants", "Tenants")]
         public async Task<IActionResult> Index(TenantIndexOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))

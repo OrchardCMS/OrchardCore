@@ -12,7 +12,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
     {
         private string _name;
         private string _displayName;
-        private readonly IList<ContentTypePartDefinition> _parts;
+        private readonly List<ContentTypePartDefinition> _parts;
         private readonly JsonObject _settings;
 
         public ContentTypeDefinition Current { get; }

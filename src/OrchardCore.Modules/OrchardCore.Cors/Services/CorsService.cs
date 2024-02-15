@@ -1,7 +1,6 @@
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.Cors.Settings;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Cors.Services
