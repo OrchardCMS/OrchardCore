@@ -1,14 +1,19 @@
 using System;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin.Components;
 using OrchardCore.Admin.Controllers;
 using OrchardCore.Admin.Drivers;
 using OrchardCore.Admin.Models;
+using OrchardCore.Common.Components;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Shell.Configuration;
@@ -84,6 +89,33 @@ namespace OrchardCore.Admin
             });
         }
     }
+
+   
+    public class AdminComponentsStartup : StartupBase
+    {
+        public override int Order => 1;
+
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddRazorComponents()
+                .AddInteractiveServerComponents()
+                .AddInteractiveWebAssemblyComponents();
+            ;
+
+        }
+
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            app.UseStaticFiles();
+            routes.MapRazorComponents<OrchardAdminApp>()
+                .AddInteractiveServerRenderMode()
+                .AddInteractiveWebAssemblyRenderMode()
+                .AddAdditionalAssemblies(typeof(OptionEditor).Assembly)
+                ;
+
+        }
+    }
+
 
     [RequireFeatures("OrchardCore.Deployment")]
     public class DeploymentStartup : StartupBase

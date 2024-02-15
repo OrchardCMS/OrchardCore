@@ -500,6 +500,16 @@ namespace OrchardCore.Resources
                 .SetDependencies("monaco-loader")
                 .SetVersion(MonacoEditorVersion);
 
+            manifest
+             .DefineScript("blazor-custom-elements")
+             .SetUrl("~/_content/Microsoft.AspNetCore.Components.CustomElements/Microsoft.AspNetCore.Components.CustomElements.lib.module.js")
+             .SetVersion("8.0.1");
+
+            manifest
+                .DefineScript("blazor-web-js")
+                .SetUrl("~/_framework/blazor.web.js")
+                .SetVersion("8.0.1");
+
             return manifest;
         }
 

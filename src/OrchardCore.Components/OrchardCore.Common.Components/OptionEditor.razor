@@ -1,0 +1,309 @@
+@using System.Text.Json
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.JSInterop
+
+@inherits ColloctedJSComponent
+
+<a href="javascript:void(0)" @onclick="() => Modal!.Open()" class="float-end" title="@("Edit Data")">
+	<i class="fa-solid fa-edit" aria-hidden="true"></i>
+</a>
+
+
+<table class="table table-bordered table-sm options-table"
+	   ondragover="event.preventDefault();"
+	   ondragstart="event.dataTransfer.setData('', event.target.id);"
+	   @ref="tableElement">
+	<thead class="thead-light">
+		<tr>
+			<th scope="col">Option Label</th>
+			<th scope="col">Value</th>
+			<th scope="col" colspan="3">Default?</th>
+		</tr>
+	</thead>
+	<tbody>
+
+		@for (var keyIndex = 0; keyIndex < Options!.Count; keyIndex++)
+		{
+			var option = Options![keyIndex];
+
+			<tr draggable="true"
+				@key="keyIndex"
+				@ondrop="@(()=> Drop(option))"
+				@ondragstart="@(()=> StartDrag(option))"
+				tabindex="-1">
+
+				<td>
+					<input type="text" placeholder="Enter a name" value="@option.Name" @onchange="(args)=>OptionItemChangeAsync(()=> option.Name = args.Value?.ToString())" class="form-control">
+				</td>
+				<td><input type="text" placeholder="Enter a value" value="@option.Value" @onchange="(args)=>OptionItemChangeAsync(()=> option.Value = args.Value?.ToString())" class="form-control courrier"></td>
+				<td class="text-center align-middle">
+					<div class="form-check ms-2">
+						<input type="radio" @onchange="DefaultOptionChangedAsync"
+							   checked=@(string.Equals(DefaultValueInternal,option.Value,StringComparison.OrdinalIgnoreCase)) class="form-check-input" value="@option.Value" name="radio">
+						<label title="Set as default" for="radio" class="form-check-label"></label>
+					</div>
+				</td>
+				<td class="text-center">
+					<button type="button" title="Remove element from list" class="btn" draggable="false"
+							@onclick="@(() => RemoveOptionAsync(option) )">
+						<i aria-hidden="true" class="fa-solid fa-times"></i>
+					</button>
+				</td>
+				<td class="text-center">
+					<div class="btn cursor-move">
+						<i aria-hidden="true" class="fa-solid fa-arrows-alt"></i>
+					</div>
+				</td>
+			</tr>
+
+		}
+	</tbody>
+
+	<tfoot>
+		<tr>
+			<td colspan="5" class="col-sm-12 text-center">
+				<button type="button" class="btn btn-light w-100 btn-sm" @onclick="AddNewOptionAsync">
+					<i aria-hidden="true" class="fa-solid fa-plus small"></i>
+					Add an option
+				</button>
+			</td>
+		</tr>
+	</tfoot>
+</table>
+
+
+<ModalDialog ShowBackdrop="true" Title="Edit Data" @ref="Modal">
+	<Body>
+		<div class="mb-3">
+			<label for="options-textarea" class="form-label">@("Options")</label>
+			<textarea id="options-textarea" name="options-textarea" rows="8" class="form-control @IsInvalidClass" @oninput="OptionsJsonChangedAsync">@OptionsJsonInternal</textarea>
+			<span class="hint">@("A JSON representation of the allowed values, e.g. {0}") @("[{ name: 'First option', value: 'option1' }, { name: 'Second option', value: 'option2' } ]")</span>
+		</div>
+		<div class="mb-3">
+			<label for="options-defaultvalue" class="form-label">@("Default value")</label>
+			<input id="options-defaultvalue" name="options-defaultvalue" class="form-control" type="text" @bind-value="DefaultValueInternal" />
+			<span class="hint">@("(Optional) The default to assign to the text field.")</span>
+		</div>
+	</Body>
+	<Actions>
+		<button type="button" class="btn btn-primary btn-submit" @onclick="SubmitAsync">@("OK")</button>
+		<button type="button" class="btn btn-secondary" @onclick="()=> Modal!.Close()">@("Cancel")</button>
+	</Actions>
+</ModalDialog>
+
+@code {
+	[Parameter]
+	public string? OptionsJson { get; set; }
+
+	[Parameter]
+	public string? DefaultValue { get; set; }
+
+
+	ElementReference tableElement;
+
+	private ModalDialog? Modal { get; set; }
+
+	private List<OptionsModel>? Options { get; set; }
+	private string? OptionsJsonInternal { get; set; }
+	private string? DefaultValueInternal { get; set; }
+	private string IsInvalidClass { get; set; } = string.Empty;
+	private const string OptionsJsonEmpty = "[]";
+
+
+
+	private void SetOptionsEmpty()
+	{
+		Options = new List<OptionsModel>();
+		OptionsJsonInternal = OptionsJsonEmpty;
+	}
+
+	private bool TryJsonValid(string? json)
+	{
+		if (string.IsNullOrWhiteSpace(json))
+			return false;
+		try
+		{
+			_ = JsonSerializer.Deserialize<List<OptionsModel>>(json, new JsonSerializerOptions(JsonSerializerDefaults.Web));
+			return true;
+		}
+		catch (JsonException)
+		{
+			return false;
+		}
+	}
+
+	private bool TryUpdateOptions(string? json)
+	{
+		if (string.IsNullOrWhiteSpace(json))
+			return false;
+		try
+		{
+
+			var updated = JsonSerializer.Deserialize<List<OptionsModel>>(json, new JsonSerializerOptions(JsonSerializerDefaults.Web));
+			if (updated != null && !Options!.Equals(updated))
+			{
+				Options.Clear();
+				Options.AddRange(updated!);
+			}
+			return true;
+		}
+		catch (JsonException ex)
+		{
+			Console.WriteLine(ex);
+			return false;
+		}
+	}
+
+	private bool TryUpdateOptionsJson(List<OptionsModel>? options)
+	{
+		if (options is null)
+			return false;
+		try
+		{
+			OptionsJsonInternal = JsonSerializer.Serialize(options!, new JsonSerializerOptions(JsonSerializerDefaults.Web));
+			return true;
+		}
+		catch (JsonException ex)
+		{
+			Console.WriteLine(ex);
+			return false;
+		}
+	}
+
+	private async Task OptionItemChangeAsync(Action update)
+	{
+		update();
+		TryUpdateOptionsJson(Options);
+		await TriggerEventAsync();
+	}
+
+
+	protected override Task OnInitializedAsync()
+	{
+		SetOptionsEmpty();
+		return base.OnInitializedAsync();
+	}
+
+
+	protected override Task OnParametersSetAsync()
+	{
+		if (!string.IsNullOrWhiteSpace(OptionsJson))
+		{
+			if (TryUpdateOptions(OptionsJson))
+			{
+				OptionsJsonInternal = OptionsJson;
+			}
+		}
+
+		if (!string.IsNullOrWhiteSpace(DefaultValue))
+			DefaultValueInternal = DefaultValue.Trim();
+		else
+			DefaultValueInternal = string.Empty;
+
+		return base.OnParametersSetAsync();
+	}
+	private Task AddNewOptionAsync()
+	{
+		Options!.Add(new OptionsModel());
+		TryUpdateOptionsJson(Options);
+		return TriggerEventAsync();
+	}
+
+	private Task RemoveOptionAsync(OptionsModel option)
+	{
+		Options!.Remove(option);
+		TryUpdateOptionsJson(Options);
+		return TriggerEventAsync();
+	}
+
+	async Task DefaultOptionChangedAsync(ChangeEventArgs args)
+	{
+		DefaultValueInternal = args.Value?.ToString();
+		await TriggerEventAsync();
+	}
+
+	async Task OptionsJsonChangedAsync(ChangeEventArgs e)
+	{
+		var newVal = e.Value?.ToString();
+		if (TryJsonValid(newVal))
+		{
+			IsInvalidClass = "";
+			OptionsJsonInternal = newVal;
+		}
+		else
+		{
+			IsInvalidClass = "is-invalid";
+		}
+
+		await Task.CompletedTask;
+	}
+
+	async Task SubmitAsync()
+	{
+		if (TryUpdateOptions(OptionsJsonInternal))
+		{
+			await Modal!.Close();
+			await TriggerEventAsync();
+			StateHasChanged();
+		}
+	}
+
+	async Task CancelAsync()
+	{
+		TryUpdateOptionsJson(Options);
+		await Modal!.Close();
+	}
+
+	public class OptionsModel
+	{
+		[Required(AllowEmptyStrings = false, ErrorMessage = "Provide option name")]
+		public string? Name { get; set; }
+		[Required(AllowEmptyStrings = false, ErrorMessage = "Provide option value")]
+		public string? Value { get; set; }
+	}
+
+
+	int currentIndex;
+
+	void StartDrag(OptionsModel item)
+		=> currentIndex = GetIndex(item);
+
+	int GetIndex(OptionsModel item)
+		=> Options!.FindIndex(a => string.Equals(a.Name, item.Name));
+
+	async Task Drop(OptionsModel item)
+	{
+		if (item != null)
+		{
+			var index = GetIndex(item);
+
+			// get current item
+			var current = Options![currentIndex];
+
+			// remove game from current index
+			Options!.RemoveAt(currentIndex);
+			Options!.Insert(index, current);
+
+			// update current selection
+			currentIndex = index;
+
+			TryUpdateOptionsJson(Options);
+			await TriggerEventAsync();
+		}
+		else
+		{
+			await Task.CompletedTask;
+		}
+	}
+
+	async Task TriggerEventAsync()
+	{
+		StateHasChanged();
+		if (JSModule is not null)
+		{
+			await JSModule.InvokeVoidAsync("optionsChanged", tableElement, OptionsJsonInternal, DefaultValueInternal);
+		}
+	}
+
+}

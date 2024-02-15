@@ -1,0 +1,59 @@
+<div class="modal fade @IsOpenClass text-start" role="dialog" style="display:@IsOpenDisplayStyle" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">@Title</h5>
+				<button type="button" class="btn-close" aria-label="Close" @onclick="Close"></button>
+			</div>
+			<div class="modal-body">
+				@Body
+			</div>
+			<div class="modal-footer">
+				@Actions
+			</div>
+		</div>
+	</div>
+</div>
+
+@if (ShowBackdrop && IsOpen)
+{
+	<div class="modal-backdrop fade show"></div>
+}
+
+@code {
+
+	[Parameter]
+	public string? Title { get; set; }
+	[Parameter]
+	public bool ShowBackdrop { get; set; }
+	[Parameter]
+	public RenderFragment? Body { get; set; }
+	[Parameter]
+	public RenderFragment? Actions { get; set; }
+
+
+	public bool IsOpen { get; set; }
+
+	string IsOpenClass { get; set; } = string.Empty;
+
+	string IsOpenDisplayStyle { get; set; } = "none";
+
+	public async Task Open()
+	{
+		IsOpenDisplayStyle = "block";
+		IsOpen = true;
+		await Task.Delay(100);//Delay allows bootstrap to perform nice fade animation
+		IsOpenClass = "show";
+		StateHasChanged();
+
+	}
+
+	public async Task Close() 
+	{
+		IsOpenClass = "";
+		IsOpen = false;
+		await Task.Delay(250);//Delay allows bootstrap to perform nice fade animation
+		IsOpenDisplayStyle = "none";
+		StateHasChanged();
+	}
+}

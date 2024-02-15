@@ -1,13 +1,20 @@
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Endpoints
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.Extensions.DependencyInjection
+@using OrchardCore.Admin.Components
+@using OrchardCore.Common.Components
 @using OrchardCore.ContentFields.Settings
 @model OrchardCore.ContentFields.ViewModels.PredefinedListSettingsViewModel
 
-<script asp-src="~/OrchardCore.ContentFields/Scripts/optionsEditor.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/optionsEditor.js" asp-name="optionsEditor" at="Foot" depends-on="vuejs, vuedraggable"></script>
+@* <script asp-src="~/OrchardCore.ContentFields/Scripts/optionsEditor.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/optionsEditor.js" asp-name="optionsEditor" at="Foot" depends-on="vuejs, vuedraggable"></script>
 <style asp-src="~/OrchardCore.ContentFields/Styles/optionsEditor.min.css" debug-src="~/OrchardCore.ContentFields/Styles/optionsEditor.css"></style>
-
-<script at="Foot">
+ *@
+@* <script at="Foot">
     initializeOptionsEditor(document.getElementById('@Html.IdFor(m => m)'), @Html.Raw(Model.Options), '@Model.DefaultValue', document.getElementsByClassName('@Html.IdFor(m => m)-ModalBody'));
 </script>
-
+ *@
+@*
 <script type="text/x-template" id="options-table">
     <table class="table table-bordered table-sm options-table">
         <thead class="thead-light">
@@ -77,25 +84,35 @@
             </div>
         </div>
     </div>
-</script>
+</script> *@
 
 <div id="@Html.IdFor(m => m)" class="field-editor field-editor-predefinedlist">
-    <div class="row">
-        <div class="mb-3 col-sm-6">
-            <label asp-for="Editor" class="form-label">@T["What type of list editor should be used?"]</label>
-            <select asp-for="Editor" class="form-select">
-                <option value="@nameof(EditorOption.Dropdown)">@T["Drop down list"]</option>
-                <option value="@nameof(EditorOption.Radio)">@T["Radio buttons"]</option>
-            </select>
-        </div>
-    </div>
+	<div class="row">
+		<div class="mb-3 col-sm-6">
+			<label asp-for="Editor" class="form-label">@T["What type of list editor should be used?"]</label>
+			<select asp-for="Editor" class="form-select">
+				<option value="@nameof(EditorOption.Dropdown)">@T["Drop down list"]</option>
+				<option value="@nameof(EditorOption.Radio)">@T["Radio buttons"]</option>
+			</select>
+		</div>
+	</div>
 
-    <div class="row">
-        <div class="col-sm-6">
-            <label asp-for="Options" class="form-label">@T["Options"]</label>
-            <a href="javascript:void(0)" v-on:click="showModal" class="float-end" title="@T["Edit Data"]"><i class="fa-solid fa-edit" aria-hidden="true"></i></a>
-            <options-table :data="sharedState"></options-table>
-            <options-modal :data="sharedState" v-on:reload-data="reloadData()"></options-modal>
-        </div>
-    </div>
+	<div class="row">
+		<div class="col-sm-6" >
+			<label asp-for="Options" class="form-label">@T["Options"]</label>
+			@* <options-table :data="sharedState"></options-table>
+			<options-modal :data="sharedState" v-on:reload-data="reloadData()"></options-modal> *@
+			<Component type="typeof(OptionEditor)" render-mode="WebAssemblyPrerendered" param-optionsjson="Model.Options" />
+			<input class="form-control" id="@Html.IdFor(m => m.Options)" name="@Html.NameFor(m => m.Options)" type="hidden" value="@Model.Options" />
+		</div>
+	</div>
 </div>
+<script at="Foot">
+	document.addEventListener('DOMContentLoaded', function () {
+
+		document.addEventListener("blazor:optionsChanged", function (args) {
+			const elInput = document.getElementById('@Html.IdFor(m => m.Options)');
+			elInput.value = args.detail.options;
+		})
+	}, false);
+</script>

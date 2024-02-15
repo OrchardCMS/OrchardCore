@@ -21,8 +21,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-
-    <!-- This script can't wait till the footer -->
+	
+	<!-- This script can't wait till the footer -->
     <script asp-name="admin-main" version="1" at="Head"></script>
 
     <style asp-name="TheAdminLayout" asp-src="~/TheAdmin/css/admin-layout.min.css" debug-src="~/TheAdmin/css/admin-layout.css" at="Head"></style>
@@ -39,10 +39,13 @@
     }
     <script asp-name="font-awesome" at="Head" version="6"></script>
     <script asp-name="admin" version="1" at="Foot"></script>
+	<script asp-name="blazor-web-js" version="8.0.1" at="Foot"></script>
+	<script asp-name="blazor-custom-elements" version="8.0.1" at="Foot"></script>
 
     <resources type="Header" />
 
     @await RenderSectionAsync("HeadMeta", required: false)
+	<base href="/" />
 </head>
 <body class="preload">
     <div class="ta-wrapper">
@@ -91,5 +94,6 @@
     </div>
     <div id="confirmRemoveModalMetadata" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this element?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]" data-ok-class="btn-danger" data-cancel-class="btn-secondary"></div>
     <resources type="Footer" />
+	<persist-component-state />
 </body>
 </html>
