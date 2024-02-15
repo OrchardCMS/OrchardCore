@@ -53,11 +53,18 @@ namespace OrchardCore.OpenId.Drivers
 
         public override async Task<IDisplayResult> EditAsync(OpenIdClientSettings settings, BuildEditorContext context)
         {
+            if (!context.GroupId.Equals(SettingsGroupId, StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
+
             var user = _httpContextAccessor.HttpContext?.User;
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageClientSettings))
             {
                 return null;
             }
+
+            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
 
             return Initialize<OpenIdClientSettingsViewModel>("OpenIdClientSettings_Edit", model =>
             {
@@ -109,7 +116,7 @@ namespace OrchardCore.OpenId.Drivers
                 return null;
             }
 
-            if (context.GroupId == SettingsGroupId)
+            if (context.GroupId.Equals(SettingsGroupId, StringComparison.OrdinalIgnoreCase))
             {
                 var previousClientSecret = settings.ClientSecret;
                 var model = new OpenIdClientSettingsViewModel();

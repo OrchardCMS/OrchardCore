@@ -151,6 +151,9 @@ services
     });
 ```
 
+!!! note
+    On the admin there will be no indication that this override happened, and the value displayed there will still be the one configured in site settings, so if you choose to do this you'll need to let your users know.
+
 ### `ORCHARD_APP_DATA` Environment Variable
 
 The location of the `App_Data` folder can be configured by setting the `ORCHARD_APP_DATA` environment variable.

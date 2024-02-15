@@ -60,6 +60,11 @@ namespace OrchardCore.Email.Drivers
 
         public override async Task<IDisplayResult> EditAsync(SmtpSettings settings, BuildEditorContext context)
         {
+            if (!IsEmailGroup(context))
+            {
+                return null;
+            }
+
             var user = _httpContextAccessor.HttpContext?.User;
 
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageEmailSettings))
@@ -92,14 +97,14 @@ namespace OrchardCore.Email.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(ISite site, SmtpSettings settings, IUpdateModel updater, BuildEditorContext context)
         {
-            var user = _httpContextAccessor.HttpContext?.User;
-
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageEmailSettings))
+            if (!IsEmailGroup(context))
             {
                 return null;
             }
 
-            if (!context.GroupId.Equals(EmailSettings.GroupId, StringComparison.OrdinalIgnoreCase))
+            var user = _httpContextAccessor.HttpContext?.User;
+
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageEmailSettings))
             {
                 return null;
             }
@@ -204,5 +209,7 @@ namespace OrchardCore.Email.Drivers
 
             return await EditAsync(settings, context);
         }
+        private static bool IsEmailGroup(BuildEditorContext context)
+            => context.GroupId.Equals(EmailSettings.GroupId, StringComparison.OrdinalIgnoreCase);
     }
 }

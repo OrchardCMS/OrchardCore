@@ -13,7 +13,7 @@ Enabling this module will introduce a new tab labeled 'Azure' within the email s
 
 ## Azure Email Settings Configuration
 
-You may configure the Azure Email Service using the `appsettings.json` file by adding the following settings
+You may configure the Azure Email Service using the configuration provider using the following settings
 
 ```json
 "OrchardCore_Email_Azure": {

@@ -45,22 +45,41 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
         _shellSettings = shellSettings;
         S = stringLocalizer;
     }
+    public override async Task<IDisplayResult> EditAsync(EmailSettings settings, BuildEditorContext context)
+    {
+        if (!IsEmailGroup(context))
+        {
+            return null;
+        }
 
-    public override IDisplayResult Edit(EmailSettings settings)
-        => Initialize("EmailSettings_Edit", (Func<EmailSettingsViewModel, ValueTask>)(async model =>
+        var user = _httpContextAccessor.HttpContext?.User;
+
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageEmailSettings))
+        {
+            return null;
+        }
+
+        context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
+
+        return Initialize("EmailSettings_Edit", (Func<EmailSettingsViewModel, ValueTask>)(async model =>
         {
             model.DefaultProvider = settings.DefaultProviderName;
             model.Providers = await GetProviderOptionsAsync();
         })).Location("Content:1#Providers")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageEmailSettings))
         .OnGroup(EmailSettings.GroupId);
+    }
 
     public override async Task<IDisplayResult> UpdateAsync(EmailSettings settings, BuildEditorContext context)
     {
+        if (!IsEmailGroup(context))
+        {
+            return null;
+        }
+
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!context.GroupId.Equals(EmailSettings.GroupId, StringComparison.OrdinalIgnoreCase)
-            || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageEmailSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageEmailSettings))
         {
             return null;
         }
@@ -77,7 +96,7 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
             }
         }
 
-        return Edit(settings);
+        return await EditAsync(settings, context);
     }
 
     private async Task<SelectListItem[]> GetProviderOptionsAsync()
@@ -98,4 +117,7 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
 
         return options.OrderBy(x => x.Text).ToArray();
     }
+
+    private static bool IsEmailGroup(BuildEditorContext context)
+        => context.GroupId.Equals(EmailSettings.GroupId, StringComparison.OrdinalIgnoreCase);
 }

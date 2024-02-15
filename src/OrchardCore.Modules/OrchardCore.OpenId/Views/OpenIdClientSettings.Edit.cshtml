@@ -2,9 +2,6 @@
 @using Microsoft.IdentityModel.Protocols.OpenIdConnect
 @model OpenIdClientSettingsViewModel
 
-<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
-
-
 <script asp-src="~/OrchardCore.OpenId/Scripts/parametersEditor.min.js" debug-src="~/OrchardCore.OpenId/Scripts/parametersEditor.js" asp-name="parametersEditor" at="Foot" depends-on="vuejs, vuedraggable"></script>
 <style asp-src="~/OrchardCore.OpenId/Styles/parametersEditor.min.css" debug-src="~/OrchardCore.OpenId/Styles/parametersEditor.css"></style>
 
@@ -224,7 +221,7 @@
 </div>
 
 <script at="Foot">
-////<![CDATA[
+    ////<![CDATA[
     window.onload = function () {
         refreshFlows();
 
@@ -267,5 +264,5 @@
 
         }
     };
-//]]>
+    //]]>
 </script>

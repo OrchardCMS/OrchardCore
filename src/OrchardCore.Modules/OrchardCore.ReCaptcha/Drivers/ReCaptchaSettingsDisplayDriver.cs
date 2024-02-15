@@ -34,12 +34,19 @@ namespace OrchardCore.ReCaptcha.Drivers
 
         public override async Task<IDisplayResult> EditAsync(ReCaptchaSettings settings, BuildEditorContext context)
         {
+            if (!context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
+
             var user = _httpContextAccessor.HttpContext?.User;
 
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageReCaptchaSettings))
             {
                 return null;
             }
+
+            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
 
             return Initialize<ReCaptchaSettingsViewModel>("ReCaptchaSettings_Edit", model =>
                 {

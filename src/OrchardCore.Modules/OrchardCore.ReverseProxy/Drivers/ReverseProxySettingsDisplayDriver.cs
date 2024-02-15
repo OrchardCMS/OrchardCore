@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -35,6 +36,11 @@ namespace OrchardCore.ReverseProxy.Drivers
 
         public override async Task<IDisplayResult> EditAsync(ReverseProxySettings settings, BuildEditorContext context)
         {
+            if (!context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
+
             var user = _httpContextAccessor.HttpContext?.User;
 
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageReverseProxySettings))
@@ -42,12 +48,15 @@ namespace OrchardCore.ReverseProxy.Drivers
                 return null;
             }
 
+            context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
+
             return Initialize<ReverseProxySettingsViewModel>("ReverseProxySettings_Edit", model =>
             {
                 model.EnableXForwardedFor = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedFor);
                 model.EnableXForwardedHost = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedHost);
                 model.EnableXForwardedProto = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedProto);
-            }).Location("Content:2").OnGroup(GroupId);
+            }).Location("Content:2")
+            .OnGroup(GroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ReverseProxySettings section, BuildEditorContext context)
@@ -59,7 +68,7 @@ namespace OrchardCore.ReverseProxy.Drivers
                 return null;
             }
 
-            if (context.GroupId == GroupId)
+            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
             {
                 var model = new ReverseProxySettingsViewModel();
 

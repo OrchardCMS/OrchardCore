@@ -70,8 +70,6 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
         {
             var hasFileConnectionString = !string.IsNullOrWhiteSpace(azureEmailOptions?.ConnectionString);
 
-            model.IsEnabled = settings.IsEnabled ?? (hasFileConnectionString && !string.IsNullOrWhiteSpace(azureEmailOptions.DefaultSender));
-
             model.DefaultSender = settings.DefaultSender ?? azureEmailOptions.DefaultSender;
             model.ConfigurationExists = !string.IsNullOrWhiteSpace(settings.ConnectionString) && !string.IsNullOrWhiteSpace(settings.DefaultSender);
             model.FileConfigurationExists = hasFileConnectionString;
@@ -94,56 +92,40 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
 
         if (await updater.TryUpdateModelAsync(model, Prefix))
         {
-            var emailSettings = site.As<EmailSettings>();
+            var hasChanges = false;
 
-            var hasChanges = model.IsEnabled != settings.IsEnabled;
+            var azureEmailOptions = _shellConfiguration.GetSection(AzureEmailOptionsConfiguration.SectionName).Get<AzureEmailOptions>();
 
-            if (!model.IsEnabled)
+            if (azureEmailOptions is null || !azureEmailOptions.PreventAdminSettingsOverride)
             {
-                if (hasChanges && emailSettings.DefaultProviderName == AzureEmailProvider.TechnicalName)
-                {
-                    emailSettings.DefaultProviderName = null;
+                hasChanges |= model.DefaultSender != settings.DefaultSender;
 
-                    site.Put(emailSettings);
+                settings.DefaultSender = model.DefaultSender;
+
+                if (string.IsNullOrWhiteSpace(model.ConnectionString)
+                    && settings.ConnectionString is null
+                    && string.IsNullOrWhiteSpace(azureEmailOptions?.ConnectionString))
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.ConnectionString), S["Connection string is required."]);
                 }
-
-                settings.IsEnabled = false;
-            }
-            else
-            {
-                settings.IsEnabled = true;
-
-                var azureEmailOptions = _shellConfiguration.GetSection(AzureEmailOptionsConfiguration.SectionName).Get<AzureEmailOptions>();
-
-                if (azureEmailOptions is null || !azureEmailOptions.PreventAdminSettingsOverride)
+                else if (!string.IsNullOrWhiteSpace(model.ConnectionString))
                 {
-                    hasChanges |= model.DefaultSender != settings.DefaultSender;
+                    // Encrypt the connection string.
+                    var protector = _dataProtectionProvider.CreateProtector(AzureEmailOptionsConfiguration.ProtectorName);
 
-                    settings.DefaultSender = model.DefaultSender;
+                    var protectedConnection = protector.Protect(model.ConnectionString);
 
-                    if (string.IsNullOrWhiteSpace(model.ConnectionString)
-                        && settings.ConnectionString is null
-                        && string.IsNullOrWhiteSpace(azureEmailOptions?.ConnectionString))
-                    {
-                        context.Updater.ModelState.AddModelError(Prefix, nameof(model.ConnectionString), S["Connection string is required."]);
-                    }
-                    else if (!string.IsNullOrWhiteSpace(model.ConnectionString))
-                    {
-                        // Encrypt the connection string.
-                        var protector = _dataProtectionProvider.CreateProtector(AzureEmailOptionsConfiguration.ProtectorName);
+                    // Check if the connection string changed before setting it.
+                    hasChanges |= protectedConnection != settings.ConnectionString;
 
-                        var protectedConnection = protector.Protect(model.ConnectionString);
-
-                        // Check if the connection string changed before setting it.
-                        hasChanges |= protectedConnection != settings.ConnectionString;
-
-                        settings.ConnectionString = protectedConnection;
-                    }
+                    settings.ConnectionString = protectedConnection;
                 }
             }
 
             if (context.Updater.ModelState.IsValid)
             {
+                var emailSettings = site.As<EmailSettings>();
+
                 if (string.IsNullOrEmpty(emailSettings.DefaultProviderName))
                 {
                     // If we are enabling the only provider, set it as the default one.
