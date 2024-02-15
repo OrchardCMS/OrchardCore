@@ -31,29 +31,10 @@ public class SmtpOptionsConfiguration : IConfigureOptions<SmtpOptions>
 
     public void Configure(SmtpOptions options)
     {
-        var fileSettings = _shellConfiguration.GetSection(SectionName);
-
-        if (fileSettings.Exists())
-        {
-            fileSettings.Bind(options);
-
-            if (HasRequiredSettings(options))
-            {
-                options.IsEnabled = true;
-
-                return;
-            }
-            else
-            {
-                _logger.LogWarning("The SMTP provider settings in the configuration provider are invalid or are incomplete.");
-            }
-        }
-
         var settings = _siteService.GetSiteSettingsAsync()
             .GetAwaiter().GetResult()
             .As<SmtpSettings>();
 
-        options.IsEnabled = settings.IsEnabled ?? HasRequiredSettings(settings);
         options.DefaultSender = settings.DefaultSender;
         options.DeliveryMethod = settings.DeliveryMethod;
         options.PickupDirectoryLocation = settings.PickupDirectoryLocation;
@@ -82,20 +63,18 @@ public class SmtpOptionsConfiguration : IConfigureOptions<SmtpOptions>
                 _logger.LogError("The Smtp password could not be decrypted. It may have been encrypted using a different key.");
             }
         }
+
+        var fileSettings = _shellConfiguration.GetSection(SectionName);
+
+        if (fileSettings.Exists())
+        {
+            fileSettings.Bind(options);
+        }
+
+        options.IsEnabled = settings.IsEnabled ?? HasRequiredSettings(options);
     }
 
     private static bool HasRequiredSettings(SmtpOptions model)
-    {
-        if (string.IsNullOrEmpty(model.DefaultSender))
-        {
-            return false;
-        }
-
-        return model.DeliveryMethod == SmtpDeliveryMethod.SpecifiedPickupDirectory
-            || (model.DeliveryMethod == SmtpDeliveryMethod.Network && !string.IsNullOrEmpty(model.Host));
-    }
-
-    private static bool HasRequiredSettings(SmtpSettings model)
     {
         if (string.IsNullOrEmpty(model.DefaultSender))
         {
