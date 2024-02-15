@@ -46,8 +46,9 @@ namespace Microsoft.Extensions.DependencyInjection
         private static readonly Type[] _routingTypesToIsolate = new ServiceCollection()
             .AddRouting()
             .Where(sd =>
-                sd.Lifetime == ServiceLifetime.Singleton ||
-                sd.ServiceType == typeof(IConfigureOptions<RouteOptions>))
+                sd.Lifetime == ServiceLifetime.Singleton
+                || sd.ServiceType == typeof(IConfigureOptions<RouteOptions>)
+            )
             .Select(sd => sd.GetImplementationType())
             .ToArray();
 
@@ -58,10 +59,12 @@ namespace Microsoft.Extensions.DependencyInjection
             .AddHttpClient()
             .Where(sd => sd.Lifetime == ServiceLifetime.Singleton)
             .Select(sd => sd.GetImplementationType())
-            .Except(new ServiceCollection()
-                .AddLogging()
-                .Where(sd => sd.Lifetime == ServiceLifetime.Singleton)
-                .Select(sd => sd.GetImplementationType()))
+            .Except(
+                new ServiceCollection()
+                    .AddLogging()
+                    .Where(sd => sd.Lifetime == ServiceLifetime.Singleton)
+                    .Select(sd => sd.GetImplementationType())
+            )
             .ToArray();
 
         /// <summary>
@@ -82,9 +85,10 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // If an instance of OrchardCoreBuilder exists reuse it,
             // so we can call AddOrchardCore several times.
-            var builder = services
-                .LastOrDefault(d => d.ServiceType == typeof(OrchardCoreBuilder))?
-                .ImplementationInstance as OrchardCoreBuilder;
+            var builder =
+                services
+                    .LastOrDefault(d => d.ServiceType == typeof(OrchardCoreBuilder))
+                    ?.ImplementationInstance as OrchardCoreBuilder;
 
             if (builder == null)
             {
@@ -116,7 +120,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Adds OrchardCore services to the host service collection and let the app change
         /// the default behavior and set of features through a configure action.
         /// </summary>
-        public static IServiceCollection AddOrchardCore(this IServiceCollection services, Action<OrchardCoreBuilder> configure)
+        public static IServiceCollection AddOrchardCore(
+            this IServiceCollection services,
+            Action<OrchardCoreBuilder> configure
+        )
         {
             var builder = services.AddOrchardCore();
 
@@ -155,16 +162,22 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<IOrchardHelper, DefaultOrchardHelper>();
             services.AddSingleton<IClientIPAddressAccessor, DefaultClientIPAddressAccessor>();
 
-            builder.ConfigureServices((services, serviceProvider) =>
-            {
-                services.AddSingleton<LocalLock>();
-                services.AddSingleton<ILocalLock>(sp => sp.GetRequiredService<LocalLock>());
-                services.AddSingleton<IDistributedLock>(sp => sp.GetRequiredService<LocalLock>());
+            builder.ConfigureServices(
+                (services, serviceProvider) =>
+                {
+                    services.AddSingleton<LocalLock>();
+                    services.AddSingleton<ILocalLock>(sp => sp.GetRequiredService<LocalLock>());
+                    services.AddSingleton<IDistributedLock>(sp =>
+                        sp.GetRequiredService<LocalLock>()
+                    );
 
-                var configuration = serviceProvider.GetService<IShellConfiguration>();
+                    var configuration = serviceProvider.GetService<IShellConfiguration>();
 
-                services.Configure<CultureOptions>(configuration.GetSection("OrchardCore_Localization_CultureOptions"));
-            });
+                    services.Configure<CultureOptions>(
+                        configuration.GetSection("OrchardCore_Localization_CultureOptions")
+                    );
+                }
+            );
 
             services.AddSingleton<ISlugService, SlugService>();
         }
@@ -178,20 +191,23 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddAllFeaturesDescriptor();
 
             // Registers the application primary feature.
-            services.AddTransient(sp => new ShellFeature
-            (
-                sp.GetRequiredService<IHostEnvironment>().ApplicationName, alwaysEnabled: true)
-            );
+            services.AddTransient(sp => new ShellFeature(
+                sp.GetRequiredService<IHostEnvironment>().ApplicationName,
+                alwaysEnabled: true
+            ));
 
             // Registers the application default feature.
-            services.AddTransient(sp => new ShellFeature
-            (
-                Application.DefaultFeatureId, alwaysEnabled: true)
-            );
+            services.AddTransient(sp => new ShellFeature(
+                Application.DefaultFeatureId,
+                alwaysEnabled: true
+            ));
 
             builder.ConfigureServices(shellServices =>
             {
-                shellServices.AddTransient<IConfigureOptions<ShellContextOptions>, ShellContextOptionsSetup>();
+                shellServices.AddTransient<
+                    IConfigureOptions<ShellContextOptions>,
+                    ShellContextOptionsSetup
+                >();
                 shellServices.AddNullFeatureProfilesService();
                 shellServices.AddFeatureValidation();
                 shellServices.ConfigureFeatureProfilesRuleOptions();
@@ -200,8 +216,14 @@ namespace Microsoft.Extensions.DependencyInjection
 
         private static void AddExtensionServices(OrchardCoreBuilder builder)
         {
-            builder.ApplicationServices.AddSingleton<IModuleNamesProvider, AssemblyAttributeModuleNamesProvider>();
-            builder.ApplicationServices.AddSingleton<IApplicationContext, ModularApplicationContext>();
+            builder.ApplicationServices.AddSingleton<
+                IModuleNamesProvider,
+                AssemblyAttributeModuleNamesProvider
+            >();
+            builder.ApplicationServices.AddSingleton<
+                IApplicationContext,
+                ModularApplicationContext
+            >();
 
             builder.ApplicationServices.AddExtensionManagerHost();
 
@@ -209,7 +231,10 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 services.AddExtensionManager();
                 services.AddScoped<IShellFeaturesManager, ShellFeaturesManager>();
-                services.AddScoped<IShellDescriptorFeaturesManager, ShellDescriptorFeaturesManager>();
+                services.AddScoped<
+                    IShellDescriptorFeaturesManager,
+                    ShellDescriptorFeaturesManager
+                >();
             });
         }
 
@@ -248,34 +273,43 @@ namespace Microsoft.Extensions.DependencyInjection
                 });
             });
 
-            builder.Configure((app, routes, serviceProvider) =>
-            {
-                var fileProvider = serviceProvider.GetRequiredService<IModuleStaticFileProvider>();
-
-                var shellConfiguration = serviceProvider.GetRequiredService<IShellConfiguration>();
-                // Cache static files for a year as they are coming from embedded resources and should not vary.
-                var cacheControl = shellConfiguration.GetValue("StaticFileOptions:CacheControl", $"public, max-age={TimeSpan.FromDays(30).TotalSeconds}, s-maxage={TimeSpan.FromDays(365.25).TotalSeconds}");
-
-                // Use the current options values but without mutating the resolved instance.
-                var options = serviceProvider.GetRequiredService<IOptions<StaticFileOptions>>().Value;
-                options = new StaticFileOptions
+            builder.Configure(
+                (app, routes, serviceProvider) =>
                 {
-                    RequestPath = string.Empty,
-                    FileProvider = fileProvider,
-                    RedirectToAppendTrailingSlash = options.RedirectToAppendTrailingSlash,
-                    ContentTypeProvider = options.ContentTypeProvider,
-                    DefaultContentType = options.DefaultContentType,
-                    ServeUnknownFileTypes = options.ServeUnknownFileTypes,
-                    HttpsCompression = options.HttpsCompression,
+                    var fileProvider =
+                        serviceProvider.GetRequiredService<IModuleStaticFileProvider>();
 
-                    OnPrepareResponse = ctx =>
+                    var shellConfiguration =
+                        serviceProvider.GetRequiredService<IShellConfiguration>();
+                    // Cache static files for a year as they are coming from embedded resources and should not vary.
+                    var cacheControl = shellConfiguration.GetValue(
+                        "StaticFileOptions:CacheControl",
+                        $"public, max-age={TimeSpan.FromDays(30).TotalSeconds}, s-maxage={TimeSpan.FromDays(365.25).TotalSeconds}"
+                    );
+
+                    // Use the current options values but without mutating the resolved instance.
+                    var options = serviceProvider
+                        .GetRequiredService<IOptions<StaticFileOptions>>()
+                        .Value;
+                    options = new StaticFileOptions
                     {
-                        ctx.Context.Response.Headers[HeaderNames.CacheControl] = cacheControl;
-                    },
-                };
+                        RequestPath = string.Empty,
+                        FileProvider = fileProvider,
+                        RedirectToAppendTrailingSlash = options.RedirectToAppendTrailingSlash,
+                        ContentTypeProvider = options.ContentTypeProvider,
+                        DefaultContentType = options.DefaultContentType,
+                        ServeUnknownFileTypes = options.ServeUnknownFileTypes,
+                        HttpsCompression = options.HttpsCompression,
 
-                app.UseStaticFiles(options);
-            });
+                        OnPrepareResponse = ctx =>
+                        {
+                            ctx.Context.Response.Headers[HeaderNames.CacheControl] = cacheControl;
+                        },
+                    };
+
+                    app.UseStaticFiles(options);
+                }
+            );
         }
 
         /// <summary>
@@ -285,25 +319,28 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             // 'AddMetrics()' is called by the host.
 
-            builder.ConfigureServices(collection =>
-            {
-                // The 'DefaultMeterFactory' caches 'Meters' in a non thread safe dictionary.
-                // So, we need to register an isolated 'IMeterFactory' singleton per tenant.
-                var descriptorsToRemove = collection
-                    .Where(sd =>
-                        sd is ClonedSingletonDescriptor &&
-                        _metricsTypesToIsolate.Contains(sd.GetImplementationType()))
-                    .ToArray();
-                // Isolate each tenant from the host.
-
-                foreach (var descriptor in descriptorsToRemove)
+            builder.ConfigureServices(
+                collection =>
                 {
-                    collection.Remove(descriptor);
-                }
+                    // The 'DefaultMeterFactory' caches 'Meters' in a non thread safe dictionary.
+                    // So, we need to register an isolated 'IMeterFactory' singleton per tenant.
+                    var descriptorsToRemove = collection
+                        .Where(sd =>
+                            sd is ClonedSingletonDescriptor
+                            && _metricsTypesToIsolate.Contains(sd.GetImplementationType())
+                        )
+                        .ToArray();
+                    // Isolate each tenant from the host.
 
-                collection.AddMetrics();
-            },
-            order: int.MinValue + 100);
+                    foreach (var descriptor in descriptorsToRemove)
+                    {
+                        collection.Remove(descriptor);
+                    }
+
+                    collection.AddMetrics();
+                },
+                order: int.MinValue + 100
+            );
         }
 
         /// <summary>
@@ -313,28 +350,32 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             // 'AddRouting()' is called by the host.
 
-            builder.ConfigureServices(collection =>
-            {
-                // The routing system is not tenant aware and uses a global list of endpoint data sources which is
-                // setup by the default configuration of 'RouteOptions' and mutated on each call of 'UseEndPoints()'.
-                // So, we need isolated routing singletons (and a default configuration) per tenant.
-
-                var descriptorsToRemove = collection
-                    .Where(sd =>
-                        (sd is ClonedSingletonDescriptor ||
-                        sd.ServiceType == typeof(IConfigureOptions<RouteOptions>)) &&
-                        _routingTypesToIsolate.Contains(sd.GetImplementationType()))
-                    .ToArray();
-
-                // Isolate each tenant from the host.
-                foreach (var descriptor in descriptorsToRemove)
+            builder.ConfigureServices(
+                collection =>
                 {
-                    collection.Remove(descriptor);
-                }
+                    // The routing system is not tenant aware and uses a global list of endpoint data sources which is
+                    // setup by the default configuration of 'RouteOptions' and mutated on each call of 'UseEndPoints()'.
+                    // So, we need isolated routing singletons (and a default configuration) per tenant.
 
-                collection.AddRouting();
-            },
-            order: int.MinValue + 100);
+                    var descriptorsToRemove = collection
+                        .Where(sd =>
+                            (
+                                sd is ClonedSingletonDescriptor
+                                || sd.ServiceType == typeof(IConfigureOptions<RouteOptions>)
+                            ) && _routingTypesToIsolate.Contains(sd.GetImplementationType())
+                        )
+                        .ToArray();
+
+                    // Isolate each tenant from the host.
+                    foreach (var descriptor in descriptorsToRemove)
+                    {
+                        collection.Remove(descriptor);
+                    }
+
+                    collection.AddRouting();
+                },
+                order: int.MinValue + 100
+            );
         }
 
         /// <summary>
@@ -342,38 +383,48 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         private static void IsolateHttpClient(OrchardCoreBuilder builder)
         {
-            builder.ConfigureServices(collection =>
-            {
-                // Each tenant needs isolated http client singletons and configurations, so that
-                // typed clients/handlers are activated/resolved from the right tenant container.
-
-                // Retrieve current options configurations.
-                var configurationDescriptorsToRemove = collection
-                    .Where(sd =>
-                        sd.ServiceType.IsGenericType &&
-                        sd.ServiceType.GenericTypeArguments.Contains(typeof(HttpClientFactoryOptions)))
-                    .ToArray();
-
-                // Retrieve all descriptors to remove.
-                var descriptorsToRemove = collection
-                    .Where(sd =>
-                        sd is ClonedSingletonDescriptor &&
-                        _httpClientTypesToIsolate.Contains(sd.GetImplementationType()))
-                    .Concat(configurationDescriptorsToRemove)
-                    .ToArray();
-
-                // Isolate each tenant from the host.
-                foreach (var descriptor in descriptorsToRemove)
+            builder.ConfigureServices(
+                collection =>
                 {
-                    collection.Remove(descriptor);
-                }
+                    // Each tenant needs isolated http client singletons and configurations, so that
+                    // typed clients/handlers are activated/resolved from the right tenant container.
 
-                // Make the http client factory 'IDisposable'.
-                collection.AddSingleton<TenantHttpClientFactory>();
-                collection.AddSingleton<IHttpClientFactory>(sp => sp.GetRequiredService<TenantHttpClientFactory>());
-                collection.AddSingleton<IHttpMessageHandlerFactory>(sp => sp.GetRequiredService<TenantHttpClientFactory>());
-            },
-            order: int.MinValue + 100);
+                    // Retrieve current options configurations.
+                    var configurationDescriptorsToRemove = collection
+                        .Where(sd =>
+                            sd.ServiceType.IsGenericType
+                            && sd.ServiceType.GenericTypeArguments.Contains(
+                                typeof(HttpClientFactoryOptions)
+                            )
+                        )
+                        .ToArray();
+
+                    // Retrieve all descriptors to remove.
+                    var descriptorsToRemove = collection
+                        .Where(sd =>
+                            sd is ClonedSingletonDescriptor
+                            && _httpClientTypesToIsolate.Contains(sd.GetImplementationType())
+                        )
+                        .Concat(configurationDescriptorsToRemove)
+                        .ToArray();
+
+                    // Isolate each tenant from the host.
+                    foreach (var descriptor in descriptorsToRemove)
+                    {
+                        collection.Remove(descriptor);
+                    }
+
+                    // Make the http client factory 'IDisposable'.
+                    collection.AddSingleton<TenantHttpClientFactory>();
+                    collection.AddSingleton<IHttpClientFactory>(sp =>
+                        sp.GetRequiredService<TenantHttpClientFactory>()
+                    );
+                    collection.AddSingleton<IHttpMessageHandlerFactory>(sp =>
+                        sp.GetRequiredService<TenantHttpClientFactory>()
+                    );
+                },
+                order: int.MinValue + 100
+            );
         }
 
         /// <summary>
@@ -383,26 +434,31 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             // 'AddEndpointsApiExplorer()' is called by the host.
 
-            builder.ConfigureServices(collection =>
-            {
-                // Remove the related host singletons as they are not tenant aware.
-                var descriptorsToRemove = collection
-                    .Where(sd =>
-                        sd is ClonedSingletonDescriptor &&
-                        (sd.ServiceType == typeof(IActionDescriptorCollectionProvider) ||
-                        sd.ServiceType == typeof(IApiDescriptionGroupCollectionProvider)))
-                    .ToArray();
-
-                // Isolate each tenant from the host.
-                foreach (var descriptor in descriptorsToRemove)
+            builder.ConfigureServices(
+                collection =>
                 {
-                    collection.Remove(descriptor);
-                }
+                    // Remove the related host singletons as they are not tenant aware.
+                    var descriptorsToRemove = collection
+                        .Where(sd =>
+                            sd is ClonedSingletonDescriptor
+                            && (
+                                sd.ServiceType == typeof(IActionDescriptorCollectionProvider)
+                                || sd.ServiceType == typeof(IApiDescriptionGroupCollectionProvider)
+                            )
+                        )
+                        .ToArray();
 
-                // Configure ApiExplorer at the tenant level.
-                collection.AddEndpointsApiExplorer();
-            },
-            order: int.MinValue + 100);
+                    // Isolate each tenant from the host.
+                    foreach (var descriptor in descriptorsToRemove)
+                    {
+                        collection.Remove(descriptor);
+                    }
+
+                    // Configure ApiExplorer at the tenant level.
+                    collection.AddEndpointsApiExplorer();
+                },
+                order: int.MinValue + 100
+            );
         }
 
         /// <summary>
@@ -412,24 +468,26 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ApplicationServices.AddAntiforgery();
 
-            builder.ConfigureServices((services, serviceProvider) =>
-            {
-                var settings = serviceProvider.GetRequiredService<ShellSettings>();
-                var cookieName = "__orchantiforgery_" + settings.VersionId;
+            builder.ConfigureServices(
+                (services, serviceProvider) =>
+                {
+                    var settings = serviceProvider.GetRequiredService<ShellSettings>();
+                    var cookieName = "__orchantiforgery_" + settings.VersionId;
 
-                // Re-register the antiforgery services to be tenant-aware.
-                var collection = new ServiceCollection()
-                    .AddAntiforgery(options =>
+                    // Re-register the antiforgery services to be tenant-aware.
+                    var collection = new ServiceCollection().AddAntiforgery(options =>
                     {
                         options.Cookie.Name = cookieName;
+                        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 
                         // Don't set the cookie builder 'Path' so that it uses the 'IAuthenticationFeature' value
                         // set by the pipeline and comming from the request 'PathBase' which already ends with the
                         // tenant prefix but may also start by a path related e.g to a virtual folder.
                     });
 
-                services.Add(collection);
-            });
+                    services.Add(collection);
+                }
+            );
         }
 
         /// <summary>
@@ -437,22 +495,34 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         private static void AddSameSiteCookieBackwardsCompatibility(OrchardCoreBuilder builder)
         {
-            builder.ConfigureServices(services =>
-            {
-                services.Configure<CookiePolicyOptions>(options =>
+            builder
+                .ConfigureServices(services =>
                 {
-                    options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
-                    options.OnAppendCookie = cookieContext => CheckSameSiteBackwardsCompatibility(cookieContext.Context, cookieContext.CookieOptions);
-                    options.OnDeleteCookie = cookieContext => CheckSameSiteBackwardsCompatibility(cookieContext.Context, cookieContext.CookieOptions);
+                    services.Configure<CookiePolicyOptions>(options =>
+                    {
+                        options.MinimumSameSitePolicy = SameSiteMode.Unspecified;
+                        options.OnAppendCookie = cookieContext =>
+                            CheckSameSiteBackwardsCompatibility(
+                                cookieContext.Context,
+                                cookieContext.CookieOptions
+                            );
+                        options.OnDeleteCookie = cookieContext =>
+                            CheckSameSiteBackwardsCompatibility(
+                                cookieContext.Context,
+                                cookieContext.CookieOptions
+                            );
+                    });
+                })
+                .Configure(app =>
+                {
+                    app.UseCookiePolicy();
                 });
-            })
-            .Configure(app =>
-            {
-                app.UseCookiePolicy();
-            });
         }
 
-        private static void CheckSameSiteBackwardsCompatibility(HttpContext httpContext, CookieOptions options)
+        private static void CheckSameSiteBackwardsCompatibility(
+            HttpContext httpContext,
+            CookieOptions options
+        )
         {
             var userAgent = httpContext.Request.Headers.UserAgent.ToString();
 
@@ -479,8 +549,11 @@ namespace Microsoft.Extensions.DependencyInjection
                 // This does not include:
                 // - Chrome on Mac OS X.
                 // Because they do not use the Mac OS networking stack.
-                if (userAgent.Contains("Macintosh; Intel Mac OS X 10_14") &&
-                    userAgent.Contains("Version/") && userAgent.Contains("Safari"))
+                if (
+                    userAgent.Contains("Macintosh; Intel Mac OS X 10_14")
+                    && userAgent.Contains("Version/")
+                    && userAgent.Contains("Safari")
+                )
                 {
                     options.SameSite = SameSiteMode.Unspecified;
                     return;
@@ -504,20 +577,27 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ApplicationServices.AddAuthentication();
 
-            builder.ConfigureServices(services =>
-            {
-                services.AddAuthentication();
+            builder
+                .ConfigureServices(services =>
+                {
+                    services.AddAuthentication();
 
-                // IAuthenticationSchemeProvider is already registered at the host level.
-                // We need to register it again so it is taken into account at the tenant level
-                // because it holds a reference to an underlying dictionary, responsible of storing
-                // the registered schemes which need to be distinct for each tenant.
-                services.AddSingleton<IAuthenticationSchemeProvider, AuthenticationSchemeProvider>();
-            })
-            .Configure(app =>
-            {
-                app.UseAuthentication();
-            }, order: -150);
+                    // IAuthenticationSchemeProvider is already registered at the host level.
+                    // We need to register it again so it is taken into account at the tenant level
+                    // because it holds a reference to an underlying dictionary, responsible of storing
+                    // the registered schemes which need to be distinct for each tenant.
+                    services.AddSingleton<
+                        IAuthenticationSchemeProvider,
+                        AuthenticationSchemeProvider
+                    >();
+                })
+                .Configure(
+                    app =>
+                    {
+                        app.UseAuthentication();
+                    },
+                    order: -150
+                );
         }
 
         /// <summary>
@@ -525,34 +605,40 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         private static void AddDataProtection(OrchardCoreBuilder builder)
         {
-            builder.ConfigureServices((services, serviceProvider) =>
-            {
-                var settings = serviceProvider.GetRequiredService<ShellSettings>();
-                var options = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
+            builder.ConfigureServices(
+                (services, serviceProvider) =>
+                {
+                    var settings = serviceProvider.GetRequiredService<ShellSettings>();
+                    var options = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
 
-                // The 'FileSystemXmlRepository' will create the directory, but only if it is not overridden.
-                var directory = new DirectoryInfo(Path.Combine(
-                    options.Value.ShellsApplicationDataPath,
-                    options.Value.ShellsContainerName,
-                    settings.Name, "DataProtection-Keys"));
+                    // The 'FileSystemXmlRepository' will create the directory, but only if it is not overridden.
+                    var directory = new DirectoryInfo(
+                        Path.Combine(
+                            options.Value.ShellsApplicationDataPath,
+                            options.Value.ShellsContainerName,
+                            settings.Name,
+                            "DataProtection-Keys"
+                        )
+                    );
 
-                // Re-register the data protection services to be tenant-aware so that modules that internally
-                // rely on IDataProtector/IDataProtectionProvider automatically get an isolated instance that
-                // manages its own key ring and doesn't allow decrypting payloads encrypted by another tenant.
-                // By default, the key ring is stored in the tenant directory of the configured App_Data path.
-                var collection = new ServiceCollection()
-                    .AddDataProtection()
-                    .PersistKeysToFileSystem(directory)
-                    .SetApplicationName(settings.Name)
-                    .AddKeyManagementOptions(o => o.XmlEncryptor ??= new NullXmlEncryptor())
-                    .Services;
+                    // Re-register the data protection services to be tenant-aware so that modules that internally
+                    // rely on IDataProtector/IDataProtectionProvider automatically get an isolated instance that
+                    // manages its own key ring and doesn't allow decrypting payloads encrypted by another tenant.
+                    // By default, the key ring is stored in the tenant directory of the configured App_Data path.
+                    var collection = new ServiceCollection()
+                        .AddDataProtection()
+                        .PersistKeysToFileSystem(directory)
+                        .SetApplicationName(settings.Name)
+                        .AddKeyManagementOptions(o => o.XmlEncryptor ??= new NullXmlEncryptor())
+                        .Services;
 
-                // Remove any previously registered options setups.
-                services.RemoveAll<IConfigureOptions<KeyManagementOptions>>();
-                services.RemoveAll<IConfigureOptions<DataProtectionOptions>>();
+                    // Remove any previously registered options setups.
+                    services.RemoveAll<IConfigureOptions<KeyManagementOptions>>();
+                    services.RemoveAll<IConfigureOptions<DataProtectionOptions>>();
 
-                services.Add(collection);
-            });
+                    services.Add(collection);
+                }
+            );
         }
     }
 }
