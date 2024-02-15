@@ -50,8 +50,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             jsonSerializerOptions.Setup(x => x.Value)
                 .Returns(jsonOptions);
 
-            var jsonSerializer = new DefaultJsonSerializer(jsonSerializerOptions.Object);
-            var contentSerializer = new DefaultJsonContentSerializer(jsonSerializer);
+            var contentSerializer = new DefaultJsonContentSerializer(jsonSerializerOptions.Object);
 
             _store.Configuration.ContentSerializer = contentSerializer;
             _prefixedStore.Configuration.ContentSerializer = contentSerializer;

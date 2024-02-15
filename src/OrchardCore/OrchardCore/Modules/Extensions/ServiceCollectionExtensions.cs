@@ -30,7 +30,6 @@ using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Extensions;
-using OrchardCore.Json;
 using OrchardCore.Localization;
 using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
@@ -156,7 +155,6 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
 
             services.AddTransient<IConfigureOptions<JsonSerializerOptions>, JsonSerializerOptionsConfiguration>();
-            services.AddTransient<IJsonSerializer, DefaultJsonSerializer>();
 
             services.AddScoped<IOrchardHelper, DefaultOrchardHelper>();
             services.AddSingleton<IClientIPAddressAccessor, DefaultClientIPAddressAccessor>();
