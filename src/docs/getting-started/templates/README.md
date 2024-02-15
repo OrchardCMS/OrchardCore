@@ -73,7 +73,7 @@ Fire up Visual Studio, create a new solution file (`.sln`) by creating a new ASP
 ![image](../assets/images/templates/orchard-screencast-1.gif)
 
 Now that we created a new Web Application we need to add proper dependencies so that this new Web Application be targeted as an Orchard Core application.
-Orchard Core can be added through two distinct NuGet meta packages: `OrchardCore.Application.Cms.Core.Targets` and `OrchardCore.Application.Cms.Targets`. For additional information regarding these packages, please refer to [this link](../starter-recipes/README.md). You must add one of these NuGet packages in your Web Application.
+Orchard Core can be added through two distinct NuGet meta packages: `OrchardCore.Application.Cms.Core.Targets` and `OrchardCore.Application.Cms.Targets`. For additional information regarding these packages, please refer to [this link](../starter-recipes.md). You must add one of these NuGet packages in your Web Application.
 
 !!! note
     If you want to use the `preview` packages, [configure the OrchardCore Preview url in your Package sources](../preview-package-source.md)
