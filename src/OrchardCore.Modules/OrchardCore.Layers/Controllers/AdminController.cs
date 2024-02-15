@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
@@ -26,6 +27,7 @@ using YesSql;
 
 namespace OrchardCore.Layers.Controllers
 {
+    [Admin("Layers/{action}/{id?}", "Layers.{action}")]
     public class AdminController : Controller
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
@@ -84,6 +86,7 @@ namespace OrchardCore.Layers.Controllers
             _logger = logger;
         }
 
+        [Admin("Layers", "Layers.Index")]
         public async Task<IActionResult> Index()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))

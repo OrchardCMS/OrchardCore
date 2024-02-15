@@ -17,7 +17,7 @@ namespace OrchardCore.Taxonomies.Drivers
 {
     public class TaxonomyPartDisplayDriver : ContentPartDisplayDriver<TaxonomyPart>
     {
-        private readonly IStringLocalizer S;
+        protected readonly IStringLocalizer S;
 
         public TaxonomyPartDisplayDriver(IStringLocalizer<TaxonomyPartDisplayDriver> stringLocalizer)
         {
@@ -26,7 +26,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
         public override IDisplayResult Display(TaxonomyPart part, BuildPartDisplayContext context)
         {
-            var hasItems = part.Terms.Any();
+            var hasItems = part.Terms.Count > 0;
             return Initialize<TaxonomyPartViewModel>(hasItems ? "TaxonomyPart" : "TaxonomyPart_Empty", m =>
             {
                 m.ContentItem = part.ContentItem;
@@ -109,7 +109,7 @@ namespace OrchardCore.Taxonomies.Drivers
             return newObj;
         }
 
-        private JsonObject ProcessItem(TaxonomyPart originalItems, JsonObject item)
+        private static JsonObject ProcessItem(TaxonomyPart originalItems, JsonObject item)
         {
             var contentItem = GetTaxonomyItemAt(originalItems.Terms, item["index"].ToString().Split('-').Select(x => Convert.ToInt32(x)).ToArray());
 

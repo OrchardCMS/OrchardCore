@@ -33,13 +33,19 @@ namespace OrchardCore.Tests.Workflows
                 WorkflowTypeId = IdGenerator.GenerateId(),
                 Activities =
                 [
-                    new() { ActivityId = "1", IsStart = true, Name = addTask.Name, Properties = JObject.FromObject( new
+                    new()
                     {
-                        A = new WorkflowExpression<double>("input(\"A\")"),
-                        B = new WorkflowExpression<double>("input(\"B\")"),
-                    }) },
-                    new() { ActivityId = "2", Name = writeLineTask.Name, Properties = JObject.FromObject( new { Text = new WorkflowExpression<string>("lastResult().toString()") }) },
-                    new() { ActivityId = "3", Name = setOutputTask.Name, Properties = JObject.FromObject( new { Value = new WorkflowExpression<string>("lastResult()"), OutputName = "Sum" }) }
+                        ActivityId = "1",
+                        IsStart = true,
+                        Name = addTask.Name,
+                        Properties = JObject.FromObject(new
+                        {
+                            A = new WorkflowExpression<double>("input(\"A\")"),
+                            B = new WorkflowExpression<double>("input(\"B\")"),
+                        })
+                    },
+                    new() { ActivityId = "2", Name = writeLineTask.Name, Properties = JObject.FromObject(new { Text = new WorkflowExpression<string>("lastResult().toString()") }) },
+                    new() { ActivityId = "3", Name = setOutputTask.Name, Properties = JObject.FromObject(new { Value = new WorkflowExpression<string>("lastResult()"), OutputName = "Sum" }) }
                 ],
                 Transitions =
                 [

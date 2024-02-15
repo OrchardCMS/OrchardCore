@@ -33,7 +33,7 @@ namespace OrchardCore.Contents.Workflows.Activities
             var contentTypes = ContentTypeFilter.Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
 
             // "" means 'any'.
-            return !contentTypes.Any() || contentTypes.Any(contentType => content.ContentItem.ContentType == contentType);
+            return contentTypes.Count == 0 || contentTypes.Any(contentType => content.ContentItem.ContentType == contentType);
         }
 
         public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

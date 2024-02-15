@@ -38,7 +38,7 @@ namespace OrchardCore.Contents.Liquid
                     }
                 }
 
-                if (!contentItems.Any())
+                if (contentItems.Count == 0)
                 {
                     return NilValue.Instance;
                 }

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using GraphQL.MicrosoftDI;
@@ -99,17 +98,17 @@ namespace OrchardCore.Apis.GraphQL.Services
                 // Clean Query, Mutation and Subscription if they have no fields
                 // to prevent GraphQL configuration errors.
 
-                if (!schema.Query.Fields.Any())
+                if (schema.Query.Fields.Count == 0)
                 {
                     schema.Query = null;
                 }
 
-                if (!schema.Mutation.Fields.Any())
+                if (schema.Mutation.Fields.Count == 0)
                 {
                     schema.Mutation = null;
                 }
 
-                if (!schema.Subscription.Fields.Any())
+                if (schema.Subscription.Fields.Count == 0)
                 {
                     schema.Subscription = null;
                 }

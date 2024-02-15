@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -33,7 +32,7 @@ namespace OrchardCore.Modules
 
             Assembly = Assembly.Load(new AssemblyName(Name));
 
-            _modules = [..modules];
+            _modules = new List<Module>(modules);
             _modulesByName = _modules.ToDictionary(m => m.Name, m => m);
         }
 
