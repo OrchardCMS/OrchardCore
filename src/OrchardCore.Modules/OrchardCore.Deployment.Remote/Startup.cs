@@ -11,6 +11,8 @@ namespace OrchardCore.Deployment
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpClient();
+
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<RemoteInstanceService>();
             services.AddScoped<RemoteClientService>();
