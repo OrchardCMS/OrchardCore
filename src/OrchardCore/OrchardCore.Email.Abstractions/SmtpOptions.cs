@@ -31,4 +31,15 @@ public class SmtpOptions
     public SmtpDeliveryMethod DeliveryMethod { get; set; }
 
     public string PickupDirectoryLocation { get; set; }
+
+    public bool ConfigurationExists()
+    {
+        if (string.IsNullOrEmpty(DefaultSender))
+        {
+            return false;
+        }
+
+        return DeliveryMethod == SmtpDeliveryMethod.SpecifiedPickupDirectory
+            || (DeliveryMethod == SmtpDeliveryMethod.Network && !string.IsNullOrEmpty(Host));
+    }
 }

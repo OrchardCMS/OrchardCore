@@ -16,7 +16,7 @@ public class SmtpProviderOptionsConfigurations : IConfigureOptions<EmailProvider
     {
         var typeOptions = new EmailProviderTypeOptions(typeof(SmtpEmailProvider))
         {
-            IsEnabled = _smtpOptions.IsEnabled
+            IsEnabled = _smtpOptions.IsEnabled,
         };
 
         options.TryAddProvider(SmtpEmailProvider.TechnicalName, typeOptions);

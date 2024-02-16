@@ -1,26 +1,40 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
+using OrchardCore.Email.Core.Services;
 using OrchardCore.Email.Smtp.Services;
+using OrchardCore.Environment.Shell.Builders;
 
 namespace OrchardCore.Email.Services;
 
-/// <summary>
-/// Represents a SMTP service that allows to send emails.
-/// </summary>
 [Obsolete]
 public class SmtpService : ISmtpService
 {
-    private readonly IEmailProviderResolver _emailProviderResolver;
+    private readonly EmailProviderOptions _emailProviderOptions;
+    private readonly IServiceProvider _serviceProvider;
 
-    public SmtpService(IEmailProviderResolver emailProviderResolver)
+    protected readonly IStringLocalizer S;
+
+    public SmtpService(
+        IOptions<EmailProviderOptions> emailProviderOptions,
+        IServiceProvider serviceProvider,
+        IStringLocalizer<SmtpService> stringLocalizer)
     {
-        _emailProviderResolver = emailProviderResolver;
+        _emailProviderOptions = emailProviderOptions.Value;
+        _serviceProvider = serviceProvider;
+        S = stringLocalizer;
     }
 
     public async Task<SmtpResult> SendAsync(MailMessage message)
     {
-        var provider = await _emailProviderResolver.GetAsync(SmtpEmailProvider.TechnicalName);
+        var provider = GetSmtpProvider();
+
+        if (provider == null)
+        {
+            return SmtpResult.Failed([S["Unable to find any SMTP providers."]]);
+        }
 
         var result = await provider.SendAsync(message);
 
@@ -30,5 +44,36 @@ public class SmtpService : ISmtpService
         }
 
         return SmtpResult.Failed(result.Errors.ToArray());
+    }
+
+    private IEmailProvider GetSmtpProvider()
+    {
+        IEmailProvider provider = null;
+
+        if (_emailProviderOptions.Providers.TryGetValue(DefaultSmtpEmailProvider.TechnicalName, out var defaultSmtpProvider)
+            && defaultSmtpProvider.IsEnabled)
+        {
+            provider = _serviceProvider.CreateInstance<IEmailProvider>(defaultSmtpProvider.Type);
+        }
+
+        if (provider == null)
+        {
+            if (_emailProviderOptions.Providers.TryGetValue(SmtpEmailProvider.TechnicalName, out var smtpProvider)
+                && smtpProvider.IsEnabled)
+            {
+                provider = _serviceProvider.CreateInstance<IEmailProvider>(smtpProvider.Type);
+            }
+
+            if (provider is null && defaultSmtpProvider is not null)
+            {
+                provider = _serviceProvider.CreateInstance<IEmailProvider>(defaultSmtpProvider.Type);
+            }
+            else if (provider is null && smtpProvider is not null)
+            {
+                provider = _serviceProvider.CreateInstance<IEmailProvider>(smtpProvider.Type);
+            }
+        }
+
+        return provider;
     }
 }

@@ -14,7 +14,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_Email");
 
-                tenantServices.PostConfigure<SmtpOptions>(settings => configurationSection.Bind(settings));
+                tenantServices.PostConfigure<DefaultSmtpOptions>(settings => configurationSection.Bind(settings));
             });
 
             return builder;

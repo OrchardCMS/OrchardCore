@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Smtp.Services;
@@ -10,21 +8,17 @@ namespace OrchardCore.Email.Smtp.Services;
 public class SmtpOptionsConfiguration : IConfigureOptions<SmtpOptions>
 {
     public const string ProtectorName = "SmtpSettingsConfiguration";
-    public const string SectionName = "OrchardCore_Email";
 
     private readonly ISiteService _siteService;
-    private readonly IShellConfiguration _shellConfiguration;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ILogger _logger;
 
     public SmtpOptionsConfiguration(
         ISiteService siteService,
-        IShellConfiguration shellConfiguration,
         IDataProtectionProvider dataProtectionProvider,
         ILogger<SmtpOptionsConfiguration> logger)
     {
         _siteService = siteService;
-        _shellConfiguration = shellConfiguration;
         _dataProtectionProvider = dataProtectionProvider;
         _logger = logger;
     }
@@ -50,7 +44,6 @@ public class SmtpOptionsConfiguration : IConfigureOptions<SmtpOptions>
         options.Password = settings.Password;
         options.IgnoreInvalidSslCertificate = settings.IgnoreInvalidSslCertificate;
 
-        // Decrypt the password
         if (!string.IsNullOrWhiteSpace(settings.Password))
         {
             try
@@ -64,24 +57,6 @@ public class SmtpOptionsConfiguration : IConfigureOptions<SmtpOptions>
             }
         }
 
-        var fileSettings = _shellConfiguration.GetSection(SectionName);
-
-        if (fileSettings.Exists())
-        {
-            fileSettings.Bind(options);
-        }
-
-        options.IsEnabled = settings.IsEnabled ?? HasRequiredSettings(options);
-    }
-
-    private static bool HasRequiredSettings(SmtpOptions model)
-    {
-        if (string.IsNullOrEmpty(model.DefaultSender))
-        {
-            return false;
-        }
-
-        return model.DeliveryMethod == SmtpDeliveryMethod.SpecifiedPickupDirectory
-            || (model.DeliveryMethod == SmtpDeliveryMethod.Network && !string.IsNullOrEmpty(model.Host));
+        options.IsEnabled = settings.IsEnabled ?? options.ConfigurationExists();
     }
 }
