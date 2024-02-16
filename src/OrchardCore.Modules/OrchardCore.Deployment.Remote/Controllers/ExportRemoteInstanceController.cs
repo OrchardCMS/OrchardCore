@@ -20,13 +20,12 @@ namespace OrchardCore.Deployment.Remote.Controllers
     [Admin("Deployment/ExportRemoteInstance/{action}/{id?}", "DeploymentExportRemoteInstance{action}")]
     public class ExportRemoteInstanceController : Controller
     {
-        private static readonly HttpClient _httpClient = new();
-
         private readonly IDeploymentManager _deploymentManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
         private readonly RemoteInstanceService _service;
         private readonly INotifier _notifier;
+        private readonly HttpClient _httpClient;
         protected readonly IHtmlLocalizer H;
 
         public ExportRemoteInstanceController(
@@ -35,6 +34,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             RemoteInstanceService service,
             IDeploymentManager deploymentManager,
             INotifier notifier,
+            IHttpClientFactory httpClientFactory,
             IHtmlLocalizer<ExportRemoteInstanceController> localizer)
         {
             _authorizationService = authorizationService;
@@ -42,6 +42,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             _session = session;
             _service = service;
             _notifier = notifier;
+            _httpClient = httpClientFactory.CreateClient();
             H = localizer;
         }
 

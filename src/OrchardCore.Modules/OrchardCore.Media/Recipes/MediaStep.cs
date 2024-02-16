@@ -21,15 +21,17 @@ namespace OrchardCore.Media.Recipes
         private readonly IMediaFileStore _mediaFileStore;
         private readonly HashSet<string> _allowedFileExtensions;
         private readonly ILogger _logger;
-        private static readonly HttpClient _httpClient = new();
+        private readonly HttpClient _httpClient;
 
         public MediaStep(
             IMediaFileStore mediaFileStore,
             IOptions<MediaOptions> options,
+            IHttpClientFactory httpClientFactory,
             ILogger<MediaStep> logger)
         {
             _mediaFileStore = mediaFileStore;
             _allowedFileExtensions = options.Value.AllowedFileExtensions;
+            _httpClient = httpClientFactory.CreateClient();
             _logger = logger;
         }
 

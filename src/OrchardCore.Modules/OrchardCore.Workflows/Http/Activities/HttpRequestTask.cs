@@ -85,20 +85,22 @@ namespace OrchardCore.Workflows.Http.Activities
             { 599, "Network Connect Timeout Error" }
         };
 
-        private static readonly HttpClient _httpClient = new();
+        private readonly HttpClient _httpClient;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
         protected readonly IStringLocalizer S;
         private readonly UrlEncoder _urlEncoder;
 
         public HttpRequestTask(
-            IStringLocalizer<HttpRequestTask> localizer,
             IWorkflowExpressionEvaluator expressionEvaluator,
-            UrlEncoder urlEncoder
+            UrlEncoder urlEncoder,
+            IHttpClientFactory httpClientFactory,
+            IStringLocalizer<HttpRequestTask> localizer
         )
         {
-            S = localizer;
             _expressionEvaluator = expressionEvaluator;
             _urlEncoder = urlEncoder;
+            _httpClient = httpClientFactory.CreateClient();
+            S = localizer;
         }
 
         public override LocalizedString DisplayText => S["Http Request Task"];
