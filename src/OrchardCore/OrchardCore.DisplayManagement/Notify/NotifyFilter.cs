@@ -35,7 +35,8 @@ namespace OrchardCore.DisplayManagement.Notify
             ILayoutAccessor layoutAccessor,
             IDataProtectionProvider dataProtectionProvider,
             HtmlEncoder htmlEncoder,
-            ILogger<NotifyFilter> logger)
+            ILogger<NotifyFilter> logger
+        )
         {
             _notifier = notifier;
             _shapeFactory = shapeFactory;
@@ -109,9 +110,7 @@ namespace OrchardCore.DisplayManagement.Notify
             OnHandlerExecuted(filterContext);
         }
 
-        public void OnPageHandlerSelected(PageHandlerSelectedContext context)
-        {
-        }
+        public void OnPageHandlerSelected(PageHandlerSelectedContext context) { }
 
         public void OnPageHandlerExecuting(PageHandlerExecutingContext filterContext)
         {
@@ -202,10 +201,7 @@ namespace OrchardCore.DisplayManagement.Notify
 
         private static CookieOptions GetCookieOptions(HttpContext httpContext)
         {
-            var cookieOptions = new CookieOptions
-            {
-                HttpOnly = true
-            };
+            var cookieOptions = new CookieOptions { HttpOnly = true };
 
             if (httpContext.Request.PathBase.HasValue)
             {

@@ -23,7 +23,8 @@ namespace OrchardCore.Environment.Shell
             IExtensionManager extensionManager,
             IShellHost shellHost,
             ShellSettings shellSettings,
-            IOptions<FeatureProfilesRuleOptions> featureOptions)
+            IOptions<FeatureProfilesRuleOptions> featureOptions
+        )
         {
             _extensionManager = extensionManager;
             _shellHost = shellHost;
@@ -44,24 +45,26 @@ namespace OrchardCore.Environment.Shell
             {
                 var scope = await _shellHost.GetScopeAsync(ShellSettings.DefaultShellName);
 
-                await scope.UsingAsync(async (scope) =>
-                {
-                    var featureProfilesService = scope.ServiceProvider.GetService<IFeatureProfilesService>();
-
-                    var featureProfiles = await featureProfilesService.GetFeatureProfilesAsync();
-
-                    foreach (var profileName in profileNames.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
+                await scope.UsingAsync(
+                    async (scope) =>
                     {
-                        if (featureProfiles.TryGetValue(profileName, out var featureProfile))
+                        var featureProfilesService = scope.ServiceProvider.GetService<IFeatureProfilesService>();
+
+                        var featureProfiles = await featureProfilesService.GetFeatureProfilesAsync();
+
+                        foreach (var profileName in profileNames.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries))
                         {
-                            _featureProfileLookup = (false, featureProfile);
+                            if (featureProfiles.TryGetValue(profileName, out var featureProfile))
+                            {
+                                _featureProfileLookup = (false, featureProfile);
 
-                            continue;
+                                continue;
+                            }
+
+                            _featureProfileLookup = (true, null);
                         }
-
-                        _featureProfileLookup = (true, null);
                     }
-                });
+                );
             }
 
             // When the management feature is not enabled we need to pass feature validation.

@@ -14,20 +14,9 @@ public class Permissions : IPermissionProvider
     /// </summary>
     public static readonly Permission ManageCultures = new("ManageCultures", "Manage supported culture");
 
-    private readonly IEnumerable<Permission> _allPermissions =
-    [
-        ManageCultures,
-    ];
+    private readonly IEnumerable<Permission> _allPermissions = [ManageCultures,];
 
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-       => Task.FromResult(_allPermissions);
+    public Task<IEnumerable<Permission>> GetPermissionsAsync() => Task.FromResult(_allPermissions);
 
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
-    [
-        new PermissionStereotype
-        {
-            Name = "Administrator",
-            Permissions = _allPermissions,
-        },
-    ];
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() => [new PermissionStereotype { Name = "Administrator", Permissions = _allPermissions, },];
 }

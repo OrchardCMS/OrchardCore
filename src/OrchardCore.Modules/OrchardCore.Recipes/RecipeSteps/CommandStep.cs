@@ -20,10 +20,7 @@ namespace OrchardCore.Recipes.RecipeSteps
         private readonly ICommandParametersParser _commandParameterParser;
         private readonly ILogger _logger;
 
-        public CommandStep(ICommandManager commandManager,
-            ICommandParser commandParser,
-            ICommandParametersParser commandParameterParser,
-            ILogger<CommandStep> logger)
+        public CommandStep(ICommandManager commandManager, ICommandParser commandParser, ICommandParametersParser commandParameterParser, ILogger<CommandStep> logger)
         {
             _commandManager = commandManager;
             _commandParser = commandParser;

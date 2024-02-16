@@ -27,9 +27,7 @@ namespace OrchardCore.DisplayManagement.Views
         private Func<Task<bool>> _renderPredicateAsync;
 
         public ShapeResult(string shapeType, Func<IBuildShapeContext, ValueTask<IShape>> shapeBuilder)
-            : this(shapeType, shapeBuilder, null)
-        {
-        }
+            : this(shapeType, shapeBuilder, null) { }
 
         public ShapeResult(string shapeType, Func<IBuildShapeContext, ValueTask<IShape>> shapeBuilder, Func<IShape, Task> processing)
         {

@@ -41,15 +41,13 @@ namespace OrchardCore.Mvc
                     {
                         // If the module and the application assemblies are not at the same location,
                         // this means that the module is referenced as a package, not as a project in dev.
-                        if (module.Assembly == null || Path.GetDirectoryName(module.Assembly.Location)
-                            != Path.GetDirectoryName(application.Assembly.Location))
+                        if (module.Assembly == null || Path.GetDirectoryName(module.Assembly.Location) != Path.GetDirectoryName(application.Assembly.Location))
                         {
                             continue;
                         }
 
                         // Get module assets which are razor files.
-                        var assets = module.Assets.Where(a => a.ModuleAssetPath
-                            .EndsWith(".cshtml", StringComparison.Ordinal));
+                        var assets = module.Assets.Where(a => a.ModuleAssetPath.EndsWith(".cshtml", StringComparison.Ordinal));
 
                         if (assets.Any())
                         {
@@ -113,9 +111,12 @@ namespace OrchardCore.Mvc
                     var module = folder[..index];
 
                     // Try to get the module project root.
-                    if (_roots.TryGetValue(module, out var root) &&
+                    if (
+                        _roots.TryGetValue(module, out var root)
+                        &&
                         // Check for a final or an intermadiate "Pages" segment.
-                        (folder.EndsWith("/Pages", StringComparison.Ordinal) || folder.Contains("/Pages/")))
+                        (folder.EndsWith("/Pages", StringComparison.Ordinal) || folder.Contains("/Pages/"))
+                    )
                     {
                         // Resolve the subpath relative to "{ModuleProjectDirectory}".
                         folder = string.Concat(root, folder.AsSpan(module.Length + 1));
@@ -213,7 +214,6 @@ namespace OrchardCore.Mvc
                     }
                 }
             }
-
             // The view engine uses a watch on "Pages/**/*.cshtml" but only for razor pages.
             // So here, we only use file providers for modules which have a "Pages" folder.
             else if (path.Equals("Pages/**/*.cshtml"))

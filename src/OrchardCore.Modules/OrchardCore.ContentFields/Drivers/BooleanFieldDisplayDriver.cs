@@ -13,27 +13,32 @@ namespace OrchardCore.ContentFields.Drivers
     {
         public override IDisplayResult Display(BooleanField field, BuildFieldDisplayContext context)
         {
-            return Initialize<DisplayBooleanFieldViewModel>(GetDisplayShapeType(context), model =>
-            {
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-            })
-            .Location("Detail", "Content")
-            .Location("Summary", "Content");
+            return Initialize<DisplayBooleanFieldViewModel>(
+                    GetDisplayShapeType(context),
+                    model =>
+                    {
+                        model.Field = field;
+                        model.Part = context.ContentPart;
+                        model.PartFieldDefinition = context.PartFieldDefinition;
+                    }
+                )
+                .Location("Detail", "Content")
+                .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(BooleanField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditBooleanFieldViewModel>(GetEditorShapeType(context), model =>
-            {
-                model.Value = (context.IsNew == false) ?
-                    field.Value : context.PartFieldDefinition.GetSettings<BooleanFieldSettings>().DefaultValue;
+            return Initialize<EditBooleanFieldViewModel>(
+                GetEditorShapeType(context),
+                model =>
+                {
+                    model.Value = (context.IsNew == false) ? field.Value : context.PartFieldDefinition.GetSettings<BooleanFieldSettings>().DefaultValue;
 
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-            });
+                    model.Field = field;
+                    model.Part = context.ContentPart;
+                    model.PartFieldDefinition = context.PartFieldDefinition;
+                }
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(BooleanField field, IUpdateModel updater, UpdateFieldEditorContext context)

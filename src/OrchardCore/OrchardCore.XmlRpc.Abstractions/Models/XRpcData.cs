@@ -17,7 +17,10 @@ namespace OrchardCore.XmlRpc.Models
             _value = value;
         }
 
-        public virtual Type Type { get { return typeof(object); } }
+        public virtual Type Type
+        {
+            get { return typeof(object); }
+        }
 
         public static XRpcData<T> For<T>(T t)
         {
@@ -47,7 +50,10 @@ namespace OrchardCore.XmlRpc.Models
             base.SetValue(value);
         }
 
-        public override Type Type { get { return typeof(T); } }
+        public override Type Type
+        {
+            get { return typeof(T); }
+        }
     }
 
     public class XRpcFault

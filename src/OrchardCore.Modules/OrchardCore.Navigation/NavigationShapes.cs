@@ -14,7 +14,8 @@ namespace OrchardCore.Navigation
     {
         public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
         {
-            builder.Describe("Navigation")
+            builder
+                .Describe("Navigation")
                 .OnDisplaying(displaying =>
                 {
                     var menu = displaying.Shape;
@@ -73,7 +74,8 @@ namespace OrchardCore.Navigation
                     }
                 });
 
-            builder.Describe("NavigationItem")
+            builder
+                .Describe("NavigationItem")
                 .OnDisplaying(displaying =>
                 {
                     var menuItem = displaying.Shape;
@@ -88,7 +90,8 @@ namespace OrchardCore.Navigation
                     menuItem.Metadata.Alternates.Add("NavigationItem__" + encodedMenuName + "__level__" + level);
                 });
 
-            builder.Describe("NavigationItemLink")
+            builder
+                .Describe("NavigationItemLink")
                 .OnDisplaying(displaying =>
                 {
                     var menuItem = displaying.Shape;

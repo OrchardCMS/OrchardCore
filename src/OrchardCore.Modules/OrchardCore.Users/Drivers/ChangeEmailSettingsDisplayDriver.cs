@@ -18,13 +18,12 @@ namespace OrchardCore.Users.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
-        public ChangeEmailSettingsDisplayDriver(
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+        public ChangeEmailSettingsDisplayDriver(IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService)
         {
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
         }
+
         public override async Task<IDisplayResult> EditAsync(ChangeEmailSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
@@ -34,10 +33,15 @@ namespace OrchardCore.Users.Drivers
                 return null;
             }
 
-            return Initialize<ChangeEmailSettings>("ChangeEmailSettings_Edit", model =>
-            {
-                model.AllowChangeEmail = settings.AllowChangeEmail;
-            }).Location("Content:5").OnGroup(GroupId);
+            return Initialize<ChangeEmailSettings>(
+                    "ChangeEmailSettings_Edit",
+                    model =>
+                    {
+                        model.AllowChangeEmail = settings.AllowChangeEmail;
+                    }
+                )
+                .Location("Content:5")
+                .OnGroup(GroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ChangeEmailSettings section, BuildEditorContext context)

@@ -38,7 +38,8 @@ public class DbConnectionValidator : IDbConnectionValidator
         IOptions<SqliteOptions> sqliteOptions,
         IOptions<ShellOptions> shellOptions,
         ITableNameConventionFactory tableNameConventionFactory,
-        ILogger<DbConnectionValidator> logger)
+        ILogger<DbConnectionValidator> logger
+    )
     {
         _databaseProviders = databaseProviders;
         _tableNameConventionFactory = tableNameConventionFactory;
@@ -83,9 +84,7 @@ public class DbConnectionValidator : IDbConnectionValidator
         await using var connection = factory.CreateConnection();
 
         // Prevent from creating an empty locked 'Sqlite' file.
-        if (provider.Value == DatabaseProviderValue.Sqlite &&
-            connection is SqliteConnection sqliteConnection &&
-            !File.Exists(sqliteConnection.DataSource))
+        if (provider.Value == DatabaseProviderValue.Sqlite && connection is SqliteConnection sqliteConnection && !File.Exists(sqliteConnection.DataSource))
         {
             return DbConnectionValidatorResult.DocumentTableNotFound;
         }
@@ -100,8 +99,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             {
                 _logger.LogWarning(ex, "Unable to validate connection string.");
 
-                if (ex is SqlException sqlException
-                    && sqlException.InnerException?.Message == "The certificate chain was issued by an authority that is not trusted.")
+                if (ex is SqlException sqlException && sqlException.InnerException?.Message == "The certificate chain was issued by an authority that is not trusted.")
                 {
                     return DbConnectionValidatorResult.InvalidCertificate;
                 }
@@ -129,7 +127,8 @@ public class DbConnectionValidator : IDbConnectionValidator
                 return DbConnectionValidatorResult.DocumentTableFound;
             }
 
-            var requiredColumnsCount = Enumerable.Range(0, result.FieldCount)
+            var requiredColumnsCount = Enumerable
+                .Range(0, result.FieldCount)
                 .Select(result.GetName)
                 .Where(c => _requiredDocumentTableColumns.Contains(c, StringComparer.OrdinalIgnoreCase))
                 .Count();
@@ -158,9 +157,7 @@ public class DbConnectionValidator : IDbConnectionValidator
                 return DbConnectionValidatorResult.ShellDescriptorDocumentNotFound;
             }
         }
-        catch
-        {
-        }
+        catch { }
 
         // The 'Document' table exists.
         return DbConnectionValidatorResult.DocumentTableFound;
@@ -181,9 +178,8 @@ public class DbConnectionValidator : IDbConnectionValidator
         return sqlBuilder.ToString();
     }
 
-    private static (IConnectionFactory connectionFactory, ISqlDialect sqlDialect) GetFactoryAndSqlDialect(
-        string databaseProvider,
-        string connectionString) => databaseProvider switch
+    private static (IConnectionFactory connectionFactory, ISqlDialect sqlDialect) GetFactoryAndSqlDialect(string databaseProvider, string connectionString) =>
+        databaseProvider switch
         {
             DatabaseProviderValue.SqlConnection => (new DbConnectionFactory<SqlConnection>(connectionString), new SqlServerDialect()),
             DatabaseProviderValue.MySql => (new DbConnectionFactory<MySqlConnection>(connectionString), new MySqlDialect()),

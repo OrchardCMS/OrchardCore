@@ -17,9 +17,7 @@ using OrchardCore.Twitter.Signin.Settings;
 
 namespace OrchardCore.Twitter.Signin.Configuration
 {
-    public class TwitterOptionsConfiguration :
-        IConfigureOptions<AuthenticationOptions>,
-        IConfigureNamedOptions<TwitterOptions>
+    public class TwitterOptionsConfiguration : IConfigureOptions<AuthenticationOptions>, IConfigureNamedOptions<TwitterOptions>
     {
         private readonly ITwitterSettingsService _twitterService;
         private readonly ITwitterSigninService _twitterSigninService;
@@ -34,7 +32,8 @@ namespace OrchardCore.Twitter.Signin.Configuration
             IDataProtectionProvider dataProtectionProvider,
             IHttpContextAccessor httpContextAccessor,
             ShellSettings shellSettings,
-            ILogger<TwitterOptionsConfiguration> logger)
+            ILogger<TwitterOptionsConfiguration> logger
+        )
         {
             _twitterService = twitterService;
             _twitterSigninService = twitterSigninService;
@@ -59,11 +58,14 @@ namespace OrchardCore.Twitter.Signin.Configuration
                 return;
             }
 
-            options.AddScheme(TwitterDefaults.AuthenticationScheme, builder =>
-            {
-                builder.DisplayName = "Twitter";
-                builder.HandlerType = typeof(TwitterHandler);
-            });
+            options.AddScheme(
+                TwitterDefaults.AuthenticationScheme,
+                builder =>
+                {
+                    builder.DisplayName = "Twitter";
+                    builder.HandlerType = typeof(TwitterHandler);
+                }
+            );
         }
 
         public void Configure(string name, TwitterOptions options)

@@ -13,9 +13,7 @@ namespace OrchardCore.Workflows.Events
         protected readonly IStringLocalizer<WorkflowFaultEvent> S;
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
 
-        public WorkflowFaultEvent(
-            IStringLocalizer<WorkflowFaultEvent> stringLocalizer,
-            IWorkflowScriptEvaluator scriptEvaluator)
+        public WorkflowFaultEvent(IStringLocalizer<WorkflowFaultEvent> stringLocalizer, IWorkflowScriptEvaluator scriptEvaluator)
         {
             S = stringLocalizer;
             _scriptEvaluator = scriptEvaluator;
@@ -56,7 +54,8 @@ namespace OrchardCore.Workflows.Events
 
         private static string GetDefaultValue()
         {
-            var sample = $@"//sample code
+            var sample =
+                $@"//sample code
 var errorInfo= input('{WorkflowFaultModel.WorkflowFaultInputKey}');
 // This is where you define the workflow to intercept or specify the exception information
 var result=  errorInfo.{nameof(WorkflowFaultModel.WorkflowName)}== 'WorkflowName' ||

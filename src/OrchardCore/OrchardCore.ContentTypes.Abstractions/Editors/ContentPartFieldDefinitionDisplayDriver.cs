@@ -8,7 +8,9 @@ namespace OrchardCore.ContentTypes.Editors
     /// <summary>
     /// A concrete implementation of <see cref="ContentPartFieldDefinitionDisplayDriver"/> provides a driver for all field definitions.
     /// </summary>
-    public abstract class ContentPartFieldDefinitionDisplayDriver : DisplayDriver<ContentPartFieldDefinition, BuildDisplayContext, BuildEditorContext, UpdatePartFieldEditorContext>, IContentPartFieldDefinitionDisplayDriver
+    public abstract class ContentPartFieldDefinitionDisplayDriver
+        : DisplayDriver<ContentPartFieldDefinition, BuildDisplayContext, BuildEditorContext, UpdatePartFieldEditorContext>,
+            IContentPartFieldDefinitionDisplayDriver
     {
         protected override void BuildPrefix(ContentPartFieldDefinition model, string htmlFieldPrefix)
         {
@@ -34,7 +36,8 @@ namespace OrchardCore.ContentTypes.Editors
     /// A concrete implementation of <see cref="ContentPartFieldDefinitionDisplayDriver&lt;TField&gt;"/> provides a driver for field definitions
     /// of the type <c>TField</c>.
     /// </summary>
-    public abstract class ContentPartFieldDefinitionDisplayDriver<TField> : ContentPartFieldDefinitionDisplayDriver where TField : ContentField
+    public abstract class ContentPartFieldDefinitionDisplayDriver<TField> : ContentPartFieldDefinitionDisplayDriver
+        where TField : ContentField
     {
         public override bool CanHandleModel(ContentPartFieldDefinition model)
         {

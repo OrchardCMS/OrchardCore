@@ -60,7 +60,10 @@ public static class TaxonomyOrchardHelperExtensions
     /// <summary>
     /// Query content items.
     /// </summary>
-    public static async Task<IEnumerable<ContentItem>> QueryCategorizedContentItemsAsync(this IOrchardHelper orchardHelper, Func<IQuery<ContentItem, TaxonomyIndex>, IQuery<ContentItem>> query)
+    public static async Task<IEnumerable<ContentItem>> QueryCategorizedContentItemsAsync(
+        this IOrchardHelper orchardHelper,
+        Func<IQuery<ContentItem, TaxonomyIndex>, IQuery<ContentItem>> query
+    )
     {
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
         var session = orchardHelper.HttpContext.RequestServices.GetService<ISession>();

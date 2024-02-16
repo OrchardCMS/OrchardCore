@@ -19,23 +19,22 @@ namespace OrchardCore.Lists
 
         public async Task<int> CreateAsync()
         {
-            await _contentDefinitionManager.AlterPartDefinitionAsync("ListPart", builder => builder
-                .Attachable()
-                .WithDescription("Add a list behavior."));
+            await _contentDefinitionManager.AlterPartDefinitionAsync("ListPart", builder => builder.Attachable().WithDescription("Add a list behavior."));
 
-            await SchemaBuilder.CreateMapIndexTableAsync<ContainedPartIndex>(table => table
-                .Column<string>("ContentItemId", column => column.WithLength(26))
-                .Column<string>("ListContentItemId", column => column.WithLength(26))
-                .Column<string>("DisplayText")
-                .Column<int>("Order")
-                .Column<string>("ListContentType")
-                .Column<bool>("Published")
-                .Column<bool>("Latest")
-
+            await SchemaBuilder.CreateMapIndexTableAsync<ContainedPartIndex>(table =>
+                table
+                    .Column<string>("ContentItemId", column => column.WithLength(26))
+                    .Column<string>("ListContentItemId", column => column.WithLength(26))
+                    .Column<string>("DisplayText")
+                    .Column<int>("Order")
+                    .Column<string>("ListContentType")
+                    .Column<bool>("Published")
+                    .Column<bool>("Latest")
             );
 
-            await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table
-                .CreateIndex("IDX_ContainedPartIndex_DocumentId",
+            await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table =>
+                table.CreateIndex(
+                    "IDX_ContainedPartIndex_DocumentId",
                     "Id",
                     "DocumentId",
                     "ContentItemId",
@@ -44,7 +43,8 @@ namespace OrchardCore.Lists
                     "Order",
                     "ListContentType",
                     "Published",
-                    "Latest")
+                    "Latest"
+                )
             );
 
             // Shortcut other migration steps on new content definition schemas.
@@ -63,11 +63,8 @@ namespace OrchardCore.Lists
         // This code can be removed in a later version.
         public async Task<int> UpdateFrom2Async()
         {
-            await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table
-                .CreateIndex("IDX_ContainedPartIndex_DocumentId",
-                "DocumentId",
-                "ListContentItemId",
-                "Order")
+            await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table =>
+                table.CreateIndex("IDX_ContainedPartIndex_DocumentId", "DocumentId", "ListContentItemId", "Order")
             );
 
             return 3;
@@ -76,31 +73,20 @@ namespace OrchardCore.Lists
         // This code can be removed in a later version.
         public async Task<int> UpdateFrom3Async()
         {
-            await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table
-                .AddColumn<string>("ContentItemId", column => column.WithLength(26))
-            );
+            await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table.AddColumn<string>("ContentItemId", column => column.WithLength(26)));
 
-            await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table
-                .AddColumn<string>("ListContentType")
-            );
+            await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table.AddColumn<string>("ListContentType"));
 
-            await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table
-                .AddColumn<string>("DisplayText")
-            );
+            await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table.AddColumn<string>("DisplayText"));
 
-            await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table
-                .AddColumn<bool>("Published")
-            );
+            await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table.AddColumn<bool>("Published"));
 
-            await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table
-                .AddColumn<bool>("Latest")
-            );
-            await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table
-                .DropIndex("IDX_ContainedPartIndex_DocumentId")
-            );
+            await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table.AddColumn<bool>("Latest"));
+            await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table.DropIndex("IDX_ContainedPartIndex_DocumentId"));
 
-            await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table
-                .CreateIndex("IDX_ContainedPartIndex_DocumentId",
+            await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table =>
+                table.CreateIndex(
+                    "IDX_ContainedPartIndex_DocumentId",
                     "Id",
                     "DocumentId",
                     "ContentItemId",
@@ -109,7 +95,8 @@ namespace OrchardCore.Lists
                     "Order",
                     "ListContentType",
                     "Published",
-                    "Latest")
+                    "Latest"
+                )
             );
 
             return 4;

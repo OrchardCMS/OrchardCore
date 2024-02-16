@@ -34,10 +34,7 @@ namespace OrchardCore.Email.Services
         /// <param name="options">The <see cref="IOptions{SmtpSettings}"/>.</param>
         /// <param name="logger">The <see cref="ILogger{SmtpService}"/>.</param>
         /// <param name="stringLocalizer">The <see cref="IStringLocalizer{SmtpService}"/>.</param>
-        public SmtpService(
-            IOptions<SmtpSettings> options,
-            ILogger<SmtpService> logger,
-            IStringLocalizer<SmtpService> stringLocalizer)
+        public SmtpService(IOptions<SmtpSettings> options, ILogger<SmtpService> logger, IStringLocalizer<SmtpService> stringLocalizer)
         {
             _options = options.Value;
             _logger = logger;
@@ -62,9 +59,7 @@ namespace OrchardCore.Email.Services
             try
             {
                 // Set the MailMessage.From, to avoid the confusion between _options.DefaultSender (Author) and submitter (Sender)
-                var senderAddress = string.IsNullOrWhiteSpace(message.From)
-                    ? _options.DefaultSender
-                    : message.From;
+                var senderAddress = string.IsNullOrWhiteSpace(message.From) ? _options.DefaultSender : message.From;
 
                 if (!string.IsNullOrWhiteSpace(senderAddress))
                 {
@@ -111,9 +106,7 @@ namespace OrchardCore.Email.Services
 
         private MimeMessage FromMailMessage(MailMessage message, List<LocalizedString> errors)
         {
-            var submitterAddress = string.IsNullOrWhiteSpace(message.Sender)
-                ? _options.DefaultSender
-                : message.Sender;
+            var submitterAddress = string.IsNullOrWhiteSpace(message.Sender) ? _options.DefaultSender : message.Sender;
 
             var mimeMessage = new MimeMessage();
 
@@ -122,7 +115,6 @@ namespace OrchardCore.Email.Services
                 if (MailboxAddress.TryParse(submitterAddress, out var mailBox))
                 {
                     mimeMessage.Sender = mailBox;
-
                 }
                 else
                 {
@@ -297,21 +289,17 @@ namespace OrchardCore.Email.Services
 
         private bool CertificateValidationCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
-            const string logErrorMessage = "SMTP Server's certificate {CertificateSubject} issued by {CertificateIssuer} " +
-                                           "with thumbprint {CertificateThumbprint} and expiration date {CertificateExpirationDate} " +
-                                           "is considered invalid with {SslPolicyErrors} policy errors";
+            const string logErrorMessage =
+                "SMTP Server's certificate {CertificateSubject} issued by {CertificateIssuer} "
+                + "with thumbprint {CertificateThumbprint} and expiration date {CertificateExpirationDate} "
+                + "is considered invalid with {SslPolicyErrors} policy errors";
 
             if (sslPolicyErrors == SslPolicyErrors.None)
             {
                 return true;
             }
 
-            _logger.LogError(logErrorMessage,
-                certificate.Subject,
-                certificate.Issuer,
-                certificate.GetCertHashString(),
-                certificate.GetExpirationDateString(),
-                sslPolicyErrors);
+            _logger.LogError(logErrorMessage, certificate.Subject, certificate.Issuer, certificate.GetCertHashString(), certificate.GetExpirationDateString(), sslPolicyErrors);
 
             if (sslPolicyErrors.HasFlag(SslPolicyErrors.RemoteCertificateChainErrors) && chain?.ChainStatus != null)
             {

@@ -1,11 +1,6 @@
 using OrchardCore.Modules.Manifest;
 
-[assembly: Module(
-    Name = "Templates",
-    Author = ManifestConstants.OrchardCoreTeam,
-    Website = ManifestConstants.OrchardCoreWebsite,
-    Version = ManifestConstants.OrchardCoreVersion
-)]
+[assembly: Module(Name = "Templates", Author = ManifestConstants.OrchardCoreTeam, Website = ManifestConstants.OrchardCoreWebsite, Version = ManifestConstants.OrchardCoreVersion)]
 
 [assembly: Feature(
     Id = "OrchardCore.Templates",

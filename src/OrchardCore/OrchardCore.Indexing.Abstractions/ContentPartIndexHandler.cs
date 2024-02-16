@@ -9,9 +9,15 @@ namespace OrchardCore.Indexing
     /// An implementation of <see cref="ContentPartIndexHandler&lt;TPart&gt;"/> is able to take part in the rendering of
     /// a <see typeparamref="TPart"/> instance.
     /// </summary>
-    public abstract class ContentPartIndexHandler<TPart> : IContentPartIndexHandler where TPart : ContentPart
+    public abstract class ContentPartIndexHandler<TPart> : IContentPartIndexHandler
+        where TPart : ContentPart
     {
-        Task IContentPartIndexHandler.BuildIndexAsync(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, BuildIndexContext context, IContentIndexSettings settings)
+        Task IContentPartIndexHandler.BuildIndexAsync(
+            ContentPart contentPart,
+            ContentTypePartDefinition typePartDefinition,
+            BuildIndexContext context,
+            IContentIndexSettings settings
+        )
         {
             var part = contentPart as TPart;
 
@@ -20,10 +26,7 @@ namespace OrchardCore.Indexing
                 return Task.CompletedTask;
             }
 
-            var keys = new List<string>
-            {
-                typePartDefinition.Name,
-            };
+            var keys = new List<string> { typePartDefinition.Name, };
 
             foreach (var key in context.Keys)
             {

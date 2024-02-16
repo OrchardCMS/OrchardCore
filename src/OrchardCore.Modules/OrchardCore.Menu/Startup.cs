@@ -41,22 +41,18 @@ namespace OrchardCore.Menu
 
             // MenuPart
             services.AddScoped<IContentHandler, MenuContentHandler>();
-            services.AddContentPart<MenuPart>()
-                .UseDisplayDriver<MenuPartDisplayDriver>();
+            services.AddContentPart<MenuPart>().UseDisplayDriver<MenuPartDisplayDriver>();
 
             services.AddContentPart<MenuItemsListPart>();
 
             // LinkMenuItemPart
-            services.AddContentPart<LinkMenuItemPart>()
-                .UseDisplayDriver<LinkMenuItemPartDisplayDriver>();
+            services.AddContentPart<LinkMenuItemPart>().UseDisplayDriver<LinkMenuItemPartDisplayDriver>();
 
             // ContentMenuItemPart
-            services.AddContentPart<ContentMenuItemPart>()
-                .UseDisplayDriver<ContentMenuItemPartDisplayDriver>();
+            services.AddContentPart<ContentMenuItemPart>().UseDisplayDriver<ContentMenuItemPartDisplayDriver>();
 
             // HtmlMenuItemPart
-            services.AddContentPart<HtmlMenuItemPart>()
-                .UseDisplayDriver<HtmlMenuItemPartDisplayDriver>();
+            services.AddContentPart<HtmlMenuItemPart>().UseDisplayDriver<HtmlMenuItemPartDisplayDriver>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlMenuItemPartSettingsDisplayDriver>();
 
             services.AddTagHelpers<MenuTagHelper>();

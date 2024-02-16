@@ -13,7 +13,8 @@ namespace OrchardCore.Media.Services
     {
         private static readonly int[] _defaultSupportedSizes = [16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048];
 
-        private static readonly string[] _defaultAllowedFileExtensions = [
+        private static readonly string[] _defaultAllowedFileExtensions =
+        [
             // Images
             ".jpg",
             ".jpeg",
@@ -22,7 +23,6 @@ namespace OrchardCore.Media.Services
             ".ico",
             ".svg",
             ".webp",
-
             // Documents
             ".pdf", // (Portable Document Format; Adobe Acrobat)
             ".doc",
@@ -35,13 +35,11 @@ namespace OrchardCore.Media.Services
             ".xls",
             ".xlsx", // (Microsoft Excel Document)
             ".psd", // (Adobe Photoshop Document)
-
             // Audio
             ".mp3",
             ".m4a",
             ".ogg",
             ".wav",
-
             // Video
             ".mp4",
             ".m4v", // (MPEG-4)
@@ -84,12 +82,12 @@ namespace OrchardCore.Media.Services
 
             // Because IShellConfiguration treats arrays as key value pairs, we replace the array value,
             // rather than letting Configure merge the default array with the appsettings value.
-            options.SupportedSizes = section.GetSection("SupportedSizes")
-                .Get<int[]>()?.OrderBy(s => s).ToArray() ?? _defaultSupportedSizes;
+            options.SupportedSizes = section.GetSection("SupportedSizes").Get<int[]>()?.OrderBy(s => s).ToArray() ?? _defaultSupportedSizes;
 
             options.AllowedFileExtensions = new HashSet<string>(
                 section.GetSection("AllowedFileExtensions").Get<string[]>() ?? _defaultAllowedFileExtensions,
-                StringComparer.OrdinalIgnoreCase);
+                StringComparer.OrdinalIgnoreCase
+            );
 
             options.MaxBrowserCacheDays = section.GetValue("MaxBrowserCacheDays", DefaultMaxBrowserCacheDays);
             options.MaxCacheDays = section.GetValue("MaxCacheDays", DefaultMaxCacheDays);

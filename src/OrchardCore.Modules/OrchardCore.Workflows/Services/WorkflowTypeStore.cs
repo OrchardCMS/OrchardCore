@@ -44,11 +44,7 @@ namespace OrchardCore.Workflows.Services
 
         public Task<IEnumerable<WorkflowType>> GetByStartActivityAsync(string activityName)
         {
-            return _session
-                .Query<WorkflowType, WorkflowTypeStartActivitiesIndex>(index =>
-                    index.StartActivityName == activityName &&
-                    index.IsEnabled)
-                .ListAsync();
+            return _session.Query<WorkflowType, WorkflowTypeStartActivitiesIndex>(index => index.StartActivityName == activityName && index.IsEnabled).ListAsync();
         }
 
         public async Task SaveAsync(WorkflowType workflowType)

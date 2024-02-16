@@ -7,11 +7,7 @@ namespace OrchardCore.Seo;
 
 public class AdminMenu : INavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
-    {
-        { "area", "OrchardCore.Settings" },
-        { "groupId", SeoConstants.RobotsSettingsGroupId },
-    };
+    private static readonly RouteValueDictionary _routeValues = new() { { "area", "OrchardCore.Settings" }, { "groupId", SeoConstants.RobotsSettingsGroupId }, };
 
     protected readonly IStringLocalizer S;
 
@@ -27,18 +23,19 @@ public class AdminMenu : INavigationProvider
             return Task.CompletedTask;
         }
 
-        builder
-            .Add(S["Configuration"], configuration => configuration
-                .Add(S["Settings"], settings => settings
-                   .Add(S["SEO"], S["SEO"].PrefixPosition(), seo => seo
-                       .AddClass("seo")
-                       .Id("seo")
-                       .Action("Index", "Admin", _routeValues)
-                       .Permission(SeoConstants.ManageSeoSettings)
-                       .LocalNav()
-                    )
+        builder.Add(
+            S["Configuration"],
+            configuration =>
+                configuration.Add(
+                    S["Settings"],
+                    settings =>
+                        settings.Add(
+                            S["SEO"],
+                            S["SEO"].PrefixPosition(),
+                            seo => seo.AddClass("seo").Id("seo").Action("Index", "Admin", _routeValues).Permission(SeoConstants.ManageSeoSettings).LocalNav()
+                        )
                 )
-            );
+        );
 
         return Task.CompletedTask;
     }

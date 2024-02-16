@@ -18,7 +18,8 @@ namespace OrchardCore.Users.AuditTrail.Services
 
         public void Configure(AuditTrailOptions options)
         {
-            options.For<UserAuditTrailEventConfiguration>(User, S => S["User"])
+            options
+                .For<UserAuditTrailEventConfiguration>(User, S => S["User"])
                 .WithEvent(LoggedIn, S => S["Logged in"], S => S["A user was successfully logged in."], true)
                 .WithEvent(LogInFailed, S => S["Login failed"], S => S["An attempt to login failed."], false) // Intentionally not enabled by default.
                 .WithEvent(LogInIsLockedOut, S => S["Login account locked"], S => S["An attempt to login failed because the user is locked out."], true)

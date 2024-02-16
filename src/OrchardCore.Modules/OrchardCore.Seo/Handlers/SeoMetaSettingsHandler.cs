@@ -32,7 +32,7 @@ namespace OrchardCore.Seo.Drivers
             IActionContextAccessor actionContextAccessor,
             IHttpContextAccessor httpContextAccessor,
             IUrlHelperFactory urlHelperFactory
-            )
+        )
         {
             _mediaFileStore = mediaFileStore;
             _siteService = siteService;
@@ -64,13 +64,27 @@ namespace OrchardCore.Seo.Drivers
                 // Logic is this happens last after the part settings.
                 // so if values are not set it is responsible for settings them.
 
-                string defaultImage = metaSettings.Content.SocialMetaSettings?.DefaultSocialImage?.Paths?.Count > 0 ? metaSettings.Content.SocialMetaSettings.DefaultSocialImage.Paths[0] : string.Empty;
-                string openGraphImage = metaSettings.Content.SocialMetaSettings?.OpenGraphImage?.Paths?.Count > 0 ? metaSettings.Content.SocialMetaSettings?.OpenGraphImage?.Paths[0] : string.Empty;
-                string twitterImage = metaSettings.Content.SocialMetaSettings?.TwitterImage?.Paths?.Count > 0 ? metaSettings.Content.SocialMetaSettings?.TwitterImage?.Paths[0] : string.Empty;
+                string defaultImage =
+                    metaSettings.Content.SocialMetaSettings?.DefaultSocialImage?.Paths?.Count > 0
+                        ? metaSettings.Content.SocialMetaSettings.DefaultSocialImage.Paths[0]
+                        : string.Empty;
+                string openGraphImage =
+                    metaSettings.Content.SocialMetaSettings?.OpenGraphImage?.Paths?.Count > 0 ? metaSettings.Content.SocialMetaSettings?.OpenGraphImage?.Paths[0] : string.Empty;
+                string twitterImage =
+                    metaSettings.Content.SocialMetaSettings?.TwitterImage?.Paths?.Count > 0 ? metaSettings.Content.SocialMetaSettings?.TwitterImage?.Paths[0] : string.Empty;
 
-                string defaultAltText = metaSettings.Content.SocialMetaSettings?.DefaultSocialImage?.MediaTexts?.Count > 0 ? metaSettings.Content.SocialMetaSettings.DefaultSocialImage.MediaTexts[0] : string.Empty;
-                string openGraphAltText = metaSettings.Content.SocialMetaSettings?.OpenGraphImage?.MediaTexts?.Count > 0 ? metaSettings.Content.SocialMetaSettings?.OpenGraphImage?.MediaTexts[0] : string.Empty;
-                string twitterAltText = metaSettings.Content.SocialMetaSettings?.TwitterImage?.MediaTexts?.Count > 0 ? metaSettings.Content.SocialMetaSettings?.TwitterImage?.MediaTexts[0] : string.Empty;
+                string defaultAltText =
+                    metaSettings.Content.SocialMetaSettings?.DefaultSocialImage?.MediaTexts?.Count > 0
+                        ? metaSettings.Content.SocialMetaSettings.DefaultSocialImage.MediaTexts[0]
+                        : string.Empty;
+                string openGraphAltText =
+                    metaSettings.Content.SocialMetaSettings?.OpenGraphImage?.MediaTexts?.Count > 0
+                        ? metaSettings.Content.SocialMetaSettings?.OpenGraphImage?.MediaTexts[0]
+                        : string.Empty;
+                string twitterAltText =
+                    metaSettings.Content.SocialMetaSettings?.TwitterImage?.MediaTexts?.Count > 0
+                        ? metaSettings.Content.SocialMetaSettings?.TwitterImage?.MediaTexts[0]
+                        : string.Empty;
 
                 string twitterCard = metaSettings.Content.SocialMetaSettings?.TwitterCard?.Text?.ToString();
                 string twitterCreator = metaSettings.Content.SocialMetaSettings?.TwitterCreator?.Text?.ToString();

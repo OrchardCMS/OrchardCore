@@ -40,7 +40,8 @@ namespace OrchardCore.Users.Drivers
             IEnumerable<IUserEventHandler> userEventHandlers,
             IAuthorizationService authorizationService,
             IHtmlLocalizer<UserDisplayDriver> htmlLocalizer,
-            IStringLocalizer<UserDisplayDriver> stringLocalizer)
+            IStringLocalizer<UserDisplayDriver> stringLocalizer
+        )
         {
             _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
@@ -68,15 +69,18 @@ namespace OrchardCore.Users.Drivers
                 return null;
             }
 
-            return Initialize<EditUserViewModel>("UserFields_Edit", model =>
-            {
-                model.EmailConfirmed = user.EmailConfirmed;
-                model.IsEnabled = user.IsEnabled;
-                model.IsNewRequest = context.IsNew;
-                // The current user cannot disable themselves, nor can a user without permission to manage this user disable them.
-                model.IsEditingDisabled = IsCurrentUser(user);
-            })
-           .Location("Content:1.5");
+            return Initialize<EditUserViewModel>(
+                    "UserFields_Edit",
+                    model =>
+                    {
+                        model.EmailConfirmed = user.EmailConfirmed;
+                        model.IsEnabled = user.IsEnabled;
+                        model.IsNewRequest = context.IsNew;
+                        // The current user cannot disable themselves, nor can a user without permission to manage this user disable them.
+                        model.IsEditingDisabled = IsCurrentUser(user);
+                    }
+                )
+                .Location("Content:1.5");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
@@ -114,10 +118,7 @@ namespace OrchardCore.Users.Drivers
 
             if (!isEditingDisabled && !model.IsEnabled && user.IsEnabled)
             {
-                var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole))
-                    .Cast<User>()
-                    .Where(user => user.IsEnabled)
-                    .ToList();
+                var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole)).Cast<User>().Where(user => user.IsEnabled).ToList();
 
                 if (enabledUsersOfAdminRole.Count == 1 && user.UserId == enabledUsersOfAdminRole.First().UserId)
                 {

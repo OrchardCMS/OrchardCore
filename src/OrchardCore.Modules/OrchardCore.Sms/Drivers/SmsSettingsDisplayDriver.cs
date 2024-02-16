@@ -34,7 +34,8 @@ public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
         IShellHost shellHost,
         IOptions<SmsProviderOptions> smsProviders,
         ShellSettings shellSettings,
-        IStringLocalizer<SmsSettingsDisplayDriver> stringLocalizer)
+        IStringLocalizer<SmsSettingsDisplayDriver> stringLocalizer
+    )
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
@@ -44,26 +45,28 @@ public class SmsSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsSettings>
         S = stringLocalizer;
     }
 
-    public override IDisplayResult Edit(SmsSettings settings)
-        => Initialize<SmsSettingsViewModel>("SmsSettings_Edit", model =>
-        {
-            model.DefaultProvider = settings.DefaultProviderName;
-            model.Providers = _smsProviderOptions.Providers
-                .Where(entry => entry.Value.IsEnabled)
-                .Select(entry => new SelectListItem(entry.Key, entry.Key))
-                .OrderBy(item => item.Text)
-                .ToArray();
-
-        }).Location("Content:1#Providers")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings))
-        .OnGroup(SmsSettings.GroupId);
+    public override IDisplayResult Edit(SmsSettings settings) =>
+        Initialize<SmsSettingsViewModel>(
+                "SmsSettings_Edit",
+                model =>
+                {
+                    model.DefaultProvider = settings.DefaultProviderName;
+                    model.Providers = _smsProviderOptions
+                        .Providers.Where(entry => entry.Value.IsEnabled)
+                        .Select(entry => new SelectListItem(entry.Key, entry.Key))
+                        .OrderBy(item => item.Text)
+                        .ToArray();
+                }
+            )
+            .Location("Content:1#Providers")
+            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings))
+            .OnGroup(SmsSettings.GroupId);
 
     public override async Task<IDisplayResult> UpdateAsync(SmsSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!context.GroupId.Equals(SmsSettings.GroupId, StringComparison.OrdinalIgnoreCase)
-            || !await _authorizationService.AuthorizeAsync(user, SmsPermissions.ManageSmsSettings))
+        if (!context.GroupId.Equals(SmsSettings.GroupId, StringComparison.OrdinalIgnoreCase) || !await _authorizationService.AuthorizeAsync(user, SmsPermissions.ManageSmsSettings))
         {
             return null;
         }

@@ -9,9 +9,7 @@ namespace OrchardCore.Shortcodes.Services
         private readonly IEnumerable<IShortcodeContextProvider> _shortcodeContextProviders;
         private readonly ShortcodesProcessor _shortcodesProcessor;
 
-        public ShortcodeService(
-            IEnumerable<IShortcodeProvider> shortcodeProviders,
-            IEnumerable<IShortcodeContextProvider> shortcodeContextProviders)
+        public ShortcodeService(IEnumerable<IShortcodeProvider> shortcodeProviders, IEnumerable<IShortcodeContextProvider> shortcodeContextProviders)
         {
             _shortcodesProcessor = new ShortcodesProcessor(shortcodeProviders);
             _shortcodeContextProviders = shortcodeContextProviders;

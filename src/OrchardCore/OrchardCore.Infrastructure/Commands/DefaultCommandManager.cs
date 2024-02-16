@@ -12,8 +12,7 @@ namespace OrchardCore.Environment.Commands
         private readonly CommandHandlerDescriptorBuilder _builder = new();
         protected readonly IStringLocalizer S;
 
-        public DefaultCommandManager(IEnumerable<ICommandHandler> commandHandlers,
-            IStringLocalizer<DefaultCommandManager> localizer)
+        public DefaultCommandManager(IEnumerable<ICommandHandler> commandHandlers, IStringLocalizer<DefaultCommandManager> localizer)
         {
             _commandHandlers = commandHandlers;
 
@@ -35,11 +34,9 @@ namespace OrchardCore.Environment.Commands
                 var commandList = string.Join(",", GetCommandDescriptors().SelectMany(d => d.Names).ToArray());
                 if (matches.Count > 0)
                 {
-                    throw new Exception(S["Multiple commands found matching arguments \"{0}\". Commands available: {1}.",
-                        commandMatch, commandList]);
+                    throw new Exception(S["Multiple commands found matching arguments \"{0}\". Commands available: {1}.", commandMatch, commandList]);
                 }
-                throw new Exception(S["No command found matching arguments \"{0}\". Commands available: {1}.",
-                    commandMatch, commandList]);
+                throw new Exception(S["No command found matching arguments \"{0}\". Commands available: {1}.", commandMatch, commandList]);
             }
         }
 
@@ -52,8 +49,7 @@ namespace OrchardCore.Environment.Commands
         {
             // Commands are matched with arguments. first argument
             // is the command others are arguments to the command.
-            return _commandHandlers.SelectMany(h =>
-                    MatchCommands(parameters, parameters.Arguments.Count(), _builder.Build(h.GetType()), h)).ToList();
+            return _commandHandlers.SelectMany(h => MatchCommands(parameters, parameters.Arguments.Count(), _builder.Build(h.GetType()), h)).ToList();
         }
 
         private static IEnumerable<Match> MatchCommands(CommandParameters parameters, int argCount, CommandHandlerDescriptor descriptor, ICommandHandler handler)

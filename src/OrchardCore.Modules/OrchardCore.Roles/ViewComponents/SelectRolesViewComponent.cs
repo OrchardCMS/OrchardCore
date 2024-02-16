@@ -22,11 +22,7 @@ namespace OrchardCore.Roles.ViewComponents
 
             var roleSelections = await BuildRoleSelectionsAsync(selectedRoles, except);
 
-            var model = new SelectRolesViewModel
-            {
-                HtmlName = htmlName,
-                RoleSelections = roleSelections
-            };
+            var model = new SelectRolesViewModel { HtmlName = htmlName, RoleSelections = roleSelections };
 
             return View(model);
         }
@@ -40,13 +36,7 @@ namespace OrchardCore.Roles.ViewComponents
                 roleNames = roleNames.Except(except, StringComparer.OrdinalIgnoreCase);
             }
 
-            return roleNames.Select(x => new Selection<string>
-            {
-                IsSelected = selectedRoles.Contains(x),
-                Item = x
-            })
-            .OrderBy(x => x.Item)
-            .ToList();
+            return roleNames.Select(x => new Selection<string> { IsSelected = selectedRoles.Contains(x), Item = x }).OrderBy(x => x.Item).ToList();
         }
     }
 

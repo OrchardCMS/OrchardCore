@@ -30,7 +30,8 @@ namespace OrchardCore.AuditTrail.Services
             IOptions<AuditTrailAdminListOptions> adminListOptions,
             ISession session,
             IServiceProvider serviceProvider,
-            IStringLocalizer<DefaultAuditTrailAdminListQueryService> stringLocalizer)
+            IStringLocalizer<DefaultAuditTrailAdminListQueryService> stringLocalizer
+        )
         {
             _auditTrailManager = auditTrailManager;
             _localClock = localClock;
@@ -61,13 +62,12 @@ namespace OrchardCore.AuditTrail.Services
 
             var events = await query.ListAsync();
 
-            var result = new AuditTrailEventQueryResult
-            {
-                Events = events,
-                TotalCount = totalCount
-            };
+            var result = new AuditTrailEventQueryResult { Events = events, TotalCount = totalCount };
 
-            options.AuditTrailSorts = _adminListOptions.SortOptions.Values.Where(x => x.SelectListItem != null).Select(opt => opt.SelectListItem(_serviceProvider, opt, options)).ToList();
+            options.AuditTrailSorts = _adminListOptions
+                .SortOptions.Values.Where(x => x.SelectListItem != null)
+                .Select(opt => opt.SelectListItem(_serviceProvider, opt, options))
+                .ToList();
 
             var categories = _auditTrailManager.DescribeCategories();
 
@@ -85,8 +85,9 @@ namespace OrchardCore.AuditTrail.Services
                     var currentCategory = categories.FirstOrDefault(x => x.Name == firstEvent.Category);
                     if (currentCategory != null)
                     {
-                        options.Events = currentCategory.Events.Values.Select(category =>
-                            new SelectListItem(category.LocalizedName(_serviceProvider), category.Name, category.Name == options.Category)).ToList();
+                        options.Events = currentCategory
+                            .Events.Values.Select(category => new SelectListItem(category.LocalizedName(_serviceProvider), category.Name, category.Name == options.Category))
+                            .ToList();
                     }
                 }
             }
@@ -94,10 +95,7 @@ namespace OrchardCore.AuditTrail.Services
             var localNow = await _localClock.LocalNowAsync;
             var startOfWeek = CultureInfo.CurrentUICulture.DateTimeFormat.FirstDayOfWeek;
 
-            options.AuditTrailDates =
-            [
-                new(S["Any date"], string.Empty, options.Date == string.Empty),
-            ];
+            options.AuditTrailDates = [new(S["Any date"], string.Empty, options.Date == string.Empty),];
 
             var dateTimeValue = ">@now-1";
             options.AuditTrailDates.Add(new SelectListItem(S["Last 24 hours"], dateTimeValue, options.Date == dateTimeValue));

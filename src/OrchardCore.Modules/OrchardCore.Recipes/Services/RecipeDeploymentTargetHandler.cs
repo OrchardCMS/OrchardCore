@@ -20,11 +20,13 @@ namespace OrchardCore.Recipes.Services
         private readonly IEnumerable<IRecipeEnvironmentProvider> _environmentProviders;
         private readonly ILogger _logger;
 
-        public RecipeDeploymentTargetHandler(IShellHost shellHost,
+        public RecipeDeploymentTargetHandler(
+            IShellHost shellHost,
             ShellSettings shellSettings,
             IRecipeExecutor recipeExecutor,
             IEnumerable<IRecipeEnvironmentProvider> environmentProviders,
-            ILogger<RecipeDeploymentTargetHandler> logger)
+            ILogger<RecipeDeploymentTargetHandler> logger
+        )
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;

@@ -17,16 +17,19 @@ namespace OrchardCore.Deployment
         public Task<IEnumerable<DeploymentTarget>> GetDeploymentTargetsAsync()
         {
             return Task.FromResult<IEnumerable<DeploymentTarget>>(
-                new[] {
+                new[]
+                {
                     new DeploymentTarget(
                         name: S["File Download"],
                         description: S["Download a deployment plan locally."],
-                        route: new RouteValueDictionary(new
-                        {
-                            area = "OrchardCore.Deployment",
-                            controller = "ExportFile",
-                            action = "Execute"
-                        })
+                        route: new RouteValueDictionary(
+                            new
+                            {
+                                area = "OrchardCore.Deployment",
+                                controller = "ExportFile",
+                                action = "Execute"
+                            }
+                        )
                     )
                 }
             );

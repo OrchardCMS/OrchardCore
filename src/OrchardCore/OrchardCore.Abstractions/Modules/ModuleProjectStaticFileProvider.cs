@@ -37,15 +37,13 @@ namespace OrchardCore.Modules
                     {
                         // If the module and the application assemblies are not at the same location,
                         // this means that the module is referenced as a package, not as a project in dev.
-                        if (module.Assembly == null || Path.GetDirectoryName(module.Assembly.Location)
-                            != Path.GetDirectoryName(application.Assembly.Location))
+                        if (module.Assembly == null || Path.GetDirectoryName(module.Assembly.Location) != Path.GetDirectoryName(application.Assembly.Location))
                         {
                             continue;
                         }
 
                         // Get the 1st module asset under "Areas/{ModuleId}/wwwroot/".
-                        var asset = module.Assets.FirstOrDefault(a => a.ModuleAssetPath
-                            .StartsWith(module.Root + Module.WebRoot, StringComparison.Ordinal));
+                        var asset = module.Assets.FirstOrDefault(a => a.ModuleAssetPath.StartsWith(module.Root + Module.WebRoot, StringComparison.Ordinal));
 
                         if (asset != null)
                         {

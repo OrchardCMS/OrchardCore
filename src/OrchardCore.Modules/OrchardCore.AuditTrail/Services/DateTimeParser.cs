@@ -60,11 +60,9 @@ namespace OrchardCore.AuditTrail.Services
 
         public DateTimeOffset DateTime { get; }
 
-        public override Expression BuildExpression(in BuildExpressionContext context)
-            => BuildOperation(context, Expression.Constant(DateTime.UtcDateTime, typeof(DateTime)));
+        public override Expression BuildExpression(in BuildExpressionContext context) => BuildOperation(context, Expression.Constant(DateTime.UtcDateTime, typeof(DateTime)));
 
-        public override string ToString()
-            => $"{(string.IsNullOrEmpty(Operator) ? string.Empty : Operator)}{DateTime:o}";
+        public override string ToString() => $"{(string.IsNullOrEmpty(Operator) ? string.Empty : Operator)}{DateTime:o}";
     }
 
     public class DateNode2 : OperatorNode
@@ -76,18 +74,15 @@ namespace OrchardCore.AuditTrail.Services
 
         public DateTime DateTime { get; }
 
-        public override Expression BuildExpression(in BuildExpressionContext context)
-            => BuildOperation(context, Expression.Constant(DateTime, typeof(DateTime)));
+        public override Expression BuildExpression(in BuildExpressionContext context) => BuildOperation(context, Expression.Constant(DateTime, typeof(DateTime)));
 
-        public override string ToString()
-            => $"{(string.IsNullOrEmpty(Operator) ? string.Empty : Operator)}{DateTime:o}";
+        public override string ToString() => $"{(string.IsNullOrEmpty(Operator) ? string.Empty : Operator)}{DateTime:o}";
     }
 
     public class NowNode : OperatorNode
     {
-        public NowNode()
-        {
-        }
+        public NowNode() { }
+
         public NowNode(long arithmetic)
         {
             Arithmetic = arithmetic;
@@ -95,30 +90,25 @@ namespace OrchardCore.AuditTrail.Services
 
         public long? Arithmetic { get; }
 
-        public override Expression BuildExpression(in BuildExpressionContext context)
-            => BuildOperation(context, Expression.Constant(context.UtcNow.AddDays(Arithmetic.GetValueOrDefault()), typeof(DateTime)));
+        public override Expression BuildExpression(in BuildExpressionContext context) =>
+            BuildOperation(context, Expression.Constant(context.UtcNow.AddDays(Arithmetic.GetValueOrDefault()), typeof(DateTime)));
 
-        public override string ToString()
-            => $"{(string.IsNullOrEmpty(Operator) ? string.Empty : Operator)}@now{(Arithmetic.HasValue ? Arithmetic.Value.ToString() : string.Empty)}";
+        public override string ToString() =>
+            $"{(string.IsNullOrEmpty(Operator) ? string.Empty : Operator)}@now{(Arithmetic.HasValue ? Arithmetic.Value.ToString() : string.Empty)}";
     }
 
     public class TodayNode : NowNode
     {
-        public TodayNode()
-        {
-        }
+        public TodayNode() { }
 
-        public TodayNode(long arithmetic) : base(arithmetic)
-        {
-        }
+        public TodayNode(long arithmetic)
+            : base(arithmetic) { }
 
-        public override string ToString()
-            => $"{(string.IsNullOrEmpty(Operator) ? string.Empty : Operator)}@today{(Arithmetic.HasValue ? Arithmetic.Value.ToString() : string.Empty)}";
-
+        public override string ToString() =>
+            $"{(string.IsNullOrEmpty(Operator) ? string.Empty : Operator)}@today{(Arithmetic.HasValue ? Arithmetic.Value.ToString() : string.Empty)}";
     }
 
-    public abstract class ExpressionNode : Node
-    { }
+    public abstract class ExpressionNode : Node { }
 
     public class UnaryExpressionNode : ExpressionNode
     {
@@ -127,12 +117,11 @@ namespace OrchardCore.AuditTrail.Services
             Node = node;
         }
 
-        public override Expression BuildExpression(in BuildExpressionContext context)
-            => Expression.Lambda(context.Type, Node.BuildExpression(context), context.Parameter);
+        public override Expression BuildExpression(in BuildExpressionContext context) => Expression.Lambda(context.Type, Node.BuildExpression(context), context.Parameter);
 
         public OperatorNode Node { get; }
-        public override string ToString()
-            => Node.ToString();
+
+        public override string ToString() => Node.ToString();
     }
 
     public class BinaryExpressionNode : ExpressionNode
@@ -168,18 +157,22 @@ namespace OrchardCore.AuditTrail.Services
             var arithmetic = Terms.Integer(NumberOptions.AllowSign);
             var range = Literals.Text("..");
 
-            var todayParser = Terms.Text("@today").And(ZeroOrOne(arithmetic))
-                 .Then<OperatorNode>(x =>
-                 {
-                     if (x.Item2 != 0)
-                     {
-                         return new TodayNode(x.Item2);
-                     }
+            var todayParser = Terms
+                .Text("@today")
+                .And(ZeroOrOne(arithmetic))
+                .Then<OperatorNode>(x =>
+                {
+                    if (x.Item2 != 0)
+                    {
+                        return new TodayNode(x.Item2);
+                    }
 
-                     return new TodayNode();
-                 });
+                    return new TodayNode();
+                });
 
-            var nowParser = Terms.Text("@now").And(ZeroOrOne(arithmetic))
+            var nowParser = Terms
+                .Text("@now")
+                .And(ZeroOrOne(arithmetic))
                 .Then<OperatorNode>(x =>
                 {
                     if (x.Item2 != 0)
@@ -191,37 +184,39 @@ namespace OrchardCore.AuditTrail.Services
                 });
 
             var dateParser = AnyCharBefore(range)
-                .Then<OperatorNode>((ctx, x) =>
-                {
-                    var context = (DateTimeParseContext)ctx;
-                    var dateValue = x.ToString();
+                .Then<OperatorNode>(
+                    (ctx, x) =>
+                    {
+                        var context = (DateTimeParseContext)ctx;
+                        var dateValue = x.ToString();
 
-                    // Try o, primarily for times, and fall back to local timezone.
-                    if (DateTimeOffset.TryParseExact(dateValue, "yyyy-MM-dd'T'HH:mm:ss.FFFK", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateTimeOffset))
-                    {
-                        return new DateNode2(dateTimeOffset.UtcDateTime);
-                    }
-                    else
-                    {
-                        var success = true;
-                        if (!DateTime.TryParse(dateValue, context.CultureInfo, DateTimeStyles.None, out var dateTime))
+                        // Try o, primarily for times, and fall back to local timezone.
+                        if (DateTimeOffset.TryParseExact(dateValue, "yyyy-MM-dd'T'HH:mm:ss.FFFK", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateTimeOffset))
                         {
-                            if (!DateTime.TryParse(dateValue, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
+                            return new DateNode2(dateTimeOffset.UtcDateTime);
+                        }
+                        else
+                        {
+                            var success = true;
+                            if (!DateTime.TryParse(dateValue, context.CultureInfo, DateTimeStyles.None, out var dateTime))
                             {
-                                success = false;
+                                if (!DateTime.TryParse(dateValue, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
+                                {
+                                    success = false;
+                                }
+                            }
+
+                            // If no timezone is specified, assume local using the configured timezone.
+                            if (success)
+                            {
+                                var converted = context.Clock.ConvertToTimeZone(dateTime, context.UserTimeZone);
+                                return new DateNode2(converted.UtcDateTime.Date);
                             }
                         }
 
-                        // If no timezone is specified, assume local using the configured timezone.
-                        if (success)
-                        {
-                            var converted = context.Clock.ConvertToTimeZone(dateTime, context.UserTimeZone);
-                            return new DateNode2(converted.UtcDateTime.Date);
-                        }
+                        throw new ParseException("Could not parse date", context.Scanner.Cursor.Position);
                     }
-
-                    throw new ParseException("Could not parse date", context.Scanner.Cursor.Position);
-                });
+                );
 
             var currentParser = OneOf(nowParser, todayParser);
 
@@ -235,26 +230,28 @@ namespace OrchardCore.AuditTrail.Services
                     {
                         return new UnaryExpressionNode(x.Item1);
                     }
-
                     else
                     {
                         return new BinaryExpressionNode(x.Item1, x.Item2);
                     }
                 });
 
-            Parser = operators.And(valueParser)
-                    .Then<ExpressionNode>(x =>
-                    {
-                        x.Item2.Operator = x.Item1;
-                        return new UnaryExpressionNode(x.Item2);
-                    })
-                .Or(rangeParser).Compile();
+            Parser = operators
+                .And(valueParser)
+                .Then<ExpressionNode>(x =>
+                {
+                    x.Item2.Operator = x.Item1;
+                    return new UnaryExpressionNode(x.Item2);
+                })
+                .Or(rangeParser)
+                .Compile();
         }
     }
 
     public class DateTimeParseContext : ParseContext
     {
-        public DateTimeParseContext(CultureInfo cultureInfo, IClock clock, ITimeZone userTimeZone, Scanner scanner, bool useNewLines = false) : base(scanner, useNewLines)
+        public DateTimeParseContext(CultureInfo cultureInfo, IClock clock, ITimeZone userTimeZone, Scanner scanner, bool useNewLines = false)
+            : base(scanner, useNewLines)
         {
             CultureInfo = cultureInfo;
             Clock = clock;

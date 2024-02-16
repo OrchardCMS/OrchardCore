@@ -52,7 +52,8 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
-        public ContentTypePartDefinitionBuilder MergeSettings<T>(Action<T> setting) where T : class, new()
+        public ContentTypePartDefinitionBuilder MergeSettings<T>(Action<T> setting)
+            where T : class, new()
         {
             var existingJObject = _settings[typeof(T).Name] as JsonObject;
 

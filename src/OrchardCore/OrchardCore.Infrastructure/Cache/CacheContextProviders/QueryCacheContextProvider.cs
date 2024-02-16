@@ -23,11 +23,7 @@ namespace OrchardCore.Environment.Cache.CacheContextProviders
                 var httpContext = _httpContextAccessor.HttpContext;
                 var query = httpContext.Request.Query;
                 var allKeys = query.Keys.OrderBy(x => x).ToArray();
-                entries.AddRange(allKeys
-                    .Select(x => new CacheContextEntry(
-                        key: x.ToLowerInvariant(),
-                        value: query[x].ToString().ToLowerInvariant())
-                    ));
+                entries.AddRange(allKeys.Select(x => new CacheContextEntry(key: x.ToLowerInvariant(), value: query[x].ToString().ToLowerInvariant())));
 
                 // If we track any query value, we don't need to look into specific ones.
                 return Task.CompletedTask;
@@ -39,10 +35,7 @@ namespace OrchardCore.Environment.Cache.CacheContextProviders
 
                 var httpContext = _httpContextAccessor.HttpContext;
                 var query = httpContext.Request.Query;
-                entries.Add(new CacheContextEntry(
-                        key: key.ToLowerInvariant(),
-                        value: query[key].ToString().ToLowerInvariant())
-                    );
+                entries.Add(new CacheContextEntry(key: key.ToLowerInvariant(), value: query[key].ToString().ToLowerInvariant()));
             }
 
             return Task.CompletedTask;

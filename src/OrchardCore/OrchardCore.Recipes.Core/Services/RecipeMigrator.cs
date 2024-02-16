@@ -27,7 +27,8 @@ namespace OrchardCore.Recipes.Services
             IHostEnvironment hostingEnvironment,
             ITypeFeatureProvider typeFeatureProvider,
             IEnumerable<IRecipeEnvironmentProvider> environmentProviders,
-            ILogger<RecipeMigrator> logger)
+            ILogger<RecipeMigrator> logger
+        )
         {
             _recipeReader = recipeReader;
             _recipeExecutor = recipeExecutor;

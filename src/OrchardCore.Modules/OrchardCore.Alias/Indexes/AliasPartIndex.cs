@@ -36,7 +36,7 @@ namespace OrchardCore.Alias.Indexes
             var part = context.ContentItem.As<AliasPart>();
 
             // Validate that the content definition contains this part, this prevents indexing parts
-            // that have been removed from the type definition, but are still present in the elements.            
+            // that have been removed from the type definition, but are still present in the elements.
             if (part != null)
             {
                 // Lazy initialization because of ISession cyclic dependency.
@@ -60,7 +60,8 @@ namespace OrchardCore.Alias.Indexes
 
         public void Describe(DescribeContext<ContentItem> context)
         {
-            context.For<AliasPartIndex>()
+            context
+                .For<AliasPartIndex>()
                 .When(contentItem => contentItem.Has<AliasPart>() || _partRemoved.Contains(contentItem.ContentItemId))
                 .Map(contentItem =>
                 {

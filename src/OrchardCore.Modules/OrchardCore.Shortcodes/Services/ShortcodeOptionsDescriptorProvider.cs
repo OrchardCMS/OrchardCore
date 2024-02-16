@@ -15,14 +15,15 @@ namespace OrchardCore.Shortcodes.Services
         }
 
         public Task<IEnumerable<ShortcodeDescriptor>> DiscoverAsync() =>
-            Task.FromResult(_options.Shortcodes.Values.Select(option =>
-                new ShortcodeDescriptor
+            Task.FromResult(
+                _options.Shortcodes.Values.Select(option => new ShortcodeDescriptor
                 {
                     Name = option.Name,
                     DefaultValue = option.DefaultValue,
                     Usage = option.Usage,
                     Hint = option.Hint,
                     Categories = option.Categories
-                }));
+                })
+            );
     }
 }

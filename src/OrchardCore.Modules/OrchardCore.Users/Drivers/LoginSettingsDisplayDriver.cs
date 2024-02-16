@@ -17,9 +17,7 @@ namespace OrchardCore.Users.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
-        public LoginSettingsDisplayDriver(
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+        public LoginSettingsDisplayDriver(IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService)
         {
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
@@ -27,25 +25,31 @@ namespace OrchardCore.Users.Drivers
 
         public override IDisplayResult Edit(LoginSettings settings)
         {
-            return Initialize<LoginSettings>("LoginSettings_Edit", model =>
-            {
-                model.UseSiteTheme = settings.UseSiteTheme;
-                model.UseExternalProviderIfOnlyOneDefined = settings.UseExternalProviderIfOnlyOneDefined;
-                model.DisableLocalLogin = settings.DisableLocalLogin;
-                model.UseScriptToSyncRoles = settings.UseScriptToSyncRoles;
-                model.SyncRolesScript = settings.SyncRolesScript;
-                model.AllowChangingEmail = settings.AllowChangingEmail;
-                model.AllowChangingUsername = settings.AllowChangingUsername;
-                model.AllowChangingPhoneNumber = settings.AllowChangingPhoneNumber;
-            }).Location("Content:5#General")
-            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.ManageUsers))
-            .OnGroup(GroupId);
+            return Initialize<LoginSettings>(
+                    "LoginSettings_Edit",
+                    model =>
+                    {
+                        model.UseSiteTheme = settings.UseSiteTheme;
+                        model.UseExternalProviderIfOnlyOneDefined = settings.UseExternalProviderIfOnlyOneDefined;
+                        model.DisableLocalLogin = settings.DisableLocalLogin;
+                        model.UseScriptToSyncRoles = settings.UseScriptToSyncRoles;
+                        model.SyncRolesScript = settings.SyncRolesScript;
+                        model.AllowChangingEmail = settings.AllowChangingEmail;
+                        model.AllowChangingUsername = settings.AllowChangingUsername;
+                        model.AllowChangingPhoneNumber = settings.AllowChangingPhoneNumber;
+                    }
+                )
+                .Location("Content:5#General")
+                .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.ManageUsers))
+                .OnGroup(GroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(LoginSettings section, BuildEditorContext context)
         {
-            if (!context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase)
-                || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
+            if (
+                !context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase)
+                || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers)
+            )
             {
                 return null;
             }

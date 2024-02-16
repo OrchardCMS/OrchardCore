@@ -17,8 +17,7 @@ namespace OrchardCore.ReCaptcha.Forms
                 o.MemberAccessStrategy.Register<ReCaptchaPart>();
             });
 
-            services.AddContentPart<ReCaptchaPart>()
-                .UseDisplayDriver<ReCaptchaPartDisplayDriver>();
+            services.AddContentPart<ReCaptchaPart>().UseDisplayDriver<ReCaptchaPartDisplayDriver>();
 
             services.AddDataMigration<Migrations>();
         }

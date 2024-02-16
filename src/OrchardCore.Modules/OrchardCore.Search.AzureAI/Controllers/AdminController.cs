@@ -59,7 +59,7 @@ public class AdminController : Controller
         ILogger<AdminController> logger,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer
-        )
+    )
     {
         _siteService = siteService;
         _authorizationService = authorizationService;
@@ -88,9 +88,7 @@ public class AdminController : Controller
             return NotConfigured();
         }
 
-        var indexes = (await _indexSettingsService.GetSettingsAsync())
-            .Select(i => new IndexViewModel { Name = i.IndexName })
-            .ToList();
+        var indexes = (await _indexSettingsService.GetSettingsAsync()).Select(i => new IndexViewModel { Name = i.IndexName }).ToList();
 
         var totalIndexes = indexes.Count;
 
@@ -102,9 +100,7 @@ public class AdminController : Controller
         var siteSettings = await _siteService.GetSiteSettingsAsync();
         var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
-        indexes = indexes
-            .Skip(pager.GetStartIndex())
-            .Take(pager.PageSize).ToList();
+        indexes = indexes.Skip(pager.GetStartIndex()).Take(pager.PageSize).ToList();
 
         // Maintain previous route data when generating page links.
         var routeData = new RouteData();
@@ -121,23 +117,14 @@ public class AdminController : Controller
             Pager = await _shapeFactory.PagerAsync(pager, totalIndexes, routeData)
         };
 
-        model.Options.ContentsBulkAction =
-        [
-            new SelectListItem(S["Delete"], nameof(AzureAISearchIndexBulkAction.Remove)),
-        ];
+        model.Options.ContentsBulkAction = [new SelectListItem(S["Delete"], nameof(AzureAISearchIndexBulkAction.Remove)),];
 
         return View(model);
     }
 
     [HttpPost, ActionName(nameof(Index))]
     [FormValueRequired("submit.Filter")]
-    public ActionResult IndexFilterPOST(AdminIndexViewModel model)
-        => RedirectToAction(nameof(Index),
-            new RouteValueDictionary
-            {
-                { _optionsSearch, model.Options.Search }
-            });
-
+    public ActionResult IndexFilterPOST(AdminIndexViewModel model) => RedirectToAction(nameof(Index), new RouteValueDictionary { { _optionsSearch, model.Options.Search } });
 
     [HttpPost, ActionName(nameof(Index))]
     [FormValueRequired("submit.BulkAction")]
@@ -191,10 +178,7 @@ public class AdminController : Controller
             return NotConfigured();
         }
 
-        var model = new AzureAISettingsViewModel
-        {
-            AnalyzerName = AzureAISearchDefaultOptions.DefaultAnalyzer
-        };
+        var model = new AzureAISettingsViewModel { AnalyzerName = AzureAISearchDefaultOptions.DefaultAnalyzer };
 
         PopulateMenuOptions(model);
 
@@ -493,22 +477,22 @@ public class AdminController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    private ViewResult NotConfigured()
-        => View("NotConfigured");
+    private ViewResult NotConfigured() => View("NotConfigured");
 
-    private static Task AsyncContentItemsAsync(string indexName)
-        => HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("sync-content-items-azure-ai-" + indexName, async (scope) =>
-        {
-            var indexingService = scope.ServiceProvider.GetRequiredService<AzureAISearchIndexingService>();
-            await indexingService.ProcessContentItemsAsync(indexName);
-        });
+    private static Task AsyncContentItemsAsync(string indexName) =>
+        HttpBackgroundJob.ExecuteAfterEndOfRequestAsync(
+            "sync-content-items-azure-ai-" + indexName,
+            async (scope) =>
+            {
+                var indexingService = scope.ServiceProvider.GetRequiredService<AzureAISearchIndexingService>();
+                await indexingService.ProcessContentItemsAsync(indexName);
+            }
+        );
 
     private void PopulateMenuOptions(AzureAISettingsViewModel model)
     {
-        model.Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
-            .Select(x => new SelectListItem { Text = $"{x.Name} ({x.DisplayName})", Value = x.Name });
+        model.Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures).Select(x => new SelectListItem { Text = $"{x.Name} ({x.DisplayName})", Value = x.Name });
 
-        model.Analyzers = _azureAIOptions.Analyzers
-            .Select(x => new SelectListItem { Text = x, Value = x });
+        model.Analyzers = _azureAIOptions.Analyzers.Select(x => new SelectListItem { Text = x, Value = x });
     }
 }

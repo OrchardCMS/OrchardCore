@@ -15,12 +15,10 @@ namespace OrchardCore.Roles
         private readonly RoleManager<IRole> _roleManager;
         private readonly IPermissionGrantingService _permissionGrantingService;
 
+        private IEnumerable<RoleClaim> _anonymousClaims = null,
+            _authenticatedClaims = null;
 
-        private IEnumerable<RoleClaim> _anonymousClaims = null, _authenticatedClaims = null;
-
-        public RolesPermissionsHandler(
-            RoleManager<IRole> roleManager,
-            IPermissionGrantingService permissionGrantingService)
+        public RolesPermissionsHandler(RoleManager<IRole> roleManager, IPermissionGrantingService permissionGrantingService)
         {
             _roleManager = roleManager;
             _permissionGrantingService = permissionGrantingService;

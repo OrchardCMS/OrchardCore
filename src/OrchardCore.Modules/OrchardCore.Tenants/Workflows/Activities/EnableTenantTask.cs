@@ -13,10 +13,14 @@ namespace OrchardCore.Tenants.Workflows.Activities
 {
     public class EnableTenantTask : TenantTask
     {
-        public EnableTenantTask(IShellSettingsManager shellSettingsManager, IShellHost shellHost, IWorkflowExpressionEvaluator expressionEvaluator, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<EnableTenantTask> localizer)
-            : base(shellSettingsManager, shellHost, expressionEvaluator, scriptEvaluator, localizer)
-        {
-        }
+        public EnableTenantTask(
+            IShellSettingsManager shellSettingsManager,
+            IShellHost shellHost,
+            IWorkflowExpressionEvaluator expressionEvaluator,
+            IWorkflowScriptEvaluator scriptEvaluator,
+            IStringLocalizer<EnableTenantTask> localizer
+        )
+            : base(shellSettingsManager, shellHost, expressionEvaluator, scriptEvaluator, localizer) { }
 
         public override string Name => nameof(EnableTenantTask);
 

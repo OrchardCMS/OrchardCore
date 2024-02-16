@@ -32,7 +32,8 @@ namespace OrchardCore.Users.Controllers
             INotifier notifier,
             ILogger<RegistrationController> logger,
             IHtmlLocalizer<RegistrationController> htmlLocalizer,
-            IStringLocalizer<RegistrationController> stringLocalizer)
+            IStringLocalizer<RegistrationController> stringLocalizer
+        )
         {
             _userManager = userManager;
             _authorizationService = authorizationService;
@@ -138,13 +139,11 @@ namespace OrchardCore.Users.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult ConfirmEmailSent(string returnUrl = null)
-            => View(new { ReturnUrl = returnUrl });
+        public IActionResult ConfirmEmailSent(string returnUrl = null) => View(new { ReturnUrl = returnUrl });
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult RegistrationPending(string returnUrl = null)
-            => View(new { ReturnUrl = returnUrl });
+        public IActionResult RegistrationPending(string returnUrl = null) => View(new { ReturnUrl = returnUrl });
 
         [Authorize]
         [HttpPost]

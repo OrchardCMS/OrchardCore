@@ -41,7 +41,8 @@ namespace OrchardCore.Recipes.Controllers
             IEnumerable<IRecipeEnvironmentProvider> environmentProviders,
             INotifier notifier,
             IHtmlLocalizer<AdminController> localizer,
-            ILogger<AdminController> logger)
+            ILogger<AdminController> logger
+        )
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
@@ -65,17 +66,19 @@ namespace OrchardCore.Recipes.Controllers
             var features = await _shellFeaturesManager.GetAvailableFeaturesAsync();
             var recipes = await GetRecipesAsync(features);
 
-            var model = recipes.Select(recipe => new RecipeViewModel
-            {
-                Name = recipe.Name,
-                DisplayName = recipe.DisplayName,
-                FileName = recipe.RecipeFileInfo.Name,
-                BasePath = recipe.BasePath,
-                Tags = recipe.Tags,
-                IsSetupRecipe = recipe.IsSetupRecipe,
-                Feature = features.FirstOrDefault(f => recipe.BasePath.Contains(f.Extension.SubPath))?.Name ?? "Application",
-                Description = recipe.Description
-            }).ToArray();
+            var model = recipes
+                .Select(recipe => new RecipeViewModel
+                {
+                    Name = recipe.Name,
+                    DisplayName = recipe.DisplayName,
+                    FileName = recipe.RecipeFileInfo.Name,
+                    BasePath = recipe.BasePath,
+                    Tags = recipe.Tags,
+                    IsSetupRecipe = recipe.IsSetupRecipe,
+                    Feature = features.FirstOrDefault(f => recipe.BasePath.Contains(f.Extension.SubPath))?.Name ?? "Application",
+                    Description = recipe.Description
+                })
+                .ToArray();
 
             return View(model);
         }
@@ -116,10 +119,13 @@ namespace OrchardCore.Recipes.Controllers
         private async Task<IEnumerable<RecipeDescriptor>> GetRecipesAsync(IEnumerable<IFeatureInfo> features)
         {
             var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
-            var recipes = recipeCollections.SelectMany(x => x)
-                .Where(r => !r.IsSetupRecipe &&
-                    (r.Tags == null || !r.Tags.Contains("hidden", StringComparer.InvariantCultureIgnoreCase)) &&
-                    features.Any(f => r.BasePath != null && f.Extension?.SubPath != null && r.BasePath.Contains(f.Extension.SubPath, StringComparison.OrdinalIgnoreCase)));
+            var recipes = recipeCollections
+                .SelectMany(x => x)
+                .Where(r =>
+                    !r.IsSetupRecipe
+                    && (r.Tags == null || !r.Tags.Contains("hidden", StringComparer.InvariantCultureIgnoreCase))
+                    && features.Any(f => r.BasePath != null && f.Extension?.SubPath != null && r.BasePath.Contains(f.Extension.SubPath, StringComparison.OrdinalIgnoreCase))
+                );
 
             return recipes;
         }

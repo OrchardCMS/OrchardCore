@@ -32,7 +32,8 @@ namespace OrchardCore.Facebook
                 if (Path.GetFileName(httpContext.Request.Path.Value) == "fbsdk.js")
                 {
                     var locale = CultureInfo.CurrentUICulture.Name.Replace('-', '_');
-                    script = $@"(function(d){{
+                    script =
+                        $@"(function(d){{
                         var js, id = 'facebook-jssdk'; if (d.getElementById(id)) {{ return; }}
                         js = d.createElement('script'); js.id = id; js.async = true;
                         js.src = ""https://connect.facebook.net/{locale}/{settings.SdkJs}"";

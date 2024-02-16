@@ -17,12 +17,7 @@ namespace OrchardCore.XmlRpc
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaControllerRoute(
-                name: "XmlRpc",
-                areaName: "OrchardCore.XmlRpc",
-                pattern: "xmlrpc",
-                defaults: new { controller = "Home", action = "Index" }
-            );
+            routes.MapAreaControllerRoute(name: "XmlRpc", areaName: "OrchardCore.XmlRpc", pattern: "xmlrpc", defaults: new { controller = "Home", action = "Index" });
         }
     }
 

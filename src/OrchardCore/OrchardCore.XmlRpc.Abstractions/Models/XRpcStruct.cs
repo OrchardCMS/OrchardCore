@@ -8,6 +8,7 @@ namespace OrchardCore.XmlRpc.Models
         {
             Members = new Dictionary<string, XRpcData>();
         }
+
         public IDictionary<string, XRpcData> Members { get; set; }
 
         public object this[string index]

@@ -41,20 +41,18 @@ namespace OrchardCore.Modules
 
         private ConcurrentBag<Module> GetModules()
         {
-            var modules = new ConcurrentBag<Module>
-            {
-                new(_environment.ApplicationName, true),
-            };
+            var modules = new ConcurrentBag<Module> { new(_environment.ApplicationName, true), };
 
-            var names = _moduleNamesProviders
-                .SelectMany(p => p.GetModuleNames())
-                .Where(n => n != _environment.ApplicationName)
-                .Distinct();
+            var names = _moduleNamesProviders.SelectMany(p => p.GetModuleNames()).Where(n => n != _environment.ApplicationName).Distinct();
 
-            Parallel.ForEach(names, new ParallelOptions { MaxDegreeOfParallelism = 8 }, (name) =>
-            {
-                modules.Add(new Module(name, false));
-            });
+            Parallel.ForEach(
+                names,
+                new ParallelOptions { MaxDegreeOfParallelism = 8 },
+                (name) =>
+                {
+                    modules.Add(new Module(name, false));
+                }
+            );
 
             return modules;
         }

@@ -7,9 +7,7 @@ namespace OrchardCore.Demo.ViewModels
     public class TodoViewModel : ShapeViewModel
     {
         public TodoViewModel()
-            : base("Todo")
-        {
-        }
+            : base("Todo") { }
 
         public string TodoId { get; set; }
 
@@ -23,10 +21,7 @@ namespace OrchardCore.Demo.ViewModels
 
         public string DisplayMode
         {
-            get
-            {
-                return Metadata.DisplayType;
-            }
+            get { return Metadata.DisplayType; }
             set
             {
                 var alternate = $"Todo_{value}";

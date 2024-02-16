@@ -19,24 +19,23 @@ namespace OrchardCore.Benchmark
     [MemoryDiagnoser]
     public class ShapeFactoryBenchmark
     {
-        private static readonly FilterArguments _filterArguments = new FilterArguments().Add("utc", new DateTimeValue(DateTime.UtcNow)).Add("format", StringValue.Create("MMMM dd, yyyy"));
+        private static readonly FilterArguments _filterArguments = new FilterArguments()
+            .Add("utc", new DateTimeValue(DateTime.UtcNow))
+            .Add("format", StringValue.Create("MMMM dd, yyyy"));
         private static readonly FluidValue _input = StringValue.Create("DateTime");
         private static readonly TemplateContext _templateContext;
 
         static ShapeFactoryBenchmark()
         {
             _templateContext = new TemplateContext();
-            var defaultShapeTable = new ShapeTable
-            (
-                [],
-                []
-            );
+            var defaultShapeTable = new ShapeTable([], []);
 
             var shapeFactory = new DefaultShapeFactory(
                 serviceProvider: new ServiceCollection().BuildServiceProvider(),
                 events: [],
                 shapeTableManager: new TestShapeTableManager(defaultShapeTable),
-                themeManager: new MockThemeManager(new ExtensionInfo("path", new ManifestInfo(new ModuleAttribute()), (x, y) => [])));
+                themeManager: new MockThemeManager(new ExtensionInfo("path", new ManifestInfo(new ModuleAttribute()), (x, y) => []))
+            );
 
             _templateContext.AmbientValues["DisplayHelper"] = new DisplayHelper(null, shapeFactory, null);
         }
@@ -49,7 +48,6 @@ namespace OrchardCore.Benchmark
         {
             await ShapeRenderOriginal(_input, _filterArguments, _templateContext);
         }
-
 
         // [Benchmark]
         // public async Task NewShapeRender()

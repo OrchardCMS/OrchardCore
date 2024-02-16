@@ -8,11 +8,7 @@ namespace OrchardCore.Feeds.Rss
         {
             if (context.Format == "rss")
             {
-                return new FeedBuilderMatch
-                {
-                    FeedBuilder = new RssFeedBuilder(),
-                    Priority = -5
-                };
+                return new FeedBuilderMatch { FeedBuilder = new RssFeedBuilder(), Priority = -5 };
             }
 
             return null;

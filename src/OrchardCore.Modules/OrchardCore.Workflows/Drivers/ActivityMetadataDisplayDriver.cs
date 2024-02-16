@@ -13,10 +13,14 @@ namespace OrchardCore.Workflows.Drivers
     {
         public override IDisplayResult Edit(ActivityMetadata section, BuildEditorContext context)
         {
-            return Initialize<ActivityMetadataEditViewModel>("ActivityMetadata_Edit", viewModel =>
-            {
-                viewModel.Title = section.Title;
-            }).Location("Content:before");
+            return Initialize<ActivityMetadataEditViewModel>(
+                    "ActivityMetadata_Edit",
+                    viewModel =>
+                    {
+                        viewModel.Title = section.Title;
+                    }
+                )
+                .Location("Content:before");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ActivityMetadata section, IUpdateModel updater, BuildEditorContext context)

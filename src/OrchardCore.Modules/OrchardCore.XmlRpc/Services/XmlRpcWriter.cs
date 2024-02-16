@@ -23,19 +23,19 @@ namespace OrchardCore.XmlRpc.Services
         public XmlRpcWriter()
         {
             _dispatch = new Dictionary<Type, Func<XRpcData, XElement>>
-                {
-                    { typeof(int), p => new XElement("int", (int)p.Value) },
-                    { typeof(bool), p => new XElement("boolean", (bool)p.Value ? "1" : "0") },
-                    { typeof(string), p => new XElement("string", p.Value) },
-                    { typeof(double), p => new XElement("double", (double)p.Value) },
-                    { typeof(DateTime), p => new XElement("dateTime.iso8601", ((DateTime)p.Value).ToString("yyyyMMddTHH:mm:ssZ", CultureInfo.InvariantCulture)) },
-                    { typeof(DateTime?), p => new XElement("dateTime.iso8601", ((DateTime?)p.Value).Value.ToString("yyyyMMddTHH:mm:ssZ", CultureInfo.InvariantCulture)) },
-                    { typeof(DateTimeOffset), p => new XElement("dateTime.iso8601", ((DateTimeOffset)p.Value).ToString("yyyyMMddTHH:mm:ssZ", CultureInfo.InvariantCulture)) },
-                    { typeof(DateTimeOffset?), p => new XElement("dateTime.iso8601", ((DateTimeOffset?)p.Value).Value.ToString("yyyyMMddTHH:mm:ssZ", CultureInfo.InvariantCulture)) },
-                    { typeof(byte[]), p => new XElement("base64", Convert.ToBase64String((byte[])p.Value)) },
-                    { typeof(XRpcStruct), p => MapStruct((XRpcStruct)p.Value) },
-                    { typeof(XRpcArray), p => MapArray((XRpcArray)p.Value) },
-                };
+            {
+                { typeof(int), p => new XElement("int", (int)p.Value) },
+                { typeof(bool), p => new XElement("boolean", (bool)p.Value ? "1" : "0") },
+                { typeof(string), p => new XElement("string", p.Value) },
+                { typeof(double), p => new XElement("double", (double)p.Value) },
+                { typeof(DateTime), p => new XElement("dateTime.iso8601", ((DateTime)p.Value).ToString("yyyyMMddTHH:mm:ssZ", CultureInfo.InvariantCulture)) },
+                { typeof(DateTime?), p => new XElement("dateTime.iso8601", ((DateTime?)p.Value).Value.ToString("yyyyMMddTHH:mm:ssZ", CultureInfo.InvariantCulture)) },
+                { typeof(DateTimeOffset), p => new XElement("dateTime.iso8601", ((DateTimeOffset)p.Value).ToString("yyyyMMddTHH:mm:ssZ", CultureInfo.InvariantCulture)) },
+                { typeof(DateTimeOffset?), p => new XElement("dateTime.iso8601", ((DateTimeOffset?)p.Value).Value.ToString("yyyyMMddTHH:mm:ssZ", CultureInfo.InvariantCulture)) },
+                { typeof(byte[]), p => new XElement("base64", Convert.ToBase64String((byte[])p.Value)) },
+                { typeof(XRpcStruct), p => MapStruct((XRpcStruct)p.Value) },
+                { typeof(XRpcArray), p => MapArray((XRpcArray)p.Value) },
+            };
         }
 
         /// <summary>
@@ -54,17 +54,10 @@ namespace OrchardCore.XmlRpc.Services
                 members.Set("faultCode", rpcMethodResponse.Fault.Code);
                 members.Set("faultString", rpcMethodResponse.Fault.Message);
 
-                return new XElement("methodResponse",
-                    new XElement("fault",
-                        new XElement("value", MapStruct(members))
-                    )
-                );
+                return new XElement("methodResponse", new XElement("fault", new XElement("value", MapStruct(members))));
             }
 
-            return new XElement("methodResponse",
-                new XElement("params",
-                    rpcMethodResponse.Params.Select(
-                        p => new XElement("param", MapValue(p)))));
+            return new XElement("methodResponse", new XElement("params", rpcMethodResponse.Params.Select(p => new XElement("param", MapValue(p)))));
         }
 
         /// <summary>
@@ -86,13 +79,7 @@ namespace OrchardCore.XmlRpc.Services
         /// <returns>The XML element.</returns>
         public XElement MapStruct(XRpcStruct rpcStruct)
         {
-            return new XElement(
-                "struct",
-                rpcStruct.Members.Select(
-                    kv => new XElement(
-                              "member",
-                              new XElement("name", kv.Key),
-                              MapValue(kv.Value))));
+            return new XElement("struct", rpcStruct.Members.Select(kv => new XElement("member", new XElement("name", kv.Key), MapValue(kv.Value))));
         }
 
         /// <summary>
@@ -102,11 +89,7 @@ namespace OrchardCore.XmlRpc.Services
         /// <returns>The XML element.</returns>
         public XElement MapArray(XRpcArray rpcArray)
         {
-            return new XElement(
-                "array",
-                new XElement(
-                    "data",
-                    rpcArray.Data.Select(MapValue)));
+            return new XElement("array", new XElement("data", rpcArray.Data.Select(MapValue)));
         }
 
         /// <summary>

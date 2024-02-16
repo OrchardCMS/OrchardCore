@@ -22,11 +22,7 @@ namespace OrchardCore.Media.Processing
         /// </summary>
         private Func<HttpContext, bool> _match;
 
-        public MediaResizingFileProvider(
-            IMediaFileProvider mediaFileProvider,
-            IOptions<ImageSharpMiddlewareOptions> imageSharpOptions,
-            IOptions<MediaOptions> mediaOptions
-            )
+        public MediaResizingFileProvider(IMediaFileProvider mediaFileProvider, IOptions<ImageSharpMiddlewareOptions> imageSharpOptions, IOptions<MediaOptions> mediaOptions)
         {
             _mediaFileProvider = mediaFileProvider;
             _formatUtilities = new FormatUtilities(imageSharpOptions);
@@ -43,8 +39,7 @@ namespace OrchardCore.Media.Processing
         public ProcessingBehavior ProcessingBehavior => ProcessingBehavior.CommandOnly;
 
         /// <inheritdoc/>
-        public bool IsValidRequest(HttpContext context)
-            => _formatUtilities.TryGetExtensionFromUri(context.Request.GetDisplayUrl(), out _);
+        public bool IsValidRequest(HttpContext context) => _formatUtilities.TryGetExtensionFromUri(context.Request.GetDisplayUrl(), out _);
 
         /// <inheritdoc/>
         public Task<IImageResolver> GetAsync(HttpContext context)

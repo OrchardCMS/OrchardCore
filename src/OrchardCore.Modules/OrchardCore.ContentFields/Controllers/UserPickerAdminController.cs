@@ -29,7 +29,7 @@ namespace OrchardCore.ContentFields.Controllers
             IContentManager contentManager,
             IAuthorizationService authorizationService,
             IEnumerable<IUserPickerResultProvider> resultProviders
-            )
+        )
         {
             _contentDefinitionManager = contentDefinitionManager;
             _contentManager = contentManager;
@@ -52,8 +52,7 @@ namespace OrchardCore.ContentFields.Controllers
                 return Forbid();
             }
 
-            var partFieldDefinition = (await _contentDefinitionManager.GetPartDefinitionAsync(part))?.Fields
-                .FirstOrDefault(f => f.Name == field);
+            var partFieldDefinition = (await _contentDefinitionManager.GetPartDefinitionAsync(part))?.Fields.FirstOrDefault(f => f.Name == field);
 
             var fieldSettings = partFieldDefinition?.GetSettings<UserPickerFieldSettings>();
             if (fieldSettings == null)
@@ -63,23 +62,31 @@ namespace OrchardCore.ContentFields.Controllers
 
             var editor = partFieldDefinition.Editor() ?? "Default";
 
-            var resultProvider = _resultProviders.FirstOrDefault(p => p.Name == editor)
-                ?? _resultProviders.FirstOrDefault(p => p.Name == "Default");
+            var resultProvider = _resultProviders.FirstOrDefault(p => p.Name == editor) ?? _resultProviders.FirstOrDefault(p => p.Name == "Default");
 
             if (resultProvider == null)
             {
                 return new ObjectResult(new List<UserPickerResult>());
             }
 
-            var results = await resultProvider.Search(new UserPickerSearchContext
-            {
-                Query = query,
-                DisplayAllUsers = fieldSettings.DisplayAllUsers,
-                Roles = fieldSettings.DisplayedRoles,
-                PartFieldDefinition = partFieldDefinition
-            });
+            var results = await resultProvider.Search(
+                new UserPickerSearchContext
+                {
+                    Query = query,
+                    DisplayAllUsers = fieldSettings.DisplayAllUsers,
+                    Roles = fieldSettings.DisplayedRoles,
+                    PartFieldDefinition = partFieldDefinition
+                }
+            );
 
-            return new ObjectResult(results.Select(r => new VueMultiselectUserViewModel() { Id = r.UserId, DisplayText = r.DisplayText, IsEnabled = r.IsEnabled }));
+            return new ObjectResult(
+                results.Select(r => new VueMultiselectUserViewModel()
+                {
+                    Id = r.UserId,
+                    DisplayText = r.DisplayText,
+                    IsEnabled = r.IsEnabled
+                })
+            );
         }
     }
 }

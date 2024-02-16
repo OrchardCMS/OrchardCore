@@ -12,4 +12,3 @@ public class EditUserPhoneNumberViewModel
     [BindNever]
     public bool AllowEditing { get; set; }
 }
-

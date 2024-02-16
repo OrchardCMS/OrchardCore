@@ -5,7 +5,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries;
 
 public class PublicationStatusGraphType : EnumerationGraphType
 {
-
     public PublicationStatusGraphType()
     {
         Name = "Status";

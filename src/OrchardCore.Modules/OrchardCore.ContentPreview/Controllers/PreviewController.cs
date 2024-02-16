@@ -29,7 +29,8 @@ namespace OrchardCore.ContentPreview.Controllers
             IContentManagerSession contentManagerSession,
             IAuthorizationService authorizationService,
             IClock clock,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor
+        )
         {
             _authorizationService = authorizationService;
             _clock = clock;
@@ -133,10 +134,7 @@ namespace OrchardCore.ContentPreview.Controllers
             return string.Empty;
         }
 
-        public static string GetModelErrorMessageOrDefault(
-            ModelError modelError,
-            ModelStateEntry containingEntry,
-            ModelExplorer modelExplorer)
+        public static string GetModelErrorMessageOrDefault(ModelError modelError, ModelStateEntry containingEntry, ModelExplorer modelExplorer)
         {
             Debug.Assert(modelError != null);
             Debug.Assert(containingEntry != null);
@@ -153,9 +151,7 @@ namespace OrchardCore.ContentPreview.Controllers
         }
 
         // Returns non-null list of model states, which caller will render in order provided.
-        public static IList<ModelStateEntry> GetModelStateList(
-            ViewDataDictionary viewData,
-            bool excludePropertyErrors)
+        public static IList<ModelStateEntry> GetModelStateList(ViewDataDictionary viewData, bool excludePropertyErrors)
         {
             if (excludePropertyErrors)
             {
@@ -191,10 +187,7 @@ namespace OrchardCore.ContentPreview.Controllers
             return Array.Empty<ModelStateEntry>();
         }
 
-        private static void Visit(
-            ModelStateEntry modelStateEntry,
-            ModelMetadata metadata,
-            List<ModelStateEntry> orderedModelStateEntries)
+        private static void Visit(ModelStateEntry modelStateEntry, ModelMetadata metadata, List<ModelStateEntry> orderedModelStateEntries)
         {
             if (metadata.ElementMetadata != null && modelStateEntry.Children != null)
             {

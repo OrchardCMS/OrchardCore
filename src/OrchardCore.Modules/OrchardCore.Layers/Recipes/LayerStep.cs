@@ -27,11 +27,7 @@ namespace OrchardCore.Layers.Recipes
         private readonly IConditionIdGenerator _conditionIdGenerator;
         private readonly IEnumerable<IConditionFactory> _factories;
 
-        public LayerStep(
-            ILayerService layerService,
-            IRuleMigrator ruleMigrator,
-            IConditionIdGenerator conditionIdGenerator,
-            IEnumerable<IConditionFactory> factories)
+        public LayerStep(ILayerService layerService, IRuleMigrator ruleMigrator, IConditionIdGenerator conditionIdGenerator, IEnumerable<IConditionFactory> factories)
         {
             _layerService = layerService;
             _ruleMigrator = ruleMigrator;
@@ -94,7 +90,10 @@ namespace OrchardCore.Layers.Recipes
                         var name = jCondition["Name"].ToString();
                         if (factories.TryGetValue(name, out var factory))
                         {
-                            var factoryCondition = (Condition)jCondition.ToObject(factory.Create().GetType()/*, _jsonSerializer*/);
+                            var factoryCondition = (Condition)
+                                jCondition.ToObject(
+                                    factory.Create().GetType() /*, _jsonSerializer*/
+                                );
 
                             layer.LayerRule.Conditions.Add(factoryCondition);
                         }

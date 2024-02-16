@@ -19,9 +19,10 @@ namespace OrchardCore.Markdown
 
         public async Task<int> CreateAsync()
         {
-            await _contentDefinitionManager.AlterPartDefinitionAsync("MarkdownBodyPart", builder => builder
-                .Attachable()
-                .WithDescription("Provides a Markdown formatted body for your content item."));
+            await _contentDefinitionManager.AlterPartDefinitionAsync(
+                "MarkdownBodyPart",
+                builder => builder.Attachable().WithDescription("Provides a Markdown formatted body for your content item.")
+            );
 
             // Shortcut other migration steps on new content definition schemas.
             return 4;
@@ -44,10 +45,17 @@ namespace OrchardCore.Markdown
             {
                 if (contentType.Parts.Any(x => x.PartDefinition.Name == "MarkdownBodyPart"))
                 {
-                    await _contentDefinitionManager.AlterTypeDefinitionAsync(contentType.Name, x => x.WithPart("MarkdownBodyPart", part =>
-                    {
-                        part.MergeSettings<MarkdownBodyPartSettings>(x => x.SanitizeHtml = false);
-                    }));
+                    await _contentDefinitionManager.AlterTypeDefinitionAsync(
+                        contentType.Name,
+                        x =>
+                            x.WithPart(
+                                "MarkdownBodyPart",
+                                part =>
+                                {
+                                    part.MergeSettings<MarkdownBodyPartSettings>(x => x.SanitizeHtml = false);
+                                }
+                            )
+                    );
                 }
             }
 
@@ -63,16 +71,22 @@ namespace OrchardCore.Markdown
             {
                 if (partDefinition.Fields.Any(x => x.FieldDefinition.Name == "MarkdownField"))
                 {
-                    await _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, partBuilder =>
-                    {
-                        foreach (var fieldDefinition in partDefinition.Fields.Where(x => x.FieldDefinition.Name == "MarkdownField"))
+                    await _contentDefinitionManager.AlterPartDefinitionAsync(
+                        partDefinition.Name,
+                        partBuilder =>
                         {
-                            partBuilder.WithField(fieldDefinition.Name, fieldBuilder =>
+                            foreach (var fieldDefinition in partDefinition.Fields.Where(x => x.FieldDefinition.Name == "MarkdownField"))
                             {
-                                fieldBuilder.MergeSettings<MarkdownFieldSettings>(s => s.SanitizeHtml = false);
-                            });
+                                partBuilder.WithField(
+                                    fieldDefinition.Name,
+                                    fieldBuilder =>
+                                    {
+                                        fieldBuilder.MergeSettings<MarkdownFieldSettings>(s => s.SanitizeHtml = false);
+                                    }
+                                );
+                            }
                         }
-                    });
+                    );
                 }
             }
 

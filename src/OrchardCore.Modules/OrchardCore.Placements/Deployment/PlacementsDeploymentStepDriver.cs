@@ -8,11 +8,10 @@ namespace OrchardCore.Placements.Deployment
     {
         public override IDisplayResult Display(PlacementsDeploymentStep step)
         {
-            return
-                Combine(
-                    View("PlacementsDeploymentStep_Summary", step).Location("Summary", "Content"),
-                    View("PlacementsDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
-                );
+            return Combine(
+                View("PlacementsDeploymentStep_Summary", step).Location("Summary", "Content"),
+                View("PlacementsDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(PlacementsDeploymentStep step)

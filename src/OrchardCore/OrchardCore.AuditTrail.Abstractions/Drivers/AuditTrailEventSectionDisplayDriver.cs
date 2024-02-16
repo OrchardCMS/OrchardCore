@@ -12,7 +12,6 @@ namespace OrchardCore.AuditTrail.Drivers
     public abstract class AuditTrailEventSectionDisplayDriver<TSection> : SectionDisplayDriver<AuditTrailEvent, TSection>
         where TSection : new()
     {
-        public override bool CanHandleModel(AuditTrailEvent auditTrailEvent)
-            => auditTrailEvent.Properties.ContainsKey(PropertyName);
+        public override bool CanHandleModel(AuditTrailEvent auditTrailEvent) => auditTrailEvent.Properties.ContainsKey(PropertyName);
     }
 }

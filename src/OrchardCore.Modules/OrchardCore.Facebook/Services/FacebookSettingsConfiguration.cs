@@ -14,10 +14,7 @@ public class FacebookSettingsConfiguration : IConfigureOptions<FacebookSettings>
     private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
 
-    public FacebookSettingsConfiguration(
-        IFacebookService facebookService,
-        ShellSettings shellSettings,
-        ILogger<FacebookSettingsConfiguration> logger)
+    public FacebookSettingsConfiguration(IFacebookService facebookService, ShellSettings shellSettings, ILogger<FacebookSettingsConfiguration> logger)
     {
         _facebookService = facebookService;
         _shellSettings = shellSettings;
@@ -26,9 +23,7 @@ public class FacebookSettingsConfiguration : IConfigureOptions<FacebookSettings>
 
     public void Configure(FacebookSettings options)
     {
-        var settings = GetFacebookSettingsAsync()
-            .GetAwaiter()
-            .GetResult();
+        var settings = GetFacebookSettingsAsync().GetAwaiter().GetResult();
 
         if (settings != null)
         {

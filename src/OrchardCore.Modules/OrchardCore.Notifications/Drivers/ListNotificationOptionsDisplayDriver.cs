@@ -17,12 +17,9 @@ public class ListNotificationOptionsDisplayDriver : DisplayDriver<ListNotificati
     public override IDisplayResult Display(ListNotificationOptions model)
     {
         return Combine(
-            Initialize<ListNotificationOptions>("NotificationsAdminListBulkActions", m => BuildOptionsViewModel(m, model))
-                .Location("BulkActions", "Content:10"),
-            View("NotificationsAdminFilters_Thumbnail__Status", model)
-                .Location("Thumbnail", "Content:30"),
-            View("NotificationsAdminFilters_Thumbnail__Sort", model)
-                .Location("Thumbnail", "Content:40")
+            Initialize<ListNotificationOptions>("NotificationsAdminListBulkActions", m => BuildOptionsViewModel(m, model)).Location("BulkActions", "Content:10"),
+            View("NotificationsAdminFilters_Thumbnail__Status", model).Location("Thumbnail", "Content:30"),
+            View("NotificationsAdminFilters_Thumbnail__Sort", model).Location("Thumbnail", "Content:40")
         );
     }
 
@@ -31,18 +28,12 @@ public class ListNotificationOptionsDisplayDriver : DisplayDriver<ListNotificati
         model.FilterResult.MapTo(model);
 
         return Combine(
-            Initialize<ListNotificationOptions>("NotificationsAdminListBulkActions", m => BuildOptionsViewModel(m, model))
-                .Location("BulkActions", "Content:10"),
-            Initialize<ListNotificationOptions>("NotificationsAdminListSearch", m => BuildOptionsViewModel(m, model))
-                .Location("Search:10"),
-            Initialize<ListNotificationOptions>("NotificationsAdminListActionBarButtons", m => BuildOptionsViewModel(m, model))
-                .Location("ActionBarButtons:10"),
-            Initialize<ListNotificationOptions>("NotificationsAdminListSummary", m => BuildOptionsViewModel(m, model))
-                .Location("Summary:10"),
-            Initialize<ListNotificationOptions>("NotificationsAdminListFilters", m => BuildOptionsViewModel(m, model))
-                .Location("Actions:10.1"),
-            Initialize<ListNotificationOptions>("NotificationsAdminList_Fields_BulkActions", m => BuildOptionsViewModel(m, model))
-                .Location("Actions:10.1")
+            Initialize<ListNotificationOptions>("NotificationsAdminListBulkActions", m => BuildOptionsViewModel(m, model)).Location("BulkActions", "Content:10"),
+            Initialize<ListNotificationOptions>("NotificationsAdminListSearch", m => BuildOptionsViewModel(m, model)).Location("Search:10"),
+            Initialize<ListNotificationOptions>("NotificationsAdminListActionBarButtons", m => BuildOptionsViewModel(m, model)).Location("ActionBarButtons:10"),
+            Initialize<ListNotificationOptions>("NotificationsAdminListSummary", m => BuildOptionsViewModel(m, model)).Location("Summary:10"),
+            Initialize<ListNotificationOptions>("NotificationsAdminListFilters", m => BuildOptionsViewModel(m, model)).Location("Actions:10.1"),
+            Initialize<ListNotificationOptions>("NotificationsAdminList_Fields_BulkActions", m => BuildOptionsViewModel(m, model)).Location("Actions:10.1")
         );
     }
 

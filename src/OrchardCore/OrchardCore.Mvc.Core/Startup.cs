@@ -41,11 +41,7 @@ namespace OrchardCore.Mvc
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var descriptors = serviceProvider.GetRequiredService<IActionDescriptorCollectionProvider>()
-                .ActionDescriptors.Items
-                .OfType<ControllerActionDescriptor>()
-                .ToArray()
-                ;
+            var descriptors = serviceProvider.GetRequiredService<IActionDescriptorCollectionProvider>().ActionDescriptors.Items.OfType<ControllerActionDescriptor>().ToArray();
 
             var mappers = serviceProvider.GetServices<IAreaControllerRouteMapper>().OrderBy(x => x.Order);
 
@@ -97,8 +93,7 @@ namespace OrchardCore.Mvc
             builder.AddViewLocalization();
             builder.AddDataAnnotationsLocalization();
 
-            services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IConfigureOptions<RazorViewEngineOptions>, ModularRazorViewEngineOptionsSetup>());
+            services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<RazorViewEngineOptions>, ModularRazorViewEngineOptionsSetup>());
 
             // Support razor runtime compilation only if in dev mode and if the 'refs' folder exists.
             var refsFolderExists = Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "refs"));
@@ -112,8 +107,7 @@ namespace OrchardCore.Mvc
             // because the compiler still uses its internal cache to retrieve compiled items.
             services.AddSingleton<IViewCompilerProvider, SharedViewCompilerProvider>();
 
-            services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IConfigureOptions<MvcRazorRuntimeCompilationOptions>, RazorCompilationOptionsSetup>());
+            services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<MvcRazorRuntimeCompilationOptions>, RazorCompilationOptionsSetup>());
 
             services.AddSingleton<RazorCompilationFileProviderAccessor>();
 
@@ -139,8 +133,7 @@ namespace OrchardCore.Mvc
             services.AddScoped<IViewLocationExpanderProvider, ComponentViewLocationExpanderProvider>();
             services.AddScoped<IViewLocationExpanderProvider, SharedViewLocationExpanderProvider>();
 
-            services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<IApplicationModelProvider, ModularApplicationModelProvider>());
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IApplicationModelProvider, ModularApplicationModelProvider>());
         }
     }
 }

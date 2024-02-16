@@ -35,10 +35,7 @@ public class JsonDynamicArray : DynamicObject, IEnumerable<JsonNode?>
 
             return value;
         }
-        set
-        {
-            SetValue(index, value);
-        }
+        set { SetValue(index, value); }
     }
 
     public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object? result)

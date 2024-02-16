@@ -8,13 +8,15 @@ namespace OrchardCore.Documents
     /// <summary>
     /// A generic service to keep in sync any single <see cref="IDocumentEntity"/> between an <see cref="IDocumentStore"/> and a multi level cache.
     /// </summary>
-    public class DocumentEntityManager<TDocumentEntity> : IDocumentEntityManager<TDocumentEntity> where TDocumentEntity : class, IDocumentEntity, new()
+    public class DocumentEntityManager<TDocumentEntity> : IDocumentEntityManager<TDocumentEntity>
+        where TDocumentEntity : class, IDocumentEntity, new()
     {
         private readonly IDocumentManager<TDocumentEntity> _documentManager;
 
         public DocumentEntityManager(IDocumentManager<TDocumentEntity> documentManager) => _documentManager = documentManager;
 
-        public async Task<T> GetAsync<T>(string key) where T : new()
+        public async Task<T> GetAsync<T>(string key)
+            where T : new()
         {
             var document = await _documentManager.GetOrCreateImmutableAsync();
             if (document.Properties.TryGetPropertyValue(key, out var value))
@@ -25,7 +27,8 @@ namespace OrchardCore.Documents
             return new T();
         }
 
-        public async Task SetAsync<T>(string key, T value) where T : new()
+        public async Task SetAsync<T>(string key, T value)
+            where T : new()
         {
             var document = await _documentManager.GetOrCreateMutableAsync();
             document.Properties[key] = JObject.FromObject(value);

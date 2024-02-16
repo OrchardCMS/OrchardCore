@@ -66,24 +66,31 @@ namespace OrchardCore.Localization.Drivers
                 return null;
             }
 
-            return Initialize<LocalizationSettingsViewModel>("LocalizationSettings_Edit", model =>
-            {
-                model.Cultures = ILocalizationService.GetAllCulturesAndAliases()
-                    .Select(cultureInfo =>
+            return Initialize<LocalizationSettingsViewModel>(
+                    "LocalizationSettings_Edit",
+                    model =>
                     {
-                        return new CultureEntry
-                        {
-                            Supported = settings.SupportedCultures.Contains(cultureInfo.Name, StringComparer.OrdinalIgnoreCase),
-                            CultureInfo = cultureInfo,
-                            IsDefault = string.Equals(settings.DefaultCulture, cultureInfo.Name, StringComparison.OrdinalIgnoreCase)
-                        };
-                    }).ToArray();
+                        model.Cultures = ILocalizationService
+                            .GetAllCulturesAndAliases()
+                            .Select(cultureInfo =>
+                            {
+                                return new CultureEntry
+                                {
+                                    Supported = settings.SupportedCultures.Contains(cultureInfo.Name, StringComparer.OrdinalIgnoreCase),
+                                    CultureInfo = cultureInfo,
+                                    IsDefault = string.Equals(settings.DefaultCulture, cultureInfo.Name, StringComparison.OrdinalIgnoreCase)
+                                };
+                            })
+                            .ToArray();
 
-                if (!model.Cultures.Any(x => x.IsDefault))
-                {
-                    model.Cultures[0].IsDefault = true;
-                }
-            }).Location("Content:2").OnGroup(GroupId);
+                        if (!model.Cultures.Any(x => x.IsDefault))
+                        {
+                            model.Cultures[0].IsDefault = true;
+                        }
+                    }
+                )
+                .Location("Content:2")
+                .OnGroup(GroupId);
         }
 
         /// <inheritdocs />

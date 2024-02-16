@@ -43,7 +43,8 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
         ISiteService siteService,
         IHtmlLocalizer htmlLocalizer,
         IStringLocalizer stringLocalizer,
-        IOptions<TwoFactorOptions> twoFactorOptions)
+        IOptions<TwoFactorOptions> twoFactorOptions
+    )
     {
         UserManager = userManager;
         DistributedCache = distributedCache;
@@ -60,18 +61,11 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
     {
         var key = GetRecoveryCodesCacheKey(userId);
 
-        var model = new ShowRecoveryCodesViewModel()
-        {
-            RecoveryCodes = codes ?? [],
-        };
+        var model = new ShowRecoveryCodesViewModel() { RecoveryCodes = codes ?? [], };
 
         var data = JsonSerializer.SerializeToUtf8Bytes(model);
 
-        await DistributedCache.SetAsync(key, data,
-            new DistributedCacheEntryOptions()
-            {
-                AbsoluteExpirationRelativeToNow = new TimeSpan(0, 0, 5)
-            });
+        await DistributedCache.SetAsync(key, data, new DistributedCacheEntryOptions() { AbsoluteExpirationRelativeToNow = new TimeSpan(0, 0, 5) });
     }
 
     protected async Task<IActionResult> RemoveTwoFactorProviderAync(IUser user, Func<Task> onSuccessAsync)
@@ -125,8 +119,7 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
 
     protected async Task RefreshTwoFactorClaimAsync(IUser user)
     {
-        var twoFactorClaim = (await UserManager.GetClaimsAsync(user))
-            .FirstOrDefault(claim => claim.Type == UserConstants.TwoFactorAuthenticationClaimType);
+        var twoFactorClaim = (await UserManager.GetClaimsAsync(user)).FirstOrDefault(claim => claim.Type == UserConstants.TwoFactorAuthenticationClaimType);
 
         if (twoFactorClaim != null)
         {
@@ -159,18 +152,13 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
         return providers.Intersect(TwoFactorOptions.Providers).ToList();
     }
 
-    protected IActionResult RedirectToTwoFactorIndex()
-        => RedirectToAction(nameof(TwoFactorAuthenticationController.Index), _twoFactorAuthenticationControllerName);
+    protected IActionResult RedirectToTwoFactorIndex() => RedirectToAction(nameof(TwoFactorAuthenticationController.Index), _twoFactorAuthenticationControllerName);
 
-    protected IActionResult RedirectToAccountLogin()
-        => RedirectToAction(nameof(AccountController.Login), _accountControllerName);
+    protected IActionResult RedirectToAccountLogin() => RedirectToAction(nameof(AccountController.Login), _accountControllerName);
 
-    protected IActionResult UserNotFound()
-        => NotFound("Unable to load user.");
+    protected IActionResult UserNotFound() => NotFound("Unable to load user.");
 
-    protected static string StripToken(string code)
-        => code.Replace(" ", string.Empty).Replace("-", string.Empty);
+    protected static string StripToken(string code) => code.Replace(" ", string.Empty).Replace("-", string.Empty);
 
-    protected static string GetRecoveryCodesCacheKey(string userId)
-        => $"TwoFactorAuthenticationRecoveryCodes_{userId}";
+    protected static string GetRecoveryCodesCacheKey(string userId) => $"TwoFactorAuthenticationRecoveryCodes_{userId}";
 }

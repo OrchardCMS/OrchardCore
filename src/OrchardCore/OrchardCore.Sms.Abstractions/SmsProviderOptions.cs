@@ -15,8 +15,7 @@ public class SmsProviderOptions
     /// The 'Key' is the technical name of the provider.
     /// The 'Value' is the type of the SMS provider. The type will always be an implementation of <see cref="ISmsProvider"></see> interface.
     /// </summary>
-    public IReadOnlyDictionary<string, SmsProviderTypeOptions> Providers
-        => _readonlyProviders ??= _providers.ToFrozenDictionary(x => x.Key, x => x.Value);
+    public IReadOnlyDictionary<string, SmsProviderTypeOptions> Providers => _readonlyProviders ??= _providers.ToFrozenDictionary(x => x.Key, x => x.Value);
 
     /// <summary>
     /// Adds a provider if one does not exist.

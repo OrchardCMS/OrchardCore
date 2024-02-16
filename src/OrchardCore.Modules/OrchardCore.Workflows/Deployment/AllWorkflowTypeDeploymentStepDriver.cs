@@ -8,11 +8,10 @@ namespace OrchardCore.Workflows.Deployment
     {
         public override IDisplayResult Display(AllWorkflowTypeDeploymentStep step)
         {
-            return
-                Combine(
-                    View("AllWorkflowTypeDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                    View("AllWorkflowTypeDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-                );
+            return Combine(
+                View("AllWorkflowTypeDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("AllWorkflowTypeDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(AllWorkflowTypeDeploymentStep step)

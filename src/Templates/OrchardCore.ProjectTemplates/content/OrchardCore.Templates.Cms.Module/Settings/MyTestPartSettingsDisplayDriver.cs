@@ -17,13 +17,17 @@ namespace OrchardCore.Templates.Cms.Module.Settings
                 return null;
             }
 
-            return Initialize<MyTestPartSettingsViewModel>("MyTestPartSettings_Edit", model =>
-            {
-                var settings = contentTypePartDefinition.GetSettings<MyTestPartSettings>();
+            return Initialize<MyTestPartSettingsViewModel>(
+                    "MyTestPartSettings_Edit",
+                    model =>
+                    {
+                        var settings = contentTypePartDefinition.GetSettings<MyTestPartSettings>();
 
-                model.MySetting = settings.MySetting;
-                model.MyTestPartSettings = settings;
-            }).Location("Content");
+                        model.MySetting = settings.MySetting;
+                        model.MyTestPartSettings = settings;
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

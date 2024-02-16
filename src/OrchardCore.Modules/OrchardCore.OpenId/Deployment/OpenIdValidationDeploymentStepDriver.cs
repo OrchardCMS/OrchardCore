@@ -8,11 +8,10 @@ namespace OrchardCore.OpenId.Deployment
     {
         public override IDisplayResult Display(OpenIdValidationDeploymentStep step)
         {
-            return
-                Combine(
-                    View("OpenIdValidationDeploymentStep_Summary", step).Location("Summary", "Content"),
-                    View("OpenIdValidationDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
-                );
+            return Combine(
+                View("OpenIdValidationDeploymentStep_Summary", step).Location("Summary", "Content"),
+                View("OpenIdValidationDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(OpenIdValidationDeploymentStep step)

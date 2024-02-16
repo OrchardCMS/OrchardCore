@@ -27,6 +27,7 @@ namespace OrchardCore.Media.ViewModels
 
         [BindNever]
         public List<SelectListItem> AvailableResizeModes { get; set; } = [];
+
         [BindNever]
         public List<SelectListItem> AvailableFormats { get; set; } = [];
     }

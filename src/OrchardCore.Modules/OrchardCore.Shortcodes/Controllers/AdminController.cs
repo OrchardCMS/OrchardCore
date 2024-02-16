@@ -50,7 +50,7 @@ namespace OrchardCore.Shortcodes.Controllers
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IHtmlSanitizerService htmlSanitizerService
-            )
+        )
         {
             _authorizationService = authorizationService;
             _shortcodeTemplatesManager = shortcodeTemplatesManager;
@@ -82,9 +82,7 @@ namespace OrchardCore.Shortcodes.Controllers
 
             var count = shortcodeTemplates.Count;
 
-            shortcodeTemplates = shortcodeTemplates.OrderBy(x => x.Key)
-                .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize).ToList();
+            shortcodeTemplates = shortcodeTemplates.OrderBy(x => x.Key).Skip(pager.GetStartIndex()).Take(pager.PageSize).ToList();
 
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();
@@ -103,21 +101,15 @@ namespace OrchardCore.Shortcodes.Controllers
                 Pager = pagerShape
             };
 
-            model.Options.ContentsBulkAction =
-            [
-                new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
-            ];
+            model.Options.ContentsBulkAction = [new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),];
 
             return View(model);
         }
 
         [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
-        public ActionResult IndexFilterPOST(ShortcodeTemplateIndexViewModel model)
-            => RedirectToAction(nameof(Index), new RouteValueDictionary
-            {
-                { _optionsSearch, model.Options.Search }
-            });
+        public ActionResult IndexFilterPOST(ShortcodeTemplateIndexViewModel model) =>
+            RedirectToAction(nameof(Index), new RouteValueDictionary { { _optionsSearch, model.Options.Search } });
 
         public async Task<IActionResult> Create()
         {
@@ -163,7 +155,10 @@ namespace OrchardCore.Shortcodes.Controllers
                 }
                 else if (!_liquidTemplateManager.Validate(model.Content, out var errors))
                 {
-                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                    ModelState.AddModelError(
+                        nameof(ShortcodeTemplateViewModel.Content),
+                        S["The template doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]
+                    );
                 }
             }
 
@@ -244,8 +239,7 @@ namespace OrchardCore.Shortcodes.Controllers
                 {
                     ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name contains invalid characters."]);
                 }
-                else if (!string.Equals(model.Name, sourceName, StringComparison.OrdinalIgnoreCase)
-                    && shortcodeTemplatesDocument.ShortcodeTemplates.ContainsKey(model.Name))
+                else if (!string.Equals(model.Name, sourceName, StringComparison.OrdinalIgnoreCase) && shortcodeTemplatesDocument.ShortcodeTemplates.ContainsKey(model.Name))
                 {
                     ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["A template with the same name already exists."]);
                 }
@@ -256,7 +250,10 @@ namespace OrchardCore.Shortcodes.Controllers
                 }
                 else if (!_liquidTemplateManager.Validate(model.Content, out var errors))
                 {
-                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                    ModelState.AddModelError(
+                        nameof(ShortcodeTemplateViewModel.Content),
+                        S["The template doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]
+                    );
                 }
             }
 

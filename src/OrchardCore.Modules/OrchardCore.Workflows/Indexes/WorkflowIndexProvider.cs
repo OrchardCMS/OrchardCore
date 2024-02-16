@@ -28,21 +28,20 @@ namespace OrchardCore.Workflows.Indexes
     {
         public override void Describe(DescribeContext<Workflow> context)
         {
-            context.For<WorkflowIndex>()
-                .Map(workflow =>
-                    new WorkflowIndex
-                    {
-                        WorkflowTypeId = workflow.WorkflowTypeId,
-                        WorkflowId = workflow.WorkflowId,
-                        CreatedUtc = workflow.CreatedUtc,
-                        WorkflowStatus = (int)workflow.Status
-                    }
-                );
+            context
+                .For<WorkflowIndex>()
+                .Map(workflow => new WorkflowIndex
+                {
+                    WorkflowTypeId = workflow.WorkflowTypeId,
+                    WorkflowId = workflow.WorkflowId,
+                    CreatedUtc = workflow.CreatedUtc,
+                    WorkflowStatus = (int)workflow.Status
+                });
 
-            context.For<WorkflowBlockingActivitiesIndex>()
+            context
+                .For<WorkflowBlockingActivitiesIndex>()
                 .Map(workflow =>
-                    workflow.BlockingActivities.Select(x =>
-                    new WorkflowBlockingActivitiesIndex
+                    workflow.BlockingActivities.Select(x => new WorkflowBlockingActivitiesIndex
                     {
                         ActivityId = x.ActivityId,
                         ActivityName = x.Name,

@@ -8,14 +8,10 @@ namespace OrchardCore.Search.ViewModels
     public class SearchResultsViewModel : ShapeViewModel
     {
         public SearchResultsViewModel()
-            : base("Search__Results")
-        {
-        }
+            : base("Search__Results") { }
 
         public SearchResultsViewModel(string shapeType)
-            : base(shapeType)
-        {
-        }
+            : base(shapeType) { }
 
         [BindNever]
         public IEnumerable<ContentItem> ContentItems { get; set; }

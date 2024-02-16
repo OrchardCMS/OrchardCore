@@ -22,6 +22,5 @@ namespace OrchardCore.Media.Fields
         {
             mediaField.Content["Anchors"] = JArray.FromObject(anchors);
         }
-
     }
 }

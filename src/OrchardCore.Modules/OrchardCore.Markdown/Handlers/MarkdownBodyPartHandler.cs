@@ -28,12 +28,14 @@ namespace OrchardCore.Markdown.Handlers
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
 
-        public MarkdownBodyPartHandler(IContentDefinitionManager contentDefinitionManager,
+        public MarkdownBodyPartHandler(
+            IContentDefinitionManager contentDefinitionManager,
             IShortcodeService shortcodeService,
             IMarkdownService markdownService,
             IHtmlSanitizerService htmlSanitizerService,
             ILiquidTemplateManager liquidTemplateManager,
-            HtmlEncoder htmlEncoder)
+            HtmlEncoder htmlEncoder
+        )
         {
             _contentDefinitionManager = contentDefinitionManager;
             _shortcodeService = shortcodeService;
@@ -68,16 +70,15 @@ namespace OrchardCore.Markdown.Handlers
                             ContentItem = part.ContentItem,
                         };
 
-                        html = await _liquidTemplateManager.RenderStringAsync(html, _htmlEncoder, model,
-                            new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
+                        html = await _liquidTemplateManager.RenderStringAsync(
+                            html,
+                            _htmlEncoder,
+                            model,
+                            new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) }
+                        );
                     }
 
-                    html = await _shortcodeService.ProcessAsync(html,
-                        new Context
-                        {
-                            ["ContentItem"] = part.ContentItem,
-                            ["TypePartDefinition"] = contentTypePartDefinition
-                        });
+                    html = await _shortcodeService.ProcessAsync(html, new Context { ["ContentItem"] = part.ContentItem, ["TypePartDefinition"] = contentTypePartDefinition });
 
                     if (settings.SanitizeHtml)
                     {

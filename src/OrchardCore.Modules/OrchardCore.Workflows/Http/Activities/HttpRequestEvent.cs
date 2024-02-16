@@ -16,10 +16,7 @@ namespace OrchardCore.Workflows.Http.Activities
         private readonly IHttpContextAccessor _httpContextAccessor;
         protected readonly IStringLocalizer S;
 
-        public HttpRequestEvent(
-            IStringLocalizer<HttpRequestEvent> localizer,
-            IHttpContextAccessor httpContextAccessor
-        )
+        public HttpRequestEvent(IStringLocalizer<HttpRequestEvent> localizer, IHttpContextAccessor httpContextAccessor)
         {
             S = localizer;
             _httpContextAccessor = httpContextAccessor;
@@ -70,12 +67,13 @@ namespace OrchardCore.Workflows.Http.Activities
 
         public override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            if (_httpContextAccessor.HttpContext.Request.HasFormContentType
-            && _httpContextAccessor.HttpContext.Request.Form.TryGetValue(WorkflowConstants.FormLocationKeyInputName, out var value)
-            && !string.IsNullOrWhiteSpace(value))
+            if (
+                _httpContextAccessor.HttpContext.Request.HasFormContentType
+                && _httpContextAccessor.HttpContext.Request.Form.TryGetValue(WorkflowConstants.FormLocationKeyInputName, out var value)
+                && !string.IsNullOrWhiteSpace(value)
+            )
             {
-                if (!workflowContext.Output.TryGetValue(WorkflowConstants.HttpFormLocationOutputKeyName, out var obj)
-                    || obj is not Dictionary<string, string> formLocation)
+                if (!workflowContext.Output.TryGetValue(WorkflowConstants.HttpFormLocationOutputKeyName, out var obj) || obj is not Dictionary<string, string> formLocation)
                 {
                     formLocation = [];
                 }
@@ -88,11 +86,9 @@ namespace OrchardCore.Workflows.Http.Activities
             return Task.FromResult(Outcomes("Done"));
         }
 
-        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-            => Outcomes(S["Done"]);
+        public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext) => Outcomes(S["Done"]);
 
-        public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-            => Outcomes("Done");
+        public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext) => Outcomes("Done");
 
         private static string GetLocationUrl(string value)
         {

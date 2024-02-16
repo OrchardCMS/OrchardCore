@@ -15,7 +15,13 @@ namespace OrchardCore.Navigation
             Contained = [];
         }
 
-        public async Task<NavigationBuilder> AddAsync(LocalizedString caption, string position, Func<NavigationItemBuilder, Task> itemBuilder, IEnumerable<string> classes = null, int priority = 0)
+        public async Task<NavigationBuilder> AddAsync(
+            LocalizedString caption,
+            string position,
+            Func<NavigationItemBuilder, Task> itemBuilder,
+            IEnumerable<string> classes = null,
+            int priority = 0
+        )
         {
             var childBuilder = new NavigationItemBuilder();
 
@@ -61,6 +67,7 @@ namespace OrchardCore.Navigation
         {
             return AddAsync(caption, null, itemBuilder, classes);
         }
+
         public Task<NavigationBuilder> AddAsync(Func<NavigationItemBuilder, Task> itemBuilder, IEnumerable<string> classes = null)
         {
             return AddAsync(new LocalizedString(null, null), null, itemBuilder, classes);
@@ -70,6 +77,7 @@ namespace OrchardCore.Navigation
         {
             return Add(caption, null, itemBuilder, classes);
         }
+
         public NavigationBuilder Add(Action<NavigationItemBuilder> itemBuilder, IEnumerable<string> classes = null)
         {
             return Add(new LocalizedString(null, null), null, itemBuilder, classes);
@@ -79,6 +87,7 @@ namespace OrchardCore.Navigation
         {
             return Add(caption, position, x => { }, classes);
         }
+
         public NavigationBuilder Add(LocalizedString caption, IEnumerable<string> classes = null)
         {
             return Add(caption, null, x => { }, classes);

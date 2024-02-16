@@ -37,8 +37,7 @@ namespace OrchardCore.Contents.AuditTrail
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddDataMigration<Migrations>();
-            services.AddContentPart<AuditTrailPart>()
-                .UseDisplayDriver<AuditTrailPartDisplayDriver>();
+            services.AddContentPart<AuditTrailPart>().UseDisplayDriver<AuditTrailPartDisplayDriver>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, AuditTrailPartSettingsDisplayDriver>();
             services.AddScoped<IContentDisplayDriver, AuditTrailContentsDriver>();
@@ -57,18 +56,18 @@ namespace OrchardCore.Contents.AuditTrail
             var contentControllerName = typeof(AuditTrailContentController).ControllerName();
 
             routes.MapAreaControllerRoute(
-               name: "DisplayAuditTrailContent",
-               areaName: "OrchardCore.Contents",
-               pattern: _adminOptions.AdminUrlPrefix + "/AuditTrail/Content/Display/{auditTrailEventId}",
-               defaults: new { controller = contentControllerName, action = nameof(AuditTrailContentController.Display) }
-           );
+                name: "DisplayAuditTrailContent",
+                areaName: "OrchardCore.Contents",
+                pattern: _adminOptions.AdminUrlPrefix + "/AuditTrail/Content/Display/{auditTrailEventId}",
+                defaults: new { controller = contentControllerName, action = nameof(AuditTrailContentController.Display) }
+            );
 
             routes.MapAreaControllerRoute(
-               name: "RestoreAuditTrailContent",
-               areaName: "OrchardCore.Contents",
-               pattern: _adminOptions.AdminUrlPrefix + "/AuditTrail/Content/Restore/{auditTrailEventId}",
-               defaults: new { controller = contentControllerName, action = nameof(AuditTrailContentController.Restore) }
-           );
+                name: "RestoreAuditTrailContent",
+                areaName: "OrchardCore.Contents",
+                pattern: _adminOptions.AdminUrlPrefix + "/AuditTrail/Content/Restore/{auditTrailEventId}",
+                defaults: new { controller = contentControllerName, action = nameof(AuditTrailContentController.Restore) }
+            );
         }
     }
 }

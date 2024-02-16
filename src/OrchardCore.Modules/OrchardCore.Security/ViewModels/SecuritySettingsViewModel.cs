@@ -16,11 +16,10 @@ namespace OrchardCore.Security.ViewModels
             set
             {
                 // Populate all policy values for the editor (null if not provided).
-                _contentSecurityPolicy = SecurityHeaderDefaults.ContentSecurityPolicyNames
-                    .ToDictionary(name => name, name =>
-                        value?.ContainsKey(name) ?? false
-                            ? value[name]
-                            : null);
+                _contentSecurityPolicy = SecurityHeaderDefaults.ContentSecurityPolicyNames.ToDictionary(
+                    name => name,
+                    name => value?.ContainsKey(name) ?? false ? value[name] : null
+                );
             }
         }
 
@@ -34,11 +33,10 @@ namespace OrchardCore.Security.ViewModels
             set
             {
                 // Populate all policy values for the editor ('None' if not provided).
-                _permissionsPolicy = SecurityHeaderDefaults.PermissionsPolicyNames
-                    .ToDictionary(name => name, name =>
-                        value?.ContainsKey(name) ?? false
-                            ? value[name]
-                            : PermissionsPolicyOriginValue.None);
+                _permissionsPolicy = SecurityHeaderDefaults.PermissionsPolicyNames.ToDictionary(
+                    name => name,
+                    name => value?.ContainsKey(name) ?? false ? value[name] : PermissionsPolicyOriginValue.None
+                );
             }
         }
 

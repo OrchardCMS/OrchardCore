@@ -18,9 +18,10 @@ namespace OrchardCore.Contents.AuditTrail
 
         public async Task<int> CreateAsync()
         {
-            await _contentDefinitionManager.AlterPartDefinitionAsync("AuditTrailPart", part => part
-                .Attachable()
-                .WithDescription("Allows editors to enter a comment to be saved into the Audit Trail event when saving a content item."));
+            await _contentDefinitionManager.AlterPartDefinitionAsync(
+                "AuditTrailPart",
+                part => part.Attachable().WithDescription("Allows editors to enter a comment to be saved into the Audit Trail event when saving a content item.")
+            );
 
             return 1;
         }

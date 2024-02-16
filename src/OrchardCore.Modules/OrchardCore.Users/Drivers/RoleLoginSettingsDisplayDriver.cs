@@ -27,7 +27,8 @@ public class RoleLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, RoleLo
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IRoleService roleService,
-        IStringLocalizer<RoleLoginSettingsDisplayDriver> stringLocalizer)
+        IStringLocalizer<RoleLoginSettingsDisplayDriver> stringLocalizer
+    )
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
@@ -37,25 +38,33 @@ public class RoleLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, RoleLo
 
     public override IDisplayResult Edit(RoleLoginSettings settings)
     {
-        return Initialize<RoleLoginSettingsViewModel>("LoginSettingsRoles_Edit", async model =>
-        {
-            model.RequireTwoFactorAuthenticationForSpecificRoles = settings.RequireTwoFactorAuthenticationForSpecificRoles;
-            var roles = await _roleService.GetRolesAsync();
-            model.Roles = roles.Select(role => new RoleEntry()
-            {
-                Role = role.RoleName,
-                IsSelected = settings.Roles != null && settings.Roles.Contains(role.RoleName, StringComparer.OrdinalIgnoreCase),
-            }).OrderBy(entry => entry.Role)
-            .ToArray();
-        }).Location("Content:6#Two-Factor Authentication")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
-        .OnGroup(LoginSettingsDisplayDriver.GroupId);
+        return Initialize<RoleLoginSettingsViewModel>(
+                "LoginSettingsRoles_Edit",
+                async model =>
+                {
+                    model.RequireTwoFactorAuthenticationForSpecificRoles = settings.RequireTwoFactorAuthenticationForSpecificRoles;
+                    var roles = await _roleService.GetRolesAsync();
+                    model.Roles = roles
+                        .Select(role => new RoleEntry()
+                        {
+                            Role = role.RoleName,
+                            IsSelected = settings.Roles != null && settings.Roles.Contains(role.RoleName, StringComparer.OrdinalIgnoreCase),
+                        })
+                        .OrderBy(entry => entry.Role)
+                        .ToArray();
+                }
+            )
+            .Location("Content:6#Two-Factor Authentication")
+            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
+            .OnGroup(LoginSettingsDisplayDriver.GroupId);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(RoleLoginSettings settings, BuildEditorContext context)
     {
-        if (!context.GroupId.Equals(LoginSettingsDisplayDriver.GroupId, StringComparison.OrdinalIgnoreCase)
-            || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
+        if (
+            !context.GroupId.Equals(LoginSettingsDisplayDriver.GroupId, StringComparison.OrdinalIgnoreCase)
+            || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers)
+        )
         {
             return null;
         }
@@ -68,9 +77,7 @@ public class RoleLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, RoleLo
         {
             var roles = await _roleService.GetRolesAsync();
 
-            var selectedRoles = model.Roles.Where(x => x.IsSelected)
-                .Join(roles, e => e.Role, r => r.RoleName, (e, r) => r.RoleName)
-                .ToArray();
+            var selectedRoles = model.Roles.Where(x => x.IsSelected).Join(roles, e => e.Role, r => r.RoleName, (e, r) => r.RoleName).ToArray();
 
             if (selectedRoles.Length == 0)
             {

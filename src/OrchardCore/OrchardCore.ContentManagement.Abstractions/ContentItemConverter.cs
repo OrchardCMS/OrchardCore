@@ -65,24 +65,19 @@ namespace OrchardCore.ContentManagement
                         contentItem.DisplayText = reader.TokenType == JsonTokenType.String ? reader.GetString() : null;
                         break;
                     case nameof(ContentItem.Latest):
-                        contentItem.Latest = (reader.TokenType == JsonTokenType.True ||
-                            reader.TokenType == JsonTokenType.False) && reader.GetBoolean();
+                        contentItem.Latest = (reader.TokenType == JsonTokenType.True || reader.TokenType == JsonTokenType.False) && reader.GetBoolean();
                         break;
                     case nameof(ContentItem.Published):
-                        contentItem.Published = (reader.TokenType == JsonTokenType.True ||
-                            reader.TokenType == JsonTokenType.False) && reader.GetBoolean();
+                        contentItem.Published = (reader.TokenType == JsonTokenType.True || reader.TokenType == JsonTokenType.False) && reader.GetBoolean();
                         break;
                     case nameof(ContentItem.PublishedUtc):
-                        contentItem.PublishedUtc = reader.TokenType != JsonTokenType.Null &&
-                            reader.TryGetDateTime(out var date) ? date : null;
+                        contentItem.PublishedUtc = reader.TokenType != JsonTokenType.Null && reader.TryGetDateTime(out var date) ? date : null;
                         break;
                     case nameof(ContentItem.ModifiedUtc):
-                        contentItem.ModifiedUtc = reader.TokenType != JsonTokenType.Null &&
-                            reader.TryGetDateTime(out date) ? date : null;
+                        contentItem.ModifiedUtc = reader.TokenType != JsonTokenType.Null && reader.TryGetDateTime(out date) ? date : null;
                         break;
                     case nameof(ContentItem.CreatedUtc):
-                        contentItem.CreatedUtc = reader.TokenType != JsonTokenType.Null &&
-                            reader.TryGetDateTime(out date) ? date : null;
+                        contentItem.CreatedUtc = reader.TokenType != JsonTokenType.Null && reader.TryGetDateTime(out date) ? date : null;
                         break;
                     case nameof(ContentItem.Author):
                         contentItem.Author = reader.TokenType == JsonTokenType.String ? reader.GetString() : null;

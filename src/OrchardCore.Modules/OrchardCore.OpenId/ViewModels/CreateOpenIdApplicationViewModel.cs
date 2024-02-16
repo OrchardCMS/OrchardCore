@@ -52,6 +52,7 @@ namespace OrchardCore.OpenId.ViewModels
             public string Name { get; set; }
             public bool Selected { get; set; }
         }
+
         public class ScopeEntry
         {
             public string Name { get; set; }

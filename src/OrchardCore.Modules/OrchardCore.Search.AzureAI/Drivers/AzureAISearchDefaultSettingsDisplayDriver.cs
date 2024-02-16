@@ -44,7 +44,7 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
         IShellHost shellHost,
         IDataProtectionProvider dataProtectionProvider,
         IStringLocalizer<AzureAISearchDefaultSettingsDisplayDriver> stringLocalizer
-        )
+    )
     {
         _indexSettingsService = indexSettingsService;
         _httpContextAccessor = httpContextAccessor;
@@ -63,24 +63,28 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
             return null;
         }
 
-        return Initialize<AzureAISearchDefaultSettingsViewModel>("AzureAISearchDefaultSettings_Edit", model =>
-        {
-            model.AuthenticationTypes = new[]
-            {
-                new SelectListItem(S["Default"], nameof(AzureAIAuthenticationType.Default)),
-                new SelectListItem(S["Managed Identity"], nameof(AzureAIAuthenticationType.ManagedIdentity)),
-                new SelectListItem(S["API Key"], nameof(AzureAIAuthenticationType.ApiKey)),
-            };
+        return Initialize<AzureAISearchDefaultSettingsViewModel>(
+                "AzureAISearchDefaultSettings_Edit",
+                model =>
+                {
+                    model.AuthenticationTypes = new[]
+                    {
+                        new SelectListItem(S["Default"], nameof(AzureAIAuthenticationType.Default)),
+                        new SelectListItem(S["Managed Identity"], nameof(AzureAIAuthenticationType.ManagedIdentity)),
+                        new SelectListItem(S["API Key"], nameof(AzureAIAuthenticationType.ApiKey)),
+                    };
 
-            model.ConfigurationsAreOptional = _searchOptions.FileConfigurationExists();
-            model.AuthenticationType = settings.AuthenticationType;
-            model.UseCustomConfiguration = settings.UseCustomConfiguration;
-            model.Endpoint = settings.Endpoint;
-            model.IdentityClientId = settings.IdentityClientId;
-            model.ApiKeyExists = !string.IsNullOrEmpty(settings.ApiKey);
-        }).Location("Content")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
-        .OnGroup(GroupId);
+                    model.ConfigurationsAreOptional = _searchOptions.FileConfigurationExists();
+                    model.AuthenticationType = settings.AuthenticationType;
+                    model.UseCustomConfiguration = settings.UseCustomConfiguration;
+                    model.Endpoint = settings.Endpoint;
+                    model.IdentityClientId = settings.IdentityClientId;
+                    model.ApiKeyExists = !string.IsNullOrEmpty(settings.ApiKey);
+                }
+            )
+            .Location("Content")
+            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
+            .OnGroup(GroupId);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(AzureAISearchDefaultSettings settings, BuildEditorContext context)
@@ -140,12 +144,16 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
 
             settings.UseCustomConfiguration = model.UseCustomConfiguration;
 
-            if (context.Updater.ModelState.IsValid &&
-                (_searchOptions.Credential?.Key != model.ApiKey
-                || _searchOptions.Endpoint != settings.Endpoint
-                || _searchOptions.AuthenticationType != settings.AuthenticationType
-                || _searchOptions.IdentityClientId != settings.IdentityClientId
-                || useCustomConfigurationChanged))
+            if (
+                context.Updater.ModelState.IsValid
+                && (
+                    _searchOptions.Credential?.Key != model.ApiKey
+                    || _searchOptions.Endpoint != settings.Endpoint
+                    || _searchOptions.AuthenticationType != settings.AuthenticationType
+                    || _searchOptions.IdentityClientId != settings.IdentityClientId
+                    || useCustomConfigurationChanged
+                )
+            )
             {
                 await _shellHost.ReleaseShellContextAsync(_shellSettings);
             }

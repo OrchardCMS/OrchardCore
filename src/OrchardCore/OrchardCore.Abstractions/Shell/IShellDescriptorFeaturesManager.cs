@@ -9,7 +9,11 @@ namespace OrchardCore.Environment.Shell
 
     public interface IShellDescriptorFeaturesManager
     {
-        Task<(IEnumerable<IFeatureInfo>, IEnumerable<IFeatureInfo>)> UpdateFeaturesAsync(ShellDescriptor shellDescriptor,
-            IEnumerable<IFeatureInfo> featuresToDisable, IEnumerable<IFeatureInfo> featuresToEnable, bool force);
+        Task<(IEnumerable<IFeatureInfo>, IEnumerable<IFeatureInfo>)> UpdateFeaturesAsync(
+            ShellDescriptor shellDescriptor,
+            IEnumerable<IFeatureInfo> featuresToDisable,
+            IEnumerable<IFeatureInfo> featuresToEnable,
+            bool force
+        );
     }
 }

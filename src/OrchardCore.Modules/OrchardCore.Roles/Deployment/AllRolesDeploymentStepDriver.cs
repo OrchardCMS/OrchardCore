@@ -8,11 +8,10 @@ namespace OrchardCore.Roles.Deployment
     {
         public override IDisplayResult Display(AllRolesDeploymentStep step)
         {
-            return
-                Combine(
-                    View("AllRolesDeploymentStep_Summary", step).Location("Summary", "Content"),
-                    View("AllRolesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
-                );
+            return Combine(
+                View("AllRolesDeploymentStep_Summary", step).Location("Summary", "Content"),
+                View("AllRolesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(AllRolesDeploymentStep step)

@@ -29,51 +29,73 @@ namespace OrchardCore.Seo.Drivers
 
             var results = new List<IDisplayResult>
             {
-                Initialize<SeoMetaPartViewModel>("SeoMetaPart_Edit", model =>
-                {
-                    model.PageTitle = part.PageTitle;
-                    model.Render = part.Render;
-                    model.MetaDescription = part.MetaDescription;
-                    model.MetaKeywords = part.MetaKeywords;
-                    model.Canonical = part.Canonical;
-                    model.MetaRobots = part.MetaRobots;
-                    model.CustomMetaTags = JConvert.SerializeObject(part.CustomMetaTags, JOptions.CamelCaseIndented);
-                    model.SeoMetaPart = part;
-                    model.Settings = settings;
-                }).Location("Parts#SEO;50"),
+                Initialize<SeoMetaPartViewModel>(
+                        "SeoMetaPart_Edit",
+                        model =>
+                        {
+                            model.PageTitle = part.PageTitle;
+                            model.Render = part.Render;
+                            model.MetaDescription = part.MetaDescription;
+                            model.MetaKeywords = part.MetaKeywords;
+                            model.Canonical = part.Canonical;
+                            model.MetaRobots = part.MetaRobots;
+                            model.CustomMetaTags = JConvert.SerializeObject(part.CustomMetaTags, JOptions.CamelCaseIndented);
+                            model.SeoMetaPart = part;
+                            model.Settings = settings;
+                        }
+                    )
+                    .Location("Parts#SEO;50"),
             };
 
             if (settings.DisplayOpenGraph)
             {
-                results.Add(Initialize<SeoMetaPartOpenGraphViewModel>("SeoMetaPartOpenGraph_Edit", model =>
-                {
-                    model.OpenGraphType = part.OpenGraphType;
-                    model.OpenGraphTitle = part.OpenGraphTitle;
-                    model.OpenGraphDescription = part.OpenGraphDescription;
-                    model.SeoMetaPart = part;
-                }).Location("Parts#SEO;50%Open Graph;20"));
+                results.Add(
+                    Initialize<SeoMetaPartOpenGraphViewModel>(
+                            "SeoMetaPartOpenGraph_Edit",
+                            model =>
+                            {
+                                model.OpenGraphType = part.OpenGraphType;
+                                model.OpenGraphTitle = part.OpenGraphTitle;
+                                model.OpenGraphDescription = part.OpenGraphDescription;
+                                model.SeoMetaPart = part;
+                            }
+                        )
+                        .Location("Parts#SEO;50%Open Graph;20")
+                );
             }
 
             if (settings.DisplayTwitter)
             {
-                results.Add(Initialize<SeoMetaPartTwitterViewModel>("SeoMetaPartTwitter_Edit", model =>
-                {
-                    model.TwitterTitle = part.TwitterTitle;
-                    model.TwitterDescription = part.TwitterDescription;
-                    model.TwitterCard = part.TwitterCard;
-                    model.TwitterCreator = part.TwitterCreator;
-                    model.TwitterSite = part.TwitterSite;
-                    model.SeoMetaPart = part;
-                }).Location("Parts#SEO;50%Twitter;30"));
+                results.Add(
+                    Initialize<SeoMetaPartTwitterViewModel>(
+                            "SeoMetaPartTwitter_Edit",
+                            model =>
+                            {
+                                model.TwitterTitle = part.TwitterTitle;
+                                model.TwitterDescription = part.TwitterDescription;
+                                model.TwitterCard = part.TwitterCard;
+                                model.TwitterCreator = part.TwitterCreator;
+                                model.TwitterSite = part.TwitterSite;
+                                model.SeoMetaPart = part;
+                            }
+                        )
+                        .Location("Parts#SEO;50%Twitter;30")
+                );
             }
 
             if (settings.DisplayGoogleSchema)
             {
-                results.Add(Initialize<SeoMetaPartGoogleSchemaViewModel>("SeoMetaPartGoogleSchema_Edit", model =>
-                    {
-                        model.GoogleSchema = part.GoogleSchema;
-                        model.SeoMetaPart = part;
-                    }).Location("Parts#SEO;50%Google Schema;40"));
+                results.Add(
+                    Initialize<SeoMetaPartGoogleSchemaViewModel>(
+                            "SeoMetaPartGoogleSchema_Edit",
+                            model =>
+                            {
+                                model.GoogleSchema = part.GoogleSchema;
+                                model.SeoMetaPart = part;
+                            }
+                        )
+                        .Location("Parts#SEO;50%Google Schema;40")
+                );
             }
 
             return Combine(results);
@@ -93,9 +115,7 @@ namespace OrchardCore.Seo.Drivers
                     part.Canonical = partViewModel.Canonical;
                     part.MetaRobots = partViewModel.MetaRobots;
 
-                    part.CustomMetaTags = string.IsNullOrWhiteSpace(partViewModel.CustomMetaTags)
-                        ? []
-                        : JConvert.DeserializeObject<MetaEntry[]>(partViewModel.CustomMetaTags);
+                    part.CustomMetaTags = string.IsNullOrWhiteSpace(partViewModel.CustomMetaTags) ? [] : JConvert.DeserializeObject<MetaEntry[]>(partViewModel.CustomMetaTags);
 
                     if (part.Canonical?.IndexOfAny(SeoMetaPart.InvalidCharactersForCanoncial) > -1 || part.Canonical?.IndexOf(' ') > -1)
                     {

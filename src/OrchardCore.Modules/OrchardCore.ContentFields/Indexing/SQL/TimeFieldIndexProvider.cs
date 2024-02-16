@@ -28,7 +28,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
 
         public override void Describe(DescribeContext<ContentItem> context)
         {
-            context.For<TimeFieldIndex>()
+            context
+                .For<TimeFieldIndex>()
                 .Map(async contentItem =>
                 {
                     // Remove index records of soft deleted items.
@@ -56,9 +57,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                         return null;
                     }
 
-                    var fieldDefinitions = contentTypeDefinition
-                        .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(TimeField)))
-                        .ToArray();
+                    var fieldDefinitions = contentTypeDefinition.Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(TimeField))).ToArray();
 
                     // This type doesn't have any TimeField, ignore it
                     if (fieldDefinitions.Length == 0)
@@ -69,18 +68,17 @@ namespace OrchardCore.ContentFields.Indexing.SQL
 
                     return fieldDefinitions
                         .GetContentFields<TimeField>(contentItem)
-                        .Select(pair =>
-                            new TimeFieldIndex
-                            {
-                                Latest = contentItem.Latest,
-                                Published = contentItem.Published,
-                                ContentItemId = contentItem.ContentItemId,
-                                ContentItemVersionId = contentItem.ContentItemVersionId,
-                                ContentType = contentItem.ContentType,
-                                ContentPart = pair.Definition.PartDefinition.Name,
-                                ContentField = pair.Definition.Name,
-                                Time = pair.Field.Value,
-                            });
+                        .Select(pair => new TimeFieldIndex
+                        {
+                            Latest = contentItem.Latest,
+                            Published = contentItem.Published,
+                            ContentItemId = contentItem.ContentItemId,
+                            ContentItemVersionId = contentItem.ContentItemVersionId,
+                            ContentType = contentItem.ContentType,
+                            ContentPart = pair.Definition.PartDefinition.Name,
+                            ContentField = pair.Definition.Name,
+                            Time = pair.Field.Value,
+                        });
                 });
         }
     }

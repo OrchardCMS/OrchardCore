@@ -19,9 +19,7 @@ namespace OrchardCore.Layers.GraphQL
         protected readonly IStringLocalizer S;
         private readonly GraphQLContentOptions _graphQLContentOptions;
 
-        public SiteLayersQuery(
-            IStringLocalizer<SiteLayersQuery> localizer,
-            IOptions<GraphQLContentOptions> graphQLContentOptions)
+        public SiteLayersQuery(IStringLocalizer<SiteLayersQuery> localizer, IOptions<GraphQLContentOptions> graphQLContentOptions)
         {
             S = localizer;
             _graphQLContentOptions = graphQLContentOptions.Value;

@@ -14,7 +14,12 @@ namespace OrchardCore.Tests.OrchardCore.Users.Core
         {
             //Arrange
             var userManager = UsersMockHelper.MockUserManager<IUser>();
-            var user = new User { UserId = Guid.NewGuid().ToString("n"), UserName = "Foo", Email = "foo@foo.com" };
+            var user = new User
+            {
+                UserId = Guid.NewGuid().ToString("n"),
+                UserName = "Foo",
+                Email = "foo@foo.com"
+            };
             userManager.Setup(m => m.GetUserIdAsync(user)).ReturnsAsync(user.UserId);
             userManager.Setup(m => m.GetUserNameAsync(user)).ReturnsAsync(user.UserName);
             userManager.Setup(m => m.GetEmailAsync(user)).ReturnsAsync(user.Email);
@@ -29,10 +34,7 @@ namespace OrchardCore.Tests.OrchardCore.Users.Core
             var options = new Mock<IOptions<IdentityOptions>>();
             options.Setup(a => a.Value).Returns(new IdentityOptions());
 
-            var claimsProviders = new List<IUserClaimsProvider>()
-            {
-                new EmailClaimsProvider(userManager.Object)
-            };
+            var claimsProviders = new List<IUserClaimsProvider>() { new EmailClaimsProvider(userManager.Object) };
 
             var factory = new DefaultUserClaimsPrincipalProviderFactory(userManager.Object, roleManager, options.Object, claimsProviders, null);
 
@@ -56,5 +58,4 @@ namespace OrchardCore.Tests.OrchardCore.Users.Core
             Assert.Equal(emailVerified.ToString(), emailVerifiedClaim.Value);
         }
     }
-
 }

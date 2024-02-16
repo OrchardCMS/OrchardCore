@@ -15,11 +15,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         private readonly IElasticClient _elasticClient;
         private readonly ILogger _logger;
 
-        public ElasticQueryService(
-            IElasticClient elasticClient,
-            ShellSettings shellSettings,
-            ILogger<ElasticQueryService> logger
-            )
+        public ElasticQueryService(IElasticClient elasticClient, ShellSettings shellSettings, ILogger<ElasticQueryService> logger)
         {
             _indexPrefix = shellSettings.Name.ToLowerInvariant() + "_";
             _elasticClient = elasticClient;

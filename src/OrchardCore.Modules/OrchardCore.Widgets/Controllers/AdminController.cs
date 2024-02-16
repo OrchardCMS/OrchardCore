@@ -21,7 +21,8 @@ namespace OrchardCore.Widgets.Controllers
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
             IShapeFactory shapeFactory,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor
+        )
         {
             _contentItemDisplayManager = contentItemDisplayManager;
             _contentManager = contentManager;
@@ -29,7 +30,18 @@ namespace OrchardCore.Widgets.Controllers
             _updateModelAccessor = updateModelAccessor;
         }
 
-        public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string contentItemsName, string zonesName, string zone, string targetId, string parentContentType, string partName)
+        public async Task<IActionResult> BuildEditor(
+            string id,
+            string prefix,
+            string prefixesName,
+            string contentTypesName,
+            string contentItemsName,
+            string zonesName,
+            string zone,
+            string targetId,
+            string parentContentType,
+            string partName
+        )
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -75,10 +87,7 @@ namespace OrchardCore.Widgets.Controllers
                 ZonesName: zonesName
             );
 
-            var model = new BuildEditorViewModel
-            {
-                EditorShape = contentCard
-            };
+            var model = new BuildEditorViewModel { EditorShape = contentCard };
 
             return View("Display", model);
         }

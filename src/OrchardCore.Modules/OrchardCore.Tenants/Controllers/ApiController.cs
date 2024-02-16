@@ -65,7 +65,8 @@ namespace OrchardCore.Tenants.Controllers
             IEnumerable<DatabaseProvider> databaseProviders,
             ITenantValidator tenantValidator,
             IStringLocalizer<ApiController> stringLocalizer,
-            ILogger<ApiController> logger)
+            ILogger<ApiController> logger
+        )
         {
             _shellHost = shellHost;
             _currentShellSettings = currentShellSettings;
@@ -105,10 +106,7 @@ namespace OrchardCore.Tenants.Controllers
                 if (model.IsNewTenant)
                 {
                     // Creates a default shell settings based on the configuration.
-                    using var shellSettings = _shellSettingsManager
-                        .CreateDefaultSettings()
-                        .AsUninitialized()
-                        .AsDisposable();
+                    using var shellSettings = _shellSettingsManager.CreateDefaultSettings().AsUninitialized().AsDisposable();
 
                     shellSettings.Name = model.Name;
                     shellSettings.RequestUrlHost = model.RequestUrlHost;
@@ -282,7 +280,8 @@ namespace OrchardCore.Tenants.Controllers
                 return Problem(
                     title: S["An error occurred while removing the tenant '{0}'.", tenantName],
                     detail: context.ErrorMessage,
-                    statusCode: (int)HttpStatusCode.BadRequest);
+                    statusCode: (int)HttpStatusCode.BadRequest
+                );
             }
 
             if (_logger.IsEnabled(LogLevel.Warning))

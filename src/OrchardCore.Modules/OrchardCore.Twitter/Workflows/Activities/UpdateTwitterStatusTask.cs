@@ -15,11 +15,7 @@ namespace OrchardCore.Twitter.Workflows.Activities
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
         protected readonly IStringLocalizer S;
 
-        public UpdateTwitterStatusTask(
-            TwitterClient twitterClient,
-            IWorkflowExpressionEvaluator expressionEvaluator,
-            IStringLocalizer<UpdateTwitterStatusTask> localizer
-            )
+        public UpdateTwitterStatusTask(TwitterClient twitterClient, IWorkflowExpressionEvaluator expressionEvaluator, IStringLocalizer<UpdateTwitterStatusTask> localizer)
         {
             _twitterClient = twitterClient;
             _expressionEvaluator = expressionEvaluator;

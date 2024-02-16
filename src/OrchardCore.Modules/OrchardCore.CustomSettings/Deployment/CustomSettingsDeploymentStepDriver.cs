@@ -21,31 +21,31 @@ namespace OrchardCore.CustomSettings.Deployment
 
         public override IDisplayResult Display(CustomSettingsDeploymentStep step)
         {
-            return
-                Combine(
-                    View("CustomSettingsDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                    View("CustomSettingsDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-                );
+            return Combine(
+                View("CustomSettingsDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("CustomSettingsDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(CustomSettingsDeploymentStep step)
         {
-            return Initialize<CustomSettingsDeploymentStepViewModel>("CustomSettingsDeploymentStep_Fields_Edit", async model =>
-            {
-                model.IncludeAll = step.IncludeAll;
-                model.SettingsTypeNames = step.SettingsTypeNames;
-                model.AllSettingsTypeNames = (await _customSettingsService.GetAllSettingsTypeNamesAsync()).ToArray();
-            }).Location("Content");
+            return Initialize<CustomSettingsDeploymentStepViewModel>(
+                    "CustomSettingsDeploymentStep_Fields_Edit",
+                    async model =>
+                    {
+                        model.IncludeAll = step.IncludeAll;
+                        model.SettingsTypeNames = step.SettingsTypeNames;
+                        model.AllSettingsTypeNames = (await _customSettingsService.GetAllSettingsTypeNamesAsync()).ToArray();
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(CustomSettingsDeploymentStep step, IUpdateModel updater)
         {
             step.SettingsTypeNames = [];
 
-            await updater.TryUpdateModelAsync(step,
-                                              Prefix,
-                                              x => x.SettingsTypeNames,
-                                              x => x.IncludeAll);
+            await updater.TryUpdateModelAsync(step, Prefix, x => x.SettingsTypeNames, x => x.IncludeAll);
 
             // don't have the selected option if include all
             if (step.IncludeAll)

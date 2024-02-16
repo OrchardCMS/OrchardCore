@@ -19,11 +19,7 @@ public class Permissions : IPermissionProvider
 
     public async Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        var permissions = new List<Permission>()
-        {
-            ManageElasticIndexes,
-            QueryElasticApi,
-        };
+        var permissions = new List<Permission>() { ManageElasticIndexes, QueryElasticApi, };
 
         var elasticIndexSettings = await _elasticIndexSettingsService.GetSettingsAsync();
 
@@ -36,22 +32,8 @@ public class Permissions : IPermissionProvider
     }
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
-    [
-        new PermissionStereotype
-        {
-            Name = "Administrator",
-            Permissions =
-            [
-                ManageElasticIndexes,
-            ],
-        },
-        new PermissionStereotype
-        {
-            Name = "Editor",
-            Permissions =
-            [
-                QueryElasticApi,
-            ],
-        },
-    ];
+        [
+            new PermissionStereotype { Name = "Administrator", Permissions = [ManageElasticIndexes,], },
+            new PermissionStereotype { Name = "Editor", Permissions = [QueryElasticApi,], },
+        ];
 }

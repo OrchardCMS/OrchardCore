@@ -20,15 +20,20 @@ namespace OrchardCore.Workflows.Http.Scripting
             _signalUrlMethod = new GlobalMethod
             {
                 Name = "signalUrl",
-                Method = serviceProvider => (Func<string, string>)((signal) =>
-                {
-                    var payload = !string.IsNullOrWhiteSpace(workflowContext.CorrelationId) ? SignalPayload.ForCorrelation(signal, workflowContext.CorrelationId) : SignalPayload.ForWorkflow(signal, workflowContext.WorkflowId);
-                    var token = securityTokenService.CreateToken(payload, TimeSpan.FromDays(7));
-                    var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
-                    var linkGenerator = serviceProvider.GetRequiredService<LinkGenerator>();
+                Method = serviceProvider =>
+                    (Func<string, string>)(
+                        (signal) =>
+                        {
+                            var payload = !string.IsNullOrWhiteSpace(workflowContext.CorrelationId)
+                                ? SignalPayload.ForCorrelation(signal, workflowContext.CorrelationId)
+                                : SignalPayload.ForWorkflow(signal, workflowContext.WorkflowId);
+                            var token = securityTokenService.CreateToken(payload, TimeSpan.FromDays(7));
+                            var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+                            var linkGenerator = serviceProvider.GetRequiredService<LinkGenerator>();
 
-                    return linkGenerator.GetPathByAction(httpContextAccessor.HttpContext, "Trigger", "HttpWorkflow", new { area = "OrchardCore.Workflows", token });
-                }),
+                            return linkGenerator.GetPathByAction(httpContextAccessor.HttpContext, "Trigger", "HttpWorkflow", new { area = "OrchardCore.Workflows", token });
+                        }
+                    ),
             };
         }
 
@@ -47,19 +52,22 @@ namespace OrchardCore.Workflows.Http.Scripting
             _createWorkflowToken = new GlobalMethod
             {
                 Name = "createWorkflowToken",
-                Method = serviceProvider => (Func<string, string, int, string>)((workflowTypeId, activityId, days) =>
-                {
-                    var securityTokenService = serviceProvider.GetRequiredService<ISecurityTokenService>();
+                Method = serviceProvider =>
+                    (Func<string, string, int, string>)(
+                        (workflowTypeId, activityId, days) =>
+                        {
+                            var securityTokenService = serviceProvider.GetRequiredService<ISecurityTokenService>();
 
-                    var payload = new WorkflowPayload(workflowTypeId, activityId);
+                            var payload = new WorkflowPayload(workflowTypeId, activityId);
 
-                    if (days == 0)
-                    {
-                        days = HttpWorkflowController.NoExpiryTokenLifespan;
-                    }
+                            if (days == 0)
+                            {
+                                days = HttpWorkflowController.NoExpiryTokenLifespan;
+                            }
 
-                    return securityTokenService.CreateToken(payload, TimeSpan.FromDays(days));
-                })
+                            return securityTokenService.CreateToken(payload, TimeSpan.FromDays(days));
+                        }
+                    )
             };
         }
 

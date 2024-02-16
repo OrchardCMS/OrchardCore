@@ -10,11 +10,7 @@ namespace OrchardCore.Users
 {
     public class AdminMenu : INavigationProvider
     {
-        private static readonly RouteValueDictionary _routeValues = new()
-        {
-            { "area", "OrchardCore.Settings" },
-            { "groupId", LoginSettingsDisplayDriver.GroupId },
-        };
+        private static readonly RouteValueDictionary _routeValues = new() { { "area", "OrchardCore.Settings" }, { "groupId", LoginSettingsDisplayDriver.GroupId }, };
 
         protected readonly IStringLocalizer S;
 
@@ -30,26 +26,35 @@ namespace OrchardCore.Users
                 return Task.CompletedTask;
             }
 
-            builder
-                .Add(S["Security"], NavigationConstants.AdminMenuSecurityPosition, security => security
-                    .AddClass("security")
-                    .Id("security")
-                    .Add(S["Users"], S["Users"].PrefixPosition(), users => users
-                        .AddClass("users")
-                        .Id("users")
-                        .Action("Index", "Admin", "OrchardCore.Users")
-                        .Permission(CommonPermissions.ListUsers)
-                        .Resource(new User())
-                        .LocalNav()
-                    )
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["User Login"], S["User Login"].PrefixPosition(), login => login
-                            .Permission(CommonPermissions.ManageUsers)
-                            .Action("Index", "Admin", _routeValues)
-                            .LocalNav()
+            builder.Add(
+                S["Security"],
+                NavigationConstants.AdminMenuSecurityPosition,
+                security =>
+                    security
+                        .AddClass("security")
+                        .Id("security")
+                        .Add(
+                            S["Users"],
+                            S["Users"].PrefixPosition(),
+                            users =>
+                                users
+                                    .AddClass("users")
+                                    .Id("users")
+                                    .Action("Index", "Admin", "OrchardCore.Users")
+                                    .Permission(CommonPermissions.ListUsers)
+                                    .Resource(new User())
+                                    .LocalNav()
                         )
-                    )
-                );
+                        .Add(
+                            S["Settings"],
+                            settings =>
+                                settings.Add(
+                                    S["User Login"],
+                                    S["User Login"].PrefixPosition(),
+                                    login => login.Permission(CommonPermissions.ManageUsers).Action("Index", "Admin", _routeValues).LocalNav()
+                                )
+                        )
+            );
 
             return Task.CompletedTask;
         }
@@ -58,11 +63,7 @@ namespace OrchardCore.Users
     [Feature("OrchardCore.Users.ChangeEmail")]
     public class ChangeEmailAdminMenu : INavigationProvider
     {
-        private static readonly RouteValueDictionary _routeValues = new()
-        {
-            { "area", "OrchardCore.Settings" },
-            { "groupId", ChangeEmailSettingsDisplayDriver.GroupId },
-        };
+        private static readonly RouteValueDictionary _routeValues = new() { { "area", "OrchardCore.Settings" }, { "groupId", ChangeEmailSettingsDisplayDriver.GroupId }, };
 
         protected readonly IStringLocalizer S;
 
@@ -78,16 +79,19 @@ namespace OrchardCore.Users
                 return Task.CompletedTask;
             }
 
-            builder
-                .Add(S["Security"], security => security
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["User Change email"], S["User Change email"].PrefixPosition(), email => email
-                            .Permission(CommonPermissions.ManageUsers)
-                            .Action("Index", "Admin", _routeValues)
-                            .LocalNav()
-                        )
+            builder.Add(
+                S["Security"],
+                security =>
+                    security.Add(
+                        S["Settings"],
+                        settings =>
+                            settings.Add(
+                                S["User Change email"],
+                                S["User Change email"].PrefixPosition(),
+                                email => email.Permission(CommonPermissions.ManageUsers).Action("Index", "Admin", _routeValues).LocalNav()
+                            )
                     )
-                );
+            );
 
             return Task.CompletedTask;
         }
@@ -96,11 +100,7 @@ namespace OrchardCore.Users
     [Feature("OrchardCore.Users.Registration")]
     public class RegistrationAdminMenu : INavigationProvider
     {
-        private static readonly RouteValueDictionary _routeValues = new()
-        {
-            { "area", "OrchardCore.Settings" },
-            { "groupId", RegistrationSettingsDisplayDriver.GroupId },
-        };
+        private static readonly RouteValueDictionary _routeValues = new() { { "area", "OrchardCore.Settings" }, { "groupId", RegistrationSettingsDisplayDriver.GroupId }, };
 
         protected readonly IStringLocalizer S;
 
@@ -116,16 +116,19 @@ namespace OrchardCore.Users
                 return Task.CompletedTask;
             }
 
-            builder
-                .Add(S["Security"], security => security
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["User Registration"], S["User Registration"].PrefixPosition(), registration => registration
-                            .Permission(CommonPermissions.ManageUsers)
-                            .Action("Index", "Admin", _routeValues)
-                            .LocalNav()
-                        )
+            builder.Add(
+                S["Security"],
+                security =>
+                    security.Add(
+                        S["Settings"],
+                        settings =>
+                            settings.Add(
+                                S["User Registration"],
+                                S["User Registration"].PrefixPosition(),
+                                registration => registration.Permission(CommonPermissions.ManageUsers).Action("Index", "Admin", _routeValues).LocalNav()
+                            )
                     )
-                );
+            );
 
             return Task.CompletedTask;
         }
@@ -134,11 +137,7 @@ namespace OrchardCore.Users
     [Feature("OrchardCore.Users.ResetPassword")]
     public class ResetPasswordAdminMenu : INavigationProvider
     {
-        private static readonly RouteValueDictionary _routeValues = new()
-        {
-            { "area", "OrchardCore.Settings" },
-            { "groupId", ResetPasswordSettingsDisplayDriver.GroupId },
-        };
+        private static readonly RouteValueDictionary _routeValues = new() { { "area", "OrchardCore.Settings" }, { "groupId", ResetPasswordSettingsDisplayDriver.GroupId }, };
 
         protected readonly IStringLocalizer S;
 
@@ -154,16 +153,19 @@ namespace OrchardCore.Users
                 return Task.CompletedTask;
             }
 
-            builder
-                .Add(S["Security"], security => security
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["User Reset password"], S["User Reset password"].PrefixPosition(), password => password
-                            .Permission(CommonPermissions.ManageUsers)
-                            .Action("Index", "Admin", _routeValues)
-                            .LocalNav()
-                        )
+            builder.Add(
+                S["Security"],
+                security =>
+                    security.Add(
+                        S["Settings"],
+                        settings =>
+                            settings.Add(
+                                S["User Reset password"],
+                                S["User Reset password"].PrefixPosition(),
+                                password => password.Permission(CommonPermissions.ManageUsers).Action("Index", "Admin", _routeValues).LocalNav()
+                            )
                     )
-                );
+            );
 
             return Task.CompletedTask;
         }

@@ -23,7 +23,8 @@ namespace OrchardCore.Environment.Shell
             IExtensionManager extensionManager,
             IEnumerable<ShellFeature> shellFeatures,
             IShellDescriptorManager shellDescriptorManager,
-            ILogger<ShellFeaturesManager> logger)
+            ILogger<ShellFeaturesManager> logger
+        )
         {
             _extensionManager = extensionManager;
             _alwaysEnabledFeatures = shellFeatures.Where(f => f.AlwaysEnabled).ToArray();
@@ -31,27 +32,24 @@ namespace OrchardCore.Environment.Shell
             _logger = logger;
         }
 
-        public async Task<(IEnumerable<IFeatureInfo>, IEnumerable<IFeatureInfo>)> UpdateFeaturesAsync(ShellDescriptor shellDescriptor,
-            IEnumerable<IFeatureInfo> featuresToDisable, IEnumerable<IFeatureInfo> featuresToEnable, bool force)
+        public async Task<(IEnumerable<IFeatureInfo>, IEnumerable<IFeatureInfo>)> UpdateFeaturesAsync(
+            ShellDescriptor shellDescriptor,
+            IEnumerable<IFeatureInfo> featuresToDisable,
+            IEnumerable<IFeatureInfo> featuresToEnable,
+            bool force
+        )
         {
             var featureEventHandlers = ShellScope.Services.GetServices<IFeatureEventHandler>();
 
-            var enabledFeatures = _extensionManager.GetFeatures()
-                .Where(feature => shellDescriptor.Features.Any(shellFeature => shellFeature.Id == feature.Id))
-                .ToArray();
+            var enabledFeatures = _extensionManager.GetFeatures().Where(feature => shellDescriptor.Features.Any(shellFeature => shellFeature.Id == feature.Id)).ToArray();
 
-            var enabledFeatureIds = enabledFeatures
-                .Select(feature => feature.Id)
-                .ToHashSet();
+            var enabledFeatureIds = enabledFeatures.Select(feature => feature.Id).ToHashSet();
 
-            var installedFeatureIds = enabledFeatureIds
-                .Concat(shellDescriptor.Installed.Select(shellFeature => shellFeature.Id))
-                .ToHashSet();
+            var installedFeatureIds = enabledFeatureIds.Concat(shellDescriptor.Installed.Select(shellFeature => shellFeature.Id)).ToHashSet();
 
             var alwaysEnabledIds = _alwaysEnabledFeatures.Select(shellFeature => shellFeature.Id).ToArray();
 
-            var byDependencyOnlyFeaturesToDisable = enabledFeatures
-                .Where(feature => feature.EnabledByDependencyOnly);
+            var byDependencyOnlyFeaturesToDisable = enabledFeatures.Where(feature => feature.EnabledByDependencyOnly);
 
             var allFeaturesToDisable = featuresToDisable
                 .Where(feature => !feature.EnabledByDependencyOnly && !alwaysEnabledIds.Contains(feature.Id))
@@ -91,9 +89,7 @@ namespace OrchardCore.Environment.Shell
                 await featureEventHandlers.InvokeAsync((handler, featureInfo) => handler.EnablingAsync(featureInfo), feature, _logger);
             }
 
-            var allFeaturesToInstall = allFeaturesToEnable
-                .Where(f => !installedFeatureIds.Contains(f.Id))
-                .ToList();
+            var allFeaturesToInstall = allFeaturesToEnable.Where(f => !installedFeatureIds.Contains(f.Id)).ToList();
 
             foreach (var feature in allFeaturesToInstall)
             {
@@ -112,9 +108,7 @@ namespace OrchardCore.Environment.Shell
 
             if (allFeaturesToDisable.Count > 0 || allFeaturesToEnable.Count > 0)
             {
-                await _shellDescriptorManager.UpdateShellDescriptorAsync(
-                    shellDescriptor.SerialNumber,
-                    enabledFeatureIds.Select(id => new ShellFeature(id)).ToArray());
+                await _shellDescriptorManager.UpdateShellDescriptorAsync(shellDescriptor.SerialNumber, enabledFeatureIds.Select(id => new ShellFeature(id)).ToArray());
 
                 ShellScope.AddDeferredTask(async scope =>
                 {
@@ -165,10 +159,7 @@ namespace OrchardCore.Environment.Shell
         /// <returns>An enumeration of the features to disable, empty if 'force' = true and a dependency is disabled.</returns>
         private IEnumerable<IFeatureInfo> GetFeaturesToEnable(IFeatureInfo featureInfo, IEnumerable<string> enabledFeatureIds, bool force)
         {
-            var featuresToEnable = _extensionManager
-                .GetFeatureDependencies(featureInfo.Id)
-                .Where(f => !enabledFeatureIds.Contains(f.Id))
-                .ToList();
+            var featuresToEnable = _extensionManager.GetFeatureDependencies(featureInfo.Id).Where(f => !enabledFeatureIds.Contains(f.Id)).ToList();
 
             if (featuresToEnable.Count > 1 && !force)
             {
@@ -192,10 +183,7 @@ namespace OrchardCore.Environment.Shell
         /// <returns>An enumeration of the features to enable, empty if 'force' = true and a dependent is enabled.</returns>
         private List<IFeatureInfo> GetFeaturesToDisable(IFeatureInfo featureInfo, IEnumerable<string> enabledFeatureIds, bool force)
         {
-            var featuresToDisable = _extensionManager
-                .GetDependentFeatures(featureInfo.Id)
-                .Where(f => enabledFeatureIds.Contains(f.Id))
-                .ToList();
+            var featuresToDisable = _extensionManager.GetDependentFeatures(featureInfo.Id).Where(f => enabledFeatureIds.Contains(f.Id)).ToList();
 
             if (featuresToDisable.Count > 1 && !force)
             {

@@ -17,7 +17,6 @@ namespace OrchardCore.ArchiveLater;
 
 public class Startup : StartupBase
 {
-
     public override void ConfigureServices(IServiceCollection services)
     {
         services.Configure<TemplateOptions>(o =>
@@ -25,9 +24,7 @@ public class Startup : StartupBase
             o.MemberAccessStrategy.Register<ArchiveLaterPartViewModel>();
         });
 
-        services
-            .AddContentPart<ArchiveLaterPart>()
-            .UseDisplayDriver<ArchiveLaterPartDisplayDriver>();
+        services.AddContentPart<ArchiveLaterPart>().UseDisplayDriver<ArchiveLaterPartDisplayDriver>();
 
         services.AddDataMigration<Migrations>();
 

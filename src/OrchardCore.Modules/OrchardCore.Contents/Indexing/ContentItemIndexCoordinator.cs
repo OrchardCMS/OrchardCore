@@ -24,7 +24,8 @@ namespace OrchardCore.Contents.Indexing
             ITypeActivatorFactory<ContentPart> contentPartFactory,
             IEnumerable<IContentPartIndexHandler> partIndexHandlers,
             IEnumerable<IContentFieldIndexHandler> fieldIndexHandlers,
-            ILogger<ContentItemIndexCoordinator> logger)
+            ILogger<ContentItemIndexCoordinator> logger
+        )
         {
             _contentDefinitionManager = contentDefinitionManager;
             _contentPartFactory = contentPartFactory;
@@ -59,9 +60,15 @@ namespace OrchardCore.Contents.Indexing
                     continue;
                 }
 
-                await _partIndexHandlers.InvokeAsync((handler, part, contentTypePartDefinition, context, typePartIndexSettings) =>
-                    handler.BuildIndexAsync(part, contentTypePartDefinition, context, typePartIndexSettings),
-                        part, contentTypePartDefinition, context, typePartIndexSettings, _logger);
+                await _partIndexHandlers.InvokeAsync(
+                    (handler, part, contentTypePartDefinition, context, typePartIndexSettings) =>
+                        handler.BuildIndexAsync(part, contentTypePartDefinition, context, typePartIndexSettings),
+                    part,
+                    contentTypePartDefinition,
+                    context,
+                    typePartIndexSettings,
+                    _logger
+                );
 
                 foreach (var contentPartFieldDefinition in contentTypePartDefinition.PartDefinition.Fields)
                 {
@@ -74,9 +81,16 @@ namespace OrchardCore.Contents.Indexing
                         continue;
                     }
 
-                    await _fieldIndexHandlers.InvokeAsync((handler, part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings) =>
-                        handler.BuildIndexAsync(part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings),
-                            part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings, _logger);
+                    await _fieldIndexHandlers.InvokeAsync(
+                        (handler, part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings) =>
+                            handler.BuildIndexAsync(part, contentTypePartDefinition, contentPartFieldDefinition, context, partFieldIndexSettings),
+                        part,
+                        contentTypePartDefinition,
+                        contentPartFieldDefinition,
+                        context,
+                        partFieldIndexSettings,
+                        _logger
+                    );
                 }
             }
 

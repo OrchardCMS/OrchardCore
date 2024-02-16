@@ -22,19 +22,23 @@ namespace OrchardCore.Users.Deployment
         public override IDisplayResult Display(CustomUserSettingsDeploymentStep step)
         {
             return Combine(
-                    View("CustomUserSettingsDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                    View("CustomUserSettingsDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content"));
+                View("CustomUserSettingsDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("CustomUserSettingsDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(CustomUserSettingsDeploymentStep step)
         {
-            return Initialize<CustomUserSettingsDeploymentStepViewModel>("CustomUserSettingsDeploymentStep_Fields_Edit", async model =>
-            {
-                model.IncludeAll = step.IncludeAll;
-                model.SettingsTypeNames = step.SettingsTypeNames;
-                model.AllSettingsTypeNames = (await _customUserSettingsService.GetAllSettingsTypeNamesAsync()).ToArray();
-            })
-            .Location("Content");
+            return Initialize<CustomUserSettingsDeploymentStepViewModel>(
+                    "CustomUserSettingsDeploymentStep_Fields_Edit",
+                    async model =>
+                    {
+                        model.IncludeAll = step.IncludeAll;
+                        model.SettingsTypeNames = step.SettingsTypeNames;
+                        model.AllSettingsTypeNames = (await _customUserSettingsService.GetAllSettingsTypeNamesAsync()).ToArray();
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(CustomUserSettingsDeploymentStep step, IUpdateModel updater)

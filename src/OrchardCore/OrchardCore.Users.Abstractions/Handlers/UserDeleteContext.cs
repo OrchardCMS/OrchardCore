@@ -6,9 +6,8 @@ namespace OrchardCore.Users.Handlers
     public class UserDeleteContext : UserContextBase
     {
         /// <inheritdocs />
-        public UserDeleteContext(IUser user) : base(user)
-        {
-        }
+        public UserDeleteContext(IUser user)
+            : base(user) { }
 
         public bool Cancel { get; set; }
     }

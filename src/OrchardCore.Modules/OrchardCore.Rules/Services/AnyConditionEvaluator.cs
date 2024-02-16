@@ -12,7 +12,7 @@ namespace OrchardCore.Rules.Services
             _conditionResolver = conditionResolver;
         }
 
-        public async override ValueTask<bool> EvaluateAsync(AnyConditionGroup condition)
+        public override async ValueTask<bool> EvaluateAsync(AnyConditionGroup condition)
         {
             foreach (var childCondition in condition.Conditions)
             {

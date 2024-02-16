@@ -20,18 +20,22 @@ namespace OrchardCore.ContentTypes.Editors
 
         public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition)
         {
-            return Initialize<ContentTypeSettingsViewModel>("ContentTypeSettings_Edit", model =>
-            {
-                var settings = contentTypeDefinition.GetSettings<ContentTypeSettings>();
+            return Initialize<ContentTypeSettingsViewModel>(
+                    "ContentTypeSettings_Edit",
+                    model =>
+                    {
+                        var settings = contentTypeDefinition.GetSettings<ContentTypeSettings>();
 
-                model.Creatable = settings.Creatable;
-                model.Listable = settings.Listable;
-                model.Draftable = settings.Draftable;
-                model.Versionable = settings.Versionable;
-                model.Securable = settings.Securable;
-                model.Stereotype = settings.Stereotype;
-                model.Description = settings.Description;
-            }).Location("Content:5");
+                        model.Creatable = settings.Creatable;
+                        model.Listable = settings.Listable;
+                        model.Draftable = settings.Draftable;
+                        model.Versionable = settings.Versionable;
+                        model.Securable = settings.Securable;
+                        model.Stereotype = settings.Stereotype;
+                        model.Description = settings.Description;
+                    }
+                )
+                .Location("Content:5");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypeDefinition contentTypeDefinition, UpdateTypeEditorContext context)
@@ -68,9 +72,7 @@ namespace OrchardCore.ContentTypes.Editors
 
             var startWithLetter = char.IsLetter(value[0]);
 
-            return value.Length == 1
-                ? startWithLetter
-                : startWithLetter && value.Skip(1).All(c => char.IsLetterOrDigit(c));
+            return value.Length == 1 ? startWithLetter : startWithLetter && value.Skip(1).All(c => char.IsLetterOrDigit(c));
         }
     }
 }

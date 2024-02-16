@@ -10,11 +10,13 @@ namespace OrchardCore.Demo.Controllers
         {
             return Content("Index content");
         }
+
         [Route("Demo/About")]
         public IActionResult About()
         {
             return Content("About content");
         }
+
         [Route("Demo/Contact")]
         public IActionResult Contact()
         {

@@ -15,7 +15,8 @@ namespace OrchardCore.ContentManagement.Metadata.Models
         /// </summary>
         public JsonObject Settings { get; protected set; }
 
-        public T GetSettings<T>() where T : new()
+        public T GetSettings<T>()
+            where T : new()
         {
             if (Settings == null)
             {
@@ -38,10 +39,7 @@ namespace OrchardCore.ContentManagement.Metadata.Models
                     result = new T();
                 }
 
-                namedSettings = new Dictionary<Type, object>(_namedSettings)
-                {
-                    [typeof(T)] = result,
-                };
+                namedSettings = new Dictionary<Type, object>(_namedSettings) { [typeof(T)] = result, };
 
                 _namedSettings = namedSettings;
             }

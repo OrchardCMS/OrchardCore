@@ -60,15 +60,11 @@ namespace OrchardCore.Apis.GraphQL.Client
             // Field-level argument exists
             else if (queryValues is IDictionary<string, string>)
             {
-                ((IDictionary<string, string>)queryValues)
-                    .Add(fieldName.ToGraphQLStringFormat(), fieldValue);
+                ((IDictionary<string, string>)queryValues).Add(fieldName.ToGraphQLStringFormat(), fieldValue);
             }
             else
             {
-                _queries.Add(argument, new Dictionary<string, string>()
-                {
-                    { fieldName.ToGraphQLStringFormat(),  fieldValue }
-                });
+                _queries.Add(argument, new Dictionary<string, string>() { { fieldName.ToGraphQLStringFormat(), fieldValue } });
             }
 
             return this;
@@ -89,15 +85,11 @@ namespace OrchardCore.Apis.GraphQL.Client
             // Field-level argument exists
             else if (queryValues is IDictionary<string, string>)
             {
-                ((IDictionary<string, string>)queryValues)
-                    .Add(fieldName.ToGraphQLStringFormat(), $"{{ {fieldValue} }}");
+                ((IDictionary<string, string>)queryValues).Add(fieldName.ToGraphQLStringFormat(), $"{{ {fieldValue} }}");
             }
             else
             {
-                _queries.Add(argument, new Dictionary<string, string>()
-                {
-                    { fieldName.ToGraphQLStringFormat(),  $"{{ {fieldValue} }}" }
-                });
+                _queries.Add(argument, new Dictionary<string, string>() { { fieldName.ToGraphQLStringFormat(), $"{{ {fieldValue} }}" } });
             }
 
             return this;

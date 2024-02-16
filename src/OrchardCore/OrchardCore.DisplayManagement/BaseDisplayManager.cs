@@ -13,10 +13,7 @@ namespace OrchardCore.DisplayManagement
         private readonly IShapeFactory _shapeFactory;
         private readonly IEnumerable<IShapePlacementProvider> _placementProviders;
 
-        public BaseDisplayManager(
-            IShapeFactory shapeFactory,
-            IEnumerable<IShapePlacementProvider> placementProviders
-            )
+        public BaseDisplayManager(IShapeFactory shapeFactory, IEnumerable<IShapePlacementProvider> placementProviders)
         {
             _shapeFactory = shapeFactory;
             _placementProviders = placementProviders;
@@ -39,7 +36,13 @@ namespace OrchardCore.DisplayManagement
             context.FindPlacement = (shapeType, differentiator, displayType, displayContext) => FindPlacementImpl(resolvers, shapeType, differentiator, displayType, context);
         }
 
-        private static PlacementInfo FindPlacementImpl(IList<IPlacementInfoResolver> placementResolvers, string shapeType, string differentiator, string displayType, IBuildShapeContext context)
+        private static PlacementInfo FindPlacementImpl(
+            IList<IPlacementInfoResolver> placementResolvers,
+            string shapeType,
+            string differentiator,
+            string displayType,
+            IBuildShapeContext context
+        )
         {
             var delimiterIndex = shapeType.IndexOf("__", StringComparison.Ordinal);
 
@@ -48,22 +51,17 @@ namespace OrchardCore.DisplayManagement
                 shapeType = shapeType[..delimiterIndex];
             }
 
-            var placementContext = new ShapePlacementContext(
-                shapeType,
-                displayType,
-                differentiator,
-                context.Shape
-            );
+            var placementContext = new ShapePlacementContext(shapeType, displayType, differentiator, context.Shape);
 
-            return placementResolvers.Aggregate<IPlacementInfoResolver, PlacementInfo>(null, (prev, resolver) =>
-                PlacementInfoExtensions.Combine(prev, resolver.ResolvePlacement(placementContext))
+            return placementResolvers.Aggregate<IPlacementInfoResolver, PlacementInfo>(
+                null,
+                (prev, resolver) => PlacementInfoExtensions.Combine(prev, resolver.ResolvePlacement(placementContext))
             );
         }
 
         protected ValueTask<IShape> CreateContentShapeAsync(string actualShapeType)
         {
-            return _shapeFactory.CreateAsync(actualShapeType, () =>
-                new ValueTask<IShape>(new ZoneHolding(() => _shapeFactory.CreateAsync("ContentZone"))));
+            return _shapeFactory.CreateAsync(actualShapeType, () => new ValueTask<IShape>(new ZoneHolding(() => _shapeFactory.CreateAsync("ContentZone"))));
         }
     }
 }

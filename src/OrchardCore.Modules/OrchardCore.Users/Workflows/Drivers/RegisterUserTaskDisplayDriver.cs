@@ -27,7 +27,7 @@ namespace OrchardCore.Users.Workflows.Drivers
             model.RequireModeration = activity.RequireModeration;
         }
 
-        public async override Task<IDisplayResult> UpdateAsync(RegisterUserTask model, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(RegisterUserTask model, IUpdateModel updater)
         {
             var viewModel = new RegisterUserTaskViewModel();
             if (await updater.TryUpdateModelAsync(viewModel, Prefix))
@@ -41,12 +41,20 @@ namespace OrchardCore.Users.Workflows.Drivers
                 {
                     if (string.IsNullOrWhiteSpace(viewModel.ConfirmationEmailSubject))
                     {
-                        updater.ModelState.AddModelError(Prefix, nameof(viewModel.ConfirmationEmailSubject), S["A value is required for {0}.", nameof(viewModel.ConfirmationEmailSubject)]);
+                        updater.ModelState.AddModelError(
+                            Prefix,
+                            nameof(viewModel.ConfirmationEmailSubject),
+                            S["A value is required for {0}.", nameof(viewModel.ConfirmationEmailSubject)]
+                        );
                     }
 
                     if (string.IsNullOrWhiteSpace(viewModel.ConfirmationEmailTemplate))
                     {
-                        updater.ModelState.AddModelError(Prefix, nameof(viewModel.ConfirmationEmailTemplate), S["A value is required for {0}.", nameof(viewModel.ConfirmationEmailTemplate)]);
+                        updater.ModelState.AddModelError(
+                            Prefix,
+                            nameof(viewModel.ConfirmationEmailTemplate),
+                            S["A value is required for {0}.", nameof(viewModel.ConfirmationEmailTemplate)]
+                        );
                     }
                 }
             }

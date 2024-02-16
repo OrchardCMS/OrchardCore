@@ -17,10 +17,7 @@ public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOption
     // Local instance since it can be discarded once the startup is over.
     private readonly FluidParser _fluidParser = new();
 
-    public AwsStorageOptionsConfiguration(
-        IShellConfiguration shellConfiguration,
-        ShellSettings shellSettings,
-        ILogger<AwsStorageOptionsConfiguration> logger)
+    public AwsStorageOptionsConfiguration(IShellConfiguration shellConfiguration, ShellSettings shellSettings, ILogger<AwsStorageOptionsConfiguration> logger)
     {
         _shellConfiguration = shellConfiguration;
         _shellSettings = shellSettings;
@@ -48,11 +45,7 @@ public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOption
         {
             var template = _fluidParser.Parse(options.BucketName);
 
-            options.BucketName = template
-                .Render(templateContext, NullEncoder.Default)
-                .Replace("\r", string.Empty)
-                .Replace("\n", string.Empty)
-                .Trim();
+            options.BucketName = template.Render(templateContext, NullEncoder.Default).Replace("\r", string.Empty).Replace("\n", string.Empty).Trim();
         }
         catch (Exception e)
         {
@@ -67,11 +60,7 @@ public class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStorageOption
         {
             var template = _fluidParser.Parse(options.BasePath);
 
-            options.BasePath = template
-                .Render(templateContext, NullEncoder.Default)
-                .Replace("\r", string.Empty)
-                .Replace("\n", string.Empty)
-                .Trim();
+            options.BasePath = template.Render(templateContext, NullEncoder.Default).Replace("\r", string.Empty).Replace("\n", string.Empty).Trim();
         }
         catch (Exception e)
         {

@@ -16,14 +16,17 @@ public class FormElementLabelPartDisplayDriver : ContentPartDisplayDriver<FormEl
 
     public override IDisplayResult Edit(FormElementLabelPart part)
     {
-        return Initialize<FormElementLabelPartViewModel>("FormElementLabelPart_Fields_Edit", m =>
-        {
-            m.Label = part.Label;
-            m.LabelOption = part.Option;
-        });
+        return Initialize<FormElementLabelPartViewModel>(
+            "FormElementLabelPart_Fields_Edit",
+            m =>
+            {
+                m.Label = part.Label;
+                m.LabelOption = part.Option;
+            }
+        );
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(FormElementLabelPart part, IUpdateModel updater)
+    public override async Task<IDisplayResult> UpdateAsync(FormElementLabelPart part, IUpdateModel updater)
     {
         var viewModel = new FormElementLabelPartViewModel();
 

@@ -10,8 +10,6 @@ public class NamingTests
     [Fact]
     public void CreateLengthSafeIndexName()
     {
-
-
         var isValid1 = AzureAISearchIndexNamingHelper.TryGetSafeIndexName(_maxName, out var result1);
 
         Assert.True(isValid1);

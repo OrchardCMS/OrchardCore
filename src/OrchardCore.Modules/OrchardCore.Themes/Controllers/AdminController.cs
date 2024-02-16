@@ -31,7 +31,8 @@ namespace OrchardCore.Themes.Controllers
             IHtmlLocalizer<AdminController> localizer,
             IShellFeaturesManager shellFeaturesManager,
             IAuthorizationService authorizationService,
-            INotifier notifier)
+            INotifier notifier
+        )
         {
             _siteThemeService = siteThemeService;
             _adminThemeService = adminThemeService;
@@ -116,8 +117,9 @@ namespace OrchardCore.Themes.Controllers
             }
             else
             {
-                var feature = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
-                    .FirstOrDefault(f => f.Id == id && !f.IsAlwaysEnabled && !f.EnabledByDependencyOnly && f.IsTheme());
+                var feature = (await _shellFeaturesManager.GetAvailableFeaturesAsync()).FirstOrDefault(f =>
+                    f.Id == id && !f.IsAlwaysEnabled && !f.EnabledByDependencyOnly && f.IsTheme()
+                );
 
                 if (feature == null)
                 {
@@ -191,8 +193,9 @@ namespace OrchardCore.Themes.Controllers
                 return Forbid();
             }
 
-            var feature = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
-                .FirstOrDefault(f => f.Id == id && !f.IsAlwaysEnabled && !f.EnabledByDependencyOnly && f.IsTheme());
+            var feature = (await _shellFeaturesManager.GetAvailableFeaturesAsync()).FirstOrDefault(f =>
+                f.Id == id && !f.IsAlwaysEnabled && !f.EnabledByDependencyOnly && f.IsTheme()
+            );
 
             if (feature == null)
             {
@@ -214,8 +217,9 @@ namespace OrchardCore.Themes.Controllers
                 return Forbid();
             }
 
-            var feature = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
-                .FirstOrDefault(f => f.Id == id && !f.IsAlwaysEnabled && !f.EnabledByDependencyOnly && f.IsTheme());
+            var feature = (await _shellFeaturesManager.GetAvailableFeaturesAsync()).FirstOrDefault(f =>
+                f.Id == id && !f.IsAlwaysEnabled && !f.EnabledByDependencyOnly && f.IsTheme()
+            );
 
             if (feature == null)
             {

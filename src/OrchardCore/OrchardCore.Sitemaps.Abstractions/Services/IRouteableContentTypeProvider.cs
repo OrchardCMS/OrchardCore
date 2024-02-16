@@ -26,6 +26,5 @@ public interface IRouteableContentTypeProvider
     /// Provides routable content types.
     /// </summary>
     [Obsolete($"Instead, utilize the {nameof(ListRoutableTypeDefinitionsAsync)} method. This current method is slated for removal in upcoming releases.")]
-    IEnumerable<ContentTypeDefinition> ListRoutableTypeDefinitions()
-        => ListRoutableTypeDefinitionsAsync().GetAwaiter().GetResult();
+    IEnumerable<ContentTypeDefinition> ListRoutableTypeDefinitions() => ListRoutableTypeDefinitionsAsync().GetAwaiter().GetResult();
 }

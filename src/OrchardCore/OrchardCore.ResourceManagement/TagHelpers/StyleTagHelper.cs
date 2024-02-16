@@ -162,8 +162,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 if (!childContent.IsEmptyOrWhiteSpace)
                 {
                     // Inline named style definition
-                    _resourceManager.InlineManifest.DefineStyle(Name)
-                        .SetInnerContent(childContent.GetContent());
+                    _resourceManager.InlineManifest.DefineStyle(Name).SetInnerContent(childContent.GetContent());
                 }
 
                 if (At == ResourceLocation.Inline)

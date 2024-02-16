@@ -22,7 +22,13 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             return true;
         }
 
-        public async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, LiquidTemplateContext context)
+        public async ValueTask<Completion> WriteToAsync(
+            List<FilterArgument> argumentsList,
+            IReadOnlyList<Statement> statements,
+            TextWriter writer,
+            TextEncoder encoder,
+            LiquidTemplateContext context
+        )
         {
             var services = context.Services;
             var viewContext = context.ViewContext;
@@ -46,15 +52,33 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             {
                 switch (argument.Name)
                 {
-                    case "action": action = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                    case "controller": controller = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                    case "area": area = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                    case "page": page = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                    case "page_handler": pageHandler = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                    case "fragment": fragment = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                    case "host": host = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                    case "protocol": protocol = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                    case "route": route = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                    case "action":
+                        action = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        break;
+                    case "controller":
+                        controller = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        break;
+                    case "area":
+                        area = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        break;
+                    case "page":
+                        page = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        break;
+                    case "page_handler":
+                        pageHandler = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        break;
+                    case "fragment":
+                        fragment = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        break;
+                    case "host":
+                        host = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        break;
+                    case "protocol":
+                        protocol = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        break;
+                    case "route":
+                        route = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        break;
 
                     case "all_route_data":
 
@@ -67,7 +91,9 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
                         break;
 
-                    case "href": href = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                    case "href":
+                        href = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        break;
 
                     default:
 
@@ -89,16 +115,18 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             // If "href" is already set, it means the user is attempting to use a normal anchor.
             if (!string.IsNullOrEmpty(href))
             {
-                if (action != null ||
-                    controller != null ||
-                    area != null ||
-                    page != null ||
-                    pageHandler != null ||
-                    route != null ||
-                    protocol != null ||
-                    host != null ||
-                    fragment != null ||
-                    (routeValues != null && routeValues.Count > 0))
+                if (
+                    action != null
+                    || controller != null
+                    || area != null
+                    || page != null
+                    || pageHandler != null
+                    || route != null
+                    || protocol != null
+                    || host != null
+                    || fragment != null
+                    || (routeValues != null && routeValues.Count > 0)
+                )
                 {
                     // User specified an href and one of the bound attributes; can't determine the href attribute.
                     throw new InvalidOperationException("Cannot override href with other properties");
@@ -141,7 +169,8 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                     hostname: host,
                     fragment: fragment,
                     routeValues: localRouteValues,
-                    htmlAttributes: null);
+                    htmlAttributes: null
+                );
             }
             else if (routeLink)
             {
@@ -153,20 +182,22 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                     hostName: host,
                     fragment: fragment,
                     routeValues: localRouteValues,
-                    htmlAttributes: null);
+                    htmlAttributes: null
+                );
             }
             else
             {
                 tagBuilder = generator.GenerateActionLink(
-                   viewContext,
-                   linkText: string.Empty,
-                   actionName: action,
-                   controllerName: controller,
-                   protocol: protocol,
-                   hostname: host,
-                   fragment: fragment,
-                   routeValues: localRouteValues,
-                   htmlAttributes: null);
+                    viewContext,
+                    linkText: string.Empty,
+                    actionName: action,
+                    controllerName: controller,
+                    protocol: protocol,
+                    hostname: host,
+                    fragment: fragment,
+                    routeValues: localRouteValues,
+                    htmlAttributes: null
+                );
             }
 
             foreach (var attribute in customAttributes)

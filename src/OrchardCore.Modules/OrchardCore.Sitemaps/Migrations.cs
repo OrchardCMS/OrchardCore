@@ -16,9 +16,10 @@ namespace OrchardCore.Sitemaps
 
         public async Task<int> CreateAsync()
         {
-            await _contentDefinitionManager.AlterPartDefinitionAsync("SitemapPart", builder => builder
-                .Attachable()
-                .WithDescription("Provides an optional part that allows content items to be excluded, or configured, on a content item."));
+            await _contentDefinitionManager.AlterPartDefinitionAsync(
+                "SitemapPart",
+                builder => builder.Attachable().WithDescription("Provides an optional part that allows content items to be excluded, or configured, on a content item.")
+            );
 
             return 1;
         }

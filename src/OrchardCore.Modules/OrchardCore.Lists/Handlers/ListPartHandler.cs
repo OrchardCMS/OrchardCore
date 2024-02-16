@@ -14,10 +14,10 @@ namespace OrchardCore.Lists.Drivers
             {
                 contentItemMetadata.AdminRouteValues = new RouteValueDictionary
                 {
-                    {"Area", "OrchardCore.Contents"},
-                    {"Controller", "Admin"},
-                    {"Action", "Display"},
-                    {"ContentItemId", context.ContentItem.ContentItemId}
+                    { "Area", "OrchardCore.Contents" },
+                    { "Controller", "Admin" },
+                    { "Action", "Display" },
+                    { "ContentItemId", context.ContentItem.ContentItemId }
                 };
 
                 return Task.CompletedTask;

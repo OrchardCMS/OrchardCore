@@ -27,7 +27,8 @@ namespace OrchardCore.ContentFields.Drivers
         public LocalizationSetContentPickerFieldDisplayDriver(
             IContentManager contentManager,
             IStringLocalizer<LocalizationSetContentPickerFieldDisplayDriver> localizer,
-            IContentLocalizationManager contentLocalizationManager)
+            IContentLocalizationManager contentLocalizationManager
+        )
         {
             _contentManager = contentManager;
             S = localizer;
@@ -36,45 +37,53 @@ namespace OrchardCore.ContentFields.Drivers
 
         public override IDisplayResult Display(LocalizationSetContentPickerField field, BuildFieldDisplayContext context)
         {
-            return Initialize<DisplayLocalizationSetContentPickerFieldViewModel>(GetDisplayShapeType(context), model =>
-            {
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-            })
-            .Location("Detail", "Content")
-            .Location("Summary", "Content");
+            return Initialize<DisplayLocalizationSetContentPickerFieldViewModel>(
+                    GetDisplayShapeType(context),
+                    model =>
+                    {
+                        model.Field = field;
+                        model.Part = context.ContentPart;
+                        model.PartFieldDefinition = context.PartFieldDefinition;
+                    }
+                )
+                .Location("Detail", "Content")
+                .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(LocalizationSetContentPickerField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditLocalizationSetContentPickerFieldViewModel>(GetEditorShapeType(context), async model =>
-            {
-                model.LocalizationSets = string.Join(",", field.LocalizationSets);
-
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-
-                model.SelectedItems = [];
-
-                foreach (var kvp in await _contentLocalizationManager.GetFirstItemIdForSetsAsync(field.LocalizationSets))
+            return Initialize<EditLocalizationSetContentPickerFieldViewModel>(
+                GetEditorShapeType(context),
+                async model =>
                 {
-                    var contentItem = await _contentManager.GetAsync(kvp.Value, VersionOptions.Latest);
+                    model.LocalizationSets = string.Join(",", field.LocalizationSets);
 
-                    if (contentItem == null)
+                    model.Field = field;
+                    model.Part = context.ContentPart;
+                    model.PartFieldDefinition = context.PartFieldDefinition;
+
+                    model.SelectedItems = [];
+
+                    foreach (var kvp in await _contentLocalizationManager.GetFirstItemIdForSetsAsync(field.LocalizationSets))
                     {
-                        continue;
+                        var contentItem = await _contentManager.GetAsync(kvp.Value, VersionOptions.Latest);
+
+                        if (contentItem == null)
+                        {
+                            continue;
+                        }
+
+                        model.SelectedItems.Add(
+                            new VueMultiselectItemViewModel
+                            {
+                                Id = kvp.Key, // localization set
+                                DisplayText = contentItem.ToString(),
+                                HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem)
+                            }
+                        );
                     }
-
-                    model.SelectedItems.Add(new VueMultiselectItemViewModel
-                    {
-                        Id = kvp.Key, // localization set
-                        DisplayText = contentItem.ToString(),
-                        HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem)
-                    });
                 }
-            });
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(LocalizationSetContentPickerField field, IUpdateModel updater, UpdateFieldEditorContext context)
@@ -88,8 +97,7 @@ namespace OrchardCore.ContentFields.Drivers
                 return Edit(field, context);
             }
 
-            field.LocalizationSets = viewModel.LocalizationSets == null
-                ? [] : viewModel.LocalizationSets.Split(',', StringSplitOptions.RemoveEmptyEntries);
+            field.LocalizationSets = viewModel.LocalizationSets == null ? [] : viewModel.LocalizationSets.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
             var settings = context.PartFieldDefinition.GetSettings<LocalizationSetContentPickerFieldSettings>();
 
@@ -100,7 +108,11 @@ namespace OrchardCore.ContentFields.Drivers
 
             if (!settings.Multiple && field.LocalizationSets.Length > 1)
             {
-                updater.ModelState.AddModelError(Prefix, nameof(field.LocalizationSets), S["The {0} field cannot contain multiple items.", context.PartFieldDefinition.DisplayName()]);
+                updater.ModelState.AddModelError(
+                    Prefix,
+                    nameof(field.LocalizationSets),
+                    S["The {0} field cannot contain multiple items.", context.PartFieldDefinition.DisplayName()]
+                );
             }
 
             return Edit(field, context);

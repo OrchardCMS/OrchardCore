@@ -62,7 +62,8 @@ namespace OrchardCore.Contents.Controllers
             ILogger<AdminController> logger,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor
+        )
         {
             _authorizationService = authorizationService;
             _notifier = notifier;
@@ -87,11 +88,10 @@ namespace OrchardCore.Contents.Controllers
             ContentOptionsViewModel options,
             PagerParameters pagerParameters,
             string contentTypeId = "",
-            string stereotype = "")
+            string stereotype = ""
+        )
         {
-            var contentTypeDefinitions = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
-                .OrderBy(ctd => ctd.DisplayName)
-                .ToList();
+            var contentTypeDefinitions = (await _contentDefinitionManager.ListTypeDefinitionsAsync()).OrderBy(ctd => ctd.DisplayName).ToList();
 
             if (!await _authorizationService.AuthorizeContentTypeDefinitionsAsync(User, CommonPermissions.ListContent, contentTypeDefinitions, _contentManager))
             {
@@ -143,9 +143,7 @@ namespace OrchardCore.Contents.Controllers
             if (options.CreatableTypes == null)
             {
                 // At this point, the creatable types were not yet populated. Populate them using all creatable types.
-                var creatableContentTypeDefinitions = contentTypeDefinitions
-                    .Where(ctd => ctd.IsCreatable())
-                    .ToArray();
+                var creatableContentTypeDefinitions = contentTypeDefinitions.Where(ctd => ctd.IsCreatable()).ToArray();
 
                 options.CreatableTypes = await GetCreatableTypeOptionsAsync(false, creatableContentTypeDefinitions);
             }
@@ -179,8 +177,7 @@ namespace OrchardCore.Contents.Controllers
                 new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
             ];
 
-            if (options.ContentTypeOptions == null
-                && (string.IsNullOrEmpty(options.SelectedContentType) || string.IsNullOrEmpty(contentTypeId)))
+            if (options.ContentTypeOptions == null && (string.IsNullOrEmpty(options.SelectedContentType) || string.IsNullOrEmpty(contentTypeId)))
             {
                 options.ContentTypeOptions = await GetListableContentTypeOptionsAsync(contentTypeDefinitions, options.SelectedContentType, true);
             }
@@ -199,7 +196,11 @@ namespace OrchardCore.Contents.Controllers
             options.RouteValues.TryAdd("q", options.FilterResult.ToString());
 
             var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
-            dynamic pagerShape = await _shapeFactory.PagerAsync(pager, _pagerOptions.MaxPagedCount > 0 ? _pagerOptions.MaxPagedCount : await query.CountAsync(), options.RouteValues);
+            dynamic pagerShape = await _shapeFactory.PagerAsync(
+                pager,
+                _pagerOptions.MaxPagedCount > 0 ? _pagerOptions.MaxPagedCount : await query.CountAsync(),
+                options.RouteValues
+            );
 
             // Load items so that loading handlers are invoked.
             var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync(_contentManager);
@@ -220,13 +221,16 @@ namespace OrchardCore.Contents.Controllers
 
             var header = await _contentOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
 
-            var shapeViewModel = await _shapeFactory.CreateAsync<ListContentsViewModel>("ContentsAdminList", viewModel =>
-            {
-                viewModel.ContentItems = contentItemSummaries;
-                viewModel.Pager = pagerShape;
-                viewModel.Options = options;
-                viewModel.Header = header;
-            });
+            var shapeViewModel = await _shapeFactory.CreateAsync<ListContentsViewModel>(
+                "ContentsAdminList",
+                viewModel =>
+                {
+                    viewModel.ContentItems = contentItemSummaries;
+                    viewModel.Pager = pagerShape;
+                    viewModel.Options = options;
+                    viewModel.Header = header;
+                }
+            );
 
             return View(shapeViewModel);
         }
@@ -336,16 +340,23 @@ namespace OrchardCore.Contents.Controllers
         public Task<IActionResult> CreatePOST(string id, [Bind(Prefix = "submit.Save")] string submitSave, string returnUrl)
         {
             var stayOnSamePage = submitSave == "submit.SaveAndContinue";
-            return CreatePOST(id, returnUrl, stayOnSamePage, async contentItem =>
-            {
-                await _contentManager.SaveDraftAsync(contentItem);
+            return CreatePOST(
+                id,
+                returnUrl,
+                stayOnSamePage,
+                async contentItem =>
+                {
+                    await _contentManager.SaveDraftAsync(contentItem);
 
-                var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+                    var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
-                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
-                    ? H["Your content draft has been saved."]
-                    : H["Your {0} draft has been saved.", typeDefinition.DisplayName]);
-            });
+                    await _notifier.SuccessAsync(
+                        string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
+                            ? H["Your content draft has been saved."]
+                            : H["Your {0} draft has been saved.", typeDefinition.DisplayName]
+                    );
+                }
+            );
         }
 
         [HttpPost, ActionName(nameof(Create))]
@@ -364,16 +375,23 @@ namespace OrchardCore.Contents.Controllers
                 return Forbid();
             }
 
-            return await CreatePOST(id, returnUrl, stayOnSamePage, async contentItem =>
-            {
-                await _contentManager.PublishAsync(contentItem);
+            return await CreatePOST(
+                id,
+                returnUrl,
+                stayOnSamePage,
+                async contentItem =>
+                {
+                    await _contentManager.PublishAsync(contentItem);
 
-                var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+                    var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
-                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
-                    ? H["Your content has been published."]
-                    : H["Your {0} has been published.", typeDefinition.DisplayName]);
-            });
+                    await _notifier.SuccessAsync(
+                        string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
+                            ? H["Your content has been published."]
+                            : H["Your {0} has been published.", typeDefinition.DisplayName]
+                    );
+                }
+            );
         }
 
         public async Task<IActionResult> Display(string contentItemId)
@@ -419,16 +437,23 @@ namespace OrchardCore.Contents.Controllers
         public Task<IActionResult> EditPOST(string contentItemId, [Bind(Prefix = "submit.Save")] string submitSave, string returnUrl)
         {
             var stayOnSamePage = submitSave == "submit.SaveAndContinue";
-            return EditPOST(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
-            {
-                await _contentManager.SaveDraftAsync(contentItem);
+            return EditPOST(
+                contentItemId,
+                returnUrl,
+                stayOnSamePage,
+                async contentItem =>
+                {
+                    await _contentManager.SaveDraftAsync(contentItem);
 
-                var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+                    var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
-                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
-                    ? H["Your content draft has been saved."]
-                    : H["Your {0} draft has been saved.", typeDefinition.DisplayName]);
-            });
+                    await _notifier.SuccessAsync(
+                        string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
+                            ? H["Your content draft has been saved."]
+                            : H["Your {0} draft has been saved.", typeDefinition.DisplayName]
+                    );
+                }
+            );
         }
 
         [HttpPost, ActionName(nameof(Edit))]
@@ -449,16 +474,23 @@ namespace OrchardCore.Contents.Controllers
                 return Forbid();
             }
 
-            return await EditPOST(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
-            {
-                await _contentManager.PublishAsync(contentItem);
+            return await EditPOST(
+                contentItemId,
+                returnUrl,
+                stayOnSamePage,
+                async contentItem =>
+                {
+                    await _contentManager.PublishAsync(contentItem);
 
-                var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+                    var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
-                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
-                    ? H["Your content has been published."]
-                    : H["Your {0} has been published.", typeDefinition.DisplayName]);
-            });
+                    await _notifier.SuccessAsync(
+                        string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
+                            ? H["Your content has been published."]
+                            : H["Your {0} has been published.", typeDefinition.DisplayName]
+                    );
+                }
+            );
         }
 
         [HttpPost]
@@ -512,9 +544,9 @@ namespace OrchardCore.Contents.Controllers
 
                 var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
-                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
-                    ? H["The draft has been removed."]
-                    : H["The {0} draft has been removed.", typeDefinition.DisplayName]);
+                await _notifier.SuccessAsync(
+                    string.IsNullOrWhiteSpace(typeDefinition?.DisplayName) ? H["The draft has been removed."] : H["The {0} draft has been removed.", typeDefinition.DisplayName]
+                );
             }
 
             return Url.IsLocalUrl(returnUrl) ? (IActionResult)this.LocalRedirect(returnUrl, true) : RedirectToAction(nameof(List));
@@ -536,9 +568,9 @@ namespace OrchardCore.Contents.Controllers
 
                 var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
-                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
-                    ? H["That content has been removed."]
-                    : H["That {0} has been removed.", typeDefinition.DisplayName]);
+                await _notifier.SuccessAsync(
+                    string.IsNullOrWhiteSpace(typeDefinition?.DisplayName) ? H["That content has been removed."] : H["That {0} has been removed.", typeDefinition.DisplayName]
+                );
             }
 
             return Url.IsLocalUrl(returnUrl) ? (IActionResult)this.LocalRedirect(returnUrl, true) : RedirectToAction(nameof(List));
@@ -699,7 +731,11 @@ namespace OrchardCore.Contents.Controllers
             return options;
         }
 
-        private async Task<List<SelectListItem>> GetListableContentTypeOptionsAsync(IEnumerable<ContentTypeDefinition> definitions, string selectedContentType, bool showSelectAll = true)
+        private async Task<List<SelectListItem>> GetListableContentTypeOptionsAsync(
+            IEnumerable<ContentTypeDefinition> definitions,
+            string selectedContentType,
+            bool showSelectAll = true
+        )
         {
             var currentUserId = CurrentUserId();
 
@@ -708,12 +744,12 @@ namespace OrchardCore.Contents.Controllers
             if (showSelectAll)
             {
                 items.Add(new SelectListItem(S["All content types"], string.Empty));
-            };
+            }
+            ;
 
             foreach (var definition in definitions)
             {
-                if (!definition.IsListable()
-                    || !await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.ListContent, definition.Name, currentUserId))
+                if (!definition.IsListable() || !await _authorizationService.AuthorizeContentTypeAsync(User, CommonPermissions.ListContent, definition.Name, currentUserId))
                 {
                     continue;
                 }
@@ -734,13 +770,10 @@ namespace OrchardCore.Contents.Controllers
 
         private string _currentUserId;
 
-        private string CurrentUserId()
-            => _currentUserId ??= User.FindFirstValue(ClaimTypes.NameIdentifier);
+        private string CurrentUserId() => _currentUserId ??= User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        private async Task<bool> IsAuthorizedAsync(Permission permission)
-            => await _authorizationService.AuthorizeAsync(User, permission);
+        private async Task<bool> IsAuthorizedAsync(Permission permission) => await _authorizationService.AuthorizeAsync(User, permission);
 
-        private async Task<bool> IsAuthorizedAsync(Permission permission, object resource)
-            => await _authorizationService.AuthorizeAsync(User, permission, resource);
+        private async Task<bool> IsAuthorizedAsync(Permission permission, object resource) => await _authorizationService.AuthorizeAsync(User, permission, resource);
     }
 }

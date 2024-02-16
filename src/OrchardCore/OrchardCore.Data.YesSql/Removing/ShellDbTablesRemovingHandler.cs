@@ -26,7 +26,8 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
     public ShellDbTablesRemovingHandler(
         IShellContextFactory shellContextFactory,
         IStringLocalizer<ShellDbTablesRemovingHandler> localizer,
-        ILogger<ShellDbTablesRemovingHandler> logger)
+        ILogger<ShellDbTablesRemovingHandler> logger
+    )
     {
         _shellContextFactory = shellContextFactory;
         S = localizer;
@@ -146,12 +147,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
                 {
                     var type = migration.GetType().FullName;
 
-                    _logger.LogError(
-                        ex,
-                        "Failed to replay the migration '{MigrationType}' from version '{Version}' on tenant '{TenantName}'.",
-                        type,
-                        version,
-                        shellSettings.Name);
+                    _logger.LogError(ex, "Failed to replay the migration '{MigrationType}' from version '{Version}' on tenant '{TenantName}'.", type, version, shellSettings.Name);
 
                     // Replaying a migration may fail for the same reason that a setup or any migration failed.
                     // So the tenant removal is not interrupted, the already enlisted tables may be sufficient.

@@ -29,7 +29,11 @@ public class LiquidShapes(HtmlEncoder htmlEncoder) : ShapeTableProvider
         var model = shapeDisplayContext.Shape as FacebookPluginPartViewModel;
         var liquidTemplateManager = shapeDisplayContext.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
 
-        model.Html = await liquidTemplateManager.RenderStringAsync(model.FacebookPluginPart.Liquid, _htmlEncoder, shapeDisplayContext.DisplayContext.Value,
-            new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
+        model.Html = await liquidTemplateManager.RenderStringAsync(
+            model.FacebookPluginPart.Liquid,
+            _htmlEncoder,
+            shapeDisplayContext.DisplayContext.Value,
+            new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) }
+        );
     }
 }

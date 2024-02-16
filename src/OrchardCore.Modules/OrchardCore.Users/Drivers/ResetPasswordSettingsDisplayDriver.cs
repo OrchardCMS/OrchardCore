@@ -18,9 +18,7 @@ namespace OrchardCore.Users.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
-        public ResetPasswordSettingsDisplayDriver(
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+        public ResetPasswordSettingsDisplayDriver(IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService)
         {
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
@@ -35,11 +33,16 @@ namespace OrchardCore.Users.Drivers
                 return null;
             }
 
-            return Initialize<ResetPasswordSettings>("ResetPasswordSettings_Edit", model =>
-            {
-                model.AllowResetPassword = settings.AllowResetPassword;
-                model.UseSiteTheme = settings.UseSiteTheme;
-            }).Location("Content:5").OnGroup(GroupId);
+            return Initialize<ResetPasswordSettings>(
+                    "ResetPasswordSettings_Edit",
+                    model =>
+                    {
+                        model.AllowResetPassword = settings.AllowResetPassword;
+                        model.UseSiteTheme = settings.UseSiteTheme;
+                    }
+                )
+                .Location("Content:5")
+                .OnGroup(GroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ResetPasswordSettings section, BuildEditorContext context)

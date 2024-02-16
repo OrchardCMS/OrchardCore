@@ -32,7 +32,7 @@ namespace OrchardCore.Media.Core
             IEnumerable<IMediaEventHandler> mediaEventHandlers,
             IEnumerable<IMediaCreatingEventHandler> mediaCreatingEventHandlers,
             ILogger<DefaultMediaFileStore> logger
-            )
+        )
         {
             _fileStore = fileStore;
 
@@ -69,20 +69,13 @@ namespace OrchardCore.Media.Core
 
         public virtual async Task<bool> TryDeleteFileAsync(string path)
         {
-            var deletingContext = new MediaDeletingContext
-            {
-                Path = path
-            };
+            var deletingContext = new MediaDeletingContext { Path = path };
 
             await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaDeletingFileAsync(context), deletingContext, _logger);
 
             var result = await _fileStore.TryDeleteFileAsync(deletingContext.Path);
 
-            var deletedContext = new MediaDeletedContext
-            {
-                Path = path,
-                Result = result
-            };
+            var deletedContext = new MediaDeletedContext { Path = path, Result = result };
 
             await _mediaEventHandlers.InvokeAsync((handler, deletedContext) => handler.MediaDeletedFileAsync(deletedContext), deletedContext, _logger);
 
@@ -91,20 +84,13 @@ namespace OrchardCore.Media.Core
 
         public virtual async Task<bool> TryDeleteDirectoryAsync(string path)
         {
-            var deletingContext = new MediaDeletingContext
-            {
-                Path = path
-            };
+            var deletingContext = new MediaDeletingContext { Path = path };
 
             await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaDeletingDirectoryAsync(context), deletingContext, _logger);
 
             var result = await _fileStore.TryDeleteDirectoryAsync(path);
 
-            var deletedContext = new MediaDeletedContext
-            {
-                Path = path,
-                Result = result
-            };
+            var deletedContext = new MediaDeletedContext { Path = path, Result = result };
 
             await _mediaEventHandlers.InvokeAsync((handler, deletedContext) => handler.MediaDeletedDirectoryAsync(deletedContext), deletedContext, _logger);
 
@@ -113,11 +99,7 @@ namespace OrchardCore.Media.Core
 
         public virtual async Task MoveFileAsync(string oldPath, string newPath)
         {
-            var context = new MediaMoveContext
-            {
-                OldPath = oldPath,
-                NewPath = newPath
-            };
+            var context = new MediaMoveContext { OldPath = oldPath, NewPath = newPath };
 
             await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaMovingAsync(context), context, _logger);
 
@@ -150,10 +132,7 @@ namespace OrchardCore.Media.Core
                 var outputStream = inputStream;
                 try
                 {
-                    var context = new MediaCreatingContext
-                    {
-                        Path = path
-                    };
+                    var context = new MediaCreatingContext { Path = path };
 
                     foreach (var mediaCreatingEventHandler in _mediaCreatingEventHandlers)
                     {

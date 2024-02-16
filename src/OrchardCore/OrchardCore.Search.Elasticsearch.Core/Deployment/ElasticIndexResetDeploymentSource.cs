@@ -7,9 +7,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment
 {
     public class ElasticIndexResetDeploymentSource : IDeploymentSource
     {
-        public ElasticIndexResetDeploymentSource()
-        {
-        }
+        public ElasticIndexResetDeploymentSource() { }
 
         public Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
@@ -22,12 +20,14 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment
 
             var indicesToReset = elasticIndexResetStep.IncludeAll ? [] : elasticIndexResetStep.Indices;
 
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "lucene-index-reset",
-                ["includeAll"] = elasticIndexResetStep.IncludeAll,
-                ["Indices"] = JArray.FromObject(indicesToReset),
-            });
+            result.Steps.Add(
+                new JsonObject
+                {
+                    ["name"] = "lucene-index-reset",
+                    ["includeAll"] = elasticIndexResetStep.IncludeAll,
+                    ["Indices"] = JArray.FromObject(indicesToReset),
+                }
+            );
 
             return Task.CompletedTask;
         }

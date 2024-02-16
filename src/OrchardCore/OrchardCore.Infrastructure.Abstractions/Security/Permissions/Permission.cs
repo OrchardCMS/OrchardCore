@@ -15,13 +15,15 @@ namespace OrchardCore.Security.Permissions
             Name = name;
         }
 
-        public Permission(string name, string description, bool isSecurityCritical = false) : this(name)
+        public Permission(string name, string description, bool isSecurityCritical = false)
+            : this(name)
         {
             Description = description;
             IsSecurityCritical = isSecurityCritical;
         }
 
-        public Permission(string name, string description, IEnumerable<Permission> impliedBy, bool isSecurityCritical = false) : this(name, description, isSecurityCritical)
+        public Permission(string name, string description, IEnumerable<Permission> impliedBy, bool isSecurityCritical = false)
+            : this(name, description, isSecurityCritical)
         {
             ImpliedBy = impliedBy;
         }

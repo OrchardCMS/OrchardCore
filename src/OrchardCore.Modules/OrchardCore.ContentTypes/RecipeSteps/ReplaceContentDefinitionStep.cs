@@ -49,36 +49,45 @@ namespace OrchardCore.ContentTypes.RecipeSteps
 
         private async Task AlterContentTypeAsync(ContentTypeDefinitionRecord record)
         {
-            await _contentDefinitionManager.AlterTypeDefinitionAsync(record.Name, builder =>
-            {
-                if (!string.IsNullOrEmpty(record.DisplayName))
+            await _contentDefinitionManager.AlterTypeDefinitionAsync(
+                record.Name,
+                builder =>
                 {
-                    builder.DisplayedAs(record.DisplayName);
-                    builder.MergeSettings(record.Settings);
-                }
+                    if (!string.IsNullOrEmpty(record.DisplayName))
+                    {
+                        builder.DisplayedAs(record.DisplayName);
+                        builder.MergeSettings(record.Settings);
+                    }
 
-                foreach (var part in record.ContentTypePartDefinitionRecords)
-                {
-                    builder.WithPart(part.Name, part.PartName, partBuilder => partBuilder.MergeSettings(part.Settings));
+                    foreach (var part in record.ContentTypePartDefinitionRecords)
+                    {
+                        builder.WithPart(part.Name, part.PartName, partBuilder => partBuilder.MergeSettings(part.Settings));
+                    }
                 }
-            });
+            );
         }
 
         private async Task AlterContentPartAsync(ContentPartDefinitionRecord record)
         {
-            await _contentDefinitionManager.AlterPartDefinitionAsync(record.Name, builder =>
-            {
-                builder.MergeSettings(record.Settings);
-
-                foreach (var field in record.ContentPartFieldDefinitionRecords)
+            await _contentDefinitionManager.AlterPartDefinitionAsync(
+                record.Name,
+                builder =>
                 {
-                    builder.WithField(field.Name, fieldBuilder =>
+                    builder.MergeSettings(record.Settings);
+
+                    foreach (var field in record.ContentPartFieldDefinitionRecords)
                     {
-                        fieldBuilder.OfType(field.FieldName);
-                        fieldBuilder.MergeSettings(field.Settings);
-                    });
+                        builder.WithField(
+                            field.Name,
+                            fieldBuilder =>
+                            {
+                                fieldBuilder.OfType(field.FieldName);
+                                fieldBuilder.MergeSettings(field.Settings);
+                            }
+                        );
+                    }
                 }
-            });
+            );
         }
 
         private class ReplaceContentDefinitionStepModel

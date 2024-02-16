@@ -14,10 +14,7 @@ namespace OrchardCore.MiniProfiler
         private readonly IShapeFactory _shapeFactory;
         private readonly IAuthorizationService _authorizationService;
 
-        public MiniProfilerFilter(
-            ILayoutAccessor layoutAccessor,
-            IShapeFactory shapeFactory,
-            IAuthorizationService authorizationService)
+        public MiniProfilerFilter(ILayoutAccessor layoutAccessor, IShapeFactory shapeFactory, IAuthorizationService authorizationService)
         {
             _layoutAccessor = layoutAccessor;
             _shapeFactory = shapeFactory;
@@ -29,12 +26,9 @@ namespace OrchardCore.MiniProfiler
             var viewMiniProfilerOnFrontEnd = await _authorizationService.AuthorizeAsync(context.HttpContext.User, Permissions.ViewMiniProfilerOnFrontEnd);
             var viewMiniProfilerOnBackEnd = await _authorizationService.AuthorizeAsync(context.HttpContext.User, Permissions.ViewMiniProfilerOnBackEnd);
             if (
-                    context.IsViewOrPageResult() &&
-                    (
-                        (viewMiniProfilerOnFrontEnd && !AdminAttribute.IsApplied(context.HttpContext)) ||
-                        (viewMiniProfilerOnBackEnd && AdminAttribute.IsApplied(context.HttpContext))
-                    )
-                )
+                context.IsViewOrPageResult()
+                && ((viewMiniProfilerOnFrontEnd && !AdminAttribute.IsApplied(context.HttpContext)) || (viewMiniProfilerOnBackEnd && AdminAttribute.IsApplied(context.HttpContext)))
+            )
             {
                 var layout = await _layoutAccessor.GetLayoutAsync();
                 var footerZone = layout.Zones["Footer"];

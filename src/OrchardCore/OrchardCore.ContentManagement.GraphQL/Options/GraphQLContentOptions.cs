@@ -55,7 +55,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
             return this;
         }
 
-        public GraphQLContentOptions IgnoreField<TGraphType>(string fieldName) where TGraphType : IObjectGraphType
+        public GraphQLContentOptions IgnoreField<TGraphType>(string fieldName)
+            where TGraphType : IObjectGraphType
         {
             HiddenFields = HiddenFields.Union([new GraphQLField<TGraphType>(fieldName)]);
 
@@ -180,8 +181,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
         internal bool ShouldSkip(Type fieldType, string fieldName)
         {
-            return HiddenFields
-                .Any(x => x.FieldType == fieldType && x.FieldName.Equals(fieldName, StringComparison.OrdinalIgnoreCase));
+            return HiddenFields.Any(x => x.FieldType == fieldType && x.FieldName.Equals(fieldName, StringComparison.OrdinalIgnoreCase));
         }
 
         public bool IsHiddenByDefault(ContentTypePartDefinition definition)

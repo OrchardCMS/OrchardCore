@@ -26,11 +26,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment
             var elasticSettings = await _elasticIndexingService.GetElasticSettingsAsync();
 
             // Adding Elasticsearch settings
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "Settings",
-                ["ElasticSettings"] = JObject.FromObject(elasticSettings),
-            });
+            result.Steps.Add(new JsonObject { ["name"] = "Settings", ["ElasticSettings"] = JObject.FromObject(elasticSettings), });
         }
     }
 }

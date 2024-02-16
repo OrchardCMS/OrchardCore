@@ -25,7 +25,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
         [HtmlAttributeName(FormatAttribute)]
         public string Format { set; get; }
 
-        public async override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+        public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
             var shapeType = "DateTime";
             dynamic shape = await _shapeFactory.CreateAsync(shapeType);

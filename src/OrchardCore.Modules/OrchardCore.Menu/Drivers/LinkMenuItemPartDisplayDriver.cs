@@ -28,7 +28,7 @@ namespace OrchardCore.Menu.Drivers
             IStringLocalizer<LinkMenuItemPartDisplayDriver> localizer,
             IHtmlSanitizerService htmlSanitizerService,
             HtmlEncoder htmlencoder
-            )
+        )
         {
             _urlHelperFactory = urlHelperFactory;
             _actionContextAccessor = actionContextAccessor;
@@ -40,27 +40,36 @@ namespace OrchardCore.Menu.Drivers
         public override IDisplayResult Display(LinkMenuItemPart part, BuildPartDisplayContext context)
         {
             return Combine(
-                Dynamic("LinkMenuItemPart_Admin", shape =>
-                {
-                    shape.MenuItemPart = part;
-                })
-                .Location("Admin", "Content:10"),
-                Dynamic("LinkMenuItemPart_Thumbnail", shape =>
-                {
-                    shape.MenuItemPart = part;
-                })
-                .Location("Thumbnail", "Content:10")
+                Dynamic(
+                        "LinkMenuItemPart_Admin",
+                        shape =>
+                        {
+                            shape.MenuItemPart = part;
+                        }
+                    )
+                    .Location("Admin", "Content:10"),
+                Dynamic(
+                        "LinkMenuItemPart_Thumbnail",
+                        shape =>
+                        {
+                            shape.MenuItemPart = part;
+                        }
+                    )
+                    .Location("Thumbnail", "Content:10")
             );
         }
 
         public override IDisplayResult Edit(LinkMenuItemPart part)
         {
-            return Initialize<LinkMenuItemPartEditViewModel>("LinkMenuItemPart_Edit", model =>
-            {
-                model.Name = part.ContentItem.DisplayText;
-                model.Url = part.Url;
-                model.MenuItemPart = part;
-            });
+            return Initialize<LinkMenuItemPartEditViewModel>(
+                "LinkMenuItemPart_Edit",
+                model =>
+                {
+                    model.Name = part.ContentItem.DisplayText;
+                    model.Url = part.Url;
+                    model.MenuItemPart = part;
+                }
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(LinkMenuItemPart part, IUpdateModel updater)

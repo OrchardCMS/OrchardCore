@@ -1,6 +1,4 @@
 namespace OrchardCore.Rules
 {
-    public class Rule : ConditionGroup
-    {
-    }
+    public class Rule : ConditionGroup { }
 }

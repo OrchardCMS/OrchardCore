@@ -31,7 +31,7 @@ namespace OrchardCore.Cors.Controllers
             CorsService corsService,
             INotifier notifier,
             IHtmlLocalizer<AdminController> htmlLocalizer
-            )
+        )
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
@@ -74,10 +74,7 @@ namespace OrchardCore.Cors.Controllers
                 }
             }
 
-            var viewModel = new CorsSettingsViewModel
-            {
-                Policies = list.ToArray()
-            };
+            var viewModel = new CorsSettingsViewModel { Policies = list.ToArray() };
 
             return View(viewModel);
         }
@@ -99,25 +96,23 @@ namespace OrchardCore.Cors.Controllers
 
             foreach (var settingViewModel in model.Policies)
             {
-                corsPolicies.Add(new CorsPolicySetting
-                {
-                    Name = settingViewModel.Name,
-                    AllowAnyHeader = settingViewModel.AllowAnyHeader,
-                    AllowAnyMethod = settingViewModel.AllowAnyMethod,
-                    AllowAnyOrigin = settingViewModel.AllowAnyOrigin,
-                    AllowCredentials = settingViewModel.AllowCredentials,
-                    AllowedHeaders = settingViewModel.AllowedHeaders,
-                    AllowedMethods = settingViewModel.AllowedMethods,
-                    AllowedOrigins = settingViewModel.AllowedOrigins,
-                    IsDefaultPolicy = settingViewModel.IsDefaultPolicy
-
-                });
+                corsPolicies.Add(
+                    new CorsPolicySetting
+                    {
+                        Name = settingViewModel.Name,
+                        AllowAnyHeader = settingViewModel.AllowAnyHeader,
+                        AllowAnyMethod = settingViewModel.AllowAnyMethod,
+                        AllowAnyOrigin = settingViewModel.AllowAnyOrigin,
+                        AllowCredentials = settingViewModel.AllowCredentials,
+                        AllowedHeaders = settingViewModel.AllowedHeaders,
+                        AllowedMethods = settingViewModel.AllowedMethods,
+                        AllowedOrigins = settingViewModel.AllowedOrigins,
+                        IsDefaultPolicy = settingViewModel.IsDefaultPolicy
+                    }
+                );
             }
 
-            var corsSettings = new CorsSettings()
-            {
-                Policies = corsPolicies
-            };
+            var corsSettings = new CorsSettings() { Policies = corsPolicies };
 
             await _corsService.UpdateSettingsAsync(corsSettings);
 

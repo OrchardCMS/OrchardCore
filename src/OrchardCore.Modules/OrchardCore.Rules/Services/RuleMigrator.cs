@@ -20,7 +20,7 @@ namespace OrchardCore.Rules.Services
             var factories = _factories.ToDictionary(x => x.Name);
 
             // Migrates well-known rules to well-known conditions.
-            // A javascript condition is automatically created for less well-known rules. 
+            // A javascript condition is automatically created for less well-known rules.
             switch (existingRule)
             {
                 case "true":

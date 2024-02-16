@@ -8,12 +8,14 @@ namespace OrchardCore.Mvc.FileProviders
 {
     public static class FileProviderExtensions
     {
-        public static IEnumerable<string> GetViewFilePaths(this IFileProvider fileProvider,
+        public static IEnumerable<string> GetViewFilePaths(
+            this IFileProvider fileProvider,
             string subPath,
             string[] extensions,
             string viewsFolder = null,
             bool inViewsFolder = false,
-            bool inDepth = true)
+            bool inDepth = true
+        )
         {
             var contents = fileProvider.GetDirectoryContents(subPath);
 

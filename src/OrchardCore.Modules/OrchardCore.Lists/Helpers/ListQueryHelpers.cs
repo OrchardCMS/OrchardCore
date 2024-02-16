@@ -13,18 +13,24 @@ namespace OrchardCore.Lists.Helpers
     {
         internal static Task<int> QueryListItemsCountAsync(ISession session, string listContentItemId, Expression<Func<ContentItemIndex, bool>> itemPredicate = null)
         {
-            return session.Query<ContentItem>()
-                    .With<ContainedPartIndex>(x => x.ListContentItemId == listContentItemId)
-                    .With<ContentItemIndex>(itemPredicate ?? (x => x.Published))
-                    .CountAsync();
+            return session
+                .Query<ContentItem>()
+                .With<ContainedPartIndex>(x => x.ListContentItemId == listContentItemId)
+                .With<ContentItemIndex>(itemPredicate ?? (x => x.Published))
+                .CountAsync();
         }
 
-        internal static Task<IEnumerable<ContentItem>> QueryListItemsAsync(ISession session, string listContentItemId, Expression<Func<ContentItemIndex, bool>> itemPredicate = null)
+        internal static Task<IEnumerable<ContentItem>> QueryListItemsAsync(
+            ISession session,
+            string listContentItemId,
+            Expression<Func<ContentItemIndex, bool>> itemPredicate = null
+        )
         {
-            return session.Query<ContentItem>()
-                    .With<ContainedPartIndex>(x => x.ListContentItemId == listContentItemId)
-                    .With<ContentItemIndex>(itemPredicate ?? (x => x.Published))
-                    .ListAsync();
+            return session
+                .Query<ContentItem>()
+                .With<ContainedPartIndex>(x => x.ListContentItemId == listContentItemId)
+                .With<ContentItemIndex>(itemPredicate ?? (x => x.Published))
+                .ListAsync();
         }
     }
 }

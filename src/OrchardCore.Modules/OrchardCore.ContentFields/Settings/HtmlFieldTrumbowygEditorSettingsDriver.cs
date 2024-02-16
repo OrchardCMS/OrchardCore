@@ -20,14 +20,17 @@ namespace OrchardCore.ContentFields.Settings
 
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<TrumbowygSettingsViewModel>("HtmlFieldTrumbowygEditorSettings_Edit", model =>
-            {
-                var settings = partFieldDefinition.GetSettings<HtmlFieldTrumbowygEditorSettings>();
+            return Initialize<TrumbowygSettingsViewModel>(
+                    "HtmlFieldTrumbowygEditorSettings_Edit",
+                    model =>
+                    {
+                        var settings = partFieldDefinition.GetSettings<HtmlFieldTrumbowygEditorSettings>();
 
-                model.Options = settings.Options;
-                model.InsertMediaWithUrl = settings.InsertMediaWithUrl;
-            })
-            .Location("Editor");
+                        model.Options = settings.Options;
+                        model.InsertMediaWithUrl = settings.InsertMediaWithUrl;
+                    }
+                )
+                .Location("Editor");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

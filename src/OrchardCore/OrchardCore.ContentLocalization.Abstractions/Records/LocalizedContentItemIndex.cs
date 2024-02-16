@@ -54,7 +54,7 @@ namespace OrchardCore.ContentLocalization.Records
             var part = context.ContentItem.As<LocalizationPart>();
 
             // Validate that the content definition contains this part, this prevents indexing parts
-            // that have been removed from the type definition, but are still present in the elements.            
+            // that have been removed from the type definition, but are still present in the elements.
             if (part != null)
             {
                 // Lazy initialization because of ISession cyclic dependency.
@@ -71,12 +71,15 @@ namespace OrchardCore.ContentLocalization.Records
         }
 
         public string CollectionName { get; set; }
+
         public Type ForType() => typeof(ContentItem);
+
         public void Describe(IDescriptor context) => Describe((DescribeContext<ContentItem>)context);
 
         public void Describe(DescribeContext<ContentItem> context)
         {
-            context.For<LocalizedContentItemIndex>()
+            context
+                .For<LocalizedContentItemIndex>()
                 .When(contentItem => contentItem.Has<LocalizationPart>() || _partRemoved.Contains(contentItem.ContentItemId))
                 .Map(contentItem =>
                 {

@@ -12,9 +12,7 @@ namespace OrchardCore.Contents.Deployment.Download
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
-        public DownloadContentDriver(
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+        public DownloadContentDriver(IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService)
         {
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
@@ -24,18 +22,19 @@ namespace OrchardCore.Contents.Deployment.Download
         {
             var context = _httpContextAccessor.HttpContext;
 
-            return Shape("Download_SummaryAdmin__Button__Actions", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "ActionsMenu:20")
-                    .RenderWhen(async () =>
+            return Shape("Download_SummaryAdmin__Button__Actions", new ContentItemViewModel(contentItem))
+                .Location("SummaryAdmin", "ActionsMenu:20")
+                .RenderWhen(async () =>
+                {
+                    var hasEditPermission = await _authorizationService.AuthorizeAsync(context.User, OrchardCore.Deployment.CommonPermissions.Export, contentItem);
+
+                    if (hasEditPermission)
                     {
-                        var hasEditPermission = await _authorizationService.AuthorizeAsync(context.User, OrchardCore.Deployment.CommonPermissions.Export, contentItem);
+                        return true;
+                    }
 
-                        if (hasEditPermission)
-                        {
-                            return true;
-                        }
-
-                        return false;
-                    });
+                    return false;
+                });
         }
     }
 }

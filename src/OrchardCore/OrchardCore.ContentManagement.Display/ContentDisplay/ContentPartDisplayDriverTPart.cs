@@ -14,7 +14,8 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
     /// Any concrete implementation of this class can provide shapes for any content item which has a specific Part.
     /// </summary>
     /// <typeparam name="TPart"></typeparam>
-    public abstract class ContentPartDisplayDriver<TPart> : DisplayDriverBase, IContentPartDisplayDriver where TPart : ContentPart, new()
+    public abstract class ContentPartDisplayDriver<TPart> : DisplayDriverBase, IContentPartDisplayDriver
+        where TPart : ContentPart, new()
     {
         private const string DisplayToken = "_Display";
         private const string DisplaySeparator = "_Display__";
@@ -295,9 +296,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         protected string GetEditorShapeType(string shapeType, ContentTypePartDefinition typePartDefinition)
         {
             var editor = typePartDefinition.Editor();
-            return !string.IsNullOrEmpty(editor)
-                ? shapeType + "__" + editor
-                : shapeType;
+            return !string.IsNullOrEmpty(editor) ? shapeType + "__" + editor : shapeType;
         }
 
         protected string GetEditorShapeType(string shapeType, BuildPartEditorContext context)
@@ -318,9 +317,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         protected string GetDisplayShapeType(string shapeType, BuildPartDisplayContext context)
         {
             var displayMode = context.TypePartDefinition.DisplayMode();
-            return !string.IsNullOrEmpty(displayMode)
-                ? shapeType + DisplaySeparator + displayMode
-                : shapeType;
+            return !string.IsNullOrEmpty(displayMode) ? shapeType + DisplaySeparator + displayMode : shapeType;
         }
 
         protected string GetDisplayShapeType(BuildPartDisplayContext context)

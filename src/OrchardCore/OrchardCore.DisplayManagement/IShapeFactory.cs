@@ -14,11 +14,7 @@ namespace OrchardCore.DisplayManagement
     /// </summary>
     public interface IShapeFactory
     {
-        ValueTask<IShape> CreateAsync(
-            string shapeType,
-            Func<ValueTask<IShape>> shapeFactory,
-            Action<ShapeCreatingContext> creating,
-            Action<ShapeCreatedContext> created);
+        ValueTask<IShape> CreateAsync(string shapeType, Func<ValueTask<IShape>> shapeFactory, Action<ShapeCreatingContext> creating, Action<ShapeCreatedContext> created);
 
         dynamic New { get; }
     }
@@ -107,12 +103,15 @@ namespace OrchardCore.DisplayManagement
         /// <returns></returns>
         public static ValueTask<IShape> CreateAsync<TModel>(this IShapeFactory factory, string shapeType, Action<TModel> initialize)
         {
-            return factory.CreateAsync(shapeType, () =>
-            {
-                var shape = CreateShape(typeof(TModel));
-                initialize((TModel)shape);
-                return new ValueTask<IShape>(shape);
-            });
+            return factory.CreateAsync(
+                shapeType,
+                () =>
+                {
+                    var shape = CreateShape(typeof(TModel));
+                    initialize((TModel)shape);
+                    return new ValueTask<IShape>(shape);
+                }
+            );
         }
 
         public static ValueTask<IShape> CreateAsync<T>(this IShapeFactory factory, string shapeType, INamedEnumerable<T> parameters)
@@ -122,32 +121,37 @@ namespace OrchardCore.DisplayManagement
                 return factory.CreateAsync(shapeType);
             }
 
-            return factory.CreateAsync(shapeType, _newShape, null, createdContext =>
-            {
-                var shape = (Shape)createdContext.Shape;
-
-                // If only one non-Type, use it as the source object to copy
-
-                var initializer = parameters.Positional.SingleOrDefault();
-
-                if (initializer != null)
+            return factory.CreateAsync(
+                shapeType,
+                _newShape,
+                null,
+                createdContext =>
                 {
-                    // Use the Arguments class to optimize reflection code
-                    var arguments = Arguments.From(initializer);
+                    var shape = (Shape)createdContext.Shape;
 
-                    foreach (var prop in arguments.Named)
+                    // If only one non-Type, use it as the source object to copy
+
+                    var initializer = parameters.Positional.SingleOrDefault();
+
+                    if (initializer != null)
                     {
-                        shape.Properties[prop.Key] = prop.Value;
+                        // Use the Arguments class to optimize reflection code
+                        var arguments = Arguments.From(initializer);
+
+                        foreach (var prop in arguments.Named)
+                        {
+                            shape.Properties[prop.Key] = prop.Value;
+                        }
+                    }
+                    else
+                    {
+                        foreach (var kv in parameters.Named)
+                        {
+                            shape.Properties[kv.Key] = kv.Value;
+                        }
                     }
                 }
-                else
-                {
-                    foreach (var kv in parameters.Named)
-                    {
-                        shape.Properties[kv.Key] = kv.Value;
-                    }
-                }
-            });
+            );
         }
     }
 }

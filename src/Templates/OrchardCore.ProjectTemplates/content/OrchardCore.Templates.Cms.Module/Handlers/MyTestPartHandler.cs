@@ -1,5 +1,5 @@
-﻿using OrchardCore.ContentManagement.Handlers;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Templates.Cms.Module.Models;
 
 namespace OrchardCore.Templates.Cms.Module.Handlers

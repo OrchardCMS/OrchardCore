@@ -23,16 +23,19 @@ namespace OrchardCore.Html.Settings
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            return Initialize<MonacoSettingsViewModel>("HtmlBodyPartMonacoSettings_Edit", model =>
-            {
-                var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartMonacoEditorSettings>();
-                if (string.IsNullOrWhiteSpace(settings.Options))
-                {
-                    settings.Options = JConvert.SerializeObject(new { automaticLayout = true, language = "html" }, JOptions.Indented);
-                }
-                model.Options = settings.Options;
-            })
-            .Location("Editor");
+            return Initialize<MonacoSettingsViewModel>(
+                    "HtmlBodyPartMonacoSettings_Edit",
+                    model =>
+                    {
+                        var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartMonacoEditorSettings>();
+                        if (string.IsNullOrWhiteSpace(settings.Options))
+                        {
+                            settings.Options = JConvert.SerializeObject(new { automaticLayout = true, language = "html" }, JOptions.Indented);
+                        }
+                        model.Options = settings.Options;
+                    }
+                )
+                .Location("Editor");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

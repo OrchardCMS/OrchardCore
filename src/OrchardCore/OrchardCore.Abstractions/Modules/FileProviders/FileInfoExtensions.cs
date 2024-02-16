@@ -7,8 +7,7 @@ namespace OrchardCore.Modules.FileProviders
 {
     public static class FileInfoExtensions
     {
-        public static IEnumerable<string> ReadAllLines(this IFileInfo fileInfo)
-            => ReadAllLinesAsync(fileInfo).GetAwaiter().GetResult();
+        public static IEnumerable<string> ReadAllLines(this IFileInfo fileInfo) => ReadAllLinesAsync(fileInfo).GetAwaiter().GetResult();
 
         public static async Task<IEnumerable<string>> ReadAllLinesAsync(this IFileInfo fileInfo)
         {

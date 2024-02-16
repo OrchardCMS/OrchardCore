@@ -48,16 +48,9 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
         IOptions<IdentityOptions> identityOptions,
         ITwoFactorAuthenticationHandlerCoordinator twoFactorHandlerCoordinator,
         IShapeFactory shapeFactory,
-        IDisplayManager<TwoFactorMethod> twoFactorDisplayManager)
-        : base(userManager,
-            distributedCache,
-            signInManager,
-            twoFactorHandlerCoordinator,
-            notifier,
-            siteService,
-            htmlLocalizer,
-            stringLocalizer,
-            twoFactorOptions)
+        IDisplayManager<TwoFactorMethod> twoFactorDisplayManager
+    )
+        : base(userManager, distributedCache, signInManager, twoFactorHandlerCoordinator, notifier, siteService, htmlLocalizer, stringLocalizer, twoFactorOptions)
     {
         _logger = logger;
         _accountEvents = accountEvents;
@@ -168,10 +161,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
             return RedirectToAccountLogin();
         }
 
-        return View(new LoginWithRecoveryCodeViewModel()
-        {
-            ReturnUrl = returnUrl,
-        });
+        return View(new LoginWithRecoveryCodeViewModel() { ReturnUrl = returnUrl, });
     }
 
     [HttpPost, AllowAnonymous]
@@ -251,10 +241,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
         {
             if (user is User u && providers.Contains(model.PreferredProvider))
             {
-                u.Put(new TwoFactorPreference()
-                {
-                    DefaultProvider = model.PreferredProvider
-                });
+                u.Put(new TwoFactorPreference() { DefaultProvider = model.PreferredProvider });
 
                 await UserManager.UpdateAsync(u);
 
@@ -349,10 +336,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
             return RedirectToAction(nameof(Index));
         }
 
-        return View(new ShowRecoveryCodesViewModel()
-        {
-            RecoveryCodes = recoveryCodes,
-        });
+        return View(new ShowRecoveryCodesViewModel() { RecoveryCodes = recoveryCodes, });
     }
 
     [Admin, HttpPost]
@@ -489,11 +473,7 @@ public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseCont
 
         foreach (var key in TwoFactorOptions.Providers)
         {
-            var method = new TwoFactorMethod()
-            {
-                Provider = key,
-                IsEnabled = providers.Contains(key),
-            };
+            var method = new TwoFactorMethod() { Provider = key, IsEnabled = providers.Contains(key), };
 
             var shape = await _twoFactorDisplayManager.BuildDisplayAsync(method, this, "SummaryAdmin");
 

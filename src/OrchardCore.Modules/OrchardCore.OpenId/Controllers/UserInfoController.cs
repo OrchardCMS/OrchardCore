@@ -49,12 +49,16 @@ namespace OrchardCore.OpenId.Controllers
             var type = principal.FindFirst(OpenIdConstants.Claims.EntityType)?.Value;
             if (!string.Equals(type, OpenIdConstants.EntityTypes.User))
             {
-                return Forbid(new AuthenticationProperties(new Dictionary<string, string>
-                {
-                    [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidRequest,
-                    [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                        "The userinfo endpoint can only be used with access tokens representing users."
-                }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+                return Forbid(
+                    new AuthenticationProperties(
+                        new Dictionary<string, string>
+                        {
+                            [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidRequest,
+                            [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The userinfo endpoint can only be used with access tokens representing users."
+                        }
+                    ),
+                    OpenIddictServerAspNetCoreDefaults.AuthenticationScheme
+                );
             }
 
             var claims = new Dictionary<string, object>();
@@ -125,10 +129,11 @@ namespace OrchardCore.OpenId.Controllers
 
             if (principal.HasScope(Scopes.Phone))
             {
-                var phone = principal.FindFirst(Claims.PhoneNumber)?.Value ??
-                            principal.FindFirst(ClaimTypes.MobilePhone)?.Value ??
-                            principal.FindFirst(ClaimTypes.HomePhone)?.Value ??
-                            principal.FindFirst(ClaimTypes.OtherPhone)?.Value;
+                var phone =
+                    principal.FindFirst(Claims.PhoneNumber)?.Value
+                    ?? principal.FindFirst(ClaimTypes.MobilePhone)?.Value
+                    ?? principal.FindFirst(ClaimTypes.HomePhone)?.Value
+                    ?? principal.FindFirst(ClaimTypes.OtherPhone)?.Value;
 
                 if (!string.IsNullOrEmpty(phone))
                 {
@@ -144,10 +149,7 @@ namespace OrchardCore.OpenId.Controllers
 
             if (principal.HasScope(Scopes.Roles))
             {
-                var roles = principal.FindAll(Claims.Role)
-                                     .Concat(principal.FindAll(ClaimTypes.Role))
-                                     .Select(claim => claim.Value)
-                                     .ToArray();
+                var roles = principal.FindAll(Claims.Role).Concat(principal.FindAll(ClaimTypes.Role)).Select(claim => claim.Value).ToArray();
 
                 if (roles.Length != 0)
                 {

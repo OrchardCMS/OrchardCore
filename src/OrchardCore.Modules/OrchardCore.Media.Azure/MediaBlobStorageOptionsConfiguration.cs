@@ -17,11 +17,7 @@ namespace OrchardCore.Media.Azure
         // Local instance since it can be discarded once the startup is over
         private readonly FluidParser _fluidParser = new();
 
-        public MediaBlobStorageOptionsConfiguration(
-            IShellConfiguration shellConfiguration,
-            ShellSettings shellSettings,
-            ILogger<MediaBlobStorageOptionsConfiguration> logger
-            )
+        public MediaBlobStorageOptionsConfiguration(IShellConfiguration shellConfiguration, ShellSettings shellSettings, ILogger<MediaBlobStorageOptionsConfiguration> logger)
         {
             _shellConfiguration = shellConfiguration;
             _shellSettings = shellSettings;

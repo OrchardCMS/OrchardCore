@@ -26,7 +26,8 @@ public class LuceneSearchService : ISearchService
         LuceneAnalyzerManager luceneAnalyzerManager,
         LuceneIndexSettingsService luceneIndexSettingsService,
         ILuceneSearchQueryService luceneSearchQueryService,
-        ILogger<LuceneSearchService> logger)
+        ILogger<LuceneSearchService> logger
+    )
     {
         _siteService = siteService;
         _luceneIndexManager = luceneIndexManager;

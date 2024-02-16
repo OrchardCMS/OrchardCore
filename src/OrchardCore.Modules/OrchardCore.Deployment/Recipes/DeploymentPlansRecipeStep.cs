@@ -17,9 +17,7 @@ namespace OrchardCore.Deployment.Recipes
         private readonly IServiceProvider _serviceProvider;
         private readonly IDeploymentPlanService _deploymentPlanService;
 
-        public DeploymentPlansRecipeStep(
-            IServiceProvider serviceProvider,
-            IDeploymentPlanService deploymentPlanService)
+        public DeploymentPlansRecipeStep(IServiceProvider serviceProvider, IDeploymentPlanService deploymentPlanService)
         {
             _serviceProvider = serviceProvider;
             _deploymentPlanService = deploymentPlanService;
@@ -41,10 +39,7 @@ namespace OrchardCore.Deployment.Recipes
 
             foreach (var plan in model.Plans)
             {
-                var deploymentPlan = new DeploymentPlan
-                {
-                    Name = plan.Name
-                };
+                var deploymentPlan = new DeploymentPlan { Name = plan.Name };
 
                 foreach (var step in plan.Steps)
                 {

@@ -10,16 +10,16 @@ using OrchardCore.OpenId.Abstractions.Stores;
 
 namespace OrchardCore.OpenId.Services.Managers
 {
-    public class OpenIdTokenManager<TToken> : OpenIddictTokenManager<TToken>, IOpenIdTokenManager where TToken : class
+    public class OpenIdTokenManager<TToken> : OpenIddictTokenManager<TToken>, IOpenIdTokenManager
+        where TToken : class
     {
         public OpenIdTokenManager(
             IOpenIddictTokenCache<TToken> cache,
             ILogger<OpenIddictTokenManager<TToken>> logger,
             IOptionsMonitor<OpenIddictCoreOptions> options,
-            IOpenIddictTokenStoreResolver resolver)
-            : base(cache, logger, options, resolver)
-        {
-        }
+            IOpenIddictTokenStoreResolver resolver
+        )
+            : base(cache, logger, options, resolver) { }
 
         /// <summary>
         /// Retrieves a token using its physical identifier.
@@ -37,9 +37,7 @@ namespace OrchardCore.OpenId.Services.Managers
                 throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
             }
 
-            return Store is IOpenIdTokenStore<TToken> store ?
-                store.FindByPhysicalIdAsync(identifier, cancellationToken) :
-                Store.FindByIdAsync(identifier, cancellationToken);
+            return Store is IOpenIdTokenStore<TToken> store ? store.FindByPhysicalIdAsync(identifier, cancellationToken) : Store.FindByIdAsync(identifier, cancellationToken);
         }
 
         /// <summary>
@@ -55,15 +53,12 @@ namespace OrchardCore.OpenId.Services.Managers
         {
             ArgumentNullException.ThrowIfNull(token);
 
-            return Store is IOpenIdTokenStore<TToken> store ?
-                store.GetPhysicalIdAsync(token, cancellationToken) :
-                Store.GetIdAsync(token, cancellationToken);
+            return Store is IOpenIdTokenStore<TToken> store ? store.GetPhysicalIdAsync(token, cancellationToken) : Store.GetIdAsync(token, cancellationToken);
         }
 
-        async ValueTask<object> IOpenIdTokenManager.FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
-            => await FindByPhysicalIdAsync(identifier, cancellationToken);
+        async ValueTask<object> IOpenIdTokenManager.FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken) =>
+            await FindByPhysicalIdAsync(identifier, cancellationToken);
 
-        ValueTask<string> IOpenIdTokenManager.GetPhysicalIdAsync(object token, CancellationToken cancellationToken)
-            => GetPhysicalIdAsync((TToken)token, cancellationToken);
+        ValueTask<string> IOpenIdTokenManager.GetPhysicalIdAsync(object token, CancellationToken cancellationToken) => GetPhysicalIdAsync((TToken)token, cancellationToken);
     }
 }

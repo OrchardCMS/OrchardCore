@@ -18,7 +18,8 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
         public MaxNumberOfResultsValidationRule(
             IOptions<GraphQLSettings> options,
             IStringLocalizer<MaxNumberOfResultsValidationRule> localizer,
-            ILogger<MaxNumberOfResultsValidationRule> logger)
+            ILogger<MaxNumberOfResultsValidationRule> logger
+        )
         {
             var settings = options.Value;
             _maxNumberOfResults = settings.MaxNumberOfResults;
@@ -29,48 +30,50 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
 
         public ValueTask<INodeVisitor> ValidateAsync(ValidationContext validationContext)
         {
-            return ValueTask.FromResult((INodeVisitor)new NodeVisitors(
-            new MatchingNodeVisitor<GraphQLArgument>((arg, visitorContext) =>
-            {
-                if ((arg.Name == "first" || arg.Name == "last") && arg.Value != null)
-                {
-                    var context = (GraphQLUserContext)validationContext.UserContext;
+            return ValueTask.FromResult(
+                (INodeVisitor)
+                    new NodeVisitors(
+                        new MatchingNodeVisitor<GraphQLArgument>(
+                            (arg, visitorContext) =>
+                            {
+                                if ((arg.Name == "first" || arg.Name == "last") && arg.Value != null)
+                                {
+                                    var context = (GraphQLUserContext)validationContext.UserContext;
 
-                    int? value = null;
+                                    int? value = null;
 
-                    if (arg.Value is GraphQLIntValue)
-                    {
-                        value = int.Parse((arg.Value as GraphQLIntValue).Value);
-                    }
-                    else
-                    {
-                        if (validationContext.Variables.TryGetValue(arg.Value.ToString(), out var input))
-                        {
-                            value = (int?)input;
-                        }
-                    }
+                                    if (arg.Value is GraphQLIntValue)
+                                    {
+                                        value = int.Parse((arg.Value as GraphQLIntValue).Value);
+                                    }
+                                    else
+                                    {
+                                        if (validationContext.Variables.TryGetValue(arg.Value.ToString(), out var input))
+                                        {
+                                            value = (int?)input;
+                                        }
+                                    }
 
-                    if (value.HasValue && value > _maxNumberOfResults)
-                    {
-                        var errorMessage = S["'{0}' exceeds the maximum number of results for '{1}' ({2})", value.Value, arg.Name, _maxNumberOfResults];
+                                    if (value.HasValue && value > _maxNumberOfResults)
+                                    {
+                                        var errorMessage = S["'{0}' exceeds the maximum number of results for '{1}' ({2})", value.Value, arg.Name, _maxNumberOfResults];
 
-                        if (_maxNumberOfResultsValidationMode == MaxNumberOfResultsValidationMode.Enabled)
-                        {
-                            validationContext.ReportError(new ValidationError(
-                                validationContext.Document.Source,
-                                "ArgumentInputError",
-                                errorMessage,
-                                arg));
-                        }
-                        else
-                        {
-                            _logger.LogInformation(errorMessage);
+                                        if (_maxNumberOfResultsValidationMode == MaxNumberOfResultsValidationMode.Enabled)
+                                        {
+                                            validationContext.ReportError(new ValidationError(validationContext.Document.Source, "ArgumentInputError", errorMessage, arg));
+                                        }
+                                        else
+                                        {
+                                            _logger.LogInformation(errorMessage);
 
-                            arg = new GraphQLArgument(arg.Name, new GraphQLIntValue(_maxNumberOfResults)); // if disabled mode we just log info and override the arg to be maxvalue
-                        }
-                    }
-                }
-            })));
+                                            arg = new GraphQLArgument(arg.Name, new GraphQLIntValue(_maxNumberOfResults)); // if disabled mode we just log info and override the arg to be maxvalue
+                                        }
+                                    }
+                                }
+                            }
+                        )
+                    )
+            );
         }
     }
 }

@@ -35,9 +35,8 @@ namespace OrchardCore.Localization.DataAnnotations
                     var displayName = context.Attributes.OfType<DisplayAttribute>().FirstOrDefault()?.Name;
                     // Use DisplayName if present
                     var argument = displayName ?? context.Key.Name;
-                    var errorMessageString = attribute.ErrorMessage == null && attribute.ErrorMessageResourceName == null
-                        ? attribute.FormatErrorMessage(argument)
-                        : attribute.ErrorMessage;
+                    var errorMessageString =
+                        attribute.ErrorMessage == null && attribute.ErrorMessageResourceName == null ? attribute.FormatErrorMessage(argument) : attribute.ErrorMessage;
 
                     // Localize the parameterized error message
                     var localizedString = _stringLocalizer[errorMessageString];

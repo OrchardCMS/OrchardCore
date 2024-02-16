@@ -11,17 +11,18 @@ namespace OrchardCore.Templates.Deployment
     {
         public override IDisplayResult Display(AllAdminTemplatesDeploymentStep step)
         {
-            return
-                Combine(
-                    View("AllAdminTemplatesDeploymentStep_Summary", step).Location("Summary", "Content"),
-                    View("AllAdminTemplatesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
-                );
+            return Combine(
+                View("AllAdminTemplatesDeploymentStep_Summary", step).Location("Summary", "Content"),
+                View("AllAdminTemplatesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(AllAdminTemplatesDeploymentStep step)
         {
-            return Initialize<AllAdminTemplatesDeploymentStepViewModel>("AllAdminTemplatesDeploymentStep_Fields_Edit", model => model.ExportAsFiles = step.ExportAsFiles).Location("Content");
+            return Initialize<AllAdminTemplatesDeploymentStepViewModel>("AllAdminTemplatesDeploymentStep_Fields_Edit", model => model.ExportAsFiles = step.ExportAsFiles)
+                .Location("Content");
         }
+
         public override async Task<IDisplayResult> UpdateAsync(AllAdminTemplatesDeploymentStep step, IUpdateModel updater)
         {
             await updater.TryUpdateModelAsync(step, Prefix, x => x.ExportAsFiles);

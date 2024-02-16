@@ -14,11 +14,8 @@ namespace OrchardCore.ContentManagement
         /// <summary>
         /// These settings instruct merge to replace current value, even for null values.
         /// </summary>
-        private static readonly JsonMergeSettings _jsonMergeSettings = new()
-        {
-            MergeArrayHandling = MergeArrayHandling.Replace,
-            MergeNullValueHandling = MergeNullValueHandling.Merge
-        };
+        private static readonly JsonMergeSettings _jsonMergeSettings =
+            new() { MergeArrayHandling = MergeArrayHandling.Replace, MergeNullValueHandling = MergeNullValueHandling.Merge };
 
         /// <summary>
         /// Gets a content element by its name.
@@ -27,7 +24,8 @@ namespace OrchardCore.ContentManagement
         /// <param name="name">The name of the content element.</param>
         /// <typeparam name="TElement">The expected type of the content element.</typeparam>
         /// <returns>The content element instance or. <code>null</code> if it doesn't exist.</returns>
-        public static TElement Get<TElement>(this ContentElement contentElement, string name) where TElement : ContentElement
+        public static TElement Get<TElement>(this ContentElement contentElement, string name)
+            where TElement : ContentElement
         {
             var result = contentElement.Get(typeof(TElement), name);
 
@@ -49,7 +47,8 @@ namespace OrchardCore.ContentManagement
         /// </summary>
         /// <param name="contentElement">The <see cref="ContentElement"/>.</param>
         /// <typeparam name="TElement">The expected type of the content element.</typeparam>
-        public static bool Has<TElement>(this ContentElement contentElement) where TElement : ContentElement
+        public static bool Has<TElement>(this ContentElement contentElement)
+            where TElement : ContentElement
         {
             return contentElement.Has(typeof(TElement).Name);
         }
@@ -103,16 +102,14 @@ namespace OrchardCore.ContentManagement
         /// <param name="name">The name of the content element.</param>
         /// <typeparam name="TElement">The expected type of the content element.</typeparam>
         /// <returns>The content element instance or a new one if it doesn't exist.</returns>
-        public static TElement GetOrCreate<TElement>(this ContentElement contentElement, string name) where TElement : ContentElement, new()
+        public static TElement GetOrCreate<TElement>(this ContentElement contentElement, string name)
+            where TElement : ContentElement, new()
         {
             var existing = contentElement.Get<TElement>(name);
 
             if (existing == null)
             {
-                var newElement = new TElement
-                {
-                    ContentItem = contentElement.ContentItem,
-                };
+                var newElement = new TElement { ContentItem = contentElement.ContentItem, };
 
                 contentElement.Data[name] = newElement.Data;
                 contentElement.Elements[name] = newElement;
@@ -148,7 +145,8 @@ namespace OrchardCore.ContentManagement
         /// This part can be not defined in Content Definitions.
         /// </summary>
         /// <typeparam name="TElement">The type of the part to be welded.</typeparam>
-        public static ContentElement Weld<TElement>(this ContentElement contentElement, object settings = null) where TElement : ContentElement, new()
+        public static ContentElement Weld<TElement>(this ContentElement contentElement, object settings = null)
+            where TElement : ContentElement, new()
         {
             var elementName = typeof(TElement).Name;
 
@@ -168,9 +166,7 @@ namespace OrchardCore.ContentManagement
 
             var weldedPartSettings = result.AsObject();
 
-            weldedPartSettings[elementName] = settings is not null
-                ? JObject.FromObject(settings)
-                : [];
+            weldedPartSettings[elementName] = settings is not null ? JObject.FromObject(settings) : [];
 
             return contentElement;
         }
@@ -238,7 +234,8 @@ namespace OrchardCore.ContentManagement
         /// <param name="action">An action to apply on the content element.</param>
         /// <typeparam name="TElement">The type of the part to be altered.</typeparam>
         /// <returns>The current <see cref="ContentElement"/> instance.</returns>
-        public static ContentElement Alter<TElement>(this ContentElement contentElement, string name, Action<TElement> action) where TElement : ContentElement, new()
+        public static ContentElement Alter<TElement>(this ContentElement contentElement, string name, Action<TElement> action)
+            where TElement : ContentElement, new()
         {
             var element = contentElement.GetOrCreate<TElement>(name);
             action(element);
@@ -255,7 +252,8 @@ namespace OrchardCore.ContentManagement
         /// <param name="action">An action to apply on the content element.</param>
         /// <typeparam name="TElement">The type of the part to be altered.</typeparam>
         /// <returns>The current <see cref="ContentElement"/> instance.</returns>
-        public static async Task<ContentElement> AlterAsync<TElement>(this ContentElement contentElement, string name, Func<TElement, Task> action) where TElement : ContentElement, new()
+        public static async Task<ContentElement> AlterAsync<TElement>(this ContentElement contentElement, string name, Func<TElement, Task> action)
+            where TElement : ContentElement, new()
         {
             var element = contentElement.GetOrCreate<TElement>(name);
 
@@ -301,7 +299,8 @@ namespace OrchardCore.ContentManagement
         /// </summary>
         /// <typeparam name="TElement">The expected type of the content elements.</typeparam>
         /// <returns>The content element instances or empty sequence if no entries exist.</returns>
-        public static IEnumerable<TElement> OfType<TElement>(this ContentElement contentElement) where TElement : ContentElement
+        public static IEnumerable<TElement> OfType<TElement>(this ContentElement contentElement)
+            where TElement : ContentElement
         {
             foreach (var part in contentElement.Elements)
             {

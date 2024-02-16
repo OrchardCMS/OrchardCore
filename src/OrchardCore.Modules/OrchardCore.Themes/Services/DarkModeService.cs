@@ -15,10 +15,7 @@ namespace OrchardCore.Themes.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ISiteService _siteService;
 
-        public DarkModeService(
-            IHttpContextAccessor httpContextAccessor,
-            ISiteService siteService,
-            ShellSettings shellSettings)
+        public DarkModeService(IHttpContextAccessor httpContextAccessor, ISiteService siteService, ShellSettings shellSettings)
         {
             _httpContextAccessor = httpContextAccessor;
             _siteService = siteService;

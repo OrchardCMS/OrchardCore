@@ -57,37 +57,34 @@ namespace OrchardCore.Environment.Shell
             return services;
         }
 
-        public static IServiceCollection AddNullFeatureProfilesService(this IServiceCollection services)
-            => services.AddScoped<IFeatureProfilesService, NullFeatureProfilesService>();
+        public static IServiceCollection AddNullFeatureProfilesService(this IServiceCollection services) =>
+            services.AddScoped<IFeatureProfilesService, NullFeatureProfilesService>();
 
-        public static IServiceCollection AddFeatureValidation(this IServiceCollection services)
-            => services
-                .AddScoped<IFeatureValidationProvider, FeatureProfilesValidationProvider>()
-                .AddScoped<IFeatureValidationProvider, DefaultTenantOnlyFeatureValidationProvider>();
+        public static IServiceCollection AddFeatureValidation(this IServiceCollection services) =>
+            services.AddScoped<IFeatureValidationProvider, FeatureProfilesValidationProvider>().AddScoped<IFeatureValidationProvider, DefaultTenantOnlyFeatureValidationProvider>();
 
-        public static IServiceCollection ConfigureFeatureProfilesRuleOptions(this IServiceCollection services)
-            => services
-                .Configure<FeatureProfilesRuleOptions>(o =>
+        public static IServiceCollection ConfigureFeatureProfilesRuleOptions(this IServiceCollection services) =>
+            services.Configure<FeatureProfilesRuleOptions>(o =>
+            {
+                o.Rules["Include"] = (expression, name) =>
                 {
-                    o.Rules["Include"] = (expression, name) =>
+                    if (FileSystemName.MatchesSimpleExpression(expression, name))
                     {
-                        if (FileSystemName.MatchesSimpleExpression(expression, name))
-                        {
-                            return (true, true);
-                        }
+                        return (true, true);
+                    }
 
-                        return (false, false);
-                    };
+                    return (false, false);
+                };
 
-                    o.Rules["Exclude"] = (expression, name) =>
+                o.Rules["Exclude"] = (expression, name) =>
+                {
+                    if (FileSystemName.MatchesSimpleExpression(expression, name))
                     {
-                        if (FileSystemName.MatchesSimpleExpression(expression, name))
-                        {
-                            return (true, false);
-                        }
+                        return (true, false);
+                    }
 
-                        return (false, false);
-                    };
-                });
+                    return (false, false);
+                };
+            });
     }
 }

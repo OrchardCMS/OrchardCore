@@ -32,8 +32,8 @@ namespace OrchardCore.Queries.Sql.Controllers
             IStore store,
             ILiquidTemplateManager liquidTemplateManager,
             IStringLocalizer<AdminController> stringLocalizer,
-            IOptions<TemplateOptions> templateOptions)
-
+            IOptions<TemplateOptions> templateOptions
+        )
         {
             _authorizationService = authorizationService;
             _store = store;
@@ -45,11 +45,7 @@ namespace OrchardCore.Queries.Sql.Controllers
         public Task<IActionResult> Query(string query)
         {
             query = string.IsNullOrWhiteSpace(query) ? "" : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query));
-            return Query(new AdminQueryViewModel
-            {
-                DecodedQuery = query,
-                FactoryName = _store.Configuration.ConnectionFactory.GetType().FullName
-            });
+            return Query(new AdminQueryViewModel { DecodedQuery = query, FactoryName = _store.Configuration.ConnectionFactory.GetType().FullName });
         }
 
         [HttpPost]
@@ -79,7 +75,11 @@ namespace OrchardCore.Queries.Sql.Controllers
 
             var parameters = JConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
 
-            var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(model.DecodedQuery, NullEncoder.Default, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
+            var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(
+                model.DecodedQuery,
+                NullEncoder.Default,
+                parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions)))
+            );
 
             if (SqlParser.TryParse(tokenizedQuery, _store.Configuration.Schema, dialect, _store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
             {

@@ -43,7 +43,8 @@ namespace OrchardCore.AdminMenu.Controllers
             INotifier notifier,
             IStringLocalizer<MenuController> stringLocalizer,
             IHtmlLocalizer<MenuController> htmlLocalizer,
-            ILogger<MenuController> logger)
+            ILogger<MenuController> logger
+        )
         {
             _authorizationService = authorizationService;
             _adminMenuService = adminMenuService;
@@ -79,10 +80,7 @@ namespace OrchardCore.AdminMenu.Controllers
             // load at least the ones without error. Provide a way to delete the ones on error.
             try
             {
-                results = adminMenuList
-                .Skip(startIndex)
-                .Take(pageSize)
-                .ToList();
+                results = adminMenuList.Skip(startIndex).Take(pageSize).ToList();
             }
             catch (Exception ex)
             {
@@ -107,21 +105,14 @@ namespace OrchardCore.AdminMenu.Controllers
                 Pager = pagerShape,
             };
 
-            model.Options.ContentsBulkAction =
-            [
-                new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
-            ];
+            model.Options.ContentsBulkAction = [new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),];
 
             return View(model);
         }
 
         [HttpPost, ActionName(nameof(List))]
         [FormValueRequired("submit.Filter")]
-        public ActionResult IndexFilterPOST(AdminMenuListViewModel model)
-            => RedirectToAction(nameof(List), new RouteValueDictionary
-            {
-                {_optionsSearch, model.Options.Search }
-            });
+        public ActionResult IndexFilterPOST(AdminMenuListViewModel model) => RedirectToAction(nameof(List), new RouteValueDictionary { { _optionsSearch, model.Options.Search } });
 
         public async Task<IActionResult> Create()
         {
@@ -170,11 +161,7 @@ namespace OrchardCore.AdminMenu.Controllers
                 return NotFound();
             }
 
-            var model = new AdminMenuEditViewModel
-            {
-                Id = adminMenu.Id,
-                Name = adminMenu.Name
-            };
+            var model = new AdminMenuEditViewModel { Id = adminMenu.Id, Name = adminMenu.Name };
 
             return View(model);
         }

@@ -19,8 +19,10 @@ namespace OrchardCore.Tests.Apis.Context
 
             var requestContext = httpContextAccessor.HttpContext.Request;
 
-            if (requestContext?.Headers.ContainsKey("PermissionsContext") == true &&
-                permissionsContexts.TryGetValue(requestContext.Headers["PermissionsContext"], out var permissionsContext))
+            if (
+                requestContext?.Headers.ContainsKey("PermissionsContext") == true
+                && permissionsContexts.TryGetValue(requestContext.Headers["PermissionsContext"], out var permissionsContext)
+            )
             {
                 _permissionsContext = permissionsContext;
             }

@@ -8,11 +8,9 @@ public class TestShapeTableManager(ShapeTable defaultShapeTable) : IShapeTableMa
 {
     private readonly ShapeTable _defaultShapeTable = defaultShapeTable;
 
-    public ShapeTable GetShapeTable(string themeId)
-        => _defaultShapeTable;
+    public ShapeTable GetShapeTable(string themeId) => _defaultShapeTable;
 
-    public Task<ShapeTable> GetShapeTableAsync(string themeId)
-        => Task.FromResult(_defaultShapeTable);
+    public Task<ShapeTable> GetShapeTableAsync(string themeId) => Task.FromResult(_defaultShapeTable);
 }
 
 public class MockThemeManager(IExtensionInfo des) : IThemeManager

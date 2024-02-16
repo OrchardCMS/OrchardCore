@@ -15,9 +15,7 @@ namespace OrchardCore.Facebook.Services
         private readonly ISiteService _siteService;
         protected readonly IStringLocalizer S;
 
-        public FacebookService(
-            ISiteService siteService,
-            IStringLocalizer<FacebookService> stringLocalizer)
+        public FacebookService(ISiteService siteService, IStringLocalizer<FacebookService> stringLocalizer)
         {
             _siteService = siteService;
             S = stringLocalizer;
@@ -46,18 +44,12 @@ namespace OrchardCore.Facebook.Services
 
             if (string.IsNullOrEmpty(settings.AppId))
             {
-                results.Add(new ValidationResult(S["The AppId is required."], new[]
-                {
-                    nameof(settings.AppId),
-                }));
+                results.Add(new ValidationResult(S["The AppId is required."], new[] { nameof(settings.AppId), }));
             }
 
             if (string.IsNullOrEmpty(settings.AppSecret))
             {
-                results.Add(new ValidationResult(S["The App Secret is required."], new[]
-                {
-                    nameof(settings.AppSecret),
-                }));
+                results.Add(new ValidationResult(S["The App Secret is required."], new[] { nameof(settings.AppSecret), }));
             }
 
             return results;

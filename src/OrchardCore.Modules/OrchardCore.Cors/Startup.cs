@@ -47,8 +47,7 @@ namespace OrchardCore.Cors
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddSingleton<CorsService>();
 
-            services.TryAddEnumerable(ServiceDescriptor
-                .Transient<IConfigureOptions<CorsOptions>, CorsOptionsConfiguration>());
+            services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<CorsOptions>, CorsOptionsConfiguration>());
         }
     }
 }

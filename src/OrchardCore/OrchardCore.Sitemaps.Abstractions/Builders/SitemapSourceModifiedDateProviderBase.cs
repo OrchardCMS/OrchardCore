@@ -7,7 +7,8 @@ namespace OrchardCore.Sitemaps.Builders
     /// <summary>
     /// Inherit to provide a sitemap source modified date provider.
     /// </summary>
-    public abstract class SitemapSourceModifiedDateProviderBase<TSitemapSource> : ISitemapSourceModifiedDateProvider where TSitemapSource : SitemapSource
+    public abstract class SitemapSourceModifiedDateProviderBase<TSitemapSource> : ISitemapSourceModifiedDateProvider
+        where TSitemapSource : SitemapSource
     {
         Task<DateTime?> ISitemapSourceModifiedDateProvider.GetLastModifiedDateAsync(SitemapSource source)
         {

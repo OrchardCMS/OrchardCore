@@ -76,76 +76,95 @@ namespace OrchardCore.Contents
                 o.LiquidViewParserConfiguration.Add(parser => parser.RegisterParserTag("contentitem", parser.ArgumentsListParser, ContentItemTag.WriteToAsync));
             });
 
-            services.Configure<TemplateOptions>(o =>
-            {
-                o.MemberAccessStrategy.Register<ContentItem>();
-                o.MemberAccessStrategy.Register<ContentElement>();
-                o.MemberAccessStrategy.Register<ShapeViewModel<ContentItem>>();
-                o.MemberAccessStrategy.Register<ContentTypePartDefinition>();
-                o.MemberAccessStrategy.Register<ContentPartFieldDefinition>();
-                o.MemberAccessStrategy.Register<ContentFieldDefinition>();
-                o.MemberAccessStrategy.Register<ContentPartDefinition>();
-
-                o.Filters.AddFilter("display_text", DisplayTextFilter.DisplayText);
-
-                o.Scope.SetValue("Content", new ObjectValue(new LiquidContentAccessor()));
-                o.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("ContentItemId", (obj, context) =>
+            services
+                .Configure<TemplateOptions>(o =>
                 {
-                    var liquidTemplateContext = (LiquidTemplateContext)context;
+                    o.MemberAccessStrategy.Register<ContentItem>();
+                    o.MemberAccessStrategy.Register<ContentElement>();
+                    o.MemberAccessStrategy.Register<ShapeViewModel<ContentItem>>();
+                    o.MemberAccessStrategy.Register<ContentTypePartDefinition>();
+                    o.MemberAccessStrategy.Register<ContentPartFieldDefinition>();
+                    o.MemberAccessStrategy.Register<ContentFieldDefinition>();
+                    o.MemberAccessStrategy.Register<ContentPartDefinition>();
 
-                    return new LiquidPropertyAccessor(liquidTemplateContext, async (contentItemId, context) =>
+                    o.Filters.AddFilter("display_text", DisplayTextFilter.DisplayText);
+
+                    o.Scope.SetValue("Content", new ObjectValue(new LiquidContentAccessor()));
+                    o.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>(
+                        "ContentItemId",
+                        (obj, context) =>
+                        {
+                            var liquidTemplateContext = (LiquidTemplateContext)context;
+
+                            return new LiquidPropertyAccessor(
+                                liquidTemplateContext,
+                                async (contentItemId, context) =>
+                                {
+                                    var contentManager = context.Services.GetRequiredService<IContentManager>();
+
+                                    return FluidValue.Create(await contentManager.GetAsync(contentItemId), context.Options);
+                                }
+                            );
+                        }
+                    );
+
+                    o.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>(
+                        "ContentItemVersionId",
+                        (obj, context) =>
+                        {
+                            var liquidTemplateContext = (LiquidTemplateContext)context;
+
+                            return new LiquidPropertyAccessor(
+                                liquidTemplateContext,
+                                async (contentItemVersionId, context) =>
+                                {
+                                    var contentManager = context.Services.GetRequiredService<IContentManager>();
+
+                                    return FluidValue.Create(await contentManager.GetVersionAsync(contentItemVersionId), context.Options);
+                                }
+                            );
+                        }
+                    );
+
+                    o.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>(
+                        "Latest",
+                        (obj, context) =>
+                        {
+                            var liquidTemplateContext = (LiquidTemplateContext)context;
+
+                            return new LiquidPropertyAccessor(
+                                liquidTemplateContext,
+                                (name, context) =>
+                                {
+                                    return GetContentByHandleAsync(context, name, true);
+                                }
+                            );
+                        }
+                    );
+
+                    o.MemberAccessStrategy.Register<LiquidContentAccessor, FluidValue>((obj, name, context) => GetContentByHandleAsync((LiquidTemplateContext)context, name));
+
+                    static async Task<FluidValue> GetContentByHandleAsync(LiquidTemplateContext context, string handle, bool latest = false)
                     {
+                        var contentHandleManager = context.Services.GetRequiredService<IContentHandleManager>();
+
+                        var contentItemId = await contentHandleManager.GetContentItemIdAsync(handle);
+
+                        if (contentItemId == null)
+                        {
+                            return NilValue.Instance;
+                        }
+
                         var contentManager = context.Services.GetRequiredService<IContentManager>();
 
-                        return FluidValue.Create(await contentManager.GetAsync(contentItemId), context.Options);
-                    });
-                });
-
-                o.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("ContentItemVersionId", (obj, context) =>
-                {
-                    var liquidTemplateContext = (LiquidTemplateContext)context;
-
-                    return new LiquidPropertyAccessor(liquidTemplateContext, async (contentItemVersionId, context) =>
-                    {
-                        var contentManager = context.Services.GetRequiredService<IContentManager>();
-
-                        return FluidValue.Create(await contentManager.GetVersionAsync(contentItemVersionId), context.Options);
-                    });
-                });
-
-                o.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("Latest", (obj, context) =>
-                {
-                    var liquidTemplateContext = (LiquidTemplateContext)context;
-
-                    return new LiquidPropertyAccessor(liquidTemplateContext, (name, context) =>
-                    {
-                        return GetContentByHandleAsync(context, name, true);
-                    });
-                });
-
-                o.MemberAccessStrategy.Register<LiquidContentAccessor, FluidValue>((obj, name, context) => GetContentByHandleAsync((LiquidTemplateContext)context, name));
-
-                static async Task<FluidValue> GetContentByHandleAsync(LiquidTemplateContext context, string handle, bool latest = false)
-                {
-                    var contentHandleManager = context.Services.GetRequiredService<IContentHandleManager>();
-
-                    var contentItemId = await contentHandleManager.GetContentItemIdAsync(handle);
-
-                    if (contentItemId == null)
-                    {
-                        return NilValue.Instance;
+                        var contentItem = await contentManager.GetAsync(contentItemId, latest ? VersionOptions.Latest : VersionOptions.Published);
+                        return FluidValue.Create(contentItem, context.Options);
                     }
-
-                    var contentManager = context.Services.GetRequiredService<IContentManager>();
-
-                    var contentItem = await contentManager.GetAsync(contentItemId, latest ? VersionOptions.Latest : VersionOptions.Published);
-                    return FluidValue.Create(contentItem, context.Options);
-                }
-            })
-            .AddLiquidFilter<DisplayUrlFilter>("display_url")
-            .AddLiquidFilter<BuildDisplayFilter>("shape_build_display")
-            .AddLiquidFilter<ContentItemFilter>("content_item_id")
-            .AddLiquidFilter<FullTextFilter>("full_text");
+                })
+                .AddLiquidFilter<DisplayUrlFilter>("display_url")
+                .AddLiquidFilter<BuildDisplayFilter>("shape_build_display")
+                .AddLiquidFilter<ContentItemFilter>("content_item_id")
+                .AddLiquidFilter<FullTextFilter>("full_text");
 
             services.AddContentManagement();
             services.AddContentManagementDisplay();
@@ -167,9 +186,7 @@ namespace OrchardCore.Contents
             services.AddDataMigration<Migrations>();
 
             // Common Part
-            services.AddContentPart<CommonPart>()
-                .UseDisplayDriver<DateEditorDriver>()
-                .UseDisplayDriver<OwnerEditorDriver>();
+            services.AddContentPart<CommonPart>().UseDisplayDriver<DateEditorDriver>().UseDisplayDriver<OwnerEditorDriver>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, CommonPartSettingsDisplayDriver>();
 
@@ -185,9 +202,9 @@ namespace OrchardCore.Contents
                 {
                     options.GlobalRouteValues = new RouteValueDictionary
                     {
-                        {"Area", "OrchardCore.Contents"},
-                        {"Controller", "Item"},
-                        {"Action", "Display"}
+                        { "Area", "OrchardCore.Contents" },
+                        { "Controller", "Item" },
+                        { "Action", "Display" }
                     };
 
                     options.ContentItemIdKey = "contentItemId";
@@ -319,7 +336,10 @@ namespace OrchardCore.Contents
         {
             services.AddDeployment<AllContentDeploymentSource, AllContentDeploymentStep, AllContentDeploymentStepDriver>();
             services.AddDeployment<ContentDeploymentSource, ContentDeploymentStep, ContentDeploymentStepDriver>();
-            services.AddSiteSettingsPropertyDeploymentStep<ContentAuditTrailSettings, DeploymentStartup>(S => S["Content Audit Trail settings"], S => S["Exports the content audit trail settings."]);
+            services.AddSiteSettingsPropertyDeploymentStep<ContentAuditTrailSettings, DeploymentStartup>(
+                S => S["Content Audit Trail settings"],
+                S => S["Exports the content audit trail settings."]
+            );
         }
     }
 

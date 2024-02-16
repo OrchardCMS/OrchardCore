@@ -24,17 +24,21 @@ namespace OrchardCore.ContentFields.Settings
 
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<ContentPickerFieldSettingsViewModel>("ContentPickerFieldSettings_Edit", model =>
-            {
-                var settings = partFieldDefinition.GetSettings<ContentPickerFieldSettings>();
-                model.Hint = settings.Hint;
-                model.Required = settings.Required;
-                model.Multiple = settings.Multiple;
-                model.Source = GetSource(settings);
-                model.DisplayedContentTypes = settings.DisplayedContentTypes;
-                model.TitlePattern = settings.TitlePattern;
-                model.Stereotypes = string.Join(',', settings.DisplayedStereotypes ?? []);
-            }).Location("Content");
+            return Initialize<ContentPickerFieldSettingsViewModel>(
+                    "ContentPickerFieldSettings_Edit",
+                    model =>
+                    {
+                        var settings = partFieldDefinition.GetSettings<ContentPickerFieldSettings>();
+                        model.Hint = settings.Hint;
+                        model.Required = settings.Required;
+                        model.Multiple = settings.Multiple;
+                        model.Source = GetSource(settings);
+                        model.DisplayedContentTypes = settings.DisplayedContentTypes;
+                        model.TitlePattern = settings.TitlePattern;
+                        model.Stereotypes = string.Join(',', settings.DisplayedStereotypes ?? []);
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
@@ -77,7 +81,10 @@ namespace OrchardCore.ContentFields.Settings
         {
             if (!string.IsNullOrEmpty(model.TitlePattern) && !_templateManager.Validate(model.TitlePattern, out var titleErrors))
             {
-                context.Updater.ModelState.AddModelError(nameof(model.TitlePattern), S["Title Pattern does not contain a valid Liquid expression. Details: {0}", string.Join(" ", titleErrors)]);
+                context.Updater.ModelState.AddModelError(
+                    nameof(model.TitlePattern),
+                    S["Title Pattern does not contain a valid Liquid expression. Details: {0}", string.Join(" ", titleErrors)]
+                );
                 return false;
             }
 
@@ -115,9 +122,7 @@ namespace OrchardCore.ContentFields.Settings
                 return ContentPickerSettingType.AllTypes;
             }
 
-            return settings.DisplayedStereotypes != null && settings.DisplayedStereotypes.Length > 0
-                ? ContentPickerSettingType.Stereotypes
-                : ContentPickerSettingType.ContentTypes;
+            return settings.DisplayedStereotypes != null && settings.DisplayedStereotypes.Length > 0 ? ContentPickerSettingType.Stereotypes : ContentPickerSettingType.ContentTypes;
         }
     }
 }

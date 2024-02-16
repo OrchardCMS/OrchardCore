@@ -10,15 +10,16 @@ namespace System.Text.Json;
 /// </summary>
 public static class JOptions
 {
-    public static readonly JsonSerializerOptions Base = new()
-    {
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        ReferenceHandler = ReferenceHandler.IgnoreCycles,
-        ReadCommentHandling = JsonCommentHandling.Skip,
-        PropertyNameCaseInsensitive = true,
-        AllowTrailingCommas = true,
-        WriteIndented = false
-    };
+    public static readonly JsonSerializerOptions Base =
+        new()
+        {
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            ReferenceHandler = ReferenceHandler.IgnoreCycles,
+            ReadCommentHandling = JsonCommentHandling.Skip,
+            PropertyNameCaseInsensitive = true,
+            AllowTrailingCommas = true,
+            WriteIndented = false
+        };
 
     public static readonly JsonSerializerOptions Default;
     public static readonly JsonSerializerOptions Indented;
@@ -35,35 +36,16 @@ public static class JOptions
         Default.Converters.Add(new DynamicJsonConverter());
         Default.Converters.Add(new PathStringJsonConverter());
 
-        Indented = new JsonSerializerOptions(Default)
-        {
-            WriteIndented = true,
-        };
+        Indented = new JsonSerializerOptions(Default) { WriteIndented = true, };
 
-        CamelCase = new JsonSerializerOptions(Default)
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        };
+        CamelCase = new JsonSerializerOptions(Default) { PropertyNamingPolicy = JsonNamingPolicy.CamelCase, };
 
-        CamelCaseIndented = new JsonSerializerOptions(CamelCase)
-        {
-            WriteIndented = true,
-        };
+        CamelCaseIndented = new JsonSerializerOptions(CamelCase) { WriteIndented = true, };
 
-        UnsafeRelaxedJsonEscaping = new JsonSerializerOptions(Default)
-        {
-            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-        };
+        UnsafeRelaxedJsonEscaping = new JsonSerializerOptions(Default) { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, };
 
-        Node = new JsonNodeOptions
-        {
-            PropertyNameCaseInsensitive = Default.PropertyNameCaseInsensitive,
-        };
+        Node = new JsonNodeOptions { PropertyNameCaseInsensitive = Default.PropertyNameCaseInsensitive, };
 
-        Document = new JsonDocumentOptions
-        {
-            CommentHandling = Default.ReadCommentHandling,
-            AllowTrailingCommas = Default.AllowTrailingCommas,
-        };
+        Document = new JsonDocumentOptions { CommentHandling = Default.ReadCommentHandling, AllowTrailingCommas = Default.AllowTrailingCommas, };
     }
 }

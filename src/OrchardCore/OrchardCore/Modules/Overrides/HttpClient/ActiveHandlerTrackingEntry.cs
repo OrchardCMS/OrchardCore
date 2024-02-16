@@ -22,11 +22,7 @@ namespace Microsoft.Extensions.Http
         // OC: Implement IDisposable.
         private bool _disposed;
 
-        public ActiveHandlerTrackingEntry(
-            string name,
-            LifetimeTrackingHttpMessageHandler handler,
-            IServiceScope scope,
-            TimeSpan lifetime)
+        public ActiveHandlerTrackingEntry(string name, LifetimeTrackingHttpMessageHandler handler, IServiceScope scope, TimeSpan lifetime)
         {
             Name = name;
             Handler = handler;

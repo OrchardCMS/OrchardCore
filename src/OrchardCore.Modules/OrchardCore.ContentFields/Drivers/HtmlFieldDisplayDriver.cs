@@ -28,11 +28,13 @@ namespace OrchardCore.ContentFields.Drivers
         private readonly IShortcodeService _shortcodeService;
         protected readonly IStringLocalizer S;
 
-        public HtmlFieldDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
+        public HtmlFieldDisplayDriver(
+            ILiquidTemplateManager liquidTemplateManager,
             HtmlEncoder htmlEncoder,
             IHtmlSanitizerService htmlSanitizerService,
             IShortcodeService shortcodeService,
-            IStringLocalizer<HtmlFieldDisplayDriver> localizer)
+            IStringLocalizer<HtmlFieldDisplayDriver> localizer
+        )
         {
             _liquidTemplateManager = liquidTemplateManager;
             _htmlEncoder = htmlEncoder;
@@ -43,41 +45,48 @@ namespace OrchardCore.ContentFields.Drivers
 
         public override IDisplayResult Display(HtmlField field, BuildFieldDisplayContext context)
         {
-            return Initialize<DisplayHtmlFieldViewModel>(GetDisplayShapeType(context), async model =>
-            {
-                model.Html = field.Html;
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-
-                var settings = context.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
-                if (!settings.SanitizeHtml)
-                {
-                    model.Html = await _liquidTemplateManager.RenderStringAsync(field.Html, _htmlEncoder, model,
-                        new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(field.ContentItem) });
-                }
-
-                model.Html = await _shortcodeService.ProcessAsync(model.Html,
-                    new Context
+            return Initialize<DisplayHtmlFieldViewModel>(
+                    GetDisplayShapeType(context),
+                    async model =>
                     {
-                        ["ContentItem"] = field.ContentItem,
-                        ["PartFieldDefinition"] = context.PartFieldDefinition
-                    });
+                        model.Html = field.Html;
+                        model.Field = field;
+                        model.Part = context.ContentPart;
+                        model.PartFieldDefinition = context.PartFieldDefinition;
 
-            })
-            .Location("Detail", "Content")
-            .Location("Summary", "Content");
+                        var settings = context.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
+                        if (!settings.SanitizeHtml)
+                        {
+                            model.Html = await _liquidTemplateManager.RenderStringAsync(
+                                field.Html,
+                                _htmlEncoder,
+                                model,
+                                new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(field.ContentItem) }
+                            );
+                        }
+
+                        model.Html = await _shortcodeService.ProcessAsync(
+                            model.Html,
+                            new Context { ["ContentItem"] = field.ContentItem, ["PartFieldDefinition"] = context.PartFieldDefinition }
+                        );
+                    }
+                )
+                .Location("Detail", "Content")
+                .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(HtmlField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditHtmlFieldViewModel>(GetEditorShapeType(context), model =>
-            {
-                model.Html = field.Html;
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-            });
+            return Initialize<EditHtmlFieldViewModel>(
+                GetEditorShapeType(context),
+                model =>
+                {
+                    model.Html = field.Html;
+                    model.Field = field;
+                    model.Part = context.ContentPart;
+                    model.PartFieldDefinition = context.PartFieldDefinition;
+                }
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(HtmlField field, IUpdateModel updater, UpdateFieldEditorContext context)
@@ -93,9 +102,9 @@ namespace OrchardCore.ContentFields.Drivers
                     var fieldName = context.PartFieldDefinition.DisplayName();
                     context.Updater.ModelState.AddModelError(
                         Prefix,
-                        nameof(viewModel.Html), S["{0} doesn't contain a valid Liquid expression. Details: {1}",
-                        fieldName,
-                        string.Join(' ', errors)]);
+                        nameof(viewModel.Html),
+                        S["{0} doesn't contain a valid Liquid expression. Details: {1}", fieldName, string.Join(' ', errors)]
+                    );
                 }
                 else
                 {

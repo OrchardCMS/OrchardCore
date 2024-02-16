@@ -27,10 +27,7 @@ public class Startup : Modules.StartupBase
     private readonly ILogger _logger;
     private readonly IShellConfiguration _configuration;
 
-    public Startup(IShellConfiguration configuration,
-        ILogger<Startup> logger)
-        => (_configuration, _logger)
-            = (configuration, logger);
+    public Startup(IShellConfiguration configuration, ILogger<Startup> logger) => (_configuration, _logger) = (configuration, logger);
 
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -53,8 +50,7 @@ public class Startup : Modules.StartupBase
         }
         else
         {
-            _logger.LogInformation(
-                "Starting with S3 Media Configuration. BucketName: {BucketName}; BasePath: {BasePath}", storeOptions.BucketName, storeOptions.BasePath);
+            _logger.LogInformation("Starting with S3 Media Configuration. BucketName: {BucketName}; BasePath: {BasePath}", storeOptions.BucketName, storeOptions.BasePath);
 
             services.AddSingleton<IMediaFileStoreCacheFileProvider>(serviceProvider =>
             {
@@ -69,8 +65,7 @@ public class Startup : Modules.StartupBase
                 var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
                 var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStoreCacheFileProvider>>();
 
-                var mediaCachePath = GetMediaCachePath(
-                    hostingEnvironment, shellSettings, DefaultMediaFileStoreCacheFileProvider.AssetsCachePath);
+                var mediaCachePath = GetMediaCachePath(hostingEnvironment, shellSettings, DefaultMediaFileStoreCacheFileProvider.AssetsCachePath);
 
                 if (!Directory.Exists(mediaCachePath))
                 {
@@ -81,47 +76,41 @@ public class Startup : Modules.StartupBase
             });
 
             // Replace the default media file provider with the media cache file provider.
-            services.Replace(ServiceDescriptor.Singleton<IMediaFileProvider>(serviceProvider =>
-                serviceProvider.GetRequiredService<IMediaFileStoreCacheFileProvider>()));
+            services.Replace(ServiceDescriptor.Singleton<IMediaFileProvider>(serviceProvider => serviceProvider.GetRequiredService<IMediaFileStoreCacheFileProvider>()));
 
             // Register the media cache file provider as a file store cache provider.
-            services.AddSingleton<IMediaFileStoreCache>(serviceProvider =>
-                serviceProvider.GetRequiredService<IMediaFileStoreCacheFileProvider>());
+            services.AddSingleton<IMediaFileStoreCache>(serviceProvider => serviceProvider.GetRequiredService<IMediaFileStoreCacheFileProvider>());
 
             // Registering IAmazonS3 client using AWS registration factory.
             services.AddAWSService<IAmazonS3>(storeOptions.AwsOptions);
 
-            services.Replace(ServiceDescriptor.Singleton<IMediaFileStore>(serviceProvider =>
-            {
-                var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
-                var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
-                var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
-                var mediaCreatingEventHandlers = serviceProvider.GetServices<IMediaCreatingEventHandler>();
-                var clock = serviceProvider.GetRequiredService<IClock>();
-                var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
-                var amazonS3Client = serviceProvider.GetService<IAmazonS3>();
-
-                var options = serviceProvider.GetRequiredService<IOptions<AwsStorageOptions>>();
-                var fileStore = new AwsFileStore(clock, options.Value, amazonS3Client);
-
-                var mediaUrlBase = $"/{fileStore.Combine(shellSettings.RequestUrlPrefix, mediaOptions.AssetsRequestPath)}";
-
-                var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext
-                    ?.Features.Get<ShellContextFeature>()
-                    ?.OriginalPathBase ?? PathString.Empty;
-
-                if (originalPathBase.HasValue)
+            services.Replace(
+                ServiceDescriptor.Singleton<IMediaFileStore>(serviceProvider =>
                 {
-                    mediaUrlBase = fileStore.Combine(originalPathBase.Value, mediaUrlBase);
-                }
+                    var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
+                    var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
+                    var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
+                    var mediaCreatingEventHandlers = serviceProvider.GetServices<IMediaCreatingEventHandler>();
+                    var clock = serviceProvider.GetRequiredService<IClock>();
+                    var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
+                    var amazonS3Client = serviceProvider.GetService<IAmazonS3>();
 
-                return new DefaultMediaFileStore(fileStore,
-                    mediaUrlBase,
-                    mediaOptions.CdnBaseUrl,
-                    mediaEventHandlers,
-                    mediaCreatingEventHandlers,
-                    logger);
-            }));
+                    var options = serviceProvider.GetRequiredService<IOptions<AwsStorageOptions>>();
+                    var fileStore = new AwsFileStore(clock, options.Value, amazonS3Client);
+
+                    var mediaUrlBase = $"/{fileStore.Combine(shellSettings.RequestUrlPrefix, mediaOptions.AssetsRequestPath)}";
+
+                    var originalPathBase =
+                        serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext?.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? PathString.Empty;
+
+                    if (originalPathBase.HasValue)
+                    {
+                        mediaUrlBase = fileStore.Combine(originalPathBase.Value, mediaUrlBase);
+                    }
+
+                    return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl, mediaEventHandlers, mediaCreatingEventHandlers, logger);
+                })
+            );
 
             services.AddSingleton<IMediaEventHandler, DefaultMediaFileStoreCacheEventHandler>();
 
@@ -129,6 +118,6 @@ public class Startup : Modules.StartupBase
         }
     }
 
-    private static string GetMediaCachePath(IWebHostEnvironment hostingEnvironment, ShellSettings shellSettings, string assetsPath)
-        => PathExtensions.Combine(hostingEnvironment.WebRootPath, shellSettings.Name, assetsPath);
+    private static string GetMediaCachePath(IWebHostEnvironment hostingEnvironment, ShellSettings shellSettings, string assetsPath) =>
+        PathExtensions.Combine(hostingEnvironment.WebRootPath, shellSettings.Name, assetsPath);
 }

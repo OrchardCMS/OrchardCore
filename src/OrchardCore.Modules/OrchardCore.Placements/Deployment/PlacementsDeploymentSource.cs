@@ -31,11 +31,7 @@ namespace OrchardCore.Placements.Deployment
                 placementObjects[placement.Key] = JArray.FromObject(placement.Value);
             }
 
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "Placements",
-                ["Placements"] = placementObjects,
-            });
+            result.Steps.Add(new JsonObject { ["name"] = "Placements", ["Placements"] = placementObjects, });
         }
     }
 }

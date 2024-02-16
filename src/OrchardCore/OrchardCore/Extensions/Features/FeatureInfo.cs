@@ -21,7 +21,8 @@ namespace OrchardCore.Environment.Extensions.Features
             string[] dependencies,
             bool defaultTenantOnly,
             bool isAlwaysEnabled,
-            bool enabledByDependencyOnly)
+            bool enabledByDependencyOnly
+        )
         {
             Id = id;
             Name = name;

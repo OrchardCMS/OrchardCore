@@ -161,11 +161,12 @@ namespace OrchardCore.DisplayManagement.Shapes
     public class Nil : DynamicObject
     {
         private static readonly Nil _singleton = new();
-        public static Nil Instance { get { return _singleton; } }
-
-        private Nil()
+        public static Nil Instance
         {
+            get { return _singleton; }
         }
+
+        private Nil() { }
 
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {

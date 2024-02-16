@@ -34,11 +34,7 @@ namespace OrchardCore.Environment.Commands.Parameters
                 }
             }
 
-            return new CommandParameters
-            {
-                Arguments = arguments,
-                Switches = switches
-            };
+            return new CommandParameters { Arguments = arguments, Switches = switches };
         }
     }
 }

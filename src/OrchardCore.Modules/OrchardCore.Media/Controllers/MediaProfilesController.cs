@@ -45,7 +45,7 @@ namespace OrchardCore.Media.Controllers
             IShapeFactory shapeFactory,
             IStringLocalizer<MediaProfilesController> stringLocalizer,
             IHtmlLocalizer<MediaProfilesController> htmlLocalizer
-            )
+        )
         {
             _authorizationService = authorizationService;
             _mediaProfilesManager = mediaProfilesManager;
@@ -76,10 +76,7 @@ namespace OrchardCore.Media.Controllers
 
             var count = mediaProfiles.Count;
 
-            mediaProfiles = mediaProfiles.OrderBy(x => x.Key)
-                .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize)
-                .ToList();
+            mediaProfiles = mediaProfiles.OrderBy(x => x.Key).Skip(pager.GetStartIndex()).Take(pager.PageSize).ToList();
 
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();
@@ -97,21 +94,15 @@ namespace OrchardCore.Media.Controllers
                 Pager = pagerShape
             };
 
-            model.Options.ContentsBulkAction =
-            [
-                new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
-            ];
+            model.Options.ContentsBulkAction = [new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),];
 
             return View(model);
         }
 
         [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
-        public ActionResult IndexFilterPOST(MediaProfileIndexViewModel model)
-            => RedirectToAction(nameof(Index), new RouteValueDictionary
-            {
-                { _optionsSearch, model.Options.Search }
-            });
+        public ActionResult IndexFilterPOST(MediaProfileIndexViewModel model) =>
+            RedirectToAction(nameof(Index), new RouteValueDictionary { { _optionsSearch, model.Options.Search } });
 
         public async Task<IActionResult> Create()
         {
@@ -354,7 +345,6 @@ namespace OrchardCore.Media.Controllers
             model.AvailableResizeModes.Add(new SelectListItem() { Text = S["BoxPad"], Value = ((int)ResizeMode.BoxPad).ToString() });
             model.AvailableResizeModes.Add(new SelectListItem() { Text = S["Min"], Value = ((int)ResizeMode.Min).ToString() });
             model.AvailableResizeModes.Add(new SelectListItem() { Text = S["Stretch"], Value = ((int)ResizeMode.Stretch).ToString() });
-
 
             model.AvailableFormats.Add(new SelectListItem() { Text = S["Default"], Value = ((int)Format.Undefined).ToString() });
             model.AvailableFormats.Add(new SelectListItem() { Text = S["Bmp"], Value = ((int)Format.Bmp).ToString() });

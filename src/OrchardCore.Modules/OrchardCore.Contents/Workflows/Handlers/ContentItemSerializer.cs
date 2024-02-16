@@ -32,11 +32,7 @@ namespace OrchardCore.Workflows.Services
         {
             if (context.Input is IContent content)
             {
-                context.Output = JObject.FromObject(new
-                {
-                    Type = "Content",
-                    ContentId = content.ContentItem.ContentItemId
-                });
+                context.Output = JObject.FromObject(new { Type = "Content", ContentId = content.ContentItem.ContentItemId });
             }
 
             return Task.CompletedTask;

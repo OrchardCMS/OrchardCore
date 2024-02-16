@@ -29,7 +29,8 @@ namespace OrchardCore.Contents.Controllers
             IContentManager contentManager,
             IContentDefinitionManager contentDefinitionManager,
             IAuthorizationService authorizationService,
-            IStringLocalizer<ApiController> stringLocalizer)
+            IStringLocalizer<ApiController> stringLocalizer
+        )
         {
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
@@ -128,12 +129,14 @@ namespace OrchardCore.Contents.Controllers
                 // intended to add model errors (only drivers), a WF content task may be executed inline and add some model errors.
                 if (!ModelState.IsValid)
                 {
-                    return ValidationProblem(new ValidationProblemDetails(ModelState)
-                    {
-                        Title = S["One or more validation errors occurred."],
-                        Detail = string.Join(", ", ModelState.Values.SelectMany(x => x.Errors.Select(x => x.ErrorMessage))),
-                        Status = (int)HttpStatusCode.BadRequest,
-                    });
+                    return ValidationProblem(
+                        new ValidationProblemDetails(ModelState)
+                        {
+                            Title = S["One or more validation errors occurred."],
+                            Detail = string.Join(", ", ModelState.Values.SelectMany(x => x.Errors.Select(x => x.ErrorMessage))),
+                            Status = (int)HttpStatusCode.BadRequest,
+                        }
+                    );
                 }
             }
             else
@@ -158,12 +161,14 @@ namespace OrchardCore.Contents.Controllers
                 // intended to add model errors (only drivers), a WF content task may be executed inline and add some model errors.
                 if (!ModelState.IsValid)
                 {
-                    return ValidationProblem(new ValidationProblemDetails(ModelState)
-                    {
-                        Title = S["One or more validation errors occurred."],
-                        Detail = string.Join(", ", ModelState.Values.SelectMany(x => x.Errors.Select(x => x.ErrorMessage))),
-                        Status = (int)HttpStatusCode.BadRequest,
-                    });
+                    return ValidationProblem(
+                        new ValidationProblemDetails(ModelState)
+                        {
+                            Title = S["One or more validation errors occurred."],
+                            Detail = string.Join(", ", ModelState.Values.SelectMany(x => x.Errors.Select(x => x.ErrorMessage))),
+                            Status = (int)HttpStatusCode.BadRequest,
+                        }
+                    );
                 }
             }
 

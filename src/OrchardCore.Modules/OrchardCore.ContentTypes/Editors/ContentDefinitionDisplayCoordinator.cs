@@ -20,7 +20,8 @@ namespace OrchardCore.ContentTypes.Editors
             IEnumerable<IContentTypePartDefinitionDisplayDriver> typePartDisplayDrivers,
             IEnumerable<IContentPartDefinitionDisplayDriver> partDisplayDrivers,
             IEnumerable<IContentPartFieldDefinitionDisplayDriver> partFieldDisplayDrivers,
-            ILogger<IContentDefinitionDisplayHandler> logger)
+            ILogger<IContentDefinitionDisplayHandler> logger
+        )
         {
             _partFieldDisplayDrivers = partFieldDisplayDrivers;
             _partDisplayDrivers = partDisplayDrivers;
@@ -31,82 +32,122 @@ namespace OrchardCore.ContentTypes.Editors
 
         public Task BuildTypeEditorAsync(ContentTypeDefinition model, BuildEditorContext context)
         {
-            return _typeDisplayDrivers.InvokeAsync(async (contentDisplay, model, context) =>
-            {
-                var result = await contentDisplay.BuildEditorAsync(model, context);
-                if (result != null)
-                    await result.ApplyAsync(context);
-            }, model, context, _logger);
+            return _typeDisplayDrivers.InvokeAsync(
+                async (contentDisplay, model, context) =>
+                {
+                    var result = await contentDisplay.BuildEditorAsync(model, context);
+                    if (result != null)
+                        await result.ApplyAsync(context);
+                },
+                model,
+                context,
+                _logger
+            );
         }
 
         public Task UpdateTypeEditorAsync(ContentTypeDefinition model, UpdateTypeEditorContext context)
         {
-            return _typeDisplayDrivers.InvokeAsync(async (contentDisplay, model, context) =>
-            {
-                var result = await contentDisplay.UpdateEditorAsync(model, context);
-                if (result != null)
-                    await result.ApplyAsync(context);
-            }, model, context, _logger);
+            return _typeDisplayDrivers.InvokeAsync(
+                async (contentDisplay, model, context) =>
+                {
+                    var result = await contentDisplay.UpdateEditorAsync(model, context);
+                    if (result != null)
+                        await result.ApplyAsync(context);
+                },
+                model,
+                context,
+                _logger
+            );
         }
 
         public Task BuildTypePartEditorAsync(ContentTypePartDefinition model, BuildEditorContext context)
         {
-            return _typePartDisplayDrivers.InvokeAsync(async (contentDisplay, model, context) =>
-            {
-                var result = await contentDisplay.BuildEditorAsync(model, context);
-                if (result != null)
-                    await result.ApplyAsync(context);
-            }, model, context, _logger);
+            return _typePartDisplayDrivers.InvokeAsync(
+                async (contentDisplay, model, context) =>
+                {
+                    var result = await contentDisplay.BuildEditorAsync(model, context);
+                    if (result != null)
+                        await result.ApplyAsync(context);
+                },
+                model,
+                context,
+                _logger
+            );
         }
 
         public Task UpdateTypePartEditorAsync(ContentTypePartDefinition model, UpdateTypePartEditorContext context)
         {
-            return _typePartDisplayDrivers.InvokeAsync(async (contentDisplay, model, context) =>
-            {
-                var result = await contentDisplay.UpdateEditorAsync(model, context);
-                if (result != null)
-                    await result.ApplyAsync(context);
-            }, model, context, _logger);
+            return _typePartDisplayDrivers.InvokeAsync(
+                async (contentDisplay, model, context) =>
+                {
+                    var result = await contentDisplay.UpdateEditorAsync(model, context);
+                    if (result != null)
+                        await result.ApplyAsync(context);
+                },
+                model,
+                context,
+                _logger
+            );
         }
 
         public Task BuildPartEditorAsync(ContentPartDefinition model, BuildEditorContext context)
         {
-            return _partDisplayDrivers.InvokeAsync(async (contentDisplay, model, context) =>
-            {
-                var result = await contentDisplay.BuildEditorAsync(model, context);
-                if (result != null)
-                    await result.ApplyAsync(context);
-            }, model, context, _logger);
+            return _partDisplayDrivers.InvokeAsync(
+                async (contentDisplay, model, context) =>
+                {
+                    var result = await contentDisplay.BuildEditorAsync(model, context);
+                    if (result != null)
+                        await result.ApplyAsync(context);
+                },
+                model,
+                context,
+                _logger
+            );
         }
 
         public Task UpdatePartEditorAsync(ContentPartDefinition model, UpdatePartEditorContext context)
         {
-            return _partDisplayDrivers.InvokeAsync(async (contentDisplay, model, context) =>
-            {
-                var result = await contentDisplay.UpdateEditorAsync(model, context);
-                if (result != null)
-                    await result.ApplyAsync(context);
-            }, model, context, _logger);
+            return _partDisplayDrivers.InvokeAsync(
+                async (contentDisplay, model, context) =>
+                {
+                    var result = await contentDisplay.UpdateEditorAsync(model, context);
+                    if (result != null)
+                        await result.ApplyAsync(context);
+                },
+                model,
+                context,
+                _logger
+            );
         }
 
         public async Task BuildPartFieldEditorAsync(ContentPartFieldDefinition model, BuildEditorContext context)
         {
-            await _partFieldDisplayDrivers.InvokeAsync(async (contentDisplay, model, context) =>
-            {
-                var result = await contentDisplay.BuildEditorAsync(model, context);
-                if (result != null)
-                    await result.ApplyAsync(context);
-            }, model, context, _logger);
+            await _partFieldDisplayDrivers.InvokeAsync(
+                async (contentDisplay, model, context) =>
+                {
+                    var result = await contentDisplay.BuildEditorAsync(model, context);
+                    if (result != null)
+                        await result.ApplyAsync(context);
+                },
+                model,
+                context,
+                _logger
+            );
         }
 
         public async Task UpdatePartFieldEditorAsync(ContentPartFieldDefinition model, UpdatePartFieldEditorContext context)
         {
-            await _partFieldDisplayDrivers.InvokeAsync(async (contentDisplay, model, context) =>
-            {
-                var result = await contentDisplay.UpdateEditorAsync(model, context);
-                if (result != null)
-                    await result.ApplyAsync(context);
-            }, model, context, _logger);
+            await _partFieldDisplayDrivers.InvokeAsync(
+                async (contentDisplay, model, context) =>
+                {
+                    var result = await contentDisplay.UpdateEditorAsync(model, context);
+                    if (result != null)
+                        await result.ApplyAsync(context);
+                },
+                model,
+                context,
+                _logger
+            );
         }
     }
 }

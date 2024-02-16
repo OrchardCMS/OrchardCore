@@ -14,7 +14,8 @@ namespace OrchardCore.Documents
     /// <summary>
     /// A generic service to keep in sync any single <see cref="IDocument"/> between an <see cref="IDocumentStore"/> and a multi level cache.
     /// </summary>
-    public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDocument : class, IDocument, new()
+    public class DocumentManager<TDocument> : IDocumentManager<TDocument>
+        where TDocument : class, IDocument, new()
     {
         public const string FailoverKey = "OrchardCore_Documents_FailoverKey";
 
@@ -26,11 +27,7 @@ namespace OrchardCore.Documents
         protected readonly bool _isDistributed;
         protected bool _isVolatile;
 
-        public DocumentManager(
-            IDistributedCache distributedCache,
-            IMemoryCache memoryCache,
-            IOptionsMonitor<DocumentOptions> options,
-            ILogger<DocumentManager<TDocument>> logger)
+        public DocumentManager(IDistributedCache distributedCache, IMemoryCache memoryCache, IOptionsMonitor<DocumentOptions> options, ILogger<DocumentManager<TDocument>> logger)
         {
             _distributedCache = distributedCache;
             _memoryCache = memoryCache;
@@ -84,9 +81,7 @@ namespace OrchardCore.Documents
                 }
                 else
                 {
-                    document = await GetFromDistributedCacheAsync()
-                        ?? await (factoryAsync?.Invoke() ?? Task.FromResult((TDocument)null))
-                        ?? new TDocument();
+                    document = await GetFromDistributedCacheAsync() ?? await (factoryAsync?.Invoke() ?? Task.FromResult((TDocument)null)) ?? new TDocument();
 
                     ShellScope.Set(typeof(TDocument), document);
                 }
@@ -128,10 +123,7 @@ namespace OrchardCore.Documents
                 _logger.LogError(e, "Failed to read the '{DocumentName}' from the distributed cache", typeof(TDocument).Name);
 
                 failover = true;
-                _memoryCache.Set(FailoverKey, failover, new MemoryCacheEntryOptions()
-                {
-                    AbsoluteExpirationRelativeToNow = _options.FailoverRetryLatency
-                });
+                _memoryCache.Set(FailoverKey, failover, new MemoryCacheEntryOptions() { AbsoluteExpirationRelativeToNow = _options.FailoverRetryLatency });
             }
 
             if (document is null)
@@ -144,9 +136,7 @@ namespace OrchardCore.Documents
                 }
                 else
                 {
-                    document = await (factoryAsync?.Invoke()
-                        ?? Task.FromResult((TDocument)null))
-                        ?? new TDocument();
+                    document = await (factoryAsync?.Invoke() ?? Task.FromResult((TDocument)null)) ?? new TDocument();
                 }
 
                 if (cacheable)
@@ -185,17 +175,20 @@ namespace OrchardCore.Documents
 
             if (!_isVolatile)
             {
-                await DocumentStore.UpdateAsync(document, async document =>
-                {
-                    // A non volatile document can be invalidated.
-                    await InvalidateInternalAsync(document);
-
-                    if (afterUpdateAsync != null)
+                await DocumentStore.UpdateAsync(
+                    document,
+                    async document =>
                     {
-                        await afterUpdateAsync(document);
-                    }
-                },
-                _options.CheckConcurrency.Value);
+                        // A non volatile document can be invalidated.
+                        await InvalidateInternalAsync(document);
+
+                        if (afterUpdateAsync != null)
+                        {
+                            await afterUpdateAsync(document);
+                        }
+                    },
+                    _options.CheckConcurrency.Value
+                );
 
                 return;
             }
@@ -224,17 +217,20 @@ namespace OrchardCore.Documents
             if (_isDistributed)
             {
                 // Cache the id locally for the synchronization latency time.
-                id = await _memoryCache.GetOrCreateAsync(_options.CacheIdKey, entry =>
-                {
-                    entry.AbsoluteExpirationRelativeToNow = _options.SynchronizationLatency;
-
-                    if (failover)
+                id = await _memoryCache.GetOrCreateAsync(
+                    _options.CacheIdKey,
+                    entry =>
                     {
-                        return Task.FromResult<string>(null);
-                    }
+                        entry.AbsoluteExpirationRelativeToNow = _options.SynchronizationLatency;
 
-                    return _distributedCache.GetStringAsync(_options.CacheIdKey);
-                });
+                        if (failover)
+                        {
+                            return Task.FromResult<string>(null);
+                        }
+
+                        return _distributedCache.GetStringAsync(_options.CacheIdKey);
+                    }
+                );
             }
             else
             {
@@ -292,12 +288,16 @@ namespace OrchardCore.Documents
                 return null;
             }
 
-            _memoryCache.Set(_options.CacheKey, document, new MemoryCacheEntryOptions()
-            {
-                AbsoluteExpiration = _options.AbsoluteExpiration,
-                AbsoluteExpirationRelativeToNow = _options.AbsoluteExpirationRelativeToNow,
-                SlidingExpiration = _options.SlidingExpiration
-            });
+            _memoryCache.Set(
+                _options.CacheKey,
+                document,
+                new MemoryCacheEntryOptions()
+                {
+                    AbsoluteExpiration = _options.AbsoluteExpiration,
+                    AbsoluteExpirationRelativeToNow = _options.AbsoluteExpirationRelativeToNow,
+                    SlidingExpiration = _options.SlidingExpiration
+                }
+            );
 
             // Remove the id from the one second cache.
             _memoryCache.Remove(_options.CacheIdKey);
@@ -314,20 +314,25 @@ namespace OrchardCore.Documents
                 await UpdateDistributedCacheAsync(document);
             }
 
-            _memoryCache.Set(_options.CacheKey, document, new MemoryCacheEntryOptions()
-            {
-                AbsoluteExpiration = _options.AbsoluteExpiration,
-                AbsoluteExpirationRelativeToNow = _options.AbsoluteExpirationRelativeToNow,
-                SlidingExpiration = _options.SlidingExpiration
-            });
+            _memoryCache.Set(
+                _options.CacheKey,
+                document,
+                new MemoryCacheEntryOptions()
+                {
+                    AbsoluteExpiration = _options.AbsoluteExpiration,
+                    AbsoluteExpirationRelativeToNow = _options.AbsoluteExpirationRelativeToNow,
+                    SlidingExpiration = _options.SlidingExpiration
+                }
+            );
 
             if (failover)
             {
                 // Cache the id locally so that the memory cache is used during the 'FailoverRetryLatency'.
-                _memoryCache.Set(_options.CacheIdKey, document.Identifier ?? "NULL", new MemoryCacheEntryOptions()
-                {
-                    AbsoluteExpirationRelativeToNow = _options.FailoverRetryLatency
-                });
+                _memoryCache.Set(
+                    _options.CacheIdKey,
+                    document.Identifier ?? "NULL",
+                    new MemoryCacheEntryOptions() { AbsoluteExpirationRelativeToNow = _options.FailoverRetryLatency }
+                );
 
                 return;
             }

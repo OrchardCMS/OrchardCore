@@ -23,19 +23,22 @@ namespace OrchardCore.Facebook.Widgets.Settings
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            return Initialize<FacebookPluginPartSettingsViewModel>("FacebookPluginPartSettings_Edit", model =>
-            {
-                model.FacebookPluginPartSettings = contentTypePartDefinition.GetSettings<FacebookPluginPartSettings>();
-                model.Liquid = model.FacebookPluginPartSettings.Liquid;
-            }).Location("Content");
+            return Initialize<FacebookPluginPartSettingsViewModel>(
+                    "FacebookPluginPartSettings_Edit",
+                    model =>
+                    {
+                        model.FacebookPluginPartSettings = contentTypePartDefinition.GetSettings<FacebookPluginPartSettings>();
+                        model.Liquid = model.FacebookPluginPartSettings.Liquid;
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
             var model = new FacebookPluginPartSettingsViewModel();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix,
-                m => m.Liquid);
+            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Liquid);
 
             if (!string.IsNullOrEmpty(model.Liquid) && !_templateManager.Validate(model.Liquid, out var errors))
             {

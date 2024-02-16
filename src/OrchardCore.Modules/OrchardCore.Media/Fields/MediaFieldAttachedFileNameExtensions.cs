@@ -12,9 +12,7 @@ namespace OrchardCore.Media.Fields
         {
             var filenames = (JsonArray)mediaField.Content["AttachedFileNames"];
 
-            return filenames != null
-                ? filenames.ToObject<string[]>()
-                : [];
+            return filenames != null ? filenames.ToObject<string[]>() : [];
         }
 
         /// <summary>
@@ -24,6 +22,5 @@ namespace OrchardCore.Media.Fields
         {
             mediaField.Content["AttachedFileNames"] = JArray.FromObject(filenames);
         }
-
     }
 }

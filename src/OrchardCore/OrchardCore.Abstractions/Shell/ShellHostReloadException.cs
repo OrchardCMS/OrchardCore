@@ -12,8 +12,7 @@ namespace OrchardCore.Environment.Shell
         /// exception message.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public ShellHostReloadException(string message) : base(message)
-        {
-        }
+        public ShellHostReloadException(string message)
+            : base(message) { }
     }
 }

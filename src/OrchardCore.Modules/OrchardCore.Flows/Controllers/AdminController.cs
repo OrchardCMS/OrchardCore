@@ -28,7 +28,8 @@ namespace OrchardCore.Flows.Controllers
             IContentDefinitionManager contentDefinitionManager,
             IContentItemDisplayManager contentItemDisplayManager,
             IShapeFactory shapeFactory,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor
+        )
         {
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
@@ -37,7 +38,17 @@ namespace OrchardCore.Flows.Controllers
             _updateModelAccessor = updateModelAccessor;
         }
 
-        public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string contentItemsName, string targetId, bool flowMetadata, string parentContentType, string partName)
+        public async Task<IActionResult> BuildEditor(
+            string id,
+            string prefix,
+            string prefixesName,
+            string contentTypesName,
+            string contentItemsName,
+            string targetId,
+            bool flowMetadata,
+            string parentContentType,
+            string partName
+        )
         {
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -99,10 +110,7 @@ namespace OrchardCore.Flows.Controllers
                 contentCard.ColumnSize = colSize;
             }
 
-            var model = new BuildEditorViewModel
-            {
-                EditorShape = contentCard
-            };
+            var model = new BuildEditorViewModel { EditorShape = contentCard };
             return View("Display", model);
         }
 

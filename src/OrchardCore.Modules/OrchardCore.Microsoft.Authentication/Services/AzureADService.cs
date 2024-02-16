@@ -14,9 +14,7 @@ namespace OrchardCore.Microsoft.Authentication.Services
         private readonly ISiteService _siteService;
         protected readonly IStringLocalizer S;
 
-        public AzureADService(
-            ISiteService siteService,
-            IStringLocalizer<AzureADService> stringLocalizer)
+        public AzureADService(ISiteService siteService, IStringLocalizer<AzureADService> stringLocalizer)
         {
             _siteService = siteService;
             S = stringLocalizer;
@@ -39,13 +37,16 @@ namespace OrchardCore.Microsoft.Authentication.Services
             ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
-            container.Alter<AzureADSettings>(nameof(AzureADSettings), aspect =>
-            {
-                aspect.AppId = settings.AppId;
-                aspect.CallbackPath = settings.CallbackPath;
-                aspect.DisplayName = settings.DisplayName;
-                aspect.TenantId = settings.TenantId;
-            });
+            container.Alter<AzureADSettings>(
+                nameof(AzureADSettings),
+                aspect =>
+                {
+                    aspect.AppId = settings.AppId;
+                    aspect.CallbackPath = settings.CallbackPath;
+                    aspect.DisplayName = settings.DisplayName;
+                    aspect.TenantId = settings.TenantId;
+                }
+            );
 
             await _siteService.UpdateSiteSettingsAsync(container);
         }

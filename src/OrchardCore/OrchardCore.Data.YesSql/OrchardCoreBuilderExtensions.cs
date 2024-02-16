@@ -50,10 +50,31 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddTransient<IConfigureOptions<SqliteOptions>, SqliteOptionsConfiguration>();
 
                 // Adding supported databases
-                services.TryAddDataProvider(name: "Sql Server", value: DatabaseProviderValue.SqlConnection, hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
+                services.TryAddDataProvider(
+                    name: "Sql Server",
+                    value: DatabaseProviderValue.SqlConnection,
+                    hasConnectionString: true,
+                    sampleConnectionString: "Server=localhost;Database=Orchard;User Id=username;Password=password",
+                    hasTablePrefix: true,
+                    isDefault: false
+                );
                 services.TryAddDataProvider(name: "Sqlite", value: DatabaseProviderValue.Sqlite, hasConnectionString: false, hasTablePrefix: false, isDefault: true);
-                services.TryAddDataProvider(name: "MySql", value: DatabaseProviderValue.MySql, hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;Uid=username;Pwd=password", hasTablePrefix: true, isDefault: false);
-                services.TryAddDataProvider(name: "Postgres", value: DatabaseProviderValue.Postgres, hasConnectionString: true, sampleConnectionString: "Server=localhost;Port=5432;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
+                services.TryAddDataProvider(
+                    name: "MySql",
+                    value: DatabaseProviderValue.MySql,
+                    hasConnectionString: true,
+                    sampleConnectionString: "Server=localhost;Database=Orchard;Uid=username;Pwd=password",
+                    hasTablePrefix: true,
+                    isDefault: false
+                );
+                services.TryAddDataProvider(
+                    name: "Postgres",
+                    value: DatabaseProviderValue.Postgres,
+                    hasConnectionString: true,
+                    sampleConnectionString: "Server=localhost;Port=5432;Database=Orchard;User Id=username;Password=password",
+                    hasTablePrefix: true,
+                    isDefault: false
+                );
 
                 // Configuring data access
                 services.AddSingleton(sp =>
@@ -73,9 +94,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     switch (shellSettings["DatabaseProvider"])
                     {
                         case DatabaseProviderValue.SqlConnection:
-                            storeConfiguration
-                                .UseSqlServer(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, shellSettings["Schema"])
-                                .UseBlockIdGenerator();
+                            storeConfiguration.UseSqlServer(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, shellSettings["Schema"]).UseBlockIdGenerator();
                             break;
                         case DatabaseProviderValue.Sqlite:
                             var shellOptions = sp.GetService<IOptions<ShellOptions>>().Value;
@@ -87,19 +106,13 @@ namespace Microsoft.Extensions.DependencyInjection
                             // Only allow creating a file DB when a tenant is in the Initializing state
                             var connectionString = SqliteHelper.GetConnectionString(sqliteOptions, databaseFolder, shellSettings);
 
-                            storeConfiguration
-                                .UseSqLite(connectionString, IsolationLevel.ReadUncommitted)
-                                .UseDefaultIdGenerator();
+                            storeConfiguration.UseSqLite(connectionString, IsolationLevel.ReadUncommitted).UseDefaultIdGenerator();
                             break;
                         case DatabaseProviderValue.MySql:
-                            storeConfiguration
-                                .UseMySql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, shellSettings["Schema"])
-                                .UseBlockIdGenerator();
+                            storeConfiguration.UseMySql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, shellSettings["Schema"]).UseBlockIdGenerator();
                             break;
                         case DatabaseProviderValue.Postgres:
-                            storeConfiguration
-                                .UsePostgreSql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, shellSettings["Schema"])
-                                .UseBlockIdGenerator();
+                            storeConfiguration.UsePostgreSql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, shellSettings["Schema"]).UseBlockIdGenerator();
                             break;
                         default:
                             throw new ArgumentException("Unknown database provider: " + shellSettings["DatabaseProvider"]);
@@ -153,19 +166,17 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     session.RegisterIndexes(scopedServices.ToArray());
 
-                    ShellScope.Current
-                        .RegisterBeforeDispose(scope =>
+                    ShellScope
+                        .Current.RegisterBeforeDispose(scope =>
                         {
-                            return scope.ServiceProvider
-                                .GetRequiredService<IDocumentStore>()
-                                .CommitAsync();
+                            return scope.ServiceProvider.GetRequiredService<IDocumentStore>().CommitAsync();
                         })
-                        .AddExceptionHandler((scope, e) =>
-                        {
-                            return scope.ServiceProvider
-                                .GetRequiredService<IDocumentStore>()
-                                .CancelAsync();
-                        });
+                        .AddExceptionHandler(
+                            (scope, e) =>
+                            {
+                                return scope.ServiceProvider.GetRequiredService<IDocumentStore>().CancelAsync();
+                            }
+                        );
 
                     return session;
                 });

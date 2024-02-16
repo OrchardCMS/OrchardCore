@@ -24,18 +24,13 @@ namespace OrchardCore.Environment.Shell.Configuration
         private readonly SemaphoreSlim _semaphore = new(1);
         private bool _released;
 
-        public ShellConfiguration()
-        {
-        }
+        public ShellConfiguration() { }
 
         public ShellConfiguration(IConfiguration configuration)
         {
             _updatableData = new UpdatableDataProvider();
 
-            _configuration = new ConfigurationBuilder()
-                .AddConfiguration(configuration)
-                .Add(_updatableData)
-                .Build();
+            _configuration = new ConfigurationBuilder().AddConfiguration(configuration).Add(_updatableData).Build();
         }
 
         public ShellConfiguration(IConfigurationBuilder builder)
@@ -50,9 +45,8 @@ namespace OrchardCore.Environment.Shell.Configuration
             _factoryAsync = factoryAsync;
         }
 
-        public ShellConfiguration(ShellConfiguration configuration) : this(null, configuration)
-        {
-        }
+        public ShellConfiguration(ShellConfiguration configuration)
+            : this(null, configuration) { }
 
         public ShellConfiguration(string name, ShellConfiguration configuration)
         {
@@ -62,10 +56,7 @@ namespace OrchardCore.Environment.Shell.Configuration
             {
                 _updatableData = new UpdatableDataProvider(configuration._updatableData.ToArray());
 
-                _configuration = new ConfigurationBuilder()
-                    .AddConfiguration(configuration._configuration, shouldDisposeConfiguration: true)
-                    .Add(_updatableData)
-                    .Build();
+                _configuration = new ConfigurationBuilder().AddConfiguration(configuration._configuration, shouldDisposeConfiguration: true).Add(_updatableData).Build();
 
                 return;
             }
@@ -133,9 +124,7 @@ namespace OrchardCore.Environment.Shell.Configuration
             {
                 var value = Configuration[key];
 
-                return value ?? (key.Contains('_')
-                    ? Configuration[key.Replace('_', '.')]
-                    : null);
+                return value ?? (key.Contains('_') ? Configuration[key.Replace('_', '.')] : null);
             }
             set
             {

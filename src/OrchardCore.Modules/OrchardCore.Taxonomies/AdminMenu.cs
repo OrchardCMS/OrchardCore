@@ -8,11 +8,8 @@ namespace OrchardCore.Taxonomies
 {
     public class AdminMenu : INavigationProvider
     {
-        private static readonly RouteValueDictionary _routeValues = new()
-        {
-            { "area", "OrchardCore.Settings" },
-            { "groupId", TaxonomyContentsAdminListSettingsDisplayDriver.GroupId },
-        };
+        private static readonly RouteValueDictionary _routeValues =
+            new() { { "area", "OrchardCore.Settings" }, { "groupId", TaxonomyContentsAdminListSettingsDisplayDriver.GroupId }, };
 
         protected readonly IStringLocalizer S;
 
@@ -28,18 +25,26 @@ namespace OrchardCore.Taxonomies
                 return Task.CompletedTask;
             }
 
-            builder
-                .Add(S["Configuration"], configuration => configuration
-                    .Add(S["Settings"], "1", settings => settings
-                        .Add(S["Taxonomy Filters"], S["Taxonomy Filters"].PrefixPosition(), filters => filters
-                            .AddClass("taxonomyfilters")
-                            .Id("taxonomyfilters")
-                            .Permission(Permissions.ManageTaxonomies)
-                            .Action("Index", "Admin", _routeValues)
-                            .LocalNav()
-                        )
+            builder.Add(
+                S["Configuration"],
+                configuration =>
+                    configuration.Add(
+                        S["Settings"],
+                        "1",
+                        settings =>
+                            settings.Add(
+                                S["Taxonomy Filters"],
+                                S["Taxonomy Filters"].PrefixPosition(),
+                                filters =>
+                                    filters
+                                        .AddClass("taxonomyfilters")
+                                        .Id("taxonomyfilters")
+                                        .Permission(Permissions.ManageTaxonomies)
+                                        .Action("Index", "Admin", _routeValues)
+                                        .LocalNav()
+                            )
                     )
-                );
+            );
 
             return Task.CompletedTask;
         }

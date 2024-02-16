@@ -43,7 +43,8 @@ namespace OrchardCore.Templates.Controllers
             IOptions<PagerOptions> pagerOptions,
             IStringLocalizer<TemplateController> stringLocalizer,
             IHtmlLocalizer<TemplateController> htmlLocalizer,
-            INotifier notifier)
+            INotifier notifier
+        )
         {
             _authorizationService = authorizationService;
             _templatesManager = templatesManager;
@@ -76,10 +77,7 @@ namespace OrchardCore.Templates.Controllers
             }
 
             var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
-            var templatesDocument = options.AdminTemplates
-                ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
-                : await _templatesManager.GetTemplatesDocumentAsync()
-                ;
+            var templatesDocument = options.AdminTemplates ? await _adminTemplatesManager.GetTemplatesDocumentAsync() : await _templatesManager.GetTemplatesDocumentAsync();
 
             var templates = templatesDocument.Templates.ToList();
 
@@ -90,9 +88,7 @@ namespace OrchardCore.Templates.Controllers
 
             var count = templates.Count;
 
-            templates = templates.OrderBy(x => x.Key)
-                .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize).ToList();
+            templates = templates.OrderBy(x => x.Key).Skip(pager.GetStartIndex()).Take(pager.PageSize).ToList();
 
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();
@@ -110,10 +106,7 @@ namespace OrchardCore.Templates.Controllers
                 Pager = pagerShape
             };
 
-            model.Options.ContentsBulkAction =
-            [
-                new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
-            ];
+            model.Options.ContentsBulkAction = [new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),];
 
             // The 'Admin' action redirect the user to the 'Index' action.
             // To ensure we render the same 'Index' view in both cases, we have to explicitly specify the name of the view that should be rendered.
@@ -122,11 +115,7 @@ namespace OrchardCore.Templates.Controllers
 
         [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
-        public ActionResult IndexFilterPOST(TemplateIndexViewModel model)
-            => RedirectToAction(nameof(Index), new RouteValueDictionary
-            {
-                { _optionsSearch, model.Options.Search }
-            });
+        public ActionResult IndexFilterPOST(TemplateIndexViewModel model) => RedirectToAction(nameof(Index), new RouteValueDictionary { { _optionsSearch, model.Options.Search } });
 
         public async Task<IActionResult> Create(string name = null, bool adminTemplates = false, string returnUrl = null)
         {
@@ -140,11 +129,7 @@ namespace OrchardCore.Templates.Controllers
                 return Forbid();
             }
 
-            var model = new TemplateViewModel
-            {
-                AdminTemplates = adminTemplates,
-                Name = name
-            };
+            var model = new TemplateViewModel { AdminTemplates = adminTemplates, Name = name };
 
             ViewData["ReturnUrl"] = returnUrl;
             return View(model);
@@ -177,10 +162,7 @@ namespace OrchardCore.Templates.Controllers
                 }
                 else
                 {
-                    var templatesDocument = model.AdminTemplates
-                        ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
-                        : await _templatesManager.GetTemplatesDocumentAsync()
-                        ;
+                    var templatesDocument = model.AdminTemplates ? await _adminTemplatesManager.GetTemplatesDocumentAsync() : await _templatesManager.GetTemplatesDocumentAsync();
 
                     if (templatesDocument.Templates.ContainsKey(model.Name))
                     {
@@ -193,16 +175,21 @@ namespace OrchardCore.Templates.Controllers
             {
                 var template = new Template { Content = model.Content, Description = model.Description };
 
-                await (model.AdminTemplates
-                    ? _adminTemplatesManager.UpdateTemplateAsync(model.Name, template)
-                    : _templatesManager.UpdateTemplateAsync(model.Name, template)
-                    );
+                await (model.AdminTemplates ? _adminTemplatesManager.UpdateTemplateAsync(model.Name, template) : _templatesManager.UpdateTemplateAsync(model.Name, template));
 
                 await _notifier.SuccessAsync(H["The \"{0}\" template has been created.", model.Name]);
 
                 if (submit == "SaveAndContinue")
                 {
-                    return RedirectToAction(nameof(Edit), new { name = model.Name, adminTemplates = model.AdminTemplates, returnUrl });
+                    return RedirectToAction(
+                        nameof(Edit),
+                        new
+                        {
+                            name = model.Name,
+                            adminTemplates = model.AdminTemplates,
+                            returnUrl
+                        }
+                    );
                 }
                 else
                 {
@@ -226,10 +213,7 @@ namespace OrchardCore.Templates.Controllers
                 return Forbid();
             }
 
-            var templatesDocument = adminTemplates
-                ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
-                : await _templatesManager.GetTemplatesDocumentAsync()
-                ;
+            var templatesDocument = adminTemplates ? await _adminTemplatesManager.GetTemplatesDocumentAsync() : await _templatesManager.GetTemplatesDocumentAsync();
 
             if (!templatesDocument.Templates.TryGetValue(name, out var template))
             {
@@ -261,10 +245,7 @@ namespace OrchardCore.Templates.Controllers
                 return Forbid();
             }
 
-            var templatesDocument = model.AdminTemplates
-                ? await _adminTemplatesManager.LoadTemplatesDocumentAsync()
-                : await _templatesManager.LoadTemplatesDocumentAsync()
-                ;
+            var templatesDocument = model.AdminTemplates ? await _adminTemplatesManager.LoadTemplatesDocumentAsync() : await _templatesManager.LoadTemplatesDocumentAsync();
 
             if (ModelState.IsValid)
             {
@@ -291,15 +272,9 @@ namespace OrchardCore.Templates.Controllers
             {
                 var template = new Template { Content = model.Content, Description = model.Description };
 
-                await (model.AdminTemplates
-                    ? _adminTemplatesManager.RemoveTemplateAsync(sourceName)
-                    : _templatesManager.RemoveTemplateAsync(sourceName)
-                    );
+                await (model.AdminTemplates ? _adminTemplatesManager.RemoveTemplateAsync(sourceName) : _templatesManager.RemoveTemplateAsync(sourceName));
 
-                await (model.AdminTemplates
-                    ? _adminTemplatesManager.UpdateTemplateAsync(model.Name, template)
-                    : _templatesManager.UpdateTemplateAsync(model.Name, template)
-                    );
+                await (model.AdminTemplates ? _adminTemplatesManager.UpdateTemplateAsync(model.Name, template) : _templatesManager.UpdateTemplateAsync(model.Name, template));
 
                 if (submit != "SaveAndContinue")
                 {
@@ -329,18 +304,14 @@ namespace OrchardCore.Templates.Controllers
                 return Forbid();
             }
 
-            var templatesDocument = adminTemplates
-                ? await _adminTemplatesManager.LoadTemplatesDocumentAsync()
-                : await _templatesManager.LoadTemplatesDocumentAsync();
+            var templatesDocument = adminTemplates ? await _adminTemplatesManager.LoadTemplatesDocumentAsync() : await _templatesManager.LoadTemplatesDocumentAsync();
 
             if (!templatesDocument.Templates.ContainsKey(name))
             {
                 return NotFound();
             }
 
-            await (adminTemplates
-                    ? _adminTemplatesManager.RemoveTemplateAsync(name)
-                    : _templatesManager.RemoveTemplateAsync(name));
+            await (adminTemplates ? _adminTemplatesManager.RemoveTemplateAsync(name) : _templatesManager.RemoveTemplateAsync(name));
 
             await _notifier.SuccessAsync(H["Template deleted successfully."]);
 
@@ -358,9 +329,7 @@ namespace OrchardCore.Templates.Controllers
 
             if (itemIds?.Count() > 0)
             {
-                var templatesDocument = options.AdminTemplates
-                        ? await _adminTemplatesManager.LoadTemplatesDocumentAsync()
-                        : await _templatesManager.LoadTemplatesDocumentAsync();
+                var templatesDocument = options.AdminTemplates ? await _adminTemplatesManager.LoadTemplatesDocumentAsync() : await _templatesManager.LoadTemplatesDocumentAsync();
                 var checkedContentItems = templatesDocument.Templates.Where(x => itemIds.Contains(x.Key));
 
                 switch (options.BulkAction)
@@ -370,9 +339,7 @@ namespace OrchardCore.Templates.Controllers
                     case ContentsBulkAction.Remove:
                         foreach (var item in checkedContentItems)
                         {
-                            await (options.AdminTemplates
-                                    ? _adminTemplatesManager.RemoveTemplateAsync(item.Key)
-                                    : _templatesManager.RemoveTemplateAsync(item.Key));
+                            await (options.AdminTemplates ? _adminTemplatesManager.RemoveTemplateAsync(item.Key) : _templatesManager.RemoveTemplateAsync(item.Key));
                         }
                         await _notifier.SuccessAsync(H["Templates successfully removed."]);
                         break;

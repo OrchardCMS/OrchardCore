@@ -14,7 +14,6 @@ namespace OrchardCore.Sitemaps.ViewModels
         public bool Enabled { get; set; }
 
         public ContainableSitemapEntryViewModel[] ContainableSitemaps { get; set; } = [];
-
     }
 
     public class ContainableSitemapEntryViewModel

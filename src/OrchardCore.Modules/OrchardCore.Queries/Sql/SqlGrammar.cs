@@ -4,7 +4,8 @@ namespace OrchardCore.Queries.Sql
 {
     public class SqlGrammar : Grammar
     {
-        public SqlGrammar() : base(false)
+        public SqlGrammar()
+            : base(false)
         {
             var comment = new CommentTerminal("comment", "/*", "*/");
             var lineComment = new CommentTerminal("line_comment", "--", "\n", "\r\n");
@@ -150,8 +151,17 @@ namespace OrchardCore.Queries.Sql
             orderDirOptional.Rule = Empty | "ASC" | "DESC";
 
             // Select stmt.
-            selectStatement.Rule = SELECT + optionalSelectRestriction + selectorList + fromClauseOpt + whereClauseOptional +
-                              groupClauseOpt + havingClauseOpt + orderClauseOpt + limitClauseOpt + offsetClauseOpt;
+            selectStatement.Rule =
+                SELECT
+                + optionalSelectRestriction
+                + selectorList
+                + fromClauseOpt
+                + whereClauseOptional
+                + groupClauseOpt
+                + havingClauseOpt
+                + orderClauseOpt
+                + limitClauseOpt
+                + offsetClauseOpt;
             optionalSelectRestriction.Rule = Empty | "ALL" | "DISTINCT";
             selectorList.Rule = columnItemList | "*";
             columnItemList.Rule = MakePlusRule(columnItemList, comma, columnItem);
@@ -189,10 +199,28 @@ namespace OrchardCore.Queries.Sql
             unExpr.Rule = unOp + term;
             unOp.Rule = NOT | "+" | "-" | "~";
             binExpr.Rule = expression + binOp + expression;
-            binOp.Rule = ToTerm("+") | "-" | "*" | "/" | "%" // Arithmetic.
-                       | "&" | "|" | "^"                     // Bit.
-                       | "=" | ">" | "<" | ">=" | "<=" | "<>" | "!=" | "!<" | "!>"
-                       | "AND" | "OR" | "LIKE" | "NOT LIKE";
+            binOp.Rule =
+                ToTerm("+")
+                | "-"
+                | "*"
+                | "/"
+                | "%" // Arithmetic.
+                | "&"
+                | "|"
+                | "^" // Bit.
+                | "="
+                | ">"
+                | "<"
+                | ">="
+                | "<="
+                | "<>"
+                | "!="
+                | "!<"
+                | "!>"
+                | "AND"
+                | "OR"
+                | "LIKE"
+                | "NOT LIKE";
             betweenExpr.Rule = expression + notOpt + "BETWEEN" + expression + "AND" + expression;
             inExpr.Rule = expression + notOpt + "IN" + "(" + functionArguments + ")";
             notOpt.Rule = Empty | NOT;

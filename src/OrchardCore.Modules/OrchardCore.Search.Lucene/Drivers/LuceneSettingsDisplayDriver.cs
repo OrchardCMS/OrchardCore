@@ -17,7 +17,7 @@ namespace OrchardCore.Search.Lucene.Drivers
         LuceneIndexSettingsService luceneIndexSettingsService,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService
-            ) : SectionDisplayDriver<ISite, LuceneSettings>
+    ) : SectionDisplayDriver<ISite, LuceneSettings>
     {
         private readonly LuceneIndexSettingsService _luceneIndexSettingsService = luceneIndexSettingsService;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
@@ -33,13 +33,17 @@ namespace OrchardCore.Search.Lucene.Drivers
                 return null;
             }
 
-            return Initialize<LuceneSettingsViewModel>("LuceneSettings_Edit", async model =>
-                {
-                    model.SearchIndex = settings.SearchIndex;
-                    model.SearchFields = string.Join(", ", settings.DefaultSearchFields ?? []);
-                    model.SearchIndexes = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName);
-                    model.AllowLuceneQueriesInSearch = settings.AllowLuceneQueriesInSearch;
-                }).Location("Content:2#Lucene;15")
+            return Initialize<LuceneSettingsViewModel>(
+                    "LuceneSettings_Edit",
+                    async model =>
+                    {
+                        model.SearchIndex = settings.SearchIndex;
+                        model.SearchFields = string.Join(", ", settings.DefaultSearchFields ?? []);
+                        model.SearchIndexes = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName);
+                        model.AllowLuceneQueriesInSearch = settings.AllowLuceneQueriesInSearch;
+                    }
+                )
+                .Location("Content:2#Lucene;15")
                 .OnGroup(SearchConstants.SearchSettingsGroupId);
         }
 

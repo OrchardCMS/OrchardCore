@@ -11,19 +11,22 @@ namespace OrchardCore.Features.Deployment
     {
         public override IDisplayResult Display(AllFeaturesDeploymentStep step)
         {
-            return
-                Combine(
-                    View("AllFeaturesDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                    View("AllFeaturesDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-                );
+            return Combine(
+                View("AllFeaturesDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("AllFeaturesDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(AllFeaturesDeploymentStep step)
         {
-            return Initialize<AllFeaturesDeploymentStepViewModel>("AllFeaturesDeploymentStep_Fields_Edit", model =>
-            {
-                model.IgnoreDisabledFeatures = step.IgnoreDisabledFeatures;
-            }).Location("Content");
+            return Initialize<AllFeaturesDeploymentStepViewModel>(
+                    "AllFeaturesDeploymentStep_Fields_Edit",
+                    model =>
+                    {
+                        model.IgnoreDisabledFeatures = step.IgnoreDisabledFeatures;
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(AllFeaturesDeploymentStep step, IUpdateModel updater)

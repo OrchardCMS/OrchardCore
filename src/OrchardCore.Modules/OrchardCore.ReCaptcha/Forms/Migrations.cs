@@ -16,12 +16,9 @@ namespace OrchardCore.ReCaptcha.Forms
 
         public async Task<int> CreateAsync()
         {
-            await _contentDefinitionManager.AlterPartDefinitionAsync("ReCaptchaPart", part => part
-                .WithDescription("Provides captcha properties."));
+            await _contentDefinitionManager.AlterPartDefinitionAsync("ReCaptchaPart", part => part.WithDescription("Provides captcha properties."));
 
-            await _contentDefinitionManager.AlterTypeDefinitionAsync("ReCaptcha", type => type
-                .WithPart("ReCaptchaPart")
-                .Stereotype("Widget"));
+            await _contentDefinitionManager.AlterTypeDefinitionAsync("ReCaptcha", type => type.WithPart("ReCaptchaPart").Stereotype("Widget"));
 
             return 1;
         }

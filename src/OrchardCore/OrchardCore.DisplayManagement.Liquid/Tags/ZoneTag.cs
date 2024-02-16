@@ -20,7 +20,8 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             IReadOnlyList<Statement> statements,
             TextWriter writer,
             TextEncoder encoder,
-            TemplateContext context)
+            TemplateContext context
+        )
         {
             var services = ((LiquidTemplateContext)context).Services;
             var layoutAccessor = services.GetRequiredService<ILayoutAccessor>();
@@ -75,10 +76,10 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 else
                 {
                     logger.LogWarning(
-                        "Unable to add shape to the zone using the {{% zone %}} Liquid tag because the zone's type " +
-                        "is \"{ActualType}\" instead of the expected {ExpectedType}",
+                        "Unable to add shape to the zone using the {{% zone %}} Liquid tag because the zone's type " + "is \"{ActualType}\" instead of the expected {ExpectedType}",
                         zone.GetType().FullName,
-                        nameof(Shape));
+                        nameof(Shape)
+                    );
                 }
             }
 

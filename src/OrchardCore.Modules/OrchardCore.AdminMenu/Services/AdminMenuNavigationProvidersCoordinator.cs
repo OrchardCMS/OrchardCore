@@ -25,7 +25,8 @@ namespace OrchardCore.AdminMenu.Services
             IAuthorizationService authorizationService,
             IHttpContextAccessor httpContextAccessor,
             IEnumerable<IAdminNodeNavigationBuilder> nodeBuilders,
-            ILogger<AdminMenuNavigationProvidersCoordinator> logger)
+            ILogger<AdminMenuNavigationProvidersCoordinator> logger
+        )
         {
             _adminMenuService = adminMenuService;
             _authorizationService = authorizationService;
@@ -43,14 +44,11 @@ namespace OrchardCore.AdminMenu.Services
                 return;
             }
 
-            var trees = (await _adminMenuService.GetAdminMenuListAsync())
-                .AdminMenu.Where(m => m.Enabled && m.MenuItems.Count > 0);
+            var trees = (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu.Where(m => m.Enabled && m.MenuItems.Count > 0);
 
             foreach (var tree in trees)
             {
-                if (await _authorizationService.AuthorizeAsync(
-                    _httpContextAccessor.HttpContext?.User,
-                    Permissions.CreatePermissionForAdminMenu(tree.Name)))
+                if (await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.CreatePermissionForAdminMenu(tree.Name)))
                 {
                     await BuildTreeAsync(tree, builder);
                 }

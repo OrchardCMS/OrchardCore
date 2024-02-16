@@ -24,25 +24,26 @@ namespace OrchardCore.Title.Settings
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            return Initialize<TitlePartSettingsViewModel>("TitlePartSettings_Edit", model =>
-            {
-                var settings = contentTypePartDefinition.GetSettings<TitlePartSettings>();
+            return Initialize<TitlePartSettingsViewModel>(
+                    "TitlePartSettings_Edit",
+                    model =>
+                    {
+                        var settings = contentTypePartDefinition.GetSettings<TitlePartSettings>();
 
-                model.Options = settings.Options;
-                model.Pattern = settings.Pattern;
-                model.RenderTitle = settings.RenderTitle;
-                model.TitlePartSettings = settings;
-            }).Location("Content");
+                        model.Options = settings.Options;
+                        model.Pattern = settings.Pattern;
+                        model.RenderTitle = settings.RenderTitle;
+                        model.TitlePartSettings = settings;
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
             var model = new TitlePartSettingsViewModel();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix,
-                m => m.Pattern,
-                m => m.Options,
-                m => m.RenderTitle);
+            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Pattern, m => m.Options, m => m.RenderTitle);
 
             if (!string.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
             {
@@ -50,7 +51,14 @@ namespace OrchardCore.Title.Settings
             }
             else
             {
-                context.Builder.WithSettings(new TitlePartSettings { Pattern = model.Pattern, Options = model.Options, RenderTitle = model.RenderTitle });
+                context.Builder.WithSettings(
+                    new TitlePartSettings
+                    {
+                        Pattern = model.Pattern,
+                        Options = model.Options,
+                        RenderTitle = model.RenderTitle
+                    }
+                );
             }
 
             return Edit(contentTypePartDefinition, context.Updater);

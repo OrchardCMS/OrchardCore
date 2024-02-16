@@ -24,26 +24,32 @@ namespace OrchardCore.ContentFields.Drivers
 
         public override IDisplayResult Display(TextField field, BuildFieldDisplayContext context)
         {
-            return Initialize<DisplayTextFieldViewModel>(GetDisplayShapeType(context), model =>
-            {
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-            })
-            .Location("Detail", "Content")
-            .Location("Summary", "Content");
+            return Initialize<DisplayTextFieldViewModel>(
+                    GetDisplayShapeType(context),
+                    model =>
+                    {
+                        model.Field = field;
+                        model.Part = context.ContentPart;
+                        model.PartFieldDefinition = context.PartFieldDefinition;
+                    }
+                )
+                .Location("Detail", "Content")
+                .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(TextField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditTextFieldViewModel>(GetEditorShapeType(context), model =>
-            {
-                var settings = context.PartFieldDefinition.GetSettings<TextFieldSettings>();
-                model.Text = context.IsNew && field.Text == null ? settings.DefaultValue : field.Text;
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-            });
+            return Initialize<EditTextFieldViewModel>(
+                GetEditorShapeType(context),
+                model =>
+                {
+                    var settings = context.PartFieldDefinition.GetSettings<TextFieldSettings>();
+                    model.Text = context.IsNew && field.Text == null ? settings.DefaultValue : field.Text;
+                    model.Field = field;
+                    model.Part = context.ContentPart;
+                    model.PartFieldDefinition = context.PartFieldDefinition;
+                }
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(TextField field, IUpdateModel updater, UpdateFieldEditorContext context)

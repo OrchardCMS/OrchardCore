@@ -16,7 +16,8 @@ namespace OrchardCore.Contents.AuditTrail.Services
 
         public void Configure(AuditTrailOptions options)
         {
-            options.For<ContentAuditTrailEventConfiguration>(Content, S => S["Content"])
+            options
+                .For<ContentAuditTrailEventConfiguration>(Content, S => S["Content"])
                 .WithEvent(Created, S => S["Created"], S => S["A content item was created."], true)
                 .WithEvent(Saved, S => S["Saved"], S => S["A content item was saved."], true)
                 .WithEvent(Published, S => S["Published"], S => S["A content item was published."], true)

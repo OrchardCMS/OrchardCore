@@ -76,75 +76,78 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public static Task<LiquidViewTemplate> ParseAsync(LiquidViewParser parser, string path, IFileProvider fileProvider, IMemoryCache cache, bool isDevelopment)
         {
-            return cache.GetOrCreateAsync(path, async entry =>
-            {
-                entry.SetSlidingExpiration(TimeSpan.FromHours(1));
-                var fileInfo = fileProvider.GetFileInfo(path);
-
-                if (isDevelopment)
+            return cache.GetOrCreateAsync(
+                path,
+                async entry =>
                 {
-                    entry.ExpirationTokens.Add(fileProvider.Watch(path));
+                    entry.SetSlidingExpiration(TimeSpan.FromHours(1));
+                    var fileInfo = fileProvider.GetFileInfo(path);
+
+                    if (isDevelopment)
+                    {
+                        entry.ExpirationTokens.Add(fileProvider.Watch(path));
+                    }
+
+                    await using var stream = fileInfo.CreateReadStream();
+                    using var sr = new StreamReader(stream);
+
+                    if (parser.TryParse(await sr.ReadToEndAsync(), out var template, out var errors))
+                    {
+                        return new LiquidViewTemplate(template);
+                    }
+
+                    throw new Exception($"Failed to parse liquid file {path}: {string.Join(System.Environment.NewLine, errors)}");
                 }
-
-                await using var stream = fileInfo.CreateReadStream();
-                using var sr = new StreamReader(stream);
-
-                if (parser.TryParse(await sr.ReadToEndAsync(), out var template, out var errors))
-                {
-                    return new LiquidViewTemplate(template);
-                }
-
-                throw new Exception($"Failed to parse liquid file {path}: {string.Join(System.Environment.NewLine, errors)}");
-            });
+            );
         }
     }
 
     internal class ShapeAccessor : DelegateAccessor
     {
-        public ShapeAccessor() : base(_getter)
-        {
-        }
+        public ShapeAccessor()
+            : base(_getter) { }
 
-        private static Func<object, string, object> _getter => (o, n) =>
-        {
-            if (o is Shape shape)
+        private static Func<object, string, object> _getter =>
+            (o, n) =>
             {
-                object obj = n switch
+                if (o is Shape shape)
                 {
-                    nameof(Shape.Id) => shape.Id,
-                    nameof(Shape.TagName) => shape.TagName,
-                    nameof(Shape.HasItems) => shape.HasItems,
-                    nameof(Shape.Classes) => shape.Classes,
-                    nameof(Shape.Attributes) => shape.Attributes,
-                    nameof(Shape.Metadata) => shape.Metadata,
-                    nameof(Shape.Items) => shape.Items,
-                    nameof(Shape.Properties) => shape.Properties,
-                    _ => null
-                };
+                    object obj = n switch
+                    {
+                        nameof(Shape.Id) => shape.Id,
+                        nameof(Shape.TagName) => shape.TagName,
+                        nameof(Shape.HasItems) => shape.HasItems,
+                        nameof(Shape.Classes) => shape.Classes,
+                        nameof(Shape.Attributes) => shape.Attributes,
+                        nameof(Shape.Metadata) => shape.Metadata,
+                        nameof(Shape.Items) => shape.Items,
+                        nameof(Shape.Properties) => shape.Properties,
+                        _ => null
+                    };
 
-                if (obj != null)
-                {
-                    return obj;
+                    if (obj != null)
+                    {
+                        return obj;
+                    }
+
+                    if (shape.Properties.TryGetValue(n, out obj))
+                    {
+                        return obj;
+                    }
+
+                    // 'MyType-MyField-FieldType_Display__DisplayMode'.
+                    var namedShaped = shape.Named(n);
+                    if (namedShaped != null)
+                    {
+                        return namedShaped;
+                    }
+
+                    // 'MyNamedPart', 'MyType__MyField' 'MyType-MyField'.
+                    return shape.NormalizedNamed(n.Replace("__", "-"));
                 }
 
-                if (shape.Properties.TryGetValue(n, out obj))
-                {
-                    return obj;
-                }
-
-                // 'MyType-MyField-FieldType_Display__DisplayMode'.
-                var namedShaped = shape.Named(n);
-                if (namedShaped != null)
-                {
-                    return namedShaped;
-                }
-
-                // 'MyNamedPart', 'MyType__MyField' 'MyType-MyField'.
-                return shape.NormalizedNamed(n.Replace("__", "-"));
-            }
-
-            return null;
-        };
+                return null;
+            };
     }
 
     public static class LiquidViewTemplateExtensions
@@ -221,22 +224,18 @@ namespace OrchardCore.DisplayManagement.Liquid
             var options = services.GetService<IOptions<MvcViewOptions>>();
             var viewEngine = options.Value.ViewEngines[0];
 
-            var viewResult = viewEngine.GetView(executingFilePath: null,
-                LiquidViewsFeatureProvider.DefaultRazorViewPath, isMainPage: true);
+            var viewResult = viewEngine.GetView(executingFilePath: null, LiquidViewsFeatureProvider.DefaultRazorViewPath, isMainPage: true);
 
             var tempDataProvider = services.GetService<ITempDataProvider>();
 
             var viewContext = new ViewContext(
                 actionContext,
                 viewResult.View,
-                new ViewDataDictionary(
-                    metadataProvider: new EmptyModelMetadataProvider(),
-                    modelState: new ModelStateDictionary()),
-                new TempDataDictionary(
-                    actionContext.HttpContext,
-                    tempDataProvider),
+                new ViewDataDictionary(metadataProvider: new EmptyModelMetadataProvider(), modelState: new ModelStateDictionary()),
+                new TempDataDictionary(actionContext.HttpContext, tempDataProvider),
                 TextWriter.Null,
-                new HtmlHelperOptions());
+                new HtmlHelperOptions()
+            );
 
             if (viewContext.View is RazorView razorView)
             {
@@ -291,7 +290,8 @@ namespace OrchardCore.DisplayManagement.Liquid
                 if (context.ShapeRecursions++ > LiquidTemplateContext.MaxShapeRecursions)
                 {
                     throw new InvalidOperationException(
-                        $"The '{shape.Metadata.Type}' shape has been called recursively more than {LiquidTemplateContext.MaxShapeRecursions} times.");
+                        $"The '{shape.Metadata.Type}' shape has been called recursively more than {LiquidTemplateContext.MaxShapeRecursions} times."
+                    );
                 }
             }
             else

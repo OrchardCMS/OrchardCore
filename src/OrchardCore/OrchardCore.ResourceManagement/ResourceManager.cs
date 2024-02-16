@@ -26,16 +26,13 @@ namespace OrchardCore.ResourceManagement
         private HashSet<string> _localStyles;
         private readonly ResourceManagementOptions _options;
 
-        public ResourceManager(
-            IOptions<ResourceManagementOptions> options,
-            IFileVersionProvider fileVersionProvider)
+        public ResourceManager(IOptions<ResourceManagementOptions> options, IFileVersionProvider fileVersionProvider)
         {
             _options = options.Value;
             _fileVersionProvider = fileVersionProvider;
 
             _builtResources = new Dictionary<string, ResourceRequiredContext[]>(StringComparer.OrdinalIgnoreCase);
         }
-
 
         public ResourceManifest InlineManifest => _dynamicManifest ??= new ResourceManifest();
 
@@ -47,11 +44,7 @@ namespace OrchardCore.ResourceManagement
             var key = new ResourceTypeName(resourceType, resourceName);
             if (!_required.TryGetValue(key, out var settings))
             {
-                settings = new RequireSettings(_options)
-                {
-                    Type = resourceType,
-                    Name = resourceName
-                };
+                settings = new RequireSettings(_options) { Type = resourceType, Name = resourceName };
                 _required[key] = settings;
             }
             _builtResources[resourceType] = null;
@@ -75,9 +68,7 @@ namespace OrchardCore.ResourceManagement
                 resourceDebugPath = string.Concat(_options.ContentBasePath, resourceDebugPath.AsSpan(1));
             }
 
-            return RegisterResource(
-                resourceType,
-                GetResourceKey(resourcePath, resourceDebugPath)).Define(d => d.SetUrl(resourcePath, resourceDebugPath));
+            return RegisterResource(resourceType, GetResourceKey(resourcePath, resourceDebugPath)).Define(d => d.SetUrl(resourcePath, resourceDebugPath));
         }
 
         public void RegisterHeadScript(IHtmlContent script)
@@ -149,10 +140,7 @@ namespace OrchardCore.ResourceManagement
             return resource;
         }
 
-        private static ResourceDefinition FindMatchingResource(
-            IEnumerable<KeyValuePair<string, IList<ResourceDefinition>>> stream,
-            RequireSettings settings,
-            string name)
+        private static ResourceDefinition FindMatchingResource(IEnumerable<KeyValuePair<string, IList<ResourceDefinition>>> stream, RequireSettings settings, string name)
         {
             Version lower = null;
             Version upper = null;
@@ -170,9 +158,7 @@ namespace OrchardCore.ResourceManagement
                 {
                     foreach (var resourceDefinition in r.Value)
                     {
-                        var version = resourceDefinition.Version != null
-                            ? new Version(resourceDefinition.Version)
-                            : null;
+                        var version = resourceDefinition.Version != null ? new Version(resourceDefinition.Version) : null;
 
                         if (lower != null)
                         {
@@ -310,8 +296,7 @@ namespace OrchardCore.ResourceManagement
             return _styles ?? EmptyList<IHtmlContent>.Instance;
         }
 
-        public IEnumerable<ResourceRequiredContext> GetRequiredResources(string resourceType)
-            => DoGetRequiredResources(resourceType);
+        public IEnumerable<ResourceRequiredContext> GetRequiredResources(string resourceType) => DoGetRequiredResources(resourceType);
 
         private ResourceRequiredContext[] DoGetRequiredResources(string resourceType)
         {
@@ -323,14 +308,20 @@ namespace OrchardCore.ResourceManagement
             var allResources = new ResourceDictionary();
             foreach (var settings in ResolveRequiredResources(resourceType))
             {
-                var resource = FindResource(settings)
-                    ?? throw new InvalidOperationException($"Could not find a resource of type '{settings.Type}' named '{settings.Name}' with version '{settings.Version ?? "any"}'.");
+                var resource =
+                    FindResource(settings)
+                    ?? throw new InvalidOperationException(
+                        $"Could not find a resource of type '{settings.Type}' named '{settings.Name}' with version '{settings.Version ?? "any"}'."
+                    );
 
                 ExpandDependencies(resource, settings, allResources);
             }
 
             requiredResources = new ResourceRequiredContext[allResources.Count];
-            int i, first = 0, byDependency = allResources.FirstCount, last = allResources.Count - allResources.LastCount;
+            int i,
+                first = 0,
+                byDependency = allResources.FirstCount,
+                last = allResources.Count - allResources.LastCount;
             foreach (DictionaryEntry entry in allResources)
             {
                 var settings = (RequireSettings)entry.Value;
@@ -358,10 +349,7 @@ namespace OrchardCore.ResourceManagement
             return _builtResources[resourceType] = requiredResources;
         }
 
-        protected virtual void ExpandDependencies(
-            ResourceDefinition resource,
-            RequireSettings settings,
-            ResourceDictionary allResources)
+        protected virtual void ExpandDependencies(ResourceDefinition resource, RequireSettings settings, ResourceDictionary allResources)
         {
             if (resource == null)
             {
@@ -392,17 +380,15 @@ namespace OrchardCore.ResourceManagement
             // (1) If a require exists for the resource, combine with it. Last settings in gets preference for its specified values.
             // (2) If no require already exists, form a new settings object based on the given one but with its own type/name.
 
-            var dependencySettings = (((RequireSettings)allResources[resource])
-                    ?.NewAndCombine(settings)
+            var dependencySettings = (
+                ((RequireSettings)allResources[resource])?.NewAndCombine(settings)
                 ?? new RequireSettings(_options)
                 {
                     Name = resource.Name,
                     Type = resource.Type,
                     Position = resource.Position
-                }
-                    .Combine(settings))
-                    .CombinePosition(settings)
-                    ;
+                }.Combine(settings)
+            ).CombinePosition(settings);
 
             if (dependencies != null)
             {
@@ -654,8 +640,10 @@ namespace OrchardCore.ResourceManagement
 
             foreach (var context in localScripts)
             {
-                if ((context.Settings.Location == ResourceLocation.Unspecified || context.Settings.Location == ResourceLocation.Inline) &&
-                    (_localScripts.Add(context.Settings.Name) || context.Settings.Name == settings.Name))
+                if (
+                    (context.Settings.Location == ResourceLocation.Unspecified || context.Settings.Location == ResourceLocation.Inline)
+                    && (_localScripts.Add(context.Settings.Name) || context.Settings.Name == settings.Name)
+                )
                 {
                     if (!first)
                     {
@@ -678,8 +666,7 @@ namespace OrchardCore.ResourceManagement
 
             foreach (var context in localStyles)
             {
-                if (context.Settings.Location == ResourceLocation.Inline &&
-                    (_localStyles.Add(context.Settings.Name) || context.Settings.Name == settings.Name))
+                if (context.Settings.Location == ResourceLocation.Inline && (_localStyles.Add(context.Settings.Name) || context.Settings.Name == settings.Name))
                 {
                     if (!first)
                     {

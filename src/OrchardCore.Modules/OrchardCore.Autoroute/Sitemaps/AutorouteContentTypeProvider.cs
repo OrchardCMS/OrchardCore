@@ -16,10 +16,7 @@ namespace OrchardCore.Autoroute.Sitemaps
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContentManager _contentManager;
 
-        public AutorouteContentTypeProvider(
-            IContentDefinitionManager contentDefinitionManager,
-            IContentManager contentManager
-            )
+        public AutorouteContentTypeProvider(IContentDefinitionManager contentDefinitionManager, IContentManager contentManager)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _contentManager = contentManager;
@@ -44,8 +41,7 @@ namespace OrchardCore.Autoroute.Sitemaps
 
         public async Task<IEnumerable<ContentTypeDefinition>> ListRoutableTypeDefinitionsAsync()
         {
-            return (await _contentDefinitionManager.ListTypeDefinitionsAsync())
-                .Where(ctd => ctd.Parts.Any(p => p.Name == nameof(AutoroutePart)));
+            return (await _contentDefinitionManager.ListTypeDefinitionsAsync()).Where(ctd => ctd.Parts.Any(p => p.Name == nameof(AutoroutePart)));
         }
     }
 }

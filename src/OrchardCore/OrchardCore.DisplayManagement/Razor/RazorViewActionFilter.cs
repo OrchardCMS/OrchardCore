@@ -24,9 +24,7 @@ namespace OrchardCore.DisplayManagement.Razor
             }
 
             var task = OnActionExecutionAsync(context);
-            return !task.IsCompletedSuccessfully
-                ? Awaited(task, next)
-                : next();
+            return !task.IsCompletedSuccessfully ? Awaited(task, next) : next();
         }
 
         public async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)

@@ -17,10 +17,7 @@ namespace OrchardCore.ContentLocalization.Sitemaps
         private readonly IContentManager _contentManager;
         private readonly IRouteableContentTypeCoordinator _routeableContentTypeCoordinator;
 
-        public SitemapUrlHrefLangExtendedMetadataProvider(
-            IContentManager contentManager,
-            IRouteableContentTypeCoordinator routeableContentTypeCoordinator
-            )
+        public SitemapUrlHrefLangExtendedMetadataProvider(IContentManager contentManager, IRouteableContentTypeCoordinator routeableContentTypeCoordinator)
         {
             _contentManager = contentManager;
             _routeableContentTypeCoordinator = routeableContentTypeCoordinator;
@@ -28,11 +25,7 @@ namespace OrchardCore.ContentLocalization.Sitemaps
 
         public XAttribute GetExtendedAttribute => _extendedAttribute;
 
-        public async Task<bool> ApplyExtendedMetadataAsync(
-            SitemapBuilderContext context,
-            ContentItemsQueryContext queryContext,
-            ContentItem contentItem,
-            XElement url)
+        public async Task<bool> ApplyExtendedMetadataAsync(SitemapBuilderContext context, ContentItemsQueryContext queryContext, ContentItem contentItem, XElement url)
         {
             var part = contentItem.As<LocalizationPart>();
             if (part == null)
@@ -40,9 +33,7 @@ namespace OrchardCore.ContentLocalization.Sitemaps
                 return true;
             }
 
-            var localizedContentParts = queryContext.ReferenceContentItems
-                .Select(ci => ci.As<LocalizationPart>())
-                .Where(cp => cp.LocalizationSet == part.LocalizationSet);
+            var localizedContentParts = queryContext.ReferenceContentItems.Select(ci => ci.As<LocalizationPart>()).Where(cp => cp.LocalizationSet == part.LocalizationSet);
 
             foreach (var localizedPart in localizedContentParts)
             {
@@ -54,10 +45,12 @@ namespace OrchardCore.ContentLocalization.Sitemaps
 
                 var hrefValue = await _routeableContentTypeCoordinator.GetRouteAsync(context, localizedPart.ContentItem);
 
-                var linkNode = new XElement(_extendedNamespace + "link",
+                var linkNode = new XElement(
+                    _extendedNamespace + "link",
                     new XAttribute("rel", "alternate"),
                     new XAttribute("hreflang", localizedPart.Culture),
-                    new XAttribute("href", hrefValue));
+                    new XAttribute("href", hrefValue)
+                );
 
                 url.Add(linkNode);
             }

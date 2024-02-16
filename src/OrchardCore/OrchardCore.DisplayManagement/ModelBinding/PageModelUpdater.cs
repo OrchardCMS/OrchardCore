@@ -9,13 +9,13 @@ namespace OrchardCore.DisplayManagement.ModelBinding
     {
         public PageModelUpdater(PageModel page) => PageContext = page.PageContext;
 
-        public new Task<bool> TryUpdateModelAsync<TModel>(TModel model) where TModel : class
-            => base.TryUpdateModelAsync(model);
+        public new Task<bool> TryUpdateModelAsync<TModel>(TModel model)
+            where TModel : class => base.TryUpdateModelAsync(model);
 
-        public new Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix) where TModel : class
-            => base.TryUpdateModelAsync(model, prefix);
+        public new Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix)
+            where TModel : class => base.TryUpdateModelAsync(model, prefix);
 
-        public new Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix, params Expression<Func<TModel, object>>[] includeExpressions) where TModel : class
-            => base.TryUpdateModelAsync(model, prefix, includeExpressions);
+        public new Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix, params Expression<Func<TModel, object>>[] includeExpressions)
+            where TModel : class => base.TryUpdateModelAsync(model, prefix, includeExpressions);
     }
 }

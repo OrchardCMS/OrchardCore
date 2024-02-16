@@ -14,20 +14,23 @@ namespace OrchardCore.ContentTypes.Deployment
 
         public override IDisplayResult Display(DeleteContentDefinitionDeploymentStep step)
         {
-            return
-                Combine(
-                    View("DeleteContentDefinitionDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                    View("DeleteContentDefinitionDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-                );
+            return Combine(
+                View("DeleteContentDefinitionDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("DeleteContentDefinitionDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(DeleteContentDefinitionDeploymentStep step)
         {
-            return Initialize<DeleteContentDefinitionStepViewModel>("DeleteContentDefinitionDeploymentStep_Fields_Edit", model =>
-            {
-                model.ContentParts = string.Join(", ", step.ContentParts);
-                model.ContentTypes = string.Join(", ", step.ContentTypes);
-            }).Location("Content");
+            return Initialize<DeleteContentDefinitionStepViewModel>(
+                    "DeleteContentDefinitionDeploymentStep_Fields_Edit",
+                    model =>
+                    {
+                        model.ContentParts = string.Join(", ", step.ContentParts);
+                        model.ContentTypes = string.Join(", ", step.ContentTypes);
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(DeleteContentDefinitionDeploymentStep step, IUpdateModel updater)

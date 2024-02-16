@@ -13,21 +13,24 @@ namespace OrchardCore.ContentTypes.Deployment
     {
         public override IDisplayResult Display(ContentDefinitionDeploymentStep step)
         {
-            return
-                Combine(
-                    View("ContentDefinitionDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                    View("ContentDefinitionDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-                );
+            return Combine(
+                View("ContentDefinitionDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("ContentDefinitionDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(ContentDefinitionDeploymentStep step)
         {
-            return Initialize<ContentDefinitionStepViewModel>("ContentDefinitionDeploymentStep_Fields_Edit", model =>
-            {
-                model.ContentParts = step.ContentParts;
-                model.ContentTypes = step.ContentTypes;
-                model.IncludeAll = step.IncludeAll;
-            }).Location("Content");
+            return Initialize<ContentDefinitionStepViewModel>(
+                    "ContentDefinitionDeploymentStep_Fields_Edit",
+                    model =>
+                    {
+                        model.ContentParts = step.ContentParts;
+                        model.ContentTypes = step.ContentTypes;
+                        model.IncludeAll = step.IncludeAll;
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentDefinitionDeploymentStep step, IUpdateModel updater)
@@ -36,12 +39,7 @@ namespace OrchardCore.ContentTypes.Deployment
             step.ContentTypes = [];
             step.ContentParts = [];
 
-            await updater.TryUpdateModelAsync(
-                step,
-                Prefix,
-                x => x.ContentTypes,
-                x => x.ContentParts,
-                x => x.IncludeAll);
+            await updater.TryUpdateModelAsync(step, Prefix, x => x.ContentTypes, x => x.ContentParts, x => x.IncludeAll);
 
             // don't have the selected option if include all
             if (step.IncludeAll)

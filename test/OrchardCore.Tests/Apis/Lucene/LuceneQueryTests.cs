@@ -132,11 +132,11 @@ namespace OrchardCore.Tests.Apis.Lucene
 
                 // { "from": 0, "size": 10, "query":{ "bool": { "should": [ { "wildcard": {  "Content.ContentItem.DisplayText.Normalized": { "value": "orch*", "boost": 2 } } },{ "wildcard": { "Content.BodyAspect.Body": { "value": "orchar*", "boost": 5 } } } ] } } }
                 var query =
-                    "{ \"from\": 0, \"size\": 10, \"query\":" +
-                        "{ \"bool\": { \"should\": [ " +
-                            "{ \"wildcard\": {  \"Content.ContentItem.DisplayText.Normalized\": { \"value\": \"orch*\", \"boost\": 2 } } }," +
-                            "{ \"wildcard\": { \"Content.BodyAspect.Body\": { \"value\": \"orchar*\", \"boost\": 5 } } }" +
-                        "] } } }";
+                    "{ \"from\": 0, \"size\": 10, \"query\":"
+                    + "{ \"bool\": { \"should\": [ "
+                    + "{ \"wildcard\": {  \"Content.ContentItem.DisplayText.Normalized\": { \"value\": \"orch*\", \"boost\": 2 } } },"
+                    + "{ \"wildcard\": { \"Content.BodyAspect.Body\": { \"value\": \"orchar*\", \"boost\": 5 } } }"
+                    + "] } } }";
 
                 var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={query}");
                 var queryResults = await content.Content.ReadAsAsync<LuceneQueryResults>();
@@ -150,7 +150,8 @@ namespace OrchardCore.Tests.Apis.Lucene
                 Assert.Contains("Orchard", contentItems.ElementAt(1).As<HtmlBodyPart>().Html, StringComparison.OrdinalIgnoreCase);
                 Assert.Contains("Orchard", contentItems.ElementAt(2).DisplayText, StringComparison.OrdinalIgnoreCase);
                 Assert.Contains("Orchard", contentItems.ElementAt(3).DisplayText, StringComparison.OrdinalIgnoreCase);
-            };
+            }
+            ;
         }
     }
 }

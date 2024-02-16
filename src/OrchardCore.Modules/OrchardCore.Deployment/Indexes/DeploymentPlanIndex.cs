@@ -13,13 +13,11 @@ namespace OrchardCore.Deployment.Indexes
     {
         public override void Describe(DescribeContext<DeploymentPlan> context)
         {
-            context.For<DeploymentPlanIndex>()
+            context
+                .For<DeploymentPlanIndex>()
                 .Map(deploymentPlan =>
                 {
-                    return new DeploymentPlanIndex
-                    {
-                        Name = deploymentPlan.Name
-                    };
+                    return new DeploymentPlanIndex { Name = deploymentPlan.Name };
                 });
         }
     }

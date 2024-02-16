@@ -9,9 +9,7 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
 {
     public class TenantValidatorTests : SiteContext
     {
-        static TenantValidatorTests()
-        {
-        }
+        static TenantValidatorTests() { }
 
         [Theory]
         [InlineData("Tenant1", "tenant1", "", "Feature Profile", new[] { "A tenant with the same name already exists." })]
@@ -27,7 +25,13 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
         [InlineData("@Invalid Tenant", "tenant7", "example1.com", "Feature Profile", new[] { "Invalid tenant name. Must contain characters only and no spaces." })]
         [InlineData("Tenant7", null, "  ", "Feature Profile", new[] { "A tenant with the same host and prefix already exists." })]
         [InlineData("Tenant7", "/tenant7", "", "Feature Profile", new[] { "The url prefix can not contain more than one segment." })]
-        [InlineData("@Invalid Tenant", "/tenant7", "", "Feature Profile", new[] { "Invalid tenant name. Must contain characters only and no spaces.", "The url prefix can not contain more than one segment." })]
+        [InlineData(
+            "@Invalid Tenant",
+            "/tenant7",
+            "",
+            "Feature Profile",
+            new[] { "Invalid tenant name. Must contain characters only and no spaces.", "The url prefix can not contain more than one segment." }
+        )]
         [InlineData("Tenant8", "tenant4", "example6.com,example4.com, example5.com", "Feature Profile", new[] { "A tenant with the same host and prefix already exists." })]
         [InlineData("Tenant9", "tenant9", "", "Feature Profile", new string[] { })]
         [InlineData("Tenant9", "", "example6.com", "Feature Profile", new string[] { })]
@@ -101,44 +105,51 @@ namespace OrchardCore.Modules.Tenants.Services.Tests
         private static TenantValidator CreateTenantValidator(bool defaultTenant = true)
         {
             var featureProfilesServiceMock = new Mock<IFeatureProfilesService>();
-            featureProfilesServiceMock.Setup(fp => fp.GetFeatureProfilesAsync())
-                .Returns(Task.FromResult((IDictionary<string, FeatureProfile>)new Dictionary<string, FeatureProfile>
-                {
-                    { "Feature Profile", new FeatureProfile() }
-                }));
+            featureProfilesServiceMock
+                .Setup(fp => fp.GetFeatureProfilesAsync())
+                .Returns(Task.FromResult((IDictionary<string, FeatureProfile>)new Dictionary<string, FeatureProfile> { { "Feature Profile", new FeatureProfile() } }));
 
             var stringLocalizerMock = new Mock<IStringLocalizer<TenantValidator>>();
-            stringLocalizerMock
-                .Setup(l => l[It.IsAny<string>()])
-                .Returns<string>(n => new LocalizedString(n, n));
-            stringLocalizerMock
-                .Setup(l => l[It.IsAny<string>(), It.IsAny<object[]>()])
-                .Returns<string, object[]>((n, a) => new LocalizedString(n, n));
+            stringLocalizerMock.Setup(l => l[It.IsAny<string>()]).Returns<string>(n => new LocalizedString(n, n));
+            stringLocalizerMock.Setup(l => l[It.IsAny<string>(), It.IsAny<object[]>()]).Returns<string, object[]>((n, a) => new LocalizedString(n, n));
 
-            var shellSettings = defaultTenant
-                ? ShellHost.GetSettings(ShellSettings.DefaultShellName)
-                : new ShellSettings();
+            var shellSettings = defaultTenant ? ShellHost.GetSettings(ShellSettings.DefaultShellName) : new ShellSettings();
 
             var dbConnectionValidatorMock = new Mock<IDbConnectionValidator>();
             var validationContext = new DbConnectionValidatorContext(shellSettings);
 
             dbConnectionValidatorMock.Setup(v => v.ValidateAsync(validationContext));
 
-            return new TenantValidator(
-                ShellHost,
-                ShellSettingsManager,
-                featureProfilesServiceMock.Object,
-                dbConnectionValidatorMock.Object,
-                stringLocalizerMock.Object
-                );
+            return new TenantValidator(ShellHost, ShellSettingsManager, featureProfilesServiceMock.Object, dbConnectionValidatorMock.Object, stringLocalizerMock.Object);
         }
 
         private static async Task SeedTenantsAsync()
         {
             await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant1", RequestUrlPrefix = "tenant1" }.AsUninitialized());
-            await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant2", RequestUrlPrefix = string.Empty, RequestUrlHost = "example2.com" }.AsUninitialized());
-            await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant3", RequestUrlPrefix = "tenant3", RequestUrlHost = string.Empty }.AsUninitialized());
-            await ShellHost.GetOrCreateShellContextAsync(new ShellSettings { Name = "Tenant4", RequestUrlPrefix = "tenant4", RequestUrlHost = "example4.com, example5.com" }.AsUninitialized());
+            await ShellHost.GetOrCreateShellContextAsync(
+                new ShellSettings
+                {
+                    Name = "Tenant2",
+                    RequestUrlPrefix = string.Empty,
+                    RequestUrlHost = "example2.com"
+                }.AsUninitialized()
+            );
+            await ShellHost.GetOrCreateShellContextAsync(
+                new ShellSettings
+                {
+                    Name = "Tenant3",
+                    RequestUrlPrefix = "tenant3",
+                    RequestUrlHost = string.Empty
+                }.AsUninitialized()
+            );
+            await ShellHost.GetOrCreateShellContextAsync(
+                new ShellSettings
+                {
+                    Name = "Tenant4",
+                    RequestUrlPrefix = "tenant4",
+                    RequestUrlHost = "example4.com, example5.com"
+                }.AsUninitialized()
+            );
         }
     }
 }

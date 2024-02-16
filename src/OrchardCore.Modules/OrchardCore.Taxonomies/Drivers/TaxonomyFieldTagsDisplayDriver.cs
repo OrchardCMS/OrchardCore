@@ -23,9 +23,7 @@ namespace OrchardCore.Taxonomies.Drivers
         private readonly IContentManager _contentManager;
         protected readonly IStringLocalizer S;
 
-        public TaxonomyFieldTagsDisplayDriver(
-            IContentManager contentManager,
-            IStringLocalizer<TaxonomyFieldTagsDisplayDriver> s)
+        public TaxonomyFieldTagsDisplayDriver(IContentManager contentManager, IStringLocalizer<TaxonomyFieldTagsDisplayDriver> s)
         {
             _contentManager = contentManager;
             S = s;
@@ -33,42 +31,48 @@ namespace OrchardCore.Taxonomies.Drivers
 
         public override IDisplayResult Display(TaxonomyField field, BuildFieldDisplayContext context)
         {
-            return Initialize<DisplayTaxonomyFieldTagsViewModel>(GetDisplayShapeType(context), model =>
-            {
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-            })
-            .Location("Detail", "Content")
-            .Location("Summary", "Content");
+            return Initialize<DisplayTaxonomyFieldTagsViewModel>(
+                    GetDisplayShapeType(context),
+                    model =>
+                    {
+                        model.Field = field;
+                        model.Part = context.ContentPart;
+                        model.PartFieldDefinition = context.PartFieldDefinition;
+                    }
+                )
+                .Location("Detail", "Content")
+                .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(TaxonomyField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditTagTaxonomyFieldViewModel>(GetEditorShapeType(context), async model =>
-            {
-                var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
-                model.Taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId, VersionOptions.Latest);
-
-                if (model.Taxonomy != null)
+            return Initialize<EditTagTaxonomyFieldViewModel>(
+                GetEditorShapeType(context),
+                async model =>
                 {
-                    var termEntries = new List<TermEntry>();
-                    TaxonomyFieldDriverHelper.PopulateTermEntries(termEntries, field, model.Taxonomy.As<TaxonomyPart>().Terms, 0);
-                    var tagTermEntries = termEntries.Select(te => new TagTermEntry
+                    var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
+                    model.Taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId, VersionOptions.Latest);
+
+                    if (model.Taxonomy != null)
                     {
-                        ContentItemId = te.ContentItemId,
-                        Selected = te.Selected,
-                        DisplayText = te.Term.DisplayText,
-                        IsLeaf = te.IsLeaf
-                    });
+                        var termEntries = new List<TermEntry>();
+                        TaxonomyFieldDriverHelper.PopulateTermEntries(termEntries, field, model.Taxonomy.As<TaxonomyPart>().Terms, 0);
+                        var tagTermEntries = termEntries.Select(te => new TagTermEntry
+                        {
+                            ContentItemId = te.ContentItemId,
+                            Selected = te.Selected,
+                            DisplayText = te.Term.DisplayText,
+                            IsLeaf = te.IsLeaf
+                        });
 
-                    model.TagTermEntries = JNode.FromObject(tagTermEntries, JOptions.CamelCase).ToJsonString(JOptions.Default);
+                        model.TagTermEntries = JNode.FromObject(tagTermEntries, JOptions.CamelCase).ToJsonString(JOptions.Default);
+                    }
+
+                    model.Field = field;
+                    model.Part = context.ContentPart;
+                    model.PartFieldDefinition = context.PartFieldDefinition;
                 }
-
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-            });
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(TaxonomyField field, IUpdateModel updater, UpdateFieldEditorContext context)
@@ -81,14 +85,14 @@ namespace OrchardCore.Taxonomies.Drivers
 
                 field.TaxonomyContentItemId = settings.TaxonomyContentItemId;
 
-                field.TermContentItemIds = model.TermContentItemIds == null
-                    ? [] : model.TermContentItemIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                field.TermContentItemIds = model.TermContentItemIds == null ? [] : model.TermContentItemIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
                 if (settings.Required && field.TermContentItemIds.Length == 0)
                 {
                     updater.ModelState.AddModelError(
                         nameof(EditTagTaxonomyFieldViewModel.TermContentItemIds),
-                        S["A value is required for '{0}'", context.PartFieldDefinition.DisplayName()]);
+                        S["A value is required for '{0}'", context.PartFieldDefinition.DisplayName()]
+                    );
                 }
 
                 // Update display text for tags.
@@ -103,9 +107,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
                 foreach (var termContentItemId in field.TermContentItemIds)
                 {
-                    var term = TaxonomyOrchardHelperExtensions.FindTerm(
-                        (JsonArray)taxonomy.Content["TaxonomyPart"]["Terms"],
-                        termContentItemId);
+                    var term = TaxonomyOrchardHelperExtensions.FindTerm((JsonArray)taxonomy.Content["TaxonomyPart"]["Terms"], termContentItemId);
 
                     terms.Add(term);
                 }

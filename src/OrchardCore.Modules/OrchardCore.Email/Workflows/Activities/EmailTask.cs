@@ -16,12 +16,7 @@ namespace OrchardCore.Email.Workflows.Activities
         protected readonly IStringLocalizer S;
         private readonly HtmlEncoder _htmlEncoder;
 
-        public EmailTask(
-            ISmtpService smtpService,
-            IWorkflowExpressionEvaluator expressionEvaluator,
-            IStringLocalizer<EmailTask> localizer,
-            HtmlEncoder htmlEncoder
-        )
+        public EmailTask(ISmtpService smtpService, IWorkflowExpressionEvaluator expressionEvaluator, IStringLocalizer<EmailTask> localizer, HtmlEncoder htmlEncoder)
         {
             _smtpService = smtpService;
             _expressionEvaluator = expressionEvaluator;
@@ -87,7 +82,6 @@ namespace OrchardCore.Email.Workflows.Activities
             get => GetProperty(() => true);
             set => SetProperty(value);
         }
-
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {

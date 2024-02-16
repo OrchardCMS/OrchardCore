@@ -40,7 +40,8 @@ namespace OrchardCore.Roles.Controllers
             IRoleService roleService,
             INotifier notifier,
             IStringLocalizer<AdminController> stringLocalizer,
-            IHtmlLocalizer<AdminController> htmlLocalizer)
+            IHtmlLocalizer<AdminController> htmlLocalizer
+        )
         {
             _documentStore = documentStore;
             _roleManager = roleManager;
@@ -62,10 +63,7 @@ namespace OrchardCore.Roles.Controllers
 
             var roles = await _roleService.GetRolesAsync();
 
-            var model = new RolesViewModel
-            {
-                RoleEntries = roles.Select(BuildRoleEntry).ToList()
-            };
+            var model = new RolesViewModel { RoleEntries = roles.Select(BuildRoleEntry).ToList() };
 
             return View(model);
         }
@@ -271,18 +269,17 @@ namespace OrchardCore.Roles.Controllers
 
             var title = string.IsNullOrWhiteSpace(feature.Name) ? S["{0} Feature", feature.Id] : feature.Name;
 
-            return new PermissionGroupKey(feature.Id, title)
-            {
-                Source = feature.Id,
-            };
+            return new PermissionGroupKey(feature.Id, title) { Source = feature.Id, };
         }
 
         private async Task<IEnumerable<string>> GetEffectivePermissions(Role role, IEnumerable<Permission> allPermissions)
         {
             // Create a fake user to check the actual permissions. If the role is anonymous
             // IsAuthenticated needs to be false.
-            var fakeIdentity = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Role, role.RoleName) },
-                !string.Equals(role.RoleName, "Anonymous", StringComparison.OrdinalIgnoreCase) ? "FakeAuthenticationType" : null);
+            var fakeIdentity = new ClaimsIdentity(
+                new[] { new Claim(ClaimTypes.Role, role.RoleName) },
+                !string.Equals(role.RoleName, "Anonymous", StringComparison.OrdinalIgnoreCase) ? "FakeAuthenticationType" : null
+            );
 
             // Add role claims
             fakeIdentity.AddClaims(role.RoleClaims.Select(c => c.ToClaim()));

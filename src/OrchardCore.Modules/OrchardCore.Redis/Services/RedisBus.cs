@@ -42,17 +42,20 @@ namespace OrchardCore.Redis.Services
             {
                 var subscriber = _redis.Connection.GetSubscriber();
 
-                await subscriber.SubscribeAsync(RedisChannel.Literal(_channelPrefix + channel), (redisChannel, redisValue) =>
-                {
-                    var tokens = redisValue.ToString().Split('/').ToArray();
-
-                    if (tokens.Length != 2 || tokens[0].Length == 0 || tokens[0].Equals(_hostName, StringComparison.OrdinalIgnoreCase))
+                await subscriber.SubscribeAsync(
+                    RedisChannel.Literal(_channelPrefix + channel),
+                    (redisChannel, redisValue) =>
                     {
-                        return;
-                    }
+                        var tokens = redisValue.ToString().Split('/').ToArray();
 
-                    handler(channel, tokens[1]);
-                });
+                        if (tokens.Length != 2 || tokens[0].Length == 0 || tokens[0].Equals(_hostName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            return;
+                        }
+
+                        handler(channel, tokens[1]);
+                    }
+                );
             }
             catch (Exception e)
             {

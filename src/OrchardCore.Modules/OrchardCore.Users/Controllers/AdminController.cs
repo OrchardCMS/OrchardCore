@@ -64,7 +64,8 @@ namespace OrchardCore.Users.Controllers
             ILogger<AdminController> logger,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor
+        )
         {
             _userDisplayManager = userDisplayManager;
             _userOptionsDisplayManager = userOptionsDisplayManager;
@@ -84,7 +85,10 @@ namespace OrchardCore.Users.Controllers
             S = stringLocalizer;
         }
 
-        public async Task<ActionResult> Index([ModelBinder(BinderType = typeof(UserFilterEngineModelBinder), Name = "q")] QueryFilterResult<User> queryFilterResult, PagerParameters pagerParameters)
+        public async Task<ActionResult> Index(
+            [ModelBinder(BinderType = typeof(UserFilterEngineModelBinder), Name = "q")] QueryFilterResult<User> queryFilterResult,
+            PagerParameters pagerParameters
+        )
         {
             // Check a dummy user account to see if the current user has permission to view users.
             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ListUsers, new User()))
@@ -114,10 +118,7 @@ namespace OrchardCore.Users.Controllers
 
             var count = await users.CountAsync();
 
-            var results = await users
-                .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize)
-                .ListAsync();
+            var results = await users.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
 
             dynamic pagerShape = await _shapeFactory.PagerAsync(pager, count, options.RouteValues);
 
@@ -125,18 +126,35 @@ namespace OrchardCore.Users.Controllers
 
             foreach (var user in results)
             {
-                userEntries.Add(new UserEntry
-                {
-                    UserId = user.UserId,
-                    Shape = await _userDisplayManager.BuildDisplayAsync(user, updater: _updateModelAccessor.ModelUpdater, displayType: "SummaryAdmin")
-                });
+                userEntries.Add(
+                    new UserEntry
+                    {
+                        UserId = user.UserId,
+                        Shape = await _userDisplayManager.BuildDisplayAsync(user, updater: _updateModelAccessor.ModelUpdater, displayType: "SummaryAdmin")
+                    }
+                );
             }
 
             options.UserFilters =
             [
-                new SelectListItem() { Text = S["All Users"], Value = nameof(UsersFilter.All), Selected = (options.Filter == UsersFilter.All) },
-                new SelectListItem() { Text = S["Enabled Users"], Value = nameof(UsersFilter.Enabled), Selected = (options.Filter == UsersFilter.Enabled) },
-                new SelectListItem() { Text = S["Disabled Users"], Value = nameof(UsersFilter.Disabled), Selected = (options.Filter == UsersFilter.Disabled) }
+                new SelectListItem()
+                {
+                    Text = S["All Users"],
+                    Value = nameof(UsersFilter.All),
+                    Selected = (options.Filter == UsersFilter.All)
+                },
+                new SelectListItem()
+                {
+                    Text = S["Enabled Users"],
+                    Value = nameof(UsersFilter.Enabled),
+                    Selected = (options.Filter == UsersFilter.Enabled)
+                },
+                new SelectListItem()
+                {
+                    Text = S["Disabled Users"],
+                    Value = nameof(UsersFilter.Disabled),
+                    Selected = (options.Filter == UsersFilter.Disabled)
+                }
                 // new SelectListItem() { Text = S["Approved"], Value = nameof(UsersFilter.Approved) },
                 // new SelectListItem() { Text = S["Email pending"], Value = nameof(UsersFilter.EmailPending) },
                 // new SelectListItem() { Text = S["Pending"], Value = nameof(UsersFilter.Pending) }
@@ -144,8 +162,18 @@ namespace OrchardCore.Users.Controllers
 
             options.UserSorts =
             [
-                new SelectListItem() { Text = S["Name"], Value = nameof(UsersOrder.Name), Selected = (options.Order == UsersOrder.Name) },
-                new SelectListItem() { Text = S["Email"], Value = nameof(UsersOrder.Email), Selected = (options.Order == UsersOrder.Email) },
+                new SelectListItem()
+                {
+                    Text = S["Name"],
+                    Value = nameof(UsersOrder.Name),
+                    Selected = (options.Order == UsersOrder.Name)
+                },
+                new SelectListItem()
+                {
+                    Text = S["Email"],
+                    Value = nameof(UsersOrder.Email),
+                    Selected = (options.Order == UsersOrder.Email)
+                },
                 // new SelectListItem() { Text = S["Created date"], Value = nameof(UsersOrder.CreatedUtc) },
                 // new SelectListItem() { Text = S["Last Login date"], Value = nameof(UsersOrder.LastLoginUtc) }
             ];
@@ -174,8 +202,18 @@ namespace OrchardCore.Users.Controllers
 
             options.UserRoleFilters =
             [
-                new SelectListItem() { Text = S["Any role"], Value = string.Empty, Selected = options.SelectedRole == string.Empty },
-                new SelectListItem() { Text = S["Authenticated (no roles)"], Value = "Authenticated", Selected = string.Equals(options.SelectedRole, "Authenticated", StringComparison.OrdinalIgnoreCase) },
+                new SelectListItem()
+                {
+                    Text = S["Any role"],
+                    Value = string.Empty,
+                    Selected = options.SelectedRole == string.Empty
+                },
+                new SelectListItem()
+                {
+                    Text = S["Authenticated (no roles)"],
+                    Value = "Authenticated",
+                    Selected = string.Equals(options.SelectedRole, "Authenticated", StringComparison.OrdinalIgnoreCase)
+                },
                 // TODO Candidate for dynamic localization.
                 .. roleNames.Select(roleName =>
                     new SelectListItem
@@ -195,13 +233,16 @@ namespace OrchardCore.Users.Controllers
 
             var header = await _userOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
 
-            var shapeViewModel = await _shapeFactory.CreateAsync<UsersIndexViewModel>("UsersAdminList", viewModel =>
-            {
-                viewModel.Users = userEntries;
-                viewModel.Pager = pagerShape;
-                viewModel.Options = options;
-                viewModel.Header = header;
-            });
+            var shapeViewModel = await _shapeFactory.CreateAsync<UsersIndexViewModel>(
+                "UsersAdminList",
+                viewModel =>
+                {
+                    viewModel.Users = userEntries;
+                    viewModel.Pager = pagerShape;
+                    viewModel.Options = options;
+                    viewModel.Header = header;
+                }
+            );
 
             return View(shapeViewModel);
         }
@@ -248,7 +289,8 @@ namespace OrchardCore.Users.Controllers
 
                     switch (options.BulkAction)
                     {
-                        case UsersBulkAction.None: break;
+                        case UsersBulkAction.None:
+                            break;
                         case UsersBulkAction.Approve:
                             if (canEditUser && !await _userManager.IsEmailConfirmedAsync(user))
                             {

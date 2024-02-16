@@ -118,20 +118,23 @@ namespace OrchardCore.Shortcodes
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddShortcode<LocaleShortcodeProvider>("locale", d =>
-            {
-                d.DefaultValue = "[locale {language_code}] [/locale]";
-                d.Hint = "Conditionally render content in the specified language";
-                d.Usage =
-@"[locale en]English Text[/locale][locale fr false]French Text[/locale]<br>
+            services.AddShortcode<LocaleShortcodeProvider>(
+                "locale",
+                d =>
+                {
+                    d.DefaultValue = "[locale {language_code}] [/locale]";
+                    d.Hint = "Conditionally render content in the specified language";
+                    d.Usage =
+                        @"[locale en]English Text[/locale][locale fr false]French Text[/locale]<br>
 <table>
   <tr>
     <td>Args:</td>
     <td>lang, fallback</td>
   </tr>
 </table>";
-                d.Categories = ["Localization"];
-            });
+                    d.Categories = ["Localization"];
+                }
+            );
         }
     }
 

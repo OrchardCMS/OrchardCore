@@ -26,7 +26,8 @@ namespace OrchardCore.Demo.Controllers
             ISession session,
             IUpdateModelAccessor updateModelAccessor,
             IAuthorizationService authorizationService,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor
+        )
         {
             _contentManager = contentManager;
             _contentDisplay = contentDisplay;

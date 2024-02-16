@@ -25,36 +25,42 @@ namespace OrchardCore.ContentFields.Fields
 
         public override IDisplayResult Display(MultiTextField field, BuildFieldDisplayContext context)
         {
-            return Initialize<DisplayMultiTextFieldViewModel>(GetDisplayShapeType(context), model =>
-            {
-                var settings = context.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
+            return Initialize<DisplayMultiTextFieldViewModel>(
+                    GetDisplayShapeType(context),
+                    model =>
+                    {
+                        var settings = context.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
 
-                model.Values = settings.Options.Where(o => field.Values?.Contains(o.Value) == true).Select(o => o.Value).ToArray();
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-            })
-            .Location("Detail", "Content")
-            .Location("Summary", "Content");
+                        model.Values = settings.Options.Where(o => field.Values?.Contains(o.Value) == true).Select(o => o.Value).ToArray();
+                        model.Field = field;
+                        model.Part = context.ContentPart;
+                        model.PartFieldDefinition = context.PartFieldDefinition;
+                    }
+                )
+                .Location("Detail", "Content")
+                .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(MultiTextField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditMultiTextFieldViewModel>(GetEditorShapeType(context), model =>
-            {
-                if (context.IsNew)
+            return Initialize<EditMultiTextFieldViewModel>(
+                GetEditorShapeType(context),
+                model =>
                 {
-                    var settings = context.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
-                    model.Values = settings.Options.Where(o => o.Default).Select(o => o.Value).ToArray();
+                    if (context.IsNew)
+                    {
+                        var settings = context.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
+                        model.Values = settings.Options.Where(o => o.Default).Select(o => o.Value).ToArray();
+                    }
+                    else
+                    {
+                        model.Values = field.Values;
+                    }
+                    model.Field = field;
+                    model.Part = context.ContentPart;
+                    model.PartFieldDefinition = context.PartFieldDefinition;
                 }
-                else
-                {
-                    model.Values = field.Values;
-                }
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-            });
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(MultiTextField field, IUpdateModel updater, UpdateFieldEditorContext context)

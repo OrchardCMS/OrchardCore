@@ -14,10 +14,7 @@ namespace OrchardCore.DisplayManagement.Shapes
     /// </remarks>
     public class ShapeSerializer
     {
-        private static readonly JsonSerializerOptions _shapeJsonSerializer = new()
-        {
-            ReferenceHandler = ReferenceHandler.IgnoreCycles,
-        };
+        private static readonly JsonSerializerOptions _shapeJsonSerializer = new() { ReferenceHandler = ReferenceHandler.IgnoreCycles, };
 
         private readonly HashSet<IShape> _shapes = [];
         private readonly IShape _shape;

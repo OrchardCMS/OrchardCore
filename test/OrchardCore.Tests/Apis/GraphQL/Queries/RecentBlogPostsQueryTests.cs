@@ -12,28 +12,25 @@ namespace OrchardCore.Tests.Apis.GraphQL
             using var context = new BlogContext();
             await context.InitializeAsync();
 
-            var blogPostContentItemId = await context
-                .CreateContentItem("BlogPost", builder =>
+            var blogPostContentItemId = await context.CreateContentItem(
+                "BlogPost",
+                builder =>
                 {
                     builder.Published = true;
                     builder.Latest = true;
                     builder.DisplayText = "Some sorta blogpost in a Query!";
 
-                    builder
-                        .Weld(new ContainedPart
-                        {
-                            ListContentItemId = context.BlogContentItemId
-                        });
-                });
+                    builder.Weld(new ContainedPart { ListContentItemId = context.BlogContentItemId });
+                }
+            );
 
-            var result = await context
-                .GraphQLClient
-                .Content
-                .Query("RecentBlogPosts", builder =>
+            var result = await context.GraphQLClient.Content.Query(
+                "RecentBlogPosts",
+                builder =>
                 {
-                    builder
-                        .WithField("displayText");
-                });
+                    builder.WithField("displayText");
+                }
+            );
 
             var nodes = result["data"]["recentBlogPosts"];
 

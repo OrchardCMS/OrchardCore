@@ -29,7 +29,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             ILiquidTemplateManager liquidTemplateManager,
             ISession session,
             JavaScriptEncoder javaScriptEncoder,
-            IOptions<TemplateOptions> templateOptions)
+            IOptions<TemplateOptions> templateOptions
+        )
         {
             _queryService = queryService;
             _liquidTemplateManager = liquidTemplateManager;
@@ -50,7 +51,11 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             var elasticQuery = query as ElasticQuery;
             var elasticQueryResults = new ElasticQueryResults();
 
-            var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(elasticQuery.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
+            var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(
+                elasticQuery.Template,
+                _javaScriptEncoder,
+                parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions)))
+            );
             var docs = await _queryService.SearchAsync(elasticQuery.Index, tokenizedContent);
             elasticQueryResults.Count = docs.Count;
 
@@ -84,8 +89,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                 foreach (var document in docs.TopDocs)
                 {
-                    results.Add(new JsonObject(document.Select(x =>
-                        KeyValuePair.Create(x.Key, (JsonNode)JsonValue.Create(x.Value.ToString())))));
+                    results.Add(new JsonObject(document.Select(x => KeyValuePair.Create(x.Key, (JsonNode)JsonValue.Create(x.Value.ToString())))));
                 }
 
                 elasticQueryResults.Items = results;

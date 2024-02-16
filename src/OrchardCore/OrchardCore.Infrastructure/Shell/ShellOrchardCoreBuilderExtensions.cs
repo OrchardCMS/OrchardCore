@@ -14,7 +14,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddDataStorage(this OrchardCoreBuilder builder)
         {
-            builder.AddSitesFolder()
+            builder
+                .AddSitesFolder()
                 .ConfigureServices(services =>
                 {
                     services.AddScoped<IShellDescriptorManager, ShellDescriptorManager>();

@@ -22,8 +22,7 @@ namespace OrchardCore.Sitemaps.Handlers
 
             var allSitemaps = await _sitemapManager.LoadSitemapsAsync();
 
-            var sitemapIndex = allSitemaps
-                .FirstOrDefault(s => s.GetType() == typeof(SitemapIndex));
+            var sitemapIndex = allSitemaps.FirstOrDefault(s => s.GetType() == typeof(SitemapIndex));
 
             if (contentItem == null || sitemapIndex == null)
             {

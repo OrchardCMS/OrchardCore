@@ -8,11 +8,12 @@ namespace OrchardCore.Logging
     {
         public static IHostBuilder UseSerilogWeb(this IHostBuilder builder)
         {
-            return builder.UseSerilog((hostingContext, configBuilder) =>
-            {
-                configBuilder.ReadFrom.Configuration(hostingContext.Configuration)
-                .Enrich.FromLogContext();
-            });
+            return builder.UseSerilog(
+                (hostingContext, configBuilder) =>
+                {
+                    configBuilder.ReadFrom.Configuration(hostingContext.Configuration).Enrich.FromLogContext();
+                }
+            );
         }
     }
 }

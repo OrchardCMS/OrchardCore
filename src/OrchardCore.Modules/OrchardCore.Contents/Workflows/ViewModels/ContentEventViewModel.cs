@@ -5,11 +5,10 @@ using OrchardCore.Workflows.ViewModels;
 
 namespace OrchardCore.Contents.Workflows.ViewModels
 {
-    public class ContentEventViewModel<T> : ActivityViewModel<T> where T : ContentEvent
+    public class ContentEventViewModel<T> : ActivityViewModel<T>
+        where T : ContentEvent
     {
-        public ContentEventViewModel()
-        {
-        }
+        public ContentEventViewModel() { }
 
         public ContentEventViewModel(T activity)
         {

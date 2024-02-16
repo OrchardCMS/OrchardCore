@@ -23,11 +23,13 @@ namespace OrchardCore.Media.Services
         private readonly MediaOptions _mediaOptions;
         private readonly IUserAssetFolderNameProvider _userAssetFolderNameProvider;
 
-        public ManageMediaFolderAuthorizationHandler(IServiceProvider serviceProvider,
+        public ManageMediaFolderAuthorizationHandler(
+            IServiceProvider serviceProvider,
             AttachedMediaFieldFileService attachedMediaFieldFileService,
             IMediaFileStore fileStore,
             IOptions<MediaOptions> options,
-            IUserAssetFolderNameProvider userAssetFolderNameProvider)
+            IUserAssetFolderNameProvider userAssetFolderNameProvider
+        )
         {
             _serviceProvider = serviceProvider;
             _attachedMediaFieldFileService = attachedMediaFieldFileService;
@@ -57,17 +59,15 @@ namespace OrchardCore.Media.Services
             _pathSeparator = _fileStore.Combine("a", "b").Contains('/') ? '/' : '\\';
 
             // ensure end trailing slash
-            _mediaFieldsFolder = _fileStore.NormalizePath(_attachedMediaFieldFileService.MediaFieldsFolder)
-                                 .TrimEnd(_pathSeparator) + _pathSeparator;
+            _mediaFieldsFolder = _fileStore.NormalizePath(_attachedMediaFieldFileService.MediaFieldsFolder).TrimEnd(_pathSeparator) + _pathSeparator;
 
-            _usersFolder = _fileStore.NormalizePath(_mediaOptions.AssetsUsersFolder)
-                           .TrimEnd(_pathSeparator) + _pathSeparator;
+            _usersFolder = _fileStore.NormalizePath(_mediaOptions.AssetsUsersFolder).TrimEnd(_pathSeparator) + _pathSeparator;
 
             var path = context.Resource as string;
 
-            var userOwnFolder = _fileStore.NormalizePath(
-                                _fileStore.Combine(_usersFolder, _userAssetFolderNameProvider.GetUserAssetFolderName(context.User)))
-                                .TrimEnd(_pathSeparator) + _pathSeparator;
+            var userOwnFolder =
+                _fileStore.NormalizePath(_fileStore.Combine(_usersFolder, _userAssetFolderNameProvider.GetUserAssetFolderName(context.User))).TrimEnd(_pathSeparator)
+                + _pathSeparator;
 
             var permission = Permissions.ManageMedia;
 
@@ -99,8 +99,7 @@ namespace OrchardCore.Media.Services
         private bool IsAuthorizedFolder(string authorizedFolder, string childPath)
         {
             // Ensure end trailing slash.
-            childPath = _fileStore.NormalizePath(childPath)
-                        .TrimEnd(_pathSeparator) + _pathSeparator;
+            childPath = _fileStore.NormalizePath(childPath).TrimEnd(_pathSeparator) + _pathSeparator;
 
             return childPath.Equals(authorizedFolder);
         }

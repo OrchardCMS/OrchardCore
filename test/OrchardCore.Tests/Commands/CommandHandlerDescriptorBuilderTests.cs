@@ -23,29 +23,20 @@ namespace OrchardCore.Tests.Commands
 
         public class MyCommand : DefaultCommandHandler
         {
-            public MyCommand() : base(null)
-            {
-            }
+            public MyCommand()
+                : base(null) { }
 
 #pragma warning disable CA1822 // Mark members as static
-            public void FooBar()
-            {
-            }
+            public void FooBar() { }
 
             [CommandName("MyCommand")]
-            public void FooBar2()
-            {
-            }
+            public void FooBar2() { }
 
             [CommandName("Foo Bar")]
-            public void Foo_Bar()
-            {
-            }
+            public void Foo_Bar() { }
 
             [CommandName("Foo_Bar")]
-            public void Foo_Bar3()
-            {
-            }
+            public void Foo_Bar3() { }
 #pragma warning restore CA1822 // Mark members as static
         }
 
@@ -63,8 +54,8 @@ namespace OrchardCore.Tests.Commands
         public class PublicMethodsOnly
         {
 #pragma warning restore 660,661
-            public bool Bar { get; set; }   // No accessors.
-            public bool Field = true;       // No field.
+            public bool Bar { get; set; } // No accessors.
+            public bool Field = true; // No field.
 
             // No private method.
 #pragma warning disable CA1822 // Mark members as static
@@ -72,13 +63,10 @@ namespace OrchardCore.Tests.Commands
             private void Blah()
 #pragma warning restore IDE0051 // Remove unused private members
 #pragma warning restore CA1822 // Mark members as static
-            {
-            }
+            { }
 
             // No private method.
-            public static void Foo()
-            {
-            }
+            public static void Foo() { }
 
             // No operator.
             public static bool operator ==(PublicMethodsOnly _1, PublicMethodsOnly _2)
@@ -94,8 +82,7 @@ namespace OrchardCore.Tests.Commands
 #pragma warning disable CA1822 // Mark members as static
             public void Method()
 #pragma warning restore CA1822 // Mark members as static
-            {
-            }
+            { }
         }
     }
 }

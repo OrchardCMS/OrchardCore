@@ -19,11 +19,7 @@ namespace OrchardCore.ContentLocalization.Sitemaps
         private readonly IRouteableContentTypeCoordinator _routeableContentTypeCoordinator;
         private readonly ILocalizationService _localizationService;
 
-        public LocalizedContentItemsQueryProvider(
-            ISession session,
-            IRouteableContentTypeCoordinator routeableContentTypeCoordinator,
-            ILocalizationService localizationService
-            )
+        public LocalizedContentItemsQueryProvider(ISession session, IRouteableContentTypeCoordinator routeableContentTypeCoordinator, ILocalizationService localizationService)
         {
             _session = session;
             _routeableContentTypeCoordinator = routeableContentTypeCoordinator;
@@ -39,7 +35,8 @@ namespace OrchardCore.ContentLocalization.Sitemaps
                 // Assumption here is that at least one content type will be localized.
                 var ctdNames = routeableContentTypeDefinitions.Select(ctd => ctd.Name);
 
-                var queryResults = await _session.Query<ContentItem>()
+                var queryResults = await _session
+                    .Query<ContentItem>()
                     .With<ContentItemIndex>(x => x.Published && x.ContentType.IsIn(ctdNames))
                     .OrderBy(x => x.CreatedUtc)
                     .ListAsync();
@@ -47,14 +44,12 @@ namespace OrchardCore.ContentLocalization.Sitemaps
                 queryContext.ContentItems = queryResults;
 
                 // Provide all content items with localization as reference content items.
-                queryContext.ReferenceContentItems = queryResults
-                    .Where(ci => ci.Has<LocalizationPart>());
+                queryContext.ReferenceContentItems = queryResults.Where(ci => ci.Has<LocalizationPart>());
             }
             else if (source.LimitItems)
             {
                 // Test that content type is still valid to include in sitemap.
-                var contentType = routeableContentTypeDefinitions
-                    .FirstOrDefault(ctd => string.Equals(source.LimitedContentType.ContentTypeName, ctd.Name));
+                var contentType = routeableContentTypeDefinitions.FirstOrDefault(ctd => string.Equals(source.LimitedContentType.ContentTypeName, ctd.Name));
 
                 if (contentType == null)
                 {
@@ -66,11 +61,12 @@ namespace OrchardCore.ContentLocalization.Sitemaps
                     // Get all content items here for reference. Then reduce by default culture.
                     // We know that the content item should be localized.
                     // If it doesn't have a localization part, the content item should have been saved.
-                    var queryResults = await _session.Query<ContentItem>()
-                         .With<ContentItemIndex>(ci => ci.ContentType == source.LimitedContentType.ContentTypeName && ci.Published)
-                         .OrderBy(ci => ci.CreatedUtc)
-                         .With<LocalizedContentItemIndex>()
-                         .ListAsync();
+                    var queryResults = await _session
+                        .Query<ContentItem>()
+                        .With<ContentItemIndex>(ci => ci.ContentType == source.LimitedContentType.ContentTypeName && ci.Published)
+                        .OrderBy(ci => ci.CreatedUtc)
+                        .With<LocalizedContentItemIndex>()
+                        .ListAsync();
 
                     // When limiting items Content item is valid if it is for the default culture.
                     var defaultCulture = await _localizationService.GetDefaultCultureAsync();
@@ -84,13 +80,13 @@ namespace OrchardCore.ContentLocalization.Sitemaps
                     queryContext.ContentItems = items;
 
                     // Provide all content items with localization as reference content items.
-                    queryContext.ReferenceContentItems = queryResults
-                        .Where(ci => ci.Has<LocalizationPart>());
+                    queryContext.ReferenceContentItems = queryResults.Where(ci => ci.Has<LocalizationPart>());
                 }
                 else
                 {
                     // Content type is not localized. Produce standard results.
-                    var queryResults = await _session.Query<ContentItem>()
+                    var queryResults = await _session
+                        .Query<ContentItem>()
                         .With<ContentItemIndex>(x => x.ContentType == source.LimitedContentType.ContentTypeName && x.Published)
                         .OrderBy(x => x.CreatedUtc)
                         .Skip(source.LimitedContentType.Skip)
@@ -103,12 +99,11 @@ namespace OrchardCore.ContentLocalization.Sitemaps
             else
             {
                 // Test that content types are still valid to include in sitemap.
-                var typesToIndex = routeableContentTypeDefinitions
-                    .Where(ctd => source.ContentTypes.Any(s => string.Equals(ctd.Name, s.ContentTypeName)))
-                    .Select(x => x.Name);
+                var typesToIndex = routeableContentTypeDefinitions.Where(ctd => source.ContentTypes.Any(s => string.Equals(ctd.Name, s.ContentTypeName))).Select(x => x.Name);
 
                 // No advantage here in reducing with localized index.
-                var queryResults = await _session.Query<ContentItem>()
+                var queryResults = await _session
+                    .Query<ContentItem>()
                     .With<ContentItemIndex>(x => x.ContentType.IsIn(typesToIndex) && x.Published)
                     .OrderBy(x => x.CreatedUtc)
                     .ListAsync();
@@ -116,8 +111,7 @@ namespace OrchardCore.ContentLocalization.Sitemaps
                 queryContext.ContentItems = queryResults;
 
                 // Provide all content items with localization as reference content items.
-                queryContext.ReferenceContentItems = queryResults
-                    .Where(ci => ci.Has<LocalizationPart>());
+                queryContext.ReferenceContentItems = queryResults.Where(ci => ci.Has<LocalizationPart>());
             }
         }
     }

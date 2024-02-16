@@ -14,9 +14,7 @@ namespace OrchardCore.XmlRpc.Controllers
         private readonly IEnumerable<IXmlRpcHandler> _xmlRpcHandlers;
         private readonly ILogger _logger;
 
-        public MetaWeblogController(
-            IEnumerable<IXmlRpcHandler> xmlRpcHandlers,
-            ILogger<MetaWeblogController> logger)
+        public MetaWeblogController(IEnumerable<IXmlRpcHandler> xmlRpcHandlers, ILogger<MetaWeblogController> logger)
         {
             _xmlRpcHandlers = xmlRpcHandlers;
             _logger = logger;
@@ -37,17 +35,15 @@ namespace OrchardCore.XmlRpc.Controllers
                 new XElement(XName.Get("supportsKeywords", ManifestUri), "No"),
                 new XElement(XName.Get("supportsCategories", ManifestUri), "No"),
                 new XElement(XName.Get("supportsFileUpload", ManifestUri), "No"),
-                new XElement(XName.Get("supportsCustomDate", ManifestUri), "No"));
+                new XElement(XName.Get("supportsCustomDate", ManifestUri), "No")
+            );
 
             foreach (var handler in _xmlRpcHandlers)
             {
                 handler.SetCapabilities(options);
             }
 
-            var doc = new XDocument(
-                        new XElement(
-                            XName.Get("manifest", ManifestUri),
-                            options));
+            var doc = new XDocument(new XElement(XName.Get("manifest", ManifestUri), options));
 
             return Content(doc.ToString(), "text/xml");
         }

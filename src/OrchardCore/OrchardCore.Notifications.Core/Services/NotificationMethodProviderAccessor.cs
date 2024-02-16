@@ -31,11 +31,13 @@ public class NotificationMethodProviderAccessor : INotificationMethodProviderAcc
             var methods = _notificationMethodProviders.Where(provider => !optout.Contains(provider.Method));
             if (selectedMethods.Count > 0)
             {
-                return Task.FromResult<IEnumerable<INotificationMethodProvider>>(methods
-                    // Priority matters to honor user preferences.
-                    .OrderBy(provider => selectedMethods.IndexOf(provider.Method))
-                    .ThenBy(provider => provider.Name.ToString())
-                    .ToList());
+                return Task.FromResult<IEnumerable<INotificationMethodProvider>>(
+                    methods
+                        // Priority matters to honor user preferences.
+                        .OrderBy(provider => selectedMethods.IndexOf(provider.Method))
+                        .ThenBy(provider => provider.Name.ToString())
+                        .ToList()
+                );
             }
 
             return Task.FromResult<IEnumerable<INotificationMethodProvider>>(methods.OrderBy(provider => provider.Name.ToString()).ToList());

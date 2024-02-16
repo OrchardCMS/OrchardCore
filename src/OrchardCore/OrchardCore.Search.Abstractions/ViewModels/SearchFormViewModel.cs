@@ -6,14 +6,10 @@ namespace OrchardCore.Search.ViewModels
     public class SearchFormViewModel : ShapeViewModel
     {
         public SearchFormViewModel()
-            : base("Search__Form")
-        {
-        }
+            : base("Search__Form") { }
 
         public SearchFormViewModel(string shapeType)
-            : base(shapeType)
-        {
-        }
+            : base(shapeType) { }
 
         public string Terms { get; set; }
 

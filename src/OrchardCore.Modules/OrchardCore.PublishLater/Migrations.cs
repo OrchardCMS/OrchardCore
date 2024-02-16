@@ -20,25 +20,17 @@ public class Migrations : DataMigration
 
     public async Task<int> CreateAsync()
     {
-        await _contentDefinitionManager.AlterPartDefinitionAsync("PublishLaterPart", builder => builder
-            .Attachable()
-            .WithDescription("Adds the ability to schedule content items to be published at a given future date and time."));
-
-        await SchemaBuilder.CreateMapIndexTableAsync<PublishLaterPartIndex>(table => table
-            .Column<string>("ContentItemId")
-            .Column<DateTime>("ScheduledPublishDateTimeUtc")
-            .Column<bool>("Published")
-            .Column<bool>("Latest")
+        await _contentDefinitionManager.AlterPartDefinitionAsync(
+            "PublishLaterPart",
+            builder => builder.Attachable().WithDescription("Adds the ability to schedule content items to be published at a given future date and time.")
         );
 
-        await SchemaBuilder.AlterIndexTableAsync<PublishLaterPartIndex>(table => table
-            .CreateIndex("IDX_PublishLaterPartIndex_DocumentId",
-                "Id",
-                "DocumentId",
-                "ContentItemId",
-                "ScheduledPublishDateTimeUtc",
-                "Published",
-                "Latest")
+        await SchemaBuilder.CreateMapIndexTableAsync<PublishLaterPartIndex>(table =>
+            table.Column<string>("ContentItemId").Column<DateTime>("ScheduledPublishDateTimeUtc").Column<bool>("Published").Column<bool>("Latest")
+        );
+
+        await SchemaBuilder.AlterIndexTableAsync<PublishLaterPartIndex>(table =>
+            table.CreateIndex("IDX_PublishLaterPartIndex_DocumentId", "Id", "DocumentId", "ContentItemId", "ScheduledPublishDateTimeUtc", "Published", "Latest")
         );
 
         return 3;
@@ -50,14 +42,10 @@ public class Migrations : DataMigration
         // The 'ScheduledPublishUtc' column and related index are kept on existing databases,
         // this because dropping an index and altering a column don't work on all providers.
 
-        await SchemaBuilder.AlterIndexTableAsync<PublishLaterPartIndex>(table => table
-            .AddColumn<DateTime>(nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc))
-        );
+        await SchemaBuilder.AlterIndexTableAsync<PublishLaterPartIndex>(table => table.AddColumn<DateTime>(nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc)));
 
-        await SchemaBuilder.AlterIndexTableAsync<PublishLaterPartIndex>(table => table
-            .CreateIndex($"IDX_PublishLaterPartIndex_ScheduledPublishDateTimeUtc",
-                "DocumentId",
-                "ScheduledPublishDateTimeUtc")
+        await SchemaBuilder.AlterIndexTableAsync<PublishLaterPartIndex>(table =>
+            table.CreateIndex($"IDX_PublishLaterPartIndex_ScheduledPublishDateTimeUtc", "DocumentId", "ScheduledPublishDateTimeUtc")
         );
 
         return 2;
@@ -79,13 +67,7 @@ public class Migrations : DataMigration
 
         await SchemaBuilder.AlterIndexTableAsync<PublishLaterPartIndex>(table =>
         {
-            table.CreateIndex("IDX_PublishLaterPartIndex_ScheduledPublishDateTimeUtc",
-                "Id",
-                "DocumentId",
-                "ContentItemId",
-                "ScheduledPublishDateTimeUtc",
-                "Published",
-                "Latest");
+            table.CreateIndex("IDX_PublishLaterPartIndex_ScheduledPublishDateTimeUtc", "Id", "DocumentId", "ContentItemId", "ScheduledPublishDateTimeUtc", "Published", "Latest");
         });
 
         return 3;

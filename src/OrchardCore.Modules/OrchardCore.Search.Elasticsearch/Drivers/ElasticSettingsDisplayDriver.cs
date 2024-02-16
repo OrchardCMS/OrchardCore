@@ -26,10 +26,7 @@ public class ElasticSettingsDisplayDriver : SectionDisplayDriver<ISite, ElasticS
 {
     private static readonly char[] _separator = [',', ' '];
 
-    private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
-    {
-        WriteIndented = true,
-    };
+    private static readonly JsonSerializerOptions _jsonSerializerOptions = new() { WriteIndented = true, };
 
     private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -46,7 +43,7 @@ public class ElasticSettingsDisplayDriver : SectionDisplayDriver<ISite, ElasticS
         IOptions<ElasticConnectionOptions> elasticConnectionOptions,
         IElasticClient elasticClient,
         IStringLocalizer<ElasticSettingsDisplayDriver> stringLocalizer
-        )
+    )
     {
         _elasticIndexSettingsService = elasticIndexSettingsService;
         _httpContextAccessor = httpContextAccessor;
@@ -56,22 +53,27 @@ public class ElasticSettingsDisplayDriver : SectionDisplayDriver<ISite, ElasticS
         S = stringLocalizer;
     }
 
-    public override IDisplayResult Edit(ElasticSettings settings)
-        => Initialize<ElasticSettingsViewModel>("ElasticSettings_Edit", async model =>
-        {
-            model.SearchIndex = settings.SearchIndex;
-            model.SearchFields = string.Join(", ", settings.DefaultSearchFields ?? []);
-            model.SearchIndexes = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName);
-            model.DefaultQuery = settings.DefaultQuery;
-            model.SearchType = settings.GetSearchType();
-            model.SearchTypes = [
-                new(S["Multi-Match Query (Default)"], string.Empty),
-                new(S["Query String Query"], ElasticSettings.QueryStringSearchType),
-                new(S["Custom Query"], ElasticSettings.CustomSearchType),
-            ];
-        }).Location("Content:2#Elasticsearch;10")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageElasticIndexes))
-        .OnGroup(SearchConstants.SearchSettingsGroupId);
+    public override IDisplayResult Edit(ElasticSettings settings) =>
+        Initialize<ElasticSettingsViewModel>(
+                "ElasticSettings_Edit",
+                async model =>
+                {
+                    model.SearchIndex = settings.SearchIndex;
+                    model.SearchFields = string.Join(", ", settings.DefaultSearchFields ?? []);
+                    model.SearchIndexes = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName);
+                    model.DefaultQuery = settings.DefaultQuery;
+                    model.SearchType = settings.GetSearchType();
+                    model.SearchTypes =
+                    [
+                        new(S["Multi-Match Query (Default)"], string.Empty),
+                        new(S["Query String Query"], ElasticSettings.QueryStringSearchType),
+                        new(S["Custom Query"], ElasticSettings.CustomSearchType),
+                    ];
+                }
+            )
+            .Location("Content:2#Elasticsearch;10")
+            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageElasticIndexes))
+            .OnGroup(SearchConstants.SearchSettingsGroupId);
 
     public override async Task<IDisplayResult> UpdateAsync(ElasticSettings section, BuildEditorContext context)
     {

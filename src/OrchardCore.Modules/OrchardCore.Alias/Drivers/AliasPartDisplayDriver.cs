@@ -14,14 +14,10 @@ namespace OrchardCore.Alias.Drivers
 {
     public class AliasPartDisplayDriver : ContentPartDisplayDriver<AliasPart>
     {
-
         private readonly ISession _session;
         protected readonly IStringLocalizer S;
 
-        public AliasPartDisplayDriver(
-            ISession session,
-            IStringLocalizer<AliasPartDisplayDriver> localizer
-        )
+        public AliasPartDisplayDriver(ISession session, IStringLocalizer<AliasPartDisplayDriver> localizer)
         {
             _session = session;
             S = localizer;
@@ -51,6 +47,5 @@ namespace OrchardCore.Alias.Drivers
             model.ContentItem = part.ContentItem;
             model.Settings = settings;
         }
-
     }
 }

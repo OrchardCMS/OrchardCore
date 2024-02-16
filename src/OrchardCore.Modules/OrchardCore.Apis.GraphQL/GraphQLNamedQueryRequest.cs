@@ -1,4 +1,3 @@
-
 using GraphQL.Transport;
 
 namespace OrchardCore.Apis.GraphQL

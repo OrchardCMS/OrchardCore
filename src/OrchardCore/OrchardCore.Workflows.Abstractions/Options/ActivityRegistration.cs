@@ -11,7 +11,8 @@ namespace OrchardCore.Workflows.Options
             DriverTypes = [];
         }
 
-        public ActivityRegistration(Type activityType, Type driverType) : this(activityType)
+        public ActivityRegistration(Type activityType, Type driverType)
+            : this(activityType)
         {
             DriverTypes.Add(driverType);
         }

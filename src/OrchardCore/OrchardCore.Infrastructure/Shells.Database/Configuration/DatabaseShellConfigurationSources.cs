@@ -26,14 +26,11 @@ namespace OrchardCore.Shells.Database.Configuration
         public DatabaseShellConfigurationSources(
             Microsoft.Extensions.Configuration.IConfiguration configuration,
             IShellContextFactory shellContextFactory,
-            IOptions<ShellOptions> shellOptions)
-
+            IOptions<ShellOptions> shellOptions
+        )
         {
-            _options = configuration
-                .GetSection("OrchardCore")
-                .GetSectionCompat("OrchardCore_Shells_Database")
-                .Get<DatabaseShellsStorageOptions>()
-                ?? new DatabaseShellsStorageOptions();
+            _options =
+                configuration.GetSection("OrchardCore").GetSectionCompat("OrchardCore_Shells_Database").Get<DatabaseShellsStorageOptions>() ?? new DatabaseShellsStorageOptions();
 
             _shellContextFactory = shellContextFactory;
 

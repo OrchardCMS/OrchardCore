@@ -24,8 +24,7 @@ namespace OrchardCore.Lists.Drivers
         /// </summary>
         public override async Task LocalizedAsync(LocalizationContentContext context, ListPart part)
         {
-            var containedList = await _session.Query<ContentItem, ContainedPartIndex>(
-                x => x.ListContentItemId == context.Original.ContentItemId).ListAsync();
+            var containedList = await _session.Query<ContentItem, ContainedPartIndex>(x => x.ListContentItemId == context.Original.ContentItemId).ListAsync();
 
             if (!containedList.Any())
             {

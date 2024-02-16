@@ -16,8 +16,7 @@ namespace OrchardCore.OpenId.Recipes
     {
         private readonly IOpenIdServerService _serverService;
 
-        public OpenIdServerSettingsStep(IOpenIdServerService serverService)
-            => _serverService = serverService;
+        public OpenIdServerSettingsStep(IOpenIdServerService serverService) => _serverService = serverService;
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
@@ -40,18 +39,12 @@ namespace OrchardCore.OpenId.Recipes
             settings.SigningCertificateStoreName = model.SigningCertificateStoreName;
             settings.SigningCertificateThumbprint = model.SigningCertificateThumbprint;
 
-            settings.AuthorizationEndpointPath = model.EnableAuthorizationEndpoint ?
-                new PathString("/connect/authorize") : PathString.Empty;
-            settings.LogoutEndpointPath = model.EnableLogoutEndpoint ?
-                new PathString("/connect/logout") : PathString.Empty;
-            settings.TokenEndpointPath = model.EnableTokenEndpoint ?
-                new PathString("/connect/token") : PathString.Empty;
-            settings.UserinfoEndpointPath = model.EnableUserInfoEndpoint ?
-                new PathString("/connect/userinfo") : PathString.Empty;
-            settings.IntrospectionEndpointPath = model.EnableIntrospectionEndpoint ?
-                new PathString("/connect/introspect") : PathString.Empty;
-            settings.RevocationEndpointPath = model.EnableRevocationEndpoint ?
-                new PathString("/connect/revoke") : PathString.Empty;
+            settings.AuthorizationEndpointPath = model.EnableAuthorizationEndpoint ? new PathString("/connect/authorize") : PathString.Empty;
+            settings.LogoutEndpointPath = model.EnableLogoutEndpoint ? new PathString("/connect/logout") : PathString.Empty;
+            settings.TokenEndpointPath = model.EnableTokenEndpoint ? new PathString("/connect/token") : PathString.Empty;
+            settings.UserinfoEndpointPath = model.EnableUserInfoEndpoint ? new PathString("/connect/userinfo") : PathString.Empty;
+            settings.IntrospectionEndpointPath = model.EnableIntrospectionEndpoint ? new PathString("/connect/introspect") : PathString.Empty;
+            settings.RevocationEndpointPath = model.EnableRevocationEndpoint ? new PathString("/connect/revoke") : PathString.Empty;
 
             settings.AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow;
             settings.AllowClientCredentialsFlow = model.AllowClientCredentialsFlow;

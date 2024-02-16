@@ -16,15 +16,11 @@ namespace OrchardCore.Tests.Security
                     var permission = new Permission(permissionName);
                     identity.AddClaim(permission);
                 }
-
             }
 
             var principal = new ClaimsPrincipal(identity);
 
-            return new AuthorizationHandlerContext(
-                new[] { new PermissionRequirement(required) },
-                principal,
-                null);
+            return new AuthorizationHandlerContext(new[] { new PermissionRequirement(required) }, principal, null);
         }
 
         public static async Task SuccessAsync(this AuthorizationHandlerContext context, params string[] permissionNames)

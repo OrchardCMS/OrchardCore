@@ -23,9 +23,7 @@ namespace OrchardCore.Seo.Models
         public string MetaRobots { get; set; }
         public MetaEntry[] CustomMetaTags { get; set; } = [];
 
-
         public MediaField DefaultSocialImage { get; set; }
-
 
         public MediaField OpenGraphImage { get; set; }
         public string OpenGraphType { get; set; }

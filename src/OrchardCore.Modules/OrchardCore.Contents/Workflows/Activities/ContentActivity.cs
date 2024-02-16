@@ -18,10 +18,7 @@ namespace OrchardCore.Contents.Workflows.Activities
     {
         protected readonly IStringLocalizer S;
 
-        protected ContentActivity(
-            IContentManager contentManager,
-            IWorkflowScriptEvaluator scriptEvaluator,
-            IStringLocalizer localizer)
+        protected ContentActivity(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer localizer)
         {
             ContentManager = contentManager;
             ScriptEvaluator = scriptEvaluator;
@@ -134,7 +131,8 @@ namespace OrchardCore.Contents.Workflows.Activities
             else
             {
                 // If no expression was provided, see if the content item was provided as an input or as a property.
-                content = workflowContext.Input.GetValue<IContent>(ContentEventConstants.ContentItemInputKey)
+                content =
+                    workflowContext.Input.GetValue<IContent>(ContentEventConstants.ContentItemInputKey)
                     ?? workflowContext.Properties.GetValue<IContent>(ContentEventConstants.ContentItemInputKey);
             }
 

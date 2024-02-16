@@ -23,8 +23,7 @@ public class AccountBaseController : Controller
                 ["Roles"] = u.RoleNames,
                 ["Provider"] = info?.LoginProvider
             };
-            await workflowManager.TriggerEventAsync(nameof(Workflows.Activities.UserLoggedInEvent),
-                input: input, correlationId: u.UserId);
+            await workflowManager.TriggerEventAsync(nameof(Workflows.Activities.UserLoggedInEvent), input: input, correlationId: u.UserId);
         }
 
         return RedirectToLocal(returnUrl);

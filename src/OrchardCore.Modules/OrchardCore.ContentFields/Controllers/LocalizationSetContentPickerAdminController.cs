@@ -35,7 +35,8 @@ namespace OrchardCore.ContentFields.Controllers
             IContentManager contentManager,
             ISession session,
             IAuthorizationService authorizationService,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor
+        )
         {
             _contentDefinitionManager = contentDefinitionManager;
             _contentLocalizationManager = contentLocalizationManager;
@@ -53,8 +54,7 @@ namespace OrchardCore.ContentFields.Controllers
                 return BadRequest("Part and field are required parameters");
             }
 
-            var partFieldDefinition = (await _contentDefinitionManager.GetPartDefinitionAsync(part))?.Fields
-                .FirstOrDefault(f => f.Name == field);
+            var partFieldDefinition = (await _contentDefinitionManager.GetPartDefinitionAsync(part))?.Fields.FirstOrDefault(f => f.Name == field);
 
             var fieldSettings = partFieldDefinition?.GetSettings<LocalizationSetContentPickerFieldSettings>();
             if (fieldSettings == null)
@@ -62,8 +62,7 @@ namespace OrchardCore.ContentFields.Controllers
                 return BadRequest("Unable to find field definition");
             }
 
-            var dbQuery = _session.Query<ContentItem, ContentItemIndex>()
-              .With<ContentItemIndex>(x => x.ContentType.IsIn(fieldSettings.DisplayedContentTypes) && x.Latest);
+            var dbQuery = _session.Query<ContentItem, ContentItemIndex>().With<ContentItemIndex>(x => x.ContentType.IsIn(fieldSettings.DisplayedContentTypes) && x.Latest);
 
             if (!string.IsNullOrEmpty(query))
             {
@@ -81,12 +80,14 @@ namespace OrchardCore.ContentFields.Controllers
             {
                 if (await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.ViewContent, contentItem))
                 {
-                    results.Add(new VueMultiselectItemViewModel
-                    {
-                        Id = contentItem.Key, // localization set
-                        DisplayText = contentItem.Value.ToString(),
-                        HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem.Value)
-                    });
+                    results.Add(
+                        new VueMultiselectItemViewModel
+                        {
+                            Id = contentItem.Key, // localization set
+                            DisplayText = contentItem.Value.ToString(),
+                            HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem.Value)
+                        }
+                    );
                 }
             }
 

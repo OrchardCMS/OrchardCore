@@ -29,25 +29,31 @@ namespace OrchardCore.Title.Drivers
                 return null;
             }
 
-            return Initialize<TitlePartViewModel>(GetDisplayShapeType(context), model =>
-            {
-                model.Title = titlePart.ContentItem.DisplayText;
-                model.TitlePart = titlePart;
-                model.ContentItem = titlePart.ContentItem;
-            })
-            .Location("Detail", "Header")
-            .Location("Summary", "Header");
+            return Initialize<TitlePartViewModel>(
+                    GetDisplayShapeType(context),
+                    model =>
+                    {
+                        model.Title = titlePart.ContentItem.DisplayText;
+                        model.TitlePart = titlePart;
+                        model.ContentItem = titlePart.ContentItem;
+                    }
+                )
+                .Location("Detail", "Header")
+                .Location("Summary", "Header");
         }
 
         public override IDisplayResult Edit(TitlePart titlePart, BuildPartEditorContext context)
         {
-            return Initialize<TitlePartViewModel>(GetEditorShapeType(context), model =>
-            {
-                model.Title = titlePart.ContentItem.DisplayText;
-                model.TitlePart = titlePart;
-                model.ContentItem = titlePart.ContentItem;
-                model.Settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
-            });
+            return Initialize<TitlePartViewModel>(
+                GetEditorShapeType(context),
+                model =>
+                {
+                    model.Title = titlePart.ContentItem.DisplayText;
+                    model.TitlePart = titlePart;
+                    model.ContentItem = titlePart.ContentItem;
+                    model.Settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
+                }
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(TitlePart model, IUpdateModel updater, UpdatePartEditorContext context)

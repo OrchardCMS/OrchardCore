@@ -28,11 +28,7 @@ namespace OrchardCore.Search.Deployment
             var settings = await _site.GetSiteSettingsAsync();
             var searchSettings = settings.As<SearchSettings>();
 
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "Settings",
-                ["SearchSettings"] = JObject.FromObject(searchSettings),
-            });
+            result.Steps.Add(new JsonObject { ["name"] = "Settings", ["SearchSettings"] = JObject.FromObject(searchSettings), });
         }
     }
 }

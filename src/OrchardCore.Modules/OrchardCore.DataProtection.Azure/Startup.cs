@@ -34,15 +34,14 @@ public class Startup : StartupBase
                 .PersistKeysToAzureBlobStorage(sp =>
                 {
                     var options = sp.GetRequiredService<BlobOptions>();
-                    return new BlobClient(
-                        options.ConnectionString,
-                        options.ContainerName,
-                        options.BlobName);
+                    return new BlobClient(options.ConnectionString, options.ContainerName, options.BlobName);
                 });
         }
         else
         {
-            _logger.LogCritical("No connection string was supplied for OrchardCore.DataProtection.Azure. Ensure that an application setting containing a valid Azure Storage connection string is available at `Modules:OrchardCore.DataProtection.Azure:ConnectionString`.");
+            _logger.LogCritical(
+                "No connection string was supplied for OrchardCore.DataProtection.Azure. Ensure that an application setting containing a valid Azure Storage connection string is available at `Modules:OrchardCore.DataProtection.Azure:ConnectionString`."
+            );
         }
     }
 }

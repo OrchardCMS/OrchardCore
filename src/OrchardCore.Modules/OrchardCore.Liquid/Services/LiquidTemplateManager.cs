@@ -20,12 +20,7 @@ namespace OrchardCore.Liquid.Services
         private readonly TemplateOptions _templateOptions;
         private readonly IServiceProvider _serviceProvider;
 
-        public LiquidTemplateManager(
-            IMemoryCache memoryCache,
-            LiquidViewParser liquidViewParser,
-            IOptions<TemplateOptions> templateOptions,
-            IServiceProvider serviceProvider
-            )
+        public LiquidTemplateManager(IMemoryCache memoryCache, LiquidViewParser liquidViewParser, IOptions<TemplateOptions> templateOptions, IServiceProvider serviceProvider)
         {
             _memoryCache = memoryCache;
             _liquidViewParser = liquidViewParser;
@@ -54,7 +49,12 @@ namespace OrchardCore.Liquid.Services
             return result.RenderAsync(encoder, context, model);
         }
 
-        public async Task<IHtmlContent> RenderHtmlContentAsync(string source, TextEncoder encoder, object model = null, IEnumerable<KeyValuePair<string, FluidValue>> properties = null)
+        public async Task<IHtmlContent> RenderHtmlContentAsync(
+            string source,
+            TextEncoder encoder,
+            object model = null,
+            IEnumerable<KeyValuePair<string, FluidValue>> properties = null
+        )
         {
             if (string.IsNullOrWhiteSpace(source))
             {
@@ -104,20 +104,23 @@ namespace OrchardCore.Liquid.Services
         {
             var errors = Enumerable.Empty<string>();
 
-            var result = _memoryCache.GetOrCreate(source, (ICacheEntry e) =>
-            {
-                if (!_liquidViewParser.TryParse(source, out var parsed, out var error))
+            var result = _memoryCache.GetOrCreate(
+                source,
+                (ICacheEntry e) =>
                 {
-                    // If the source string cannot be parsed, create a template that contains the parser errors
-                    _liquidViewParser.TryParse(string.Join(System.Environment.NewLine, errors), out parsed, out error);
-                }
+                    if (!_liquidViewParser.TryParse(source, out var parsed, out var error))
+                    {
+                        // If the source string cannot be parsed, create a template that contains the parser errors
+                        _liquidViewParser.TryParse(string.Join(System.Environment.NewLine, errors), out parsed, out error);
+                    }
 
-                // Define a default sliding expiration to prevent the
-                // cache from being filled and still apply some micro-caching
-                // in case the template is used commonly
-                e.SetSlidingExpiration(TimeSpan.FromSeconds(30));
-                return new LiquidViewTemplate(parsed);
-            });
+                    // Define a default sliding expiration to prevent the
+                    // cache from being filled and still apply some micro-caching
+                    // in case the template is used commonly
+                    e.SetSlidingExpiration(TimeSpan.FromSeconds(30));
+                    return new LiquidViewTemplate(parsed);
+                }
+            );
 
             return result;
         }

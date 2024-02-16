@@ -36,7 +36,8 @@ namespace OrchardCore.Taxonomies.Indexing
 
         public override void Describe(DescribeContext<ContentItem> context)
         {
-            context.For<TaxonomyIndex>()
+            context
+                .For<TaxonomyIndex>()
                 .Map(async contentItem =>
                 {
                     // Remove index records of soft deleted items.
@@ -96,17 +97,19 @@ namespace OrchardCore.Taxonomies.Indexing
 
                         foreach (var termContentItemId in field.TermContentItemIds)
                         {
-                            results.Add(new TaxonomyIndex
-                            {
-                                TaxonomyContentItemId = field.TaxonomyContentItemId,
-                                ContentItemId = contentItem.ContentItemId,
-                                ContentType = contentItem.ContentType,
-                                ContentPart = fieldDefinition.PartDefinition.Name,
-                                ContentField = fieldDefinition.Name,
-                                TermContentItemId = termContentItemId,
-                                Published = contentItem.Published,
-                                Latest = contentItem.Latest
-                            });
+                            results.Add(
+                                new TaxonomyIndex
+                                {
+                                    TaxonomyContentItemId = field.TaxonomyContentItemId,
+                                    ContentItemId = contentItem.ContentItemId,
+                                    ContentType = contentItem.ContentType,
+                                    ContentPart = fieldDefinition.PartDefinition.Name,
+                                    ContentField = fieldDefinition.Name,
+                                    TermContentItemId = termContentItemId,
+                                    Published = contentItem.Published,
+                                    Latest = contentItem.Latest
+                                }
+                            );
                         }
                     }
 

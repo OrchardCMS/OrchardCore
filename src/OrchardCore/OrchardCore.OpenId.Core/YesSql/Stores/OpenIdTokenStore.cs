@@ -38,8 +38,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask<long> CountAsync<TResult>(Func<IQueryable<TToken>, IQueryable<TResult>> query, CancellationToken cancellationToken)
-            => throw new NotSupportedException();
+        public virtual ValueTask<long> CountAsync<TResult>(Func<IQueryable<TToken>, IQueryable<TResult>> query, CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
 
         /// <inheritdoc/>
         public virtual async ValueTask CreateAsync(TToken token, CancellationToken cancellationToken)
@@ -64,21 +64,18 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual IAsyncEnumerable<TToken> FindAsync(
-            string subject, string client, CancellationToken cancellationToken)
+        public virtual IAsyncEnumerable<TToken> FindAsync(string subject, string client, CancellationToken cancellationToken)
         {
             ArgumentException.ThrowIfNullOrEmpty(subject);
             ArgumentException.ThrowIfNullOrEmpty(client);
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.Query<TToken, OpenIdTokenIndex>(
-                index => index.ApplicationId == client && index.Subject == subject, collection: OpenIdCollection).ToAsyncEnumerable();
+            return _session.Query<TToken, OpenIdTokenIndex>(index => index.ApplicationId == client && index.Subject == subject, collection: OpenIdCollection).ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>
-        public virtual IAsyncEnumerable<TToken> FindAsync(
-            string subject, string client, string status, CancellationToken cancellationToken)
+        public virtual IAsyncEnumerable<TToken> FindAsync(string subject, string client, string status, CancellationToken cancellationToken)
         {
             ArgumentException.ThrowIfNullOrEmpty(subject);
             ArgumentException.ThrowIfNullOrEmpty(client);
@@ -86,13 +83,13 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.Query<TToken, OpenIdTokenIndex>(
-                index => index.ApplicationId == client && index.Subject == subject && index.Status == status, collection: OpenIdCollection).ToAsyncEnumerable();
+            return _session
+                .Query<TToken, OpenIdTokenIndex>(index => index.ApplicationId == client && index.Subject == subject && index.Status == status, collection: OpenIdCollection)
+                .ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>
-        public virtual IAsyncEnumerable<TToken> FindAsync(
-            string subject, string client, string status, string type, CancellationToken cancellationToken)
+        public virtual IAsyncEnumerable<TToken> FindAsync(string subject, string client, string status, string type, CancellationToken cancellationToken)
         {
             ArgumentException.ThrowIfNullOrEmpty(subject);
             ArgumentException.ThrowIfNullOrEmpty(client);
@@ -101,9 +98,12 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.Query<TToken, OpenIdTokenIndex>(
-                index => index.ApplicationId == client && index.Subject == subject &&
-                         index.Status == status && index.Type == type, collection: OpenIdCollection).ToAsyncEnumerable();
+            return _session
+                .Query<TToken, OpenIdTokenIndex>(
+                    index => index.ApplicationId == client && index.Subject == subject && index.Status == status && index.Type == type,
+                    collection: OpenIdCollection
+                )
+                .ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>
@@ -169,8 +169,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<TResult> GetAsync<TState, TResult>(
             Func<IQueryable<TToken>, TState, IQueryable<TResult>> query,
-            TState state, CancellationToken cancellationToken)
-            => throw new NotSupportedException();
+            TState state,
+            CancellationToken cancellationToken
+        ) => throw new NotSupportedException();
 
         /// <inheritdoc/>
         public virtual ValueTask<string> GetApplicationIdAsync(TToken token, CancellationToken cancellationToken)
@@ -248,8 +249,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 return new ValueTask<ImmutableDictionary<string, JsonElement>>(ImmutableDictionary.Create<string, JsonElement>());
             }
 
-            return new ValueTask<ImmutableDictionary<string, JsonElement>>(
-                JConvert.DeserializeObject<ImmutableDictionary<string, JsonElement>>(token.Properties.ToString()));
+            return new ValueTask<ImmutableDictionary<string, JsonElement>>(JConvert.DeserializeObject<ImmutableDictionary<string, JsonElement>>(token.Properties.ToString()));
         }
 
         /// <inheritdoc/>
@@ -298,8 +298,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask<TToken> InstantiateAsync(CancellationToken cancellationToken)
-            => new(new TToken { TokenId = Guid.NewGuid().ToString("n") });
+        public virtual ValueTask<TToken> InstantiateAsync(CancellationToken cancellationToken) => new(new TToken { TokenId = Guid.NewGuid().ToString("n") });
 
         /// <inheritdoc/>
         public virtual IAsyncEnumerable<TToken> ListAsync(int? count, int? offset, CancellationToken cancellationToken)
@@ -322,8 +321,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual IAsyncEnumerable<TResult> ListAsync<TState, TResult>(
             Func<IQueryable<TToken>, TState, IQueryable<TResult>> query,
-            TState state, CancellationToken cancellationToken)
-            => throw new NotSupportedException();
+            TState state,
+            CancellationToken cancellationToken
+        ) => throw new NotSupportedException();
 
         /// <inheritdoc/>
         public virtual async ValueTask<long> PruneAsync(DateTimeOffset threshold, CancellationToken cancellationToken = default)
@@ -340,13 +340,24 @@ namespace OrchardCore.OpenId.YesSql.Stores
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var tokens = (await _session.Query<TToken, OpenIdTokenIndex>(
-                    token => token.CreationDate < threshold.UtcDateTime &&
-                           ((token.Status != Statuses.Inactive && token.Status != Statuses.Valid) ||
-                             token.AuthorizationId.IsNotIn<OpenIdAuthorizationIndex>(
-                                authorization => authorization.AuthorizationId,
-                                authorization => authorization.Status == Statuses.Valid) ||
-                             token.ExpirationDate < DateTime.UtcNow), collection: OpenIdCollection).Take(100).ListAsync()).ToList();
+                var tokens = (
+                    await _session
+                        .Query<TToken, OpenIdTokenIndex>(
+                            token =>
+                                token.CreationDate < threshold.UtcDateTime
+                                && (
+                                    (token.Status != Statuses.Inactive && token.Status != Statuses.Valid)
+                                    || token.AuthorizationId.IsNotIn<OpenIdAuthorizationIndex>(
+                                        authorization => authorization.AuthorizationId,
+                                        authorization => authorization.Status == Statuses.Valid
+                                    )
+                                    || token.ExpirationDate < DateTime.UtcNow
+                                ),
+                            collection: OpenIdCollection
+                        )
+                        .Take(100)
+                        .ListAsync()
+                ).ToList();
 
                 if (tokens.Count is 0)
                 {
@@ -390,8 +401,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var tokens = (await _session.Query<TToken, OpenIdTokenIndex>(
-                token => token.AuthorizationId == identifier, collection: OpenIdCollection).ListAsync()).ToList();
+            var tokens = (await _session.Query<TToken, OpenIdTokenIndex>(token => token.AuthorizationId == identifier, collection: OpenIdCollection).ListAsync()).ToList();
 
             if (tokens.Count is 0)
             {
@@ -556,10 +566,13 @@ namespace OrchardCore.OpenId.YesSql.Stores
             }
             catch (ConcurrencyException exception)
             {
-                throw new OpenIddictExceptions.ConcurrencyException(new StringBuilder()
-                    .AppendLine("The token was concurrently updated and cannot be persisted in its current state.")
-                    .Append("Reload the token from the database and retry the operation.")
-                    .ToString(), exception);
+                throw new OpenIddictExceptions.ConcurrencyException(
+                    new StringBuilder()
+                        .AppendLine("The token was concurrently updated and cannot be persisted in its current state.")
+                        .Append("Reload the token from the database and retry the operation.")
+                        .ToString(),
+                    exception
+                );
             }
         }
     }

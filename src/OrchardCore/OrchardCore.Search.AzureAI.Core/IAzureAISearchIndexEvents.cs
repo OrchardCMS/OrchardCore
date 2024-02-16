@@ -5,7 +5,7 @@ namespace OrchardCore.Search.AzureAI;
 public interface IAzureAISearchIndexEvents
 {
     /// <summary>
-    /// This event is invoked before removing an existing that already exists. 
+    /// This event is invoked before removing an existing that already exists.
     /// </summary>
     /// <param name="context"></param>
     /// <returns></returns>

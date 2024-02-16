@@ -6,8 +6,7 @@ namespace OrchardCore.Users.Handlers
     public class UserContext : UserContextBase
     {
         /// <inheritdocs />
-        public UserContext(IUser user) : base(user)
-        {
-        }
+        public UserContext(IUser user)
+            : base(user) { }
     }
 }

@@ -16,9 +16,7 @@ namespace OrchardCore.ContentLocalization
     {
         public static IServiceCollection AddContentLocalization(this IServiceCollection services)
         {
-            services.AddContentPart<LocalizationPart>()
-                .UseDisplayDriver<LocalizationPartDisplayDriver>()
-                .AddHandler<LocalizationPartHandler>();
+            services.AddContentPart<LocalizationPart>().UseDisplayDriver<LocalizationPartDisplayDriver>().AddHandler<LocalizationPartHandler>();
 
             services.TryAddScoped<IContentLocalizationManager, DefaultContentLocalizationManager>();
 

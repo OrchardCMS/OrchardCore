@@ -13,12 +13,14 @@ namespace OrchardCore.ContentTypes.Deployment
                 return Task.CompletedTask;
             }
 
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "DeleteContentDefinition",
-                ["ContentTypes"] = JArray.FromObject(deleteContentDefinitionStep.ContentTypes),
-                ["ContentParts"] = JArray.FromObject(deleteContentDefinitionStep.ContentParts),
-            });
+            result.Steps.Add(
+                new JsonObject
+                {
+                    ["name"] = "DeleteContentDefinition",
+                    ["ContentTypes"] = JArray.FromObject(deleteContentDefinitionStep.ContentTypes),
+                    ["ContentParts"] = JArray.FromObject(deleteContentDefinitionStep.ContentParts),
+                }
+            );
 
             return Task.CompletedTask;
         }

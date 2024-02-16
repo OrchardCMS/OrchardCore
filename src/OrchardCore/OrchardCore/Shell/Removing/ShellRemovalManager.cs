@@ -23,7 +23,8 @@ public class ShellRemovalManager : IShellRemovalManager
         IShellContextFactory shellContextFactory,
         IEnumerable<IShellRemovingHandler> shellRemovingHandlers,
         IStringLocalizer<ShellRemovalManager> localizer,
-        ILogger<ShellRemovalManager> logger)
+        ILogger<ShellRemovalManager> logger
+    )
     {
         _shellHost = shellHost;
         _shellContextFactory = shellContextFactory;
@@ -34,11 +35,7 @@ public class ShellRemovalManager : IShellRemovalManager
 
     public async Task<ShellRemovingContext> RemoveAsync(ShellSettings shellSettings, bool localResourcesOnly = false)
     {
-        var context = new ShellRemovingContext
-        {
-            ShellSettings = shellSettings,
-            LocalResourcesOnly = localResourcesOnly,
-        };
+        var context = new ShellRemovingContext { ShellSettings = shellSettings, LocalResourcesOnly = localResourcesOnly, };
 
         if (shellSettings.IsDefaultShell())
         {
@@ -64,10 +61,7 @@ public class ShellRemovalManager : IShellRemovalManager
             }
             catch (Exception ex)
             {
-                _logger.LogError(
-                    ex,
-                    "Failed to create a 'ShellContext' before removing the tenant '{TenantName}'.",
-                    shellSettings.Name);
+                _logger.LogError(ex, "Failed to create a 'ShellContext' before removing the tenant '{TenantName}'.", shellSettings.Name);
 
                 context.ErrorMessage = S["Failed to create a 'ShellContext' before removing the tenant."];
                 context.Error = ex;
@@ -79,9 +73,7 @@ public class ShellRemovalManager : IShellRemovalManager
             (var locker, var locked) = await shellContext.TryAcquireShellRemovingLockAsync();
             if (!locked)
             {
-                _logger.LogError(
-                    "Failed to acquire a lock before executing the tenant handlers while removing the tenant '{TenantName}'.",
-                    shellSettings.Name);
+                _logger.LogError("Failed to acquire a lock before executing the tenant handlers while removing the tenant '{TenantName}'.", shellSettings.Name);
 
                 context.ErrorMessage = S["Failed to acquire a lock before executing the tenant handlers."];
                 return context;
@@ -110,11 +102,7 @@ public class ShellRemovalManager : IShellRemovalManager
                     {
                         var type = handler.GetType().FullName;
 
-                        _logger.LogError(
-                            ex,
-                            "Failed to execute the tenant handler '{TenantHandler}' while removing the tenant '{TenantName}'.",
-                            type,
-                            shellSettings.Name);
+                        _logger.LogError(ex, "Failed to execute the tenant handler '{TenantHandler}' while removing the tenant '{TenantName}'.", type, shellSettings.Name);
 
                         context.ErrorMessage = S["Failed to execute the tenant handler '{0}'.", type];
                         context.Error = ex;
@@ -132,9 +120,7 @@ public class ShellRemovalManager : IShellRemovalManager
             (var locker, var locked) = await shellContext.TryAcquireShellRemovingLockAsync();
             if (!locked)
             {
-                _logger.LogError(
-                    "Failed to acquire a lock before executing the host handlers while removing the tenant '{TenantName}'.",
-                    shellSettings.Name);
+                _logger.LogError("Failed to acquire a lock before executing the host handlers while removing the tenant '{TenantName}'.", shellSettings.Name);
 
                 context.ErrorMessage = S["Failed to acquire a lock before executing the host handlers."];
 
@@ -165,11 +151,7 @@ public class ShellRemovalManager : IShellRemovalManager
                 {
                     var type = handler.GetType().FullName;
 
-                    _logger.LogError(
-                        ex,
-                        "Failed to execute the host handler '{HostHandler}' while removing the tenant '{TenantName}'.",
-                        type,
-                        shellSettings.Name);
+                    _logger.LogError(ex, "Failed to execute the host handler '{HostHandler}' while removing the tenant '{TenantName}'.", type, shellSettings.Name);
 
                     context.ErrorMessage = S["Failed to execute the host handler '{0}'.", type];
                     context.Error = ex;

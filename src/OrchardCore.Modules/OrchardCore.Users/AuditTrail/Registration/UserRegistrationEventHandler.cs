@@ -15,16 +15,13 @@ namespace OrchardCore.Users.AuditTrail.Registration
         private readonly IServiceProvider _serviceProvider;
         private UserManager<IUser> _userManager;
 
-        public UserRegistrationEventHandler(
-            IAuditTrailManager auditTrailManager,
-            IServiceProvider serviceProvider)
+        public UserRegistrationEventHandler(IAuditTrailManager auditTrailManager, IServiceProvider serviceProvider)
         {
             _auditTrailManager = auditTrailManager;
             _serviceProvider = serviceProvider;
         }
 
-        public Task RegisteredAsync(IUser user) =>
-            RecordAuditTrailEventAsync(UserRegistrationAuditTrailEventConfiguration.Registered, user);
+        public Task RegisteredAsync(IUser user) => RecordAuditTrailEventAsync(UserRegistrationAuditTrailEventConfiguration.Registered, user);
 
         #region Unused events
 
@@ -40,19 +37,15 @@ namespace OrchardCore.Users.AuditTrail.Registration
             var userId = await _userManager.GetUserIdAsync(user);
 
             await _auditTrailManager.RecordEventAsync(
-                new AuditTrailContext<AuditTrailUserEvent>
-                (
+                new AuditTrailContext<AuditTrailUserEvent>(
                     name,
                     UserRegistrationAuditTrailEventConfiguration.User,
                     userId,
                     userId,
                     userName,
-                    new AuditTrailUserEvent
-                    {
-                        UserId = userId,
-                        UserName = userName
-                    }
-                ));
+                    new AuditTrailUserEvent { UserId = userId, UserName = userName }
+                )
+            );
         }
     }
 }

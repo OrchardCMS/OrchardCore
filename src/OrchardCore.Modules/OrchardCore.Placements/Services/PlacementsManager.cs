@@ -10,8 +10,7 @@ namespace OrchardCore.Placements.Services
     {
         private readonly IPlacementStore _placementStore;
 
-        public PlacementsManager(IPlacementStore placementStore)
-            => _placementStore = placementStore;
+        public PlacementsManager(IPlacementStore placementStore) => _placementStore = placementStore;
 
         public async Task<IReadOnlyDictionary<string, IEnumerable<PlacementNode>>> ListShapePlacementsAsync()
         {

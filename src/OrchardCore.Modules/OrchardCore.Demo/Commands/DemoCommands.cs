@@ -8,8 +8,8 @@ namespace OrchardCore.Demo.Commands
     {
         private readonly ILogger _logger;
 
-        public DemoCommands(ILogger<DemoCommands> logger,
-            IStringLocalizer<DemoCommands> localizer) : base(localizer)
+        public DemoCommands(ILogger<DemoCommands> logger, IStringLocalizer<DemoCommands> localizer)
+            : base(localizer)
         {
             _logger = logger;
         }

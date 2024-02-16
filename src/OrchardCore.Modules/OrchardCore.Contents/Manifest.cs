@@ -1,21 +1,12 @@
 using OrchardCore.Modules.Manifest;
 
-[assembly: Module(
-    Name = "Contents",
-    Author = ManifestConstants.OrchardCoreTeam,
-    Website = ManifestConstants.OrchardCoreWebsite,
-    Version = ManifestConstants.OrchardCoreVersion
-)]
+[assembly: Module(Name = "Contents", Author = ManifestConstants.OrchardCoreTeam, Website = ManifestConstants.OrchardCoreWebsite, Version = ManifestConstants.OrchardCoreVersion)]
 
 [assembly: Feature(
     Id = "OrchardCore.Contents",
     Name = "Contents",
     Description = "The contents module enables the edition and rendering of content items.",
-    Dependencies =
-    [
-        "OrchardCore.Settings",
-        "OrchardCore.Liquid"
-    ],
+    Dependencies = ["OrchardCore.Settings", "OrchardCore.Liquid"],
     Category = "Content Management"
 )]
 
@@ -31,12 +22,7 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget",
     Name = "Export Content To Deployment Target",
     Description = "Adds an export to deployment target action to the content items list.",
-    Dependencies =
-    [
-        "OrchardCore.Contents",
-        "OrchardCore.Deployment",
-        "OrchardCore.Recipes.Core",
-    ],
+    Dependencies = ["OrchardCore.Contents", "OrchardCore.Deployment", "OrchardCore.Recipes.Core",],
     Category = "Content Management"
 )]
 

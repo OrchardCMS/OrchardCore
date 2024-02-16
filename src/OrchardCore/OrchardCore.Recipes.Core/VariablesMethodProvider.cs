@@ -19,29 +19,38 @@ namespace OrchardCore.Recipes
             _globalMethod = new GlobalMethod
             {
                 Name = GlobalMethodName,
-                Method = serviceProvider => (Func<string, object>)(name =>
-                {
-                    var variable = variables[name];
+                Method = serviceProvider =>
+                    (Func<string, object>)(
+                        name =>
+                        {
+                            var variable = variables[name];
 
-                    if (variable == null)
-                    {
-                        var S = serviceProvider.GetService<IStringLocalizer<VariablesMethodProvider>>();
+                            if (variable == null)
+                            {
+                                var S = serviceProvider.GetService<IStringLocalizer<VariablesMethodProvider>>();
 
-                        throw new ValidationException(S["The variable '{0}' was used in the recipe but not defined. Make sure you add the '{0}' variable in the '{1}' section of the recipe.", name, GlobalMethodName]);
-                    }
+                                throw new ValidationException(
+                                    S[
+                                        "The variable '{0}' was used in the recipe but not defined. Make sure you add the '{0}' variable in the '{1}' section of the recipe.",
+                                        name,
+                                        GlobalMethodName
+                                    ]
+                                );
+                            }
 
-                    var value = variable.Value<string>();
+                            var value = variable.Value<string>();
 
-                    // Replace variable value while the result returns another script.
-                    while (value.StartsWith('[') && value.EndsWith(']'))
-                    {
-                        value = value.Trim('[', ']');
-                        value = (ScriptingManager.Evaluate(value, null, null, scopedMethodProviders) ?? "").ToString();
-                        variables[name] = value;
-                    }
+                            // Replace variable value while the result returns another script.
+                            while (value.StartsWith('[') && value.EndsWith(']'))
+                            {
+                                value = value.Trim('[', ']');
+                                value = (ScriptingManager.Evaluate(value, null, null, scopedMethodProviders) ?? "").ToString();
+                                variables[name] = value;
+                            }
 
-                    return value;
-                }),
+                            return value;
+                        }
+                    ),
             };
         }
 

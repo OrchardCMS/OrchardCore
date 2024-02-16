@@ -20,11 +20,7 @@ namespace OrchardCore.Sitemaps.Builders
         private readonly ISitemapModifiedDateProvider _sitemapModifiedDateProvider;
         private readonly SitemapsOptions _sitemapsOptions;
 
-        public SitemapIndexTypeBuilder(
-            ISitemapManager sitemapManager,
-            ISitemapModifiedDateProvider sitemapModifiedDateProvider,
-            IOptions<SitemapsOptions> options
-            )
+        public SitemapIndexTypeBuilder(ISitemapManager sitemapManager, ISitemapModifiedDateProvider sitemapModifiedDateProvider, IOptions<SitemapsOptions> options)
         {
             _sitemapManager = sitemapManager;
             _sitemapModifiedDateProvider = sitemapModifiedDateProvider;
@@ -35,9 +31,11 @@ namespace OrchardCore.Sitemaps.Builders
         {
             context.Response = new SitemapResponse
             {
-                ResponseElement = new XElement(_namespace + "sitemapindex",
+                ResponseElement = new XElement(
+                    _namespace + "sitemapindex",
                     new XAttribute(XNamespace.Xmlns + "xsi", _schemaInstance),
-                    new XAttribute(_schemaInstance + "schemaLocation", _schemaLocation))
+                    new XAttribute(_schemaInstance + "schemaLocation", _schemaLocation)
+                )
             };
 
             var indexSource = sitemap.SitemapSources.FirstOrDefault() as SitemapIndexSource;
@@ -47,18 +45,14 @@ namespace OrchardCore.Sitemaps.Builders
                 return;
             }
 
-            var containedSitemaps = (await _sitemapManager.GetSitemapsAsync())
-                .Where(s => s.Enabled && indexSource.ContainedSitemapIds.Any(id => id == s.SitemapId));
+            var containedSitemaps = (await _sitemapManager.GetSitemapsAsync()).Where(s => s.Enabled && indexSource.ContainedSitemapIds.Any(id => id == s.SitemapId));
 
             foreach (var containedSitemap in containedSitemaps)
             {
                 var xmlSitemap = new XElement(_namespace + "sitemap");
                 var loc = new XElement(_namespace + "loc");
 
-                var routeValues = new RouteValueDictionary(_sitemapsOptions.GlobalRouteValues)
-                {
-                    [_sitemapsOptions.SitemapIdKey] = containedSitemap.SitemapId
-                };
+                var routeValues = new RouteValueDictionary(_sitemapsOptions.GlobalRouteValues) { [_sitemapsOptions.SitemapIdKey] = containedSitemap.SitemapId };
 
                 loc.Add(context.HostPrefix + context.UrlHelper.Action(routeValues["Action"].ToString(), routeValues));
                 xmlSitemap.Add(loc);

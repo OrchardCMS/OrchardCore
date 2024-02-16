@@ -183,6 +183,7 @@ namespace OrchardCore.Tests.Hosting.Console
             Assert.Single(result);
             Assert.Equal("", result[0]);
         }
+
         [Fact]
         public void ParserUnderstandsEmptyArgument3()
         {

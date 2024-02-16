@@ -36,7 +36,8 @@ namespace OrchardCore.Deployment.Remote.Controllers
             RemoteInstanceService service,
             IDeploymentManager deploymentManager,
             INotifier notifier,
-            IHtmlLocalizer<ExportRemoteInstanceController> localizer)
+            IHtmlLocalizer<ExportRemoteInstanceController> localizer
+        )
         {
             _authorizationService = authorizationService;
             _deploymentManager = deploymentManager;
@@ -92,11 +93,13 @@ namespace OrchardCore.Deployment.Remote.Controllers
             {
                 using (var requestContent = new MultipartFormDataContent())
                 {
-                    requestContent.Add(new StreamContent(
-                        new FileStream(archiveFileName,
-                        FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 1, FileOptions.Asynchronous | FileOptions.SequentialScan)
-                    ),
-                        nameof(ImportViewModel.Content), Path.GetFileName(archiveFileName));
+                    requestContent.Add(
+                        new StreamContent(
+                            new FileStream(archiveFileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 1, FileOptions.Asynchronous | FileOptions.SequentialScan)
+                        ),
+                        nameof(ImportViewModel.Content),
+                        Path.GetFileName(archiveFileName)
+                    );
                     requestContent.Add(new StringContent(remoteInstance.ClientName), nameof(ImportViewModel.ClientName));
                     requestContent.Add(new StringContent(remoteInstance.ApiKey), nameof(ImportViewModel.ApiKey));
 
@@ -109,7 +112,9 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 }
                 else
                 {
-                    await _notifier.ErrorAsync(H["An error occurred while sending the deployment to the remote instance: \"{0} ({1})\"", response.ReasonPhrase, (int)response.StatusCode]);
+                    await _notifier.ErrorAsync(
+                        H["An error occurred while sending the deployment to the remote instance: \"{0} ({1})\"", response.ReasonPhrase, (int)response.StatusCode]
+                    );
                 }
             }
             finally

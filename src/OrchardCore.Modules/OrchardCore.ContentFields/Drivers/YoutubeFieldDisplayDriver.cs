@@ -25,26 +25,32 @@ namespace OrchardCore.ContentFields.Drivers
 
         public override IDisplayResult Display(YoutubeField field, BuildFieldDisplayContext context)
         {
-            return Initialize<YoutubeFieldDisplayViewModel>(GetDisplayShapeType(context), model =>
-            {
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-            })
-            .Location("Detail", "Content")
-            .Location("Summary", "Content");
+            return Initialize<YoutubeFieldDisplayViewModel>(
+                    GetDisplayShapeType(context),
+                    model =>
+                    {
+                        model.Field = field;
+                        model.Part = context.ContentPart;
+                        model.PartFieldDefinition = context.PartFieldDefinition;
+                    }
+                )
+                .Location("Detail", "Content")
+                .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(YoutubeField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditYoutubeFieldViewModel>(GetEditorShapeType(context), model =>
-           {
-               model.RawAddress = field.RawAddress;
-               model.EmbeddedAddress = field.EmbeddedAddress;
-               model.Field = field;
-               model.Part = context.ContentPart;
-               model.PartFieldDefinition = context.PartFieldDefinition;
-           });
+            return Initialize<EditYoutubeFieldViewModel>(
+                GetEditorShapeType(context),
+                model =>
+                {
+                    model.RawAddress = field.RawAddress;
+                    model.EmbeddedAddress = field.EmbeddedAddress;
+                    model.Field = field;
+                    model.Part = context.ContentPart;
+                    model.PartFieldDefinition = context.PartFieldDefinition;
+                }
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(YoutubeField field, IUpdateModel updater, UpdateFieldEditorContext context)

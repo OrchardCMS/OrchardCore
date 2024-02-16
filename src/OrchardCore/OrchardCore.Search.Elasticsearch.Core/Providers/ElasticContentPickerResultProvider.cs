@@ -16,10 +16,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Providers
         private readonly string _indexPrefix;
         private readonly ElasticConnectionOptions _elasticConnectionOptions;
 
-        public ElasticContentPickerResultProvider(
-            ShellSettings shellSettings,
-            IOptions<ElasticConnectionOptions> elasticConnectionOptions,
-            ElasticIndexManager elasticIndexManager)
+        public ElasticContentPickerResultProvider(ShellSettings shellSettings, IOptions<ElasticConnectionOptions> elasticConnectionOptions, ElasticIndexManager elasticIndexManager)
         {
             _indexPrefix = shellSettings.Name.ToLowerInvariant() + "_";
             _elasticConnectionOptions = elasticConnectionOptions.Value;
@@ -51,68 +48,56 @@ namespace OrchardCore.Search.Elasticsearch.Core.Providers
 
             var results = new List<ContentPickerResult>();
 
-            await _elasticIndexManager.SearchAsync(indexName, async elasticClient =>
-            {
-                ISearchResponse<Dictionary<string, object>> searchResponse = null;
-                var elasticTopDocs = new ElasticTopDocs();
+            await _elasticIndexManager.SearchAsync(
+                indexName,
+                async elasticClient =>
+                {
+                    ISearchResponse<Dictionary<string, object>> searchResponse = null;
+                    var elasticTopDocs = new ElasticTopDocs();
 
-                if (string.IsNullOrWhiteSpace(searchContext.Query))
-                {
-                    searchResponse = await elasticClient.SearchAsync<Dictionary<string, object>>(s => s
-                        .Index(_indexPrefix + indexName)
-                        .Query(q => q
-                            .Bool(b => b
-                                .Filter(f => f
-                                    .Terms(t => t
-                                        .Field("Content.ContentItem.ContentType")
-                                        .Terms(searchContext.ContentTypes.ToArray())
-                                    )
-                                )
-                            )
-                        )
-                    );
-                }
-                else
-                {
-                    searchResponse = await elasticClient.SearchAsync<Dictionary<string, object>>(s => s
-                        .Index(_indexPrefix + indexName)
-                        .Query(q => q
-                            .Bool(b => b
-                                .Filter(f => f
-                                    .Terms(t => t
-                                        .Field("Content.ContentItem.ContentType")
-                                        .Terms(searchContext.ContentTypes.ToArray())
-                                    )
-                                )
-                                .Should(s => s
-                                    .Wildcard(w => w
-                                        .Field("Content.ContentItem.DisplayText.Normalized")
-                                        .Wildcard(searchContext.Query.ToLowerInvariant() + "*")
-                                    )
-                                )
-                            )
-                        )
-                    );
-                }
-
-                if (searchResponse.IsValid)
-                {
-                    elasticTopDocs.TopDocs = searchResponse.Documents.ToList();
-                }
-
-                if (elasticTopDocs.TopDocs != null)
-                {
-                    foreach (var doc in elasticTopDocs.TopDocs)
+                    if (string.IsNullOrWhiteSpace(searchContext.Query))
                     {
-                        results.Add(new ContentPickerResult
+                        searchResponse = await elasticClient.SearchAsync<Dictionary<string, object>>(s =>
+                            s.Index(_indexPrefix + indexName)
+                                .Query(q => q.Bool(b => b.Filter(f => f.Terms(t => t.Field("Content.ContentItem.ContentType").Terms(searchContext.ContentTypes.ToArray())))))
+                        );
+                    }
+                    else
+                    {
+                        searchResponse = await elasticClient.SearchAsync<Dictionary<string, object>>(s =>
+                            s.Index(_indexPrefix + indexName)
+                                .Query(q =>
+                                    q.Bool(b =>
+                                        b.Filter(f => f.Terms(t => t.Field("Content.ContentItem.ContentType").Terms(searchContext.ContentTypes.ToArray())))
+                                            .Should(s =>
+                                                s.Wildcard(w => w.Field("Content.ContentItem.DisplayText.Normalized").Wildcard(searchContext.Query.ToLowerInvariant() + "*"))
+                                            )
+                                    )
+                                )
+                        );
+                    }
+
+                    if (searchResponse.IsValid)
+                    {
+                        elasticTopDocs.TopDocs = searchResponse.Documents.ToList();
+                    }
+
+                    if (elasticTopDocs.TopDocs != null)
+                    {
+                        foreach (var doc in elasticTopDocs.TopDocs)
                         {
-                            ContentItemId = doc["ContentItemId"].ToString(),
-                            DisplayText = doc["Content.ContentItem.DisplayText.keyword"].ToString(),
-                            HasPublished = doc["Content.ContentItem.Published"].ToString().ToLowerInvariant().Equals("true")
-                        });
+                            results.Add(
+                                new ContentPickerResult
+                                {
+                                    ContentItemId = doc["ContentItemId"].ToString(),
+                                    DisplayText = doc["Content.ContentItem.DisplayText.keyword"].ToString(),
+                                    HasPublished = doc["Content.ContentItem.Published"].ToString().ToLowerInvariant().Equals("true")
+                                }
+                            );
+                        }
                     }
                 }
-            });
+            );
 
             return results.OrderBy(x => x.DisplayText);
         }

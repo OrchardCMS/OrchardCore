@@ -12,7 +12,13 @@ namespace OrchardCore.Settings.Deployment
         /// <summary>
         /// Registers a <see cref="SiteSettingsPropertyDeploymentSource{TModel}"/> step.
         /// </summary>
-        public static void AddSiteSettingsPropertyDeploymentStep<TModel, TLocalizer>(this IServiceCollection services, Func<IStringLocalizer, LocalizedString> title, Func<IStringLocalizer, string> description) where TModel : class, new() where TLocalizer : class
+        public static void AddSiteSettingsPropertyDeploymentStep<TModel, TLocalizer>(
+            this IServiceCollection services,
+            Func<IStringLocalizer, LocalizedString> title,
+            Func<IStringLocalizer, string> description
+        )
+            where TModel : class, new()
+            where TLocalizer : class
         {
             services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<TModel>>();
             services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>

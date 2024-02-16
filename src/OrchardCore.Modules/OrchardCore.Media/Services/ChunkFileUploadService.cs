@@ -25,11 +25,7 @@ public class ChunkFileUploadService : IChunkFileUploadService
     private readonly IOptions<MediaOptions> _options;
     private readonly string _tempFileNamePrefix;
 
-    public ChunkFileUploadService(
-        ShellSettings shellSettings,
-        IClock clock,
-        ILogger<ChunkFileUploadService> logger,
-        IOptions<MediaOptions> options)
+    public ChunkFileUploadService(ShellSettings shellSettings, IClock clock, ILogger<ChunkFileUploadService> logger, IOptions<MediaOptions> options)
     {
         _clock = clock;
         _logger = logger;
@@ -41,33 +37,31 @@ public class ChunkFileUploadService : IChunkFileUploadService
     public async Task<IActionResult> ProcessRequestAsync(
         HttpRequest request,
         Func<Guid, IFormFile, ContentRangeHeaderValue, Task<IActionResult>> chunkAsync,
-        Func<IEnumerable<IFormFile>, Task<IActionResult>> completedAsync)
+        Func<IEnumerable<IFormFile>, Task<IActionResult>> completedAsync
+    )
     {
         var contentRangeHeader = request.Headers.ContentRange;
 
-        if (_options.Value.MaxUploadChunkSize <= 0 ||
-            contentRangeHeader.Count is 0 ||
-            !request.Form.TryGetValue(UploadIdFormKey, out var uploadIdValue))
+        if (_options.Value.MaxUploadChunkSize <= 0 || contentRangeHeader.Count is 0 || !request.Form.TryGetValue(UploadIdFormKey, out var uploadIdValue))
         {
             return await completedAsync(request.Form.Files);
         }
 
-        if (request.Form.Files.Count != 1 ||
-            !ContentRangeHeaderValue.TryParse(contentRangeHeader, out var contentRange) ||
-            !Guid.TryParse(uploadIdValue, out var uploadId) ||
-            !contentRange.HasLength ||
-            !contentRange.HasRange ||
-            contentRange.Length > _options.Value.MaxFileSize ||
-            contentRange.To - contentRange.From > _options.Value.MaxUploadChunkSize)
+        if (
+            request.Form.Files.Count != 1
+            || !ContentRangeHeaderValue.TryParse(contentRangeHeader, out var contentRange)
+            || !Guid.TryParse(uploadIdValue, out var uploadId)
+            || !contentRange.HasLength
+            || !contentRange.HasRange
+            || contentRange.Length > _options.Value.MaxFileSize
+            || contentRange.To - contentRange.From > _options.Value.MaxUploadChunkSize
+        )
         {
             return new BadRequestResult();
         }
 
         var formFile = request.Form.Files[0];
-        using (var fileStream = GetOrCreateTemporaryFile(
-            uploadId,
-            formFile,
-            contentRange.Length.Value))
+        using (var fileStream = GetOrCreateTemporaryFile(uploadId, formFile, contentRange.Length.Value))
         {
             fileStream.Seek(contentRange.From.Value, SeekOrigin.Begin);
             await formFile.CopyToAsync(fileStream, request.HttpContext.RequestAborted);
@@ -78,10 +72,7 @@ public class ChunkFileUploadService : IChunkFileUploadService
             : await chunkAsync(uploadId, formFile, contentRange);
     }
 
-    private async Task<IActionResult> CompleteUploadAsync(
-        Guid uploadId,
-        IFormFile formFile,
-        Func<IEnumerable<IFormFile>, Task<IActionResult>> completedAsync)
+    private async Task<IActionResult> CompleteUploadAsync(Guid uploadId, IFormFile formFile, Func<IEnumerable<IFormFile>, Task<IActionResult>> completedAsync)
     {
         try
         {
@@ -98,13 +89,13 @@ public class ChunkFileUploadService : IChunkFileUploadService
     public void PurgeTempDirectory()
     {
         var tempFolderPath = GetTempFolderPath();
-        if (_options.Value.TemporaryFileLifetime <= TimeSpan.Zero ||
-            !Directory.Exists(tempFolderPath))
+        if (_options.Value.TemporaryFileLifetime <= TimeSpan.Zero || !Directory.Exists(tempFolderPath))
         {
             return;
         }
 
-        var tempFiles = Directory.GetFiles(tempFolderPath, $"{_tempFileNamePrefix}*")
+        var tempFiles = Directory
+            .GetFiles(tempFolderPath, $"{_tempFileNamePrefix}*")
             .Select(filePath => new FileInfo(filePath))
             .Where(fileInfo => fileInfo.LastWriteTimeUtc + _options.Value.TemporaryFileLifetime < _clock.UtcNow)
             .ToArray();
@@ -118,8 +109,7 @@ public class ChunkFileUploadService : IChunkFileUploadService
         }
     }
 
-    private bool DeleteTemporaryFile(Guid uploadId, IFormFile formFile) =>
-        DeleteTemporaryFile(GetTempFilePath(uploadId, formFile));
+    private bool DeleteTemporaryFile(Guid uploadId, IFormFile formFile) => DeleteTemporaryFile(GetTempFilePath(uploadId, formFile));
 
     private bool DeleteTemporaryFile(string tempFilePath)
     {
@@ -131,17 +121,11 @@ public class ChunkFileUploadService : IChunkFileUploadService
         }
         catch (Exception exception) when (exception.IsFileSharingViolation())
         {
-            _logger.LogError(
-                exception,
-                "Sharing violation while deleting the temporary file '{TempFilePath}'.",
-                tempFilePath);
+            _logger.LogError(exception, "Sharing violation while deleting the temporary file '{TempFilePath}'.", tempFilePath);
         }
         catch (Exception exception)
         {
-            _logger.LogError(
-                exception,
-                "An error occurred while deleting the temporary file '{TempFilePath}'.",
-                tempFilePath);
+            _logger.LogError(exception, "An error occurred while deleting the temporary file '{TempFilePath}'.", tempFilePath);
         }
 
         return false;
@@ -179,13 +163,10 @@ public class ChunkFileUploadService : IChunkFileUploadService
         };
     }
 
-    private static string GetTempFolderPath() =>
-        Path.Combine(Path.GetTempPath(), TempFolderPrefix);
+    private static string GetTempFolderPath() => Path.Combine(Path.GetTempPath(), TempFolderPrefix);
 
     private string GetTempFilePath(Guid uploadId, IFormFile formFile) =>
-        Path.Combine(
-            GetTempFolderPath(),
-            $"{_tempFileNamePrefix}{CalculateHash(uploadId.ToString(), formFile.FileName, formFile.Name)}");
+        Path.Combine(GetTempFolderPath(), $"{_tempFileNamePrefix}{CalculateHash(uploadId.ToString(), formFile.FileName, formFile.Name)}");
 
     private static FileStream CreateTemporaryFile(string tempPath, long size)
     {
@@ -222,17 +203,13 @@ public class ChunkFileUploadService : IChunkFileUploadService
 
         public string FileName { get; set; }
 
-        public ChunkedFormFile(Stream stream) =>
-            _stream = stream;
+        public ChunkedFormFile(Stream stream) => _stream = stream;
 
-        public void CopyTo(Stream target) =>
-            _stream.CopyTo(target);
+        public void CopyTo(Stream target) => _stream.CopyTo(target);
 
-        public Task CopyToAsync(Stream target, CancellationToken cancellationToken = default) =>
-            _stream.CopyToAsync(target, cancellationToken);
+        public Task CopyToAsync(Stream target, CancellationToken cancellationToken = default) => _stream.CopyToAsync(target, cancellationToken);
 
-        public Stream OpenReadStream() =>
-            _stream;
+        public Stream OpenReadStream() => _stream;
 
         public void Dispose()
         {

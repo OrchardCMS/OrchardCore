@@ -17,10 +17,7 @@ namespace OrchardCore.XmlRpc.Controllers
         private readonly IEnumerable<IXmlRpcHandler> _xmlRpcHandlers;
         private readonly ILogger _logger;
 
-        public HomeController(
-            IXmlRpcWriter writer,
-            IEnumerable<IXmlRpcHandler> xmlRpcHandlers,
-            ILogger<HomeController> logger)
+        public HomeController(IXmlRpcWriter writer, IEnumerable<IXmlRpcHandler> xmlRpcHandlers, ILogger<HomeController> logger)
         {
             _writer = writer;
             _xmlRpcHandlers = xmlRpcHandlers;

@@ -34,7 +34,7 @@ namespace OrchardCore.Flows.Drivers
             IHtmlLocalizer<FlowPartDisplayDriver> htmlLocalizer,
             INotifier notifier,
             ILogger<FlowPartDisplayDriver> logger
-            )
+        )
         {
             _contentDefinitionManager = contentDefinitionManager;
             _contentManager = contentManager;
@@ -48,48 +48,64 @@ namespace OrchardCore.Flows.Drivers
         {
             var hasItems = flowPart.Widgets.Count > 0;
 
-            return Initialize<FlowPartViewModel>(hasItems ? "FlowPart" : "FlowPart_Empty", m =>
-            {
-                m.FlowPart = flowPart;
-                m.BuildPartDisplayContext = context;
-            })
-            .Location("Detail", "Content");
+            return Initialize<FlowPartViewModel>(
+                    hasItems ? "FlowPart" : "FlowPart_Empty",
+                    m =>
+                    {
+                        m.FlowPart = flowPart;
+                        m.BuildPartDisplayContext = context;
+                    }
+                )
+                .Location("Detail", "Content");
         }
 
         public override IDisplayResult Edit(FlowPart flowPart, BuildPartEditorContext context)
         {
-            return Initialize<FlowPartEditViewModel>(GetEditorShapeType(context), async model =>
-            {
-                var containedContentTypes = await GetContainedContentTypesAsync(context.TypePartDefinition);
-                var notify = false;
-
-                var existingWidgets = new List<ContentItem>();
-
-                foreach (var widget in flowPart.Widgets)
+            return Initialize<FlowPartEditViewModel>(
+                GetEditorShapeType(context),
+                async model =>
                 {
-                    if (!containedContentTypes.Any(c => c.Name == widget.ContentType))
+                    var containedContentTypes = await GetContainedContentTypesAsync(context.TypePartDefinition);
+                    var notify = false;
+
+                    var existingWidgets = new List<ContentItem>();
+
+                    foreach (var widget in flowPart.Widgets)
                     {
-                        _logger.LogWarning("The Widget content item with id {ContentItemId} has no matching {ContentType} content type definition.", widget.ContentItem.ContentItemId, widget.ContentItem.ContentType);
-                        await _notifier.WarningAsync(H["The Widget content item with id {0} has no matching {1} content type definition.", widget.ContentItem.ContentItemId, widget.ContentItem.ContentType]);
-                        notify = true;
+                        if (!containedContentTypes.Any(c => c.Name == widget.ContentType))
+                        {
+                            _logger.LogWarning(
+                                "The Widget content item with id {ContentItemId} has no matching {ContentType} content type definition.",
+                                widget.ContentItem.ContentItemId,
+                                widget.ContentItem.ContentType
+                            );
+                            await _notifier.WarningAsync(
+                                H[
+                                    "The Widget content item with id {0} has no matching {1} content type definition.",
+                                    widget.ContentItem.ContentItemId,
+                                    widget.ContentItem.ContentType
+                                ]
+                            );
+                            notify = true;
+                        }
+                        else
+                        {
+                            existingWidgets.Add(widget);
+                        }
                     }
-                    else
+
+                    flowPart.Widgets = existingWidgets;
+
+                    if (notify)
                     {
-                        existingWidgets.Add(widget);
+                        await _notifier.WarningAsync(H["Publishing this content item may erase created content. Fix any content type issues beforehand."]);
                     }
+
+                    model.FlowPart = flowPart;
+                    model.Updater = context.Updater;
+                    model.ContainedContentTypeDefinitions = containedContentTypes;
                 }
-
-                flowPart.Widgets = existingWidgets;
-
-                if (notify)
-                {
-                    await _notifier.WarningAsync(H["Publishing this content item may erase created content. Fix any content type issues beforehand."]);
-                }
-
-                model.FlowPart = flowPart;
-                model.Updater = context.Updater;
-                model.ContainedContentTypeDefinitions = containedContentTypes;
-            });
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(FlowPart part, UpdatePartEditorContext context)
@@ -134,12 +150,10 @@ namespace OrchardCore.Flows.Drivers
 
             if (settings?.ContainedContentTypes?.Length == 0)
             {
-                return (await _contentDefinitionManager.ListTypeDefinitionsAsync())
-                    .Where(t => t.StereotypeEquals("Widget"));
+                return (await _contentDefinitionManager.ListTypeDefinitionsAsync()).Where(t => t.StereotypeEquals("Widget"));
             }
 
-            return (await _contentDefinitionManager.ListTypeDefinitionsAsync())
-                .Where(t => settings.ContainedContentTypes.Contains(t.Name) && t.StereotypeEquals("Widget"));
+            return (await _contentDefinitionManager.ListTypeDefinitionsAsync()).Where(t => settings.ContainedContentTypes.Contains(t.Name) && t.StereotypeEquals("Widget"));
         }
     }
 }

@@ -101,8 +101,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             await DocumentManager.UpdateAsync(document);
         }
 
-        private static IDocumentManager<ElasticIndexSettingsDocument> DocumentManager =>
-            ShellScope.Services.GetRequiredService<IDocumentManager<ElasticIndexSettingsDocument>>();
+        private static IDocumentManager<ElasticIndexSettingsDocument> DocumentManager => ShellScope.Services.GetRequiredService<IDocumentManager<ElasticIndexSettingsDocument>>();
 
         // Returns the name of the analyzer configured for the given index name.
         private static string GetAnalyzerName(ElasticIndexSettingsDocument document, string indexName)

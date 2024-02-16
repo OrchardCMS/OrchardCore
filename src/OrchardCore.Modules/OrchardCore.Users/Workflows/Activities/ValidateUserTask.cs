@@ -58,10 +58,7 @@ namespace OrchardCore.Users.Workflows.Activities
 
                 if (Roles.Any())
                 {
-                    var userRoleNames = user
-                        .FindAll(c => c.Type == _roleClaimType)
-                        .Select(c => c.Value)
-                        .ToList();
+                    var userRoleNames = user.FindAll(c => c.Type == _roleClaimType).Select(c => c.Value).ToList();
 
                     foreach (var role in Roles)
                     {

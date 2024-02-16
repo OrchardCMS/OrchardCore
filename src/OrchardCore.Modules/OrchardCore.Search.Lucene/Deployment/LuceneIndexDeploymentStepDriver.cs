@@ -20,31 +20,31 @@ namespace OrchardCore.Search.Lucene.Deployment
 
         public override IDisplayResult Display(LuceneIndexDeploymentStep step)
         {
-            return
-                Combine(
-                    View("LuceneIndexDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                    View("LuceneIndexDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-                );
+            return Combine(
+                View("LuceneIndexDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("LuceneIndexDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(LuceneIndexDeploymentStep step)
         {
-            return Initialize<LuceneIndexDeploymentStepViewModel>("LuceneIndexDeploymentStep_Fields_Edit", async model =>
-            {
-                model.IncludeAll = step.IncludeAll;
-                model.IndexNames = step.IndexNames;
-                model.AllIndexNames = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
-            }).Location("Content");
+            return Initialize<LuceneIndexDeploymentStepViewModel>(
+                    "LuceneIndexDeploymentStep_Fields_Edit",
+                    async model =>
+                    {
+                        model.IncludeAll = step.IncludeAll;
+                        model.IndexNames = step.IndexNames;
+                        model.AllIndexNames = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(LuceneIndexDeploymentStep step, IUpdateModel updater)
         {
             step.IndexNames = [];
 
-            await updater.TryUpdateModelAsync(step,
-                                              Prefix,
-                                              x => x.IndexNames,
-                                              x => x.IncludeAll);
+            await updater.TryUpdateModelAsync(step, Prefix, x => x.IndexNames, x => x.IncludeAll);
 
             // don't have the selected option if include all
             if (step.IncludeAll)

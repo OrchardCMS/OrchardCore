@@ -10,22 +10,9 @@ public class Permissions : IPermissionProvider
     public static readonly Permission Export = CommonPermissions.Export;
     public static readonly Permission Import = CommonPermissions.Import;
 
-    private readonly IEnumerable<Permission> _allPermissions =
-    [
-        Import,
-        Export,
-        ManageDeploymentPlan,
-    ];
+    private readonly IEnumerable<Permission> _allPermissions = [Import, Export, ManageDeploymentPlan,];
 
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
+    public Task<IEnumerable<Permission>> GetPermissionsAsync() => Task.FromResult(_allPermissions);
 
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
-    [
-        new PermissionStereotype
-        {
-            Name = "Administrator",
-            Permissions = _allPermissions,
-        },
-    ];
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() => [new PermissionStereotype { Name = "Administrator", Permissions = _allPermissions, },];
 }

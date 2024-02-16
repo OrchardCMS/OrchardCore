@@ -6,6 +6,7 @@ namespace OrchardCore.Alias.Settings
     {
         public string Pattern { get; set; }
         public AliasPartOptions Options { get; set; }
+
         [BindNever]
         public AliasPartSettings AliasPartSettings { get; set; }
     }

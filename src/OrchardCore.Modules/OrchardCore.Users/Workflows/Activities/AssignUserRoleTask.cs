@@ -22,7 +22,8 @@ namespace OrchardCore.Users.Workflows.Activities
             UserManager<IUser> userManager,
             IUserService userService,
             IWorkflowExpressionEvaluator expressionEvaluator,
-            IStringLocalizer<AssignUserRoleTask> localizer)
+            IStringLocalizer<AssignUserRoleTask> localizer
+        )
         {
             _userManager = userManager;
             _userService = userService;

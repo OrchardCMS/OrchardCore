@@ -33,7 +33,7 @@ namespace OrchardCore.Seo.Drivers
             IResourceManager resourceManager,
             IShortcodeService shortcodeService,
             HtmlEncoder htmlEncoder
-            )
+        )
         {
             _contentManager = contentManager;
             _pageTitleBuilder = pageTitleBuilder;
@@ -65,10 +65,7 @@ namespace OrchardCore.Seo.Drivers
                 return null;
             }
 
-            var shortCodeContext = new Context
-            {
-                ["ContentItem"] = contentItem
-            };
+            var shortCodeContext = new Context { ["ContentItem"] = contentItem };
 
             if (!string.IsNullOrEmpty(aspect.PageTitle))
             {
@@ -77,204 +74,167 @@ namespace OrchardCore.Seo.Drivers
 
             if (!string.IsNullOrEmpty(aspect.MetaDescription))
             {
-                _resourceManager.RegisterMeta(new MetaEntry
-                {
-                    Name = "description",
-                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.MetaDescription, shortCodeContext))
-                });
+                _resourceManager.RegisterMeta(
+                    new MetaEntry { Name = "description", Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.MetaDescription, shortCodeContext)) }
+                );
             }
 
             if (!string.IsNullOrEmpty(aspect.MetaKeywords))
             {
-                _resourceManager.RegisterMeta(new MetaEntry
-                {
-                    Name = "keywords",
-                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.MetaKeywords, shortCodeContext))
-                });
+                _resourceManager.RegisterMeta(
+                    new MetaEntry { Name = "keywords", Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.MetaKeywords, shortCodeContext)) }
+                );
             }
 
             if (!string.IsNullOrEmpty(aspect.Canonical))
             {
-                _resourceManager.RegisterLink(new LinkEntry
-                {
-                    Href = aspect.Canonical,
-                    Rel = "canonical"
-                });
+                _resourceManager.RegisterLink(new LinkEntry { Href = aspect.Canonical, Rel = "canonical" });
             }
 
             if (!string.IsNullOrEmpty(aspect.MetaRobots))
             {
-                _resourceManager.RegisterMeta(new MetaEntry
-                {
-                    Name = "robots",
-                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.MetaRobots, shortCodeContext))
-                });
+                _resourceManager.RegisterMeta(
+                    new MetaEntry { Name = "robots", Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.MetaRobots, shortCodeContext)) }
+                );
             }
 
             foreach (var customMetaTag in aspect.CustomMetaTags)
             {
                 // Generate a new meta entry as the builder is preopulated.
-                _resourceManager.RegisterMeta(new MetaEntry(
-                    _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(customMetaTag.Name, shortCodeContext)),
-                    _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(customMetaTag.Property, shortCodeContext)),
-                    _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(customMetaTag.Content, shortCodeContext)),
-                    _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(customMetaTag.HttpEquiv, shortCodeContext)),
-                    _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(customMetaTag.Charset, shortCodeContext))));
+                _resourceManager.RegisterMeta(
+                    new MetaEntry(
+                        _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(customMetaTag.Name, shortCodeContext)),
+                        _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(customMetaTag.Property, shortCodeContext)),
+                        _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(customMetaTag.Content, shortCodeContext)),
+                        _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(customMetaTag.HttpEquiv, shortCodeContext)),
+                        _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(customMetaTag.Charset, shortCodeContext))
+                    )
+                );
             }
 
             // OpenGraph.
             if (!string.IsNullOrEmpty(aspect.OpenGraphType))
             {
-                _resourceManager.RegisterMeta(new MetaEntry
-                {
-                    Property = "og:type",
-                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphType, shortCodeContext))
-                });
+                _resourceManager.RegisterMeta(
+                    new MetaEntry { Property = "og:type", Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphType, shortCodeContext)) }
+                );
             }
 
             if (!string.IsNullOrEmpty(aspect.OpenGraphTitle))
             {
-                _resourceManager.RegisterMeta(new MetaEntry
-                {
-                    Property = "og:title",
-                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphTitle, shortCodeContext))
-                });
+                _resourceManager.RegisterMeta(
+                    new MetaEntry { Property = "og:title", Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphTitle, shortCodeContext)) }
+                );
             }
 
             if (!string.IsNullOrEmpty(aspect.OpenGraphDescription))
             {
-                _resourceManager.RegisterMeta(new MetaEntry
-                {
-                    Property = "og:description",
-                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphDescription, shortCodeContext))
-                });
+                _resourceManager.RegisterMeta(
+                    new MetaEntry
+                    {
+                        Property = "og:description",
+                        Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphDescription, shortCodeContext))
+                    }
+                );
             }
 
             if (!string.IsNullOrEmpty(aspect.OpenGraphImage))
             {
-                _resourceManager.RegisterMeta(new MetaEntry
-                {
-                    Property = "og:image",
-                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphImage, shortCodeContext))
-                });
+                _resourceManager.RegisterMeta(
+                    new MetaEntry { Property = "og:image", Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphImage, shortCodeContext)) }
+                );
             }
 
             if (!string.IsNullOrEmpty(aspect.OpenGraphImageAlt))
             {
-                _resourceManager.RegisterMeta(new MetaEntry
-                {
-                    Property = "og:image:alt",
-                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphImageAlt, shortCodeContext))
-                });
+                _resourceManager.RegisterMeta(
+                    new MetaEntry { Property = "og:image:alt", Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphImageAlt, shortCodeContext)) }
+                );
             }
 
             if (!string.IsNullOrEmpty(aspect.OpenGraphUrl))
             {
-                _resourceManager.RegisterMeta(new MetaEntry
-                {
-                    Property = "og:url",
-                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphUrl, shortCodeContext))
-                });
+                _resourceManager.RegisterMeta(
+                    new MetaEntry { Property = "og:url", Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphUrl, shortCodeContext)) }
+                );
             }
 
             if (!string.IsNullOrEmpty(aspect.OpenGraphSiteName))
             {
-                _resourceManager.RegisterMeta(new MetaEntry
-                {
-                    Property = "og:site_name",
-                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphSiteName, shortCodeContext))
-                });
+                _resourceManager.RegisterMeta(
+                    new MetaEntry { Property = "og:site_name", Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphSiteName, shortCodeContext)) }
+                );
             }
 
             if (!string.IsNullOrEmpty(aspect.OpenGraphAppId))
             {
-                _resourceManager.RegisterMeta(new MetaEntry
-                {
-                    Property = "fb:app_id",
-                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphAppId, shortCodeContext))
-                });
+                _resourceManager.RegisterMeta(
+                    new MetaEntry { Property = "fb:app_id", Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphAppId, shortCodeContext)) }
+                );
             }
 
             if (!string.IsNullOrEmpty(aspect.OpenGraphLocale))
             {
-                _resourceManager.RegisterMeta(new MetaEntry
-                {
-                    Property = "og:locale",
-                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphLocale, shortCodeContext))
-                });
+                _resourceManager.RegisterMeta(
+                    new MetaEntry { Property = "og:locale", Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.OpenGraphLocale, shortCodeContext)) }
+                );
             }
 
             // Twitter.
             if (!string.IsNullOrEmpty(aspect.TwitterCard))
             {
-                _resourceManager.RegisterMeta(new MetaEntry
-                {
-                    Property = "twitter:card",
-                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterCard, shortCodeContext))
-                });
+                _resourceManager.RegisterMeta(
+                    new MetaEntry { Property = "twitter:card", Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterCard, shortCodeContext)) }
+                );
             }
 
             if (!string.IsNullOrEmpty(aspect.TwitterSite))
             {
-                _resourceManager.RegisterMeta(new MetaEntry
-                {
-                    Property = "twitter:site",
-                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterSite, shortCodeContext))
-                });
+                _resourceManager.RegisterMeta(
+                    new MetaEntry { Property = "twitter:site", Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterSite, shortCodeContext)) }
+                );
             }
 
             if (!string.IsNullOrEmpty(aspect.TwitterTitle))
             {
-                _resourceManager.RegisterMeta(new MetaEntry
-                {
-                    Name = "twitter:title",
-                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterTitle, shortCodeContext))
-                });
+                _resourceManager.RegisterMeta(
+                    new MetaEntry { Name = "twitter:title", Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterTitle, shortCodeContext)) }
+                );
             }
 
             if (!string.IsNullOrEmpty(aspect.TwitterDescription))
             {
-                _resourceManager.RegisterMeta(new MetaEntry
-                {
-                    Name = "twitter:description",
-                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterDescription, shortCodeContext))
-                });
+                _resourceManager.RegisterMeta(
+                    new MetaEntry { Name = "twitter:description", Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterDescription, shortCodeContext)) }
+                );
             }
 
             if (!string.IsNullOrEmpty(aspect.TwitterImage))
             {
-                _resourceManager.RegisterMeta(new MetaEntry
-                {
-                    Name = "twitter:image",
-                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterImage, shortCodeContext))
-                });
+                _resourceManager.RegisterMeta(
+                    new MetaEntry { Name = "twitter:image", Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterImage, shortCodeContext)) }
+                );
             }
 
             if (!string.IsNullOrEmpty(aspect.TwitterImageAlt))
             {
-                _resourceManager.RegisterMeta(new MetaEntry
-                {
-                    Name = "twitter:image:alt",
-                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterImageAlt, shortCodeContext))
-                });
+                _resourceManager.RegisterMeta(
+                    new MetaEntry { Name = "twitter:image:alt", Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterImageAlt, shortCodeContext)) }
+                );
             }
 
             if (!string.IsNullOrEmpty(aspect.TwitterCreator))
             {
-                _resourceManager.RegisterMeta(new MetaEntry
-                {
-                    Name = "twitter:creator",
-                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterCreator, shortCodeContext))
-                });
+                _resourceManager.RegisterMeta(
+                    new MetaEntry { Name = "twitter:creator", Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterCreator, shortCodeContext)) }
+                );
             }
 
             if (!string.IsNullOrEmpty(aspect.TwitterUrl))
             {
-                _resourceManager.RegisterMeta(new MetaEntry
-                {
-                    Name = "twitter:url",
-                    Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterUrl, shortCodeContext))
-                });
+                _resourceManager.RegisterMeta(
+                    new MetaEntry { Name = "twitter:url", Content = _htmlEncoder.Encode(await _shortcodeService.ProcessAsync(aspect.TwitterUrl, shortCodeContext)) }
+                );
             }
 
             if (!string.IsNullOrEmpty(aspect.GoogleSchema))
@@ -292,7 +252,6 @@ namespace OrchardCore.Seo.Drivers
                 }
 
                 _resourceManager.RegisterHeadScript(new HtmlString($"<script type=\"application/ld+json\">\n{json}\n</script>"));
-
             }
 
             return null;

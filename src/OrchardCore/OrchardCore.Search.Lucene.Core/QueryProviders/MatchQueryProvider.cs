@@ -64,7 +64,8 @@ namespace OrchardCore.Search.Lucene.QueryProviders
                     }
 
                     return boolQuery;
-                default: throw new ArgumentException("Invalid query");
+                default:
+                    throw new ArgumentException("Invalid query");
             }
         }
     }

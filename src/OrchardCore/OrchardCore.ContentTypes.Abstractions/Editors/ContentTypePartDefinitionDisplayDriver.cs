@@ -5,7 +5,9 @@ using OrchardCore.DisplayManagement.Handlers;
 
 namespace OrchardCore.ContentTypes.Editors
 {
-    public abstract class ContentTypePartDefinitionDisplayDriver : DisplayDriver<ContentTypePartDefinition, BuildDisplayContext, BuildEditorContext, UpdateTypePartEditorContext>, IContentTypePartDefinitionDisplayDriver
+    public abstract class ContentTypePartDefinitionDisplayDriver
+        : DisplayDriver<ContentTypePartDefinition, BuildDisplayContext, BuildEditorContext, UpdateTypePartEditorContext>,
+            IContentTypePartDefinitionDisplayDriver
     {
         protected override void BuildPrefix(ContentTypePartDefinition model, string htmlFielPrefix)
         {
@@ -30,7 +32,8 @@ namespace OrchardCore.ContentTypes.Editors
     /// A concrete implementation of <see cref="ContentTypePartDefinitionDisplayDriver{TPart}"/> provides a driver for part definitions
     /// of the type <c>TPart</c>.
     /// </summary>
-    public abstract class ContentTypePartDefinitionDisplayDriver<TPart> : ContentTypePartDefinitionDisplayDriver where TPart : ContentPart
+    public abstract class ContentTypePartDefinitionDisplayDriver<TPart> : ContentTypePartDefinitionDisplayDriver
+        where TPart : ContentPart
     {
         public override bool CanHandleModel(ContentTypePartDefinition model)
         {

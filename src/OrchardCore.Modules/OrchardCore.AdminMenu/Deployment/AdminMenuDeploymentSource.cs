@@ -24,11 +24,7 @@ namespace OrchardCore.AdminMenu.Deployment
             }
 
             var data = new JsonArray();
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "AdminMenu",
-                ["data"] = data,
-            });
+            result.Steps.Add(new JsonObject { ["name"] = "AdminMenu", ["data"] = data, });
 
             foreach (var adminMenu in (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu)
             {

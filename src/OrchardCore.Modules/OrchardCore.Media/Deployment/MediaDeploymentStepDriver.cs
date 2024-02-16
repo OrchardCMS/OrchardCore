@@ -21,22 +21,25 @@ namespace OrchardCore.Media.Deployment
 
         public override IDisplayResult Display(MediaDeploymentStep step)
         {
-            return
-                Combine(
-                    View("MediaDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                    View("MediaDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-                );
+            return Combine(
+                View("MediaDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("MediaDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(MediaDeploymentStep step)
         {
-            return Initialize<MediaDeploymentStepViewModel>("MediaDeploymentStep_Fields_Edit", async model =>
-            {
-                model.IncludeAll = step.IncludeAll;
-                model.FilePaths = step.FilePaths;
-                model.DirectoryPaths = step.DirectoryPaths;
-                model.Entries = await GetMediaStoreEntries();
-            }).Location("Content");
+            return Initialize<MediaDeploymentStepViewModel>(
+                    "MediaDeploymentStep_Fields_Edit",
+                    async model =>
+                    {
+                        model.IncludeAll = step.IncludeAll;
+                        model.FilePaths = step.FilePaths;
+                        model.DirectoryPaths = step.DirectoryPaths;
+                        model.Entries = await GetMediaStoreEntries();
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(MediaDeploymentStep step, IUpdateModel updater)
@@ -44,11 +47,7 @@ namespace OrchardCore.Media.Deployment
             step.FilePaths = [];
             step.DirectoryPaths = [];
 
-            await updater.TryUpdateModelAsync(step,
-                                              Prefix,
-                                              x => x.FilePaths,
-                                              x => x.DirectoryPaths,
-                                              x => x.IncludeAll);
+            await updater.TryUpdateModelAsync(step, Prefix, x => x.FilePaths, x => x.DirectoryPaths, x => x.IncludeAll);
 
             // don't have the selected option if include all
             if (step.IncludeAll)
@@ -62,7 +61,8 @@ namespace OrchardCore.Media.Deployment
 
         private async Task<IList<MediaStoreEntryViewModel>> GetMediaStoreEntries(string path = null, MediaStoreEntryViewModel parent = null)
         {
-            var mediaStoreEntries = await _mediaFileStore.GetDirectoryContentAsync(path)
+            var mediaStoreEntries = await _mediaFileStore
+                .GetDirectoryContentAsync(path)
                 .SelectAwait(async e =>
                 {
                     var mediaStoreEntry = new MediaStoreEntryViewModel
@@ -72,12 +72,11 @@ namespace OrchardCore.Media.Deployment
                         Parent = parent
                     };
 
-                    mediaStoreEntry.Entries = e.IsDirectory
-                        ? await GetMediaStoreEntries(e.Path, mediaStoreEntry)
-                        : Array.Empty<MediaStoreEntryViewModel>();
+                    mediaStoreEntry.Entries = e.IsDirectory ? await GetMediaStoreEntries(e.Path, mediaStoreEntry) : Array.Empty<MediaStoreEntryViewModel>();
 
                     return mediaStoreEntry;
-                }).ToListAsync();
+                })
+                .ToListAsync();
 
             return mediaStoreEntries;
         }

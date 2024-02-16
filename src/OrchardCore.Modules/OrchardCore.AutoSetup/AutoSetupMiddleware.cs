@@ -83,7 +83,8 @@ namespace OrchardCore.AutoSetup
             IShellSettingsManager shellSettingsManager,
             IDistributedLock distributedLock,
             IOptions<AutoSetupOptions> options,
-            ILogger<AutoSetupMiddleware> logger)
+            ILogger<AutoSetupMiddleware> logger
+        )
         {
             _next = next;
             _shellHost = shellHost;
@@ -128,9 +129,7 @@ namespace OrchardCore.AutoSetup
                     }
 
                     // Check if the tenant was installed by another instance.
-                    using var settings = (await _shellSettingsManager
-                        .LoadSettingsAsync(_shellSettings.Name))
-                        .AsDisposable();
+                    using var settings = (await _shellSettingsManager.LoadSettingsAsync(_shellSettings.Name)).AsDisposable();
 
                     if (!settings.IsUninitialized())
                     {
@@ -207,10 +206,7 @@ namespace OrchardCore.AutoSetup
         /// <returns>The <see cref="ShellSettings"/>.</returns>
         public async Task<ShellSettings> CreateTenantSettingsAsync(TenantSetupOptions setupOptions)
         {
-            using var shellSettings = _shellSettingsManager
-                .CreateDefaultSettings()
-                .AsUninitialized()
-                .AsDisposable();
+            using var shellSettings = _shellSettingsManager.CreateDefaultSettings().AsUninitialized().AsDisposable();
 
             shellSettings.Name = setupOptions.ShellName;
             shellSettings.RequestUrlHost = setupOptions.RequestUrlHost;

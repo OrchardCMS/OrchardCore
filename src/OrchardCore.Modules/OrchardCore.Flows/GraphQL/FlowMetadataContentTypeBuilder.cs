@@ -15,8 +15,7 @@ namespace OrchardCore.Flows.GraphQL
                 return;
             }
 
-            contentItemType.Field<FlowMetadataQueryObjectType>("metadata")
-                .Resolve(context => context.Source.As<FlowMetadata>());
+            contentItemType.Field<FlowMetadataQueryObjectType>("metadata").Resolve(context => context.Source.As<FlowMetadata>());
         }
     }
 }

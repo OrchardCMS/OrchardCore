@@ -35,8 +35,7 @@ namespace OrchardCore.Search
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IDisplayDriver<ISite>, SearchSettingsDisplayDriver>();
 
-            services.AddContentPart<SearchFormPart>()
-                    .UseDisplayDriver<SearchFormPartDisplayDriver>();
+            services.AddContentPart<SearchFormPart>().UseDisplayDriver<SearchFormPartDisplayDriver>();
 
             services.AddDataMigration<SearchMigrations>();
         }

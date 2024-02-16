@@ -36,44 +36,45 @@ namespace OrchardCore.Liquid
         {
             services.AddScoped<ILiquidTemplateManager, LiquidTemplateManager>();
 
-            services.Configure<TemplateOptions>(options =>
-            {
-                options.Filters.AddFilter("t", LiquidViewFilters.Localize);
-                options.Filters.AddFilter("html_class", LiquidViewFilters.HtmlClass);
-                options.Filters.AddFilter("shape_properties", LiquidViewFilters.ShapeProperties);
-
-                options.MemberAccessStrategy.Register<LiquidPartViewModel>();
-
-                // Used to provide a factory to return a value based on a property name that is unknown at registration time.
-                options.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
-
-                // When a property of a 'JsonObject' value is accessed, try to look into its properties.
-                options.MemberAccessStrategy.Register<JsonObject, object>((source, name) => source[name]);
-
-                // Convert JToken to FluidValue
-                options.ValueConverters.Add(x =>
+            services
+                .Configure<TemplateOptions>(options =>
                 {
-                    return x switch
-                    {
-                        JsonObject o => new ObjectValue(o),
-                        JsonDynamicObject o => new ObjectValue((JsonObject)o),
-                        DateTime d => new ObjectValue(d),
-                        _ => null
-                    };
-                });
+                    options.Filters.AddFilter("t", LiquidViewFilters.Localize);
+                    options.Filters.AddFilter("html_class", LiquidViewFilters.HtmlClass);
+                    options.Filters.AddFilter("shape_properties", LiquidViewFilters.ShapeProperties);
 
-                options.Filters.AddFilter("json", JsonFilter.Json);
-                options.Filters.AddFilter("jsonparse", JsonParseFilter.JsonParse);
-            })
-            .AddLiquidFilter<LocalTimeZoneFilter>("local")
-            .AddLiquidFilter<UtcTimeZoneFilter>("utc")
-            .AddLiquidFilter<SlugifyFilter>("slugify")
-            .AddLiquidFilter<LiquidFilter>("liquid")
-            .AddLiquidFilter<ContentUrlFilter>("href")
-            .AddLiquidFilter<AbsoluteUrlFilter>("absolute_url")
-            .AddLiquidFilter<NewShapeFilter>("shape_new")
-            .AddLiquidFilter<ShapeRenderFilter>("shape_render")
-            .AddLiquidFilter<ShapeStringifyFilter>("shape_stringify");
+                    options.MemberAccessStrategy.Register<LiquidPartViewModel>();
+
+                    // Used to provide a factory to return a value based on a property name that is unknown at registration time.
+                    options.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
+
+                    // When a property of a 'JsonObject' value is accessed, try to look into its properties.
+                    options.MemberAccessStrategy.Register<JsonObject, object>((source, name) => source[name]);
+
+                    // Convert JToken to FluidValue
+                    options.ValueConverters.Add(x =>
+                    {
+                        return x switch
+                        {
+                            JsonObject o => new ObjectValue(o),
+                            JsonDynamicObject o => new ObjectValue((JsonObject)o),
+                            DateTime d => new ObjectValue(d),
+                            _ => null
+                        };
+                    });
+
+                    options.Filters.AddFilter("json", JsonFilter.Json);
+                    options.Filters.AddFilter("jsonparse", JsonParseFilter.JsonParse);
+                })
+                .AddLiquidFilter<LocalTimeZoneFilter>("local")
+                .AddLiquidFilter<UtcTimeZoneFilter>("utc")
+                .AddLiquidFilter<SlugifyFilter>("slugify")
+                .AddLiquidFilter<LiquidFilter>("liquid")
+                .AddLiquidFilter<ContentUrlFilter>("href")
+                .AddLiquidFilter<AbsoluteUrlFilter>("absolute_url")
+                .AddLiquidFilter<NewShapeFilter>("shape_new")
+                .AddLiquidFilter<ShapeRenderFilter>("shape_render")
+                .AddLiquidFilter<ShapeStringifyFilter>("shape_stringify");
 
             services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
         }
@@ -86,9 +87,7 @@ namespace OrchardCore.Liquid
         {
             // Liquid Part
             services.AddScoped<IShapeTableProvider, LiquidShapes>();
-            services.AddContentPart<LiquidPart>()
-                .UseDisplayDriver<LiquidPartDisplayDriver>()
-                .AddHandler<LiquidPartHandler>();
+            services.AddContentPart<LiquidPart>().UseDisplayDriver<LiquidPartDisplayDriver>().AddHandler<LiquidPartHandler>();
 
             services.AddDataMigration<Migrations>();
             services.AddScoped<IContentPartIndexHandler, LiquidPartIndexHandler>();

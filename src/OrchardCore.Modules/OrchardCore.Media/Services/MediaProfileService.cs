@@ -57,7 +57,6 @@ namespace OrchardCore.Media.Services
             else
             {
                 return _nullProfile;
-
             }
         }
     }

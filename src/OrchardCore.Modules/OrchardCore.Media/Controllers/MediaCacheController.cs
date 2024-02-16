@@ -25,7 +25,7 @@ namespace OrchardCore.Media.Controllers
             IServiceProvider serviceProvider,
             INotifier notifier,
             IHtmlLocalizer<MediaCacheController> htmlLocalizer
-            )
+        )
         {
             _authorizationService = authorizationService;
             // Resolve from service provider as the service will not be registered if configuration is invalid.
@@ -40,10 +40,7 @@ namespace OrchardCore.Media.Controllers
             {
                 return Forbid();
             }
-            var model = new MediaCacheViewModel
-            {
-                IsConfigured = _mediaFileStoreCache != null
-            };
+            var model = new MediaCacheViewModel { IsConfigured = _mediaFileStoreCache != null };
 
             return View(model);
         }

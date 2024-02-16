@@ -10,9 +10,7 @@ namespace OrchardCore.Deployment.Deployment
         private readonly IDeploymentPlanService _deploymentPlanService;
         private readonly IEnumerable<IDeploymentStepFactory> _deploymentStepFactories;
 
-        public DeploymentPlanDeploymentSource(
-            IDeploymentPlanService deploymentPlanService,
-            IEnumerable<IDeploymentStepFactory> deploymentStepFactories)
+        public DeploymentPlanDeploymentSource(IDeploymentPlanService deploymentPlanService, IEnumerable<IDeploymentStepFactory> deploymentStepFactories)
         {
             _deploymentPlanService = deploymentPlanService;
             _deploymentStepFactories = deploymentStepFactories;
@@ -36,24 +34,13 @@ namespace OrchardCore.Deployment.Deployment
                 ? (await _deploymentPlanService.GetAllDeploymentPlansAsync()).ToArray()
                 : (await _deploymentPlanService.GetDeploymentPlansAsync(deploymentPlanStep.DeploymentPlanNames)).ToArray();
 
-            var plans = (from plan in deploymentPlans
-                         select new
-                         {
-                             plan.Name,
-                             Steps = (from step in plan.DeploymentSteps
-                                      select new
-                                      {
-                                          Type = GetStepType(deploymentStepFactories, step),
-                                          Step = step
-                                      }).ToArray(),
-                         }).ToArray();
+            var plans = (
+                from plan in deploymentPlans
+                select new { plan.Name, Steps = (from step in plan.DeploymentSteps select new { Type = GetStepType(deploymentStepFactories, step), Step = step }).ToArray(), }
+            ).ToArray();
 
             // Adding deployment plans.
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "deployment",
-                ["Plans"] = JArray.FromObject(plans),
-            });
+            result.Steps.Add(new JsonObject { ["name"] = "deployment", ["Plans"] = JArray.FromObject(plans), });
         }
 
         /// <summary>

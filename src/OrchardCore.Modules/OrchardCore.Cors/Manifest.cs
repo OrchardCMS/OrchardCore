@@ -6,4 +6,5 @@ using OrchardCore.Modules.Manifest;
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
     Description = "Enables configuration of CORS settings.",
-    Category = "Security")]
+    Category = "Security"
+)]

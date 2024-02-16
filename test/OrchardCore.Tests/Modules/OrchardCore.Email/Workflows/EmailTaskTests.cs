@@ -15,25 +15,13 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email.Workflows
         {
             // Arrange
             var smtpService = CreateSmtpService(new SmtpSettings());
-            var task = new EmailTask(
-                smtpService,
-                new SimpleWorkflowExpressionEvaluator(),
-                Mock.Of<IStringLocalizer<EmailTask>>(),
-                HtmlEncoder.Default)
+            var task = new EmailTask(smtpService, new SimpleWorkflowExpressionEvaluator(), Mock.Of<IStringLocalizer<EmailTask>>(), HtmlEncoder.Default)
             {
                 Subject = new WorkflowExpression<string>("Test"),
                 Body = new WorkflowExpression<string>("Test message!!")
             };
 
-            var executionContext = new WorkflowExecutionContext(
-                new WorkflowType(),
-                new Workflow(),
-                _emptyDictionary,
-                _emptyDictionary,
-                _emptyDictionary,
-                [],
-                default,
-                []);
+            var executionContext = new WorkflowExecutionContext(new WorkflowType(), new Workflow(), _emptyDictionary, _emptyDictionary, _emptyDictionary, [], default, []);
             var activityContext = Mock.Of<ActivityContext>();
 
             // Act
@@ -57,8 +45,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email.Workflows
 
         private class SimpleWorkflowExpressionEvaluator : IWorkflowExpressionEvaluator
         {
-            public async Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext, TextEncoder encoder)
-                => await Task.FromResult((T)Convert.ChangeType(expression.Expression, typeof(T)));
+            public async Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext, TextEncoder encoder) =>
+                await Task.FromResult((T)Convert.ChangeType(expression.Expression, typeof(T)));
         }
     }
 }

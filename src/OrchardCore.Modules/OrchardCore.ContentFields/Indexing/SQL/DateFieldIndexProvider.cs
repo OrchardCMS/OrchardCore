@@ -28,7 +28,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
 
         public override void Describe(DescribeContext<ContentItem> context)
         {
-            context.For<DateFieldIndex>()
+            context
+                .For<DateFieldIndex>()
                 .Map(async contentItem =>
                 {
                     // Remove index records of soft deleted items.
@@ -56,9 +57,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                         return null;
                     }
 
-                    var fieldDefinitions = contentTypeDefinition
-                        .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(DateField)))
-                        .ToArray();
+                    var fieldDefinitions = contentTypeDefinition.Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(DateField))).ToArray();
 
                     // This type doesn't have any DateField, ignore it
                     if (fieldDefinitions.Length == 0)

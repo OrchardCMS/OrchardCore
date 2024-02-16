@@ -6,9 +6,8 @@ namespace OrchardCore.Users.Handlers
     public class UserUpdateContext : UserContextBase
     {
         /// <inheritdocs />
-        public UserUpdateContext(IUser user) : base(user)
-        {
-        }
+        public UserUpdateContext(IUser user)
+            : base(user) { }
 
         public bool Cancel { get; set; }
     }

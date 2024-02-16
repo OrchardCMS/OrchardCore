@@ -20,10 +20,7 @@ namespace OrchardCore.Twitter.Services
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IClock _clock;
 
-        public TwitterClientMessageHandler(
-            IClock clock,
-            IOptions<TwitterSettings> twitterSettings,
-            IDataProtectionProvider dataProtectionProvider)
+        public TwitterClientMessageHandler(IClock clock, IOptions<TwitterSettings> twitterSettings, IDataProtectionProvider dataProtectionProvider)
         {
             _twitterSettings = twitterSettings.Value;
             _dataProtectionProvider = dataProtectionProvider;
@@ -94,9 +91,13 @@ namespace OrchardCore.Twitter.Services
                 }
             }
 
-            var baseString = string.Concat(request.Method.Method.ToUpperInvariant(), "&",
-                Uri.EscapeDataString(request.RequestUri.AbsoluteUri.ToString()), "&",
-                Uri.EscapeDataString(string.Join("&", sortedParameters.Select(c => string.Format("{0}={1}", c.Key, c.Value)))));
+            var baseString = string.Concat(
+                request.Method.Method.ToUpperInvariant(),
+                "&",
+                Uri.EscapeDataString(request.RequestUri.AbsoluteUri.ToString()),
+                "&",
+                Uri.EscapeDataString(string.Join("&", sortedParameters.Select(c => string.Format("{0}={1}", c.Key, c.Value))))
+            );
 
             var secret = string.Concat(_twitterSettings.ConsumerSecret, "&", _twitterSettings.AccessTokenSecret);
 

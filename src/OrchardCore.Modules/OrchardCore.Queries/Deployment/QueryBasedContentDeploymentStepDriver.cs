@@ -17,9 +17,7 @@ namespace OrchardCore.Queries.Deployment
         private readonly IQueryManager _queryManager;
         protected readonly IStringLocalizer S;
 
-        public QueryBasedContentDeploymentStepDriver(
-            IQueryManager queryManager,
-            IStringLocalizer<QueryBasedContentDeploymentStepDriver> stringLocalizer)
+        public QueryBasedContentDeploymentStepDriver(IQueryManager queryManager, IStringLocalizer<QueryBasedContentDeploymentStepDriver> stringLocalizer)
         {
             _queryManager = queryManager;
             S = stringLocalizer;
@@ -27,28 +25,39 @@ namespace OrchardCore.Queries.Deployment
 
         public override IDisplayResult Display(QueryBasedContentDeploymentStep step)
         {
-            return
-                Combine(
-                    View("QueryBasedContentDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                    View("QueryBasedContentDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-                );
+            return Combine(
+                View("QueryBasedContentDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("QueryBasedContentDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(QueryBasedContentDeploymentStep step)
         {
-            return Initialize<QueryBasedContentDeploymentStepViewModel>("QueryBasedContentDeploymentStep_Fields_Edit", model =>
-            {
-                model.QueryName = step.QueryName;
-                model.QueryParameters = step.QueryParameters;
-                model.ExportAsSetupRecipe = step.ExportAsSetupRecipe;
-            }).Location("Content");
+            return Initialize<QueryBasedContentDeploymentStepViewModel>(
+                    "QueryBasedContentDeploymentStep_Fields_Edit",
+                    model =>
+                    {
+                        model.QueryName = step.QueryName;
+                        model.QueryParameters = step.QueryParameters;
+                        model.ExportAsSetupRecipe = step.ExportAsSetupRecipe;
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(QueryBasedContentDeploymentStep step, IUpdateModel updater)
         {
             var queryBasedContentViewModel = new QueryBasedContentDeploymentStepViewModel();
 
-            if (await updater.TryUpdateModelAsync(queryBasedContentViewModel, Prefix, viewModel => viewModel.QueryName, viewModel => viewModel.QueryParameters, viewModel => viewModel.ExportAsSetupRecipe))
+            if (
+                await updater.TryUpdateModelAsync(
+                    queryBasedContentViewModel,
+                    Prefix,
+                    viewModel => viewModel.QueryName,
+                    viewModel => viewModel.QueryParameters,
+                    viewModel => viewModel.ExportAsSetupRecipe
+                )
+            )
             {
                 var query = await _queryManager.LoadQueryAsync(queryBasedContentViewModel.QueryName);
                 if (!query.ResultsOfType<ContentItem>())

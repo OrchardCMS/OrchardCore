@@ -20,20 +20,11 @@ public class SeoMetaPartContentIndexHandler : IContentItemIndexHandler
             return Task.CompletedTask;
         }
 
-        context.DocumentIndex.Set(
-            PageTitleKey,
-            parent.PageTitle,
-            DocumentIndexOptions.Store);
+        context.DocumentIndex.Set(PageTitleKey, parent.PageTitle, DocumentIndexOptions.Store);
 
-        context.DocumentIndex.Set(
-            MetaDescriptionKey,
-            parent.MetaDescription,
-            DocumentIndexOptions.Store);
+        context.DocumentIndex.Set(MetaDescriptionKey, parent.MetaDescription, DocumentIndexOptions.Store);
 
-        context.DocumentIndex.Set(
-            MetaKeywordsKey,
-            parent.MetaKeywords,
-            DocumentIndexOptions.Store);
+        context.DocumentIndex.Set(MetaKeywordsKey, parent.MetaKeywords, DocumentIndexOptions.Store);
 
         return Task.CompletedTask;
     }

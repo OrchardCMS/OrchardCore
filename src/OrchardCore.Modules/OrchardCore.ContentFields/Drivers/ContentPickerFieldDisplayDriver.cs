@@ -27,10 +27,7 @@ namespace OrchardCore.ContentFields.Drivers
         private readonly ILiquidTemplateManager _templateManager;
         protected readonly IStringLocalizer S;
 
-        public ContentPickerFieldDisplayDriver(
-            IContentManager contentManager,
-            IStringLocalizer<ContentPickerFieldDisplayDriver> localizer,
-            ILiquidTemplateManager templateManager)
+        public ContentPickerFieldDisplayDriver(IContentManager contentManager, IStringLocalizer<ContentPickerFieldDisplayDriver> localizer, ILiquidTemplateManager templateManager)
         {
             _contentManager = contentManager;
             S = localizer;
@@ -39,52 +36,64 @@ namespace OrchardCore.ContentFields.Drivers
 
         public override IDisplayResult Display(ContentPickerField field, BuildFieldDisplayContext fieldDisplayContext)
         {
-            return Initialize<DisplayContentPickerFieldViewModel>(GetDisplayShapeType(fieldDisplayContext), model =>
-            {
-                model.Field = field;
-                model.Part = fieldDisplayContext.ContentPart;
-                model.PartFieldDefinition = fieldDisplayContext.PartFieldDefinition;
-            })
-            .Location("Detail", "Content")
-            .Location("Summary", "Content");
+            return Initialize<DisplayContentPickerFieldViewModel>(
+                    GetDisplayShapeType(fieldDisplayContext),
+                    model =>
+                    {
+                        model.Field = field;
+                        model.Part = fieldDisplayContext.ContentPart;
+                        model.PartFieldDefinition = fieldDisplayContext.PartFieldDefinition;
+                    }
+                )
+                .Location("Detail", "Content")
+                .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(ContentPickerField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditContentPickerFieldViewModel>(GetEditorShapeType(context), async model =>
-            {
-                model.ContentItemIds = string.Join(",", field.ContentItemIds);
-
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-
-                model.SelectedItems = [];
-                var settings = context.PartFieldDefinition.GetSettings<ContentPickerFieldSettings>();
-
-                foreach (var contentItemId in field.ContentItemIds)
+            return Initialize<EditContentPickerFieldViewModel>(
+                GetEditorShapeType(context),
+                async model =>
                 {
-                    var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
+                    model.ContentItemIds = string.Join(",", field.ContentItemIds);
 
-                    if (contentItem == null)
+                    model.Field = field;
+                    model.Part = context.ContentPart;
+                    model.PartFieldDefinition = context.PartFieldDefinition;
+
+                    model.SelectedItems = [];
+                    var settings = context.PartFieldDefinition.GetSettings<ContentPickerFieldSettings>();
+
+                    foreach (var contentItemId in field.ContentItemIds)
                     {
-                        continue;
-                    }
+                        var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
-                    var cultureAspect = await _contentManager.PopulateAspectAsync(contentItem, new CultureAspect());
-
-                    using (CultureScope.Create(cultureAspect.Culture))
-                    {
-                        model.SelectedItems.Add(new VueMultiselectItemViewModel
+                        if (contentItem == null)
                         {
-                            Id = contentItemId,
-                            DisplayText = await _templateManager.RenderStringAsync(settings.TitlePattern, NullEncoder.Default, contentItem,
-                                new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(contentItem) }),
-                            HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem)
-                        });
+                            continue;
+                        }
+
+                        var cultureAspect = await _contentManager.PopulateAspectAsync(contentItem, new CultureAspect());
+
+                        using (CultureScope.Create(cultureAspect.Culture))
+                        {
+                            model.SelectedItems.Add(
+                                new VueMultiselectItemViewModel
+                                {
+                                    Id = contentItemId,
+                                    DisplayText = await _templateManager.RenderStringAsync(
+                                        settings.TitlePattern,
+                                        NullEncoder.Default,
+                                        contentItem,
+                                        new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(contentItem) }
+                                    ),
+                                    HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem)
+                                }
+                            );
+                        }
                     }
                 }
-            });
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPickerField field, IUpdateModel updater, UpdateFieldEditorContext context)
@@ -98,8 +107,7 @@ namespace OrchardCore.ContentFields.Drivers
                 return Edit(field, context);
             }
 
-            field.ContentItemIds = viewModel.ContentItemIds == null
-                ? [] : viewModel.ContentItemIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
+            field.ContentItemIds = viewModel.ContentItemIds == null ? [] : viewModel.ContentItemIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
             var settings = context.PartFieldDefinition.GetSettings<ContentPickerFieldSettings>();
 
@@ -110,7 +118,11 @@ namespace OrchardCore.ContentFields.Drivers
 
             if (!settings.Multiple && field.ContentItemIds.Length > 1)
             {
-                updater.ModelState.AddModelError(Prefix, nameof(field.ContentItemIds), S["The {0} field cannot contain multiple items.", context.PartFieldDefinition.DisplayName()]);
+                updater.ModelState.AddModelError(
+                    Prefix,
+                    nameof(field.ContentItemIds),
+                    S["The {0} field cannot contain multiple items.", context.PartFieldDefinition.DisplayName()]
+                );
             }
 
             return Edit(field, context);

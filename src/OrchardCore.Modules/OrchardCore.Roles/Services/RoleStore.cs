@@ -24,11 +24,7 @@ namespace OrchardCore.Roles.Services
 
         private bool _updating;
 
-        public RoleStore(
-            IServiceProvider serviceProvider,
-            IDocumentManager<RolesDocument> documentManager,
-            IStringLocalizer<RoleStore> stringLocalizer,
-            ILogger<RoleStore> logger)
+        public RoleStore(IServiceProvider serviceProvider, IDocumentManager<RolesDocument> documentManager, IStringLocalizer<RoleStore> stringLocalizer, ILogger<RoleStore> logger)
         {
             _serviceProvider = serviceProvider;
             _documentManager = documentManager;
@@ -72,8 +68,7 @@ namespace OrchardCore.Roles.Services
 
             var roleCreatedEventHandlers = _serviceProvider.GetRequiredService<IEnumerable<IRoleCreatedEventHandler>>();
 
-            await roleCreatedEventHandlers.InvokeAsync((handler, roleToCreate) =>
-                handler.RoleCreatedAsync(roleToCreate.RoleName), roleToCreate, _logger);
+            await roleCreatedEventHandlers.InvokeAsync((handler, roleToCreate) => handler.RoleCreatedAsync(roleToCreate.RoleName), roleToCreate, _logger);
 
             return IdentityResult.Success;
         }
@@ -84,16 +79,14 @@ namespace OrchardCore.Roles.Services
 
             var roleToRemove = (Role)role;
 
-            if (string.Equals(roleToRemove.NormalizedRoleName, "ANONYMOUS") ||
-                string.Equals(roleToRemove.NormalizedRoleName, "AUTHENTICATED"))
+            if (string.Equals(roleToRemove.NormalizedRoleName, "ANONYMOUS") || string.Equals(roleToRemove.NormalizedRoleName, "AUTHENTICATED"))
             {
                 return IdentityResult.Failed(new IdentityError { Description = S["Can't delete system roles."] });
             }
 
             var roleRemovedEventHandlers = _serviceProvider.GetRequiredService<IEnumerable<IRoleRemovedEventHandler>>();
 
-            await roleRemovedEventHandlers.InvokeAsync((handler, roleToRemove) =>
-                handler.RoleRemovedAsync(roleToRemove.RoleName), roleToRemove, _logger);
+            await roleRemovedEventHandlers.InvokeAsync((handler, roleToRemove) => handler.RoleRemovedAsync(roleToRemove.RoleName), roleToRemove, _logger);
 
             var roles = await LoadRolesAsync();
             roleToRemove = roles.Roles.FirstOrDefault(r => string.Equals(r.RoleName, roleToRemove.RoleName, StringComparison.OrdinalIgnoreCase));
@@ -223,9 +216,7 @@ namespace OrchardCore.Roles.Services
         #endregion IRoleClaimStore<IRole>
 
 #pragma warning disable CA1816
-        public void Dispose()
-        {
-        }
+        public void Dispose() { }
 #pragma warning restore CA1816
     }
 }

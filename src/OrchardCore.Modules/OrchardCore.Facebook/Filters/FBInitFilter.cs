@@ -14,9 +14,7 @@ namespace OrchardCore.Facebook.Filters
         private readonly IResourceManager _resourceManager;
         private readonly ISiteService _siteService;
 
-        public FBInitFilter(
-            IResourceManager resourceManager,
-            ISiteService siteService)
+        public FBInitFilter(IResourceManager resourceManager, ISiteService siteService)
         {
             _resourceManager = resourceManager;
             _siteService = siteService;

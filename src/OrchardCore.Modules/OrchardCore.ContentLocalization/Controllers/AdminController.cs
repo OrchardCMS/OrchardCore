@@ -24,7 +24,8 @@ namespace OrchardCore.ContentLocalization.Controllers
             INotifier notifier,
             IContentLocalizationManager localizationManager,
             IHtmlLocalizer<AdminController> localizer,
-            IAuthorizationService authorizationService)
+            IAuthorizationService authorizationService
+        )
         {
             _contentManager = contentManager;
             _notifier = notifier;

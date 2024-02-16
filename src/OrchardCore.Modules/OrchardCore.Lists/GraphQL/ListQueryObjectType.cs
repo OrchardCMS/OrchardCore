@@ -35,11 +35,12 @@ namespace OrchardCore.Lists.GraphQL
                     var session = serviceProvider.GetService<ISession>();
                     var accessor = serviceProvider.GetRequiredService<IDataLoaderContextAccessor>();
 
-                    var dataLoader = accessor.Context.GetOrAddCollectionBatchLoader<string, ContentItem>("ContainedPublishedContentItems", x => LoadPublishedContentItemsForListAsync(x, session));
+                    var dataLoader = accessor.Context.GetOrAddCollectionBatchLoader<string, ContentItem>(
+                        "ContainedPublishedContentItems",
+                        x => LoadPublishedContentItemsForListAsync(x, session)
+                    );
 
-                    return ((await dataLoader.LoadAsync(g.Source.ContentItem.ContentItemId).GetResultAsync())
-                                .Skip(g.GetArgument<int>("skip"))
-                                .Take(g.GetArgument<int>("first")));
+                    return ((await dataLoader.LoadAsync(g.Source.ContentItem.ContentItemId).GetResultAsync()).Skip(g.GetArgument<int>("skip")).Take(g.GetArgument<int>("first")));
                 });
         }
 
@@ -50,11 +51,12 @@ namespace OrchardCore.Lists.GraphQL
                 return new Dictionary<string, ContentItem>().ToLookup(k => k.Key, v => v.Value);
             }
 
-            var query = await session.Query<ContentItem>()
-                                     .With<ContentItemIndex>(ci => ci.Published)
-                                     .With<ContainedPartIndex>(cp => cp.ListContentItemId.IsIn(contentItemIds))
-                                     .OrderBy(o => o.Order)
-                                     .ListAsync();
+            var query = await session
+                .Query<ContentItem>()
+                .With<ContentItemIndex>(ci => ci.Published)
+                .With<ContainedPartIndex>(cp => cp.ListContentItemId.IsIn(contentItemIds))
+                .OrderBy(o => o.Order)
+                .ListAsync();
 
             return query.ToLookup(k => k.As<ContainedPart>().ListContentItemId);
         }

@@ -26,8 +26,7 @@ namespace OrchardCore.Workflows.Controllers
         private readonly IUpdateModelAccessor _updateModelAccessor;
         protected readonly IHtmlLocalizer H;
 
-        public ActivityController
-        (
+        public ActivityController(
             ISession session,
             IActivityLibrary activityLibrary,
             IWorkflowManager workflowManager,
@@ -36,7 +35,8 @@ namespace OrchardCore.Workflows.Controllers
             IActivityDisplayManager activityDisplayManager,
             INotifier notifier,
             IHtmlLocalizer<ActivityController> h,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor
+        )
         {
             _session = session;
             _activityLibrary = activityLibrary;
@@ -111,7 +111,9 @@ namespace OrchardCore.Workflows.Controllers
             await _session.SaveAsync(workflowType);
             await _notifier.SuccessAsync(H["Activity added successfully."]);
 
-            return Url.IsLocalUrl(model.ReturnUrl) ? (IActionResult)this.Redirect(model.ReturnUrl, true) : RedirectToAction(nameof(Edit), "WorkflowType", new { id = model.WorkflowTypeId });
+            return Url.IsLocalUrl(model.ReturnUrl)
+                ? (IActionResult)this.Redirect(model.ReturnUrl, true)
+                : RedirectToAction(nameof(Edit), "WorkflowType", new { id = model.WorkflowTypeId });
         }
 
         public async Task<IActionResult> Edit(long workflowTypeId, string activityId, string returnUrl)

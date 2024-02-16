@@ -17,9 +17,7 @@ using OrchardCore.Modules;
 namespace OrchardCore.Facebook.Login.Configuration
 {
     [Feature(FacebookConstants.Features.Login)]
-    public class FacebookLoginConfiguration :
-        IConfigureOptions<AuthenticationOptions>,
-        IConfigureNamedOptions<FacebookOptions>
+    public class FacebookLoginConfiguration : IConfigureOptions<AuthenticationOptions>, IConfigureNamedOptions<FacebookOptions>
     {
         private readonly FacebookSettings _facebookSettings;
         private readonly IFacebookLoginService _loginService;
@@ -30,7 +28,8 @@ namespace OrchardCore.Facebook.Login.Configuration
             IOptions<FacebookSettings> facebookSettings,
             IFacebookLoginService loginService,
             IDataProtectionProvider dataProtectionProvider,
-            ILogger<FacebookLoginConfiguration> logger)
+            ILogger<FacebookLoginConfiguration> logger
+        )
         {
             _facebookSettings = facebookSettings.Value;
             _loginService = loginService;
@@ -52,11 +51,14 @@ namespace OrchardCore.Facebook.Login.Configuration
             }
 
             // Register the OpenID Connect client handler in the authentication handlers collection.
-            options.AddScheme(FacebookDefaults.AuthenticationScheme, builder =>
-            {
-                builder.DisplayName = "Facebook";
-                builder.HandlerType = typeof(FacebookHandler);
-            });
+            options.AddScheme(
+                FacebookDefaults.AuthenticationScheme,
+                builder =>
+                {
+                    builder.DisplayName = "Facebook";
+                    builder.HandlerType = typeof(FacebookHandler);
+                }
+            );
         }
 
         public void Configure(string name, FacebookOptions options)

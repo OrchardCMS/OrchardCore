@@ -46,8 +46,7 @@ namespace OrchardCore.Environment.Shell.Scope
                 // Keep the counter clean before failing.
                 Interlocked.Decrement(ref shellContext._refCount);
 
-                throw new InvalidOperationException(
-                    $"Can't resolve a scope on tenant '{shellContext.Settings.Name}' as it is disabled or disposed");
+                throw new InvalidOperationException($"Can't resolve a scope on tenant '{shellContext.Settings.Name}' as it is disabled or disposed");
             }
 
             _serviceScope = shellContext.ServiceProvider.CreateAsyncScope();
@@ -93,12 +92,24 @@ namespace OrchardCore.Environment.Shell.Scope
         /// <summary>
         /// Gets a shared item from the current shell scope.
         /// </summary>
-        public static object Get(object key) => Current is null ? null : Current._items.TryGetValue(key, out var value) ? value : null;
+        public static object Get(object key) =>
+            Current is null
+                ? null
+                : Current._items.TryGetValue(key, out var value)
+                    ? value
+                    : null;
 
         /// <summary>
         /// Gets a shared item of a given type from the current shell scope.
         /// </summary>
-        public static T Get<T>(object key) => Current is null ? default : Current._items.TryGetValue(key, out var value) ? value is T item ? item : default : default;
+        public static T Get<T>(object key) =>
+            Current is null
+                ? default
+                : Current._items.TryGetValue(key, out var value)
+                    ? value is T item
+                        ? item
+                        : default
+                    : default;
 
         /// <summary>
         /// Gets (or creates) a shared item of a given type from the current shell scope.
@@ -121,7 +132,8 @@ namespace OrchardCore.Environment.Shell.Scope
         /// <summary>
         /// Gets (or creates) a shared item of a given type from the current shell scope.
         /// </summary>
-        public static T GetOrCreate<T>(object key) where T : class, new()
+        public static T GetOrCreate<T>(object key)
+            where T : class, new()
         {
             if (Current is null)
             {
@@ -154,7 +166,8 @@ namespace OrchardCore.Environment.Shell.Scope
         /// <summary>
         /// Gets (or creates) a shared feature from the current shell scope.
         /// </summary>
-        public static T GetOrCreateFeature<T>() where T : class, new() => GetOrCreate<T>(typeof(T));
+        public static T GetOrCreateFeature<T>()
+            where T : class, new() => GetOrCreate<T>(typeof(T));
 
         /// <summary>
         /// Creates a child scope from the current one.
@@ -211,9 +224,10 @@ namespace OrchardCore.Environment.Shell.Scope
         /// Start holding this shell scope along the async flow.
         /// </summary>
         public void StartAsyncFlow()
-        // Use an object indirection to hold the current scope in the 'AsyncLocal',
-        // so that it can be cleared in all execution contexts when it is cleared.
-            => _current.Value = new ShellScopeHolder { Scope = this };
+            // Use an object indirection to hold the current scope in the 'AsyncLocal',
+            // so that it can be cleared in all execution contexts when it is cleared.
+            =>
+            _current.Value = new ShellScopeHolder { Scope = this };
 
         /// <summary>
         /// Executes a delegate using this shell scope in an isolated async flow,
@@ -317,19 +331,22 @@ namespace OrchardCore.Environment.Shell.Scope
             // The tenant gets activated here.
             if (!ShellContext.IsActivated)
             {
-                await new ShellScope(ShellContext).UsingAsync(async scope =>
-                {
-                    var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
-                    foreach (var tenantEvent in tenantEvents)
+                await new ShellScope(ShellContext).UsingAsync(
+                    async scope =>
                     {
-                        await tenantEvent.ActivatingAsync();
-                    }
+                        var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
+                        foreach (var tenantEvent in tenantEvents)
+                        {
+                            await tenantEvent.ActivatingAsync();
+                        }
 
-                    foreach (var tenantEvent in tenantEvents.Reverse())
-                    {
-                        await tenantEvent.ActivatedAsync();
-                    }
-                }, activateShell: false);
+                        foreach (var tenantEvent in tenantEvents.Reverse())
+                        {
+                            await tenantEvent.ActivatedAsync();
+                        }
+                    },
+                    activateShell: false
+                );
 
                 ShellContext.IsActivated = true;
             }
@@ -432,24 +449,29 @@ namespace OrchardCore.Environment.Shell.Scope
 
                     // Use 'UsingAsync' in place of 'UsingServiceScopeAsync()' to allow a deferred task to
                     // trigger another one, but still prevent the shell to be activated in a deferred task.
-                    await scope.UsingAsync(async scope =>
-                    {
-                        var logger = scope.ServiceProvider.GetService<ILogger<ShellScope>>();
-
-                        try
+                    await scope.UsingAsync(
+                        async scope =>
                         {
-                            await task(scope);
-                        }
-                        catch (Exception e)
-                        {
-                            logger?.LogError(e,
-                                "Error while processing deferred task '{TaskName}' on tenant '{TenantName}'.",
-                                task.GetType().FullName, ShellContext.Settings.Name);
+                            var logger = scope.ServiceProvider.GetService<ILogger<ShellScope>>();
 
-                            await scope.HandleExceptionAsync(e);
-                        }
-                    },
-                    activateShell: false);
+                            try
+                            {
+                                await task(scope);
+                            }
+                            catch (Exception e)
+                            {
+                                logger?.LogError(
+                                    e,
+                                    "Error while processing deferred task '{TaskName}' on tenant '{TenantName}'.",
+                                    task.GetType().FullName,
+                                    ShellContext.Settings.Name
+                                );
+
+                                await scope.HandleExceptionAsync(e);
+                            }
+                        },
+                        activateShell: false
+                    );
                 }
             }
         }

@@ -21,7 +21,8 @@ public class AzureAISearchIndexManager(
     IOptions<AzureAISearchDefaultOptions> azureAIOptions,
     IEnumerable<IAzureAISearchIndexEvents> indexEvents,
     IMemoryCache memoryCache,
-    ShellSettings shellSettings)
+    ShellSettings shellSettings
+)
 {
     public const string OwnerKey = "Content__ContentItem__Owner";
     public const string AuthorKey = "Content__ContentItem__Author";
@@ -68,8 +69,7 @@ public class AzureAISearchIndexManager(
         return false;
     }
 
-    public async Task<bool> ExistsAsync(string indexName)
-        => await GetAsync(indexName) != null;
+    public async Task<bool> ExistsAsync(string indexName) => await GetAsync(indexName) != null;
 
     public async Task<SearchIndex> GetAsync(string indexName)
     {
@@ -195,24 +195,10 @@ public class AzureAISearchIndexManager(
                 IsFilterable = true,
                 IsSortable = true,
             },
-            new SimpleField(IndexingConstants.ContentItemVersionIdKey, SearchFieldDataType.String)
-            {
-                IsFilterable = true,
-                IsSortable = true,
-            },
-            new SimpleField(OwnerKey, SearchFieldDataType.String)
-            {
-                IsFilterable = true,
-                IsSortable = true,
-            },
-            new SearchableField(DisplayTextAnalyzedKey)
-            {
-                AnalyzerName = settings.AnalyzerName,
-            },
-            new SearchableField(FullTextKey)
-            {
-                AnalyzerName = settings.AnalyzerName,
-            },
+            new SimpleField(IndexingConstants.ContentItemVersionIdKey, SearchFieldDataType.String) { IsFilterable = true, IsSortable = true, },
+            new SimpleField(OwnerKey, SearchFieldDataType.String) { IsFilterable = true, IsSortable = true, },
+            new SearchableField(DisplayTextAnalyzedKey) { AnalyzerName = settings.AnalyzerName, },
+            new SearchableField(FullTextKey) { AnalyzerName = settings.AnalyzerName, },
         };
 
         foreach (var indexMap in settings.IndexMappings)
@@ -229,35 +215,21 @@ public class AzureAISearchIndexManager(
 
             if (indexMap.Options.HasFlag(Indexing.DocumentIndexOptions.Keyword))
             {
-                searchFields.Add(new SimpleField(safeFieldName, GetFieldType(indexMap.Type))
-                {
-                    IsFilterable = true,
-                    IsSortable = true,
-                });
+                searchFields.Add(new SimpleField(safeFieldName, GetFieldType(indexMap.Type)) { IsFilterable = true, IsSortable = true, });
 
                 continue;
             }
 
-            searchFields.Add(new SearchableField(safeFieldName, true)
-            {
-                AnalyzerName = settings.AnalyzerName,
-            });
+            searchFields.Add(new SearchableField(safeFieldName, true) { AnalyzerName = settings.AnalyzerName, });
         }
 
-        var searchIndex = new SearchIndex(fullIndexName)
-        {
-            Fields = searchFields,
-            Suggesters =
-            {
-                new SearchSuggester("sg", FullTextKey),
-            },
-        };
+        var searchIndex = new SearchIndex(fullIndexName) { Fields = searchFields, Suggesters = { new SearchSuggester("sg", FullTextKey), }, };
 
         return searchIndex;
     }
 
-    private static SearchFieldDataType GetFieldType(Types type)
-        => type switch
+    private static SearchFieldDataType GetFieldType(Types type) =>
+        type switch
         {
             Types.Boolean => SearchFieldDataType.Boolean,
             Types.DateTime => SearchFieldDataType.DateTimeOffset,

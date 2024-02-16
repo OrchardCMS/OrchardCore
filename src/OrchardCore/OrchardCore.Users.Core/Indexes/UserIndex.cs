@@ -20,7 +20,8 @@ namespace OrchardCore.Users.Indexes
     {
         public override void Describe(DescribeContext<User> context)
         {
-            context.For<UserIndex>()
+            context
+                .For<UserIndex>()
                 .Map(user =>
                 {
                     return new UserIndex

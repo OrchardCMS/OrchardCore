@@ -31,10 +31,15 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
                 return null;
             }
 
-            return Initialize<ContentAuditTrailSettingsViewModel>("ContentAuditTrailSettings_Edit", model =>
-            {
-                model.AllowedContentTypes = section.AllowedContentTypes;
-            }).Location("Content:10#Content;5").OnGroup(AuditTrailSettingsGroup.Id);
+            return Initialize<ContentAuditTrailSettingsViewModel>(
+                    "ContentAuditTrailSettings_Edit",
+                    model =>
+                    {
+                        model.AllowedContentTypes = section.AllowedContentTypes;
+                    }
+                )
+                .Location("Content:10#Content;5")
+                .OnGroup(AuditTrailSettingsGroup.Id);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentAuditTrailSettings section, BuildEditorContext context)

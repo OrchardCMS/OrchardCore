@@ -27,15 +27,10 @@ namespace OrchardCore.BackgroundTasks
                 };
             }
 
-            return new BackgroundTaskSettings()
-            {
-                Name = technicalName,
-                Title = technicalName,
-            };
+            return new BackgroundTaskSettings() { Name = technicalName, Title = technicalName, };
         }
 
-        public static IBackgroundTask GetTaskByName(this IEnumerable<IBackgroundTask> tasks, string name)
-            => tasks.LastOrDefault(task => task.GetTaskName() == name);
+        public static IBackgroundTask GetTaskByName(this IEnumerable<IBackgroundTask> tasks, string name) => tasks.LastOrDefault(task => task.GetTaskName() == name);
 
         public static string GetTaskName(this IBackgroundTask task) => task.GetType().FullName;
     }

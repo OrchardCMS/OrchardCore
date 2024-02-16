@@ -13,10 +13,7 @@ namespace OrchardCore.Mvc
     /// <summary>
     /// An <see cref="ApplicationPart"/> backed by an <see cref="Assembly"/>.
     /// </summary>
-    public class ShellFeatureApplicationPart :
-        ApplicationPart,
-        IApplicationPartTypeProvider,
-        ICompilationReferencesProvider
+    public class ShellFeatureApplicationPart : ApplicationPart, IApplicationPartTypeProvider, ICompilationReferencesProvider
     {
         private static IEnumerable<string> _referencePaths;
         private static readonly object _synLock = new();
@@ -26,16 +23,11 @@ namespace OrchardCore.Mvc
         /// <summary>
         /// Initalizes a new <see cref="AssemblyPart"/> instance.
         /// </summary>
-        public ShellFeatureApplicationPart()
-        {
-        }
+        public ShellFeatureApplicationPart() { }
 
         public override string Name
         {
-            get
-            {
-                return nameof(ShellFeatureApplicationPart);
-            }
+            get { return nameof(ShellFeatureApplicationPart); }
         }
 
         /// <inheritdoc />
@@ -60,10 +52,7 @@ namespace OrchardCore.Mvc
                     }
                 }
 
-                return _shellBlueprint
-                    .Dependencies.Keys
-                    .Concat(_tagHelpers.SelectMany(p => p.GetTypes()))
-                    .Select(x => x.GetTypeInfo());
+                return _shellBlueprint.Dependencies.Keys.Concat(_tagHelpers.SelectMany(p => p.GetTypes())).Select(x => x.GetTypeInfo());
             }
         }
 
@@ -82,8 +71,7 @@ namespace OrchardCore.Mvc
                     return _referencePaths;
                 }
 
-                _referencePaths = DependencyContext.Default.CompileLibraries
-                    .SelectMany(library => library.ResolveReferencePaths());
+                _referencePaths = DependencyContext.Default.CompileLibraries.SelectMany(library => library.ResolveReferencePaths());
             }
 
             return _referencePaths;

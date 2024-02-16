@@ -64,8 +64,11 @@ namespace OrchardCore.Redis.Services
                     {
                         if (_logger.IsEnabled(LogLevel.Debug))
                         {
-                            _logger.LogDebug("Timeout elapsed before acquiring the named lock '{LockName}' after the given timeout of '{Timeout}'.",
-                                _prefix + key, timeout.ToString());
+                            _logger.LogDebug(
+                                "Timeout elapsed before acquiring the named lock '{LockName}' after the given timeout of '{Timeout}'.",
+                                _prefix + key,
+                                timeout.ToString()
+                            );
                         }
                     }
                 }
@@ -188,9 +191,7 @@ namespace OrchardCore.Redis.Services
 
         private static TimeSpan GetDelay(double retries)
         {
-            var delay = _baseDelay
-                * (1.0 + ((Math.Pow(1.8, retries - 1.0) - 1.0)
-                    * (0.6 + new Random().NextDouble() * 0.4)));
+            var delay = _baseDelay * (1.0 + ((Math.Pow(1.8, retries - 1.0) - 1.0) * (0.6 + new Random().NextDouble() * 0.4)));
 
             return TimeSpan.FromMilliseconds(Math.Min(delay, _maxDelay));
 

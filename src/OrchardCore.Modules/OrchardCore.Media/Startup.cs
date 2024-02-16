@@ -77,15 +77,16 @@ namespace OrchardCore.Media
             services.AddSingleton<IBackgroundTask, ResizedMediaCacheBackgroundTask>();
             services.AddSingleton<IBackgroundTask, RemoteMediaCacheBackgroundTask>();
 
-            services.Configure<TemplateOptions>(o =>
-            {
-                o.MemberAccessStrategy.Register<DisplayMediaFieldViewModel>();
-                o.MemberAccessStrategy.Register<Anchor>();
+            services
+                .Configure<TemplateOptions>(o =>
+                {
+                    o.MemberAccessStrategy.Register<DisplayMediaFieldViewModel>();
+                    o.MemberAccessStrategy.Register<Anchor>();
 
-                o.Filters.AddFilter("img_tag", MediaFilters.ImgTag);
-            })
-            .AddLiquidFilter<AssetUrlFilter>("asset_url")
-            .AddLiquidFilter<ResizeUrlFilter>("resize_url");
+                    o.Filters.AddFilter("img_tag", MediaFilters.ImgTag);
+                })
+                .AddLiquidFilter<AssetUrlFilter>("asset_url")
+                .AddLiquidFilter<ResizeUrlFilter>("resize_url");
 
             services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
 
@@ -107,9 +108,7 @@ namespace OrchardCore.Media
                 return new MediaFileProvider(options.AssetsRequestPath, mediaPath);
             });
 
-            services.AddSingleton<IStaticFileProvider, IMediaFileProvider>(serviceProvider =>
-                serviceProvider.GetRequiredService<IMediaFileProvider>()
-            );
+            services.AddSingleton<IStaticFileProvider, IMediaFileProvider>(serviceProvider => serviceProvider.GetRequiredService<IMediaFileProvider>());
 
             services.AddSingleton<IMediaFileStore>(serviceProvider =>
             {
@@ -125,9 +124,8 @@ namespace OrchardCore.Media
 
                 var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, mediaOptions.AssetsRequestPath);
 
-                var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext
-                    ?.Features.Get<ShellContextFeature>()
-                    ?.OriginalPathBase ?? PathString.Empty;
+                var originalPathBase =
+                    serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext?.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? PathString.Empty;
 
                 if (originalPathBase.HasValue)
                 {
@@ -167,8 +165,7 @@ namespace OrchardCore.Media
             services.AddScoped<IModularTenantEvents>(sp => sp.GetRequiredService<MediaTokenSettingsUpdater>());
 
             // Media Field
-            services.AddContentField<MediaField>()
-                .UseDisplayDriver<MediaFieldDisplayDriver>();
+            services.AddContentField<MediaField>().UseDisplayDriver<MediaFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MediaFieldSettingsDriver>();
             services.AddScoped<AttachedMediaFieldFileService, AttachedMediaFieldFileService>();
             services.AddScoped<IContentHandler, AttachedMediaFieldContentHandler>();
@@ -418,12 +415,14 @@ namespace OrchardCore.Media
         public override void ConfigureServices(IServiceCollection services)
         {
             // Only add image as a descriptor as [media] is deprecated.
-            services.AddShortcode<ImageShortcodeProvider>("image", d =>
-            {
-                d.DefaultValue = "[image] [/image]";
-                d.Hint = "Add a image from the media library.";
-                d.Usage =
-@"[image]foo.jpg[/image]<br>
+            services.AddShortcode<ImageShortcodeProvider>(
+                "image",
+                d =>
+                {
+                    d.DefaultValue = "[image] [/image]";
+                    d.Hint = "Add a image from the media library.";
+                    d.Usage =
+                        @"[image]foo.jpg[/image]<br>
 <table>
   <tr>
     <td>Args:</td>
@@ -434,23 +433,27 @@ namespace OrchardCore.Media
     <td>class, alt</td>
   </tr>
 </table>";
-                d.Categories = ["HTML Content", "Media"];
-            });
+                    d.Categories = ["HTML Content", "Media"];
+                }
+            );
 
-            services.AddShortcode<AssetUrlShortcodeProvider>("asset_url", d =>
-            {
-                d.DefaultValue = "[asset_url] [/asset_url]";
-                d.Hint = "Return a url from the media library.";
-                d.Usage =
-@"[asset_url]foo.jpg[/asset_url]<br>
+            services.AddShortcode<AssetUrlShortcodeProvider>(
+                "asset_url",
+                d =>
+                {
+                    d.DefaultValue = "[asset_url] [/asset_url]";
+                    d.Hint = "Return a url from the media library.";
+                    d.Usage =
+                        @"[asset_url]foo.jpg[/asset_url]<br>
 <table>
   <tr>
     <td>Args:</td>
     <td>width, height, mode</td>
   </tr>
 </table>";
-                d.Categories = ["HTML Content", "Media"];
-            });
+                    d.Categories = ["HTML Content", "Media"];
+                }
+            );
         }
     }
 }

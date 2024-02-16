@@ -23,8 +23,7 @@ namespace OrchardCore.Tests.DisplayManagement
             serviceCollection.AddScoped<IShapeFactory, DefaultShapeFactory>();
             serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
 
-            var defaultShapeTable = new ShapeTable
-            (
+            var defaultShapeTable = new ShapeTable(
                 new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
                 new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
             );
@@ -52,10 +51,7 @@ namespace OrchardCore.Tests.DisplayManagement
 
             var alpha = await shape.CreateAsync("Alpha");
 
-            var beta = await shape.CreateAsync("Beta", Arguments.From(new
-            {
-                Alpha = alpha
-            }));
+            var beta = await shape.CreateAsync("Beta", Arguments.From(new { Alpha = alpha }));
 
             await alpha.AddAsync(beta);
             var serialized = alpha.ShapeToJson();

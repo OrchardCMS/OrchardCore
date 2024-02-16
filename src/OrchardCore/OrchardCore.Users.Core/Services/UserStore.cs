@@ -16,19 +16,19 @@ using YesSql;
 
 namespace OrchardCore.Users.Services
 {
-    public class UserStore :
-        IUserClaimStore<IUser>,
-        IUserRoleStore<IUser>,
-        IUserPasswordStore<IUser>,
-        IUserEmailStore<IUser>,
-        IUserSecurityStampStore<IUser>,
-        IUserLoginStore<IUser>,
-        IUserLockoutStore<IUser>,
-        IUserAuthenticationTokenStore<IUser>,
-        IUserTwoFactorRecoveryCodeStore<IUser>,
-        IUserTwoFactorStore<IUser>,
-        IUserAuthenticatorKeyStore<IUser>,
-        IUserPhoneNumberStore<IUser>
+    public class UserStore
+        : IUserClaimStore<IUser>,
+            IUserRoleStore<IUser>,
+            IUserPasswordStore<IUser>,
+            IUserEmailStore<IUser>,
+            IUserSecurityStampStore<IUser>,
+            IUserLoginStore<IUser>,
+            IUserLockoutStore<IUser>,
+            IUserAuthenticationTokenStore<IUser>,
+            IUserTwoFactorRecoveryCodeStore<IUser>,
+            IUserTwoFactorStore<IUser>,
+            IUserAuthenticatorKeyStore<IUser>,
+            IUserPhoneNumberStore<IUser>
     {
         private const string TokenProtector = "OrchardCore.UserStore.Token";
         private const string InternalLoginProvider = "[OrchardCoreUserStore]";
@@ -42,13 +42,15 @@ namespace OrchardCore.Users.Services
         private readonly IRoleService _roleService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
 
-        public UserStore(ISession session,
+        public UserStore(
+            ISession session,
             ILookupNormalizer keyNormalizer,
             IUserIdGenerator userIdGenerator,
             ILogger<UserStore> logger,
             IEnumerable<IUserEventHandler> handlers,
             IRoleService roleService,
-            IDataProtectionProvider dataProtectionProvider)
+            IDataProtectionProvider dataProtectionProvider
+        )
         {
             _session = session;
             _keyNormalizer = keyNormalizer;
@@ -688,11 +690,7 @@ namespace OrchardCore.Users.Services
 
             if (userToken == null && user is User u)
             {
-                userToken = new UserToken
-                {
-                    LoginProvider = loginProvider,
-                    Name = name
-                };
+                userToken = new UserToken { LoginProvider = loginProvider, Name = name };
 
                 u.UserTokens.Add(userToken);
             }
@@ -896,11 +894,11 @@ namespace OrchardCore.Users.Services
         #endregion
 
         #region IUserAuthenticatorKeyStore<IUser>
-        public virtual Task SetAuthenticatorKeyAsync(IUser user, string key, CancellationToken cancellationToken)
-            => SetTokenAsync(user, InternalLoginProvider, AuthenticatorKeyTokenName, key, cancellationToken);
+        public virtual Task SetAuthenticatorKeyAsync(IUser user, string key, CancellationToken cancellationToken) =>
+            SetTokenAsync(user, InternalLoginProvider, AuthenticatorKeyTokenName, key, cancellationToken);
 
-        public virtual Task<string> GetAuthenticatorKeyAsync(IUser user, CancellationToken cancellationToken)
-            => GetTokenAsync(user, InternalLoginProvider, AuthenticatorKeyTokenName, cancellationToken);
+        public virtual Task<string> GetAuthenticatorKeyAsync(IUser user, CancellationToken cancellationToken) =>
+            GetTokenAsync(user, InternalLoginProvider, AuthenticatorKeyTokenName, cancellationToken);
         #endregion
 
         #region IUserPhoneNumberStore<IUser>

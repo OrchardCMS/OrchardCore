@@ -20,26 +20,31 @@ namespace OrchardCore.Deployment
                 return Task.CompletedTask;
             }
 
-            builder
-                .Add(S["Configuration"], configuration => configuration
-                    .Add(S["Import/Export"], S["Import/Export"].PrefixPosition(), import => import
-                        .Add(S["Deployment Plans"], S["Deployment Plans"].PrefixPosition(), deployment => deployment
-                            .Action("Index", "DeploymentPlan", "OrchardCore.Deployment")
-                            .Permission(Permissions.Export)
-                            .LocalNav()
-                        )
-                        .Add(S["Package Import"], S["Package Import"].PrefixPosition(), deployment => deployment
-                            .Action("Index", "Import", "OrchardCore.Deployment")
-                            .Permission(Permissions.Import)
-                            .LocalNav()
-                        )
-                        .Add(S["JSON Import"], S["JSON Import"].PrefixPosition(), deployment => deployment
-                            .Action("Json", "Import", "OrchardCore.Deployment")
-                            .Permission(Permissions.Import)
-                            .LocalNav()
-                        )
+            builder.Add(
+                S["Configuration"],
+                configuration =>
+                    configuration.Add(
+                        S["Import/Export"],
+                        S["Import/Export"].PrefixPosition(),
+                        import =>
+                            import
+                                .Add(
+                                    S["Deployment Plans"],
+                                    S["Deployment Plans"].PrefixPosition(),
+                                    deployment => deployment.Action("Index", "DeploymentPlan", "OrchardCore.Deployment").Permission(Permissions.Export).LocalNav()
+                                )
+                                .Add(
+                                    S["Package Import"],
+                                    S["Package Import"].PrefixPosition(),
+                                    deployment => deployment.Action("Index", "Import", "OrchardCore.Deployment").Permission(Permissions.Import).LocalNav()
+                                )
+                                .Add(
+                                    S["JSON Import"],
+                                    S["JSON Import"].PrefixPosition(),
+                                    deployment => deployment.Action("Json", "Import", "OrchardCore.Deployment").Permission(Permissions.Import).LocalNav()
+                                )
                     )
-                );
+            );
 
             return Task.CompletedTask;
         }

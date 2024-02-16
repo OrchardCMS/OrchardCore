@@ -29,16 +29,13 @@ namespace OrchardCore.Environment.Shell.Configuration.Internal
 
         public virtual void Set(string key, string value) => Data[key] = value;
 
-        public virtual void Load()
-        {
-        }
+        public virtual void Load() { }
 
         public virtual IEnumerable<string> GetChildKeys(IEnumerable<string> earlierKeys, string parentPath)
         {
             var prefix = parentPath == null ? string.Empty : parentPath + ConfigurationPath.KeyDelimiter;
 
-            return Data
-                .Where(kv => kv.Key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+            return Data.Where(kv => kv.Key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
                 .Select(kv => Segment(kv.Key, prefix.Length))
                 .Concat(earlierKeys)
                 .OrderBy(k => k, ConfigurationKeyComparer.Instance);

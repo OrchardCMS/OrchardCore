@@ -11,11 +11,7 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Search.Elasticsearch",
     Name = "Elasticsearch",
     Description = "Creates Elasticsearch indexes to support search scenarios, introduces a preconfigured container-enabled content type.",
-    Dependencies =
-    [
-        "OrchardCore.Indexing",
-        "OrchardCore.ContentTypes"
-    ],
+    Dependencies = ["OrchardCore.Indexing", "OrchardCore.ContentTypes"],
     Category = "Search"
 )]
 

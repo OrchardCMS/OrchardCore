@@ -13,10 +13,7 @@ namespace OrchardCore.ReCaptcha.ActionFilters.Detection
         private readonly IClientIPAddressAccessor _clientIpAddressAccessor;
         private readonly ReCaptchaSettings _settings;
 
-        public IPAddressRobotDetector(
-            IClientIPAddressAccessor clientIpAddressAccessor,
-            IMemoryCache memoryCache,
-            IOptions<ReCaptchaSettings> settingsAccessor)
+        public IPAddressRobotDetector(IClientIPAddressAccessor clientIpAddressAccessor, IMemoryCache memoryCache, IOptions<ReCaptchaSettings> settingsAccessor)
         {
             _clientIpAddressAccessor = clientIpAddressAccessor;
             _memoryCache = memoryCache;
@@ -41,10 +38,7 @@ namespace OrchardCore.ReCaptcha.ActionFilters.Detection
             var ipAddressKey = GetIpAddressCacheKey();
             var faultyRequestCount = _memoryCache.GetOrCreate(ipAddressKey, fact => 0);
 
-            return new RobotDetectionResult()
-            {
-                IsRobot = faultyRequestCount > _settings.DetectionThreshold
-            };
+            return new RobotDetectionResult() { IsRobot = faultyRequestCount > _settings.DetectionThreshold };
         }
 
         public void FlagAsRobot()

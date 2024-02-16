@@ -55,8 +55,7 @@ public static class AwsStorageOptionsExtension
                 var secretKey = credentials.GetValue(Constants.AwsCredentialParamNames.SecretKey, string.Empty);
                 var accessKey = credentials.GetValue(Constants.AwsCredentialParamNames.AccessKey, string.Empty);
 
-                if (!string.IsNullOrWhiteSpace(accessKey) ||
-                    !string.IsNullOrWhiteSpace(secretKey))
+                if (!string.IsNullOrWhiteSpace(accessKey) || !string.IsNullOrWhiteSpace(secretKey))
                 {
                     var awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
                     options.AwsOptions.Credentials = awsCredentials;

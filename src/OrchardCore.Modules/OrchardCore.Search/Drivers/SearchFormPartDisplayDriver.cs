@@ -18,11 +18,15 @@ public class SearchFormPartDisplayDriver : ContentPartDisplayDriver<SearchFormPa
 
     public override IDisplayResult Edit(SearchFormPart part, BuildPartEditorContext context)
     {
-        return Initialize<SearchPartViewModel>(GetEditorShapeType(context), viewModel =>
-        {
-            viewModel.Placeholder = part.Placeholder;
-            viewModel.IndexName = part.IndexName;
-        }).Location("Content");
+        return Initialize<SearchPartViewModel>(
+                GetEditorShapeType(context),
+                viewModel =>
+                {
+                    viewModel.Placeholder = part.Placeholder;
+                    viewModel.IndexName = part.IndexName;
+                }
+            )
+            .Location("Content");
     }
 
     public override async Task<IDisplayResult> UpdateAsync(SearchFormPart part, IUpdateModel updater, UpdatePartEditorContext context)

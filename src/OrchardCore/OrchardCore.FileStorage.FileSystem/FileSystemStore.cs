@@ -80,7 +80,8 @@ namespace OrchardCore.FileStorage.FileSystem
                             var fileRelativePath = f[_fileSystemPath.Length..];
                             var filePath = this.NormalizePath(fileRelativePath);
                             return new FileSystemStoreEntry(filePath, fileSystemInfo);
-                        }));
+                        })
+                );
 
                 // Add files.
                 results.AddRange(
@@ -92,7 +93,8 @@ namespace OrchardCore.FileStorage.FileSystem
                             var fileRelativePath = f[_fileSystemPath.Length..];
                             var filePath = this.NormalizePath(fileRelativePath);
                             return new FileSystemStoreEntry(filePath, fileSystemInfo);
-                        }));
+                        })
+                );
 
                 return results.ToAsyncEnumerable();
             }

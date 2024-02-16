@@ -17,18 +17,14 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static void AddPhoneFormatValidator(this IServiceCollection services)
-        => services.TryAddScoped<IPhoneFormatValidator, DefaultPhoneFormatValidator>();
+    public static void AddPhoneFormatValidator(this IServiceCollection services) => services.TryAddScoped<IPhoneFormatValidator, DefaultPhoneFormatValidator>();
 
     public static IServiceCollection AddSmsProvider<T>(this IServiceCollection services, string name)
         where T : class, ISmsProvider
     {
         services.Configure<SmsProviderOptions>(options =>
         {
-            options.TryAddProvider(name, new SmsProviderTypeOptions(typeof(T))
-            {
-                IsEnabled = true,
-            });
+            options.TryAddProvider(name, new SmsProviderTypeOptions(typeof(T)) { IsEnabled = true, });
         });
 
         return services;
@@ -44,14 +40,18 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddTwilioSmsProvider(this IServiceCollection services)
     {
-        services.AddHttpClient(TwilioSmsProvider.TechnicalName, client =>
-        {
-            client.BaseAddress = new Uri("https://api.twilio.com/2010-04-01/Accounts/");
-        }).AddStandardResilienceHandler();
+        services
+            .AddHttpClient(
+                TwilioSmsProvider.TechnicalName,
+                client =>
+                {
+                    client.BaseAddress = new Uri("https://api.twilio.com/2010-04-01/Accounts/");
+                }
+            )
+            .AddStandardResilienceHandler();
 
         return services.AddSmsProviderOptionsConfiguration<TwilioProviderOptionsConfigurations>();
     }
 
-    public static IServiceCollection AddLogSmsProvider(this IServiceCollection services)
-        => services.AddSmsProvider<LogSmsProvider>(LogSmsProvider.TechnicalName);
+    public static IServiceCollection AddLogSmsProvider(this IServiceCollection services) => services.AddSmsProvider<LogSmsProvider>(LogSmsProvider.TechnicalName);
 }

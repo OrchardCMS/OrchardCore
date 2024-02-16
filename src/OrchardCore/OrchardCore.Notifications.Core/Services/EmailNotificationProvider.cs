@@ -11,9 +11,7 @@ public class EmailNotificationProvider : INotificationMethodProvider
     private readonly ISmtpService _smtpService;
     protected readonly IStringLocalizer S;
 
-    public EmailNotificationProvider(
-        ISmtpService smtpService,
-        IStringLocalizer<EmailNotificationProvider> stringLocalizer)
+    public EmailNotificationProvider(ISmtpService smtpService, IStringLocalizer<EmailNotificationProvider> stringLocalizer)
     {
         _smtpService = smtpService;
         S = stringLocalizer;
@@ -32,11 +30,7 @@ public class EmailNotificationProvider : INotificationMethodProvider
             return false;
         }
 
-        var mailMessage = new MailMessage()
-        {
-            To = user.Email,
-            Subject = message.Summary,
-        };
+        var mailMessage = new MailMessage() { To = user.Email, Subject = message.Summary, };
 
         if (message.IsHtmlPreferred && !string.IsNullOrWhiteSpace(message.HtmlBody))
         {

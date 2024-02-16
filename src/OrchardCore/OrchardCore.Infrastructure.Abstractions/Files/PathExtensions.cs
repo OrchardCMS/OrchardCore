@@ -78,9 +78,7 @@ namespace System.IO
             {
                 // Determine if we need to do any path resolution.
                 // We need to resolve paths with multiple path separators (e.g "//" or "\\") or, directory traversals e.g. ("../" or "./").
-                if (segment.Length == 0 ||
-                    segment.Equals(ParentDirectoryToken) ||
-                    segment.Equals(CurrentDirectoryToken))
+                if (segment.Length == 0 || segment.Equals(ParentDirectoryToken) || segment.Equals(CurrentDirectoryToken))
                 {
                     requiresResolution = true;
                     break;

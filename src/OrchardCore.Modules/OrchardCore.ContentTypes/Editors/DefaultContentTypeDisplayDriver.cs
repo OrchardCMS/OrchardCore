@@ -18,11 +18,15 @@ namespace OrchardCore.ContentTypes.Editors
 
         public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition)
         {
-            return Initialize<ContentTypeViewModel>("ContentType_Edit", model =>
-            {
-                model.DisplayName = contentTypeDefinition.DisplayName;
-                model.Name = contentTypeDefinition.Name;
-            }).Location("Content");
+            return Initialize<ContentTypeViewModel>(
+                    "ContentType_Edit",
+                    model =>
+                    {
+                        model.DisplayName = contentTypeDefinition.DisplayName;
+                        model.Name = contentTypeDefinition.Name;
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypeDefinition contentTypeDefinition, UpdateTypeEditorContext context)

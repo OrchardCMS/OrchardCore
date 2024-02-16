@@ -23,8 +23,7 @@ namespace OrchardCore.ContentPreview
             services.AddScoped<IContentDisplayDriver, ContentPreviewDriver>();
 
             // Preview Part
-            services.AddContentPart<PreviewPart>()
-                .AddHandler<PreviewPartHandler>();
+            services.AddContentPart<PreviewPart>().AddHandler<PreviewPartHandler>();
 
             services.AddDataMigration<Migrations>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, PreviewPartSettingsDisplayDriver>();

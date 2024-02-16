@@ -8,7 +8,8 @@ namespace OrchardCore.Tests.Modules
         public async Task InjectPoweredByHeader()
         {
             // Arrange
-            string key = "X-Powered-By", value = "OrchardCore";
+            string key = "X-Powered-By",
+                value = "OrchardCore";
             var headersArray = new Dictionary<string, StringValues>() { { key, string.Empty } };
             var headersDic = new HeaderDictionary(headersArray);
             var httpResponseMock = new Mock<HttpResponse>();
@@ -36,15 +37,15 @@ namespace OrchardCore.Tests.Modules
         public async Task DoNotInjectPoweredByHeaderIfDisabled()
         {
             // Arrange
-            string key = "X-Powered-By", value = "OrchardCore";
+            string key = "X-Powered-By",
+                value = "OrchardCore";
             var httpResponseMock = new Mock<HttpResponse>();
 #pragma warning disable ASP0019 // Suggest using IHeaderDictionary.Append or the indexer
             _ = httpResponseMock.Setup(r => r.Headers.Add(key, value));
 #pragma warning restore ASP0019 // Suggest using IHeaderDictionary.Append or the indexer
 
             Func<Task> dueTask = null;
-            httpResponseMock.Setup(r => r.OnStarting(It.IsAny<Func<Task>>()))
-                            .Callback<Func<Task>>((f) => dueTask = f);
+            httpResponseMock.Setup(r => r.OnStarting(It.IsAny<Func<Task>>())).Callback<Func<Task>>((f) => dueTask = f);
 
             var httpContextMock = new Mock<HttpContext>();
             httpContextMock.Setup(c => c.Response).Returns(httpResponseMock.Object);

@@ -35,23 +35,32 @@ public sealed class RedisDatabaseFactory : IRedisDatabaseFactory, IDisposable
     }
 
     public Task<IDatabase> CreateAsync(RedisOptions options) =>
-        _factories.GetOrAdd(options.Configuration, new Lazy<Task<IDatabase>>(async () =>
-        {
-            try
-            {
-                if (_logger.IsEnabled(LogLevel.Debug))
+        _factories
+            .GetOrAdd(
+                options.Configuration,
+                new Lazy<Task<IDatabase>>(async () =>
                 {
-                    _logger.LogDebug("Creating a new instance of '{name}'. A single instance per configuration should be created across tenants. Total instances prior creating is '{count}'.", nameof(ConnectionMultiplexer), _factories.Count);
-                }
+                    try
+                    {
+                        if (_logger.IsEnabled(LogLevel.Debug))
+                        {
+                            _logger.LogDebug(
+                                "Creating a new instance of '{name}'. A single instance per configuration should be created across tenants. Total instances prior creating is '{count}'.",
+                                nameof(ConnectionMultiplexer),
+                                _factories.Count
+                            );
+                        }
 
-                return (await ConnectionMultiplexer.ConnectAsync(options.ConfigurationOptions)).GetDatabase();
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Unable to connect to Redis.");
-                throw;
-            }
-        })).Value;
+                        return (await ConnectionMultiplexer.ConnectAsync(options.ConfigurationOptions)).GetDatabase();
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogError(e, "Unable to connect to Redis.");
+                        throw;
+                    }
+                })
+            )
+            .Value;
 
     public void Dispose()
     {

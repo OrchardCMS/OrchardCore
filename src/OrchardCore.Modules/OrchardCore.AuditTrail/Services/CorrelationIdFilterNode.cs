@@ -8,14 +8,11 @@ namespace OrchardCore.AuditTrail.Services
     /// </summary>
     public class CorrelationIdFilterNode : TermOperationNode
     {
-        public CorrelationIdFilterNode(string correlationId) : base("id", new UnaryNode(correlationId, OperateNodeQuotes.None))
-        {
-        }
+        public CorrelationIdFilterNode(string correlationId)
+            : base("id", new UnaryNode(correlationId, OperateNodeQuotes.None)) { }
 
-        public override string ToNormalizedString()
-            => string.Empty;
+        public override string ToNormalizedString() => string.Empty;
 
-        public override string ToString()
-            => string.Empty;
+        public override string ToString() => string.Empty;
     }
 }

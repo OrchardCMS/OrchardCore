@@ -17,12 +17,14 @@ public class AzureAISearchIndexRebuildDeploymentSource : IDeploymentSource
 
         var indicesToRebuild = rebuildStep.IncludeAll ? [] : rebuildStep.Indices;
 
-        result.Steps.Add(new JsonObject
-        {
-            ["name"] = Name,
-            ["includeAll"] = rebuildStep.IncludeAll,
-            ["Indices"] = JArray.FromObject(indicesToRebuild),
-        });
+        result.Steps.Add(
+            new JsonObject
+            {
+                ["name"] = Name,
+                ["includeAll"] = rebuildStep.IncludeAll,
+                ["Indices"] = JArray.FromObject(indicesToRebuild),
+            }
+        );
 
         return Task.CompletedTask;
     }

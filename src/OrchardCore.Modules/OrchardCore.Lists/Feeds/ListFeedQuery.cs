@@ -101,14 +101,16 @@ namespace OrchardCore.Lists.Feeds
 
             IEnumerable<ContentItem> items;
 
-            items = itemsCount == 0
-                ? Enumerable.Empty<ContentItem>()
-                : await _session.Query<ContentItem>()
-                    .With<ContainedPartIndex>(x => x.ListContentItemId == contentItem.ContentItemId)
-                    .With<ContentItemIndex>(x => x.Published)
-                    .OrderByDescending(x => x.CreatedUtc)
-                    .Take(itemsCount)
-                    .ListAsync();
+            items =
+                itemsCount == 0
+                    ? Enumerable.Empty<ContentItem>()
+                    : await _session
+                        .Query<ContentItem>()
+                        .With<ContainedPartIndex>(x => x.ListContentItemId == contentItem.ContentItemId)
+                        .With<ContentItemIndex>(x => x.Published)
+                        .OrderByDescending(x => x.CreatedUtc)
+                        .Take(itemsCount)
+                        .ListAsync();
 
             foreach (var item in items)
             {

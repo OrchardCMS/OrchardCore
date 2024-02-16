@@ -15,9 +15,7 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
-        public ExportContentToDeploymentTargetSettingsDisplayDriver(
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+        public ExportContentToDeploymentTargetSettingsDisplayDriver(IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService)
         {
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
@@ -31,10 +29,15 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
                 return null;
             }
 
-            return Initialize<ExportContentToDeploymentTargetSettingsViewModel>("ExportContentToDeploymentTargetSettings_Edit", model =>
-            {
-                model.ExportContentToDeploymentTargetPlanId = settings.ExportContentToDeploymentTargetPlanId;
-            }).Location("Content:2").OnGroup(GroupId);
+            return Initialize<ExportContentToDeploymentTargetSettingsViewModel>(
+                    "ExportContentToDeploymentTargetSettings_Edit",
+                    model =>
+                    {
+                        model.ExportContentToDeploymentTargetPlanId = settings.ExportContentToDeploymentTargetPlanId;
+                    }
+                )
+                .Location("Content:2")
+                .OnGroup(GroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ExportContentToDeploymentTargetSettings settings, BuildEditorContext context)

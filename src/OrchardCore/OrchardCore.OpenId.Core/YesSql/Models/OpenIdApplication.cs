@@ -46,8 +46,7 @@ namespace OrchardCore.OpenId.YesSql.Models
         /// <summary>
         /// Gets or sets the localized display names associated with the application.
         /// </summary>
-        public ImmutableDictionary<CultureInfo, string> DisplayNames { get; set; }
-            = ImmutableDictionary.Create<CultureInfo, string>();
+        public ImmutableDictionary<CultureInfo, string> DisplayNames { get; set; } = ImmutableDictionary.Create<CultureInfo, string>();
 
         /// <summary>
         /// Gets or sets the physical identifier associated with the current application.
@@ -93,8 +92,7 @@ namespace OrchardCore.OpenId.YesSql.Models
         /// <summary>
         /// Gets or sets the settings associated with the application.
         /// </summary>
-        public ImmutableDictionary<string, string> Settings { get; set; }
-            = ImmutableDictionary.Create<string, string>();
+        public ImmutableDictionary<string, string> Settings { get; set; } = ImmutableDictionary.Create<string, string>();
 
         /// <summary>
         /// Gets or sets the client type associated with the current application.

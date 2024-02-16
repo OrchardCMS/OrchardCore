@@ -80,10 +80,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
 
         public MediaTokenTests()
         {
-            _mediaTokenSettings = new MediaTokenSettings
-            {
-                HashKey = _hashKey,
-            };
+            _mediaTokenSettings = new MediaTokenSettings { HashKey = _hashKey, };
         }
 
         [Theory]

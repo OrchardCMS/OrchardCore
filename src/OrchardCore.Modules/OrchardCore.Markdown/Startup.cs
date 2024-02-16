@@ -35,35 +35,35 @@ namespace OrchardCore.Markdown
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<TemplateOptions>(o =>
-            {
-                o.MemberAccessStrategy.Register<MarkdownBodyPartViewModel>();
-                o.MemberAccessStrategy.Register<MarkdownFieldViewModel>();
-            })
-            .AddLiquidFilter<Markdownify>("markdownify");
+            services
+                .Configure<TemplateOptions>(o =>
+                {
+                    o.MemberAccessStrategy.Register<MarkdownBodyPartViewModel>();
+                    o.MemberAccessStrategy.Register<MarkdownFieldViewModel>();
+                })
+                .AddLiquidFilter<Markdownify>("markdownify");
 
             // Markdown Part
-            services.AddContentPart<MarkdownBodyPart>()
-                .UseDisplayDriver<MarkdownBodyPartDisplayDriver>()
-                .AddHandler<MarkdownBodyPartHandler>();
+            services.AddContentPart<MarkdownBodyPart>().UseDisplayDriver<MarkdownBodyPartDisplayDriver>().AddHandler<MarkdownBodyPartHandler>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, MarkdownBodyPartSettingsDisplayDriver>();
             services.AddDataMigration<Migrations>();
             services.AddScoped<IContentPartIndexHandler, MarkdownBodyPartIndexHandler>();
 
             // Markdown Field
-            services.AddContentField<MarkdownField>()
-                .UseDisplayDriver<MarkdownFieldDisplayDriver>();
+            services.AddContentField<MarkdownField>().UseDisplayDriver<MarkdownFieldDisplayDriver>();
 
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MarkdownFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, MarkdownFieldIndexHandler>();
 
             services.AddOptions<MarkdownPipelineOptions>();
-            services.ConfigureMarkdownPipeline((pipeline) =>
-            {
-                var extensions = _shellConfiguration.GetValue("OrchardCore_Markdown:Extensions", DefaultMarkdownExtensions);
-                pipeline.Configure(extensions);
-            });
+            services.ConfigureMarkdownPipeline(
+                (pipeline) =>
+                {
+                    var extensions = _shellConfiguration.GetValue("OrchardCore_Markdown:Extensions", DefaultMarkdownExtensions);
+                    pipeline.Configure(extensions);
+                }
+            );
 
             services.AddScoped<IMarkdownService, DefaultMarkdownService>();
         }

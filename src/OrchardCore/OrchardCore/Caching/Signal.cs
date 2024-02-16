@@ -20,14 +20,16 @@ namespace OrchardCore.Environment.Cache
 
         public IChangeToken GetToken(string key)
         {
-            return _changeTokens.GetOrAdd(
-                key,
-                _ =>
-                {
-                    var cancellationTokenSource = new CancellationTokenSource();
-                    var changeToken = new CancellationChangeToken(cancellationTokenSource.Token);
-                    return new ChangeTokenInfo(changeToken, cancellationTokenSource);
-                })
+            return _changeTokens
+                .GetOrAdd(
+                    key,
+                    _ =>
+                    {
+                        var cancellationTokenSource = new CancellationTokenSource();
+                        var changeToken = new CancellationChangeToken(cancellationTokenSource.Token);
+                        return new ChangeTokenInfo(changeToken, cancellationTokenSource);
+                    }
+                )
                 .ChangeToken;
         }
 

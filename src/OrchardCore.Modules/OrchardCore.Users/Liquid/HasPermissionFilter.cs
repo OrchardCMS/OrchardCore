@@ -30,8 +30,7 @@ namespace OrchardCore.Users.Liquid
                     var permissionName = arguments["permission"].Or(arguments.At(0)).ToStringValue();
                     var resource = arguments["resource"].Or(arguments.At(1)).ToObjectValue();
 
-                    if (!string.IsNullOrEmpty(permissionName) &&
-                        await _authorizationService.AuthorizeAsync(user, new Permission(permissionName), resource))
+                    if (!string.IsNullOrEmpty(permissionName) && await _authorizationService.AuthorizeAsync(user, new Permission(permissionName), resource))
                     {
                         return BooleanValue.True;
                     }

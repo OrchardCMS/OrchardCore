@@ -41,7 +41,8 @@ namespace OrchardCore.ContentTypes.Controllers
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
             INotifier notifier,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor
+        )
         {
             _notifier = notifier;
             _contentDefinitionDisplayManager = contentDefinitionDisplayManager;
@@ -69,10 +70,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return Forbid();
             }
 
-            return View("List", new ListContentTypesViewModel
-            {
-                Types = await _contentDefinitionService.GetTypesAsync()
-            });
+            return View("List", new ListContentTypesViewModel { Types = await _contentDefinitionService.GetTypesAsync() });
         }
 
         public async Task<ActionResult> Create(string suggestion)
@@ -250,8 +248,17 @@ namespace OrchardCore.ContentTypes.Controllers
             {
                 Type = typeViewModel,
                 PartSelections = (await _contentDefinitionService.GetPartsAsync(metadataPartsOnly: false))
-                    .Where(cpd => !typePartNames.Contains(cpd.Name, StringComparer.OrdinalIgnoreCase) && cpd.PartDefinition != null && cpd.PartDefinition.GetSettings<ContentPartSettings>().Attachable)
-                    .Select(cpd => new PartSelectionViewModel { PartName = cpd.Name, PartDisplayName = cpd.DisplayName, PartDescription = cpd.Description })
+                    .Where(cpd =>
+                        !typePartNames.Contains(cpd.Name, StringComparer.OrdinalIgnoreCase)
+                        && cpd.PartDefinition != null
+                        && cpd.PartDefinition.GetSettings<ContentPartSettings>().Attachable
+                    )
+                    .Select(cpd => new PartSelectionViewModel
+                    {
+                        PartName = cpd.Name,
+                        PartDisplayName = cpd.DisplayName,
+                        PartDescription = cpd.Description
+                    })
                     .ToList()
             };
 
@@ -272,16 +279,20 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            var reusableParts = (await _contentDefinitionService.GetPartsAsync(metadataPartsOnly: false))
-                    .Where(cpd => cpd.PartDefinition != null &&
-                        cpd.PartDefinition.GetSettings<ContentPartSettings>().Attachable &&
-                        cpd.PartDefinition.GetSettings<ContentPartSettings>().Reusable);
+            var reusableParts = (await _contentDefinitionService.GetPartsAsync(metadataPartsOnly: false)).Where(cpd =>
+                cpd.PartDefinition != null && cpd.PartDefinition.GetSettings<ContentPartSettings>().Attachable && cpd.PartDefinition.GetSettings<ContentPartSettings>().Reusable
+            );
 
             var viewModel = new AddReusablePartViewModel
             {
                 Type = typeViewModel,
                 PartSelections = reusableParts
-                    .Select(cpd => new PartSelectionViewModel { PartName = cpd.Name, PartDisplayName = cpd.DisplayName, PartDescription = cpd.Description })
+                    .Select(cpd => new PartSelectionViewModel
+                    {
+                        PartName = cpd.Name,
+                        PartDisplayName = cpd.DisplayName,
+                        PartDescription = cpd.Description
+                    })
                     .ToList(),
                 SelectedPartName = reusableParts.FirstOrDefault()?.Name
             };
@@ -433,11 +444,15 @@ namespace OrchardCore.ContentTypes.Controllers
                 return Forbid();
             }
 
-            return View(new ListContentPartsViewModel
-            {
-                // only user-defined parts (not code as they are not configurable)
-                Parts = await _contentDefinitionService.GetPartsAsync(true/*metadataPartsOnly*/)
-            });
+            return View(
+                new ListContentPartsViewModel
+                {
+                    // only user-defined parts (not code as they are not configurable)
+                    Parts = await _contentDefinitionService.GetPartsAsync(
+                        true /*metadataPartsOnly*/
+                    )
+                }
+            );
         }
 
         public async Task<ActionResult> CreatePart(string suggestion)
@@ -606,11 +621,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            var viewModel = new AddFieldViewModel
-            {
-                Part = partViewModel.PartDefinition,
-                Fields = fields.Select(field => field.Name).OrderBy(name => name).ToList()
-            };
+            var viewModel = new AddFieldViewModel { Part = partViewModel.PartDefinition, Fields = fields.Select(field => field.Name).OrderBy(name => name).ToList() };
 
             ViewData["ReturnUrl"] = returnUrl;
             return View(viewModel);
@@ -714,8 +725,12 @@ namespace OrchardCore.ContentTypes.Controllers
 
             var partFieldDefinition = partViewModel.PartDefinition.Fields.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
 
-            if (partFieldDefinition?.FieldDefinition?.Name == null
-                || !(await _contentDefinitionService.GetFieldsAsync()).Any(field => string.Equals(field.Name, partFieldDefinition.FieldDefinition.Name, StringComparison.OrdinalIgnoreCase)))
+            if (
+                partFieldDefinition?.FieldDefinition?.Name == null
+                || !(await _contentDefinitionService.GetFieldsAsync()).Any(field =>
+                    string.Equals(field.Name, partFieldDefinition.FieldDefinition.Name, StringComparison.OrdinalIgnoreCase)
+                )
+            )
             {
                 return NotFound();
             }
@@ -755,7 +770,9 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            var field = (await _contentDefinitionManager.LoadPartDefinitionAsync(id)).Fields.FirstOrDefault(x => string.Equals(x.Name, viewModel.Name, StringComparison.OrdinalIgnoreCase));
+            var field = (await _contentDefinitionManager.LoadPartDefinitionAsync(id)).Fields.FirstOrDefault(x =>
+                string.Equals(x.Name, viewModel.Name, StringComparison.OrdinalIgnoreCase)
+            );
 
             if (field == null)
             {
@@ -774,7 +791,11 @@ namespace OrchardCore.ContentTypes.Controllers
                     ModelState.AddModelError("DisplayName", S["The Display Name can't be empty."]);
                 }
 
-                if ((await _contentDefinitionService.LoadPartAsync(partViewModel.Name)).PartDefinition.Fields.Any(t => t.Name != viewModel.Name && string.Equals(t.DisplayName().Trim(), viewModel.DisplayName.Trim(), StringComparison.OrdinalIgnoreCase)))
+                if (
+                    (await _contentDefinitionService.LoadPartAsync(partViewModel.Name)).PartDefinition.Fields.Any(t =>
+                        t.Name != viewModel.Name && string.Equals(t.DisplayName().Trim(), viewModel.DisplayName.Trim(), StringComparison.OrdinalIgnoreCase)
+                    )
+                )
                 {
                     ModelState.AddModelError("DisplayName", S["A field with the same Display Name already exists."]);
                 }
@@ -795,7 +816,9 @@ namespace OrchardCore.ContentTypes.Controllers
             await _contentDefinitionService.AlterFieldAsync(partViewModel, viewModel);
 
             // Refresh the local field variable in case it has been altered
-            field = (await _contentDefinitionManager.LoadPartDefinitionAsync(id)).Fields.FirstOrDefault(x => string.Equals(x.Name, viewModel.Name, StringComparison.OrdinalIgnoreCase));
+            field = (await _contentDefinitionManager.LoadPartDefinitionAsync(id)).Fields.FirstOrDefault(x =>
+                string.Equals(x.Name, viewModel.Name, StringComparison.OrdinalIgnoreCase)
+            );
 
             viewModel.Shape = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, _updateModelAccessor.ModelUpdater);
 
@@ -943,7 +966,11 @@ namespace OrchardCore.ContentTypes.Controllers
                         ModelState.AddModelError("DisplayName", S["The Display Name can't be empty."]);
                     }
 
-                    if (typeDefinition.Parts.Any(t => t.Name != viewModel.Name && string.Equals(t.DisplayName()?.Trim(), viewModel.DisplayName.Trim(), StringComparison.OrdinalIgnoreCase)))
+                    if (
+                        typeDefinition.Parts.Any(t =>
+                            t.Name != viewModel.Name && string.Equals(t.DisplayName()?.Trim(), viewModel.DisplayName.Trim(), StringComparison.OrdinalIgnoreCase)
+                        )
+                    )
                     {
                         ModelState.AddModelError("DisplayName", S["A part with the same Display Name already exists."]);
                     }
@@ -960,7 +987,9 @@ namespace OrchardCore.ContentTypes.Controllers
             await _contentDefinitionService.AlterTypePartAsync(viewModel);
 
             // Refresh the local part variable in case it has been altered
-            part = (await _contentDefinitionManager.LoadTypeDefinitionAsync(id)).Parts.FirstOrDefault(x => string.Equals(x.Name, viewModel.Name, StringComparison.OrdinalIgnoreCase));
+            part = (await _contentDefinitionManager.LoadTypeDefinitionAsync(id)).Parts.FirstOrDefault(x =>
+                string.Equals(x.Name, viewModel.Name, StringComparison.OrdinalIgnoreCase)
+            );
 
             viewModel.Shape = await _contentDefinitionDisplayManager.UpdateTypePartEditorAsync(part, _updateModelAccessor.ModelUpdater);
 

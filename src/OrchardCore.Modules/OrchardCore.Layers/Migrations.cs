@@ -14,10 +14,7 @@ namespace OrchardCore.Layers
         private readonly IConditionIdGenerator _conditionIdGenerator;
         private readonly IRuleMigrator _ruleMigrator;
 
-        public Migrations(
-            ILayerService layerService,
-            IConditionIdGenerator conditionIdGenerator,
-            IRuleMigrator ruleMigrator)
+        public Migrations(ILayerService layerService, IConditionIdGenerator conditionIdGenerator, IRuleMigrator ruleMigrator)
         {
             _layerService = layerService;
             _conditionIdGenerator = conditionIdGenerator;
@@ -26,15 +23,9 @@ namespace OrchardCore.Layers
 
         public async Task<int> CreateAsync()
         {
-            await SchemaBuilder.CreateMapIndexTableAsync<LayerMetadataIndex>(table => table
-               .Column<string>("Zone", c => c.WithLength(64))
-            );
+            await SchemaBuilder.CreateMapIndexTableAsync<LayerMetadataIndex>(table => table.Column<string>("Zone", c => c.WithLength(64)));
 
-            await SchemaBuilder.AlterIndexTableAsync<LayerMetadataIndex>(table => table
-                .CreateIndex("IDX_LayerMetadataIndex_DocumentId",
-                "DocumentId",
-                "Zone")
-            );
+            await SchemaBuilder.AlterIndexTableAsync<LayerMetadataIndex>(table => table.CreateIndex("IDX_LayerMetadataIndex_DocumentId", "DocumentId", "Zone"));
 
             // Shortcut other migration steps on new content definition schemas.
             return 3;
@@ -43,11 +34,7 @@ namespace OrchardCore.Layers
         // This code can be removed in a later version.
         public async Task<int> UpdateFrom1Async()
         {
-            await SchemaBuilder.AlterIndexTableAsync<LayerMetadataIndex>(table => table
-                .CreateIndex("IDX_LayerMetadataIndex_DocumentId",
-                "DocumentId",
-                "Zone")
-            );
+            await SchemaBuilder.AlterIndexTableAsync<LayerMetadataIndex>(table => table.CreateIndex("IDX_LayerMetadataIndex_DocumentId", "DocumentId", "Zone"));
 
             return 2;
         }

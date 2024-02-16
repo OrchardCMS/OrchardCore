@@ -13,10 +13,7 @@ namespace OrchardCore.Forms.Workflows.Activities
         private readonly IUpdateModelAccessor _updateModelAccessor;
         protected readonly IStringLocalizer S;
 
-        public AddModelValidationErrorTask(
-            IUpdateModelAccessor updateModelAccessor,
-            IStringLocalizer<AddModelValidationErrorTask> localizer
-        )
+        public AddModelValidationErrorTask(IUpdateModelAccessor updateModelAccessor, IStringLocalizer<AddModelValidationErrorTask> localizer)
         {
             _updateModelAccessor = updateModelAccessor;
             S = localizer;
@@ -45,8 +42,7 @@ namespace OrchardCore.Forms.Workflows.Activities
 
         public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var updater = _updateModelAccessor.ModelUpdater
-                ?? throw new InvalidOperationException("Cannot add model validation errors when there's no Updater present.");
+            var updater = _updateModelAccessor.ModelUpdater ?? throw new InvalidOperationException("Cannot add model validation errors when there's no Updater present.");
 
             updater.ModelState.AddModelError(Key, ErrorMessage);
             return Outcomes("Done");

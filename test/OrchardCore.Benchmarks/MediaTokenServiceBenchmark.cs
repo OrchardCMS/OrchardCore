@@ -58,13 +58,17 @@ namespace OrchardCore.Benchmark
         [Benchmark]
         public string AddTokenToPath_LongPath()
         {
-            return _mediaTokenService.AddTokenToPath("/media/portfolio/1.jpg?width=LOOOOOOOOOOOOOOONG&height=LOOOOOOOOOOOOOOONG&rmode=LOOOOOOOOOOOOOOONG&rxy=LOOOOOOOOOOOOOOONG&rsampler=LOOOOOOOOOOOOOOONG&ranchor=LOOOOOOOOOOOOOOONG&compand=LOOOOOOOOOOOOOOONG&token=LOOOOOOOOOOOOOOONG&quality=LOOOOOOOOOOOOOOONG");
+            return _mediaTokenService.AddTokenToPath(
+                "/media/portfolio/1.jpg?width=LOOOOOOOOOOOOOOONG&height=LOOOOOOOOOOOOOOONG&rmode=LOOOOOOOOOOOOOOONG&rxy=LOOOOOOOOOOOOOOONG&rsampler=LOOOOOOOOOOOOOOONG&ranchor=LOOOOOOOOOOOOOOONG&compand=LOOOOOOOOOOOOOOONG&token=LOOOOOOOOOOOOOOONG&quality=LOOOOOOOOOOOOOOONG"
+            );
         }
 
         [Benchmark]
         public string AddTokenToPath_LongPath_NoCache()
         {
-            return _mediaTokenServiceWithoutCache.AddTokenToPath("/media/portfolio/1.jpg?width=LOOOOOOOOOOOOOOONG&height=LOOOOOOOOOOOOOOONG&rmode=LOOOOOOOOOOOOOOONG&rxy=LOOOOOOOOOOOOOOONG&rsampler=LOOOOOOOOOOOOOOONG&ranchor=LOOOOOOOOOOOOOOONG&compand=LOOOOOOOOOOOOOOONG&token=LOOOOOOOOOOOOOOONG&quality=LOOOOOOOOOOOOOOONG");
+            return _mediaTokenServiceWithoutCache.AddTokenToPath(
+                "/media/portfolio/1.jpg?width=LOOOOOOOOOOOOOOONG&height=LOOOOOOOOOOOOOOONG&rmode=LOOOOOOOOOOOOOOONG&rxy=LOOOOOOOOOOOOOOONG&rsampler=LOOOOOOOOOOOOOOONG&ranchor=LOOOOOOOOOOOOOOONG&compand=LOOOOOOOOOOOOOOONG&token=LOOOOOOOOOOOOOOONG&quality=LOOOOOOOOOOOOOOONG"
+            );
         }
 #pragma warning restore CA1822 // Mark members as static
     }
@@ -76,9 +80,7 @@ namespace OrchardCore.Benchmark
             return new NullCacheEntry();
         }
 
-        public void Remove(object key)
-        {
-        }
+        public void Remove(object key) { }
 
         public bool TryGetValue(object key, out object value)
         {
@@ -86,9 +88,7 @@ namespace OrchardCore.Benchmark
             return false;
         }
 
-        public void Dispose()
-        {
-        }
+        public void Dispose() { }
 
         private sealed class NullCacheEntry : ICacheEntry
         {
@@ -102,9 +102,7 @@ namespace OrchardCore.Benchmark
             public TimeSpan? SlidingExpiration { get; set; }
             public object Value { get; set; }
 
-            public void Dispose()
-            {
-            }
+            public void Dispose() { }
         }
     }
 }

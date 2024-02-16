@@ -32,7 +32,7 @@ namespace OrchardCore.Seo.Drivers
             IHttpContextAccessor httpContextAccessor,
             IUrlHelperFactory urlHelperFactory,
             IContentManager contentManager
-            )
+        )
         {
             _mediaFileStore = mediaFileStore;
             _siteService = siteService;

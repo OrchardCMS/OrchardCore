@@ -20,17 +20,14 @@ public class NotifyContentOwnerTask : NotifyUserTaskActivity<NotifyContentOwnerT
     private readonly ISession _session;
 
     public NotifyContentOwnerTask(
-       INotificationService notificationCoordinator,
-       IWorkflowExpressionEvaluator expressionEvaluator,
-       HtmlEncoder htmlEncoder,
-       ILogger<NotifyContentOwnerTask> logger,
-       IStringLocalizer<NotifyContentOwnerTask> localizer,
-       ISession session
-   ) : base(notificationCoordinator,
-       expressionEvaluator,
-       htmlEncoder,
-       logger,
-       localizer)
+        INotificationService notificationCoordinator,
+        IWorkflowExpressionEvaluator expressionEvaluator,
+        HtmlEncoder htmlEncoder,
+        ILogger<NotifyContentOwnerTask> logger,
+        IStringLocalizer<NotifyContentOwnerTask> localizer,
+        ISession session
+    )
+        : base(notificationCoordinator, expressionEvaluator, htmlEncoder, logger, localizer)
     {
         _session = session;
     }
@@ -39,9 +36,7 @@ public class NotifyContentOwnerTask : NotifyUserTaskActivity<NotifyContentOwnerT
 
     protected override async Task<IEnumerable<IUser>> GetUsersAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        if (workflowContext.Input.TryGetValue("ContentItem", out var obj)
-            && obj is ContentItem contentItem
-            && !string.IsNullOrEmpty(contentItem.Owner))
+        if (workflowContext.Input.TryGetValue("ContentItem", out var obj) && obj is ContentItem contentItem && !string.IsNullOrEmpty(contentItem.Owner))
         {
             if (workflowContext.Input.TryGetValue("Owner", out var ownerObject) && ownerObject is User user && user.IsEnabled)
             {

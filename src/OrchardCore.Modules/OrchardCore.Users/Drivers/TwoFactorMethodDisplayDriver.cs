@@ -15,23 +15,35 @@ public class TwoFactorMethodDisplayDriver : DisplayDriver<TwoFactorMethod>
             return Task.FromResult<IDisplayResult>(null);
         }
 
-        var icon = Initialize<TwoFactorMethod>($"TwoFactorMethod_{model.Provider}_Icon", vm =>
-        {
-            vm.Provider = model.Provider;
-            vm.IsEnabled = model.IsEnabled;
-        }).Location("SummaryAdmin", "Icon");
+        var icon = Initialize<TwoFactorMethod>(
+                $"TwoFactorMethod_{model.Provider}_Icon",
+                vm =>
+                {
+                    vm.Provider = model.Provider;
+                    vm.IsEnabled = model.IsEnabled;
+                }
+            )
+            .Location("SummaryAdmin", "Icon");
 
-        var content = Initialize<TwoFactorMethod>($"TwoFactorMethod_{model.Provider}_Content", vm =>
-        {
-            vm.Provider = model.Provider;
-            vm.IsEnabled = model.IsEnabled;
-        }).Location("SummaryAdmin", "Content");
+        var content = Initialize<TwoFactorMethod>(
+                $"TwoFactorMethod_{model.Provider}_Content",
+                vm =>
+                {
+                    vm.Provider = model.Provider;
+                    vm.IsEnabled = model.IsEnabled;
+                }
+            )
+            .Location("SummaryAdmin", "Content");
 
-        var actions = Initialize<TwoFactorMethod>($"TwoFactorMethod_{model.Provider}_Actions", vm =>
-        {
-            vm.Provider = model.Provider;
-            vm.IsEnabled = model.IsEnabled;
-        }).Location("SummaryAdmin", "Actions");
+        var actions = Initialize<TwoFactorMethod>(
+                $"TwoFactorMethod_{model.Provider}_Actions",
+                vm =>
+                {
+                    vm.Provider = model.Provider;
+                    vm.IsEnabled = model.IsEnabled;
+                }
+            )
+            .Location("SummaryAdmin", "Actions");
 
         return Task.FromResult<IDisplayResult>(Combine(icon, content, actions));
     }

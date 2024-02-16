@@ -53,7 +53,8 @@ namespace OrchardCore.Liquid
                         var filters = string.Join(',', templateOptions.Value.Filters.Select(x => $"'{x.Key}'"));
                         var tags = string.Join(',', liquidViewParser.RegisteredTags.Select(x => $"'{x.Key}'"));
 
-                        var script = $@"[{filters}].forEach(value=>{{if(!liquidFilters.includes(value)){{ liquidFilters.push(value);}}}});
+                        var script =
+                            $@"[{filters}].forEach(value=>{{if(!liquidFilters.includes(value)){{ liquidFilters.push(value);}}}});
                                 [{tags}].forEach(value=>{{if(!liquidTags.includes(value)){{ liquidTags.push(value);}}}});";
 
                         _etag = Guid.NewGuid().ToString("n");

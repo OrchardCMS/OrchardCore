@@ -29,7 +29,7 @@ namespace OrchardCore.Menu.Drivers
             IHtmlLocalizer<MenuPartDisplayDriver> htmlLocalizer,
             INotifier notifier,
             ILogger<MenuPartDisplayDriver> logger
-            )
+        )
         {
             _contentDefinitionManager = contentDefinitionManager;
             H = htmlLocalizer;
@@ -39,29 +39,42 @@ namespace OrchardCore.Menu.Drivers
 
         public override IDisplayResult Edit(MenuPart part)
         {
-            return Initialize<MenuPartEditViewModel>("MenuPart_Edit", async model =>
-            {
-                var menuItemContentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync()).Where(t => t.StereotypeEquals("MenuItem"));
-                var notify = false;
-
-                foreach (var menuItem in part.ContentItem.As<MenuItemsListPart>().MenuItems)
+            return Initialize<MenuPartEditViewModel>(
+                "MenuPart_Edit",
+                async model =>
                 {
-                    if (!menuItemContentTypes.Any(c => c.Name == menuItem.ContentType))
+                    var menuItemContentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync()).Where(t => t.StereotypeEquals("MenuItem"));
+                    var notify = false;
+
+                    foreach (var menuItem in part.ContentItem.As<MenuItemsListPart>().MenuItems)
                     {
-                        _logger.LogWarning("The menu item content item with id {ContentItemId} has no matching {ContentType} content type definition.", menuItem.ContentItem.ContentItemId, menuItem.ContentItem.ContentType);
-                        await _notifier.WarningAsync(H["The menu item content item with id {0} has no matching {1} content type definition.", menuItem.ContentItem.ContentItemId, menuItem.ContentItem.ContentType]);
-                        notify = true;
+                        if (!menuItemContentTypes.Any(c => c.Name == menuItem.ContentType))
+                        {
+                            _logger.LogWarning(
+                                "The menu item content item with id {ContentItemId} has no matching {ContentType} content type definition.",
+                                menuItem.ContentItem.ContentItemId,
+                                menuItem.ContentItem.ContentType
+                            );
+                            await _notifier.WarningAsync(
+                                H[
+                                    "The menu item content item with id {0} has no matching {1} content type definition.",
+                                    menuItem.ContentItem.ContentItemId,
+                                    menuItem.ContentItem.ContentType
+                                ]
+                            );
+                            notify = true;
+                        }
                     }
-                }
 
-                if (notify)
-                {
-                    await _notifier.WarningAsync(H["Publishing this content item may erase created content. Fix any content type issues beforehand."]);
-                }
+                    if (notify)
+                    {
+                        await _notifier.WarningAsync(H["Publishing this content item may erase created content. Fix any content type issues beforehand."]);
+                    }
 
-                model.MenuPart = part;
-                model.MenuItemContentTypes = menuItemContentTypes;
-            });
+                    model.MenuPart = part;
+                    model.MenuItemContentTypes = menuItemContentTypes;
+                }
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(MenuPart part, IUpdateModel updater)
@@ -122,7 +135,8 @@ namespace OrchardCore.Menu.Drivers
                 {
                     menuItems.Add(ProcessItem(originalItems, children[i] as JsonObject));
                     contentItem["MenuItemsListPart"] = new JsonObject { ["MenuItems"] = menuItems };
-                };
+                }
+                ;
             }
 
             return contentItem;

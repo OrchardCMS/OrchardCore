@@ -38,7 +38,6 @@ namespace OrchardCore.Lists
     {
         private readonly AdminOptions _adminOptions;
 
-
         public Startup(IOptions<AdminOptions> adminOptions)
         {
             _adminOptions = adminOptions.Value;
@@ -46,13 +45,14 @@ namespace OrchardCore.Lists
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<TemplateOptions>(o =>
-            {
-                o.MemberAccessStrategy.Register<ListPartViewModel>();
-            })
-            .AddLiquidFilter<ListCountFilter>("list_count")
-            .AddLiquidFilter<ListItemsFilter>("list_items")
-            .AddLiquidFilter<ContainerFilter>("container");
+            services
+                .Configure<TemplateOptions>(o =>
+                {
+                    o.MemberAccessStrategy.Register<ListPartViewModel>();
+                })
+                .AddLiquidFilter<ListCountFilter>("list_count")
+                .AddLiquidFilter<ListItemsFilter>("list_items")
+                .AddLiquidFilter<ContainerFilter>("container");
 
             services.AddIndexProvider<ContainedPartIndexProvider>();
             services.AddScoped<IContentDisplayDriver, ContainedPartDisplayDriver>();
@@ -62,9 +62,7 @@ namespace OrchardCore.Lists
             services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, ListPartContentsAdminListDisplayDriver>();
 
             // List Part
-            services.AddContentPart<ListPart>()
-                .UseDisplayDriver<ListPartDisplayDriver>()
-                .AddHandler<ListPartHandler>();
+            services.AddContentPart<ListPart>().UseDisplayDriver<ListPartDisplayDriver>().AddHandler<ListPartHandler>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, ListPartSettingsDisplayDriver>();
             services.AddDataMigration<Migrations>();
@@ -99,8 +97,7 @@ namespace OrchardCore.Lists
         {
             services.AddScoped<IContentLocalizationPartHandler, ContainedPartLocalizationHandler>();
             services.AddScoped<IContentLocalizationPartHandler, ListPartLocalizationHandler>();
-            services.AddContentPart<LocalizationPart>()
-                .AddHandler<LocalizationContainedPartHandler>();
+            services.AddContentPart<LocalizationPart>().AddHandler<LocalizationContainedPartHandler>();
         }
     }
 
@@ -112,17 +109,21 @@ namespace OrchardCore.Lists
             // Feeds
             services.AddScoped<IFeedQueryProvider, ListFeedQuery>();
 
-            services.AddContentPart<ListPart>()
-                .UseDisplayDriver<ListPartFeedDisplayDriver>()
-                .AddHandler<ListPartFeedHandler>();
+            services.AddContentPart<ListPart>().UseDisplayDriver<ListPartFeedDisplayDriver>().AddHandler<ListPartFeedHandler>();
         }
+
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaControllerRoute(
                 name: "ListFeed",
                 areaName: "OrchardCore.Feeds",
                 pattern: "Contents/Lists/{contentItemId}/rss",
-                defaults: new { controller = "Feed", action = "Index", format = "rss" }
+                defaults: new
+                {
+                    controller = "Feed",
+                    action = "Index",
+                    format = "rss"
+                }
             );
         }
     }

@@ -7,9 +7,7 @@ namespace OrchardCore.DisplayManagement.ModelBinding
 {
     public class ModelBinderAccessorFilter : IActionFilter, IPageFilter
     {
-        public void OnActionExecuted(ActionExecutedContext context)
-        {
-        }
+        public void OnActionExecuted(ActionExecutedContext context) { }
 
         public void OnActionExecuting(ActionExecutingContext context)
         {
@@ -21,9 +19,7 @@ namespace OrchardCore.DisplayManagement.ModelBinding
             }
         }
 
-        public void OnPageHandlerSelected(PageHandlerSelectedContext context)
-        {
-        }
+        public void OnPageHandlerSelected(PageHandlerSelectedContext context) { }
 
         public void OnPageHandlerExecuting(PageHandlerExecutingContext context)
         {
@@ -36,8 +32,6 @@ namespace OrchardCore.DisplayManagement.ModelBinding
             }
         }
 
-        public void OnPageHandlerExecuted(PageHandlerExecutedContext context)
-        {
-        }
+        public void OnPageHandlerExecuted(PageHandlerExecutedContext context) { }
     }
 }

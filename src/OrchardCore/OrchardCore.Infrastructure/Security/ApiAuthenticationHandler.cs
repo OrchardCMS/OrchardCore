@@ -19,7 +19,8 @@ namespace OrchardCore.Security
             IOptions<AuthenticationOptions> authenticationOptions,
             IOptionsMonitor<ApiAuthorizationOptions> options,
             ILoggerFactory logger,
-            UrlEncoder encoder)
+            UrlEncoder encoder
+        )
             : base(options, logger, encoder)
         {
             _authenticationOptions = authenticationOptions;

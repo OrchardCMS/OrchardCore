@@ -15,10 +15,7 @@ public class RobotsMiddleware
     private readonly IStaticFileProvider _staticFileProvider;
     private readonly IEnumerable<IRobotsProvider> _robotsProviders;
 
-    public RobotsMiddleware(
-        RequestDelegate next,
-        IStaticFileProvider staticFileProvider,
-        IEnumerable<IRobotsProvider> robotsProviders)
+    public RobotsMiddleware(RequestDelegate next, IStaticFileProvider staticFileProvider, IEnumerable<IRobotsProvider> robotsProviders)
     {
         _next = next;
         _staticFileProvider = staticFileProvider;

@@ -14,10 +14,7 @@ public class AzureAISearchIndexMap
 
     public DocumentIndexOptions Options { get; set; }
 
-    public AzureAISearchIndexMap()
-    {
-
-    }
+    public AzureAISearchIndexMap() { }
 
     public AzureAISearchIndexMap(string azureFieldKey, Types type)
     {

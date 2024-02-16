@@ -20,15 +20,18 @@ namespace OrchardCore.ContentFields.Settings
 
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<MultiTextFieldSettingsViewModel>("MultiTextFieldSettings_Edit", model =>
-            {
-                var settings = partFieldDefinition.GetSettings<MultiTextFieldSettings>();
+            return Initialize<MultiTextFieldSettingsViewModel>(
+                    "MultiTextFieldSettings_Edit",
+                    model =>
+                    {
+                        var settings = partFieldDefinition.GetSettings<MultiTextFieldSettings>();
 
-                model.Required = settings.Required;
-                model.Hint = settings.Hint;
-                model.Options = JConvert.SerializeObject(settings.Options, JOptions.Indented);
-            })
-            .Location("Content");
+                        model.Required = settings.Required;
+                        model.Hint = settings.Hint;
+                        model.Options = JConvert.SerializeObject(settings.Options, JOptions.Indented);
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

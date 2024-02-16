@@ -3,7 +3,5 @@ using OrchardCore.Workflows.Display;
 
 namespace OrchardCore.Forms.Workflows.Drivers
 {
-    public class ValidateFormTaskDisplayDriver : ActivityDisplayDriver<ValidateFormTask>
-    {
-    }
+    public class ValidateFormTaskDisplayDriver : ActivityDisplayDriver<ValidateFormTask> { }
 }

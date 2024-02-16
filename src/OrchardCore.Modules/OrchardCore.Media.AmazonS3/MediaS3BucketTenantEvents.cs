@@ -26,7 +26,8 @@ public class MediaS3BucketTenantEvents : ModularTenantEvents
         IAmazonS3 amazonS3Client,
         IOptions<AwsStorageOptions> options,
         IStringLocalizer<MediaS3BucketTenantEvents> localizer,
-        ILogger<MediaS3BucketTenantEvents> logger)
+        ILogger<MediaS3BucketTenantEvents> logger
+    )
     {
         _shellSettings = shellSettings;
         _amazonS3Client = amazonS3Client;
@@ -37,9 +38,7 @@ public class MediaS3BucketTenantEvents : ModularTenantEvents
 
     public override async Task ActivatingAsync()
     {
-        if (!_options.CreateBucket ||
-            _shellSettings.IsUninitialized() ||
-            string.IsNullOrEmpty(_options.BucketName))
+        if (!_options.CreateBucket || _shellSettings.IsUninitialized() || string.IsNullOrEmpty(_options.BucketName))
         {
             return;
         }
@@ -56,11 +55,7 @@ public class MediaS3BucketTenantEvents : ModularTenantEvents
                 return;
             }
 
-            var bucketRequest = new PutBucketRequest
-            {
-                BucketName = _options.BucketName,
-                UseClientRegion = true
-            };
+            var bucketRequest = new PutBucketRequest { BucketName = _options.BucketName, UseClientRegion = true };
 
             // Trying to create bucket.
             var response = await _amazonS3Client.PutBucketAsync(bucketRequest);
@@ -81,11 +76,9 @@ public class MediaS3BucketTenantEvents : ModularTenantEvents
                 RestrictPublicBuckets = true
             };
 
-            await _amazonS3Client.PutPublicAccessBlockAsync(new PutPublicAccessBlockRequest
-            {
-                PublicAccessBlockConfiguration = blockConfiguration,
-                BucketName = _options.BucketName
-            });
+            await _amazonS3Client.PutPublicAccessBlockAsync(
+                new PutPublicAccessBlockRequest { PublicAccessBlockConfiguration = blockConfiguration, BucketName = _options.BucketName }
+            );
 
             _logger.LogDebug("Amazon S3 Bucket {BucketName} created.", _options.BucketName);
         }
@@ -110,11 +103,7 @@ public class MediaS3BucketTenantEvents : ModularTenantEvents
                 return;
             }
 
-            var bucketRequest = new DeleteBucketRequest
-            {
-                BucketName = _options.BucketName,
-                UseClientRegion = true
-            };
+            var bucketRequest = new DeleteBucketRequest { BucketName = _options.BucketName, UseClientRegion = true };
 
             // Trying to delete bucket.
             var response = await _amazonS3Client.DeleteBucketAsync(bucketRequest);

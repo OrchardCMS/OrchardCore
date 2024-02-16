@@ -16,10 +16,7 @@ namespace OrchardCore.Contents.Deployment.Download
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentManager _contentManager;
 
-        public DownloadController(
-            IAuthorizationService authorizationService,
-            IContentManager contentManager
-            )
+        public DownloadController(IAuthorizationService authorizationService, IContentManager contentManager)
         {
             _authorizationService = authorizationService;
             _contentManager = contentManager;
@@ -47,11 +44,7 @@ namespace OrchardCore.Contents.Deployment.Download
                 return Forbid();
             }
 
-            var model = new DisplayJsonContentItemViewModel
-            {
-                ContentItem = contentItem,
-                ContentItemJson = JObject.FromObject(contentItem).ToString()
-            };
+            var model = new DisplayJsonContentItemViewModel { ContentItem = contentItem, ContentItemJson = JObject.FromObject(contentItem).ToString() };
 
             return View(model);
         }

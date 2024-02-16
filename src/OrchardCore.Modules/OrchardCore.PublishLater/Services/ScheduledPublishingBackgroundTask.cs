@@ -13,10 +13,7 @@ using YesSql;
 
 namespace OrchardCore.PublishLater.Services;
 
-[BackgroundTask(
-    Title = "Scheduled Content Items Publisher",
-    Schedule = "* * * * *",
-    Description = "Publishes content items when their scheduled publish date time arrives.")]
+[BackgroundTask(Title = "Scheduled Content Items Publisher", Schedule = "* * * * *", Description = "Publishes content items when their scheduled publish date time arrives.")]
 public class ScheduledPublishingBackgroundTask : IBackgroundTask
 {
     private readonly ILogger _logger;

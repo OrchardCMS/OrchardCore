@@ -38,7 +38,8 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
             IContentItemDisplayManager contentItemDisplayManager,
             INotifier notifier,
             IHtmlLocalizer<AuditTrailContentController> htmlLocalizer,
-            ILogger<AuditTrailContentController> logger)
+            ILogger<AuditTrailContentController> logger
+        )
         {
             _session = session;
             _contentManager = contentManager;
@@ -52,10 +53,12 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
 
         public async Task<ActionResult> Display(string auditTrailEventId)
         {
-            var auditTrailContentEvent = (await _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
-                .Where(index => index.EventId == auditTrailEventId)
-                .FirstOrDefaultAsync())
-                ?.As<AuditTrailContentEvent>();
+            var auditTrailContentEvent = (
+                await _session
+                    .Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
+                    .Where(index => index.EventId == auditTrailEventId)
+                    .FirstOrDefaultAsync()
+            )?.As<AuditTrailContentEvent>();
 
             if (auditTrailContentEvent == null || auditTrailContentEvent.ContentItem == null)
             {
@@ -92,9 +95,12 @@ namespace OrchardCore.Contents.AuditTrail.Controllers
         [HttpPost]
         public async Task<ActionResult> Restore(string auditTrailEventId)
         {
-            var contentItem = (await _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
-                .Where(index => index.EventId == auditTrailEventId)
-                .FirstOrDefaultAsync())
+            var contentItem = (
+                await _session
+                    .Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
+                    .Where(index => index.EventId == auditTrailEventId)
+                    .FirstOrDefaultAsync()
+            )
                 ?.As<AuditTrailContentEvent>()
                 ?.ContentItem;
 

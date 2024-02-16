@@ -19,9 +19,8 @@ namespace OrchardCore.DisplayManagement.Manifest
         /// <summary>
         /// Default parameterless ctor.
         /// </summary>
-        public ThemeAttribute() : base()
-        {
-        }
+        public ThemeAttribute()
+            : base() { }
 
         /// <summary>
         /// Ctor allowing <paramref name="author"/>, as well as defaults for
@@ -58,24 +57,23 @@ namespace OrchardCore.DisplayManagement.Manifest
             object defaultTenant,
             object alwaysEnabled,
             object enabledByDependencyOnly
-        ) : this(
-            id,
-            default,
-            baseTheme,
-            default,
-            default,
-            description,
-            author,
-            semVer,
-            websiteUrl,
-            featureDependencies,
-            tags,
-            defaultTenant,
-            alwaysEnabled,
-            enabledByDependencyOnly
         )
-        {
-        }
+            : this(
+                id,
+                default,
+                baseTheme,
+                default,
+                default,
+                description,
+                author,
+                semVer,
+                websiteUrl,
+                featureDependencies,
+                tags,
+                defaultTenant,
+                alwaysEnabled,
+                enabledByDependencyOnly
+            ) { }
 
         /// <summary>
         /// Ctor allowing <paramref name="author"/>, as well as defaults for
@@ -115,24 +113,9 @@ namespace OrchardCore.DisplayManagement.Manifest
             object defaultTenant,
             object alwaysEnabled,
             object enabledByDependencyOnly
-        ) : this(
-            id,
-            name,
-            baseTheme,
-            default,
-            default,
-            description,
-            author,
-            semVer,
-            websiteUrl,
-            featureDependencies,
-            tags,
-            defaultTenant,
-            alwaysEnabled,
-            enabledByDependencyOnly
         )
-        {
-        }
+            : this(id, name, baseTheme, default, default, description, author, semVer, websiteUrl, featureDependencies, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly)
+        { }
 
         // TODO: MWP: do we need a 'type' version? probably not...
         /// <summary>
@@ -177,21 +160,8 @@ namespace OrchardCore.DisplayManagement.Manifest
             object defaultTenant,
             object alwaysEnabled,
             object enabledByDependencyOnly
-        ) : base(
-            id,
-            name,
-            category,
-            priority,
-            description,
-            author,
-            semVer,
-            websiteUrl,
-            featureDependencies,
-            tags,
-            defaultTenant,
-            alwaysEnabled,
-            enabledByDependencyOnly
         )
+            : base(id, name, category, priority, description, author, semVer, websiteUrl, featureDependencies, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly)
         {
             BaseTheme = baseTheme;
         }

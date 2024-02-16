@@ -14,13 +14,17 @@ namespace OrchardCore.Widgets.Settings
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            return Initialize<WidgetsListPartSettingsViewModel>("WidgetsPartSettings_Edit", model =>
-            {
-                var settings = contentTypePartDefinition.GetSettings<WidgetsListPartSettings>();
+            return Initialize<WidgetsListPartSettingsViewModel>(
+                    "WidgetsPartSettings_Edit",
+                    model =>
+                    {
+                        var settings = contentTypePartDefinition.GetSettings<WidgetsListPartSettings>();
 
-                model.Zones = string.Join(", ", settings.Zones);
-                model.WidgetsListPartSettings = settings;
-            }).Location("Content");
+                        model.Zones = string.Join(", ", settings.Zones);
+                        model.WidgetsListPartSettings = settings;
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

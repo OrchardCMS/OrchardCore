@@ -24,19 +24,20 @@ namespace OrchardCore.ContentLocalization.Liquid
         {
             var urlHelper = _urlHelperFactory.GetUrlHelper(context.ViewContext);
 
-            var request = _httpContextAccessor.HttpContext?.Request
-                ?? throw new ArgumentException("HttpRequest missing while invoking 'switch_culture_url'");
+            var request = _httpContextAccessor.HttpContext?.Request ?? throw new ArgumentException("HttpRequest missing while invoking 'switch_culture_url'");
 
             var targetCulture = input.ToStringValue();
 
-            var url = urlHelper.RouteUrl("RedirectToLocalizedContent",
+            var url = urlHelper.RouteUrl(
+                "RedirectToLocalizedContent",
                 new
                 {
                     area = "OrchardCore.ContentLocalization",
                     targetCulture,
                     contentItemUrl = request.Path.Value,
                     queryStringValue = request.QueryString.Value,
-                });
+                }
+            );
             return new ValueTask<FluidValue>(FluidValue.Create(url, context.Options));
         }
     }

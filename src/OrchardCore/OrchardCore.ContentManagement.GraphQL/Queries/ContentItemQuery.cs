@@ -15,8 +15,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
         private readonly IHttpContextAccessor _httpContextAccessor;
         protected readonly IStringLocalizer S;
 
-        public ContentItemQuery(IHttpContextAccessor httpContextAccessor,
-            IStringLocalizer<ContentItemQuery> localizer)
+        public ContentItemQuery(IHttpContextAccessor httpContextAccessor, IStringLocalizer<ContentItemQuery> localizer)
         {
             _httpContextAccessor = httpContextAccessor;
 
@@ -32,13 +31,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 Name = "ContentItem",
                 Description = S["Content items are instances of content types, just like objects are instances of classes."],
                 Type = typeof(ContentItemInterface),
-                Arguments = new QueryArguments(
-                    new QueryArgument<NonNullGraphType<StringGraphType>>
-                    {
-                        Name = "contentItemId",
-                        Description = S["Content item id"]
-                    }
-                ),
+                Arguments = new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "contentItemId", Description = S["Content item id"] }),
                 Resolver = new FuncFieldResolver<ContentItem>(ResolveAsync)
             };
 

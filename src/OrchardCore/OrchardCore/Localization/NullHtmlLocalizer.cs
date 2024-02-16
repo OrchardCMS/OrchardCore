@@ -50,16 +50,13 @@ public class NullHtmlLocalizer : IHtmlLocalizer
     }
 
     /// <inheritdoc/>
-    public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
-        => NullStringLocalizer.Instance.GetAllStrings(includeParentCultures);
+    public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures) => NullStringLocalizer.Instance.GetAllStrings(includeParentCultures);
 
     /// <inheritdoc/>
-    public LocalizedString GetString(string name)
-        => NullStringLocalizer.Instance.GetString(name);
+    public LocalizedString GetString(string name) => NullStringLocalizer.Instance.GetString(name);
 
     /// <inheritdoc/>
-    public LocalizedString GetString(string name, params object[] arguments)
-        => NullStringLocalizer.Instance.GetString(name, arguments);
+    public LocalizedString GetString(string name, params object[] arguments) => NullStringLocalizer.Instance.GetString(name, arguments);
 
     /// <inheritdoc/>
     [Obsolete("This method will be removed in the upcoming ASP.NET Core major release.")]

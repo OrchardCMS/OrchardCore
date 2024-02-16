@@ -18,9 +18,7 @@ namespace OrchardCore.Flows.Settings
         private readonly IContentDefinitionManager _contentDefinitionManager;
         protected readonly IStringLocalizer S;
 
-        public BagPartSettingsDisplayDriver(
-            IContentDefinitionManager contentDefinitionManager,
-            IStringLocalizer<BagPartSettingsDisplayDriver> localizer)
+        public BagPartSettingsDisplayDriver(IContentDefinitionManager contentDefinitionManager, IStringLocalizer<BagPartSettingsDisplayDriver> localizer)
         {
             _contentDefinitionManager = contentDefinitionManager;
             S = localizer;
@@ -28,21 +26,26 @@ namespace OrchardCore.Flows.Settings
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            return Initialize<BagPartSettingsViewModel>("BagPartSettings_Edit", async model =>
-            {
-                var settings = contentTypePartDefinition.GetSettings<BagPartSettings>();
+            return Initialize<BagPartSettingsViewModel>(
+                    "BagPartSettings_Edit",
+                    async model =>
+                    {
+                        var settings = contentTypePartDefinition.GetSettings<BagPartSettings>();
 
-                model.BagPartSettings = settings;
-                model.ContainedContentTypes = model.BagPartSettings.ContainedContentTypes;
-                model.DisplayType = model.BagPartSettings.DisplayType;
-                model.ContentTypes = [];
-                model.Source = settings.ContainedStereotypes != null && settings.ContainedStereotypes.Length > 0 ? BagPartSettingType.Stereotypes : BagPartSettingType.ContentTypes;
-                model.Stereotypes = string.Join(',', settings.ContainedStereotypes ?? []);
-                foreach (var contentTypeDefinition in await _contentDefinitionManager.ListTypeDefinitionsAsync())
-                {
-                    model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
-                }
-            }).Location("Content");
+                        model.BagPartSettings = settings;
+                        model.ContainedContentTypes = model.BagPartSettings.ContainedContentTypes;
+                        model.DisplayType = model.BagPartSettings.DisplayType;
+                        model.ContentTypes = [];
+                        model.Source =
+                            settings.ContainedStereotypes != null && settings.ContainedStereotypes.Length > 0 ? BagPartSettingType.Stereotypes : BagPartSettingType.ContentTypes;
+                        model.Stereotypes = string.Join(',', settings.ContainedStereotypes ?? []);
+                        foreach (var contentTypeDefinition in await _contentDefinitionManager.ListTypeDefinitionsAsync())
+                        {
+                            model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
+                        }
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
@@ -76,12 +79,14 @@ namespace OrchardCore.Flows.Settings
                 return;
             }
 
-            context.Builder.WithSettings(new BagPartSettings
-            {
-                ContainedContentTypes = [],
-                ContainedStereotypes = model.Stereotypes.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries),
-                DisplayType = model.DisplayType
-            });
+            context.Builder.WithSettings(
+                new BagPartSettings
+                {
+                    ContainedContentTypes = [],
+                    ContainedStereotypes = model.Stereotypes.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries),
+                    DisplayType = model.DisplayType
+                }
+            );
         }
 
         private void SetContentTypes(UpdateTypePartEditorContext context, BagPartSettingsViewModel model)
@@ -93,12 +98,14 @@ namespace OrchardCore.Flows.Settings
                 return;
             }
 
-            context.Builder.WithSettings(new BagPartSettings
-            {
-                ContainedContentTypes = model.ContainedContentTypes,
-                ContainedStereotypes = [],
-                DisplayType = model.DisplayType
-            });
+            context.Builder.WithSettings(
+                new BagPartSettings
+                {
+                    ContainedContentTypes = model.ContainedContentTypes,
+                    ContainedStereotypes = [],
+                    DisplayType = model.DisplayType
+                }
+            );
         }
     }
 }

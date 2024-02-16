@@ -31,10 +31,14 @@ namespace OrchardCore.Users.Services
 
             user.RoleNames.Add("Administrator");
 
-            return _userService.CreateUserAsync(user, context.Properties[SetupConstants.AdminPassword]?.ToString(), (key, message) =>
-            {
-                context.Errors[key] = message;
-            });
+            return _userService.CreateUserAsync(
+                user,
+                context.Properties[SetupConstants.AdminPassword]?.ToString(),
+                (key, message) =>
+                {
+                    context.Errors[key] = message;
+                }
+            );
         }
     }
 }

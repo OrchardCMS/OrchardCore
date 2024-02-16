@@ -28,29 +28,23 @@ namespace OrchardCore.AdminMenu.AdminNodes
 
         public override IDisplayResult Edit(LinkAdminNode treeNode)
         {
-            return Initialize<LinkAdminNodeViewModel>("LinkAdminNode_Fields_TreeEdit", async model =>
-            {
-                model.LinkText = treeNode.LinkText;
-                model.LinkUrl = treeNode.LinkUrl;
-                model.IconClass = treeNode.IconClass;
-
-                var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
-
-                var selectedPermissions = permissions.Where(p => treeNode.PermissionNames.Contains(p.Name));
-
-                model.SelectedItems = selectedPermissions
-                    .Select(p => new PermissionViewModel
+            return Initialize<LinkAdminNodeViewModel>(
+                    "LinkAdminNode_Fields_TreeEdit",
+                    async model =>
                     {
-                        Name = p.Name,
-                        DisplayText = p.Description
-                    }).ToList();
-                model.AllItems = permissions
-                    .Select(p => new PermissionViewModel
-                    {
-                        Name = p.Name,
-                        DisplayText = p.Description
-                    }).ToList();
-            }).Location("Content");
+                        model.LinkText = treeNode.LinkText;
+                        model.LinkUrl = treeNode.LinkUrl;
+                        model.IconClass = treeNode.IconClass;
+
+                        var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
+
+                        var selectedPermissions = permissions.Where(p => treeNode.PermissionNames.Contains(p.Name));
+
+                        model.SelectedItems = selectedPermissions.Select(p => new PermissionViewModel { Name = p.Name, DisplayText = p.Description }).ToList();
+                        model.AllItems = permissions.Select(p => new PermissionViewModel { Name = p.Name, DisplayText = p.Description }).ToList();
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(LinkAdminNode treeNode, IUpdateModel updater)
@@ -65,9 +59,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
                 var selectedPermissions = (model.SelectedPermissionNames == null ? [] : model.SelectedPermissionNames.Split(',', StringSplitOptions.RemoveEmptyEntries));
 
                 var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
-                treeNode.PermissionNames = permissions
-                    .Where(p => selectedPermissions.Contains(p.Name))
-                    .Select(p => p.Name).ToArray();
+                treeNode.PermissionNames = permissions.Where(p => selectedPermissions.Contains(p.Name)).Select(p => p.Name).ToArray();
             }
 
             return Edit(treeNode);

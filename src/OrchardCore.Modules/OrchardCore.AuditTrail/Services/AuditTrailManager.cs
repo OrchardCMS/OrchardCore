@@ -45,7 +45,8 @@ namespace OrchardCore.AuditTrail.Services
             IClientIPAddressAccessor clientIPAddressAccessor,
             IAuditTrailIdGenerator auditTrailIdGenerator,
             ShellSettings shellSettings,
-            ILogger<AuditTrailManager> logger)
+            ILogger<AuditTrailManager> logger
+        )
         {
             _clock = clock;
             _session = session;
@@ -60,7 +61,8 @@ namespace OrchardCore.AuditTrail.Services
             _logger = logger;
         }
 
-        public async Task RecordEventAsync<TEvent>(AuditTrailContext<TEvent> context) where TEvent : class, new()
+        public async Task RecordEventAsync<TEvent>(AuditTrailContext<TEvent> context)
+            where TEvent : class, new()
         {
             if (_shellSettings.IsInitializing() && string.IsNullOrEmpty(context.UserName))
             {
@@ -97,28 +99,31 @@ namespace OrchardCore.AuditTrail.Services
                 UserId = createContext.UserId,
                 UserName = createContext.UserName ?? "",
                 NormalizedUserName = string.IsNullOrEmpty(createContext.UserName) ? "" : _keyNormalizer.NormalizeName(createContext.UserName),
-                ClientIpAddress = string.IsNullOrEmpty(createContext.ClientIpAddress)
-                    ? await GetClientIpAddressAsync()
-                    : createContext.ClientIpAddress,
+                ClientIpAddress = string.IsNullOrEmpty(createContext.ClientIpAddress) ? await GetClientIpAddressAsync() : createContext.ClientIpAddress,
                 CreatedUtc = createContext.CreatedUtc ?? _clock.UtcNow
             };
 
             auditTrailEvent.Put(createContext.AuditTrailEventItem);
 
-            await _auditTrailEventHandlers.InvokeAsync((handler, context, auditTrailEvent) => handler.AlterAsync(context, auditTrailEvent), createContext, auditTrailEvent, _logger);
+            await _auditTrailEventHandlers.InvokeAsync(
+                (handler, context, auditTrailEvent) => handler.AlterAsync(context, auditTrailEvent),
+                createContext,
+                auditTrailEvent,
+                _logger
+            );
 
             await _session.SaveAsync(auditTrailEvent, AuditTrailEvent.Collection);
         }
+
         public Task<AuditTrailEvent> GetEventAsync(string eventId) =>
-            _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
-                .Where(index => index.EventId == eventId)
-                .FirstOrDefaultAsync();
+            _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection).Where(index => index.EventId == eventId).FirstOrDefaultAsync();
 
         public async Task<int> TrimEventsAsync(TimeSpan retentionPeriod)
         {
             var dateThreshold = _clock.UtcNow.AddDays(1) - retentionPeriod;
 
-            var events = await _session.Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
+            var events = await _session
+                .Query<AuditTrailEvent, AuditTrailEventIndex>(collection: AuditTrailEvent.Collection)
                 .Where(index => index.CreatedUtc <= dateThreshold)
                 .ListAsync();
 
@@ -133,11 +138,9 @@ namespace OrchardCore.AuditTrail.Services
         }
 
         public AuditTrailEventDescriptor DescribeEvent(AuditTrailEvent auditTrailEvent) =>
-            DescribeEvent(auditTrailEvent.Name, auditTrailEvent.Category)
-            ?? AuditTrailEventDescriptor.Default(auditTrailEvent);
+            DescribeEvent(auditTrailEvent.Name, auditTrailEvent.Category) ?? AuditTrailEventDescriptor.Default(auditTrailEvent);
 
-        public IEnumerable<AuditTrailCategoryDescriptor> DescribeCategories()
-            => _auditTrailOptions.CategoryDescriptors.Values;
+        public IEnumerable<AuditTrailCategoryDescriptor> DescribeCategories() => _auditTrailOptions.CategoryDescriptors.Values;
 
         public AuditTrailCategoryDescriptor DescribeCategory(string name)
         {
@@ -168,8 +171,7 @@ namespace OrchardCore.AuditTrail.Services
             return (await _clientIPAddressAccessor.GetIPAddressAsync())?.ToString();
         }
 
-        private async Task<AuditTrailSettings> GetAuditTrailSettingsAsync() =>
-            (await _siteService.GetSiteSettingsAsync()).As<AuditTrailSettings>();
+        private async Task<AuditTrailSettings> GetAuditTrailSettingsAsync() => (await _siteService.GetSiteSettingsAsync()).As<AuditTrailSettings>();
 
         private async Task<bool> IsEventEnabledAsync(AuditTrailEventDescriptor descriptor)
         {
@@ -180,9 +182,9 @@ namespace OrchardCore.AuditTrail.Services
 
             var settings = await GetAuditTrailSettingsAsync();
 
-            var eventSettings = settings.Categories
-                .FirstOrDefault(category => category.Name == descriptor.Category)?.Events
-                .FirstOrDefault(settings => settings.Name == descriptor.Name);
+            var eventSettings = settings
+                .Categories.FirstOrDefault(category => category.Name == descriptor.Category)
+                ?.Events.FirstOrDefault(settings => settings.Name == descriptor.Name);
 
             return eventSettings?.IsEnabled ?? descriptor.IsEnabledByDefault;
         }

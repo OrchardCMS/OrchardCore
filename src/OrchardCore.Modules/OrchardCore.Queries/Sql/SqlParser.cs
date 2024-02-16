@@ -30,12 +30,7 @@ namespace OrchardCore.Queries.Sql
         private string _groupBy;
         private string _orderBy;
 
-        private SqlParser(
-            ParseTree tree,
-            string schema,
-            ISqlDialect dialect,
-            string tablePrefix,
-            IDictionary<string, object> parameters)
+        private SqlParser(ParseTree tree, string schema, ISqlDialect dialect, string tablePrefix, IDictionary<string, object> parameters)
         {
             _tree = tree;
             _schema = schema;
@@ -46,7 +41,15 @@ namespace OrchardCore.Queries.Sql
             _modes = new Stack<FormattingModes>();
         }
 
-        public static bool TryParse(string sql, string schema, ISqlDialect dialect, string tablePrefix, IDictionary<string, object> parameters, out string query, out IEnumerable<string> messages)
+        public static bool TryParse(
+            string sql,
+            string schema,
+            ISqlDialect dialect,
+            string tablePrefix,
+            IDictionary<string, object> parameters,
+            out string query,
+            out IEnumerable<string> messages
+        )
         {
             try
             {
@@ -56,10 +59,7 @@ namespace OrchardCore.Queries.Sql
                 {
                     query = null;
 
-                    messages = tree
-                        .ParserMessages
-                        .Select(x => $"{x.Message} at line:{x.Location.Line}, col:{x.Location.Column}")
-                        .ToArray();
+                    messages = tree.ParserMessages.Select(x => $"{x.Message} at line:{x.Location.Line}, col:{x.Location.Column}").ToArray();
 
                     return false;
                 }

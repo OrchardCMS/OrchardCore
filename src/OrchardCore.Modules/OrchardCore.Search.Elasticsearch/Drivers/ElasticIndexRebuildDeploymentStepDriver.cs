@@ -21,21 +21,24 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment
 
         public override IDisplayResult Display(ElasticIndexRebuildDeploymentStep step)
         {
-            return
-                Combine(
-                    View("ElasticIndexRebuildDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                    View("ElasticIndexRebuildDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-                );
+            return Combine(
+                View("ElasticIndexRebuildDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("ElasticIndexRebuildDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(ElasticIndexRebuildDeploymentStep step)
         {
-            return Initialize<ElasticIndexRebuildDeploymentStepViewModel>("ElasticIndexRebuildDeploymentStep_Fields_Edit", async model =>
-            {
-                model.IncludeAll = step.IncludeAll;
-                model.IndexNames = step.Indices;
-                model.AllIndexNames = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
-            }).Location("Content");
+            return Initialize<ElasticIndexRebuildDeploymentStepViewModel>(
+                    "ElasticIndexRebuildDeploymentStep_Fields_Edit",
+                    async model =>
+                    {
+                        model.IncludeAll = step.IncludeAll;
+                        model.IndexNames = step.Indices;
+                        model.AllIndexNames = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ElasticIndexRebuildDeploymentStep rebuildIndexStep, IUpdateModel updater)

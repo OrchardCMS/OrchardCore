@@ -17,13 +17,9 @@ namespace OrchardCore.Tests.Apis.Context
 
         protected override IWebHostBuilder CreateWebHostBuilder()
         {
-            return WebHostBuilderFactory.CreateFromAssemblyEntryPoint(
-                typeof(Program).Assembly, []);
+            return WebHostBuilderFactory.CreateFromAssemblyEntryPoint(typeof(Program).Assembly, []);
         }
 
-        protected override IHostBuilder CreateHostBuilder()
-            => Host.CreateDefaultBuilder()
-                .ConfigureWebHostDefaults(webBuilder =>
-                    webBuilder.UseStartup<TStartup>());
+        protected override IHostBuilder CreateHostBuilder() => Host.CreateDefaultBuilder().ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<TStartup>());
     }
 }

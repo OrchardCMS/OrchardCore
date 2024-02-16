@@ -41,17 +41,20 @@ namespace OrchardCore.Https
 
             services.AddScoped<IPermissionProvider, Permissions>();
 
-            services.AddOptions<HttpsRedirectionOptions>()
-                .Configure<IHttpsService>((options, service) =>
-                {
-                    var settings = service.GetSettingsAsync().GetAwaiter().GetResult();
-                    if (settings.RequireHttpsPermanent)
+            services
+                .AddOptions<HttpsRedirectionOptions>()
+                .Configure<IHttpsService>(
+                    (options, service) =>
                     {
-                        options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
-                    }
+                        var settings = service.GetSettingsAsync().GetAwaiter().GetResult();
+                        if (settings.RequireHttpsPermanent)
+                        {
+                            options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
+                        }
 
-                    options.HttpsPort = settings.SslPort;
-                });
+                        options.HttpsPort = settings.SslPort;
+                    }
+                );
 
             services.AddHsts(options =>
             {

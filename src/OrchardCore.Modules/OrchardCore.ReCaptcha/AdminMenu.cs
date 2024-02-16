@@ -8,11 +8,7 @@ namespace OrchardCore.ReCaptcha
 {
     public class AdminMenu : INavigationProvider
     {
-        private static readonly RouteValueDictionary _routeValues = new()
-        {
-            { "area", "OrchardCore.Settings" },
-            { "groupId", ReCaptchaSettingsDisplayDriver.GroupId },
-        };
+        private static readonly RouteValueDictionary _routeValues = new() { { "area", "OrchardCore.Settings" }, { "groupId", ReCaptchaSettingsDisplayDriver.GroupId }, };
 
         protected readonly IStringLocalizer S;
 
@@ -28,16 +24,19 @@ namespace OrchardCore.ReCaptcha
                 return Task.CompletedTask;
             }
 
-            builder
-                .Add(S["Security"], security => security
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["reCaptcha"], S["reCaptcha"].PrefixPosition(), reCaptcha => reCaptcha
-                            .Permission(Permissions.ManageReCaptchaSettings)
-                            .Action("Index", "Admin", _routeValues)
-                            .LocalNav()
-                        )
+            builder.Add(
+                S["Security"],
+                security =>
+                    security.Add(
+                        S["Settings"],
+                        settings =>
+                            settings.Add(
+                                S["reCaptcha"],
+                                S["reCaptcha"].PrefixPosition(),
+                                reCaptcha => reCaptcha.Permission(Permissions.ManageReCaptchaSettings).Action("Index", "Admin", _routeValues).LocalNav()
+                            )
                     )
-                );
+            );
 
             return Task.CompletedTask;
         }

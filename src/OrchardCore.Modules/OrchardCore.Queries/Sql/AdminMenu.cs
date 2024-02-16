@@ -20,16 +20,20 @@ namespace OrchardCore.Queries.Sql
                 return Task.CompletedTask;
             }
 
-            builder
-                .Add(S["Search"], search => search
-                    .Add(S["Queries"], S["Queries"].PrefixPosition(), queries => queries
-                        .Add(S["Run SQL Query"], S["Run SQL Query"].PrefixPosition(), sql => sql
-                             .Action("Query", "Admin", "OrchardCore.Queries")
-                             .Permission(Permissions.ManageSqlQueries)
-                             .LocalNav()
-                        )
+            builder.Add(
+                S["Search"],
+                search =>
+                    search.Add(
+                        S["Queries"],
+                        S["Queries"].PrefixPosition(),
+                        queries =>
+                            queries.Add(
+                                S["Run SQL Query"],
+                                S["Run SQL Query"].PrefixPosition(),
+                                sql => sql.Action("Query", "Admin", "OrchardCore.Queries").Permission(Permissions.ManageSqlQueries).LocalNav()
+                            )
                     )
-                );
+            );
 
             return Task.CompletedTask;
         }

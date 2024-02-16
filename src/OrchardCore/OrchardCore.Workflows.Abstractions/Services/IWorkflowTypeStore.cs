@@ -20,7 +20,6 @@ namespace OrchardCore.Workflows.Services
     public static class WorkflowTypeStoreExtensions
     {
         [Obsolete("This method will be removed in a future version, use the method accepting a collection of long ids.", false)]
-        public static Task<IEnumerable<WorkflowType>> GetAsync(this IWorkflowTypeStore store, IEnumerable<int> ids) =>
-            store.GetAsync(ids.Select(id => Convert.ToInt64(id)));
+        public static Task<IEnumerable<WorkflowType>> GetAsync(this IWorkflowTypeStore store, IEnumerable<int> ids) => store.GetAsync(ids.Select(id => Convert.ToInt64(id)));
     }
 }

@@ -53,9 +53,9 @@ namespace OrchardCore.Sitemaps
                 {
                     options.GlobalRouteValues = new RouteValueDictionary
                     {
-                        {"Area", "OrchardCore.Sitemaps"},
-                        {"Controller", "Sitemap"},
-                        {"Action", "Index"}
+                        { "Area", "OrchardCore.Sitemaps" },
+                        { "Controller", "Sitemap" },
+                        { "Action", "Index" }
                     };
 
                     options.SitemapIdKey = "sitemapId";
@@ -80,9 +80,7 @@ namespace OrchardCore.Sitemaps
             services.AddScoped<IRouteableContentTypeCoordinator, DefaultRouteableContentTypeCoordinator>();
 
             // Sitemap Part.
-            services.AddContentPart<SitemapPart>()
-                .UseDisplayDriver<SitemapPartDisplayDriver>()
-                .AddHandler<SitemapPartHandler>();
+            services.AddContentPart<SitemapPart>().UseDisplayDriver<SitemapPartDisplayDriver>().AddHandler<SitemapPartHandler>();
 
             // Custom sitemap path.
             services.AddScoped<ISitemapSourceBuilder, CustomPathSitemapSourceBuilder>();
@@ -147,85 +145,84 @@ namespace OrchardCore.Sitemaps
             var sitemapIndexController = typeof(SitemapIndexController).ControllerName();
 
             routes.MapAreaControllerRoute(
-                 name: "SitemapIndexesList",
-                 areaName: "OrchardCore.Sitemaps",
-                 pattern: _adminOptions.AdminUrlPrefix + "/SitemapIndexes/List",
-                 defaults: new { controller = sitemapIndexController, action = nameof(SitemapIndexController.List) }
+                name: "SitemapIndexesList",
+                areaName: "OrchardCore.Sitemaps",
+                pattern: _adminOptions.AdminUrlPrefix + "/SitemapIndexes/List",
+                defaults: new { controller = sitemapIndexController, action = nameof(SitemapIndexController.List) }
             );
 
             routes.MapAreaControllerRoute(
-                 name: "SitemapIndexesCreate",
-                 areaName: "OrchardCore.Sitemaps",
-                 pattern: _adminOptions.AdminUrlPrefix + "/SitemapIndexes/Create",
-                 defaults: new { controller = sitemapIndexController, action = nameof(SitemapIndexController.Create) }
+                name: "SitemapIndexesCreate",
+                areaName: "OrchardCore.Sitemaps",
+                pattern: _adminOptions.AdminUrlPrefix + "/SitemapIndexes/Create",
+                defaults: new { controller = sitemapIndexController, action = nameof(SitemapIndexController.Create) }
             );
 
             routes.MapAreaControllerRoute(
-                 name: "SitemapIndexesEdit",
-                 areaName: "OrchardCore.Sitemaps",
-                 pattern: _adminOptions.AdminUrlPrefix + "/SitemapIndexes/Edit/{sitemapId}",
-                 defaults: new { controller = sitemapIndexController, action = nameof(SitemapIndexController.Edit) }
+                name: "SitemapIndexesEdit",
+                areaName: "OrchardCore.Sitemaps",
+                pattern: _adminOptions.AdminUrlPrefix + "/SitemapIndexes/Edit/{sitemapId}",
+                defaults: new { controller = sitemapIndexController, action = nameof(SitemapIndexController.Edit) }
             );
 
             routes.MapAreaControllerRoute(
-                 name: "SitemapIndexesDelete",
-                 areaName: "OrchardCore.Sitemaps",
-                 pattern: _adminOptions.AdminUrlPrefix + "/SitemapIndexes/Delete/{sitemapId}",
-                 defaults: new { controller = sitemapIndexController, action = nameof(SitemapIndexController.Delete) }
+                name: "SitemapIndexesDelete",
+                areaName: "OrchardCore.Sitemaps",
+                pattern: _adminOptions.AdminUrlPrefix + "/SitemapIndexes/Delete/{sitemapId}",
+                defaults: new { controller = sitemapIndexController, action = nameof(SitemapIndexController.Delete) }
             );
 
             routes.MapAreaControllerRoute(
-                 name: "SitemapIndexesToggle",
-                 areaName: "OrchardCore.Sitemaps",
-                 pattern: _adminOptions.AdminUrlPrefix + "/SitemapIndexes/Toggle/{sitemapId}",
-                 defaults: new { controller = sitemapIndexController, action = nameof(SitemapIndexController.Toggle) }
+                name: "SitemapIndexesToggle",
+                areaName: "OrchardCore.Sitemaps",
+                pattern: _adminOptions.AdminUrlPrefix + "/SitemapIndexes/Toggle/{sitemapId}",
+                defaults: new { controller = sitemapIndexController, action = nameof(SitemapIndexController.Toggle) }
             );
 
             var sourceController = typeof(SourceController).ControllerName();
 
             routes.MapAreaControllerRoute(
-                 name: "SitemapsSourceCreate",
-                 areaName: "OrchardCore.Sitemaps",
-                 pattern: _adminOptions.AdminUrlPrefix + "/SitemapSource/Create/{sitemapId}/{sourceType}",
-                 defaults: new { controller = sourceController, action = nameof(SourceController.Create) }
+                name: "SitemapsSourceCreate",
+                areaName: "OrchardCore.Sitemaps",
+                pattern: _adminOptions.AdminUrlPrefix + "/SitemapSource/Create/{sitemapId}/{sourceType}",
+                defaults: new { controller = sourceController, action = nameof(SourceController.Create) }
             );
 
             routes.MapAreaControllerRoute(
-                 name: "SitemapsSourceEdit",
-                 areaName: "OrchardCore.Sitemaps",
-                 pattern: _adminOptions.AdminUrlPrefix + "/SitemapSource/Edit/{sitemapId}/{sourceId}",
-                 defaults: new { controller = sourceController, action = nameof(SourceController.Edit) }
+                name: "SitemapsSourceEdit",
+                areaName: "OrchardCore.Sitemaps",
+                pattern: _adminOptions.AdminUrlPrefix + "/SitemapSource/Edit/{sitemapId}/{sourceId}",
+                defaults: new { controller = sourceController, action = nameof(SourceController.Edit) }
             );
 
             routes.MapAreaControllerRoute(
-                 name: "SitemapsSourceDelete",
-                 areaName: "OrchardCore.Sitemaps",
-                 pattern: _adminOptions.AdminUrlPrefix + "/SitemapSource/Delete/{sitemapId}/{sourceId}",
-                 defaults: new { controller = sourceController, action = nameof(SourceController.Delete) }
+                name: "SitemapsSourceDelete",
+                areaName: "OrchardCore.Sitemaps",
+                pattern: _adminOptions.AdminUrlPrefix + "/SitemapSource/Delete/{sitemapId}/{sourceId}",
+                defaults: new { controller = sourceController, action = nameof(SourceController.Delete) }
             );
-
 
             var sitemapCacheController = typeof(SitemapCacheController).ControllerName();
 
             routes.MapAreaControllerRoute(
-                 name: "SitemapsCacheList",
-                 areaName: "OrchardCore.Sitemaps",
-                 pattern: _adminOptions.AdminUrlPrefix + "/SitemapsCache/List",
-                 defaults: new { controller = sitemapCacheController, action = nameof(SitemapCacheController.List) }
+                name: "SitemapsCacheList",
+                areaName: "OrchardCore.Sitemaps",
+                pattern: _adminOptions.AdminUrlPrefix + "/SitemapsCache/List",
+                defaults: new { controller = sitemapCacheController, action = nameof(SitemapCacheController.List) }
             );
 
             routes.MapAreaControllerRoute(
-                 name: "SitemapsCachePurgeAll",
-                 areaName: "OrchardCore.Sitemaps",
-                 pattern: _adminOptions.AdminUrlPrefix + "/SitemapsCache/PurgeAll",
-                 defaults: new { controller = sitemapCacheController, action = nameof(SitemapCacheController.PurgeAll) }
+                name: "SitemapsCachePurgeAll",
+                areaName: "OrchardCore.Sitemaps",
+                pattern: _adminOptions.AdminUrlPrefix + "/SitemapsCache/PurgeAll",
+                defaults: new { controller = sitemapCacheController, action = nameof(SitemapCacheController.PurgeAll) }
             );
 
             routes.MapAreaControllerRoute(
-                 name: "SitemapsCachePurge",
-                 areaName: "OrchardCore.Sitemaps",
-                 pattern: _adminOptions.AdminUrlPrefix + "/SitemapsCache/Purge/{cacheFileName}",
-                 defaults: new { controller = sitemapCacheController, action = nameof(SitemapCacheController.Purge) }
+                name: "SitemapsCachePurge",
+                areaName: "OrchardCore.Sitemaps",
+                pattern: _adminOptions.AdminUrlPrefix + "/SitemapsCache/Purge/{cacheFileName}",
+                defaults: new { controller = sitemapCacheController, action = nameof(SitemapCacheController.Purge) }
             );
 
             routes.MapDynamicControllerRoute<SitemapRouteTransformer>("/{**sitemap}");

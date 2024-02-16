@@ -22,9 +22,8 @@ namespace OrchardCore.Modules.Manifest
         /// <summary>
         /// Default parameterless ctor.
         /// </summary>
-        public ModuleAttribute() : base()
-        {
-        }
+        public ModuleAttribute()
+            : base() { }
 
         /// <summary>
         /// Ctor allowing <paramref name="author"/>, as well as defaults for
@@ -59,23 +58,8 @@ namespace OrchardCore.Modules.Manifest
             object defaultTenant,
             object alwaysEnabled,
             object enabledByDependencyOnly
-        ) : this(
-            id,
-            default,
-            default,
-            default,
-            description,
-            author,
-            semVer,
-            websiteUrl,
-            featureDependencies,
-            tags,
-            defaultTenant,
-            alwaysEnabled,
-            enabledByDependencyOnly
         )
-        {
-        }
+            : this(id, default, default, default, description, author, semVer, websiteUrl, featureDependencies, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly) { }
 
         /// <summary>
         /// Ctor allowing <paramref name="author"/>, as well as defaults for
@@ -113,23 +97,8 @@ namespace OrchardCore.Modules.Manifest
             object defaultTenant,
             object alwaysEnabled,
             object enabledByDependencyOnly
-        ) : this(
-            id,
-            name,
-            default,
-            default,
-            description,
-            author,
-            semVer,
-            websiteUrl,
-            featureDependencies,
-            tags,
-            defaultTenant,
-            alwaysEnabled,
-            enabledByDependencyOnly
         )
-        {
-        }
+            : this(id, name, default, default, description, author, semVer, websiteUrl, featureDependencies, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly) { }
 
         /// <summary>
         /// Ctor allowing <paramref name="author"/>, as well as defaults for
@@ -171,17 +140,8 @@ namespace OrchardCore.Modules.Manifest
             object defaultTenant,
             object alwaysEnabled,
             object enabledByDependencyOnly
-        ) : base(
-            id,
-            name,
-            category,
-            priority,
-            description,
-            featureDependencies,
-            defaultTenant,
-            alwaysEnabled,
-            enabledByDependencyOnly
         )
+            : base(id, name, category, priority, description, featureDependencies, defaultTenant, alwaysEnabled, enabledByDependencyOnly)
         {
             Author = author;
             Website = websiteUrl;
@@ -231,21 +191,8 @@ namespace OrchardCore.Modules.Manifest
             object defaultTenant,
             object alwaysEnabled,
             object enabledByDependencyOnly
-        ) : this(
-            id,
-            name,
-            category,
-            priority,
-            description,
-            author,
-            semVer,
-            websiteUrl,
-            featureDependencies,
-            tags,
-            defaultTenant,
-            alwaysEnabled,
-            enabledByDependencyOnly
         )
+            : this(id, name, category, priority, description, author, semVer, websiteUrl, featureDependencies, tags, defaultTenant, alwaysEnabled, enabledByDependencyOnly)
         {
             type = (type ?? string.Empty).Trim();
             _type = string.IsNullOrEmpty(type) ? null : type;
@@ -262,11 +209,7 @@ namespace OrchardCore.Modules.Manifest
             const string attributeSuffix = nameof(Attribute);
 
             // Drops the 'Attribute' suffix from the conventional abbreviation, or leaves it alone
-            static string GetTypeNamePrefix(string typeName) =>
-                typeName.EndsWith(attributeSuffix)
-                ? typeName[..^attributeSuffix.Length]
-                : typeName
-                ;
+            static string GetTypeNamePrefix(string typeName) => typeName.EndsWith(attributeSuffix) ? typeName[..^attributeSuffix.Length] : typeName;
 
             return GetTypeNamePrefix(attributeType.Name);
         }

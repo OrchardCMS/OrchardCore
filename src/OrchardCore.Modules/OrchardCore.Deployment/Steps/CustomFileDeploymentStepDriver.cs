@@ -10,20 +10,23 @@ namespace OrchardCore.Deployment.Steps
     {
         public override IDisplayResult Display(CustomFileDeploymentStep step)
         {
-            return
-                Combine(
-                    View("CustomFileDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                    View("CustomFileDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-                );
+            return Combine(
+                View("CustomFileDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("CustomFileDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(CustomFileDeploymentStep step)
         {
-            return Initialize<CustomFileDeploymentStepViewModel>("CustomFileDeploymentStep_Fields_Edit", model =>
-            {
-                model.FileContent = step.FileContent;
-                model.FileName = step.FileName;
-            }).Location("Content");
+            return Initialize<CustomFileDeploymentStepViewModel>(
+                    "CustomFileDeploymentStep_Fields_Edit",
+                    model =>
+                    {
+                        model.FileContent = step.FileContent;
+                        model.FileName = step.FileName;
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(CustomFileDeploymentStep step, IUpdateModel updater)

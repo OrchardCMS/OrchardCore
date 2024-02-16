@@ -21,7 +21,8 @@ namespace OrchardCore.OpenId.YesSql.Resolvers
         }
 
         /// <inheritdoc/>
-        public IOpenIddictScopeStore<TScope> Get<TScope>() where TScope : class
+        public IOpenIddictScopeStore<TScope> Get<TScope>()
+            where TScope : class
         {
             var store = _provider.GetService<IOpenIddictScopeStore<TScope>>();
             if (store != null)
@@ -29,20 +30,25 @@ namespace OrchardCore.OpenId.YesSql.Resolvers
                 return store;
             }
 
-            var type = _cache.GetOrAdd(typeof(TScope), key =>
-            {
-                if (!typeof(OpenIdScope).IsAssignableFrom(key))
+            var type = _cache.GetOrAdd(
+                typeof(TScope),
+                key =>
                 {
-                    throw new InvalidOperationException(new StringBuilder()
-                        .AppendLine("The specified scope type is not compatible with the YesSql stores.")
-                        .Append("When enabling the YesSql stores, make sure you use the built-in 'OpenIdScope' ")
-                        .Append("entity (from the 'OrchardCore.OpenId.Core' package) or a custom entity ")
-                        .Append("that inherits from the 'OpenIdScope' entity.")
-                        .ToString());
-                }
+                    if (!typeof(OpenIdScope).IsAssignableFrom(key))
+                    {
+                        throw new InvalidOperationException(
+                            new StringBuilder()
+                                .AppendLine("The specified scope type is not compatible with the YesSql stores.")
+                                .Append("When enabling the YesSql stores, make sure you use the built-in 'OpenIdScope' ")
+                                .Append("entity (from the 'OrchardCore.OpenId.Core' package) or a custom entity ")
+                                .Append("that inherits from the 'OpenIdScope' entity.")
+                                .ToString()
+                        );
+                    }
 
-                return typeof(OpenIdScopeStore<>).MakeGenericType(key);
-            });
+                    return typeof(OpenIdScopeStore<>).MakeGenericType(key);
+                }
+            );
 
             return (IOpenIddictScopeStore<TScope>)_provider.GetRequiredService(type);
         }

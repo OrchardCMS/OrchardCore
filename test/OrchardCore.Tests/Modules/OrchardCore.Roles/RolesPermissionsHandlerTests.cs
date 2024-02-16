@@ -18,22 +18,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
             var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission(required), authenticated: authenticated);
 
             var permissionHandler = CreatePermissionHandler(
-                new Role
-                {
-                    RoleName = "Anonymous",
-                    RoleClaims =
-                    [
-                        new() { ClaimType = Permission.ClaimType, ClaimValue = "AllowAnonymous" }
-                    ]
-                },
-                new Role
-                {
-                    RoleName = "Authenticated",
-                    RoleClaims =
-                    [
-                        new() { ClaimType = Permission.ClaimType, ClaimValue = "AllowAuthenticated" }
-                    ]
-                }
+                new Role { RoleName = "Anonymous", RoleClaims = [new() { ClaimType = Permission.ClaimType, ClaimValue = "AllowAnonymous" }] },
+                new Role { RoleName = "Authenticated", RoleClaims = [new() { ClaimType = Permission.ClaimType, ClaimValue = "AllowAuthenticated" }] }
             );
 
             // Act
@@ -71,14 +57,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
             var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(required);
 
             var permissionHandler = CreatePermissionHandler(
-                new Role
-                {
-                    RoleName = "Anonymous",
-                    RoleClaims =
-                    [
-                        new() { ClaimType = Permission.ClaimType, ClaimValue = "Implicit2" }
-                    ]
-                }
+                new Role { RoleName = "Anonymous", RoleClaims = [new() { ClaimType = Permission.ClaimType, ClaimValue = "Implicit2" }] }
             );
 
             // Act
@@ -97,22 +76,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Roles
             var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission(required), authenticated: authenticated);
 
             var permissionHandler = CreatePermissionHandler(
-                new Role
-                {
-                    RoleName = "Anonymous",
-                    RoleClaims =
-                    [
-                        new() { ClaimType = Permission.ClaimType, ClaimValue = "aLlOwAnOnYmOuS" }
-                    ]
-                },
-                new Role
-                {
-                    RoleName = "Authenticated",
-                    RoleClaims =
-                    [
-                        new() { ClaimType = Permission.ClaimType, ClaimValue = "aLlOwAuThEnTiCaTeD" }
-                    ]
-                }
+                new Role { RoleName = "Anonymous", RoleClaims = [new() { ClaimType = Permission.ClaimType, ClaimValue = "aLlOwAnOnYmOuS" }] },
+                new Role { RoleName = "Authenticated", RoleClaims = [new() { ClaimType = Permission.ClaimType, ClaimValue = "aLlOwAuThEnTiCaTeD" }] }
             );
 
             // Act

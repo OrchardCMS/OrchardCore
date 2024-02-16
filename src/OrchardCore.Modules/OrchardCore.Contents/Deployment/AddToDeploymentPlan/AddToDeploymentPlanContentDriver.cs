@@ -18,13 +18,13 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
         public override IDisplayResult Display(ContentItem model)
         {
             return Combine(
-                    Dynamic("AddToDeploymentPlan_Modal__ActionDeploymentPlan")
-                        .Location("SummaryAdmin", "ActionsMenu:30")
-                        .RenderWhen(async () => await _deploymentPlanService.DoesUserHavePermissionsAsync()),
-                    Shape("AddToDeploymentPlan_SummaryAdmin__Button__Actions", new ContentItemViewModel(model))
-                        .Location("SummaryAdmin", "ActionsMenu:30")
-                        .RenderWhen(async () => await _deploymentPlanService.DoesUserHavePermissionsAsync())
-                );
+                Dynamic("AddToDeploymentPlan_Modal__ActionDeploymentPlan")
+                    .Location("SummaryAdmin", "ActionsMenu:30")
+                    .RenderWhen(async () => await _deploymentPlanService.DoesUserHavePermissionsAsync()),
+                Shape("AddToDeploymentPlan_SummaryAdmin__Button__Actions", new ContentItemViewModel(model))
+                    .Location("SummaryAdmin", "ActionsMenu:30")
+                    .RenderWhen(async () => await _deploymentPlanService.DoesUserHavePermissionsAsync())
+            );
         }
     }
 }

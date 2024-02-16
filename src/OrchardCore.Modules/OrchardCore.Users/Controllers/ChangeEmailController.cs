@@ -20,11 +20,7 @@ namespace OrchardCore.Users.Controllers
         private readonly ISiteService _siteService;
         protected readonly IStringLocalizer S;
 
-        public ChangeEmailController(
-            IUserService userService,
-            UserManager<IUser> userManager,
-            ISiteService siteService,
-            IStringLocalizer<ChangeEmailController> stringLocalizer)
+        public ChangeEmailController(IUserService userService, UserManager<IUser> userManager, ISiteService siteService, IStringLocalizer<ChangeEmailController> stringLocalizer)
         {
             _userService = userService;
             _userManager = userManager;
@@ -71,8 +67,7 @@ namespace OrchardCore.Users.Controllers
                 }
                 else
                 {
-                    if (await _userService.ChangeEmailAsync(user, model.Email,
-                        (key, message) => ModelState.AddModelError(key, message)))
+                    if (await _userService.ChangeEmailAsync(user, model.Email, (key, message) => ModelState.AddModelError(key, message)))
                     {
                         return RedirectToLocal(Url.Action("ChangeEmailConfirmation", "ChangeEmail"));
                     }

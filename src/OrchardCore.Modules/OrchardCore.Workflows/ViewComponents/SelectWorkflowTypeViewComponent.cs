@@ -18,11 +18,7 @@ namespace OrchardCore.Workflows.ViewComponents
         {
             var selections = await WorkflowTypeSelection.BuildAsync(_contentDefinitionManager, selectedWorkflowTypeId);
 
-            var model = new SelectWorkflowTypeViewModel
-            {
-                HtmlName = htmlName,
-                WorkflowTypeSelections = selections
-            };
+            var model = new SelectWorkflowTypeViewModel { HtmlName = htmlName, WorkflowTypeSelections = selections };
 
             return View(model);
         }

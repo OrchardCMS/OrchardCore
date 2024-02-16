@@ -21,7 +21,8 @@ namespace OrchardCore.OpenId.YesSql.Resolvers
         }
 
         /// <inheritdoc/>
-        public IOpenIddictApplicationStore<TApplication> Get<TApplication>() where TApplication : class
+        public IOpenIddictApplicationStore<TApplication> Get<TApplication>()
+            where TApplication : class
         {
             var store = _provider.GetService<IOpenIddictApplicationStore<TApplication>>();
             if (store != null)
@@ -29,20 +30,25 @@ namespace OrchardCore.OpenId.YesSql.Resolvers
                 return store;
             }
 
-            var type = _cache.GetOrAdd(typeof(TApplication), key =>
-            {
-                if (!typeof(OpenIdApplication).IsAssignableFrom(key))
+            var type = _cache.GetOrAdd(
+                typeof(TApplication),
+                key =>
                 {
-                    throw new InvalidOperationException(new StringBuilder()
-                        .AppendLine("The specified application type is not compatible with the YesSql stores.")
-                        .Append("When enabling the YesSql stores, make sure you use the built-in 'OpenIdApplication' ")
-                        .Append("entity (from the 'OrchardCore.OpenId.Core' package) or a custom entity ")
-                        .Append("that inherits from the 'OpenIdApplication' entity.")
-                        .ToString());
-                }
+                    if (!typeof(OpenIdApplication).IsAssignableFrom(key))
+                    {
+                        throw new InvalidOperationException(
+                            new StringBuilder()
+                                .AppendLine("The specified application type is not compatible with the YesSql stores.")
+                                .Append("When enabling the YesSql stores, make sure you use the built-in 'OpenIdApplication' ")
+                                .Append("entity (from the 'OrchardCore.OpenId.Core' package) or a custom entity ")
+                                .Append("that inherits from the 'OpenIdApplication' entity.")
+                                .ToString()
+                        );
+                    }
 
-                return typeof(OpenIdApplicationStore<>).MakeGenericType(key);
-            });
+                    return typeof(OpenIdApplicationStore<>).MakeGenericType(key);
+                }
+            );
 
             return (IOpenIddictApplicationStore<TApplication>)_provider.GetRequiredService(type);
         }

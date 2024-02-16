@@ -20,15 +20,19 @@ namespace OrchardCore.Themes
                 return Task.CompletedTask;
             }
 
-            builder
-                .Add(S["Design"], NavigationConstants.AdminMenuDesignPosition, design => design
-                    .AddClass("themes").Id("themes")
-                    .Add(S["Themes"], S["Themes"].PrefixPosition(), themes => themes
-                        .Action("Index", "Admin", "OrchardCore.Themes")
-                        .Permission(Permissions.ApplyTheme)
-                        .LocalNav()
-                    )
-                );
+            builder.Add(
+                S["Design"],
+                NavigationConstants.AdminMenuDesignPosition,
+                design =>
+                    design
+                        .AddClass("themes")
+                        .Id("themes")
+                        .Add(
+                            S["Themes"],
+                            S["Themes"].PrefixPosition(),
+                            themes => themes.Action("Index", "Admin", "OrchardCore.Themes").Permission(Permissions.ApplyTheme).LocalNav()
+                        )
+            );
 
             return Task.CompletedTask;
         }

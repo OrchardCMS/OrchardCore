@@ -8,11 +8,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
         public async Task DisposesMediaCreatingStreams()
         {
             var streams = new List<Stream>();
-            var creatingEventHandlers = new List<IMediaCreatingEventHandler>()
-            {
-                new TestMediaEventHandler(),
-                new TestMediaEventHandler()
-            };
+            var creatingEventHandlers = new List<IMediaCreatingEventHandler>() { new TestMediaEventHandler(), new TestMediaEventHandler() };
 
             Stream originalStream = null;
 
@@ -31,10 +27,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
                 var outputStream = inputStream;
                 try
                 {
-                    var context = new MediaCreatingContext
-                    {
-                        Path = path
-                    };
+                    var context = new MediaCreatingContext { Path = path };
 
                     foreach (var eventHandler in creatingEventHandlers)
                     {

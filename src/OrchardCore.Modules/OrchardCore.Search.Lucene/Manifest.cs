@@ -1,21 +1,12 @@
 using OrchardCore.Modules.Manifest;
 
-[assembly: Module(
-    Name = "Lucene",
-    Author = ManifestConstants.OrchardCoreTeam,
-    Website = ManifestConstants.OrchardCoreWebsite,
-    Version = ManifestConstants.OrchardCoreVersion
-)]
+[assembly: Module(Name = "Lucene", Author = ManifestConstants.OrchardCoreTeam, Website = ManifestConstants.OrchardCoreWebsite, Version = ManifestConstants.OrchardCoreVersion)]
 
 [assembly: Feature(
     Id = "OrchardCore.Search.Lucene",
     Name = "Lucene",
     Description = "Creates Lucene indexes to support search scenarios, introduces a preconfigured container-enabled content type.",
-    Dependencies =
-    [
-        "OrchardCore.Indexing",
-        "OrchardCore.ContentTypes"
-    ],
+    Dependencies = ["OrchardCore.Indexing", "OrchardCore.ContentTypes"],
     Category = "Search"
 )]
 

@@ -12,79 +12,80 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
 {
     public class ContentFieldsProvider : IContentFieldProvider
     {
-        private static readonly Dictionary<string, FieldTypeDescriptor> _contentFieldTypeMappings = new()
-        {
+        private static readonly Dictionary<string, FieldTypeDescriptor> _contentFieldTypeMappings =
+            new()
             {
-                nameof(BooleanField),
-                new FieldTypeDescriptor
                 {
-                    Description = "Boolean field",
-                    FieldType = typeof(BooleanGraphType),
-                    UnderlyingType = typeof(BooleanField),
-                    FieldAccessor = field => field.Content.Value,
-                }
-            },
-            {
-                nameof(DateField),
-                new FieldTypeDescriptor
+                    nameof(BooleanField),
+                    new FieldTypeDescriptor
+                    {
+                        Description = "Boolean field",
+                        FieldType = typeof(BooleanGraphType),
+                        UnderlyingType = typeof(BooleanField),
+                        FieldAccessor = field => field.Content.Value,
+                    }
+                },
                 {
-                    Description = "Date field",
-                    FieldType = typeof(DateGraphType),
-                    UnderlyingType = typeof(DateField),
-                    FieldAccessor = field => field.Content.Value,
-                }
-            },
-            {
-                nameof(DateTimeField),
-                new FieldTypeDescriptor
+                    nameof(DateField),
+                    new FieldTypeDescriptor
+                    {
+                        Description = "Date field",
+                        FieldType = typeof(DateGraphType),
+                        UnderlyingType = typeof(DateField),
+                        FieldAccessor = field => field.Content.Value,
+                    }
+                },
                 {
-                    Description = "Date & time field",
-                    FieldType = typeof(DateTimeGraphType),
-                    UnderlyingType = typeof(DateTimeField),
-                    FieldAccessor = field => field.Content.Value,
-                }
-            },
-            {
-                nameof(NumericField),
-                new FieldTypeDescriptor
+                    nameof(DateTimeField),
+                    new FieldTypeDescriptor
+                    {
+                        Description = "Date & time field",
+                        FieldType = typeof(DateTimeGraphType),
+                        UnderlyingType = typeof(DateTimeField),
+                        FieldAccessor = field => field.Content.Value,
+                    }
+                },
                 {
-                    Description = "Numeric field",
-                    FieldType = typeof(DecimalGraphType),
-                    UnderlyingType = typeof(NumericField),
-                    FieldAccessor = field => field.Content.Value,
-                }
-            },
-            {
-                nameof(TextField),
-                new FieldTypeDescriptor
+                    nameof(NumericField),
+                    new FieldTypeDescriptor
+                    {
+                        Description = "Numeric field",
+                        FieldType = typeof(DecimalGraphType),
+                        UnderlyingType = typeof(NumericField),
+                        FieldAccessor = field => field.Content.Value,
+                    }
+                },
                 {
-                    Description = "Text field",
-                    FieldType = typeof(StringGraphType),
-                    UnderlyingType = typeof(TextField),
-                    FieldAccessor = field => field.Content.Text,
-                }
-            },
-            {
-                nameof(TimeField),
-                new FieldTypeDescriptor
+                    nameof(TextField),
+                    new FieldTypeDescriptor
+                    {
+                        Description = "Text field",
+                        FieldType = typeof(StringGraphType),
+                        UnderlyingType = typeof(TextField),
+                        FieldAccessor = field => field.Content.Text,
+                    }
+                },
                 {
-                    Description = "Time field",
-                    FieldType = typeof(TimeSpanGraphType),
-                    UnderlyingType = typeof(TimeField),
-                    FieldAccessor = field => field.Content.Value,
-                }
-            },
-            {
-                nameof(MultiTextField),
-                new FieldTypeDescriptor
+                    nameof(TimeField),
+                    new FieldTypeDescriptor
+                    {
+                        Description = "Time field",
+                        FieldType = typeof(TimeSpanGraphType),
+                        UnderlyingType = typeof(TimeField),
+                        FieldAccessor = field => field.Content.Value,
+                    }
+                },
                 {
-                    Description = "Multi text field",
-                    FieldType = typeof(ListGraphType<StringGraphType>),
-                    UnderlyingType = typeof(MultiTextField),
-                    FieldAccessor = field => field.Content.Values,
+                    nameof(MultiTextField),
+                    new FieldTypeDescriptor
+                    {
+                        Description = "Multi text field",
+                        FieldType = typeof(ListGraphType<StringGraphType>),
+                        UnderlyingType = typeof(MultiTextField),
+                        FieldAccessor = field => field.Content.Values,
+                    }
                 }
-            }
-        };
+            };
 
         public FieldType GetField(ContentPartFieldDefinition field)
         {

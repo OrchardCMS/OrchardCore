@@ -15,7 +15,8 @@ public class UserMenuShapeTableProvider : ShapeTableProvider
     public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
     {
         // Describe any shape-type that starts with 'UserMenuItems__'.
-        builder.Describe($"{ShapeTypePrefix}*")
+        builder
+            .Describe($"{ShapeTypePrefix}*")
             .OnDisplaying(context =>
             {
                 if (string.IsNullOrEmpty(context.Shape.Metadata.DisplayType) || context.Shape.Metadata.DisplayType == "Detail")

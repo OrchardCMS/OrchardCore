@@ -19,11 +19,7 @@ namespace OrchardCore.Lists.Drivers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContainerService _containerService;
 
-        public ContainedPartDisplayDriver(
-            IContentManager contentManager,
-            IContentDefinitionManager contentDefinitionManager,
-            IContainerService containerService
-            )
+        public ContainedPartDisplayDriver(IContentManager contentManager, IContentDefinitionManager contentDefinitionManager, IContainerService containerService)
         {
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
@@ -45,9 +41,7 @@ namespace OrchardCore.Lists.Drivers
 
             var viewModel = new EditContainedPartViewModel();
 
-            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart))
-                && viewModel.ContainerId != null
-                && viewModel.ContentType == model.ContentType)
+            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart)) && viewModel.ContainerId != null && viewModel.ContentType == model.ContentType)
             {
                 // We are creating a content item that needs to be added to a container.
                 // Render the container id as part of the form. The content type, and the enable ordering setting.
@@ -77,9 +71,7 @@ namespace OrchardCore.Lists.Drivers
 
             // The content type must match the value provided in the query string
             // in order for the ContainedPart to be included on the Content Item.
-            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart))
-                && viewModel.ContainerId != null
-                && viewModel.ContentType == model.ContentType)
+            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart)) && viewModel.ContainerId != null && viewModel.ContentType == model.ContentType)
             {
                 await model.AlterAsync<ContainedPart>(async part =>
                 {
@@ -101,14 +93,17 @@ namespace OrchardCore.Lists.Drivers
         {
             var results = new List<IDisplayResult>()
             {
-                Initialize<EditContainedPartViewModel>("ListPart_ContainerId", m =>
-                {
-                    m.ContainerId = containerId;
-                    m.ContainerContentType = containerContentType;
-                    m.EnableOrdering = enableOrdering;
-                    m.ContentType = contentType;
-                })
-                .Location("Content"),
+                Initialize<EditContainedPartViewModel>(
+                        "ListPart_ContainerId",
+                        m =>
+                        {
+                            m.ContainerId = containerId;
+                            m.ContainerContentType = containerContentType;
+                            m.EnableOrdering = enableOrdering;
+                            m.ContentType = contentType;
+                        }
+                    )
+                    .Location("Content"),
             };
 
             if (!string.IsNullOrEmpty(containerContentType))
@@ -127,13 +122,19 @@ namespace OrchardCore.Lists.Drivers
                         if (container != null)
                         {
                             // Add list part navigation.
-                            results.Add(Initialize<ListPartNavigationAdminViewModel>("ListPartNavigationAdmin", async model =>
-                            {
-                                model.ContainedContentTypeDefinitions = (await GetContainedContentTypesAsync(settings)).ToArray();
-                                model.Container = container;
-                                model.EnableOrdering = settings.EnableOrdering;
-                                model.ContainerContentTypeDefinition = definition;
-                            }).Location("Content:1.5"));
+                            results.Add(
+                                Initialize<ListPartNavigationAdminViewModel>(
+                                        "ListPartNavigationAdmin",
+                                        async model =>
+                                        {
+                                            model.ContainedContentTypeDefinitions = (await GetContainedContentTypesAsync(settings)).ToArray();
+                                            model.Container = container;
+                                            model.EnableOrdering = settings.EnableOrdering;
+                                            model.ContainerContentTypeDefinition = definition;
+                                        }
+                                    )
+                                    .Location("Content:1.5")
+                            );
 
                             if (settings.ShowHeader)
                             {
@@ -147,22 +148,26 @@ namespace OrchardCore.Lists.Drivers
             return Combine(results);
         }
 
-        private ShapeResult GetListPartHeader(ContentItem containerContentItem, ListPartSettings listPartSettings)
-            => Initialize<ListPartHeaderAdminViewModel>("ListPartHeaderAdmin", async model =>
-            {
-                model.ContainerContentItem = containerContentItem;
+        private ShapeResult GetListPartHeader(ContentItem containerContentItem, ListPartSettings listPartSettings) =>
+            Initialize<ListPartHeaderAdminViewModel>(
+                    "ListPartHeaderAdmin",
+                    async model =>
+                    {
+                        model.ContainerContentItem = containerContentItem;
 
-                if (listPartSettings != null)
-                {
-                    model.ContainedContentTypeDefinitions = (await GetContainedContentTypesAsync(listPartSettings)).ToArray();
-                    model.EnableOrdering = listPartSettings.EnableOrdering;
-                }
-            }).Location("Content:1");
+                        if (listPartSettings != null)
+                        {
+                            model.ContainedContentTypeDefinitions = (await GetContainedContentTypesAsync(listPartSettings)).ToArray();
+                            model.EnableOrdering = listPartSettings.EnableOrdering;
+                        }
+                    }
+                )
+                .Location("Content:1");
 
         // Initially, attempt to locate a published container.
         // If none is found, try acquiring the most recent unpublished version.
-        private async Task<ContentItem> GetContainerAsync(string containerId)
-            => await _contentManager.GetAsync(containerId) ?? await _contentManager.GetAsync(containerId, VersionOptions.Latest);
+        private async Task<ContentItem> GetContainerAsync(string containerId) =>
+            await _contentManager.GetAsync(containerId) ?? await _contentManager.GetAsync(containerId, VersionOptions.Latest);
 
         private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(ListPartSettings settings)
         {

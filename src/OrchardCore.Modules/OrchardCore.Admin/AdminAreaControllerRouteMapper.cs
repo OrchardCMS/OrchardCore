@@ -20,10 +20,11 @@ namespace OrchardCore.Admin
 
         public bool TryMapAreaControllerRoute(IEndpointRouteBuilder routes, ControllerActionDescriptor descriptor)
         {
-            if (descriptor.ControllerName == "Admin" ||
-                descriptor.ControllerTypeInfo.GetCustomAttribute<AdminAttribute>() != null ||
-                descriptor.MethodInfo.GetCustomAttribute<AdminAttribute>() != null
-                )
+            if (
+                descriptor.ControllerName == "Admin"
+                || descriptor.ControllerTypeInfo.GetCustomAttribute<AdminAttribute>() != null
+                || descriptor.MethodInfo.GetCustomAttribute<AdminAttribute>() != null
+            )
             {
                 routes.MapAreaControllerRoute(
                     name: descriptor.DisplayName,

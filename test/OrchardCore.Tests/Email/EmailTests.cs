@@ -187,15 +187,8 @@ namespace OrchardCore.Tests.Email
         public async Task SendEmail_WithoutToAndCcAndBccHeaders_ShouldThrowsException()
         {
             // Arrange
-            var message = new MailMessage
-            {
-                Subject = "Test",
-                Body = "Test Message"
-            };
-            var settings = new SmtpSettings
-            {
-                DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory
-            };
+            var message = new MailMessage { Subject = "Test", Body = "Test Message" };
+            var settings = new SmtpSettings { DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory };
 
             var smtp = CreateSmtpService(settings);
 
@@ -216,10 +209,7 @@ namespace OrchardCore.Tests.Email
                 Subject = "Test",
                 Body = "Test Message"
             };
-            var settings = new SmtpSettings
-            {
-                DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory
-            };
+            var settings = new SmtpSettings { DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory };
 
             var smtp = CreateSmtpService(settings);
 

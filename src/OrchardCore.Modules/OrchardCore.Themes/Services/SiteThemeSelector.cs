@@ -26,11 +26,7 @@ namespace OrchardCore.Themes.Services
                 return null;
             }
 
-            return new ThemeSelectorResult
-            {
-                Priority = 0,
-                ThemeName = currentThemeName
-            };
+            return new ThemeSelectorResult { Priority = 0, ThemeName = currentThemeName };
         }
     }
 }

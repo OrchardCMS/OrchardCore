@@ -84,7 +84,10 @@ public static class ContentRazorHelperExtensions
     /// <summary>
     /// Query content items.
     /// </summary>
-    public static async Task<IEnumerable<ContentItem>> QueryContentItemsAsync(this IOrchardHelper orchardHelper, Func<IQuery<ContentItem, ContentItemIndex>, IQuery<ContentItem>> query)
+    public static async Task<IEnumerable<ContentItem>> QueryContentItemsAsync(
+        this IOrchardHelper orchardHelper,
+        Func<IQuery<ContentItem, ContentItemIndex>, IQuery<ContentItem>> query
+    )
     {
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
         var session = orchardHelper.HttpContext.RequestServices.GetService<ISession>();
@@ -102,6 +105,8 @@ public static class ContentRazorHelperExtensions
     /// <param name="maxContentItems">The maximum content items to return.</param>
     public static Task<IEnumerable<ContentItem>> GetRecentContentItemsByContentTypeAsync(this IOrchardHelper orchardHelper, string contentType, int maxContentItems = 10)
     {
-        return orchardHelper.QueryContentItemsAsync(query => query.Where(x => x.ContentType == contentType && x.Published == true).OrderByDescending(x => x.CreatedUtc).Take(maxContentItems));
+        return orchardHelper.QueryContentItemsAsync(query =>
+            query.Where(x => x.ContentType == contentType && x.Published == true).OrderByDescending(x => x.CreatedUtc).Take(maxContentItems)
+        );
     }
 }

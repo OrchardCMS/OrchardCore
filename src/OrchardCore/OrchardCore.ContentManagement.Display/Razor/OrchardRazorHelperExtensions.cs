@@ -15,7 +15,13 @@ using OrchardCore.DisplayManagement.Razor;
 public static class OrchardRazorHelperExtensions
 #pragma warning restore CA1050 // Declare types in namespaces
 {
-    public static async Task<IHtmlContent> DisplayAsync(this IOrchardDisplayHelper orchardDisplayHelper, ContentItem content, string displayType = "", string groupId = "", IUpdateModel updater = null)
+    public static async Task<IHtmlContent> DisplayAsync(
+        this IOrchardDisplayHelper orchardDisplayHelper,
+        ContentItem content,
+        string displayType = "",
+        string groupId = "",
+        IUpdateModel updater = null
+    )
     {
         var displayManager = orchardDisplayHelper.HttpContext.RequestServices.GetService<IContentItemDisplayManager>();
         var shape = await displayManager.BuildDisplayAsync(content, updater, displayType, groupId);

@@ -25,12 +25,8 @@ namespace OrchardCore.Environment.Extensions.Features
 
     public abstract class FeatureBuilderEvents : IFeatureBuilderEvents
     {
-        public virtual void Building(FeatureBuildingContext context)
-        {
-        }
+        public virtual void Building(FeatureBuildingContext context) { }
 
-        public virtual void Built(IFeatureInfo featureInfo)
-        {
-        }
+        public virtual void Built(IFeatureInfo featureInfo) { }
     }
 }

@@ -29,14 +29,12 @@ public class RemoteMediaCacheBackgroundTask : IBackgroundTask
         IMediaFileStore mediaFileStore,
         IWebHostEnvironment webHostEnvironment,
         IOptions<MediaOptions> mediaOptions,
-        ILogger<RemoteMediaCacheBackgroundTask> logger)
+        ILogger<RemoteMediaCacheBackgroundTask> logger
+    )
     {
         _mediaFileStore = mediaFileStore;
 
-        _cachePath = Path.Combine(
-            webHostEnvironment.WebRootPath,
-            shellSettings.Name,
-            DefaultMediaFileStoreCacheFileProvider.AssetsCachePath);
+        _cachePath = Path.Combine(webHostEnvironment.WebRootPath, shellSettings.Name, DefaultMediaFileStoreCacheFileProvider.AssetsCachePath);
 
         _cacheMaxStale = mediaOptions.Value.RemoteCacheMaxStale;
         _logger = logger;
@@ -97,34 +95,23 @@ public class RemoteMediaCacheBackgroundTask : IBackgroundTask
 
                 // Check if the remote media doesn't exist or was updated.
                 var entry = await _mediaFileStore.GetFileInfoAsync(path);
-                if (entry is null ||
-                    (entry.LastModifiedUtc > fileInfo.LastWriteTimeUtc &&
-                    entry.LastModifiedUtc < minWriteTimeUtc))
+                if (entry is null || (entry.LastModifiedUtc > fileInfo.LastWriteTimeUtc && entry.LastModifiedUtc < minWriteTimeUtc))
                 {
                     File.Delete(fileInfo.FullName);
                 }
             }
         }
-        catch (Exception ex) when (ex is DirectoryNotFoundException)
-        {
-        }
+        catch (Exception ex) when (ex is DirectoryNotFoundException) { }
         catch (Exception ex) when (ex.IsFileSharingViolation())
         {
             if (_logger.IsEnabled(LogLevel.Warning))
             {
-                _logger.LogWarning(
-                    ex,
-                    "Sharing violation while cleaning the remote media cache at '{CachePath}'.",
-                    _cachePath);
+                _logger.LogWarning(ex, "Sharing violation while cleaning the remote media cache at '{CachePath}'.", _cachePath);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(
-                ex,
-                "Failed to clean the remote media cache at '{CachePath}'.",
-                _cachePath);
+            _logger.LogError(ex, "Failed to clean the remote media cache at '{CachePath}'.", _cachePath);
         }
-
     }
 }

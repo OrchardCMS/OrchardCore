@@ -12,14 +12,8 @@ namespace OrchardCore.Recipes.Services
     /// </summary>
     public class ApplicationRecipeHarvester : RecipeHarvester
     {
-        public ApplicationRecipeHarvester(
-            IRecipeReader recipeReader,
-            IExtensionManager extensionManager,
-            IHostEnvironment hostingEnvironment,
-            ILogger<RecipeHarvester> logger)
-            : base(recipeReader, extensionManager, hostingEnvironment, logger)
-        {
-        }
+        public ApplicationRecipeHarvester(IRecipeReader recipeReader, IExtensionManager extensionManager, IHostEnvironment hostingEnvironment, ILogger<RecipeHarvester> logger)
+            : base(recipeReader, extensionManager, hostingEnvironment, logger) { }
 
         public override Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync()
         {

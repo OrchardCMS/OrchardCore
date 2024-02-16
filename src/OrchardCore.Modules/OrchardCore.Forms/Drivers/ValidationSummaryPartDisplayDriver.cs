@@ -17,10 +17,13 @@ namespace OrchardCore.Forms.Drivers
 
         public override IDisplayResult Edit(ValidationSummaryPart part)
         {
-            return Initialize<ValidationSummaryViewModel>("ValidationSummaryPart_Fields_Edit", model =>
-            {
-                model.ModelOnly = part.ModelOnly;
-            });
+            return Initialize<ValidationSummaryViewModel>(
+                "ValidationSummaryPart_Fields_Edit",
+                model =>
+                {
+                    model.ModelOnly = part.ModelOnly;
+                }
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ValidationSummaryPart part, IUpdateModel updater, UpdatePartEditorContext context)

@@ -46,7 +46,7 @@ namespace OrchardCore.Tenants.Controllers
             IShapeFactory shapeFactory,
             IStringLocalizer<FeatureProfilesController> stringLocalizer,
             IHtmlLocalizer<FeatureProfilesController> htmlLocalizer
-            )
+        )
         {
             _authorizationService = authorizationService;
             _featureProfilesManager = featureProfilesManager;
@@ -76,9 +76,7 @@ namespace OrchardCore.Tenants.Controllers
 
             var count = featureProfiles.Count;
 
-            featureProfiles = featureProfiles.OrderBy(x => x.Key)
-                .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize).ToList();
+            featureProfiles = featureProfiles.OrderBy(x => x.Key).Skip(pager.GetStartIndex()).Take(pager.PageSize).ToList();
 
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();
@@ -92,31 +90,27 @@ namespace OrchardCore.Tenants.Controllers
 
             var model = new FeatureProfilesIndexViewModel
             {
-                FeatureProfiles = featureProfiles.Select(x => new FeatureProfileEntry
-                {
-                    Name = x.Value.Name ?? x.Key,
-                    FeatureProfile = x.Value,
-                    Id = x.Key
-                }).ToList(),
+                FeatureProfiles = featureProfiles
+                    .Select(x => new FeatureProfileEntry
+                    {
+                        Name = x.Value.Name ?? x.Key,
+                        FeatureProfile = x.Value,
+                        Id = x.Key
+                    })
+                    .ToList(),
                 Options = options,
                 Pager = pagerShape
             };
 
-            model.Options.ContentsBulkAction =
-            [
-                new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
-            ];
+            model.Options.ContentsBulkAction = [new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),];
 
             return View(model);
         }
 
         [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
-        public ActionResult IndexFilterPOST(FeatureProfilesIndexViewModel model)
-            => RedirectToAction(nameof(Index), new RouteValueDictionary
-            {
-                { _optionsSearch, model.Options.Search }
-            });
+        public ActionResult IndexFilterPOST(FeatureProfilesIndexViewModel model) =>
+            RedirectToAction(nameof(Index), new RouteValueDictionary { { _optionsSearch, model.Options.Search } });
 
         public async Task<IActionResult> Create()
         {
@@ -125,10 +119,7 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            var viewModel = new FeatureProfileViewModel()
-            {
-                Id = IdGenerator.GenerateId(),
-            };
+            var viewModel = new FeatureProfileViewModel() { Id = IdGenerator.GenerateId(), };
 
             return View(viewModel);
         }
@@ -136,10 +127,15 @@ namespace OrchardCore.Tenants.Controllers
         [HttpPost, ActionName(nameof(Create))]
         public async Task<IActionResult> CreatePost(FeatureProfileViewModel model, string submit)
         {
-            return await ProcessSaveAsync(model, submit, true, async (profile) =>
-            {
-                await _featureProfilesManager.UpdateFeatureProfileAsync(profile.Id, profile);
-            });
+            return await ProcessSaveAsync(
+                model,
+                submit,
+                true,
+                async (profile) =>
+                {
+                    await _featureProfilesManager.UpdateFeatureProfileAsync(profile.Id, profile);
+                }
+            );
         }
 
         public async Task<IActionResult> Edit(string id)
@@ -171,12 +167,17 @@ namespace OrchardCore.Tenants.Controllers
         [HttpPost, ActionName(nameof(Edit))]
         public async Task<IActionResult> EditPost(FeatureProfileViewModel model, string submit)
         {
-            return await ProcessSaveAsync(model, submit, false, async (profile) =>
-            {
-                await _featureProfilesManager.RemoveFeatureProfileAsync(profile.Id);
+            return await ProcessSaveAsync(
+                model,
+                submit,
+                false,
+                async (profile) =>
+                {
+                    await _featureProfilesManager.RemoveFeatureProfileAsync(profile.Id);
 
-                await _featureProfilesManager.UpdateFeatureProfileAsync(profile.Id, profile);
-            });
+                    await _featureProfilesManager.UpdateFeatureProfileAsync(profile.Id, profile);
+                }
+            );
         }
 
         [HttpPost]

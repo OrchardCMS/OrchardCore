@@ -20,24 +20,27 @@ namespace OrchardCore.Rules.Drivers
 
         public override IDisplayResult Display(CultureCondition condition)
         {
-            return
-                Combine(
-                    View("CultureCondition_Fields_Summary", condition).Location("Summary", "Content"),
-                    View("CultureCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
-                );
+            return Combine(
+                View("CultureCondition_Fields_Summary", condition).Location("Summary", "Content"),
+                View("CultureCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(CultureCondition condition)
         {
-            return Initialize<CultureConditionViewModel>("CultureCondition_Fields_Edit", m =>
-            {
-                if (condition.Operation != null && _options.ConditionOperatorOptionByType.TryGetValue(condition.Operation.GetType(), out var option))
-                {
-                    m.SelectedOperation = option.Factory.Name;
-                }
-                m.Value = condition.Value;
-                m.Condition = condition;
-            }).Location("Content");
+            return Initialize<CultureConditionViewModel>(
+                    "CultureCondition_Fields_Edit",
+                    m =>
+                    {
+                        if (condition.Operation != null && _options.ConditionOperatorOptionByType.TryGetValue(condition.Operation.GetType(), out var option))
+                        {
+                            m.SelectedOperation = option.Factory.Name;
+                        }
+                        m.Value = condition.Value;
+                        m.Condition = condition;
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(CultureCondition condition, IUpdateModel updater)

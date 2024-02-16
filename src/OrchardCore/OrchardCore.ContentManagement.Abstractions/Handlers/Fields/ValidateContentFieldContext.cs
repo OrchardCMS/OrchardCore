@@ -4,11 +4,8 @@ namespace OrchardCore.ContentManagement.Handlers;
 
 public class ValidateContentFieldContext : ContentFieldContextBase
 {
-    public ValidateContentFieldContext(
-        ContentItem contentItem)
-        : base(contentItem)
-    {
-    }
+    public ValidateContentFieldContext(ContentItem contentItem)
+        : base(contentItem) { }
 
     public ContentValidateResult ContentValidateResult { get; } = new ContentValidateResult();
 }

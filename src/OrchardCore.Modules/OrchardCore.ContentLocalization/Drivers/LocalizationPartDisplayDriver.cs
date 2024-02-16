@@ -20,11 +20,7 @@ namespace OrchardCore.ContentLocalization.Drivers
         private readonly IIdGenerator _idGenerator;
         private readonly ILocalizationService _localizationService;
 
-        public LocalizationPartDisplayDriver(
-            IContentLocalizationManager contentLocalizationManager,
-            IIdGenerator idGenerator,
-            ILocalizationService localizationService
-        )
+        public LocalizationPartDisplayDriver(IContentLocalizationManager contentLocalizationManager, IIdGenerator idGenerator, ILocalizationService localizationService)
         {
             _contentLocalizationManager = contentLocalizationManager;
             _idGenerator = idGenerator;
@@ -72,31 +68,38 @@ namespace OrchardCore.ContentLocalization.Drivers
             model.Culture ??= await _localizationService.GetDefaultCultureAsync();
 
             var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
-            var currentCultures = supportedCultures.Where(c => c != model.Culture).Select(culture =>
-              {
-                  return new LocalizationLinksViewModel()
-                  {
-                      IsDeleted = false,
-                      Culture = CultureInfo.GetCultureInfo(culture),
-                      ContentItemId = alreadyTranslated.FirstOrDefault(c => c.As<LocalizationPart>()?.Culture == culture)?.ContentItemId,
-                  };
-              }).ToList();
+            var currentCultures = supportedCultures
+                .Where(c => c != model.Culture)
+                .Select(culture =>
+                {
+                    return new LocalizationLinksViewModel()
+                    {
+                        IsDeleted = false,
+                        Culture = CultureInfo.GetCultureInfo(culture),
+                        ContentItemId = alreadyTranslated.FirstOrDefault(c => c.As<LocalizationPart>()?.Culture == culture)?.ContentItemId,
+                    };
+                })
+                .ToList();
 
             // Content items that have been translated but the culture was removed from the settings page
-            var deletedCultureTranslations = alreadyTranslated.Where(c => c.As<LocalizationPart>()?.Culture != model.Culture).Select(ci =>
-            {
-                var culture = ci.As<LocalizationPart>()?.Culture;
-                if (currentCultures.Any(c => c.ContentItemId == ci.ContentItemId) || culture == null)
+            var deletedCultureTranslations = alreadyTranslated
+                .Where(c => c.As<LocalizationPart>()?.Culture != model.Culture)
+                .Select(ci =>
                 {
-                    return null;
-                }
-                return new LocalizationLinksViewModel()
-                {
-                    IsDeleted = true,
-                    Culture = CultureInfo.GetCultureInfo(culture),
-                    ContentItemId = ci?.ContentItemId
-                };
-            }).OfType<LocalizationLinksViewModel>().ToList();
+                    var culture = ci.As<LocalizationPart>()?.Culture;
+                    if (currentCultures.Any(c => c.ContentItemId == ci.ContentItemId) || culture == null)
+                    {
+                        return null;
+                    }
+                    return new LocalizationLinksViewModel()
+                    {
+                        IsDeleted = true,
+                        Culture = CultureInfo.GetCultureInfo(culture),
+                        ContentItemId = ci?.ContentItemId
+                    };
+                })
+                .OfType<LocalizationLinksViewModel>()
+                .ToList();
 
             model.ContentItemCultures = currentCultures.Concat(deletedCultureTranslations).ToList();
         }

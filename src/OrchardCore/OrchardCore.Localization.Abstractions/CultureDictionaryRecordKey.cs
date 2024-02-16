@@ -14,10 +14,8 @@ namespace OrchardCore.Localization
         /// Creates new instance of <see cref="CultureDictionaryRecordKey"/>.
         /// </summary>
         /// <param name="messageId">The message Id.</param>
-        public CultureDictionaryRecordKey(string messageId) : this(messageId, null)
-        {
-
-        }
+        public CultureDictionaryRecordKey(string messageId)
+            : this(messageId, null) { }
 
         /// <summary>
         /// Creates new instance of <see cref="CultureDictionaryRecordKey"/>.
@@ -30,8 +28,7 @@ namespace OrchardCore.Localization
             _context = context;
         }
 
-        public static implicit operator string(CultureDictionaryRecordKey cultureDictionaryRecordKey)
-            => cultureDictionaryRecordKey.ToString();
+        public static implicit operator string(CultureDictionaryRecordKey cultureDictionaryRecordKey) => cultureDictionaryRecordKey.ToString();
 
         /// <inheritdoc />
         public override bool Equals(object obj)
@@ -45,16 +42,12 @@ namespace OrchardCore.Localization
         }
 
         /// <inheritdoc />
-        public bool Equals(CultureDictionaryRecordKey other)
-            => string.Equals(_messageId, other._messageId) && string.Equals(_context, other._context);
+        public bool Equals(CultureDictionaryRecordKey other) => string.Equals(_messageId, other._messageId) && string.Equals(_context, other._context);
 
         /// <inheritdoc />
         public override int GetHashCode() => HashCode.Combine(_messageId, _context);
 
-        public override string ToString()
-            => string.IsNullOrEmpty(_context)
-                ? _messageId
-                : _context.ToLowerInvariant() + "|" + _messageId;
+        public override string ToString() => string.IsNullOrEmpty(_context) ? _messageId : _context.ToLowerInvariant() + "|" + _messageId;
 
         public static bool operator ==(CultureDictionaryRecordKey left, CultureDictionaryRecordKey right) => left.Equals(right);
 

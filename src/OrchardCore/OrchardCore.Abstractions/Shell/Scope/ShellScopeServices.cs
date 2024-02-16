@@ -11,15 +11,11 @@ public class ShellScopeServices(IServiceProvider services) : IKeyedServiceProvid
 {
     private readonly IServiceProvider _services = services;
 
-    private IServiceProvider Services
-        => ShellScope.Services ?? _services;
+    private IServiceProvider Services => ShellScope.Services ?? _services;
 
-    public object GetKeyedService(Type serviceType, object serviceKey)
-        => Services.GetKeyedService(serviceType, serviceKey);
+    public object GetKeyedService(Type serviceType, object serviceKey) => Services.GetKeyedService(serviceType, serviceKey);
 
-    public object GetRequiredKeyedService(Type serviceType, object serviceKey)
-        => Services.GetRequiredKeyedService(serviceType, serviceKey);
+    public object GetRequiredKeyedService(Type serviceType, object serviceKey) => Services.GetRequiredKeyedService(serviceType, serviceKey);
 
-    public object GetService(Type serviceType)
-        => Services?.GetService(serviceType);
+    public object GetService(Type serviceType) => Services?.GetService(serviceType);
 }

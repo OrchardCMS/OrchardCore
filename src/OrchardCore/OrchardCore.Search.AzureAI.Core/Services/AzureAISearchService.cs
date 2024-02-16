@@ -16,7 +16,7 @@ public class AzureAISearchService(
     AzureAISearchIndexSettingsService indexSettingsService,
     ILogger<AzureAISearchService> logger,
     IOptions<AzureAISearchDefaultOptions> azureAIOptions
-        ) : ISearchService
+) : ISearchService
 {
     public const string Key = "Azure AI Search";
 
@@ -66,11 +66,7 @@ public class AzureAISearchService(
         {
             result.ContentItemIds = [];
 
-            var searchOptions = new SearchOptions()
-            {
-                Skip = start,
-                Size = size,
-            };
+            var searchOptions = new SearchOptions() { Skip = start, Size = size, };
 
             searchOptions.Select.Add(IndexingConstants.ContentItemIdKey);
 
@@ -82,13 +78,18 @@ public class AzureAISearchService(
                 }
             }
 
-            await _indexDocumentManager.SearchAsync(index, term, (doc) =>
-            {
-                if (doc.TryGetValue(IndexingConstants.ContentItemIdKey, out var contentItemId))
+            await _indexDocumentManager.SearchAsync(
+                index,
+                term,
+                (doc) =>
                 {
-                    result.ContentItemIds.Add(contentItemId.ToString());
-                }
-            }, searchOptions);
+                    if (doc.TryGetValue(IndexingConstants.ContentItemIdKey, out var contentItemId))
+                    {
+                        result.ContentItemIds.Add(contentItemId.ToString());
+                    }
+                },
+                searchOptions
+            );
 
             result.Success = true;
         }
@@ -100,4 +101,3 @@ public class AzureAISearchService(
         return result;
     }
 }
-

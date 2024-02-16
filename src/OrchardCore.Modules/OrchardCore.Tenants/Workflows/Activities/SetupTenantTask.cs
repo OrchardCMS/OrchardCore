@@ -35,7 +35,8 @@ namespace OrchardCore.Tenants.Workflows.Activities
             ISetupService setupService,
             IWorkflowExpressionEvaluator expressionEvaluator,
             IWorkflowScriptEvaluator scriptEvaluator,
-            IStringLocalizer<SetupTenantTask> localizer)
+            IStringLocalizer<SetupTenantTask> localizer
+        )
             : base(shellSettingsManager, shellHost, expressionEvaluator, scriptEvaluator, localizer)
         {
             SetupService = setupService;

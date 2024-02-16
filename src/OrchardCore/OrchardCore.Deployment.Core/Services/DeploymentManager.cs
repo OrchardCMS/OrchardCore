@@ -14,7 +14,8 @@ namespace OrchardCore.Deployment.Core.Services
         public DeploymentManager(
             IEnumerable<IDeploymentSource> deploymentSources,
             IEnumerable<IDeploymentTargetProvider> deploymentTargetProviders,
-            IEnumerable<IDeploymentTargetHandler> deploymentTargetHandlers)
+            IEnumerable<IDeploymentTargetHandler> deploymentTargetHandlers
+        )
         {
             _deploymentSources = deploymentSources;
             _deploymentTargetProviders = deploymentTargetProviders;

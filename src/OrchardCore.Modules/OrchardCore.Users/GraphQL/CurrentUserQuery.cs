@@ -25,10 +25,7 @@ internal class CurrentUserQuery : ISchemaBuilder
     private readonly IOptions<GraphQLContentOptions> _contentOptionsAccessor;
     protected readonly IStringLocalizer S;
 
-    public CurrentUserQuery(
-        IHttpContextAccessor httpContextAccessor,
-        IOptions<GraphQLContentOptions> contentOptionsAccessor,
-        IStringLocalizer<CurrentUserQuery> localizer)
+    public CurrentUserQuery(IHttpContextAccessor httpContextAccessor, IOptions<GraphQLContentOptions> contentOptionsAccessor, IStringLocalizer<CurrentUserQuery> localizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _contentOptionsAccessor = contentOptionsAccessor;

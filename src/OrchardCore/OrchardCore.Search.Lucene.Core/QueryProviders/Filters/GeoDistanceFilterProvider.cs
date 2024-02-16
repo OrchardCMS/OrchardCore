@@ -202,7 +202,8 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
                     point = new Point(geoArrayValue[0].Value<double>(), geoArrayValue[1].Value<double>(), ctx);
 
                     return true;
-                default: throw new ArgumentException("Invalid geo point representation");
+                default:
+                    throw new ArgumentException("Invalid geo point representation");
             }
         }
     }

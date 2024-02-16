@@ -8,8 +8,6 @@ public class UserMenuNavbarDisplayDriver : DisplayDriver<Navbar>
 {
     public override IDisplayResult Display(Navbar model)
     {
-        return View("NavbarUserMenu", model)
-            .Location("Detail", "Content:after")
-            .Location("DetailAdmin", "Content:after");
+        return View("NavbarUserMenu", model).Location("Detail", "Content:after").Location("DetailAdmin", "Content:after");
     }
 }

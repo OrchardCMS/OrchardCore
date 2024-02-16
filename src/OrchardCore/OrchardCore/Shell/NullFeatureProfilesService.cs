@@ -8,7 +8,6 @@ namespace OrchardCore.Environment.Shell
     {
         private static readonly IDictionary<string, FeatureProfile> _featureProfiles = new Dictionary<string, FeatureProfile>();
 
-        public Task<IDictionary<string, FeatureProfile>> GetFeatureProfilesAsync()
-            => Task.FromResult(_featureProfiles);
+        public Task<IDictionary<string, FeatureProfile>> GetFeatureProfilesAsync() => Task.FromResult(_featureProfiles);
     }
 }

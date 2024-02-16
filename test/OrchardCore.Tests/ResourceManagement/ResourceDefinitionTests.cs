@@ -19,9 +19,7 @@ namespace OrchardCore.Tests.ResourceManagement
         [InlineData("/virtualpath/tenant")]
         public void GetScriptResourceWithUrl(string applicationPath)
         {
-            var resourceDefinition = _resourceManifest.DefineScript("foo")
-                .SetUrl("~/foo.js", "~/foo.debug.js")
-                .SetCdn("https://cdn.tld/foo.js", "https://cdn.tld/foo.debug.js");
+            var resourceDefinition = _resourceManifest.DefineScript("foo").SetUrl("~/foo.js", "~/foo.debug.js").SetCdn("https://cdn.tld/foo.js", "https://cdn.tld/foo.debug.js");
 
             var requireSettings = new RequireSettings { DebugMode = false, CdnMode = false };
             var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
@@ -34,9 +32,7 @@ namespace OrchardCore.Tests.ResourceManagement
         [InlineData("/base")]
         public void GetScriptResourceWithBasePath(string basePath)
         {
-            var resourceDefinition = _resourceManifest.DefineScript("foo")
-                .SetUrl("~/foo.js", "~/foo.debug.js")
-                .SetBasePath(basePath);
+            var resourceDefinition = _resourceManifest.DefineScript("foo").SetUrl("~/foo.js", "~/foo.debug.js").SetBasePath(basePath);
 
             var requireSettings = new RequireSettings { DebugMode = false, CdnMode = false };
             var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, string.Empty, StubFileVersionProvider.Instance);
@@ -51,9 +47,7 @@ namespace OrchardCore.Tests.ResourceManagement
         [InlineData("/virtualpath/tenant")]
         public void GetScriptResourceWithDebugUrl(string applicationPath)
         {
-            var resourceDefinition = _resourceManifest.DefineScript("foo")
-                .SetUrl("~/foo.js", "~/foo.debug.js")
-                .SetCdn("https://cdn.tld/foo.js", "https://cdn.tld/foo.debug.js");
+            var resourceDefinition = _resourceManifest.DefineScript("foo").SetUrl("~/foo.js", "~/foo.debug.js").SetCdn("https://cdn.tld/foo.js", "https://cdn.tld/foo.debug.js");
 
             var requireSettings = new RequireSettings { DebugMode = true, CdnMode = false };
             var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
@@ -68,9 +62,7 @@ namespace OrchardCore.Tests.ResourceManagement
         [InlineData("/virtualpath/tenant")]
         public void GetScriptResourceWithCdnUrl(string applicationPath)
         {
-            var resourceDefinition = _resourceManifest.DefineScript("foo")
-                .SetUrl("~/foo.js", "~/foo.debug.js")
-                .SetCdn("https://cdn.tld/foo.js", "https://cdn.tld/foo.debug.js");
+            var resourceDefinition = _resourceManifest.DefineScript("foo").SetUrl("~/foo.js", "~/foo.debug.js").SetCdn("https://cdn.tld/foo.js", "https://cdn.tld/foo.debug.js");
 
             var requireSettings = new RequireSettings { DebugMode = false, CdnMode = true };
             var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
@@ -85,11 +77,14 @@ namespace OrchardCore.Tests.ResourceManagement
         [InlineData("/virtualpath/tenant")]
         public void GetScriptResourceWithDebugCdnUrl(string applicationPath)
         {
-            var resourceDefinition = _resourceManifest.DefineScript("foo")
-                .SetUrl("~/foo.js", "~/foo.debug.js")
-                .SetCdn("https://cdn.tld/foo.js", "https://cdn.tld/foo.debug.js");
+            var resourceDefinition = _resourceManifest.DefineScript("foo").SetUrl("~/foo.js", "~/foo.debug.js").SetCdn("https://cdn.tld/foo.js", "https://cdn.tld/foo.debug.js");
 
-            var requireSettings = new RequireSettings { DebugMode = true, CdnMode = true, CdnBaseUrl = "https://hostcdn.net" };
+            var requireSettings = new RequireSettings
+            {
+                DebugMode = true,
+                CdnMode = true,
+                CdnBaseUrl = "https://hostcdn.net"
+            };
             var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
 
             Assert.Equal("script", tagBuilder.TagName);
@@ -107,10 +102,14 @@ namespace OrchardCore.Tests.ResourceManagement
         [InlineData("/tenant", "https://external.com/foo.js", "https://external.com/foo.js")]
         public void GetLocalScriptResourceWithCdnBaseUrl(string applicationPath, string url, string expected)
         {
-            var resourceDefinition = _resourceManifest.DefineScript("foo")
-                .SetUrl(url, url);
+            var resourceDefinition = _resourceManifest.DefineScript("foo").SetUrl(url, url);
 
-            var requireSettings = new RequireSettings { DebugMode = false, CdnMode = true, CdnBaseUrl = "https://hostcdn.net" };
+            var requireSettings = new RequireSettings
+            {
+                DebugMode = false,
+                CdnMode = true,
+                CdnBaseUrl = "https://hostcdn.net"
+            };
             var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
 
             Assert.Equal("script", tagBuilder.TagName);
@@ -123,11 +122,9 @@ namespace OrchardCore.Tests.ResourceManagement
         [InlineData("/virtualpath/tenant")]
         public void GetScriptResourceWithInlineContent(string applicationPath)
         {
-            var resourceDefinition = _resourceManifest.DefineScript("foo")
-                .SetInnerContent("console.log('foo');");
+            var resourceDefinition = _resourceManifest.DefineScript("foo").SetInnerContent("console.log('foo');");
 
-            var requireSettings = new RequireSettings()
-                .UseCdnBaseUrl("https://hostcdn.net");
+            var requireSettings = new RequireSettings().UseCdnBaseUrl("https://hostcdn.net");
             var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
 
             Assert.Equal("script", tagBuilder.TagName);
@@ -140,9 +137,7 @@ namespace OrchardCore.Tests.ResourceManagement
         [InlineData("/virtualpath/tenant")]
         public void GetStyleResourceWithUrl(string applicationPath)
         {
-            var resourceDefinition = _resourceManifest.DefineStyle("foo")
-                .SetUrl("~/foo.css", "~/foo.debug.css")
-                .SetCdn("https://cdn.tld/foo.css", "https://cdn.tld/foo.debug.css");
+            var resourceDefinition = _resourceManifest.DefineStyle("foo").SetUrl("~/foo.css", "~/foo.debug.css").SetCdn("https://cdn.tld/foo.css", "https://cdn.tld/foo.debug.css");
 
             var requireSettings = new RequireSettings { DebugMode = false, CdnMode = false };
             var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
@@ -159,9 +154,7 @@ namespace OrchardCore.Tests.ResourceManagement
         [InlineData("/virtualpath/tenant")]
         public void GetStyleResourceWithDebugUrl(string applicationPath)
         {
-            var resourceDefinition = _resourceManifest.DefineStyle("foo")
-                .SetUrl("~/foo.css", "~/foo.debug.css")
-                .SetCdn("https://cdn.tld/foo.css", "https://cdn.tld/foo.debug.css");
+            var resourceDefinition = _resourceManifest.DefineStyle("foo").SetUrl("~/foo.css", "~/foo.debug.css").SetCdn("https://cdn.tld/foo.css", "https://cdn.tld/foo.debug.css");
 
             var requireSettings = new RequireSettings { DebugMode = true, CdnMode = false };
             var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
@@ -178,9 +171,7 @@ namespace OrchardCore.Tests.ResourceManagement
         [InlineData("/virtualpath/tenant")]
         public void GetStyleResourceWithCdnUrl(string applicationPath)
         {
-            var resourceDefinition = _resourceManifest.DefineStyle("foo")
-                .SetUrl("~/foo.css", "~/foo.debug.css")
-                .SetCdn("https://cdn.tld/foo.css", "https://cdn.tld/foo.debug.css");
+            var resourceDefinition = _resourceManifest.DefineStyle("foo").SetUrl("~/foo.css", "~/foo.debug.css").SetCdn("https://cdn.tld/foo.css", "https://cdn.tld/foo.debug.css");
 
             var requireSettings = new RequireSettings { DebugMode = false, CdnMode = true };
             var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
@@ -202,10 +193,14 @@ namespace OrchardCore.Tests.ResourceManagement
         [InlineData("/tenant", "https://external.com/foo.css", "https://external.com/foo.css")]
         public void GetLocalStyleResourceWithCdnBaseUrl(string applicationPath, string url, string expected)
         {
-            var resourceDefinition = _resourceManifest.DefineStyle("foo")
-                .SetUrl(url, url);
+            var resourceDefinition = _resourceManifest.DefineStyle("foo").SetUrl(url, url);
 
-            var requireSettings = new RequireSettings { DebugMode = false, CdnMode = true, CdnBaseUrl = "https://hostcdn.net" };
+            var requireSettings = new RequireSettings
+            {
+                DebugMode = false,
+                CdnMode = true,
+                CdnBaseUrl = "https://hostcdn.net"
+            };
             var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
 
             Assert.Equal("link", tagBuilder.TagName);
@@ -220,9 +215,7 @@ namespace OrchardCore.Tests.ResourceManagement
         [InlineData("/virtualpath/tenant")]
         public void GetStyleResourceWithDebugCdnUrl(string applicationPath)
         {
-            var resourceDefinition = _resourceManifest.DefineStyle("foo")
-                .SetUrl("~/foo.css", "~/foo.debug.css")
-                .SetCdn("https://cdn.tld/foo.css", "https://cdn.tld/foo.debug.css");
+            var resourceDefinition = _resourceManifest.DefineStyle("foo").SetUrl("~/foo.css", "~/foo.debug.css").SetCdn("https://cdn.tld/foo.css", "https://cdn.tld/foo.debug.css");
 
             var requireSettings = new RequireSettings { DebugMode = true, CdnMode = true };
             var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
@@ -239,10 +232,7 @@ namespace OrchardCore.Tests.ResourceManagement
         [InlineData("/virtualpath/tenant")]
         public void GetStyleResourceWithAttributes(string applicationPath)
         {
-            var resourceDefinition = _resourceManifest.DefineStyle("foo")
-                .SetUrl("~/foo.css", "~/foo.debug.css")
-                .SetAttribute("id", "foo")
-                .SetAttribute("media", "all");
+            var resourceDefinition = _resourceManifest.DefineStyle("foo").SetUrl("~/foo.css", "~/foo.debug.css").SetAttribute("id", "foo").SetAttribute("media", "all");
 
             var requireSettings = new RequireSettings { DebugMode = false, CdnMode = false };
             var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
@@ -260,11 +250,9 @@ namespace OrchardCore.Tests.ResourceManagement
         [InlineData("/virtualpath/tenant")]
         public void GetStyleResourceWithInlineContent(string applicationPath)
         {
-            var resourceDefinition = _resourceManifest.DefineStyle("foo")
-                .SetInnerContent("body { background-color: white; }");
+            var resourceDefinition = _resourceManifest.DefineStyle("foo").SetInnerContent("body { background-color: white; }");
 
-            var requireSettings = new RequireSettings()
-                .UseCdnBaseUrl("https://cdn.net");
+            var requireSettings = new RequireSettings().UseCdnBaseUrl("https://cdn.net");
             var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, applicationPath, StubFileVersionProvider.Instance);
 
             Assert.Equal("style", tagBuilder.TagName);

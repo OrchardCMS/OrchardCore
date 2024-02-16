@@ -37,7 +37,8 @@ namespace OrchardCore.OpenId.Controllers
             IOpenIdApplicationManager applicationManager,
             IOpenIdAuthorizationManager authorizationManager,
             IOpenIdScopeManager scopeManager,
-            ShellSettings shellSettings)
+            ShellSettings shellSettings
+        )
         {
             _applicationManager = applicationManager;
             _authorizationManager = authorizationManager;
@@ -51,11 +52,7 @@ namespace OrchardCore.OpenId.Controllers
             var response = HttpContext.GetOpenIddictServerResponse();
             if (response != null)
             {
-                return View("Error", new ErrorViewModel
-                {
-                    Error = response.Error,
-                    ErrorDescription = response.ErrorDescription
-                });
+                return View("Error", new ErrorViewModel { Error = response.Error, ErrorDescription = response.ErrorDescription });
             }
 
             var request = HttpContext.GetOpenIddictServerRequest();
@@ -74,31 +71,36 @@ namespace OrchardCore.OpenId.Controllers
 
             // If a max_age parameter was provided, ensure that the cookie is not too old.
             // If it's too old, automatically redirect the user agent to the login page.
-            if (request.MaxAge != null && result.Properties.IssuedUtc != null &&
-                DateTimeOffset.UtcNow - result.Properties.IssuedUtc > TimeSpan.FromSeconds(request.MaxAge.Value))
+            if (request.MaxAge != null && result.Properties.IssuedUtc != null && DateTimeOffset.UtcNow - result.Properties.IssuedUtc > TimeSpan.FromSeconds(request.MaxAge.Value))
             {
                 return RedirectToLoginPage(request);
             }
 
-            var application = await _applicationManager.FindByClientIdAsync(request.ClientId) ??
-                throw new InvalidOperationException("The application details cannot be found.");
+            var application = await _applicationManager.FindByClientIdAsync(request.ClientId) ?? throw new InvalidOperationException("The application details cannot be found.");
 
-            var authorizations = await _authorizationManager.FindAsync(
-                subject: result.Principal.GetUserIdentifier(),
-                client: await _applicationManager.GetIdAsync(application),
-                status: Statuses.Valid,
-                type: AuthorizationTypes.Permanent,
-                scopes: request.GetScopes()).ToListAsync();
+            var authorizations = await _authorizationManager
+                .FindAsync(
+                    subject: result.Principal.GetUserIdentifier(),
+                    client: await _applicationManager.GetIdAsync(application),
+                    status: Statuses.Valid,
+                    type: AuthorizationTypes.Permanent,
+                    scopes: request.GetScopes()
+                )
+                .ToListAsync();
 
             switch (await _applicationManager.GetConsentTypeAsync(application))
             {
                 case ConsentTypes.External when authorizations.Count == 0:
-                    return Forbid(new AuthenticationProperties(new Dictionary<string, string>
-                    {
-                        [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.ConsentRequired,
-                        [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                            "The logged in user is not allowed to access this client application."
-                    }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+                    return Forbid(
+                        new AuthenticationProperties(
+                            new Dictionary<string, string>
+                            {
+                                [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.ConsentRequired,
+                                [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The logged in user is not allowed to access this client application."
+                            }
+                        ),
+                        OpenIddictServerAspNetCoreDefaults.AuthenticationScheme
+                    );
 
                 case ConsentTypes.Implicit:
                 case ConsentTypes.External when authorizations.Count > 0:
@@ -129,7 +131,8 @@ namespace OrchardCore.OpenId.Controllers
                         subject: identity.GetUserIdentifier(),
                         client: await _applicationManager.GetIdAsync(application),
                         type: AuthorizationTypes.Permanent,
-                        scopes: identity.GetScopes());
+                        scopes: identity.GetScopes()
+                    );
 
                     identity.SetAuthorizationId(await _authorizationManager.GetIdAsync(authorization));
                     identity.SetDestinations(GetDestinations);
@@ -137,20 +140,26 @@ namespace OrchardCore.OpenId.Controllers
                     return SignIn(new ClaimsPrincipal(identity), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
 
                 case ConsentTypes.Explicit when request.HasPrompt(Prompts.None):
-                    return Forbid(new AuthenticationProperties(new Dictionary<string, string>
-                    {
-                        [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.ConsentRequired,
-                        [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                            "Interactive user consent is required."
-                    }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+                    return Forbid(
+                        new AuthenticationProperties(
+                            new Dictionary<string, string>
+                            {
+                                [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.ConsentRequired,
+                                [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "Interactive user consent is required."
+                            }
+                        ),
+                        OpenIddictServerAspNetCoreDefaults.AuthenticationScheme
+                    );
 
                 default:
-                    return View(new AuthorizeViewModel
-                    {
-                        ApplicationName = await _applicationManager.GetLocalizedDisplayNameAsync(application),
-                        RequestId = request.RequestId,
-                        Scope = request.Scope
-                    });
+                    return View(
+                        new AuthorizeViewModel
+                        {
+                            ApplicationName = await _applicationManager.GetLocalizedDisplayNameAsync(application),
+                            RequestId = request.RequestId,
+                            Scope = request.Scope
+                        }
+                    );
             }
 
             IActionResult RedirectToLoginPage(OpenIddictRequest request)
@@ -159,11 +168,16 @@ namespace OrchardCore.OpenId.Controllers
                 // return an error indicating that the user is not logged in.
                 if (request.HasPrompt(Prompts.None))
                 {
-                    return Forbid(new AuthenticationProperties(new Dictionary<string, string>
-                    {
-                        [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.LoginRequired,
-                        [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The user is not logged in."
-                    }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+                    return Forbid(
+                        new AuthenticationProperties(
+                            new Dictionary<string, string>
+                            {
+                                [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.LoginRequired,
+                                [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The user is not logged in."
+                            }
+                        ),
+                        OpenIddictServerAspNetCoreDefaults.AuthenticationScheme
+                    );
                 }
 
                 string GetRedirectUrl()
@@ -175,10 +189,7 @@ namespace OrchardCore.OpenId.Controllers
                     return Request.PathBase + Request.Path + QueryString.Create(parameters);
                 }
 
-                return Challenge(new AuthenticationProperties
-                {
-                    RedirectUri = GetRedirectUrl()
-                });
+                return Challenge(new AuthenticationProperties { RedirectUri = GetRedirectUrl() });
             }
         }
 
@@ -194,11 +205,7 @@ namespace OrchardCore.OpenId.Controllers
             var response = HttpContext.GetOpenIddictServerResponse();
             if (response != null)
             {
-                return View("Error", new ErrorViewModel
-                {
-                    Error = response.Error,
-                    ErrorDescription = response.ErrorDescription
-                });
+                return View("Error", new ErrorViewModel { Error = response.Error, ErrorDescription = response.ErrorDescription });
             }
 
             var request = HttpContext.GetOpenIddictServerRequest();
@@ -207,15 +214,17 @@ namespace OrchardCore.OpenId.Controllers
                 return NotFound();
             }
 
-            var application = await _applicationManager.FindByClientIdAsync(request.ClientId)
-                ?? throw new InvalidOperationException("The application details cannot be found.");
+            var application = await _applicationManager.FindByClientIdAsync(request.ClientId) ?? throw new InvalidOperationException("The application details cannot be found.");
 
-            var authorizations = await _authorizationManager.FindAsync(
-                subject: User.GetUserIdentifier(),
-                client: await _applicationManager.GetIdAsync(application),
-                status: Statuses.Valid,
-                type: AuthorizationTypes.Permanent,
-                scopes: request.GetScopes()).ToListAsync();
+            var authorizations = await _authorizationManager
+                .FindAsync(
+                    subject: User.GetUserIdentifier(),
+                    client: await _applicationManager.GetIdAsync(application),
+                    status: Statuses.Valid,
+                    type: AuthorizationTypes.Permanent,
+                    scopes: request.GetScopes()
+                )
+                .ToListAsync();
 
             // Note: the same check is already made in the GET action but is repeated
             // here to ensure a malicious user can't abuse this POST endpoint and
@@ -223,12 +232,16 @@ namespace OrchardCore.OpenId.Controllers
             switch (await _applicationManager.GetConsentTypeAsync(application))
             {
                 case ConsentTypes.External when authorizations.Count == 0:
-                    return Forbid(new AuthenticationProperties(new Dictionary<string, string>
-                    {
-                        [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.ConsentRequired,
-                        [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                            "The logged in user is not allowed to access this client application."
-                    }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+                    return Forbid(
+                        new AuthenticationProperties(
+                            new Dictionary<string, string>
+                            {
+                                [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.ConsentRequired,
+                                [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The logged in user is not allowed to access this client application."
+                            }
+                        ),
+                        OpenIddictServerAspNetCoreDefaults.AuthenticationScheme
+                    );
 
                 default:
                     var identity = new ClaimsIdentity(User.Claims, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
@@ -257,7 +270,8 @@ namespace OrchardCore.OpenId.Controllers
                         subject: identity.GetUserIdentifier(),
                         client: await _applicationManager.GetIdAsync(application),
                         type: AuthorizationTypes.Permanent,
-                        scopes: identity.GetScopes());
+                        scopes: identity.GetScopes()
+                    );
 
                     identity.SetAuthorizationId(await _authorizationManager.GetIdAsync(authorization));
                     identity.SetDestinations(GetDestinations);
@@ -273,11 +287,7 @@ namespace OrchardCore.OpenId.Controllers
             var response = HttpContext.GetOpenIddictServerResponse();
             if (response != null)
             {
-                return View("Error", new ErrorViewModel
-                {
-                    Error = response.Error,
-                    ErrorDescription = response.ErrorDescription
-                });
+                return View("Error", new ErrorViewModel { Error = response.Error, ErrorDescription = response.ErrorDescription });
             }
 
             var request = HttpContext.GetOpenIddictServerRequest();
@@ -295,11 +305,7 @@ namespace OrchardCore.OpenId.Controllers
             var response = HttpContext.GetOpenIddictServerResponse();
             if (response != null)
             {
-                return View("Error", new ErrorViewModel
-                {
-                    Error = response.Error,
-                    ErrorDescription = response.ErrorDescription
-                });
+                return View("Error", new ErrorViewModel { Error = response.Error, ErrorDescription = response.ErrorDescription });
             }
 
             var request = HttpContext.GetOpenIddictServerRequest();
@@ -319,10 +325,7 @@ namespace OrchardCore.OpenId.Controllers
                 }
             }
 
-            return View(new LogoutViewModel
-            {
-                RequestId = request.RequestId
-            });
+            return View(new LogoutViewModel { RequestId = request.RequestId });
         }
 
         [ActionName(nameof(Logout)), AllowAnonymous]
@@ -332,11 +335,7 @@ namespace OrchardCore.OpenId.Controllers
             var response = HttpContext.GetOpenIddictServerResponse();
             if (response != null)
             {
-                return View("Error", new ErrorViewModel
-                {
-                    Error = response.Error,
-                    ErrorDescription = response.ErrorDescription
-                });
+                return View("Error", new ErrorViewModel { Error = response.Error, ErrorDescription = response.ErrorDescription });
             }
 
             var request = HttpContext.GetOpenIddictServerRequest();
@@ -369,11 +368,7 @@ namespace OrchardCore.OpenId.Controllers
             var response = HttpContext.GetOpenIddictServerResponse();
             if (response != null)
             {
-                return View("Error", new ErrorViewModel
-                {
-                    Error = response.Error,
-                    ErrorDescription = response.ErrorDescription
-                });
+                return View("Error", new ErrorViewModel { Error = response.Error, ErrorDescription = response.ErrorDescription });
             }
 
             var request = HttpContext.GetOpenIddictServerRequest();
@@ -424,29 +419,31 @@ namespace OrchardCore.OpenId.Controllers
         {
             if (request.HasScope(Scopes.OfflineAccess))
             {
-                return Forbid(new AuthenticationProperties(new Dictionary<string, string>
-                {
-                    [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidScope,
-                    [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                        "The 'offline_access' scope is not allowed when using the client credentials grant."
-                }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+                return Forbid(
+                    new AuthenticationProperties(
+                        new Dictionary<string, string>
+                        {
+                            [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidScope,
+                            [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The 'offline_access' scope is not allowed when using the client credentials grant."
+                        }
+                    ),
+                    OpenIddictServerAspNetCoreDefaults.AuthenticationScheme
+                );
             }
 
             // Note: client authentication is always enforced by OpenIddict before this action is invoked.
-            var application = await _applicationManager.FindByClientIdAsync(request.ClientId) ??
-                throw new InvalidOperationException("The application details cannot be found.");
+            var application = await _applicationManager.FindByClientIdAsync(request.ClientId) ?? throw new InvalidOperationException("The application details cannot be found.");
 
-            var identity = new ClaimsIdentity(
-                OpenIddictServerAspNetCoreDefaults.AuthenticationScheme,
-                Claims.Name, Claims.Role);
+            var identity = new ClaimsIdentity(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme, Claims.Name, Claims.Role);
 
             identity.AddClaim(new Claim(OpenIdConstants.Claims.EntityType, OpenIdConstants.EntityTypes.Application));
             identity.AddClaim(new Claim(Claims.Subject, request.ClientId));
 
             // Always add a "name" claim for grant_type=client_credentials in both
             // access and identity tokens even if the "name" scope wasn't requested.
-            identity.AddClaim(new Claim(Claims.Name, await _applicationManager.GetDisplayNameAsync(application))
-                .SetDestinations(Destinations.AccessToken, Destinations.IdentityToken));
+            identity.AddClaim(
+                new Claim(Claims.Name, await _applicationManager.GetDisplayNameAsync(application)).SetDestinations(Destinations.AccessToken, Destinations.IdentityToken)
+            );
 
             // If the role service is available, add all the role claims
             // associated with the application roles in the database.
@@ -457,8 +454,7 @@ namespace OrchardCore.OpenId.Controllers
                 // Since the claims added in this block have a dynamic name, directly set the destinations
                 // here instead of relying on the GetDestination() helper that only works with static claims.
 
-                identity.AddClaim(new Claim(identity.RoleClaimType, role)
-                    .SetDestinations(Destinations.AccessToken, Destinations.IdentityToken));
+                identity.AddClaim(new Claim(identity.RoleClaimType, role).SetDestinations(Destinations.AccessToken, Destinations.IdentityToken));
 
                 if (roleService != null)
                 {
@@ -478,53 +474,68 @@ namespace OrchardCore.OpenId.Controllers
 
         private async Task<IActionResult> ExchangePasswordGrantType(OpenIddictRequest request)
         {
-            var application = await _applicationManager.FindByClientIdAsync(request.ClientId) ??
-                throw new InvalidOperationException("The application details cannot be found.");
+            var application = await _applicationManager.FindByClientIdAsync(request.ClientId) ?? throw new InvalidOperationException("The application details cannot be found.");
 
             // By design, the password flow requires direct username/password validation, which is performed by
             // the user service. If this service is not registered, prevent the password flow from being used.
             var service = HttpContext.RequestServices.GetService<IUserService>();
             if (service == null)
             {
-                return Forbid(new AuthenticationProperties(new Dictionary<string, string>
-                {
-                    [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.UnsupportedGrantType,
-                    [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                        "The resource owner password credentials grant is not supported."
-                }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+                return Forbid(
+                    new AuthenticationProperties(
+                        new Dictionary<string, string>
+                        {
+                            [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.UnsupportedGrantType,
+                            [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The resource owner password credentials grant is not supported."
+                        }
+                    ),
+                    OpenIddictServerAspNetCoreDefaults.AuthenticationScheme
+                );
             }
 
             string error = null;
             var user = await service.AuthenticateAsync(request.Username, request.Password, (key, message) => error = message);
             if (user == null)
             {
-                return Forbid(new AuthenticationProperties(new Dictionary<string, string>
-                {
-                    [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
-                    [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = error
-                }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+                return Forbid(
+                    new AuthenticationProperties(
+                        new Dictionary<string, string>
+                        {
+                            [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
+                            [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = error
+                        }
+                    ),
+                    OpenIddictServerAspNetCoreDefaults.AuthenticationScheme
+                );
             }
 
             var principal = await service.CreatePrincipalAsync(user);
 
-            var authorizations = await _authorizationManager.FindAsync(
-                subject: principal.GetUserIdentifier(),
-                client: await _applicationManager.GetIdAsync(application),
-                status: Statuses.Valid,
-                type: AuthorizationTypes.Permanent,
-                scopes: request.GetScopes()).ToListAsync();
+            var authorizations = await _authorizationManager
+                .FindAsync(
+                    subject: principal.GetUserIdentifier(),
+                    client: await _applicationManager.GetIdAsync(application),
+                    status: Statuses.Valid,
+                    type: AuthorizationTypes.Permanent,
+                    scopes: request.GetScopes()
+                )
+                .ToListAsync();
 
             // If the application is configured to use external consent,
             // reject the request if no existing authorization can be found.
             switch (await _applicationManager.GetConsentTypeAsync(application))
             {
                 case ConsentTypes.External when authorizations.Count == 0:
-                    return Forbid(new AuthenticationProperties(new Dictionary<string, string>
-                    {
-                        [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.ConsentRequired,
-                        [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                            "The logged in user is not allowed to access this client application."
-                    }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+                    return Forbid(
+                        new AuthenticationProperties(
+                            new Dictionary<string, string>
+                            {
+                                [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.ConsentRequired,
+                                [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The logged in user is not allowed to access this client application."
+                            }
+                        ),
+                        OpenIddictServerAspNetCoreDefaults.AuthenticationScheme
+                    );
             }
 
             var identity = (ClaimsIdentity)principal.Identity;
@@ -553,7 +564,8 @@ namespace OrchardCore.OpenId.Controllers
                 subject: identity.GetUserIdentifier(),
                 client: await _applicationManager.GetIdAsync(application),
                 type: AuthorizationTypes.Permanent,
-                scopes: identity.GetScopes());
+                scopes: identity.GetScopes()
+            );
 
             identity.SetAuthorizationId(await _authorizationManager.GetIdAsync(authorization));
             identity.SetDestinations(GetDestinations);
@@ -564,20 +576,26 @@ namespace OrchardCore.OpenId.Controllers
         private async Task<IActionResult> ExchangeAuthorizationCodeOrRefreshTokenGrantType(OpenIddictRequest request)
         {
             // Retrieve the claims principal stored in the authorization code/refresh token.
-            var info = await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme) ??
-                throw new InvalidOperationException("The user principal cannot be resolved.");
+            var info =
+                await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)
+                ?? throw new InvalidOperationException("The user principal cannot be resolved.");
 
             if (request.IsRefreshTokenGrantType())
             {
                 var type = info.Principal.FindFirst(OpenIdConstants.Claims.EntityType)?.Value;
                 if (!string.Equals(type, OpenIdConstants.EntityTypes.User))
                 {
-                    return Forbid(new AuthenticationProperties(new Dictionary<string, string>
-                    {
-                        [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.UnauthorizedClient,
-                        [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                            "The refresh token grant type is not allowed for refresh tokens retrieved using the client credentials flow."
-                    }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+                    return Forbid(
+                        new AuthenticationProperties(
+                            new Dictionary<string, string>
+                            {
+                                [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.UnauthorizedClient,
+                                [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
+                                    "The refresh token grant type is not allowed for refresh tokens retrieved using the client credentials flow."
+                            }
+                        ),
+                        OpenIddictServerAspNetCoreDefaults.AuthenticationScheme
+                    );
                 }
             }
 
@@ -641,13 +659,10 @@ namespace OrchardCore.OpenId.Controllers
                 case Claims.Name when claim.Subject.HasScope(Scopes.Profile):
                 case Claims.Email when claim.Subject.HasScope(Scopes.Email):
                 case Claims.Role when claim.Subject.HasScope(Scopes.Roles):
-                    return new[]
-                    {
-                        Destinations.AccessToken,
-                        Destinations.IdentityToken
-                    };
+                    return new[] { Destinations.AccessToken, Destinations.IdentityToken };
 
-                default: return new[] { Destinations.AccessToken };
+                default:
+                    return new[] { Destinations.AccessToken };
             }
         }
 
@@ -656,10 +671,7 @@ namespace OrchardCore.OpenId.Controllers
             // Note: the current tenant name is always added as a valid resource/audience,
             // which allows the end user to use the corresponding tokens with the APIs
             // located in the current tenant without having to explicitly register a scope.
-            var resources = new List<string>()
-            {
-                OpenIdConstants.Prefixes.Tenant + _shellSettings.Name
-            };
+            var resources = new List<string>() { OpenIdConstants.Prefixes.Tenant + _shellSettings.Name };
 
             await foreach (var resource in _scopeManager.ListResourcesAsync(scopes))
             {

@@ -30,7 +30,8 @@ namespace OrchardCore.ContentFields.Drivers
             IActionContextAccessor actionContextAccessor,
             IStringLocalizer<LinkFieldDisplayDriver> localizer,
             IHtmlSanitizerService htmlSanitizerService,
-            HtmlEncoder htmlencoder)
+            HtmlEncoder htmlencoder
+        )
         {
             _urlHelperFactory = urlHelperFactory;
             _actionContextAccessor = actionContextAccessor;
@@ -41,28 +42,34 @@ namespace OrchardCore.ContentFields.Drivers
 
         public override IDisplayResult Display(LinkField field, BuildFieldDisplayContext context)
         {
-            return Initialize<DisplayLinkFieldViewModel>(GetDisplayShapeType(context), model =>
-            {
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-            })
-            .Location("Detail", "Content")
-            .Location("Summary", "Content");
+            return Initialize<DisplayLinkFieldViewModel>(
+                    GetDisplayShapeType(context),
+                    model =>
+                    {
+                        model.Field = field;
+                        model.Part = context.ContentPart;
+                        model.PartFieldDefinition = context.PartFieldDefinition;
+                    }
+                )
+                .Location("Detail", "Content")
+                .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(LinkField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditLinkFieldViewModel>(GetEditorShapeType(context), model =>
-            {
-                var settings = context.PartFieldDefinition.GetSettings<LinkFieldSettings>();
-                model.Url = context.IsNew && field.Url == null ? settings.DefaultUrl : field.Url;
-                model.Text = context.IsNew && field.Text == null ? settings.DefaultText : field.Text;
+            return Initialize<EditLinkFieldViewModel>(
+                GetEditorShapeType(context),
+                model =>
+                {
+                    var settings = context.PartFieldDefinition.GetSettings<LinkFieldSettings>();
+                    model.Url = context.IsNew && field.Url == null ? settings.DefaultUrl : field.Url;
+                    model.Text = context.IsNew && field.Text == null ? settings.DefaultText : field.Text;
 
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-            });
+                    model.Field = field;
+                    model.Part = context.ContentPart;
+                    model.PartFieldDefinition = context.PartFieldDefinition;
+                }
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(LinkField field, IUpdateModel updater, UpdateFieldEditorContext context)

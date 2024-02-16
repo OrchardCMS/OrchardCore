@@ -30,7 +30,17 @@ namespace OrchardCore.Media.Processing
 
     internal class ImageSharpUrlFormatter
     {
-        public static string GetImageResizeUrl(string path, IDictionary<string, string> queryStringParams = null, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, int? quality = null, Format format = Format.Undefined, Anchor anchor = null, string bgcolor = null)
+        public static string GetImageResizeUrl(
+            string path,
+            IDictionary<string, string> queryStringParams = null,
+            int? width = null,
+            int? height = null,
+            ResizeMode resizeMode = ResizeMode.Undefined,
+            int? quality = null,
+            Format format = Format.Undefined,
+            Anchor anchor = null,
+            string bgcolor = null
+        )
         {
             if (string.IsNullOrEmpty(path) || (!width.HasValue && !height.HasValue && queryStringParams == null))
             {
@@ -54,7 +64,7 @@ namespace OrchardCore.Media.Processing
                 queryStringParams["rmode"] = resizeMode.ToString().ToLower();
             }
 
-            // The format is set before quality such that the quality is not 
+            // The format is set before quality such that the quality is not
             // invalidated when the url is generated.
             if (format != Format.Undefined)
             {

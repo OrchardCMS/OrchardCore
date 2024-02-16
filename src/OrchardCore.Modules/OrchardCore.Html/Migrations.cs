@@ -19,10 +19,7 @@ namespace OrchardCore.Html
         private readonly ILogger _logger;
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
-        public Migrations(
-            IContentDefinitionManager contentDefinitionManager,
-            ISession session,
-            ILogger<Migrations> logger)
+        public Migrations(IContentDefinitionManager contentDefinitionManager, ISession session, ILogger<Migrations> logger)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _session = session;
@@ -31,9 +28,10 @@ namespace OrchardCore.Html
 
         public async Task<int> CreateAsync()
         {
-            await _contentDefinitionManager.AlterPartDefinitionAsync("HtmlBodyPart", builder => builder
-                .Attachable()
-                .WithDescription("Provides an HTML Body for your content item."));
+            await _contentDefinitionManager.AlterPartDefinitionAsync(
+                "HtmlBodyPart",
+                builder => builder.Attachable().WithDescription("Provides an HTML Body for your content item.")
+            );
 
             // Shortcut other migration steps on new content definition schemas.
             return 5;
@@ -138,10 +136,17 @@ namespace OrchardCore.Html
             {
                 if (contentType.Parts.Any(x => x.PartDefinition.Name == "HtmlBodyPart"))
                 {
-                    await _contentDefinitionManager.AlterTypeDefinitionAsync(contentType.Name, x => x.WithPart("HtmlBodyPart", part =>
-                    {
-                        part.MergeSettings<HtmlBodyPartSettings>(x => x.SanitizeHtml = false);
-                    }));
+                    await _contentDefinitionManager.AlterTypeDefinitionAsync(
+                        contentType.Name,
+                        x =>
+                            x.WithPart(
+                                "HtmlBodyPart",
+                                part =>
+                                {
+                                    part.MergeSettings<HtmlBodyPartSettings>(x => x.SanitizeHtml = false);
+                                }
+                            )
+                    );
                 }
             }
 

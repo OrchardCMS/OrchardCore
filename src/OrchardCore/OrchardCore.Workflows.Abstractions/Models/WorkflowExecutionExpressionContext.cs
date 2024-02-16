@@ -4,7 +4,8 @@ namespace OrchardCore.Workflows.Models
 {
     public class WorkflowExecutionExpressionContext : WorkflowExecutionHandlerContextBase
     {
-        public WorkflowExecutionExpressionContext(TemplateContext templateContext, WorkflowExecutionContext workflowExecutionContext) : base(workflowExecutionContext)
+        public WorkflowExecutionExpressionContext(TemplateContext templateContext, WorkflowExecutionContext workflowExecutionContext)
+            : base(workflowExecutionContext)
         {
             TemplateContext = templateContext;
         }

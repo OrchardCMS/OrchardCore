@@ -13,12 +13,8 @@ namespace OrchardCore.Users.Services
     [Obsolete("The class 'DefaultUserClaimsPrincipalFactory' is obsolete, please implement 'IUserClaimsProvider' instead.")]
     public class DefaultUserClaimsPrincipalFactory : UserClaimsPrincipalFactory<IUser, IRole>
     {
-        public DefaultUserClaimsPrincipalFactory(
-            UserManager<IUser> userManager,
-            RoleManager<IRole> roleManager,
-            IOptions<IdentityOptions> identityOptions) : base(userManager, roleManager, identityOptions)
-        {
-        }
+        public DefaultUserClaimsPrincipalFactory(UserManager<IUser> userManager, RoleManager<IRole> roleManager, IOptions<IdentityOptions> identityOptions)
+            : base(userManager, roleManager, identityOptions) { }
 
         protected override async Task<ClaimsIdentity> GenerateClaimsAsync(IUser user)
         {

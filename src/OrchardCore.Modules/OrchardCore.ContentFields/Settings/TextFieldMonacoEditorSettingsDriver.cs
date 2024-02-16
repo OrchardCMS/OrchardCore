@@ -21,17 +21,20 @@ namespace OrchardCore.ContentFields.Settings
 
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<MonacoSettingsViewModel>("TextFieldMonacoEditorSettings_Edit", model =>
-            {
-                var settings = partFieldDefinition.GetSettings<TextFieldMonacoEditorSettings>();
-                if (string.IsNullOrWhiteSpace(settings.Options))
-                {
-                    settings.Options = JConvert.SerializeObject(new { automaticLayout = true, language = "html" }, JOptions.Indented);
-                }
+            return Initialize<MonacoSettingsViewModel>(
+                    "TextFieldMonacoEditorSettings_Edit",
+                    model =>
+                    {
+                        var settings = partFieldDefinition.GetSettings<TextFieldMonacoEditorSettings>();
+                        if (string.IsNullOrWhiteSpace(settings.Options))
+                        {
+                            settings.Options = JConvert.SerializeObject(new { automaticLayout = true, language = "html" }, JOptions.Indented);
+                        }
 
-                model.Options = settings.Options;
-            })
-            .Location("Editor");
+                        model.Options = settings.Options;
+                    }
+                )
+                .Location("Editor");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

@@ -14,10 +14,7 @@ public class RoleTwoFactorAuthenticationHandler : ITwoFactorAuthenticationHandle
     private readonly UserManager<IUser> _userManager;
     private readonly ISiteService _siteService;
 
-    public RoleTwoFactorAuthenticationHandler(
-        IHttpContextAccessor httpContextAccessor,
-        UserManager<IUser> userManager,
-        ISiteService siteService)
+    public RoleTwoFactorAuthenticationHandler(IHttpContextAccessor httpContextAccessor, UserManager<IUser> userManager, ISiteService siteService)
     {
         _httpContextAccessor = httpContextAccessor;
         _userManager = userManager;

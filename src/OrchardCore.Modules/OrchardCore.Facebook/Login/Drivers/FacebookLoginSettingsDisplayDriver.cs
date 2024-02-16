@@ -22,7 +22,8 @@ namespace OrchardCore.Facebook.Login.Drivers
             IAuthorizationService authorizationService,
             IHttpContextAccessor httpContextAccessor,
             IShellHost shellHost,
-            ShellSettings shellSettings)
+            ShellSettings shellSettings
+        )
         {
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
@@ -38,11 +39,16 @@ namespace OrchardCore.Facebook.Login.Drivers
                 return null;
             }
 
-            return Initialize<FacebookLoginSettingsViewModel>("FacebookLoginSettings_Edit", model =>
-            {
-                model.CallbackPath = settings.CallbackPath.Value;
-                model.SaveTokens = settings.SaveTokens;
-            }).Location("Content:5").OnGroup(FacebookConstants.Features.Login);
+            return Initialize<FacebookLoginSettingsViewModel>(
+                    "FacebookLoginSettings_Edit",
+                    model =>
+                    {
+                        model.CallbackPath = settings.CallbackPath.Value;
+                        model.SaveTokens = settings.SaveTokens;
+                    }
+                )
+                .Location("Content:5")
+                .OnGroup(FacebookConstants.Features.Login);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(FacebookLoginSettings settings, BuildEditorContext context)

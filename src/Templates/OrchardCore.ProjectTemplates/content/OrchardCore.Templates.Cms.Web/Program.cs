@@ -12,20 +12,20 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseNLogHost();
 #endif
 #if (UseSerilog)
-builder.Host.UseSerilog((hostingContext, configBuilder) =>
+builder.Host.UseSerilog(
+    (hostingContext, configBuilder) =>
     {
-        configBuilder.ReadFrom.Configuration(hostingContext.Configuration)
-        .Enrich.FromLogContext();
-    });
+        configBuilder.ReadFrom.Configuration(hostingContext.Configuration).Enrich.FromLogContext();
+    }
+);
 #endif
 
-builder.Services
-    .AddOrchardCms()
-    // // Orchard Specific Pipeline
-    // .ConfigureServices( services => {
-    // })
-    // .Configure( (app, routes, services) => {
-    // })
+builder.Services.AddOrchardCms()
+// // Orchard Specific Pipeline
+// .ConfigureServices( services => {
+// })
+// .Configure( (app, routes, services) => {
+// })
 ;
 
 var app = builder.Build();

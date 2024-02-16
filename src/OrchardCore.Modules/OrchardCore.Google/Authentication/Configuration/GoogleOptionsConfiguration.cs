@@ -9,9 +9,7 @@ using OrchardCore.Google.Authentication.Settings;
 
 namespace OrchardCore.Google.Authentication.Configuration
 {
-    public class GoogleOptionsConfiguration :
-        IConfigureOptions<AuthenticationOptions>,
-        IConfigureNamedOptions<GoogleOptions>
+    public class GoogleOptionsConfiguration : IConfigureOptions<AuthenticationOptions>, IConfigureNamedOptions<GoogleOptions>
     {
         private readonly GoogleAuthenticationSettings _gitHubAuthenticationSettings;
         private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -20,7 +18,8 @@ namespace OrchardCore.Google.Authentication.Configuration
         public GoogleOptionsConfiguration(
             IOptions<GoogleAuthenticationSettings> gitHubAuthenticationSettings,
             IDataProtectionProvider dataProtectionProvider,
-            ILogger<GoogleOptionsConfiguration> logger)
+            ILogger<GoogleOptionsConfiguration> logger
+        )
         {
             _gitHubAuthenticationSettings = gitHubAuthenticationSettings.Value;
             _dataProtectionProvider = dataProtectionProvider;
@@ -34,11 +33,14 @@ namespace OrchardCore.Google.Authentication.Configuration
                 return;
             }
 
-            options.AddScheme(GoogleDefaults.AuthenticationScheme, builder =>
-            {
-                builder.DisplayName = "Google";
-                builder.HandlerType = typeof(GoogleHandler);
-            });
+            options.AddScheme(
+                GoogleDefaults.AuthenticationScheme,
+                builder =>
+                {
+                    builder.DisplayName = "Google";
+                    builder.HandlerType = typeof(GoogleHandler);
+                }
+            );
         }
 
         public void Configure(string name, GoogleOptions options)

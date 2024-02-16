@@ -13,17 +13,13 @@ namespace OrchardCore.DisplayManagement.Events
         {
             var moduleInfo = context.ExtensionInfo.Manifest.ModuleInfo;
 
-            if (moduleInfo is ThemeAttribute || (moduleInfo is ModuleMarkerAttribute &&
-                moduleInfo.Type.Equals("Theme", StringComparison.OrdinalIgnoreCase)))
+            if (moduleInfo is ThemeAttribute || (moduleInfo is ModuleMarkerAttribute && moduleInfo.Type.Equals("Theme", StringComparison.OrdinalIgnoreCase)))
             {
                 var extensionInfo = new ThemeExtensionInfo(context.ExtensionInfo);
 
                 if (extensionInfo.HasBaseTheme())
                 {
-                    context.FeatureDependencyIds = context
-                        .FeatureDependencyIds
-                        .Concat(new[] { extensionInfo.BaseTheme })
-                        .ToArray();
+                    context.FeatureDependencyIds = context.FeatureDependencyIds.Concat(new[] { extensionInfo.BaseTheme }).ToArray();
                 }
 
                 context.ExtensionInfo = extensionInfo;

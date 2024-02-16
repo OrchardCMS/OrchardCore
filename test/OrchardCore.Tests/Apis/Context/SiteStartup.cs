@@ -18,22 +18,20 @@ namespace OrchardCore.Tests.Apis.Context
 #pragma warning restore CA1822 // Mark members as static
         {
             services.AddOrchardCms(builder =>
-                builder.AddSetupFeatures(
-                    "OrchardCore.Tenants"
-                )
-                .AddTenantFeatures(
-                    "OrchardCore.Apis.GraphQL"
-                )
-                .ConfigureServices(collection =>
-                {
-                    collection.AddScoped<IRecipeHarvester, TestRecipeHarvester>();
-
-                    collection.AddScoped<IAuthorizationHandler, PermissionContextAuthorizationHandler>(sp =>
+                builder
+                    .AddSetupFeatures("OrchardCore.Tenants")
+                    .AddTenantFeatures("OrchardCore.Apis.GraphQL")
+                    .ConfigureServices(collection =>
                     {
-                        return new PermissionContextAuthorizationHandler(sp.GetRequiredService<IHttpContextAccessor>(), PermissionsContexts);
-                    });
-                })
-                .Configure(appBuilder => appBuilder.UseAuthorization()));
+                        collection.AddScoped<IRecipeHarvester, TestRecipeHarvester>();
+
+                        collection.AddScoped<IAuthorizationHandler, PermissionContextAuthorizationHandler>(sp =>
+                        {
+                            return new PermissionContextAuthorizationHandler(sp.GetRequiredService<IHttpContextAccessor>(), PermissionsContexts);
+                        });
+                    })
+                    .Configure(appBuilder => appBuilder.UseAuthorization())
+            );
 
             services.AddSingleton<IModuleNamesProvider, ModuleNamesProvider>();
         }

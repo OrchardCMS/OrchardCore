@@ -19,9 +19,7 @@ namespace OrchardCore.Media.GraphQL
         protected readonly IStringLocalizer S;
         private readonly GraphQLContentOptions _graphQLContentOptions;
 
-        public MediaAssetQuery(
-            IStringLocalizer<MediaAssetQuery> localizer,
-            IOptions<GraphQLContentOptions> graphQLContentOptions)
+        public MediaAssetQuery(IStringLocalizer<MediaAssetQuery> localizer, IOptions<GraphQLContentOptions> graphQLContentOptions)
         {
             S = localizer;
             _graphQLContentOptions = graphQLContentOptions.Value;
@@ -42,11 +40,7 @@ namespace OrchardCore.Media.GraphQL
                 Description = S["Media assets are items that are part of your media library."],
                 Type = typeof(ListGraphType<MediaAssetObjectType>),
                 Arguments = new QueryArguments(
-                    new QueryArgument<StringGraphType>
-                    {
-                        Name = "path",
-                        Description = S["Media asset path."]
-                    },
+                    new QueryArgument<StringGraphType> { Name = "path", Description = S["Media asset path."] },
                     new QueryArgument<BooleanGraphType>
                     {
                         Name = "includeSubDirectories",

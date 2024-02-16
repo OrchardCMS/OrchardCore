@@ -10,42 +10,17 @@ public class Permissions : IPermissionProvider
     public static readonly Permission LocalizeOwnContent = new("LocalizeOwnContent", "Localize own content", new[] { LocalizeContent });
     public static readonly Permission ManageContentCulturePicker = new("ManageContentCulturePicker", "Manage ContentCulturePicker settings");
 
-    private readonly IEnumerable<Permission> _allPermissions =
-    [
-        LocalizeContent,
-        LocalizeOwnContent,
-        ManageContentCulturePicker,
-    ];
+    private readonly IEnumerable<Permission> _allPermissions = [LocalizeContent, LocalizeOwnContent, ManageContentCulturePicker,];
 
-    private readonly IEnumerable<Permission> _generalPermissions =
-    [
-        LocalizeOwnContent,
-    ];
+    private readonly IEnumerable<Permission> _generalPermissions = [LocalizeOwnContent,];
 
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
+    public Task<IEnumerable<Permission>> GetPermissionsAsync() => Task.FromResult(_allPermissions);
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
-    [
-        new PermissionStereotype
-        {
-            Name = "Administrator",
-            Permissions = _allPermissions,
-        },
-        new PermissionStereotype
-        {
-            Name = "Editor",
-            Permissions = _allPermissions,
-        },
-        new PermissionStereotype
-        {
-            Name = "Author",
-            Permissions = _generalPermissions,
-        },
-        new PermissionStereotype
-        {
-            Name = "Contributor",
-            Permissions = _generalPermissions,
-        },
-    ];
+        [
+            new PermissionStereotype { Name = "Administrator", Permissions = _allPermissions, },
+            new PermissionStereotype { Name = "Editor", Permissions = _allPermissions, },
+            new PermissionStereotype { Name = "Author", Permissions = _generalPermissions, },
+            new PermissionStereotype { Name = "Contributor", Permissions = _generalPermissions, },
+        ];
 }

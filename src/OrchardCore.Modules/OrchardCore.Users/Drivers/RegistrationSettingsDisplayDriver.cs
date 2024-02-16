@@ -18,13 +18,12 @@ namespace OrchardCore.Users.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
-        public RegistrationSettingsDisplayDriver(
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+        public RegistrationSettingsDisplayDriver(IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService)
         {
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
         }
+
         public override async Task<IDisplayResult> EditAsync(RegistrationSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
@@ -34,18 +33,23 @@ namespace OrchardCore.Users.Drivers
                 return null;
             }
 
-            return Initialize<RegistrationSettings>("RegistrationSettings_Edit", model =>
-            {
-                model.UsersCanRegister = settings.UsersCanRegister;
-                model.UsersMustValidateEmail = settings.UsersMustValidateEmail;
-                model.UsersAreModerated = settings.UsersAreModerated;
-                model.UseSiteTheme = settings.UseSiteTheme;
-                model.NoPasswordForExternalUsers = settings.NoPasswordForExternalUsers;
-                model.NoUsernameForExternalUsers = settings.NoUsernameForExternalUsers;
-                model.NoEmailForExternalUsers = settings.NoEmailForExternalUsers;
-                model.UseScriptToGenerateUsername = settings.UseScriptToGenerateUsername;
-                model.GenerateUsernameScript = settings.GenerateUsernameScript;
-            }).Location("Content:5").OnGroup(GroupId);
+            return Initialize<RegistrationSettings>(
+                    "RegistrationSettings_Edit",
+                    model =>
+                    {
+                        model.UsersCanRegister = settings.UsersCanRegister;
+                        model.UsersMustValidateEmail = settings.UsersMustValidateEmail;
+                        model.UsersAreModerated = settings.UsersAreModerated;
+                        model.UseSiteTheme = settings.UseSiteTheme;
+                        model.NoPasswordForExternalUsers = settings.NoPasswordForExternalUsers;
+                        model.NoUsernameForExternalUsers = settings.NoUsernameForExternalUsers;
+                        model.NoEmailForExternalUsers = settings.NoEmailForExternalUsers;
+                        model.UseScriptToGenerateUsername = settings.UseScriptToGenerateUsername;
+                        model.GenerateUsernameScript = settings.GenerateUsernameScript;
+                    }
+                )
+                .Location("Content:5")
+                .OnGroup(GroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(RegistrationSettings section, BuildEditorContext context)

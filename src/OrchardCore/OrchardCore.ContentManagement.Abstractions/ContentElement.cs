@@ -14,9 +14,8 @@ public class ContentElement : IContent
     private Dictionary<string, ContentElement> _elements;
     private JsonDynamicObject _dynamicObject;
 
-    internal ContentElement() : this([])
-    {
-    }
+    internal ContentElement()
+        : this([]) { }
 
     internal ContentElement(JsonObject data) => Data = data;
 

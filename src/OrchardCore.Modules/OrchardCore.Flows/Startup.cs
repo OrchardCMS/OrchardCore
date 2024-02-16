@@ -42,17 +42,14 @@ namespace OrchardCore.Flows
             });
 
             // Flow Part
-            services.AddContentPart<FlowPart>()
-                .UseDisplayDriver<FlowPartDisplayDriver>();
+            services.AddContentPart<FlowPart>().UseDisplayDriver<FlowPartDisplayDriver>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, FlowPartSettingsDisplayDriver>();
             services.AddScoped<IContentPartIndexHandler, FlowPartIndexHandler>();
 
             services.AddScoped<IContentDisplayDriver, FlowMetadataDisplayDriver>();
 
             // Bag Part
-            services.AddContentPart<BagPart>()
-                .UseDisplayDriver<BagPartDisplayDriver>()
-                .AddHandler<BagPartHandler>();
+            services.AddContentPart<BagPart>().UseDisplayDriver<BagPartDisplayDriver>().AddHandler<BagPartHandler>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, BagPartSettingsDisplayDriver>();
             services.AddScoped<IContentPartIndexHandler, BagPartIndexHandler>();
 

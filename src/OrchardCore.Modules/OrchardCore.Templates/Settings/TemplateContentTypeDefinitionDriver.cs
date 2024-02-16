@@ -17,27 +17,33 @@ namespace OrchardCore.Templates.Settings
 
         public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition)
         {
-            return Initialize<ContentSettingsViewModel>("TemplateSettings", model =>
-            {
-                if (!contentTypeDefinition.TryGetStereotype(out var stereotype))
-                {
-                    stereotype = "Content";
-                }
-
-                model.ContentSettingsEntries.Add(
-                    new ContentSettingsEntry
+            return Initialize<ContentSettingsViewModel>(
+                    "TemplateSettings",
+                    model =>
                     {
-                        Key = $"{stereotype}__{contentTypeDefinition.Name}",
-                        Description = S["Template for a {0} content item in detail views", contentTypeDefinition.DisplayName]
-                    });
+                        if (!contentTypeDefinition.TryGetStereotype(out var stereotype))
+                        {
+                            stereotype = "Content";
+                        }
 
-                model.ContentSettingsEntries.Add(
-                    new ContentSettingsEntry
-                    {
-                        Key = $"{stereotype}_Summary__{contentTypeDefinition.Name}",
-                        Description = S["Template for a {0} content item in summary views", contentTypeDefinition.DisplayName]
-                    });
-            }).Location("Shortcuts");
+                        model.ContentSettingsEntries.Add(
+                            new ContentSettingsEntry
+                            {
+                                Key = $"{stereotype}__{contentTypeDefinition.Name}",
+                                Description = S["Template for a {0} content item in detail views", contentTypeDefinition.DisplayName]
+                            }
+                        );
+
+                        model.ContentSettingsEntries.Add(
+                            new ContentSettingsEntry
+                            {
+                                Key = $"{stereotype}_Summary__{contentTypeDefinition.Name}",
+                                Description = S["Template for a {0} content item in summary views", contentTypeDefinition.DisplayName]
+                            }
+                        );
+                    }
+                )
+                .Location("Shortcuts");
         }
     }
 }

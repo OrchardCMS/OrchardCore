@@ -6,6 +6,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.AdminMenu;
+
 public static class AdminMenuExtensions
 {
     public static IServiceCollection AddAdminMenu<TNode, TNodeBuilder, TNodeDriver>(this IServiceCollection services)
@@ -37,7 +38,8 @@ public static class AdminMenuExtensions
     /// </summary>
     /// <typeparam name="T">The type to register.</typeparam>
     /// <param name="services">The service collection.</param>
-    public static IServiceCollection AddAdminNodeDerivedType<T>(this IServiceCollection services) where T : AdminNode
+    public static IServiceCollection AddAdminNodeDerivedType<T>(this IServiceCollection services)
+        where T : AdminNode
     {
         services.AddJsonDerivedTypeInfo<T, AdminNode>();
         services.AddJsonDerivedTypeInfo<T, MenuItem>();

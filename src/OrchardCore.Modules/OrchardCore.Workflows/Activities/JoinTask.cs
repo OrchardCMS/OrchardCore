@@ -78,6 +78,7 @@ namespace OrchardCore.Workflows.Activities
 
             return Noop();
         }
+
         public override Task OnActivityExecutedAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             // Get outbound transitions of the executing activity.

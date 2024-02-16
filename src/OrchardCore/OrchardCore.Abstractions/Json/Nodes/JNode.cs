@@ -23,14 +23,13 @@ public static class JNode
         Stream utf8Json,
         JsonNodeOptions? nodeOptions = null,
         JsonDocumentOptions documentOptions = default,
-        CancellationToken cancellationToken = default)
-        => (await JsonNode.ParseAsync(utf8Json, nodeOptions ?? JOptions.Node, documentOptions, cancellationToken));
+        CancellationToken cancellationToken = default
+    ) => (await JsonNode.ParseAsync(utf8Json, nodeOptions ?? JOptions.Node, documentOptions, cancellationToken));
 
     /// <summary>
     /// Loads a JSON node (including objects or arrays) from the provided reader.
     /// </summary>
-    public static JsonNode? Load(ref Utf8JsonReader reader, JsonNodeOptions? nodeOptions = null)
-        => JsonNode.Parse(ref reader, nodeOptions ?? JOptions.Node);
+    public static JsonNode? Load(ref Utf8JsonReader reader, JsonNodeOptions? nodeOptions = null) => JsonNode.Parse(ref reader, nodeOptions ?? JOptions.Node);
 
     /// <summary>
     /// Parses text representing a single JSON node.
@@ -45,8 +44,8 @@ public static class JNode
     /// <summary>
     /// Parses text representing a single JSON node.
     /// </summary>
-    public static JsonNode? Parse(string json, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default)
-        => JsonNode.Parse(json, nodeOptions ?? JOptions.Node, documentOptions);
+    public static JsonNode? Parse(string json, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default) =>
+        JsonNode.Parse(json, nodeOptions ?? JOptions.Node, documentOptions);
 
     /// <summary>
     /// Tries to parse text representing a single JSON node.
@@ -96,20 +95,17 @@ public static class JNode
     /// <summary>
     /// Creates an instance of the specified type from this <see cref="JsonNode"/>.
     /// </summary>
-    public static T? ToObject<T>(this JsonNode? jsonNode, JsonSerializerOptions? options = null) =>
-        jsonNode.Deserialize<T>(options ?? JOptions.Default);
+    public static T? ToObject<T>(this JsonNode? jsonNode, JsonSerializerOptions? options = null) => jsonNode.Deserialize<T>(options ?? JOptions.Default);
 
     /// <summary>
     /// Creates an instance of the specified type from this <see cref="JsonNode"/>.
     /// </summary>
-    public static object? ToObject(this JsonNode? jsonNode, Type type, JsonSerializerOptions? options = null) =>
-        jsonNode.Deserialize(type, options ?? JOptions.Default);
+    public static object? ToObject(this JsonNode? jsonNode, Type type, JsonSerializerOptions? options = null) => jsonNode.Deserialize(type, options ?? JOptions.Default);
 
     /// <summary>
     /// Gets the value of the specified type of this <see cref="JsonNode"/>.
     /// </summary>
-    public static T? Value<T>(this JsonNode? jsonNode) =>
-        jsonNode is JsonValue jsonValue && jsonValue.TryGetValue<T>(out var value) ? value : default;
+    public static T? Value<T>(this JsonNode? jsonNode) => jsonNode is JsonValue jsonValue && jsonValue.TryGetValue<T>(out var value) ? value : default;
 
     /// <summary>
     /// Gets the value of the specified type of this <see cref="JsonNode"/>.
@@ -136,9 +132,7 @@ public static class JNode
     /// <summary>
     /// Whether this node contains elements or not.
     /// </summary>
-    public static bool HasValues(this JsonNode? jsonNode) =>
-        jsonNode is JsonObject jsonObject && jsonObject.Count > 0 ||
-        jsonNode is JsonArray jsonArray && jsonArray.Count > 0;
+    public static bool HasValues(this JsonNode? jsonNode) => jsonNode is JsonObject jsonObject && jsonObject.Count > 0 || jsonNode is JsonArray jsonArray && jsonArray.Count > 0;
 
     /// <summary>
     /// Gets the values of the specified type of this <see cref="JsonNode"/>.

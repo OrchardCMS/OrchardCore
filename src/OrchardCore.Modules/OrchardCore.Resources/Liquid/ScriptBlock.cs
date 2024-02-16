@@ -17,7 +17,13 @@ namespace OrchardCore.Resources.Liquid
     {
         private static readonly char[] _separators = [',', ' '];
 
-        public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public static async ValueTask<Completion> WriteToAsync(
+            List<FilterArgument> argumentsList,
+            IReadOnlyList<Statement> statements,
+            TextWriter writer,
+            TextEncoder encoder,
+            TemplateContext context
+        )
         {
             var services = ((LiquidTemplateContext)context).Services;
             var resourceManager = services.GetRequiredService<IResourceManager>();
@@ -37,14 +43,30 @@ namespace OrchardCore.Resources.Liquid
             {
                 switch (argument.Name)
                 {
-                    case "name": name = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                    case "condition": condition = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                    case "culture": culture = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                    case "debug": debug = (await argument.Expression.EvaluateAsync(context)).ToBooleanValue(); break;
-                    case "depends_on": dependsOn = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                    case "version": version = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                    case "at": Enum.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(), ignoreCase: true, out at); break;
-                    default: (customAttributes ??= [])[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                    case "name":
+                        name = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        break;
+                    case "condition":
+                        condition = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        break;
+                    case "culture":
+                        culture = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        break;
+                    case "debug":
+                        debug = (await argument.Expression.EvaluateAsync(context)).ToBooleanValue();
+                        break;
+                    case "depends_on":
+                        dependsOn = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        break;
+                    case "version":
+                        version = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        break;
+                    case "at":
+                        Enum.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(), ignoreCase: true, out at);
+                        break;
+                    default:
+                        (customAttributes ??= [])[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        break;
                 }
             }
 

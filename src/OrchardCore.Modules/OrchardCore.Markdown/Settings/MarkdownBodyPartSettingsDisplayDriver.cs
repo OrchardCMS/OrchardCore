@@ -12,12 +12,15 @@ namespace OrchardCore.Markdown.Settings
     {
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            return Initialize<MarkdownBodyPartSettingsViewModel>("MarkdownBodyPartSettings_Edit", model =>
-                {
-                    var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
+            return Initialize<MarkdownBodyPartSettingsViewModel>(
+                    "MarkdownBodyPartSettings_Edit",
+                    model =>
+                    {
+                        var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
 
-                    model.SanitizeHtml = settings.SanitizeHtml;
-                })
+                        model.SanitizeHtml = settings.SanitizeHtml;
+                    }
+                )
                 .Location("Content:20");
         }
 

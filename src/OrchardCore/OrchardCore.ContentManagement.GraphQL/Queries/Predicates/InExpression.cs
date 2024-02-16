@@ -25,7 +25,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         public string ToSqlString(IPredicateQuery predicateQuery)
         {
             // 'columnName in ()' is always false
-            if (Values.Length == 0) return "1=0";
+            if (Values.Length == 0)
+                return "1=0";
 
             // Generates:
             //  columnName in (@p1, @p2, @p3)
@@ -35,7 +36,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
             {
                 var parameter = predicateQuery.NewQueryParameter(Values[i]);
 
-                if (i > 0) array.Append(", ");
+                if (i > 0)
+                    array.Append(", ");
                 array.Append(parameter);
             }
 

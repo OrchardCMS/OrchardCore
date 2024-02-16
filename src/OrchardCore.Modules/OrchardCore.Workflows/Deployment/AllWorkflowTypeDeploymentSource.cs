@@ -24,11 +24,7 @@ namespace OrchardCore.Workflows.Deployment
             }
 
             var data = new JsonArray();
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "WorkflowType",
-                ["data"] = data,
-            });
+            result.Steps.Add(new JsonObject { ["name"] = "WorkflowType", ["data"] = data, });
 
             foreach (var workflow in await _workflowTypeStore.ListAsync())
             {

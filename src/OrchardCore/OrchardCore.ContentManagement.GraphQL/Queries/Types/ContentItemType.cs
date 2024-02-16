@@ -35,8 +35,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             Field(ci => ci.Owner).Description("The owner of the content item");
             Field(ci => ci.Author).Description("The author of the content item");
 
-            Field<StringGraphType, string>("render")
-                .ResolveLockedAsync(RenderShapeAsync);
+            Field<StringGraphType, string>("render").ResolveLockedAsync(RenderShapeAsync);
 
             Interface<ContentItemInterface>();
 

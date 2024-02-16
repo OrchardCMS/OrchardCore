@@ -33,15 +33,13 @@ namespace OrchardCore.ContentManagement
         /// but after having invoked the load events on them by using the <see cref="IContentManager"/>.
         /// </summary>
         public static async Task<IEnumerable<ContentItem>> ListAsync<TIndex>(this IQuery<ContentItem, TIndex> query, IContentManager contentManager)
-            where TIndex : class, IIndex
-            => await contentManager.LoadAsync(await query.ListAsync());
+            where TIndex : class, IIndex => await contentManager.LoadAsync(await query.ListAsync());
 
         /// <summary>
         /// Executes this <see cref="IQuery{ContentItem, TIndex}"/> to return all matching <see cref="ContentItem"/>s
         /// but after having invoked the load events on them by using the <see cref="IContentManager"/>.
         /// </summary>
         public static IAsyncEnumerable<ContentItem> ToAsyncEnumerable<TIndex>(this IQuery<ContentItem, TIndex> query, IContentManager contentManager)
-            where TIndex : class, IIndex
-            => contentManager.LoadAsync(query.ToAsyncEnumerable());
+            where TIndex : class, IIndex => contentManager.LoadAsync(query.ToAsyncEnumerable());
     }
 }

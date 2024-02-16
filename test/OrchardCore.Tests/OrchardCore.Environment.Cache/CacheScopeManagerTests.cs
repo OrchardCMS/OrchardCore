@@ -43,11 +43,9 @@ namespace OrchardCore.Tests.Environment.Cache
             sut.ExitScope();
             sut.ExitScope();
 
-            Assert.Collection(scopeA.Contexts, context => Assert.Contains("1", context),
-                                               context => Assert.Contains("2", context));
+            Assert.Collection(scopeA.Contexts, context => Assert.Contains("1", context), context => Assert.Contains("2", context));
 
-            Assert.Collection(scopeB.Contexts, context => Assert.Contains("1", context),
-                                               context => Assert.Contains("2", context));
+            Assert.Collection(scopeB.Contexts, context => Assert.Contains("1", context), context => Assert.Contains("2", context));
         }
 
         [Fact]
@@ -64,8 +62,7 @@ namespace OrchardCore.Tests.Environment.Cache
             sut.ExitScope();
             sut.ExitScope();
 
-            Assert.Collection(scopeA.Contexts, context => Assert.Contains("1", context),
-                                               context => Assert.Contains("2", context));
+            Assert.Collection(scopeA.Contexts, context => Assert.Contains("1", context), context => Assert.Contains("2", context));
 
             Assert.False(scopeB.Contexts.Any());
         }
@@ -84,13 +81,15 @@ namespace OrchardCore.Tests.Environment.Cache
             sut.ExitScope();
             sut.ExitScope();
 
-            Assert.Collection(scopeA.Contexts, context => Assert.Contains("3", context),
-                                               context => Assert.Contains("4", context),
-                                               context => Assert.Contains("1", context),
-                                               context => Assert.Contains("2", context));
+            Assert.Collection(
+                scopeA.Contexts,
+                context => Assert.Contains("3", context),
+                context => Assert.Contains("4", context),
+                context => Assert.Contains("1", context),
+                context => Assert.Contains("2", context)
+            );
 
-            Assert.Collection(scopeB.Contexts, context => Assert.Contains("1", context),
-                                               context => Assert.Contains("2", context));
+            Assert.Collection(scopeB.Contexts, context => Assert.Contains("1", context), context => Assert.Contains("2", context));
         }
 
         [Fact]
@@ -107,11 +106,9 @@ namespace OrchardCore.Tests.Environment.Cache
             sut.ExitScope();
             sut.ExitScope();
 
-            Assert.Collection(scopeA.Tags, tag => Assert.Contains("1", tag),
-                                           tag => Assert.Contains("2", tag));
+            Assert.Collection(scopeA.Tags, tag => Assert.Contains("1", tag), tag => Assert.Contains("2", tag));
 
-            Assert.Collection(scopeB.Tags, tag => Assert.Contains("1", tag),
-                                           tag => Assert.Contains("2", tag));
+            Assert.Collection(scopeB.Tags, tag => Assert.Contains("1", tag), tag => Assert.Contains("2", tag));
         }
 
         [Fact]
@@ -128,8 +125,7 @@ namespace OrchardCore.Tests.Environment.Cache
             sut.ExitScope();
             sut.ExitScope();
 
-            Assert.Collection(scopeA.Tags, tag => Assert.Contains("1", tag),
-                                           tag => Assert.Contains("2", tag));
+            Assert.Collection(scopeA.Tags, tag => Assert.Contains("1", tag), tag => Assert.Contains("2", tag));
 
             Assert.False(scopeB.Tags.Any());
         }
@@ -148,13 +144,9 @@ namespace OrchardCore.Tests.Environment.Cache
             sut.ExitScope();
             sut.ExitScope();
 
-            Assert.Collection(scopeA.Tags, tag => Assert.Contains("3", tag),
-                                           tag => Assert.Contains("4", tag),
-                                           tag => Assert.Contains("1", tag),
-                                           tag => Assert.Contains("2", tag));
+            Assert.Collection(scopeA.Tags, tag => Assert.Contains("3", tag), tag => Assert.Contains("4", tag), tag => Assert.Contains("1", tag), tag => Assert.Contains("2", tag));
 
-            Assert.Collection(scopeB.Tags, tag => Assert.Contains("1", tag),
-                                           tag => Assert.Contains("2", tag));
+            Assert.Collection(scopeB.Tags, tag => Assert.Contains("1", tag), tag => Assert.Contains("2", tag));
         }
 
         [Fact]
@@ -322,22 +314,13 @@ namespace OrchardCore.Tests.Environment.Cache
         [Fact]
         public void ComplexNesting()
         {
-            var scopeA = new CacheContext("a")
-                .AddContext("c1")
-                .AddTag("t1");
+            var scopeA = new CacheContext("a").AddContext("c1").AddTag("t1");
 
-            var scopeAA = new CacheContext("aa")
-                .AddContext("c2")
-                .WithExpiryAfter(new TimeSpan(0, 1, 0));
+            var scopeAA = new CacheContext("aa").AddContext("c2").WithExpiryAfter(new TimeSpan(0, 1, 0));
 
-            var scopeAB = new CacheContext("ab")
-                .WithExpirySliding(new TimeSpan(3, 30, 26))
-                .WithExpiryAfter(new TimeSpan(0, 5, 0));
+            var scopeAB = new CacheContext("ab").WithExpirySliding(new TimeSpan(3, 30, 26)).WithExpiryAfter(new TimeSpan(0, 5, 0));
 
-            var scopeABA = new CacheContext("aaa")
-                .AddContext("deepestcontext")
-                .AddTag("deepesttag")
-                .WithExpiryOn(new DateTime(2018, 10, 26));
+            var scopeABA = new CacheContext("aaa").AddContext("deepestcontext").AddTag("deepesttag").WithExpiryOn(new DateTime(2018, 10, 26));
 
             var sut = new CacheScopeManager();
 
@@ -351,12 +334,14 @@ namespace OrchardCore.Tests.Environment.Cache
             sut.ExitScope(); // scopeA
 
             // Scope A
-            Assert.Collection(scopeA.Contexts, context => Assert.Contains("c1", context),
-                                               context => Assert.Contains("c2", context),
-                                               context => Assert.Contains("deepestcontext", context));
+            Assert.Collection(
+                scopeA.Contexts,
+                context => Assert.Contains("c1", context),
+                context => Assert.Contains("c2", context),
+                context => Assert.Contains("deepestcontext", context)
+            );
 
-            Assert.Collection(scopeA.Tags, tag => Assert.Contains("t1", tag),
-                                           tag => Assert.Contains("deepesttag", tag));
+            Assert.Collection(scopeA.Tags, tag => Assert.Contains("t1", tag), tag => Assert.Contains("deepesttag", tag));
 
             Assert.Equal(new TimeSpan(0, 1, 0), scopeA.ExpiresAfter);
             Assert.Equal(new TimeSpan(3, 30, 26), scopeA.ExpiresSliding);

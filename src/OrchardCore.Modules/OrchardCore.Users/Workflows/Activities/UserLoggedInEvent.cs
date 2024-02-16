@@ -6,9 +6,8 @@ namespace OrchardCore.Users.Workflows.Activities
 {
     public class UserLoggedInEvent : UserEvent
     {
-        public UserLoggedInEvent(IUserService userService, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<UserLoggedInEvent> localizer) : base(userService, scriptEvaluator, localizer)
-        {
-        }
+        public UserLoggedInEvent(IUserService userService, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<UserLoggedInEvent> localizer)
+            : base(userService, scriptEvaluator, localizer) { }
 
         public override string Name => nameof(UserLoggedInEvent);
 

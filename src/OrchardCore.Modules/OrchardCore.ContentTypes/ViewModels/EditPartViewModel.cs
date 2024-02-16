@@ -8,9 +8,7 @@ namespace OrchardCore.ContentTypes.ViewModels
 {
     public class EditPartViewModel
     {
-        public EditPartViewModel()
-        {
-        }
+        public EditPartViewModel() { }
 
         public EditPartViewModel(ContentPartDefinition contentPartDefinition)
         {

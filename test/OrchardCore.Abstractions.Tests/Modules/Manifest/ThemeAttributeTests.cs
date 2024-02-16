@@ -16,9 +16,8 @@ namespace OrchardCore.DisplayManagement.Manifest
         /// Constructor.
         /// </summary>
         /// <param name="outputHelper"></param>
-        public ThemeAttributeTests(ITestOutputHelper outputHelper) : base(outputHelper)
-        {
-        }
+        public ThemeAttributeTests(ITestOutputHelper outputHelper)
+            : base(outputHelper) { }
 
         /// <summary>
         /// Classifier supporting
@@ -115,7 +114,20 @@ namespace OrchardCore.DisplayManagement.Manifest
                 new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
-            var theme = CreateFromArgs(ThemeString8Bool3CtorClassifier, id, baseTheme, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, enabledByDependencyOnly);
+            var theme = CreateFromArgs(
+                ThemeString8Bool3CtorClassifier,
+                id,
+                baseTheme,
+                description,
+                author,
+                semVer,
+                website,
+                depString,
+                tagString,
+                defaultTenant,
+                alwaysEnabled,
+                enabledByDependencyOnly
+            );
 
             Assert.Equal(id, theme.Id);
             Assert.Equal(id, theme.Name);
@@ -183,7 +195,21 @@ namespace OrchardCore.DisplayManagement.Manifest
                 new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
-            var theme = CreateFromArgs(ThemeString9Bool3CtorClassifier, id, name, baseTheme, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, enabledByDependencyOnly);
+            var theme = CreateFromArgs(
+                ThemeString9Bool3CtorClassifier,
+                id,
+                name,
+                baseTheme,
+                description,
+                author,
+                semVer,
+                website,
+                depString,
+                tagString,
+                defaultTenant,
+                alwaysEnabled,
+                enabledByDependencyOnly
+            );
 
             Assert.Equal(id, theme.Id);
             Assert.Equal(name, theme.Name);
@@ -256,7 +282,23 @@ namespace OrchardCore.DisplayManagement.Manifest
                 new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
-            var theme = CreateFromArgs(ThemeString11Bool3CtorClassifier, id, name, baseTheme, category, priString, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, enabledByDependencyOnly);
+            var theme = CreateFromArgs(
+                ThemeString11Bool3CtorClassifier,
+                id,
+                name,
+                baseTheme,
+                category,
+                priString,
+                description,
+                author,
+                semVer,
+                website,
+                depString,
+                tagString,
+                defaultTenant,
+                alwaysEnabled,
+                enabledByDependencyOnly
+            );
 
             Assert.Equal(id, theme.Id);
             Assert.Equal(name, theme.Name);

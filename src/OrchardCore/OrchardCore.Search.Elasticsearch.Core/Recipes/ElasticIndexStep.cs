@@ -18,10 +18,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
         private readonly ElasticIndexingService _elasticIndexingService;
         private readonly ElasticIndexManager _elasticIndexManager;
 
-        public ElasticIndexStep(
-            ElasticIndexingService elasticIndexingService,
-            ElasticIndexManager elasticIndexManager
-            )
+        public ElasticIndexStep(ElasticIndexingService elasticIndexingService, ElasticIndexManager elasticIndexManager)
         {
             _elasticIndexManager = elasticIndexManager;
             _elasticIndexingService = elasticIndexingService;

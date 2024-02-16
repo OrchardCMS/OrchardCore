@@ -19,9 +19,11 @@ public class StartupPixel : StartupBase
         services.AddScoped<IPermissionProvider, PixelPermissionProvider>();
         services.AddScoped<INavigationProvider, AdminMenuPixel>();
 
-        services.Configure<MvcOptions>((options) =>
-        {
-            options.Filters.Add(typeof(FacebookPixelFilter));
-        });
+        services.Configure<MvcOptions>(
+            (options) =>
+            {
+                options.Filters.Add(typeof(FacebookPixelFilter));
+            }
+        );
     }
 }

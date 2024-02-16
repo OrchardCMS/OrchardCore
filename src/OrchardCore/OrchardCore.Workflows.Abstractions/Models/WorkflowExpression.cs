@@ -2,9 +2,7 @@ namespace OrchardCore.Workflows.Models
 {
     public class WorkflowExpression<T>
     {
-        public WorkflowExpression()
-        {
-        }
+        public WorkflowExpression() { }
 
         public WorkflowExpression(string expression)
         {

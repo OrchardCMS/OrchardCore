@@ -81,19 +81,12 @@ namespace OrchardCore.Setup
 
             if (_supportedCultures?.Length > 0)
             {
-                localizationOptions
-                    .AddSupportedCultures(_supportedCultures)
-                    .AddSupportedUICultures(_supportedCultures);
+                localizationOptions.AddSupportedCultures(_supportedCultures).AddSupportedUICultures(_supportedCultures);
             }
 
             app.UseRequestLocalization(localizationOptions);
 
-            routes.MapAreaControllerRoute(
-                name: "Setup",
-                areaName: "OrchardCore.Setup",
-                pattern: "",
-                defaults: new { controller = "Setup", action = "Index" }
-            );
+            routes.MapAreaControllerRoute(name: "Setup", areaName: "OrchardCore.Setup", pattern: "", defaults: new { controller = "Setup", action = "Index" });
         }
     }
 }

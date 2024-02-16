@@ -14,12 +14,14 @@ public static class ShellContextExtensions
     public static HttpContext CreateHttpContext(this ShellContext shell)
     {
         var context = CreateHttpContext(shell.Settings);
-        context.Features.Set(new ShellContextFeature
-        {
-            ShellContext = shell,
-            OriginalPathBase = PathString.Empty,
-            OriginalPath = "/"
-        });
+        context.Features.Set(
+            new ShellContextFeature
+            {
+                ShellContext = shell,
+                OriginalPathBase = PathString.Empty,
+                OriginalPath = "/"
+            }
+        );
 
         return context;
     }

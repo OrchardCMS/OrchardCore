@@ -13,9 +13,7 @@ public class SiteSettingsRobotsProvider : IRobotsProvider
     private readonly ISiteService _siteService;
     private readonly AdminOptions _adminOptions;
 
-    public SiteSettingsRobotsProvider(
-        ISiteService siteService,
-        IOptions<AdminOptions> adminOptions)
+    public SiteSettingsRobotsProvider(ISiteService siteService, IOptions<AdminOptions> adminOptions)
     {
         _siteService = siteService;
         _adminOptions = adminOptions.Value;

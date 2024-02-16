@@ -28,10 +28,14 @@ namespace OrchardCore.Search.Lucene.Settings
                 return null;
             }
 
-            return Initialize<LuceneContentIndexSettingsViewModel>("LuceneContentIndexSettings_Edit", model =>
-            {
-                model.LuceneContentIndexSettings = contentPartFieldDefinition.GetSettings<LuceneContentIndexSettings>();
-            }).Location("Content:10");
+            return Initialize<LuceneContentIndexSettingsViewModel>(
+                    "LuceneContentIndexSettings_Edit",
+                    model =>
+                    {
+                        model.LuceneContentIndexSettings = contentPartFieldDefinition.GetSettings<LuceneContentIndexSettings>();
+                    }
+                )
+                .Location("Content:10");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition contentPartFieldDefinition, UpdatePartFieldEditorContext context)

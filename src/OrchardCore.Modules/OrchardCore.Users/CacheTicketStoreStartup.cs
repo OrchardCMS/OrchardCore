@@ -33,8 +33,6 @@ namespace OrchardCore.Users.Authentication
             }
         }
 
-        public void Configure(CookieAuthenticationOptions options)
-        {
-        }
+        public void Configure(CookieAuthenticationOptions options) { }
     }
 }

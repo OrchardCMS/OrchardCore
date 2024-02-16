@@ -21,9 +21,7 @@ namespace OrchardCore.Security.Settings
 
                 // Exclude null values and clone the dictionary to not be shared by site settings and options instances.
                 _contentSecurityPolicy = value
-                    .Where(kvp => kvp.Value != null ||
-                        kvp.Key == ContentSecurityPolicyValue.Sandbox ||
-                        kvp.Key == ContentSecurityPolicyValue.UpgradeInsecureRequests)
+                    .Where(kvp => kvp.Value != null || kvp.Key == ContentSecurityPolicyValue.Sandbox || kvp.Key == ContentSecurityPolicyValue.UpgradeInsecureRequests)
                     .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
                 if (_contentSecurityPolicy.TryGetValue(ContentSecurityPolicyValue.UpgradeInsecureRequests, out _))
@@ -46,9 +44,7 @@ namespace OrchardCore.Security.Settings
                 }
 
                 // Exlude 'None' values and clone the dictionary to not be shared by site settings and options instances.
-                _permissionsPolicy = value
-                    .Where(kvp => kvp.Value != PermissionsPolicyOriginValue.None)
-                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+                _permissionsPolicy = value.Where(kvp => kvp.Value != PermissionsPolicyOriginValue.None).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             }
         }
 

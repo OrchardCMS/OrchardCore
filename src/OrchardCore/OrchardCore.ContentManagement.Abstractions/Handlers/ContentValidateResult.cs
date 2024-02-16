@@ -19,6 +19,5 @@ namespace OrchardCore.ContentManagement.Handlers
             Succeeded = false;
             _errors.Add(error);
         }
-
     }
 }

@@ -46,18 +46,21 @@ namespace OrchardCore.Queries
             services.AddDeployment<AllQueriesDeploymentSource, AllQueriesDeploymentStep, AllQueriesDeploymentStepDriver>();
             services.AddSingleton<IGlobalMethodProvider, QueryGlobalMethodProvider>();
 
-            services.Configure<TemplateOptions>(o =>
-            {
-                o.Scope.SetValue("Queries", new ObjectValue(new LiquidQueriesAccessor()));
-                o.MemberAccessStrategy.Register<LiquidQueriesAccessor, FluidValue>(async (obj, name, context) =>
+            services
+                .Configure<TemplateOptions>(o =>
                 {
-                    var liquidTemplateContext = (LiquidTemplateContext)context;
-                    var queryManager = liquidTemplateContext.Services.GetRequiredService<IQueryManager>();
+                    o.Scope.SetValue("Queries", new ObjectValue(new LiquidQueriesAccessor()));
+                    o.MemberAccessStrategy.Register<LiquidQueriesAccessor, FluidValue>(
+                        async (obj, name, context) =>
+                        {
+                            var liquidTemplateContext = (LiquidTemplateContext)context;
+                            var queryManager = liquidTemplateContext.Services.GetRequiredService<IQueryManager>();
 
-                    return FluidValue.Create(await queryManager.GetQueryAsync(name), context.Options);
-                });
-            })
-            .AddLiquidFilter<QueryFilter>("query");
+                            return FluidValue.Create(await queryManager.GetQueryAsync(name), context.Options);
+                        }
+                    );
+                })
+                .AddLiquidFilter<QueryFilter>("query");
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

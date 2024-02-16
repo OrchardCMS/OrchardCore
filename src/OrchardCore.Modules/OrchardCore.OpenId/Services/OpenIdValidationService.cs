@@ -29,7 +29,8 @@ namespace OrchardCore.OpenId.Services
             ShellSettings shellSettings,
             IShellHost shellHost,
             ISiteService siteService,
-            IStringLocalizer<OpenIdValidationService> stringLocalizer)
+            IStringLocalizer<OpenIdValidationService> stringLocalizer
+        )
         {
             _shellDescriptor = shellDescriptor;
             _shellSettings = shellSettings;
@@ -61,10 +62,7 @@ namespace OrchardCore.OpenId.Services
             // feature will use the OpenID server registered in this tenant if it's been enabled.
             if (_shellDescriptor.Features.Any(feature => feature.Id == OpenIdConstants.Features.Server))
             {
-                return new OpenIdValidationSettings
-                {
-                    Tenant = _shellSettings.Name,
-                };
+                return new OpenIdValidationSettings { Tenant = _shellSettings.Name, };
             }
 
             return new OpenIdValidationSettings();
@@ -87,97 +85,63 @@ namespace OrchardCore.OpenId.Services
 
             if (!(settings.Authority == null ^ string.IsNullOrEmpty(settings.Tenant)))
             {
-                results.Add(new ValidationResult(S["Either a tenant or an authority must be registered."], new[]
-                {
-                    nameof(settings.Authority),
-                    nameof(settings.Tenant),
-                }));
+                results.Add(new ValidationResult(S["Either a tenant or an authority must be registered."], new[] { nameof(settings.Authority), nameof(settings.Tenant), }));
             }
 
             if (settings.Authority != null)
             {
                 if (!settings.Authority.IsAbsoluteUri || !settings.Authority.IsWellFormedOriginalString())
                 {
-                    results.Add(new ValidationResult(S["The specified authority is not valid."], new[]
-                    {
-                        nameof(settings.Authority)
-                    }));
+                    results.Add(new ValidationResult(S["The specified authority is not valid."], new[] { nameof(settings.Authority) }));
                 }
 
                 if (!string.IsNullOrEmpty(settings.Authority.Query) || !string.IsNullOrEmpty(settings.Authority.Fragment))
                 {
-                    results.Add(new ValidationResult(S["The authority cannot contain a query string or a fragment."], new[]
-                    {
-                        nameof(settings.Authority),
-                    }));
+                    results.Add(new ValidationResult(S["The authority cannot contain a query string or a fragment."], new[] { nameof(settings.Authority), }));
                 }
-
             }
 
             if (settings.MetadataAddress != null)
             {
                 if (!settings.MetadataAddress.IsAbsoluteUri || !settings.MetadataAddress.IsWellFormedOriginalString())
                 {
-                    results.Add(new ValidationResult(S["The specified metadata address is not valid."], new[]
-                    {
-                        nameof(settings.MetadataAddress),
-                    }));
+                    results.Add(new ValidationResult(S["The specified metadata address is not valid."], new[] { nameof(settings.MetadataAddress), }));
                 }
 
                 if (!string.IsNullOrEmpty(settings.MetadataAddress.Query) || !string.IsNullOrEmpty(settings.MetadataAddress.Fragment))
                 {
-                    results.Add(new ValidationResult(S["The metadata address cannot contain a query string or a fragment."], new[]
-                    {
-                        nameof(settings.MetadataAddress),
-                    }));
+                    results.Add(new ValidationResult(S["The metadata address cannot contain a query string or a fragment."], new[] { nameof(settings.MetadataAddress), }));
                 }
 
                 if (!string.IsNullOrEmpty(settings.Tenant))
                 {
-                    results.Add(new ValidationResult(S["No metatada address can be set when using another tenant."], new[]
-                    {
-                        nameof(settings.MetadataAddress),
-                    }));
+                    results.Add(new ValidationResult(S["No metatada address can be set when using another tenant."], new[] { nameof(settings.MetadataAddress), }));
                 }
             }
 
             if (!string.IsNullOrEmpty(settings.Tenant) && !string.IsNullOrEmpty(settings.Audience))
             {
-                results.Add(new ValidationResult(S["No audience can be set when using another tenant."], new[]
-                {
-                    nameof(settings.Audience),
-                }));
+                results.Add(new ValidationResult(S["No audience can be set when using another tenant."], new[] { nameof(settings.Audience), }));
             }
 
             if (settings.Authority != null && string.IsNullOrEmpty(settings.Audience))
             {
-                results.Add(new ValidationResult(S["An audience must be set when configuring the authority."], new[]
-                {
-                    nameof(settings.Audience),
-                }));
+                results.Add(new ValidationResult(S["An audience must be set when configuring the authority."], new[] { nameof(settings.Audience), }));
             }
 
             if (settings.Authority == null && settings.DisableTokenTypeValidation)
             {
-                results.Add(new ValidationResult(S["Token type validation can only be disabled for remote servers."], new[]
-                {
-                    nameof(settings.DisableTokenTypeValidation),
-                }));
+                results.Add(new ValidationResult(S["Token type validation can only be disabled for remote servers."], new[] { nameof(settings.DisableTokenTypeValidation), }));
             }
 
-            if (!string.IsNullOrEmpty(settings.Audience) &&
-                settings.Audience.StartsWith(OpenIdConstants.Prefixes.Tenant, StringComparison.OrdinalIgnoreCase))
+            if (!string.IsNullOrEmpty(settings.Audience) && settings.Audience.StartsWith(OpenIdConstants.Prefixes.Tenant, StringComparison.OrdinalIgnoreCase))
             {
-                results.Add(new ValidationResult(S["The audience cannot start with the special 'oct:' prefix."], new[]
-                {
-                    nameof(settings.Audience),
-                }));
+                results.Add(new ValidationResult(S["The audience cannot start with the special 'oct:' prefix."], new[] { nameof(settings.Audience), }));
             }
 
             // If a tenant was specified, ensure it is valid, that the OpenID server feature
             // was enabled and that at least a scope linked with the current tenant exists.
-            if (!string.IsNullOrEmpty(settings.Tenant) &&
-                !string.Equals(settings.Tenant, _shellSettings.Name))
+            if (!string.IsNullOrEmpty(settings.Tenant) && !string.Equals(settings.Tenant, _shellSettings.Name))
             {
                 if (!_shellHost.TryGetSettings(settings.Tenant, out var shellSettings))
                 {
@@ -192,29 +156,25 @@ namespace OrchardCore.OpenId.Services
                         var options = scope.ServiceProvider.GetRequiredService<IOptionsMonitor<OpenIddictServerOptions>>().CurrentValue;
                         if (options.UseReferenceAccessTokens)
                         {
-                            results.Add(new ValidationResult(S["Selecting a server tenant for which reference access tokens are enabled is currently not supported."], new[]
-                            {
-                                nameof(settings.Tenant),
-                            }));
+                            results.Add(
+                                new ValidationResult(
+                                    S["Selecting a server tenant for which reference access tokens are enabled is currently not supported."],
+                                    new[] { nameof(settings.Tenant), }
+                                )
+                            );
                         }
 
                         var manager = scope.ServiceProvider.GetService<IOpenIdScopeManager>();
                         if (manager == null)
                         {
-                            results.Add(new ValidationResult(S["The specified tenant is not valid."], new[]
-                            {
-                                nameof(settings.Tenant),
-                            }));
+                            results.Add(new ValidationResult(S["The specified tenant is not valid."], new[] { nameof(settings.Tenant), }));
                         }
                         else
                         {
                             var resource = OpenIdConstants.Prefixes.Tenant + _shellSettings.Name;
                             if (!await manager.FindByResourceAsync(resource).AnyAsync())
                             {
-                                results.Add(new ValidationResult(S["No appropriate scope was found."], new[]
-                                {
-                                    nameof(settings.Tenant),
-                                }));
+                                results.Add(new ValidationResult(S["No appropriate scope was found."], new[] { nameof(settings.Tenant), }));
                             }
                         }
                     });

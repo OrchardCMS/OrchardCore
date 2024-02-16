@@ -16,10 +16,7 @@ namespace OrchardCore.Environment.Extensions
             Features = [];
         }
 
-        public ExtensionInfo(
-            string subPath,
-            IManifestInfo manifestInfo,
-            Func<IManifestInfo, IExtensionInfo, IEnumerable<IFeatureInfo>> features)
+        public ExtensionInfo(string subPath, IManifestInfo manifestInfo, Func<IManifestInfo, IExtensionInfo, IEnumerable<IFeatureInfo>> features)
         {
             Id = manifestInfo.ModuleInfo.Id;
             SubPath = subPath;

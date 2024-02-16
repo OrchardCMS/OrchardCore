@@ -30,12 +30,14 @@ namespace OrchardCore.Markdown.Drivers
         private readonly IMarkdownService _markdownService;
         protected readonly IStringLocalizer S;
 
-        public MarkdownBodyPartDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
+        public MarkdownBodyPartDisplayDriver(
+            ILiquidTemplateManager liquidTemplateManager,
             HtmlEncoder htmlEncoder,
             IHtmlSanitizerService htmlSanitizerService,
             IShortcodeService shortcodeService,
             IMarkdownService markdownService,
-            IStringLocalizer<MarkdownBodyPartDisplayDriver> localizer)
+            IStringLocalizer<MarkdownBodyPartDisplayDriver> localizer
+        )
         {
             _liquidTemplateManager = liquidTemplateManager;
             _htmlEncoder = htmlEncoder;
@@ -54,13 +56,16 @@ namespace OrchardCore.Markdown.Drivers
 
         public override IDisplayResult Edit(MarkdownBodyPart markdownBodyPart, BuildPartEditorContext context)
         {
-            return Initialize<MarkdownBodyPartViewModel>(GetEditorShapeType(context), model =>
-            {
-                model.Markdown = markdownBodyPart.Markdown;
-                model.ContentItem = markdownBodyPart.ContentItem;
-                model.MarkdownBodyPart = markdownBodyPart;
-                model.TypePartDefinition = context.TypePartDefinition;
-            });
+            return Initialize<MarkdownBodyPartViewModel>(
+                GetEditorShapeType(context),
+                model =>
+                {
+                    model.Markdown = markdownBodyPart.Markdown;
+                    model.ContentItem = markdownBodyPart.ContentItem;
+                    model.MarkdownBodyPart = markdownBodyPart;
+                    model.TypePartDefinition = context.TypePartDefinition;
+                }
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(MarkdownBodyPart model, IUpdateModel updater, UpdatePartEditorContext context)
@@ -72,7 +77,11 @@ namespace OrchardCore.Markdown.Drivers
                 if (!string.IsNullOrEmpty(viewModel.Markdown) && !_liquidTemplateManager.Validate(viewModel.Markdown, out var errors))
                 {
                     var partName = context.TypePartDefinition.DisplayName();
-                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Markdown), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
+                    updater.ModelState.AddModelError(
+                        Prefix,
+                        nameof(viewModel.Markdown),
+                        S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]
+                    );
                 }
                 else
                 {
@@ -98,16 +107,18 @@ namespace OrchardCore.Markdown.Drivers
             // The liquid rendering is for backwards compatibility and can be removed in a future version.
             if (!settings.SanitizeHtml)
             {
-                model.Html = await _liquidTemplateManager.RenderStringAsync(model.Html, _htmlEncoder, model,
-                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
+                model.Html = await _liquidTemplateManager.RenderStringAsync(
+                    model.Html,
+                    _htmlEncoder,
+                    model,
+                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) }
+                );
             }
 
-            model.Html = await _shortcodeService.ProcessAsync(model.Html,
-                new Context
-                {
-                    ["ContentItem"] = markdownBodyPart.ContentItem,
-                    ["TypePartDefinition"] = context.TypePartDefinition
-                });
+            model.Html = await _shortcodeService.ProcessAsync(
+                model.Html,
+                new Context { ["ContentItem"] = markdownBodyPart.ContentItem, ["TypePartDefinition"] = context.TypePartDefinition }
+            );
 
             if (settings.SanitizeHtml)
             {

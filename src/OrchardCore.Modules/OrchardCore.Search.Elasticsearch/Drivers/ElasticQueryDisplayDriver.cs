@@ -17,9 +17,7 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
         protected readonly IStringLocalizer S;
 
-        public ElasticQueryDisplayDriver(
-            IStringLocalizer<ElasticQueryDisplayDriver> stringLocalizer,
-            ElasticIndexSettingsService elasticIndexSettingsService)
+        public ElasticQueryDisplayDriver(IStringLocalizer<ElasticQueryDisplayDriver> stringLocalizer, ElasticIndexSettingsService elasticIndexSettingsService)
         {
             _elasticIndexSettingsService = elasticIndexSettingsService;
             S = stringLocalizer;
@@ -28,26 +26,44 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
         public override IDisplayResult Display(ElasticQuery query, IUpdateModel updater)
         {
             return Combine(
-                Dynamic("ElasticQuery_SummaryAdmin", model => { model.Query = query; }).Location("Content:5"),
-                Dynamic("ElasticQuery_Buttons_SummaryAdmin", model => { model.Query = query; }).Location("Actions:2")
+                Dynamic(
+                        "ElasticQuery_SummaryAdmin",
+                        model =>
+                        {
+                            model.Query = query;
+                        }
+                    )
+                    .Location("Content:5"),
+                Dynamic(
+                        "ElasticQuery_Buttons_SummaryAdmin",
+                        model =>
+                        {
+                            model.Query = query;
+                        }
+                    )
+                    .Location("Actions:2")
             );
         }
 
         public override IDisplayResult Edit(ElasticQuery query, IUpdateModel updater)
         {
-            return Initialize<ElasticQueryViewModel>("ElasticQuery_Edit", async model =>
-            {
-                model.Query = query.Template;
-                model.Index = query.Index;
-                model.ReturnContentItems = query.ReturnContentItems;
-                model.Indices = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
+            return Initialize<ElasticQueryViewModel>(
+                    "ElasticQuery_Edit",
+                    async model =>
+                    {
+                        model.Query = query.Template;
+                        model.Index = query.Index;
+                        model.ReturnContentItems = query.ReturnContentItems;
+                        model.Indices = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
 
-                // Extract query from the query string if we come from the main query editor
-                if (string.IsNullOrEmpty(query.Template))
-                {
-                    await updater.TryUpdateModelAsync(model, "", m => m.Query);
-                }
-            }).Location("Content:5");
+                        // Extract query from the query string if we come from the main query editor
+                        if (string.IsNullOrEmpty(query.Template))
+                        {
+                            await updater.TryUpdateModelAsync(model, "", m => m.Query);
+                        }
+                    }
+                )
+                .Location("Content:5");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ElasticQuery model, IUpdateModel updater)

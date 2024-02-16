@@ -10,8 +10,7 @@ public class DefaultTwoFactorAuthenticationHandlerCoordinator : ITwoFactorAuthen
 
     private bool? _isRequired = null;
 
-    public DefaultTwoFactorAuthenticationHandlerCoordinator(
-        IEnumerable<ITwoFactorAuthenticationHandler> twoFactorAuthenticationHandlers)
+    public DefaultTwoFactorAuthenticationHandlerCoordinator(IEnumerable<ITwoFactorAuthenticationHandler> twoFactorAuthenticationHandlers)
     {
         _twoFactorAuthenticationHandlers = twoFactorAuthenticationHandlers;
     }

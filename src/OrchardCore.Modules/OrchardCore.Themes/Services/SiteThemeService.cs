@@ -10,9 +10,7 @@ namespace OrchardCore.Themes.Services
         private readonly ISiteService _siteService;
         private readonly IExtensionManager _extensionManager;
 
-        public SiteThemeService(
-            ISiteService siteService,
-            IExtensionManager extensionManager)
+        public SiteThemeService(ISiteService siteService, IExtensionManager extensionManager)
         {
             _siteService = siteService;
             _extensionManager = extensionManager;

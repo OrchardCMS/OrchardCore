@@ -11,27 +11,33 @@ namespace OrchardCore.ContentLocalization.Services
     {
         public void Build(QueryEngineBuilder<ContentItem> builder)
         {
-            builder
-                .WithNamedTerm("culture", builder => builder
-                    .OneCondition<ContentItem>((val, query) =>
-                    {
-                        if (!string.IsNullOrEmpty(val))
-                        {
-                            query.With<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.Culture == val);
-                        }
+            builder.WithNamedTerm(
+                "culture",
+                builder =>
+                    builder
+                        .OneCondition<ContentItem>(
+                            (val, query) =>
+                            {
+                                if (!string.IsNullOrEmpty(val))
+                                {
+                                    query.With<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.Culture == val);
+                                }
 
-                        return query;
-                    })
-                    .MapTo<LocalizationContentsAdminFilterViewModel>((val, model) => model.SelectedCulture = val)
-                    .MapFrom<LocalizationContentsAdminFilterViewModel>((model) =>
-                    {
-                        if (!string.IsNullOrEmpty(model.SelectedCulture))
-                        {
-                            return (true, model.SelectedCulture);
-                        }
-                        return (false, string.Empty);
-                    })
-                );
+                                return query;
+                            }
+                        )
+                        .MapTo<LocalizationContentsAdminFilterViewModel>((val, model) => model.SelectedCulture = val)
+                        .MapFrom<LocalizationContentsAdminFilterViewModel>(
+                            (model) =>
+                            {
+                                if (!string.IsNullOrEmpty(model.SelectedCulture))
+                                {
+                                    return (true, model.SelectedCulture);
+                                }
+                                return (false, string.Empty);
+                            }
+                        )
+            );
         }
     }
 }

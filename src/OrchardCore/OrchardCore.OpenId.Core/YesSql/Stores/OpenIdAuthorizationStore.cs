@@ -38,8 +38,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask<long> CountAsync<TResult>(Func<IQueryable<TAuthorization>, IQueryable<TResult>> query, CancellationToken cancellationToken)
-            => throw new NotSupportedException();
+        public virtual ValueTask<long> CountAsync<TResult>(Func<IQueryable<TAuthorization>, IQueryable<TResult>> query, CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
 
         /// <inheritdoc/>
         public virtual async ValueTask CreateAsync(TAuthorization authorization, CancellationToken cancellationToken)
@@ -64,22 +64,20 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual IAsyncEnumerable<TAuthorization> FindAsync(
-            string subject, string client, CancellationToken cancellationToken)
+        public virtual IAsyncEnumerable<TAuthorization> FindAsync(string subject, string client, CancellationToken cancellationToken)
         {
             ArgumentException.ThrowIfNullOrEmpty(subject);
             ArgumentException.ThrowIfNullOrEmpty(client);
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-                index => index.ApplicationId == client && index.Subject == subject,
-                collection: OpenIdCollection).ToAsyncEnumerable();
+            return _session
+                .Query<TAuthorization, OpenIdAuthorizationIndex>(index => index.ApplicationId == client && index.Subject == subject, collection: OpenIdCollection)
+                .ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>
-        public virtual IAsyncEnumerable<TAuthorization> FindAsync(
-            string subject, string client, string status, CancellationToken cancellationToken)
+        public virtual IAsyncEnumerable<TAuthorization> FindAsync(string subject, string client, string status, CancellationToken cancellationToken)
         {
             ArgumentException.ThrowIfNullOrEmpty(subject);
             ArgumentException.ThrowIfNullOrEmpty(client);
@@ -87,15 +85,16 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-                index => index.ApplicationId == client && index.Subject == subject && index.Status == status,
-                collection: OpenIdCollection).ToAsyncEnumerable();
+            return _session
+                .Query<TAuthorization, OpenIdAuthorizationIndex>(
+                    index => index.ApplicationId == client && index.Subject == subject && index.Status == status,
+                    collection: OpenIdCollection
+                )
+                .ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>
-        public virtual IAsyncEnumerable<TAuthorization> FindAsync(
-            string subject, string client,
-            string status, string type, CancellationToken cancellationToken)
+        public virtual IAsyncEnumerable<TAuthorization> FindAsync(string subject, string client, string status, string type, CancellationToken cancellationToken)
         {
             ArgumentException.ThrowIfNullOrEmpty(subject);
             ArgumentException.ThrowIfNullOrEmpty(client);
@@ -104,16 +103,23 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-                index => index.ApplicationId == client && index.Subject == subject &&
-                         index.Status == status && index.Type == type,
-                collection: OpenIdCollection).ToAsyncEnumerable();
+            return _session
+                .Query<TAuthorization, OpenIdAuthorizationIndex>(
+                    index => index.ApplicationId == client && index.Subject == subject && index.Status == status && index.Type == type,
+                    collection: OpenIdCollection
+                )
+                .ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>
         public virtual async IAsyncEnumerable<TAuthorization> FindAsync(
-            string subject, string client, string status, string type,
-            ImmutableArray<string> scopes, [EnumeratorCancellation] CancellationToken cancellationToken)
+            string subject,
+            string client,
+            string status,
+            string type,
+            ImmutableArray<string> scopes,
+            [EnumeratorCancellation] CancellationToken cancellationToken
+        )
         {
             await foreach (var authorization in FindAsync(subject, client, status, type, cancellationToken))
             {
@@ -125,16 +131,13 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual IAsyncEnumerable<TAuthorization> FindByApplicationIdAsync(
-            string identifier, CancellationToken cancellationToken)
+        public virtual IAsyncEnumerable<TAuthorization> FindByApplicationIdAsync(string identifier, CancellationToken cancellationToken)
         {
             ArgumentException.ThrowIfNullOrEmpty(identifier);
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-                index => index.ApplicationId == identifier,
-                collection: OpenIdCollection).ToAsyncEnumerable();
+            return _session.Query<TAuthorization, OpenIdAuthorizationIndex>(index => index.ApplicationId == identifier, collection: OpenIdCollection).ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>
@@ -144,9 +147,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return await _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-                index => index.AuthorizationId == identifier,
-                collection: OpenIdCollection).FirstOrDefaultAsync();
+            return await _session.Query<TAuthorization, OpenIdAuthorizationIndex>(index => index.AuthorizationId == identifier, collection: OpenIdCollection).FirstOrDefaultAsync();
         }
 
         /// <inheritdoc/>
@@ -160,16 +161,13 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual IAsyncEnumerable<TAuthorization> FindBySubjectAsync(
-            string subject, CancellationToken cancellationToken)
+        public virtual IAsyncEnumerable<TAuthorization> FindBySubjectAsync(string subject, CancellationToken cancellationToken)
         {
             ArgumentException.ThrowIfNullOrEmpty(subject);
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-                index => index.Subject == subject,
-                collection: OpenIdCollection).ToAsyncEnumerable();
+            return _session.Query<TAuthorization, OpenIdAuthorizationIndex>(index => index.Subject == subject, collection: OpenIdCollection).ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>
@@ -183,8 +181,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<TResult> GetAsync<TState, TResult>(
             Func<IQueryable<TAuthorization>, TState, IQueryable<TResult>> query,
-            TState state, CancellationToken cancellationToken)
-            => throw new NotSupportedException();
+            TState state,
+            CancellationToken cancellationToken
+        ) => throw new NotSupportedException();
 
         /// <inheritdoc/>
         public virtual ValueTask<DateTimeOffset?> GetCreationDateAsync(TAuthorization authorization, CancellationToken cancellationToken)
@@ -226,7 +225,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
             }
 
             return new ValueTask<ImmutableDictionary<string, JsonElement>>(
-                JConvert.DeserializeObject<ImmutableDictionary<string, JsonElement>>(authorization.Properties.ToString()));
+                JConvert.DeserializeObject<ImmutableDictionary<string, JsonElement>>(authorization.Properties.ToString())
+            );
         }
 
         /// <inheritdoc/>
@@ -262,8 +262,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask<TAuthorization> InstantiateAsync(CancellationToken cancellationToken)
-            => new(new TAuthorization { AuthorizationId = Guid.NewGuid().ToString("n") });
+        public virtual ValueTask<TAuthorization> InstantiateAsync(CancellationToken cancellationToken) =>
+            new(new TAuthorization { AuthorizationId = Guid.NewGuid().ToString("n") });
 
         /// <inheritdoc/>
         public virtual IAsyncEnumerable<TAuthorization> ListAsync(int? count, int? offset, CancellationToken cancellationToken)
@@ -286,8 +286,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual IAsyncEnumerable<TResult> ListAsync<TState, TResult>(
             Func<IQueryable<TAuthorization>, TState, IQueryable<TResult>> query,
-            TState state, CancellationToken cancellationToken)
-            => throw new NotSupportedException();
+            TState state,
+            CancellationToken cancellationToken
+        ) => throw new NotSupportedException();
 
         /// <inheritdoc/>
         public virtual async ValueTask<long> PruneAsync(DateTimeOffset threshold, CancellationToken cancellationToken)
@@ -304,14 +305,23 @@ namespace OrchardCore.OpenId.YesSql.Stores
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var authorizations = (await _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-                    authorization => authorization.CreationDate < threshold.UtcDateTime &&
-                                    (authorization.Status != OpenIddictConstants.Statuses.Valid ||
-                                    (authorization.Type == OpenIddictConstants.AuthorizationTypes.AdHoc &&
-                                     authorization.AuthorizationId.IsNotIn<OpenIdTokenIndex>(
-                                         token => token.AuthorizationId,
-                                         token => token.Id != 0))),
-                    collection: OpenIdCollection).Take(100).ListAsync()).ToList();
+                var authorizations = (
+                    await _session
+                        .Query<TAuthorization, OpenIdAuthorizationIndex>(
+                            authorization =>
+                                authorization.CreationDate < threshold.UtcDateTime
+                                && (
+                                    authorization.Status != OpenIddictConstants.Statuses.Valid
+                                    || (
+                                        authorization.Type == OpenIddictConstants.AuthorizationTypes.AdHoc
+                                        && authorization.AuthorizationId.IsNotIn<OpenIdTokenIndex>(token => token.AuthorizationId, token => token.Id != 0)
+                                    )
+                                ),
+                            collection: OpenIdCollection
+                        )
+                        .Take(100)
+                        .ListAsync()
+                ).ToList();
 
                 if (authorizations.Count is 0)
                 {
@@ -347,8 +357,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask SetApplicationIdAsync(TAuthorization authorization,
-            string identifier, CancellationToken cancellationToken)
+        public virtual ValueTask SetApplicationIdAsync(TAuthorization authorization, string identifier, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(authorization);
 
@@ -392,8 +401,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask SetScopesAsync(TAuthorization authorization,
-            ImmutableArray<string> scopes, CancellationToken cancellationToken)
+        public virtual ValueTask SetScopesAsync(TAuthorization authorization, ImmutableArray<string> scopes, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(authorization);
 
@@ -403,8 +411,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask SetStatusAsync(TAuthorization authorization,
-            string status, CancellationToken cancellationToken)
+        public virtual ValueTask SetStatusAsync(TAuthorization authorization, string status, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(authorization);
 
@@ -414,8 +421,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask SetSubjectAsync(TAuthorization authorization,
-            string subject, CancellationToken cancellationToken)
+        public virtual ValueTask SetSubjectAsync(TAuthorization authorization, string subject, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(authorization);
 
@@ -425,8 +431,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask SetTypeAsync(TAuthorization authorization,
-            string type, CancellationToken cancellationToken)
+        public virtual ValueTask SetTypeAsync(TAuthorization authorization, string type, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(authorization);
 
@@ -450,10 +455,13 @@ namespace OrchardCore.OpenId.YesSql.Stores
             }
             catch (ConcurrencyException exception)
             {
-                throw new OpenIddictExceptions.ConcurrencyException(new StringBuilder()
-                    .AppendLine("The authorization was concurrently updated and cannot be persisted in its current state.")
-                    .Append("Reload the authorization from the database and retry the operation.")
-                    .ToString(), exception);
+                throw new OpenIddictExceptions.ConcurrencyException(
+                    new StringBuilder()
+                        .AppendLine("The authorization was concurrently updated and cannot be persisted in its current state.")
+                        .Append("Reload the authorization from the database and retry the operation.")
+                        .ToString(),
+                    exception
+                );
             }
         }
     }

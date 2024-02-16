@@ -15,25 +15,27 @@ namespace OrchardCore.DisplayManagement.Theming
     {
         public static readonly string ThemeLayoutFileName = "DefaultOrchardCoreThemingLayout" + RazorViewEngine.ViewExtension;
 
-        public ThemingViewsFeatureProvider()
-        {
-        }
+        public ThemingViewsFeatureProvider() { }
 
         public void PopulateFeature(IEnumerable<ApplicationPart> parts, ViewsFeature feature)
         {
-            feature.ViewDescriptors.Add(new CompiledViewDescriptor()
-            {
-                ExpirationTokens = Array.Empty<IChangeToken>(),
-                RelativePath = "/_ViewStart" + RazorViewEngine.ViewExtension,
-                Item = new TenantRazorCompiledItem(typeof(ThemeViewStart), "/_ViewStart")
-            });
+            feature.ViewDescriptors.Add(
+                new CompiledViewDescriptor()
+                {
+                    ExpirationTokens = Array.Empty<IChangeToken>(),
+                    RelativePath = "/_ViewStart" + RazorViewEngine.ViewExtension,
+                    Item = new TenantRazorCompiledItem(typeof(ThemeViewStart), "/_ViewStart")
+                }
+            );
 
-            feature.ViewDescriptors.Add(new CompiledViewDescriptor()
-            {
-                ExpirationTokens = Array.Empty<IChangeToken>(),
-                RelativePath = '/' + ThemeLayoutFileName,
-                Item = new TenantRazorCompiledItem(typeof(ThemeLayout), '/' + ThemeLayoutFileName)
-            });
+            feature.ViewDescriptors.Add(
+                new CompiledViewDescriptor()
+                {
+                    ExpirationTokens = Array.Empty<IChangeToken>(),
+                    RelativePath = '/' + ThemeLayoutFileName,
+                    Item = new TenantRazorCompiledItem(typeof(ThemeLayout), '/' + ThemeLayoutFileName)
+                }
+            );
         }
     }
 }

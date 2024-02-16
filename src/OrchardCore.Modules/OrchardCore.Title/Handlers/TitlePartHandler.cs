@@ -23,7 +23,8 @@ namespace OrchardCore.Title.Handlers
         public TitlePartHandler(
             ILiquidTemplateManager liquidTemplateManager,
             IContentDefinitionManager contentDefinitionManager,
-            IStringLocalizer<TitlePartHandler> stringLocalizer)
+            IStringLocalizer<TitlePartHandler> stringLocalizer
+        )
         {
             _liquidTemplateManager = liquidTemplateManager;
             _contentDefinitionManager = contentDefinitionManager;
@@ -85,11 +86,12 @@ namespace OrchardCore.Title.Handlers
                     ContentItem = part.ContentItem,
                 };
 
-                var title = await _liquidTemplateManager.RenderStringAsync(settings.Pattern, NullEncoder.Default, model,
-                    new Dictionary<string, FluidValue>()
-                    {
-                        ["ContentItem"] = new ObjectValue(model.ContentItem)
-                    });
+                var title = await _liquidTemplateManager.RenderStringAsync(
+                    settings.Pattern,
+                    NullEncoder.Default,
+                    model,
+                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) }
+                );
 
                 title = title.Replace("\r", string.Empty).Replace("\n", string.Empty);
 

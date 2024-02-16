@@ -30,6 +30,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
             _httpContextAccessor = httpContextAccessor;
             _logger = logger;
         }
+
         public Task<string> GetIdentifierAsync()
         {
             var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
@@ -92,10 +93,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                 return null;
             }
 
-            var typetype = new ObjectGraphType<JsonObject>
-            {
-                Name = fieldTypeName
-            };
+            var typetype = new ObjectGraphType<JsonObject> { Name = fieldTypeName };
 
             foreach (var child in properties)
             {
@@ -133,7 +131,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                             return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<int>();
                         }),
                     };
-              
+
                     field.Metadata.Add("Name", name);
                     typetype.AddField(field);
                 }
@@ -141,9 +139,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
 
             var fieldType = new FieldType
             {
-                Arguments = new QueryArguments(
-                    new QueryArgument<StringGraphType> { Name = "parameters" }
-                ),
+                Arguments = new QueryArguments(new QueryArgument<StringGraphType> { Name = "parameters" }),
 
                 Name = fieldTypeName,
                 Description = "Represents the " + query.Source + " Query : " + query.Name,
@@ -159,9 +155,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
 
                 var parameters = context.GetArgument<string>("parameters");
 
-                    var queryParameters = parameters != null ?
-                        JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                        : [];
+                var queryParameters = parameters != null ? JConvert.DeserializeObject<Dictionary<string, object>>(parameters) : [];
 
                 var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
 
@@ -181,9 +175,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
 
             var fieldType = new FieldType
             {
-                Arguments = new QueryArguments(
-                    new QueryArgument<StringGraphType> { Name = "parameters" }
-                ),
+                Arguments = new QueryArguments(new QueryArgument<StringGraphType> { Name = "parameters" }),
 
                 Name = fieldTypeName,
                 Description = "Represents the " + query.Source + " Query : " + query.Name,
@@ -199,9 +191,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
 
                 var parameters = context.GetArgument<string>("parameters");
 
-                    var queryParameters = parameters != null ?
-                        JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                        : [];
+                var queryParameters = parameters != null ? JConvert.DeserializeObject<Dictionary<string, object>>(parameters) : [];
 
                 var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
                 return result.Items;

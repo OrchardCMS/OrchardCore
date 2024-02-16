@@ -42,12 +42,7 @@ namespace OrchardCore.Users
             CreateDynamicPermission(name, new Permission("ManageUsersInRole_{0}", "Manage users in {0} role", new[] { ManageUsers }, true));
 
         // Dynamic permission template.
-        private static Permission CreateDynamicPermission(string roleName, Permission permission)
-            => new(
-                string.Format(permission.Name, roleName),
-                string.Format(permission.Description, roleName),
-                permission.ImpliedBy,
-                permission.IsSecurityCritical
-            );
+        private static Permission CreateDynamicPermission(string roleName, Permission permission) =>
+            new(string.Format(permission.Name, roleName), string.Format(permission.Description, roleName), permission.ImpliedBy, permission.IsSecurityCritical);
     }
 }

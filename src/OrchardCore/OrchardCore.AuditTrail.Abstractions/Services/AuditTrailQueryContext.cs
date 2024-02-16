@@ -7,7 +7,8 @@ namespace OrchardCore.AuditTrail.Services
 {
     public class AuditTrailQueryContext : QueryExecutionContext<AuditTrailEvent>
     {
-        public AuditTrailQueryContext(IServiceProvider serviceProvider, IQuery<AuditTrailEvent> query) : base(query)
+        public AuditTrailQueryContext(IServiceProvider serviceProvider, IQuery<AuditTrailEvent> query)
+            : base(query)
         {
             ServiceProvider = serviceProvider;
         }

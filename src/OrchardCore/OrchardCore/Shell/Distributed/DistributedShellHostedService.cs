@@ -52,7 +52,8 @@ namespace OrchardCore.Environment.Shell.Distributed
             IShellContextFactory shellContextFactory,
             IShellSettingsManager shellSettingsManager,
             IShellRemovalManager shellRemovingManager,
-            ILogger<DistributedShellHostedService> logger)
+            ILogger<DistributedShellHostedService> logger
+        )
         {
             _shellHost = shellHost;
             _shellContextFactory = shellContextFactory;
@@ -102,9 +103,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                     }
 
                     // Manage the second counter used to sync the default tenant while it is 'Uninitialized'.
-                    defaultTenantSyncingSeconds = defaultContext.Settings.IsUninitialized()
-                        ? defaultTenantSyncingSeconds
-                        : 0;
+                    defaultTenantSyncingSeconds = defaultContext.Settings.IsUninitialized() ? defaultTenantSyncingSeconds : 0;
 
                     // Check periodically if the default tenant is still 'Uninitialized'.
                     if (defaultTenantSyncingSeconds++ > DefaultTenantSyncingPeriod)
@@ -112,9 +111,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                         defaultTenantSyncingSeconds = 0;
 
                         // Load the settings of the default tenant that may have been setup by another instance.
-                        using var loadedDefaultSettings = (await _shellSettingsManager
-                            .LoadSettingsAsync(ShellSettings.DefaultShellName))
-                            .AsDisposable();
+                        using var loadedDefaultSettings = (await _shellSettingsManager.LoadSettingsAsync(ShellSettings.DefaultShellName)).AsDisposable();
 
                         if (loadedDefaultSettings.IsRunning())
                         {
@@ -192,9 +189,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                         // Load all new created tenants.
                         foreach (var tenant in tenantsToCreate)
                         {
-                            loadedSettings.Add((await _shellSettingsManager
-                                .LoadSettingsAsync(tenant))
-                                .AsDisposable());
+                            loadedSettings.Add((await _shellSettingsManager.LoadSettingsAsync(tenant)).AsDisposable());
                         }
 
                         // Retrieve all removed tenants that are not yet removed locally.
@@ -342,9 +337,7 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
 
             // Load a first isolated configuration before the default context is initialized.
-            var defaultSettings = (await _shellSettingsManager
-                .LoadSettingsAsync(ShellSettings.DefaultShellName))
-                .AsDisposable();
+            var defaultSettings = (await _shellSettingsManager.LoadSettingsAsync(ShellSettings.DefaultShellName)).AsDisposable();
 
             // If there is no default tenant or it is not running, nothing to do.
             if (!defaultSettings.IsRunning())
@@ -354,8 +347,7 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
 
             // Create a distributed context based on the first loaded isolated configuration.
-            var context = _context = (await CreateDistributedContextAsync(defaultSettings))
-                ?.WithoutSharedSettings();
+            var context = _context = (await CreateDistributedContextAsync(defaultSettings))?.WithoutSharedSettings();
 
             if (context is null)
             {
@@ -420,8 +412,7 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
 
             // If there is no default tenant or it is not running, nothing to do.
-            if (!_shellHost.TryGetShellContext(ShellSettings.DefaultShellName, out var defaultContext) ||
-                !defaultContext.Settings.IsRunning())
+            if (!_shellHost.TryGetShellContext(ShellSettings.DefaultShellName, out var defaultContext) || !defaultContext.Settings.IsRunning())
             {
                 return;
             }
@@ -471,8 +462,7 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
 
             // If there is no default tenant or it is not running, nothing to do.
-            if (!_shellHost.TryGetShellContext(ShellSettings.DefaultShellName, out var defaultContext) ||
-                !defaultContext.Settings.IsRunning())
+            if (!_shellHost.TryGetShellContext(ShellSettings.DefaultShellName, out var defaultContext) || !defaultContext.Settings.IsRunning())
             {
                 return;
             }
@@ -537,8 +527,7 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
 
             // If there is no default tenant or it is not running, nothing to do.
-            if (!_shellHost.TryGetShellContext(ShellSettings.DefaultShellName, out var defaultContext) ||
-                !defaultContext.Settings.IsRunning())
+            if (!_shellHost.TryGetShellContext(ShellSettings.DefaultShellName, out var defaultContext) || !defaultContext.Settings.IsRunning())
             {
                 return;
             }
@@ -576,6 +565,7 @@ namespace OrchardCore.Environment.Shell.Distributed
         }
 
         private static string ReleaseIdKey(string name) => $"{name}{ReleaseIdKeySuffix}";
+
         private static string ReloadIdKey(string name) => $"{name}{ReloadIdKeySuffix}";
 
         /// <summary>
@@ -635,8 +625,7 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
 
             // Check if the default tenant descriptor or tenant configuration was updated.
-            if (_context.Context.Blueprint.Descriptor.SerialNumber != descriptor.SerialNumber ||
-                !_context.Context.Settings.HasConfiguration())
+            if (_context.Context.Blueprint.Descriptor.SerialNumber != descriptor.SerialNumber || !_context.Context.Settings.HasConfiguration())
             {
                 // Creates a new context based on the default settings and descriptor.
                 return await CreateDistributedContextAsync(defaultContext.Settings, descriptor);
@@ -767,9 +756,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                     return descriptor;
                 }
             }
-            catch
-            {
-            }
+            catch { }
 
             return null;
         }

@@ -31,10 +31,22 @@ namespace OrchardCore.Environment.Commands.Parameters
                 _arguments = [];
             }
 
-            public StringBuilder StringBuilder { get { return _stringBuilder; } }
-            public bool EOF { get { return _index >= _commandLine.Length; } }
-            public char Current { get { return _commandLine[_index]; } }
-            public IEnumerable<string> Arguments { get { return _arguments; } }
+            public StringBuilder StringBuilder
+            {
+                get { return _stringBuilder; }
+            }
+            public bool EOF
+            {
+                get { return _index >= _commandLine.Length; }
+            }
+            public char Current
+            {
+                get { return _commandLine[_index]; }
+            }
+            public IEnumerable<string> Arguments
+            {
+                get { return _arguments; }
+            }
 
             public void AddArgument()
             {

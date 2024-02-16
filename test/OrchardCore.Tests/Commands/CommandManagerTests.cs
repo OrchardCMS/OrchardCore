@@ -37,9 +37,8 @@ namespace OrchardCore.Tests.Commands
 
         public class MyCommand : DefaultCommandHandler
         {
-            public MyCommand() : base(null)
-            {
-            }
+            public MyCommand()
+                : base(null) { }
 
 #pragma warning disable CA1822 // Mark members as static
             public string FooBar()

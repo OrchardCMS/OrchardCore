@@ -17,11 +17,11 @@ namespace OrchardCore.AdminMenu.AdminNodes
         private readonly IAdminMenuPermissionService _adminMenuPermissionService;
         private readonly AdminOptions _adminOptions;
 
-
         public LinkAdminNodeNavigationBuilder(
             IAdminMenuPermissionService adminMenuPermissionService,
             IOptions<AdminOptions> adminOptions,
-            ILogger<LinkAdminNodeNavigationBuilder> logger)
+            ILogger<LinkAdminNodeNavigationBuilder> logger
+        )
         {
             _adminMenuPermissionService = adminMenuPermissionService;
             _adminOptions = adminOptions.Value;
@@ -38,58 +38,62 @@ namespace OrchardCore.AdminMenu.AdminNodes
                 return Task.CompletedTask;
             }
 
-            return builder.AddAsync(new LocalizedString(node.LinkText, node.LinkText), async itemBuilder =>
-            {
-                var nodeLinkUrl = node.LinkUrl;
-                if (!string.IsNullOrEmpty(nodeLinkUrl) && nodeLinkUrl[0] != '/' && !nodeLinkUrl.Contains("://"))
+            return builder.AddAsync(
+                new LocalizedString(node.LinkText, node.LinkText),
+                async itemBuilder =>
                 {
-                    if (nodeLinkUrl.StartsWith("~/", StringComparison.Ordinal))
+                    var nodeLinkUrl = node.LinkUrl;
+                    if (!string.IsNullOrEmpty(nodeLinkUrl) && nodeLinkUrl[0] != '/' && !nodeLinkUrl.Contains("://"))
                     {
-                        nodeLinkUrl = nodeLinkUrl[2..];
+                        if (nodeLinkUrl.StartsWith("~/", StringComparison.Ordinal))
+                        {
+                            nodeLinkUrl = nodeLinkUrl[2..];
+                        }
+
+                        // Check if the first segment of 'nodeLinkUrl' is not equal to the admin prefix.
+                        if (
+                            !nodeLinkUrl.StartsWith($"{_adminOptions.AdminUrlPrefix}", StringComparison.OrdinalIgnoreCase)
+                            || (nodeLinkUrl.Length != _adminOptions.AdminUrlPrefix.Length && nodeLinkUrl[_adminOptions.AdminUrlPrefix.Length] != '/')
+                        )
+                        {
+                            nodeLinkUrl = $"{_adminOptions.AdminUrlPrefix}/{nodeLinkUrl}";
+                        }
                     }
 
-                    // Check if the first segment of 'nodeLinkUrl' is not equal to the admin prefix.
-                    if (!nodeLinkUrl.StartsWith($"{_adminOptions.AdminUrlPrefix}", StringComparison.OrdinalIgnoreCase) ||
-                        (nodeLinkUrl.Length != _adminOptions.AdminUrlPrefix.Length
-                        && nodeLinkUrl[_adminOptions.AdminUrlPrefix.Length] != '/'))
+                    // Add the actual link.
+                    itemBuilder.Url(nodeLinkUrl);
+                    itemBuilder.Priority(node.Priority);
+                    itemBuilder.Position(node.Position);
+
+                    if (node.PermissionNames.Length > 0)
                     {
-                        nodeLinkUrl = $"{_adminOptions.AdminUrlPrefix}/{nodeLinkUrl}";
+                        var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
+
+                        // Find the actual permissions and apply them to the menu.
+                        var selectedPermissions = permissions.Where(p => node.PermissionNames.Contains(p.Name));
+                        itemBuilder.Permissions(selectedPermissions);
+                    }
+
+                    // Add adminNode's IconClass property values to menuItem.Classes.
+                    // Add them with a prefix so that later the shape template can extract them to use them on a <i> tag.
+                    node.IconClass?.Split(' ').ToList().ForEach(c => itemBuilder.AddClass("icon-class-" + c));
+
+                    // Let children build themselves inside this MenuItem.
+                    // Todo: This logic can be shared by all TreeNodeNavigationBuilders.
+                    foreach (var childTreeNode in menuItem.Items)
+                    {
+                        try
+                        {
+                            var treeBuilder = treeNodeBuilders.FirstOrDefault(x => x.Name == childTreeNode.GetType().Name);
+                            await treeBuilder.BuildNavigationAsync(childTreeNode, itemBuilder, treeNodeBuilders);
+                        }
+                        catch (Exception e)
+                        {
+                            _logger.LogError(e, "An exception occurred while building the '{MenuItem}' child Menu Item.", childTreeNode.GetType().Name);
+                        }
                     }
                 }
-
-                // Add the actual link.
-                itemBuilder.Url(nodeLinkUrl);
-                itemBuilder.Priority(node.Priority);
-                itemBuilder.Position(node.Position);
-
-                if (node.PermissionNames.Length > 0)
-                {
-                    var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
-
-                    // Find the actual permissions and apply them to the menu.
-                    var selectedPermissions = permissions.Where(p => node.PermissionNames.Contains(p.Name));
-                    itemBuilder.Permissions(selectedPermissions);
-                }
-
-                // Add adminNode's IconClass property values to menuItem.Classes.
-                // Add them with a prefix so that later the shape template can extract them to use them on a <i> tag.
-                node.IconClass?.Split(' ').ToList().ForEach(c => itemBuilder.AddClass("icon-class-" + c));
-
-                // Let children build themselves inside this MenuItem.
-                // Todo: This logic can be shared by all TreeNodeNavigationBuilders.
-                foreach (var childTreeNode in menuItem.Items)
-                {
-                    try
-                    {
-                        var treeBuilder = treeNodeBuilders.FirstOrDefault(x => x.Name == childTreeNode.GetType().Name);
-                        await treeBuilder.BuildNavigationAsync(childTreeNode, itemBuilder, treeNodeBuilders);
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.LogError(e, "An exception occurred while building the '{MenuItem}' child Menu Item.", childTreeNode.GetType().Name);
-                    }
-                }
-            });
+            );
         }
     }
 }

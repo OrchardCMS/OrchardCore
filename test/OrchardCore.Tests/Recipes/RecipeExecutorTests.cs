@@ -26,16 +26,11 @@ namespace OrchardCore.Recipes
                 // Arrange
                 var shellHostMock = new Mock<IShellHost>();
 
-                shellHostMock.Setup(h => h.GetScopeAsync(It.IsAny<ShellSettings>()))
-                    .Returns(GetScopeAsync);
+                shellHostMock.Setup(h => h.GetScopeAsync(It.IsAny<ShellSettings>())).Returns(GetScopeAsync);
 
                 var recipeEventHandlers = new List<IRecipeEventHandler> { new RecipeEventHandler() };
                 var loggerMock = new Mock<ILogger<RecipeExecutor>>();
-                var recipeExecutor = new RecipeExecutor(
-                    shellHostMock.Object,
-                    scope.ShellContext.Settings,
-                    recipeEventHandlers,
-                    loggerMock.Object);
+                var recipeExecutor = new RecipeExecutor(shellHostMock.Object, scope.ShellContext.Settings, recipeEventHandlers, loggerMock.Object);
 
                 // Act
                 var executionId = Guid.NewGuid().ToString("n");
@@ -51,17 +46,10 @@ namespace OrchardCore.Recipes
 
         private static Task<ShellScope> GetScopeAsync() => ShellScope.Context.CreateScopeAsync();
 
-        private static ShellContext CreateShellContext() => new()
-        {
-            Settings = new ShellSettings().AsDefaultShell().AsRunning(),
-            ServiceProvider = CreateServiceProvider(),
-        };
+        private static ShellContext CreateShellContext() => new() { Settings = new ShellSettings().AsDefaultShell().AsRunning(), ServiceProvider = CreateServiceProvider(), };
 
-        private static IServiceProvider CreateServiceProvider() => new ServiceCollection()
-            .AddScripting()
-            .AddSingleton<IDistributedLock, LocalLock>()
-            .AddLogging()
-            .BuildServiceProvider();
+        private static IServiceProvider CreateServiceProvider() =>
+            new ServiceCollection().AddScripting().AddSingleton<IDistributedLock, LocalLock>().AddLogging().BuildServiceProvider();
 
         private IFileInfo GetRecipeFileInfo(string recipeName)
         {

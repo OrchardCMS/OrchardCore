@@ -1,8 +1,6 @@
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services
-    .AddOrchardCore()
-    .AddMvc();
+builder.Services.AddOrchardCore().AddMvc();
 
 var app = builder.Build();
 

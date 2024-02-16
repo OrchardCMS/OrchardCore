@@ -19,10 +19,7 @@ namespace OrchardCore.Modules
 
         public RequireFeaturesAttribute(string featureName, params string[] otherFeatureNames)
         {
-            RequiredFeatureNames = new List<string>(otherFeatureNames)
-            {
-                featureName
-            };
+            RequiredFeatureNames = new List<string>(otherFeatureNames) { featureName };
         }
 
         /// <summary>

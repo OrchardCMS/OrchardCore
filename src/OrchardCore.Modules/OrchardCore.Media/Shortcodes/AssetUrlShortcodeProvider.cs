@@ -15,10 +15,7 @@ namespace OrchardCore.Media.Shortcodes
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ResourceManagementOptions _options;
 
-        public AssetUrlShortcodeProvider(
-            IMediaFileStore mediaFileStore,
-            IHttpContextAccessor httpContextAccessor,
-            IOptions<ResourceManagementOptions> options)
+        public AssetUrlShortcodeProvider(IMediaFileStore mediaFileStore, IHttpContextAccessor httpContextAccessor, IOptions<ResourceManagementOptions> options)
         {
             _mediaFileStore = mediaFileStore;
             _httpContextAccessor = httpContextAccessor;

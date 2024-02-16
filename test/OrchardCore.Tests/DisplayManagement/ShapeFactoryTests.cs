@@ -23,8 +23,7 @@ namespace OrchardCore.Tests.DisplayManagement
             serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
             serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
 
-            _shapeTable = new ShapeTable
-            (
+            _shapeTable = new ShapeTable(
                 new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
                 new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
             );
@@ -126,8 +125,6 @@ namespace OrchardCore.Tests.DisplayManagement
             Assert.Equal("Baz", foo.Baz);
         }
 
-        private class SubShape : Shape
-        {
-        }
+        private class SubShape : Shape { }
     }
 }

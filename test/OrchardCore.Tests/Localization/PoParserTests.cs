@@ -122,7 +122,10 @@ namespace OrchardCore.Tests.Localization
             var entries = ParseText("EntryWithMultilineText");
 
             Assert.Equal("Here is an example of how one might continue a very long string\nfor the common case the string represents multi-line output.", entries[0].Key);
-            Assert.Equal("Here is an example of how one might continue a very long translation\nfor the common case the string represents multi-line output.", entries[0].Translations[0]);
+            Assert.Equal(
+                "Here is an example of how one might continue a very long translation\nfor the common case the string represents multi-line output.",
+                entries[0].Translations[0]
+            );
         }
 
         [Fact]
@@ -173,8 +176,14 @@ namespace OrchardCore.Tests.Localization
             var entries = ParseText("EntryWithPluralAndMultilineText");
 
             Assert.Equal("Here is an example of how one might continue a very long string\nfor the common case the string represents multi-line output.", entries[0].Key);
-            Assert.Equal("Here is an example of how one might continue a very long translation\nfor the common case the string represents multi-line output.", entries[0].Translations[0]);
-            Assert.Equal("Here are examples of how one might continue a very long translation\nfor the common case the string represents multi-line output.", entries[0].Translations[1]);
+            Assert.Equal(
+                "Here is an example of how one might continue a very long translation\nfor the common case the string represents multi-line output.",
+                entries[0].Translations[0]
+            );
+            Assert.Equal(
+                "Here are examples of how one might continue a very long translation\nfor the common case the string represents multi-line output.",
+                entries[0].Translations[1]
+            );
         }
 
         [Fact]

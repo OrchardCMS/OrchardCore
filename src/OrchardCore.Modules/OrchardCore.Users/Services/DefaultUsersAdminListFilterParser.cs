@@ -12,7 +12,6 @@ namespace OrchardCore.Users.Services
             _parser = parser;
         }
 
-        public QueryFilterResult<User> Parse(string text)
-            => _parser.Parse(text);
+        public QueryFilterResult<User> Parse(string text) => _parser.Parse(text);
     }
 }

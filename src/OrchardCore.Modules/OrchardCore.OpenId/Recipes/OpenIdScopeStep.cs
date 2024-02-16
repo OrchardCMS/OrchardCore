@@ -45,9 +45,7 @@ namespace OrchardCore.OpenId.Recipes
             if (!string.IsNullOrEmpty(model.Resources))
             {
                 descriptor.Resources.Clear();
-                descriptor.Resources.UnionWith(
-                    model.Resources
-                        .Split(' ', StringSplitOptions.RemoveEmptyEntries));
+                descriptor.Resources.UnionWith(model.Resources.Split(' ', StringSplitOptions.RemoveEmptyEntries));
             }
 
             if (isNew)

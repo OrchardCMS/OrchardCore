@@ -1,9 +1,11 @@
-#if (AddPart)
-using Fluid;
-#endif
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Modules;
+#if (AddPart)
+using Fluid;
+#endif
+
 #if (AddPart)
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -16,7 +18,7 @@ using OrchardCore.Templates.Cms.Module.Models;
 using OrchardCore.Templates.Cms.Module.Settings;
 using OrchardCore.Templates.Cms.Module.ViewModels;
 #endif
-using OrchardCore.Modules;
+
 
 namespace OrchardCore.Templates.Cms.Module
 {
@@ -30,9 +32,7 @@ namespace OrchardCore.Templates.Cms.Module
                 o.MemberAccessStrategy.Register<MyTestPartViewModel>();
             });
 
-            services.AddContentPart<MyTestPart>()
-                .UseDisplayDriver<MyTestPartDisplayDriver>()
-                .AddHandler<MyTestPartHandler>();
+            services.AddContentPart<MyTestPart>().UseDisplayDriver<MyTestPartDisplayDriver>().AddHandler<MyTestPartHandler>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, MyTestPartSettingsDisplayDriver>();
             services.AddDataMigration<Migrations>();

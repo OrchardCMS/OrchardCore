@@ -20,13 +20,20 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 
             services.AddScoped<IDisplayDriver<ISite>, ExportContentToDeploymentTargetSettingsDisplayDriver>();
 
-            services.AddDeployment<ExportContentToDeploymentTargetDeploymentSource, ExportContentToDeploymentTargetDeploymentStep, ExportContentToDeploymentTargetDeploymentStepDriver>();
+            services.AddDeployment<
+                ExportContentToDeploymentTargetDeploymentSource,
+                ExportContentToDeploymentTargetDeploymentStep,
+                ExportContentToDeploymentTargetDeploymentStepDriver
+            >();
 
             services.AddDataMigration<ExportContentToDeploymentTargetMigrations>();
             services.AddScoped<IContentDisplayDriver, ExportContentToDeploymentTargetContentDriver>();
             services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, ExportContentToDeploymentTargetContentsAdminListDisplayDriver>();
 
-            services.AddSiteSettingsPropertyDeploymentStep<ExportContentToDeploymentTargetSettings, ExportContentToDeploymentTargetStartup>(S => S["Export Content To Deployment Target settings"], S => S["Exports the Export Content To Deployment Target settings."]);
+            services.AddSiteSettingsPropertyDeploymentStep<ExportContentToDeploymentTargetSettings, ExportContentToDeploymentTargetStartup>(
+                S => S["Export Content To Deployment Target settings"],
+                S => S["Exports the Export Content To Deployment Target settings."]
+            );
         }
     }
 }

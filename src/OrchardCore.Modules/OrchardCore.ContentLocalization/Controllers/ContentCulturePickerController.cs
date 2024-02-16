@@ -21,10 +21,7 @@ namespace OrchardCore.ContentLocalization.Controllers
         private readonly ILocalizationService _locationService;
         private readonly IContentCulturePickerService _culturePickerService;
 
-        public ContentCulturePickerController(
-            ISiteService siteService,
-            ILocalizationService locationService,
-            IContentCulturePickerService culturePickerService)
+        public ContentCulturePickerController(ISiteService siteService, ILocalizationService locationService, IContentCulturePickerService culturePickerService)
         {
             _siteService = siteService;
             _locationService = locationService;

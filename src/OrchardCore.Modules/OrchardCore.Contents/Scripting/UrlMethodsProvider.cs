@@ -15,29 +15,30 @@ namespace OrchardCore.Contents.Scripting
             _getUrlPrefix = new GlobalMethod
             {
                 Name = "getUrlPrefix",
-                Method = serviceProvider => (string path, bool? escaped) =>
-                {
-                    var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
-
-                    var pathBase = httpContextAccessor.HttpContext?.Request.PathBase ?? PathString.Empty;
-                    if (!pathBase.HasValue)
+                Method = serviceProvider =>
+                    (string path, bool? escaped) =>
                     {
-                        pathBase = "/";
-                    }
+                        var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
 
-                    path = path?.Trim(' ', '/') ?? string.Empty;
-                    if (path.Length > 0)
-                    {
-                        pathBase = pathBase.Add($"/{path}");
-                    }
+                        var pathBase = httpContextAccessor.HttpContext?.Request.PathBase ?? PathString.Empty;
+                        if (!pathBase.HasValue)
+                        {
+                            pathBase = "/";
+                        }
 
-                    if (escaped.HasValue && escaped.Value)
-                    {
-                        return pathBase.ToString();
-                    }
+                        path = path?.Trim(' ', '/') ?? string.Empty;
+                        if (path.Length > 0)
+                        {
+                            pathBase = pathBase.Add($"/{path}");
+                        }
 
-                    return pathBase.Value;
-                },
+                        if (escaped.HasValue && escaped.Value)
+                        {
+                            return pathBase.ToString();
+                        }
+
+                        return pathBase.Value;
+                    },
             };
         }
 

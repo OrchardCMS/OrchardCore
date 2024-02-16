@@ -16,17 +16,16 @@ using OrchardCore.OpenId.Abstractions.Stores;
 
 namespace OrchardCore.OpenId.Services.Managers
 {
-    public class OpenIdApplicationManager<TApplication> : OpenIddictApplicationManager<TApplication>,
-        IOpenIdApplicationManager where TApplication : class
+    public class OpenIdApplicationManager<TApplication> : OpenIddictApplicationManager<TApplication>, IOpenIdApplicationManager
+        where TApplication : class
     {
         public OpenIdApplicationManager(
             IOpenIddictApplicationCache<TApplication> cache,
             ILogger<OpenIdApplicationManager<TApplication>> logger,
             IOptionsMonitor<OpenIddictCoreOptions> options,
-            IOpenIddictApplicationStoreResolver resolver)
-            : base(cache, logger, options, resolver)
-        {
-        }
+            IOpenIddictApplicationStoreResolver resolver
+        )
+            : base(cache, logger, options, resolver) { }
 
         /// <summary>
         /// Retrieves an application using its physical identifier.
@@ -44,9 +43,9 @@ namespace OrchardCore.OpenId.Services.Managers
                 throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
             }
 
-            return Store is IOpenIdApplicationStore<TApplication> store ?
-                store.FindByPhysicalIdAsync(identifier, cancellationToken) :
-                Store.FindByIdAsync(identifier, cancellationToken);
+            return Store is IOpenIdApplicationStore<TApplication> store
+                ? store.FindByPhysicalIdAsync(identifier, cancellationToken)
+                : Store.FindByIdAsync(identifier, cancellationToken);
         }
 
         /// <summary>
@@ -62,13 +61,12 @@ namespace OrchardCore.OpenId.Services.Managers
         {
             ArgumentNullException.ThrowIfNull(application);
 
-            return Store is IOpenIdApplicationStore<TApplication> store ?
-                store.GetPhysicalIdAsync(application, cancellationToken) :
-                Store.GetIdAsync(application, cancellationToken);
+            return Store is IOpenIdApplicationStore<TApplication> store
+                ? store.GetPhysicalIdAsync(application, cancellationToken)
+                : Store.GetIdAsync(application, cancellationToken);
         }
 
-        public virtual async ValueTask<ImmutableArray<string>> GetRolesAsync(
-            TApplication application, CancellationToken cancellationToken = default)
+        public virtual async ValueTask<ImmutableArray<string>> GetRolesAsync(TApplication application, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(application);
 
@@ -95,8 +93,7 @@ namespace OrchardCore.OpenId.Services.Managers
             }
         }
 
-        public virtual IAsyncEnumerable<TApplication> ListInRoleAsync(
-            string role, CancellationToken cancellationToken = default)
+        public virtual IAsyncEnumerable<TApplication> ListInRoleAsync(string role, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(role))
             {
@@ -126,8 +123,7 @@ namespace OrchardCore.OpenId.Services.Managers
             }
         }
 
-        public virtual async ValueTask SetRolesAsync(TApplication application,
-            ImmutableArray<string> roles, CancellationToken cancellationToken = default)
+        public virtual async ValueTask SetRolesAsync(TApplication application, ImmutableArray<string> roles, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(application);
 
@@ -143,8 +139,7 @@ namespace OrchardCore.OpenId.Services.Managers
             else
             {
                 var properties = await Store.GetPropertiesAsync(application, cancellationToken);
-                properties = properties.SetItem(OpenIdConstants.Properties.Roles,
-                    JsonSerializer.SerializeToElement(roles, JOptions.UnsafeRelaxedJsonEscaping));
+                properties = properties.SetItem(OpenIdConstants.Properties.Roles, JsonSerializer.SerializeToElement(roles, JOptions.UnsafeRelaxedJsonEscaping));
 
                 await Store.SetPropertiesAsync(application, properties, cancellationToken);
             }
@@ -152,8 +147,7 @@ namespace OrchardCore.OpenId.Services.Managers
             await UpdateAsync(application, cancellationToken);
         }
 
-        public override async ValueTask PopulateAsync(TApplication application,
-            OpenIddictApplicationDescriptor descriptor, CancellationToken cancellationToken = default)
+        public override async ValueTask PopulateAsync(TApplication application, OpenIddictApplicationDescriptor descriptor, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(application);
 
@@ -174,16 +168,14 @@ namespace OrchardCore.OpenId.Services.Managers
                 else
                 {
                     var properties = await Store.GetPropertiesAsync(application, cancellationToken);
-                    properties = properties.SetItem(OpenIdConstants.Properties.Roles,
-                        JsonSerializer.SerializeToElement(model.Roles, JOptions.UnsafeRelaxedJsonEscaping));
+                    properties = properties.SetItem(OpenIdConstants.Properties.Roles, JsonSerializer.SerializeToElement(model.Roles, JOptions.UnsafeRelaxedJsonEscaping));
 
                     await Store.SetPropertiesAsync(application, properties, cancellationToken);
                 }
             }
         }
 
-        public override async ValueTask PopulateAsync(OpenIddictApplicationDescriptor descriptor,
-            TApplication application, CancellationToken cancellationToken = default)
+        public override async ValueTask PopulateAsync(OpenIddictApplicationDescriptor descriptor, TApplication application, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(descriptor);
 
@@ -197,8 +189,7 @@ namespace OrchardCore.OpenId.Services.Managers
             }
         }
 
-        public override IAsyncEnumerable<ValidationResult> ValidateAsync(
-            TApplication application, CancellationToken cancellationToken = default)
+        public override IAsyncEnumerable<ValidationResult> ValidateAsync(TApplication application, CancellationToken cancellationToken = default)
         {
             ArgumentNullException.ThrowIfNull(application);
 
@@ -223,19 +214,18 @@ namespace OrchardCore.OpenId.Services.Managers
             }
         }
 
-        async ValueTask<object> IOpenIdApplicationManager.FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
-            => await FindByPhysicalIdAsync(identifier, cancellationToken);
+        async ValueTask<object> IOpenIdApplicationManager.FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken) =>
+            await FindByPhysicalIdAsync(identifier, cancellationToken);
 
-        ValueTask<string> IOpenIdApplicationManager.GetPhysicalIdAsync(object application, CancellationToken cancellationToken)
-            => GetPhysicalIdAsync((TApplication)application, cancellationToken);
+        ValueTask<string> IOpenIdApplicationManager.GetPhysicalIdAsync(object application, CancellationToken cancellationToken) =>
+            GetPhysicalIdAsync((TApplication)application, cancellationToken);
 
-        ValueTask<ImmutableArray<string>> IOpenIdApplicationManager.GetRolesAsync(object application, CancellationToken cancellationToken)
-            => GetRolesAsync((TApplication)application, cancellationToken);
+        ValueTask<ImmutableArray<string>> IOpenIdApplicationManager.GetRolesAsync(object application, CancellationToken cancellationToken) =>
+            GetRolesAsync((TApplication)application, cancellationToken);
 
-        IAsyncEnumerable<object> IOpenIdApplicationManager.ListInRoleAsync(string role, CancellationToken cancellationToken)
-            => ListInRoleAsync(role, cancellationToken);
+        IAsyncEnumerable<object> IOpenIdApplicationManager.ListInRoleAsync(string role, CancellationToken cancellationToken) => ListInRoleAsync(role, cancellationToken);
 
-        ValueTask IOpenIdApplicationManager.SetRolesAsync(object application, ImmutableArray<string> roles, CancellationToken cancellationToken)
-            => SetRolesAsync((TApplication)application, roles, cancellationToken);
+        ValueTask IOpenIdApplicationManager.SetRolesAsync(object application, ImmutableArray<string> roles, CancellationToken cancellationToken) =>
+            SetRolesAsync((TApplication)application, roles, cancellationToken);
     }
 }

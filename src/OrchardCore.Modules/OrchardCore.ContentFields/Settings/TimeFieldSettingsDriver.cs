@@ -11,14 +11,17 @@ namespace OrchardCore.ContentFields.Settings
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<TimeFieldSettings>("TimeFieldSettings_Edit", model =>
-            {
-                var settings = partFieldDefinition.Settings.ToObject<TimeFieldSettings>();
+            return Initialize<TimeFieldSettings>(
+                    "TimeFieldSettings_Edit",
+                    model =>
+                    {
+                        var settings = partFieldDefinition.Settings.ToObject<TimeFieldSettings>();
 
-                model.Hint = settings.Hint;
-                model.Required = settings.Required;
-                model.Step = settings.Step;
-            })
+                        model.Hint = settings.Hint;
+                        model.Required = settings.Required;
+                        model.Step = settings.Step;
+                    }
+                )
                 .Location("Content");
         }
 

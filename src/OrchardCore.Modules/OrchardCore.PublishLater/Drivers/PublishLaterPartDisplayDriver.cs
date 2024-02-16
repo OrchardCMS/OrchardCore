@@ -18,10 +18,7 @@ namespace OrchardCore.PublishLater.Drivers
         private readonly IAuthorizationService _authorizationService;
         private readonly ILocalClock _localClock;
 
-        public PublishLaterPartDisplayDriver(
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService,
-            ILocalClock localClock)
+        public PublishLaterPartDisplayDriver(IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService, ILocalClock localClock)
         {
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
@@ -30,17 +27,12 @@ namespace OrchardCore.PublishLater.Drivers
 
         public override IDisplayResult Display(PublishLaterPart part, BuildPartDisplayContext context)
         {
-            return Initialize<PublishLaterPartViewModel>(
-                $"{nameof(PublishLaterPart)}_SummaryAdmin",
-                model => PopulateViewModel(part, model))
-            .Location("SummaryAdmin", "Meta:25");
+            return Initialize<PublishLaterPartViewModel>($"{nameof(PublishLaterPart)}_SummaryAdmin", model => PopulateViewModel(part, model)).Location("SummaryAdmin", "Meta:25");
         }
 
         public override IDisplayResult Edit(PublishLaterPart part, BuildPartEditorContext context)
         {
-            return Initialize<PublishLaterPartViewModel>(GetEditorShapeType(context),
-                model => PopulateViewModel(part, model))
-            .Location("Actions:10");
+            return Initialize<PublishLaterPartViewModel>(GetEditorShapeType(context), model => PopulateViewModel(part, model)).Location("Actions:10");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(PublishLaterPart part, IUpdateModel updater, UpdatePartEditorContext context)
@@ -70,9 +62,7 @@ namespace OrchardCore.PublishLater.Drivers
         {
             viewModel.ContentItem = part.ContentItem;
             viewModel.ScheduledPublishUtc = part.ScheduledPublishUtc;
-            viewModel.ScheduledPublishLocalDateTime = part.ScheduledPublishUtc.HasValue ?
-                (await _localClock.ConvertToLocalAsync(part.ScheduledPublishUtc.Value)).DateTime :
-                null;
+            viewModel.ScheduledPublishLocalDateTime = part.ScheduledPublishUtc.HasValue ? (await _localClock.ConvertToLocalAsync(part.ScheduledPublishUtc.Value)).DateTime : null;
         }
     }
 }

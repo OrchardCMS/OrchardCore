@@ -35,7 +35,8 @@ namespace OrchardCore.DisplayManagement.Razor
             IEnumerable<IRazorViewExtensionProvider> viewExtensionProviders,
             IHttpContextAccessor httpContextAccessor,
             ViewContextAccessor viewContextAccessor,
-            ITempDataProvider tempDataProvider)
+            ITempDataProvider tempDataProvider
+        )
         {
             _options = options;
             _httpContextAccessor = httpContextAccessor;
@@ -46,10 +47,7 @@ namespace OrchardCore.DisplayManagement.Razor
 
         public IEnumerable<string> TemplateFileExtensions
         {
-            get
-            {
-                return _templateFileExtensions;
-            }
+            get { return _templateFileExtensions; }
         }
 
         public Task<IHtmlContent> RenderAsync(string relativePath, DisplayContext displayContext)
@@ -79,10 +77,14 @@ namespace OrchardCore.DisplayManagement.Razor
 
             if (viewEngines.Count == 0)
             {
-                throw new InvalidOperationException(string.Format("'{0}.{1}' must not be empty. At least one '{2}' is required to locate a view for rendering.",
-                    typeof(MvcViewOptions).FullName,
-                    nameof(MvcViewOptions.ViewEngines),
-                    typeof(IViewEngine).FullName));
+                throw new InvalidOperationException(
+                    string.Format(
+                        "'{0}.{1}' must not be empty. At least one '{2}' is required to locate a view for rendering.",
+                        typeof(MvcViewOptions).FullName,
+                        nameof(MvcViewOptions.ViewEngines),
+                        typeof(IViewEngine).FullName
+                    )
+                );
             }
 
             var viewEngine = viewEngines[0];
@@ -101,17 +103,11 @@ namespace OrchardCore.DisplayManagement.Razor
             var viewContext = new ViewContext(
                 actionContext,
                 view,
-                new ViewDataDictionary(
-                    metadataProvider: new EmptyModelMetadataProvider(),
-                    modelState: new ModelStateDictionary())
-                {
-                    Model = model
-                },
-                new TempDataDictionary(
-                    actionContext.HttpContext,
-                    _tempDataProvider),
+                new ViewDataDictionary(metadataProvider: new EmptyModelMetadataProvider(), modelState: new ModelStateDictionary()) { Model = model },
+                new TempDataDictionary(actionContext.HttpContext, _tempDataProvider),
                 output,
-                new HtmlHelperOptions());
+                new HtmlHelperOptions()
+            );
 
             await view.RenderAsync(viewContext);
 
@@ -135,7 +131,8 @@ namespace OrchardCore.DisplayManagement.Razor
             var searchedLocations = getViewResult.SearchedLocations.Concat(findViewResult.SearchedLocations);
             var errorMessage = string.Join(
                 System.Environment.NewLine,
-                new[] { $"Unable to find view '{viewName}'. The following locations were searched:" }.Concat(searchedLocations));
+                new[] { $"Unable to find view '{viewName}'. The following locations were searched:" }.Concat(searchedLocations)
+            );
 
             throw new InvalidOperationException(errorMessage);
         }

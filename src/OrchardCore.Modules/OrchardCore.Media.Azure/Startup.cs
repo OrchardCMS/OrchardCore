@@ -77,8 +77,7 @@ namespace OrchardCore.Media.Azure
                     var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
                     var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStoreCacheFileProvider>>();
 
-                    var mediaCachePath = GetMediaCachePath(
-                        hostingEnvironment, shellSettings, DefaultMediaFileStoreCacheFileProvider.AssetsCachePath);
+                    var mediaCachePath = GetMediaCachePath(hostingEnvironment, shellSettings, DefaultMediaFileStoreCacheFileProvider.AssetsCachePath);
 
                     if (!Directory.Exists(mediaCachePath))
                     {
@@ -89,40 +88,39 @@ namespace OrchardCore.Media.Azure
                 });
 
                 // Replace the default media file provider with the media cache file provider.
-                services.Replace(ServiceDescriptor.Singleton<IMediaFileProvider>(serviceProvider =>
-                    serviceProvider.GetRequiredService<IMediaFileStoreCacheFileProvider>()));
+                services.Replace(ServiceDescriptor.Singleton<IMediaFileProvider>(serviceProvider => serviceProvider.GetRequiredService<IMediaFileStoreCacheFileProvider>()));
 
                 // Register the media cache file provider as a file store cache provider.
-                services.AddSingleton<IMediaFileStoreCache>(serviceProvider =>
-                    serviceProvider.GetRequiredService<IMediaFileStoreCacheFileProvider>());
+                services.AddSingleton<IMediaFileStoreCache>(serviceProvider => serviceProvider.GetRequiredService<IMediaFileStoreCacheFileProvider>());
 
                 // Replace the default media file store with a blob file store.
-                services.Replace(ServiceDescriptor.Singleton<IMediaFileStore>(serviceProvider =>
-                {
-                    var blobStorageOptions = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
-                    var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
-                    var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
-                    var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
-                    var clock = serviceProvider.GetRequiredService<IClock>();
-                    var contentTypeProvider = serviceProvider.GetRequiredService<IContentTypeProvider>();
-                    var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
-                    var mediaCreatingEventHandlers = serviceProvider.GetServices<IMediaCreatingEventHandler>();
-                    var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
-
-                    var fileStore = new BlobFileStore(blobStorageOptions, clock, contentTypeProvider);
-                    var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, mediaOptions.AssetsRequestPath);
-
-                    var originalPathBase = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext
-                        ?.Features.Get<ShellContextFeature>()
-                        ?.OriginalPathBase ?? PathString.Empty;
-
-                    if (originalPathBase.HasValue)
+                services.Replace(
+                    ServiceDescriptor.Singleton<IMediaFileStore>(serviceProvider =>
                     {
-                        mediaUrlBase = fileStore.Combine(originalPathBase.Value, mediaUrlBase);
-                    }
+                        var blobStorageOptions = serviceProvider.GetRequiredService<IOptions<MediaBlobStorageOptions>>().Value;
+                        var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
+                        var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
+                        var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
+                        var clock = serviceProvider.GetRequiredService<IClock>();
+                        var contentTypeProvider = serviceProvider.GetRequiredService<IContentTypeProvider>();
+                        var mediaEventHandlers = serviceProvider.GetServices<IMediaEventHandler>();
+                        var mediaCreatingEventHandlers = serviceProvider.GetServices<IMediaCreatingEventHandler>();
+                        var logger = serviceProvider.GetRequiredService<ILogger<DefaultMediaFileStore>>();
 
-                    return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl, mediaEventHandlers, mediaCreatingEventHandlers, logger);
-                }));
+                        var fileStore = new BlobFileStore(blobStorageOptions, clock, contentTypeProvider);
+                        var mediaUrlBase = "/" + fileStore.Combine(shellSettings.RequestUrlPrefix, mediaOptions.AssetsRequestPath);
+
+                        var originalPathBase =
+                            serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext?.Features.Get<ShellContextFeature>()?.OriginalPathBase ?? PathString.Empty;
+
+                        if (originalPathBase.HasValue)
+                        {
+                            mediaUrlBase = fileStore.Combine(originalPathBase.Value, mediaUrlBase);
+                        }
+
+                        return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl, mediaEventHandlers, mediaCreatingEventHandlers, logger);
+                    })
+                );
 
                 services.AddSingleton<IMediaEventHandler, DefaultMediaFileStoreCacheEventHandler>();
 
@@ -130,8 +128,8 @@ namespace OrchardCore.Media.Azure
             }
         }
 
-        private static string GetMediaCachePath(IWebHostEnvironment hostingEnvironment, ShellSettings shellSettings, string assetsPath)
-            => PathExtensions.Combine(hostingEnvironment.WebRootPath, shellSettings.Name, assetsPath);
+        private static string GetMediaCachePath(IWebHostEnvironment hostingEnvironment, ShellSettings shellSettings, string assetsPath) =>
+            PathExtensions.Combine(hostingEnvironment.WebRootPath, shellSettings.Name, assetsPath);
 
         private static bool CheckOptions(string connectionString, string containerName, ILogger logger)
         {

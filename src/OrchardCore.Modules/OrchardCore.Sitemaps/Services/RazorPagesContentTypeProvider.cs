@@ -15,10 +15,7 @@ namespace OrchardCore.Sitemaps.Services
         private readonly SitemapsRazorPagesOptions _options;
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
-        public RazorPagesContentTypeProvider(
-            IOptions<SitemapsRazorPagesOptions> options,
-            IContentDefinitionManager contentDefinitionManager
-            )
+        public RazorPagesContentTypeProvider(IOptions<SitemapsRazorPagesOptions> options, IContentDefinitionManager contentDefinitionManager)
         {
             _options = options.Value;
             _contentDefinitionManager = contentDefinitionManager;

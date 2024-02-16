@@ -20,10 +20,7 @@ public class TwilioSmsProvider : ISmsProvider
 
     public const string ProtectorName = "Twilio";
 
-    private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
-    {
-        PropertyNamingPolicy = SnakeCaseNamingPolicy.Instance,
-    };
+    private static readonly JsonSerializerOptions _jsonSerializerOptions = new() { PropertyNamingPolicy = SnakeCaseNamingPolicy.Instance, };
 
     public LocalizedString Name => S["Twilio"];
 
@@ -39,7 +36,8 @@ public class TwilioSmsProvider : ISmsProvider
         IDataProtectionProvider dataProtectionProvider,
         ILogger<TwilioSmsProvider> logger,
         IHttpClientFactory httpClientFactory,
-        IStringLocalizer<TwilioSmsProvider> stringLocalizer)
+        IStringLocalizer<TwilioSmsProvider> stringLocalizer
+    )
     {
         _siteService = siteService;
         _dataProtectionProvider = dataProtectionProvider;
@@ -65,12 +63,7 @@ public class TwilioSmsProvider : ISmsProvider
         try
         {
             var settings = await GetSettingsAsync();
-            var data = new List<KeyValuePair<string, string>>
-            {
-                new ("From", settings.PhoneNumber),
-                new ("To", message.To),
-                new ("Body", message.Body),
-            };
+            var data = new List<KeyValuePair<string, string>> { new("From", settings.PhoneNumber), new("To", message.To), new("Body", message.Body), };
 
             var client = GetHttpClient(settings);
             var response = await client.PostAsync($"{settings.AccountSID}/Messages.json", new FormUrlEncodedContent(data));
@@ -79,8 +72,7 @@ public class TwilioSmsProvider : ISmsProvider
             {
                 var result = await response.Content.ReadFromJsonAsync<TwilioMessageResponse>(_jsonSerializerOptions);
 
-                if (string.Equals(result.Status, "sent", StringComparison.OrdinalIgnoreCase) ||
-                    string.Equals(result.Status, "queued", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(result.Status, "sent", StringComparison.OrdinalIgnoreCase) || string.Equals(result.Status, "queued", StringComparison.OrdinalIgnoreCase))
                 {
                     return SmsResult.Success;
                 }

@@ -35,24 +35,17 @@ namespace OrchardCore.DisplayManagement.LocationExpander
         }
 
         /// <inheritdoc />
-        public virtual IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context,
-                                                               IEnumerable<string> viewLocations)
+        public virtual IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context, IEnumerable<string> viewLocations)
         {
             if (!context.Values.TryGetValue("Theme", out var currentThemeId))
             {
                 return viewLocations;
             }
 
-            var currentThemeAndBaseThemesOrdered = _extensionManager
-                .GetFeatures([currentThemeId])
-                .Where(f => f.IsTheme())
-                .Reverse()
-                .ToList();
+            var currentThemeAndBaseThemesOrdered = _extensionManager.GetFeatures([currentThemeId]).Where(f => f.IsTheme()).Reverse().ToList();
 
             // let the application acting as a super theme also for mvc views discovering.
-            var applicationTheme = _extensionManager
-                .GetFeatures()
-                .FirstOrDefault(x => x.Id == _hostingEnvironment.ApplicationName);
+            var applicationTheme = _extensionManager.GetFeatures().FirstOrDefault(x => x.Id == _hostingEnvironment.ApplicationName);
 
             if (applicationTheme != null)
             {

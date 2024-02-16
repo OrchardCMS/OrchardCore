@@ -11,9 +11,6 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Search.AzureAI",
     Name = "Azure AI Search",
     Description = "Provides Azure AI Search services for managing indexes and facilitating search scenarios within indexes.",
-    Dependencies =
-    [
-        "OrchardCore.Indexing",
-    ],
+    Dependencies = ["OrchardCore.Indexing",],
     Category = "Search"
 )]

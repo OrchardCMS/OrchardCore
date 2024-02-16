@@ -19,10 +19,7 @@ namespace OrchardCore.Contents.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
-        public ContentsDriver(
-            IContentDefinitionManager contentDefinitionManager,
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+        public ContentsDriver(IContentDefinitionManager contentDefinitionManager, IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _httpContextAccessor = httpContextAccessor;
@@ -37,9 +34,7 @@ namespace OrchardCore.Contents.Drivers
             var context = _httpContextAccessor.HttpContext;
             var results = new List<IDisplayResult>();
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
-            var contentsMetadataShape = Shape("ContentsMetadata",
-                new ContentItemViewModel(contentItem))
-                .Location("Detail", "Content:before");
+            var contentsMetadataShape = Shape("ContentsMetadata", new ContentItemViewModel(contentItem)).Location("Detail", "Content:before");
 
             if (contentTypeDefinition != null)
             {
@@ -67,21 +62,23 @@ namespace OrchardCore.Contents.Drivers
 
                 results.Add(contentsMetadataShape);
                 results.Add(Shape("ContentsButtonEdit_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Actions:10"));
-                results.Add(Shape("ContentsButtonActions_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "ActionsMenu:10")
-                    .RenderWhen(async () =>
-                    {
-                        var hasPublishPermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.PublishContent, contentItem);
-                        var hasDeletePermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.DeleteContent, contentItem);
-                        var hasPreviewPermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.PreviewContent, contentItem);
-                        var hasClonePermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.CloneContent, contentItem);
-
-                        if (hasPublishPermission || hasDeletePermission || hasPreviewPermission || hasClonePermission)
+                results.Add(
+                    Shape("ContentsButtonActions_SummaryAdmin", new ContentItemViewModel(contentItem))
+                        .Location("SummaryAdmin", "ActionsMenu:10")
+                        .RenderWhen(async () =>
                         {
-                            return true;
-                        }
+                            var hasPublishPermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.PublishContent, contentItem);
+                            var hasDeletePermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.DeleteContent, contentItem);
+                            var hasPreviewPermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.PreviewContent, contentItem);
+                            var hasClonePermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.CloneContent, contentItem);
 
-                        return false;
-                    })
+                            if (hasPublishPermission || hasDeletePermission || hasPreviewPermission || hasClonePermission)
+                            {
+                                return true;
+                            }
+
+                            return false;
+                        })
                 );
             }
 
@@ -102,20 +99,24 @@ namespace OrchardCore.Contents.Drivers
                 return null;
             }
 
-            results.Add(Dynamic("Content_PublishButton").Location("Actions:10")
-                .RenderWhen(() => _authorizationService.AuthorizeAsync(context.User, CommonPermissions.PublishContent, contentItem)));
+            results.Add(
+                Dynamic("Content_PublishButton")
+                    .Location("Actions:10")
+                    .RenderWhen(() => _authorizationService.AuthorizeAsync(context.User, CommonPermissions.PublishContent, contentItem))
+            );
 
-            results.Add(Dynamic("Content_SaveDraftButton").Location("Actions:20")
-                .RenderWhen(async () =>
-                {
-                    if (contentTypeDefinition.IsDraftable() &&
-                        await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.EditContent, contentItem))
+            results.Add(
+                Dynamic("Content_SaveDraftButton")
+                    .Location("Actions:20")
+                    .RenderWhen(async () =>
                     {
-                        return true;
-                    }
+                        if (contentTypeDefinition.IsDraftable() && await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.EditContent, contentItem))
+                        {
+                            return true;
+                        }
 
-                    return false;
-                })
+                        return false;
+                    })
             );
 
             return Combine(results.ToArray());

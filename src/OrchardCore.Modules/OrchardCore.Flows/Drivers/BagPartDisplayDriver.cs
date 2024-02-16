@@ -43,7 +43,7 @@ namespace OrchardCore.Flows.Drivers
             INotifier notifier,
             IHtmlLocalizer<BagPartDisplayDriver> htmlLocalizer,
             IAuthorizationService authorizationService
-            )
+        )
         {
             _contentDefinitionManager = contentDefinitionManager;
             _contentManager = contentManager;
@@ -59,27 +59,33 @@ namespace OrchardCore.Flows.Drivers
         {
             var hasItems = bagPart.ContentItems.Count > 0;
 
-            return Initialize<BagPartViewModel>(hasItems ? "BagPart" : "BagPart_Empty", m =>
-            {
-                m.BagPart = bagPart;
-                m.BuildPartDisplayContext = context;
-                m.Settings = context.TypePartDefinition.GetSettings<BagPartSettings>();
-            })
-            .Location("Detail", "Content")
-            .Location("Summary", "Content");
+            return Initialize<BagPartViewModel>(
+                    hasItems ? "BagPart" : "BagPart_Empty",
+                    m =>
+                    {
+                        m.BagPart = bagPart;
+                        m.BuildPartDisplayContext = context;
+                        m.Settings = context.TypePartDefinition.GetSettings<BagPartSettings>();
+                    }
+                )
+                .Location("Detail", "Content")
+                .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(BagPart bagPart, BuildPartEditorContext context)
         {
-            return Initialize<BagPartEditViewModel>(GetEditorShapeType(context), async m =>
-            {
-                var contentDefinitionManager = _serviceProvider.GetRequiredService<IContentDefinitionManager>();
+            return Initialize<BagPartEditViewModel>(
+                GetEditorShapeType(context),
+                async m =>
+                {
+                    var contentDefinitionManager = _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
-                m.BagPart = bagPart;
-                m.Updater = context.Updater;
-                m.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(context.TypePartDefinition);
-                m.AccessibleWidgets = await GetAccessibleWidgetsAsync(bagPart.ContentItems, contentDefinitionManager);
-            });
+                    m.BagPart = bagPart;
+                    m.Updater = context.Updater;
+                    m.ContainedContentTypeDefinitions = await GetContainedContentTypesAsync(context.TypePartDefinition);
+                    m.AccessibleWidgets = await GetAccessibleWidgetsAsync(bagPart.ContentItems, contentDefinitionManager);
+                }
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(BagPart part, UpdatePartEditorContext context)
@@ -182,9 +188,15 @@ namespace OrchardCore.Flows.Drivers
 
                 if (contentTypeDefinition == null)
                 {
-                    _logger.LogWarning("The Widget content item with id {ContentItemId} has no matching {ContentType} content type definition.", contentItem.ContentItemId, contentItem.ContentType);
+                    _logger.LogWarning(
+                        "The Widget content item with id {ContentItemId} has no matching {ContentType} content type definition.",
+                        contentItem.ContentItemId,
+                        contentItem.ContentType
+                    );
 
-                    await _notifier.WarningAsync(H["The Widget content item with id {0} has no matching {1} content type definition.", contentItem.ContentItemId, contentItem.ContentType]);
+                    await _notifier.WarningAsync(
+                        H["The Widget content item with id {0} has no matching {1} content type definition.", contentItem.ContentItemId, contentItem.ContentType]
+                    );
 
                     continue;
                 }
@@ -219,8 +231,8 @@ namespace OrchardCore.Flows.Drivers
             return await AuthorizeAsync(permission, contentItem);
         }
 
-        private Task<bool> AuthorizeAsync(Permission permission, ContentItem contentItem)
-            => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, permission, contentItem);
+        private Task<bool> AuthorizeAsync(Permission permission, ContentItem contentItem) =>
+            _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, permission, contentItem);
 
         private async Task<IEnumerable<ContentTypeDefinition>> GetContainedContentTypesAsync(ContentTypePartDefinition typePartDefinition)
         {
@@ -229,8 +241,9 @@ namespace OrchardCore.Flows.Drivers
 
             if (settings.ContainedStereotypes != null && settings.ContainedStereotypes.Length > 0)
             {
-                contentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
-                    .Where(contentType => contentType.HasStereotype() && settings.ContainedStereotypes.Contains(contentType.GetStereotype(), StringComparer.OrdinalIgnoreCase));
+                contentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync()).Where(contentType =>
+                    contentType.HasStereotype() && settings.ContainedStereotypes.Contains(contentType.GetStereotype(), StringComparer.OrdinalIgnoreCase)
+                );
             }
             else if (settings.ContainedContentTypes != null && settings.ContainedContentTypes.Length > 0)
             {

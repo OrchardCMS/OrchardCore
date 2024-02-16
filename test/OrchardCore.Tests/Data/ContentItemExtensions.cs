@@ -46,15 +46,9 @@ namespace OrchardCore.Tests.Data
         public void MergeReflectsChangesToWellKnownProperties()
         {
             // Setup
-            var contentItem = new ContentItem
-            {
-                DisplayText = "original value"
-            };
+            var contentItem = new ContentItem { DisplayText = "original value" };
 
-            var newContentItem = new ContentItem
-            {
-                DisplayText = "merged value"
-            };
+            var newContentItem = new ContentItem { DisplayText = "merged value" };
 
             // Act
             contentItem.Merge(newContentItem);
@@ -67,15 +61,9 @@ namespace OrchardCore.Tests.Data
         public void MergeRemovesWellKnownPropertiesFromData()
         {
             // Setup
-            var contentItem = new ContentItem
-            {
-                DisplayText = "original value"
-            };
+            var contentItem = new ContentItem { DisplayText = "original value" };
 
-            var newContentItem = new ContentItem
-            {
-                DisplayText = "merged value"
-            };
+            var newContentItem = new ContentItem { DisplayText = "merged value" };
 
             // Act
             contentItem.Merge(newContentItem);
@@ -88,15 +76,9 @@ namespace OrchardCore.Tests.Data
         public void MergeMaintainsDocumentId()
         {
             // Setup
-            var contentItem = new ContentItem
-            {
-                Id = 1,
-            };
+            var contentItem = new ContentItem { Id = 1, };
 
-            var newContentItem = new ContentItem
-            {
-                Id = 2
-            };
+            var newContentItem = new ContentItem { Id = 2 };
 
             // Act
             contentItem.Merge(newContentItem);

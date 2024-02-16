@@ -34,7 +34,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
 
         public override void Describe(DescribeContext<ContentItem> context)
         {
-            context.For<MultiTextFieldIndex>()
+            context
+                .For<MultiTextFieldIndex>()
                 .Map(async contentItem =>
                 {
                     // Remove index records of soft deleted items.
@@ -75,21 +76,19 @@ namespace OrchardCore.ContentFields.Indexing.SQL
 
                     return fieldDefinitions
                         .GetContentFields<MultiTextField>(contentItem)
-                        .SelectMany(pair =>
-                            pair.Field.Values.Select(value => (pair.Definition, Value: value)))
-                        .Select(pair =>
-                            new MultiTextFieldIndex
-                            {
-                                Latest = contentItem.Latest,
-                                Published = contentItem.Published,
-                                ContentItemId = contentItem.ContentItemId,
-                                ContentItemVersionId = contentItem.ContentItemVersionId,
-                                ContentType = contentItem.ContentType,
-                                ContentPart = pair.Definition.PartDefinition.Name,
-                                ContentField = pair.Definition.Name,
-                                Value = pair.Value?[..Math.Min(pair.Value.Length, MultiTextFieldIndex.MaxValueSize)],
-                                BigValue = pair.Value,
-                            });
+                        .SelectMany(pair => pair.Field.Values.Select(value => (pair.Definition, Value: value)))
+                        .Select(pair => new MultiTextFieldIndex
+                        {
+                            Latest = contentItem.Latest,
+                            Published = contentItem.Published,
+                            ContentItemId = contentItem.ContentItemId,
+                            ContentItemVersionId = contentItem.ContentItemVersionId,
+                            ContentType = contentItem.ContentType,
+                            ContentPart = pair.Definition.PartDefinition.Name,
+                            ContentField = pair.Definition.Name,
+                            Value = pair.Value?[..Math.Min(pair.Value.Length, MultiTextFieldIndex.MaxValueSize)],
+                            BigValue = pair.Value,
+                        });
                 });
         }
     }

@@ -14,11 +14,13 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 services.AddOptions<HtmlSanitizerOptions>();
 
-                services.ConfigureHtmlSanitizer((sanitizer) =>
-                {
-                    sanitizer.AllowedAttributes.Add("class");
-                    sanitizer.AllowedTags.Remove("form");
-                });
+                services.ConfigureHtmlSanitizer(
+                    (sanitizer) =>
+                    {
+                        sanitizer.AllowedAttributes.Add("class");
+                        sanitizer.AllowedTags.Remove("form");
+                    }
+                );
 
                 services.AddSingleton<IHtmlSanitizerService, HtmlSanitizerService>();
             });

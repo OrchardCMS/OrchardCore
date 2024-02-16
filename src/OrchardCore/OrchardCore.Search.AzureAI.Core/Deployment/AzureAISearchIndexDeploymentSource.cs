@@ -28,19 +28,12 @@ public class AzureAISearchIndexDeploymentSource(AzureAISearchIndexSettingsServic
         {
             if (indicesToAdd.Contains(index.IndexName))
             {
-                var indexSettingsDict = new Dictionary<string, AzureAISearchIndexSettings>
-                {
-                    { index.IndexName, index },
-                };
+                var indexSettingsDict = new Dictionary<string, AzureAISearchIndexSettings> { { index.IndexName, index }, };
 
                 data.Add(JObject.FromObject(indexSettingsDict));
             }
         }
 
-        result.Steps.Add(new JsonObject
-        {
-            ["name"] = nameof(AzureAISearchIndexSettings),
-            ["Indices"] = data,
-        });
+        result.Steps.Add(new JsonObject { ["name"] = nameof(AzureAISearchIndexSettings), ["Indices"] = data, });
     }
 }

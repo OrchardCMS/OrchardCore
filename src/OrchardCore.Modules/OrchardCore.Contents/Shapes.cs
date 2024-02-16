@@ -13,7 +13,8 @@ namespace OrchardCore.Contents
     {
         public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
         {
-            builder.Describe("Content")
+            builder
+                .Describe("Content")
                 .OnDisplaying(displaying =>
                 {
                     var shape = displaying.Shape;
@@ -45,7 +46,8 @@ namespace OrchardCore.Contents
                 });
 
             // This shapes provides a way to lazily load a content item render it in any display type.
-            builder.Describe("ContentItem")
+            builder
+                .Describe("ContentItem")
                 .OnProcessing(async context =>
                 {
                     var content = context.Shape;

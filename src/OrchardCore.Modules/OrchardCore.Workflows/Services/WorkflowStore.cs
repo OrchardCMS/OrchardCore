@@ -35,8 +35,7 @@ namespace OrchardCore.Workflows.Services
 
         public Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId = null, int? skip = null, int? take = null)
         {
-            var query = (IQuery<Workflow>)FilterByWorkflowTypeId(_session.Query<Workflow, WorkflowIndex>(), workflowTypeId)
-                .OrderByDescending(x => x.CreatedUtc);
+            var query = (IQuery<Workflow>)FilterByWorkflowTypeId(_session.Query<Workflow, WorkflowIndex>(), workflowTypeId).OrderByDescending(x => x.CreatedUtc);
 
             if (skip != null)
             {
@@ -79,9 +78,7 @@ namespace OrchardCore.Workflows.Services
         public Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, IEnumerable<string> blockingActivityIds)
         {
             return _session
-                .Query<Workflow, WorkflowBlockingActivitiesIndex>(index =>
-                    index.WorkflowTypeId == workflowTypeId &&
-                    index.ActivityId.IsIn(blockingActivityIds))
+                .Query<Workflow, WorkflowBlockingActivitiesIndex>(index => index.WorkflowTypeId == workflowTypeId && index.ActivityId.IsIn(blockingActivityIds))
                 .ListAsync();
         }
 

@@ -20,10 +20,7 @@ namespace OrchardCore.Shells.Azure.Configuration
         private readonly string _container;
         private readonly string _fileStoreContainer;
 
-        public BlobShellConfigurationSources(
-            IShellsFileStore shellsFileStore,
-            BlobShellStorageOptions blobOptions,
-            IOptions<ShellOptions> shellOptions)
+        public BlobShellConfigurationSources(IShellsFileStore shellsFileStore, BlobShellStorageOptions blobOptions, IOptions<ShellOptions> shellOptions)
         {
             _shellsFileStore = shellsFileStore;
             _blobOptions = blobOptions;

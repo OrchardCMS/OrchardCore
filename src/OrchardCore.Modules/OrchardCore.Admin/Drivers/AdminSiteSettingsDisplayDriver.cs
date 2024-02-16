@@ -17,9 +17,7 @@ namespace OrchardCore.Admin.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
-        public AdminSiteSettingsDisplayDriver(
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+        public AdminSiteSettingsDisplayDriver(IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService)
         {
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
@@ -34,13 +32,18 @@ namespace OrchardCore.Admin.Drivers
                 return null;
             }
 
-            return Initialize<AdminSettingsViewModel>("AdminSettings_Edit", model =>
-            {
-                model.DisplayThemeToggler = settings.DisplayThemeToggler;
-                model.DisplayMenuFilter = settings.DisplayMenuFilter;
-                model.DisplayNewMenu = settings.DisplayNewMenu;
-                model.DisplayTitlesInTopbar = settings.DisplayTitlesInTopbar;
-            }).Location("Content:3").OnGroup(GroupId);
+            return Initialize<AdminSettingsViewModel>(
+                    "AdminSettings_Edit",
+                    model =>
+                    {
+                        model.DisplayThemeToggler = settings.DisplayThemeToggler;
+                        model.DisplayMenuFilter = settings.DisplayMenuFilter;
+                        model.DisplayNewMenu = settings.DisplayNewMenu;
+                        model.DisplayTitlesInTopbar = settings.DisplayTitlesInTopbar;
+                    }
+                )
+                .Location("Content:3")
+                .OnGroup(GroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(AdminSettings settings, BuildEditorContext context)

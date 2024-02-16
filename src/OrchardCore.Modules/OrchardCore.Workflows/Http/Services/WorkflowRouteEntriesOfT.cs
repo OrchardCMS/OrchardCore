@@ -13,7 +13,8 @@ using YesSql;
 
 namespace OrchardCore.Workflows.Http.Services
 {
-    internal class WorkflowRouteEntries<TWorkflowRouteDocument> : IWorkflowRouteEntries where TWorkflowRouteDocument : WorkflowRouteDocument, new()
+    internal class WorkflowRouteEntries<TWorkflowRouteDocument> : IWorkflowRouteEntries
+        where TWorkflowRouteDocument : WorkflowRouteDocument, new()
     {
         private readonly IVolatileDocumentManager<TWorkflowRouteDocument> _documentManager;
 
@@ -48,11 +49,14 @@ namespace OrchardCore.Workflows.Http.Services
             var actionName = routeValues.GetValue<string>("action");
             var areaName = routeValues.GetValue<string>("area");
 
-            return document.Entries.Values.SelectMany(x => x).Where(x =>
-                x.HttpMethod == httpMethod &&
-                (x.ControllerName == controllerName || string.IsNullOrWhiteSpace(x.ControllerName)) &&
-                (x.ActionName == actionName || string.IsNullOrWhiteSpace(x.ActionName)) &&
-                (x.AreaName == areaName || string.IsNullOrWhiteSpace(x.AreaName)))
+            return document
+                .Entries.Values.SelectMany(x => x)
+                .Where(x =>
+                    x.HttpMethod == httpMethod
+                    && (x.ControllerName == controllerName || string.IsNullOrWhiteSpace(x.ControllerName))
+                    && (x.ActionName == actionName || string.IsNullOrWhiteSpace(x.ActionName))
+                    && (x.AreaName == areaName || string.IsNullOrWhiteSpace(x.AreaName))
+                )
                 .ToArray();
         }
 

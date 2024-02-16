@@ -22,13 +22,17 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         [Shape]
 #pragma warning disable CA1822 // Mark members as static
-        public async Task<IHtmlContent> List(Shape shape, DisplayContext displayContext, IEnumerable<object> Items,
+        public async Task<IHtmlContent> List(
+            Shape shape,
+            DisplayContext displayContext,
+            IEnumerable<object> Items,
 #pragma warning restore CA1822 // Mark members as static
             string ItemTagName,
             IEnumerable<string> ItemClasses,
             IDictionary<string, string> ItemAttributes,
             string FirstClass,
-            string LastClass)
+            string LastClass
+        )
         {
             if (Items == null)
             {
@@ -123,7 +127,8 @@ namespace OrchardCore.DisplayManagement.Shapes
     {
         public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
         {
-            builder.Describe("List")
+            builder
+                .Describe("List")
                 .OnCreated(created =>
                 {
                     dynamic list = created.Shape;

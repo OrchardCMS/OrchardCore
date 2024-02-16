@@ -12,13 +12,16 @@ namespace OrchardCore.Menu.Settings
     {
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            return Initialize<HtmlMenuItemPartSettingsViewModel>("HtmlMenuItemPartSettings_Edit", model =>
-            {
-                var settings = contentTypePartDefinition.GetSettings<HtmlMenuItemPartSettings>();
+            return Initialize<HtmlMenuItemPartSettingsViewModel>(
+                    "HtmlMenuItemPartSettings_Edit",
+                    model =>
+                    {
+                        var settings = contentTypePartDefinition.GetSettings<HtmlMenuItemPartSettings>();
 
-                model.SanitizeHtml = settings.SanitizeHtml;
-            })
-            .Location("Content:20");
+                        model.SanitizeHtml = settings.SanitizeHtml;
+                    }
+                )
+                .Location("Content:20");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

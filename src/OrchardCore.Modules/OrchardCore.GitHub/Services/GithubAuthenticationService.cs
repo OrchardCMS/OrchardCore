@@ -14,9 +14,7 @@ namespace OrchardCore.GitHub.Services
         private readonly ISiteService _siteService;
         protected readonly IStringLocalizer S;
 
-        public GitHubAuthenticationService(
-            ISiteService siteService,
-            IStringLocalizer<GitHubAuthenticationService> stringLocalizer)
+        public GitHubAuthenticationService(ISiteService siteService, IStringLocalizer<GitHubAuthenticationService> stringLocalizer)
         {
             _siteService = siteService;
             S = stringLocalizer;
@@ -39,12 +37,15 @@ namespace OrchardCore.GitHub.Services
             ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
-            container.Alter<GitHubAuthenticationSettings>(nameof(GitHubAuthenticationSettings), aspect =>
-            {
-                aspect.ClientID = settings.ClientID;
-                aspect.ClientSecret = settings.ClientSecret;
-                aspect.CallbackPath = settings.CallbackPath;
-            });
+            container.Alter<GitHubAuthenticationSettings>(
+                nameof(GitHubAuthenticationSettings),
+                aspect =>
+                {
+                    aspect.ClientID = settings.ClientID;
+                    aspect.ClientSecret = settings.ClientSecret;
+                    aspect.CallbackPath = settings.CallbackPath;
+                }
+            );
 
             await _siteService.UpdateSiteSettingsAsync(container);
         }

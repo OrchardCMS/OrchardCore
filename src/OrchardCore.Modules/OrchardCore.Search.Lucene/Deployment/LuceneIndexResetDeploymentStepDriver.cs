@@ -20,21 +20,24 @@ namespace OrchardCore.Search.Lucene.Deployment
 
         public override IDisplayResult Display(LuceneIndexResetDeploymentStep step)
         {
-            return
-                Combine(
-                    View("LuceneIndexResetDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                    View("LuceneIndexResetDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-                );
+            return Combine(
+                View("LuceneIndexResetDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("LuceneIndexResetDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(LuceneIndexResetDeploymentStep step)
         {
-            return Initialize<LuceneIndexResetDeploymentStepViewModel>("LuceneIndexResetDeploymentStep_Fields_Edit", async model =>
-            {
-                model.IncludeAll = step.IncludeAll;
-                model.IndexNames = step.IndexNames;
-                model.AllIndexNames = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
-            }).Location("Content");
+            return Initialize<LuceneIndexResetDeploymentStepViewModel>(
+                    "LuceneIndexResetDeploymentStep_Fields_Edit",
+                    async model =>
+                    {
+                        model.IncludeAll = step.IncludeAll;
+                        model.IndexNames = step.IndexNames;
+                        model.AllIndexNames = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(LuceneIndexResetDeploymentStep resetIndexStep, IUpdateModel updater)

@@ -7,13 +7,12 @@ using Microsoft.Identity.Web;
 using OrchardCore.Microsoft.Authentication.Settings;
 using MicrosoftIdentityDefaults = Microsoft.Identity.Web.Constants;
 
-
 namespace OrchardCore.Microsoft.Authentication.Configuration
 {
-    public class AzureADOptionsConfiguration :
-        IConfigureOptions<AuthenticationOptions>,
-        IConfigureNamedOptions<PolicySchemeOptions>,
-        IConfigureNamedOptions<MicrosoftIdentityOptions>
+    public class AzureADOptionsConfiguration
+        : IConfigureOptions<AuthenticationOptions>,
+            IConfigureNamedOptions<PolicySchemeOptions>,
+            IConfigureNamedOptions<MicrosoftIdentityOptions>
     {
         public const string AzureAdOpenIdConnectScheme = MicrosoftIdentityDefaults.AzureAd + OpenIdConnectDefaults.AuthenticationScheme;
 
@@ -33,16 +32,22 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             }
 
             // Register the OpenID Connect client handler in the authentication handlers collection.
-            options.AddScheme(Constants.AzureAd, builder =>
-            {
-                builder.DisplayName = settings.DisplayName;
-                builder.HandlerType = typeof(PolicySchemeHandler);
-            });
+            options.AddScheme(
+                Constants.AzureAd,
+                builder =>
+                {
+                    builder.DisplayName = settings.DisplayName;
+                    builder.HandlerType = typeof(PolicySchemeHandler);
+                }
+            );
 
-            options.AddScheme(AzureAdOpenIdConnectScheme, builder =>
-            {
-                builder.HandlerType = typeof(OpenIdConnectHandler);
-            });
+            options.AddScheme(
+                AzureAdOpenIdConnectScheme,
+                builder =>
+                {
+                    builder.HandlerType = typeof(OpenIdConnectHandler);
+                }
+            );
         }
 
         public void Configure(string name, MicrosoftIdentityOptions options)
@@ -80,6 +85,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             options.ForwardDefault = "Identity.External";
             options.ForwardChallenge = AzureAdOpenIdConnectScheme;
         }
+
         public void Configure(PolicySchemeOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
     }
 }

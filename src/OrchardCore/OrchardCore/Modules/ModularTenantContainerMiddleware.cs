@@ -15,10 +15,7 @@ namespace OrchardCore.Modules
         private readonly IShellHost _shellHost;
         private readonly IRunningShellTable _runningShellTable;
 
-        public ModularTenantContainerMiddleware(
-            RequestDelegate next,
-            IShellHost shellHost,
-            IRunningShellTable runningShellTable)
+        public ModularTenantContainerMiddleware(RequestDelegate next, IShellHost shellHost, IRunningShellTable runningShellTable)
         {
             _next = next;
             _shellHost = shellHost;
@@ -49,12 +46,14 @@ namespace OrchardCore.Modules
                 var shellScope = await _shellHost.GetScopeAsync(shellSettings);
 
                 // Holds the 'ShellContext' for the full request.
-                httpContext.Features.Set(new ShellContextFeature
-                {
-                    ShellContext = shellScope.ShellContext,
-                    OriginalPath = httpContext.Request.Path,
-                    OriginalPathBase = httpContext.Request.PathBase
-                });
+                httpContext.Features.Set(
+                    new ShellContextFeature
+                    {
+                        ShellContext = shellScope.ShellContext,
+                        OriginalPath = httpContext.Request.Path,
+                        OriginalPathBase = httpContext.Request.PathBase
+                    }
+                );
 
                 await shellScope.UsingAsync(async scope =>
                 {

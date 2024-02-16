@@ -15,8 +15,7 @@ namespace OrchardCore.Modules
     {
         private readonly ILogger _logger;
 
-        public ModularTenantRouterMiddleware(RequestDelegate _, ILogger<ModularTenantRouterMiddleware> logger)
-            => _logger = logger;
+        public ModularTenantRouterMiddleware(RequestDelegate _, ILogger<ModularTenantRouterMiddleware> logger) => _logger = logger;
 
         public async Task Invoke(HttpContext httpContext)
         {

@@ -35,4 +35,3 @@ public class AdminMenuPermissionService : IAdminMenuPermissionService
         return _permissions;
     }
 }
-

@@ -21,9 +21,9 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             {
                 var dic1 = new Dictionary<string, string>()
                 {
-                    {"name", name},
-                    {"description", name},
-                    {"type", "module"},
+                    { "name", name },
+                    { "description", name },
+                    { "type", "module" },
                 };
 
                 var memConfigSrc1 = new MemoryConfigurationSource { InitialData = dic1 };
@@ -32,11 +32,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
 
                 Manifest = new ManifestInfo(new ModuleAttribute());
 
-                var features =
-                    new List<IFeatureInfo>()
-                    {
-                        { new FeatureInfo(name, name, 0, string.Empty, string.Empty, this, [], false, false, false) }
-                    };
+                var features = new List<IFeatureInfo>() { { new FeatureInfo(name, name, 0, string.Empty, string.Empty, this, [], false, false, false) } };
 
                 Features = features;
             }
@@ -55,9 +51,9 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             {
                 var dic1 = new Dictionary<string, string>()
                 {
-                    {"name", name},
-                    {"description", name},
-                    {"type", "theme"},
+                    { "name", name },
+                    { "description", name },
+                    { "type", "theme" },
                 };
 
                 var memConfigSrc1 = new MemoryConfigurationSource { InitialData = dic1 };
@@ -66,11 +62,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
 
                 Manifest = new ManifestInfo(new ThemeAttribute());
 
-                var features =
-                    new List<IFeatureInfo>()
-                    {
-                        { new FeatureInfo(name, name, 0, string.Empty, string.Empty, this, [], false, false, false) }
-                    };
+                var features = new List<IFeatureInfo>() { { new FeatureInfo(name, name, 0, string.Empty, string.Empty, this, [], false, false, false) } };
 
                 Features = features;
 
@@ -81,10 +73,10 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             {
                 var dic1 = new Dictionary<string, string>()
                 {
-                    {"name", name},
-                    {"description", name},
-                    {"type", "theme"},
-                    {"basetheme", baseTheme.Id }
+                    { "name", name },
+                    { "description", name },
+                    { "type", "theme" },
+                    { "basetheme", baseTheme.Id }
                 };
 
                 var memConfigSrc1 = new MemoryConfigurationSource { InitialData = dic1 };
@@ -93,11 +85,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
 
                 Manifest = new ManifestInfo(new ThemeAttribute());
 
-                Features =
-                    new List<IFeatureInfo>()
-                    {
-                        { new FeatureInfo(name, name, 0, string.Empty, string.Empty, this, [baseTheme.Id], false, false, false) }
-                    };
+                Features = new List<IFeatureInfo>() { { new FeatureInfo(name, name, 0, string.Empty, string.Empty, this, [baseTheme.Id], false, false, false) } };
 
                 Id = name;
             }
@@ -126,7 +114,8 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             var baseThemeFeatureExtensionInfo = new TestThemeExtensionInfo("BaseTheme");
             var derivedThemeFeatureExtensionInfo = new TestThemeExtensionInfo("DerivedTheme", baseThemeFeatureExtensionInfo.Features.First());
 
-            var features = new[] {
+            var features = new[]
+            {
                 testFeatureExtensionInfo.Features.First(),
                 theme1FeatureExtensionInfo.Features.First(),
                 baseThemeFeatureExtensionInfo.Features.First(),
@@ -136,13 +125,15 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             serviceCollection.AddSingleton<IExtensionManager>(new TestExtensionManager(features));
 
 #pragma warning disable CA1861 // Avoid constant arrays as arguments
-            TestShapeProvider.InitFeatureShapes(new Dictionary<IFeatureInfo, IEnumerable<string>>
-            {
-                { TestFeature(), new[] {"Hello"} },
-                { features[1], new[] {"Theme1Shape"} },
-                { features[2], new[] {"DerivedShape", "OverriddenShape"} },
-                { features[3], new[] {"BaseShape", "OverriddenShape"} },
-            });
+            TestShapeProvider.InitFeatureShapes(
+                new Dictionary<IFeatureInfo, IEnumerable<string>>
+                {
+                    { TestFeature(), new[] { "Hello" } },
+                    { features[1], new[] { "Theme1Shape" } },
+                    { features[2], new[] { "DerivedShape", "OverriddenShape" } },
+                    { features[3], new[] { "BaseShape", "OverriddenShape" } },
+                }
+            );
 #pragma warning restore CA1861 // Avoid constant arrays as arguments
 
             serviceCollection.AddScoped<IShapeTableProvider, TestShapeProvider>();
@@ -183,7 +174,11 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 throw new NotImplementedException();
             }
 
-            public Task<(IEnumerable<IFeatureInfo>, IEnumerable<IFeatureInfo>)> UpdateFeaturesAsync(IEnumerable<IFeatureInfo> featuresToDisable, IEnumerable<IFeatureInfo> featuresToEnable, bool force)
+            public Task<(IEnumerable<IFeatureInfo>, IEnumerable<IFeatureInfo>)> UpdateFeaturesAsync(
+                IEnumerable<IFeatureInfo> featuresToDisable,
+                IEnumerable<IFeatureInfo> featuresToEnable,
+                bool force
+            )
             {
                 throw new NotImplementedException();
             }
@@ -207,6 +202,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
         public class TestExtensionManager : IExtensionManager
         {
             private readonly IEnumerable<IFeatureInfo> _features;
+
             public TestExtensionManager(IEnumerable<IFeatureInfo> features)
             {
                 _features = features;
@@ -285,8 +281,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
 
             public Action<ShapeTableBuilder> Discover = x => { };
 
-            public static void InitFeatureShapes(IDictionary<IFeatureInfo, IEnumerable<string>> featureShapes)
-                => _featureShapes = featureShapes;
+            public static void InitFeatureShapes(IDictionary<IFeatureInfo, IEnumerable<string>> featureShapes) => _featureShapes = featureShapes;
 
             void IShapeTableProvider.Discover(ShapeTableBuilder builder)
             {
@@ -322,17 +317,25 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
         [Fact]
         public async Task CallbackAlterationsContributeToDescriptor()
         {
-            Func<ShapeCreatingContext, Task> cb1 = x => { return Task.CompletedTask; };
-            Func<ShapeCreatedContext, Task> cb2 = x => { return Task.CompletedTask; };
-            Func<ShapeDisplayContext, Task> cb3 = x => { return Task.CompletedTask; };
-            Func<ShapeDisplayContext, Task> cb4 = x => { return Task.CompletedTask; };
+            Func<ShapeCreatingContext, Task> cb1 = x =>
+            {
+                return Task.CompletedTask;
+            };
+            Func<ShapeCreatedContext, Task> cb2 = x =>
+            {
+                return Task.CompletedTask;
+            };
+            Func<ShapeDisplayContext, Task> cb3 = x =>
+            {
+                return Task.CompletedTask;
+            };
+            Func<ShapeDisplayContext, Task> cb4 = x =>
+            {
+                return Task.CompletedTask;
+            };
 
-            _serviceProvider.GetService<TestShapeProvider>().Discover =
-                builder => builder.Describe("Foo").From(TestFeature())
-                               .OnCreating(cb1)
-                               .OnCreated(cb2)
-                               .OnDisplaying(cb3)
-                               .OnDisplayed(cb4);
+            _serviceProvider.GetService<TestShapeProvider>().Discover = builder =>
+                builder.Describe("Foo").From(TestFeature()).OnCreating(cb1).OnCreated(cb2).OnDisplaying(cb3).OnDisplayed(cb4);
 
             var manager = _serviceProvider.GetService<IShapeTableManager>();
 
@@ -362,8 +365,10 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             var shapeSummary = new ShapePlacementContext("Foo", "Summary", string.Empty, null);
             var shapeTitle = new ShapePlacementContext("Foo", "Title", string.Empty, null);
 
-            _serviceProvider.GetService<TestShapeProvider>().Discover =
-                builder => builder.Describe("Hello1").From(TestFeature())
+            _serviceProvider.GetService<TestShapeProvider>().Discover = builder =>
+                builder
+                    .Describe("Hello1")
+                    .From(TestFeature())
                     .Placement(ctx => ctx.DisplayType == "Detail" ? new PlacementInfo { Location = "Main" } : null)
                     .Placement(ctx => ctx.DisplayType == "Summary" ? new PlacementInfo { Location = string.Empty } : null);
 
@@ -392,8 +397,10 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             var shapeSummary = new ShapePlacementContext("Foo", "Summary", string.Empty, null);
             var shapeTitle = new ShapePlacementContext("Foo", "Title", string.Empty, null);
 
-            _serviceProvider.GetService<TestShapeProvider>().Discover =
-                builder => builder.Describe("Hello2").From(TestFeature())
+            _serviceProvider.GetService<TestShapeProvider>().Discover = builder =>
+                builder
+                    .Describe("Hello2")
+                    .From(TestFeature())
                     .Placement(ctx => ctx.DisplayType == "Detail", new PlacementInfo { Location = "Main" })
                     .Placement(ctx => ctx.DisplayType == "Summary", new PlacementInfo { Location = string.Empty });
 
@@ -422,10 +429,10 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             // all path have a trailing / as per the current implementation
             // todo: (sebros) find a way to 'use' the current implementation in DefaultContentDisplay.BindPlacement instead of emulating it
 
-            var rules = new[] {
+            var rules = new[]
+            {
                 Tuple.Create("~/my-blog", "~/my-blog/", true),
                 Tuple.Create("~/my-blog/", "~/my-blog/", true),
-
                 // star match
                 Tuple.Create("~/my-blog*", "~/my-blog/", true),
                 Tuple.Create("~/my-blog*", "~/my-blog/my-post/", true),
@@ -440,9 +447,8 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var context = rule.Item2;
                 var match = rule.Item3;
 
-                _serviceProvider.GetService<TestShapeProvider>().Discover =
-                    builder => builder.Describe("Hello").From(TestFeature())
-                                   .Placement(ctx => true, new PlacementInfo { Location = "Match" });
+                _serviceProvider.GetService<TestShapeProvider>().Discover = builder =>
+                    builder.Describe("Hello").From(TestFeature()).Placement(ctx => true, new PlacementInfo { Location = "Match" });
 
                 var manager = _serviceProvider.GetService<IShapeTableManager>();
                 var hello = (await manager.GetShapeTableAsync(null)).Descriptors["Hello"];

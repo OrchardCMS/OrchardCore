@@ -18,11 +18,15 @@ namespace OrchardCore.Flows.Drivers
                 return null;
             }
 
-            return Initialize<FlowMetadata>("FlowMetadata_Edit", m =>
-            {
-                m.Alignment = flowMetadata.Alignment;
-                m.Size = flowMetadata.Size;
-            }).Location("Footer");
+            return Initialize<FlowMetadata>(
+                    "FlowMetadata_Edit",
+                    m =>
+                    {
+                        m.Alignment = flowMetadata.Alignment;
+                        m.Size = flowMetadata.Size;
+                    }
+                )
+                .Location("Footer");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentItem contentItem, IUpdateModel updater)

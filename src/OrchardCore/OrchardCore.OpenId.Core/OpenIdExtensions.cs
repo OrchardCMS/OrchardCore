@@ -20,8 +20,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             ArgumentNullException.ThrowIfNull(builder);
 
-            builder.Services.TryAddEnumerable(
-                ServiceDescriptor.Scoped<IDataMigration, OpenIdMigrations>());
+            builder.Services.TryAddEnumerable(ServiceDescriptor.Scoped<IDataMigration, OpenIdMigrations>());
 
             // Configure support for an OpenId collection.
             builder.Services.Configure<StoreCollectionOptions>(o => o.Collections.Add("OpenId"));
@@ -33,10 +32,11 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             ArgumentNullException.ThrowIfNull(builder);
 
-            builder.ReplaceApplicationManager(typeof(OpenIdApplicationManager<>))
-                   .ReplaceAuthorizationManager(typeof(OpenIdAuthorizationManager<>))
-                   .ReplaceScopeManager(typeof(OpenIdScopeManager<>))
-                   .ReplaceTokenManager(typeof(OpenIdTokenManager<>));
+            builder
+                .ReplaceApplicationManager(typeof(OpenIdApplicationManager<>))
+                .ReplaceAuthorizationManager(typeof(OpenIdAuthorizationManager<>))
+                .ReplaceScopeManager(typeof(OpenIdScopeManager<>))
+                .ReplaceTokenManager(typeof(OpenIdTokenManager<>));
 
             // Register proxy delegates so that the Orchard managers can be directly
             // resolved from the DI using the non-generic, Orchard-specific interfaces.
@@ -57,15 +57,17 @@ namespace Microsoft.Extensions.DependencyInjection
             // in case case-sensitive stores were registered before this extension was called.
             builder.Configure(options => options.DisableAdditionalFiltering = false);
 
-            builder.SetDefaultApplicationEntity<OpenIdApplication>()
-                   .SetDefaultAuthorizationEntity<OpenIdAuthorization>()
-                   .SetDefaultScopeEntity<OpenIdScope>()
-                   .SetDefaultTokenEntity<OpenIdToken>();
+            builder
+                .SetDefaultApplicationEntity<OpenIdApplication>()
+                .SetDefaultAuthorizationEntity<OpenIdAuthorization>()
+                .SetDefaultScopeEntity<OpenIdScope>()
+                .SetDefaultTokenEntity<OpenIdToken>();
 
-            builder.ReplaceApplicationStoreResolver<OpenIdApplicationStoreResolver>()
-                   .ReplaceAuthorizationStoreResolver<OpenIdAuthorizationStoreResolver>()
-                   .ReplaceScopeStoreResolver<OpenIdScopeStoreResolver>()
-                   .ReplaceTokenStoreResolver<OpenIdTokenStoreResolver>();
+            builder
+                .ReplaceApplicationStoreResolver<OpenIdApplicationStoreResolver>()
+                .ReplaceAuthorizationStoreResolver<OpenIdAuthorizationStoreResolver>()
+                .ReplaceScopeStoreResolver<OpenIdScopeStoreResolver>()
+                .ReplaceTokenStoreResolver<OpenIdTokenStoreResolver>();
 
             builder.Services.TryAddSingleton<OpenIdApplicationStoreResolver.TypeResolutionCache>();
             builder.Services.TryAddSingleton<OpenIdAuthorizationStoreResolver.TypeResolutionCache>();
@@ -77,13 +79,15 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddScoped(typeof(OpenIdScopeStore<>));
             builder.Services.TryAddScoped(typeof(OpenIdTokenStore<>));
 
-            builder.Services.TryAddEnumerable(new[]
-            {
-                ServiceDescriptor.Singleton<IIndexProvider, OpenIdApplicationIndexProvider>(),
-                ServiceDescriptor.Singleton<IIndexProvider, OpenIdAuthorizationIndexProvider>(),
-                ServiceDescriptor.Singleton<IIndexProvider, OpenIdScopeIndexProvider>(),
-                ServiceDescriptor.Singleton<IIndexProvider, OpenIdTokenIndexProvider>()
-            });
+            builder.Services.TryAddEnumerable(
+                new[]
+                {
+                    ServiceDescriptor.Singleton<IIndexProvider, OpenIdApplicationIndexProvider>(),
+                    ServiceDescriptor.Singleton<IIndexProvider, OpenIdAuthorizationIndexProvider>(),
+                    ServiceDescriptor.Singleton<IIndexProvider, OpenIdScopeIndexProvider>(),
+                    ServiceDescriptor.Singleton<IIndexProvider, OpenIdTokenIndexProvider>()
+                }
+            );
 
             return builder;
         }

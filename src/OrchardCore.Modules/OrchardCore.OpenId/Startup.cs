@@ -47,20 +47,15 @@ namespace OrchardCore.OpenId
             // Register the OpenIddict core services and the Orchard migrations, managers and default YesSql stores.
             // The default YesSql stores can be replaced by another database by referencing the corresponding
             // OpenIddict package (e.g OpenIddict.EntityFrameworkCore) and registering it in the options.
-            services.AddOpenIddict()
+            services
+                .AddOpenIddict()
                 .AddCore(options =>
                 {
-                    options.AddOrchardMigrations()
-                           .UseOrchardManagers()
-                           .UseYesSql();
+                    options.AddOrchardMigrations().UseOrchardManagers().UseYesSql();
                 });
 
             // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
-            services.TryAddEnumerable(new[]
-            {
-                ServiceDescriptor.Scoped<IPermissionProvider, Permissions>(),
-                ServiceDescriptor.Scoped<INavigationProvider, AdminMenu>(),
-            });
+            services.TryAddEnumerable(new[] { ServiceDescriptor.Scoped<IPermissionProvider, Permissions>(), ServiceDescriptor.Scoped<INavigationProvider, AdminMenu>(), });
         }
     }
 
@@ -72,22 +67,25 @@ namespace OrchardCore.OpenId
             services.TryAddSingleton<IOpenIdClientService, OpenIdClientService>();
 
             // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
-            services.TryAddEnumerable(new[]
-            {
-                ServiceDescriptor.Scoped<IDisplayDriver<ISite>, OpenIdClientSettingsDisplayDriver>(),
-                ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdClientSettingsStep>()
-            });
+            services.TryAddEnumerable(
+                new[]
+                {
+                    ServiceDescriptor.Scoped<IDisplayDriver<ISite>, OpenIdClientSettingsDisplayDriver>(),
+                    ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdClientSettingsStep>()
+                }
+            );
 
             // Register the options initializers required by the OpenID Connect client handler.
-            services.TryAddEnumerable(new[]
-            {
-                // Orchard-specific initializers:
-                ServiceDescriptor.Singleton<IConfigureOptions<AuthenticationOptions>, OpenIdClientConfiguration>(),
-                ServiceDescriptor.Singleton<IConfigureOptions<OpenIdConnectOptions>, OpenIdClientConfiguration>(),
-
-                // Built-in initializers:
-                ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>()
-            });
+            services.TryAddEnumerable(
+                new[]
+                {
+                    // Orchard-specific initializers:
+                    ServiceDescriptor.Singleton<IConfigureOptions<AuthenticationOptions>, OpenIdClientConfiguration>(),
+                    ServiceDescriptor.Singleton<IConfigureOptions<OpenIdConnectOptions>, OpenIdClientConfiguration>(),
+                    // Built-in initializers:
+                    ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>()
+                }
+            );
         }
     }
 
@@ -161,7 +159,8 @@ namespace OrchardCore.OpenId
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddOpenIddict()
+            services
+                .AddOpenIddict()
                 .AddServer(options =>
                 {
                     options.UseAspNetCore();
@@ -171,16 +170,17 @@ namespace OrchardCore.OpenId
             services.TryAddSingleton<IOpenIdServerService, OpenIdServerService>();
 
             // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
-            services.TryAddEnumerable(new[]
-            {
-                ServiceDescriptor.Scoped<IRoleRemovedEventHandler, OpenIdApplicationRoleRemovedEventHandler>(),
-                ServiceDescriptor.Scoped<IDisplayDriver<OpenIdServerSettings>, OpenIdServerSettingsDisplayDriver>(),
-                ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdServerSettingsStep>(),
-                ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdApplicationStep>(),
-                ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdScopeStep>(),
-
-                ServiceDescriptor.Singleton<IBackgroundTask, OpenIdBackgroundTask>()
-            });
+            services.TryAddEnumerable(
+                new[]
+                {
+                    ServiceDescriptor.Scoped<IRoleRemovedEventHandler, OpenIdApplicationRoleRemovedEventHandler>(),
+                    ServiceDescriptor.Scoped<IDisplayDriver<OpenIdServerSettings>, OpenIdServerSettingsDisplayDriver>(),
+                    ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdServerSettingsStep>(),
+                    ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdApplicationStep>(),
+                    ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdScopeStep>(),
+                    ServiceDescriptor.Singleton<IBackgroundTask, OpenIdBackgroundTask>()
+                }
+            );
 
             // Note: the OpenIddict ASP.NET host adds an authentication options initializer that takes care of
             // registering the server ASP.NET Core handler. Yet, it MUST NOT be registered at this stage
@@ -189,13 +189,15 @@ namespace OrchardCore.OpenId
             // To prevent that, the initializer is manually removed from the services collection of the tenant.
             services.RemoveAll<IConfigureOptions<AuthenticationOptions>, OpenIddictServerAspNetCoreConfiguration>();
 
-            services.TryAddEnumerable(new[]
-            {
-                ServiceDescriptor.Singleton<IConfigureOptions<AuthenticationOptions>, OpenIdServerConfiguration>(),
-                ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictServerOptions>, OpenIdServerConfiguration>(),
-                ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictServerAspNetCoreOptions>, OpenIdServerConfiguration>(),
-                ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictServerDataProtectionOptions>, OpenIdServerConfiguration>()
-            });
+            services.TryAddEnumerable(
+                new[]
+                {
+                    ServiceDescriptor.Singleton<IConfigureOptions<AuthenticationOptions>, OpenIdServerConfiguration>(),
+                    ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictServerOptions>, OpenIdServerConfiguration>(),
+                    ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictServerAspNetCoreOptions>, OpenIdServerConfiguration>(),
+                    ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictServerDataProtectionOptions>, OpenIdServerConfiguration>()
+                }
+            );
         }
 
         public override async ValueTask ConfigureAsync(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -286,7 +288,8 @@ namespace OrchardCore.OpenId
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddOpenIddict()
+            services
+                .AddOpenIddict()
                 .AddValidation(options =>
                 {
                     options.UseAspNetCore();
@@ -297,11 +300,13 @@ namespace OrchardCore.OpenId
             services.TryAddSingleton<IOpenIdValidationService, OpenIdValidationService>();
 
             // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
-            services.TryAddEnumerable(new[]
-            {
-                ServiceDescriptor.Scoped<IDisplayDriver<OpenIdValidationSettings>, OpenIdValidationSettingsDisplayDriver>(),
-                ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdValidationSettingsStep>()
-            });
+            services.TryAddEnumerable(
+                new[]
+                {
+                    ServiceDescriptor.Scoped<IDisplayDriver<OpenIdValidationSettings>, OpenIdValidationSettingsDisplayDriver>(),
+                    ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdValidationSettingsStep>()
+                }
+            );
 
             // Note: the OpenIddict ASP.NET host adds an authentication options initializer that takes care of
             // registering the validation handler. Yet, it MUST NOT be registered at this stage as it is
@@ -310,13 +315,15 @@ namespace OrchardCore.OpenId
             // To prevent that, the initializer is manually removed from the services collection of the tenant.
             services.RemoveAll<IConfigureOptions<AuthenticationOptions>, OpenIddictValidationAspNetCoreConfiguration>();
 
-            services.TryAddEnumerable(new[]
-            {
-                ServiceDescriptor.Singleton<IConfigureOptions<AuthenticationOptions>, OpenIdValidationConfiguration>(),
-                ServiceDescriptor.Singleton<IConfigureOptions<ApiAuthorizationOptions>, OpenIdValidationConfiguration>(),
-                ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictValidationOptions>, OpenIdValidationConfiguration>(),
-                ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictValidationDataProtectionOptions>, OpenIdValidationConfiguration>()
-            });
+            services.TryAddEnumerable(
+                new[]
+                {
+                    ServiceDescriptor.Singleton<IConfigureOptions<AuthenticationOptions>, OpenIdValidationConfiguration>(),
+                    ServiceDescriptor.Singleton<IConfigureOptions<ApiAuthorizationOptions>, OpenIdValidationConfiguration>(),
+                    ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictValidationOptions>, OpenIdValidationConfiguration>(),
+                    ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictValidationDataProtectionOptions>, OpenIdValidationConfiguration>()
+                }
+            );
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -362,7 +369,6 @@ namespace OrchardCore.OpenId
         }
 
         public static IServiceCollection RemoveAll<TService, TImplementation>(this IServiceCollection services)
-            where TImplementation : TService
-            => services.RemoveAll(typeof(TService), typeof(TImplementation));
+            where TImplementation : TService => services.RemoveAll(typeof(TService), typeof(TImplementation));
     }
 }

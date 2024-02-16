@@ -14,10 +14,7 @@ namespace OrchardCore.Workflows.Activities
         private readonly IUpdateModelAccessor _updateModelAccessor;
         protected readonly IStringLocalizer S;
 
-        public CommitTransactionTask(
-            ISession session,
-            IUpdateModelAccessor updateModelAccessor,
-            IStringLocalizer<CommitTransactionTask> localizer)
+        public CommitTransactionTask(ISession session, IUpdateModelAccessor updateModelAccessor, IStringLocalizer<CommitTransactionTask> localizer)
         {
             _session = session;
             _updateModelAccessor = updateModelAccessor;

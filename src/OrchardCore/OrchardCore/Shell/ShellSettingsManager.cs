@@ -33,7 +33,8 @@ namespace OrchardCore.Environment.Shell
             IConfiguration applicationConfiguration,
             IShellsConfigurationSources tenantsConfigSources,
             IShellConfigurationSources tenantConfigSources,
-            IShellsSettingsSources tenantsSettingsSources)
+            IShellsSettingsSources tenantsSettingsSources
+        )
         {
             _applicationConfiguration = applicationConfiguration;
             _tenantsConfigSources = tenantsConfigSources;
@@ -43,11 +44,7 @@ namespace OrchardCore.Environment.Shell
 
         public ShellSettings CreateDefaultSettings()
         {
-            return new ShellSettings
-            (
-                new ShellConfiguration(_configuration),
-                new ShellConfiguration(_configuration)
-            );
+            return new ShellSettings(new ShellConfiguration(_configuration), new ShellConfiguration(_configuration));
         }
 
         public async Task<IEnumerable<ShellSettings>> LoadSettingsAsync()
@@ -73,13 +70,11 @@ namespace OrchardCore.Environment.Shell
                     var settings = new ShellConfiguration(tenantSettingsBuilder);
                     var configuration = new ShellConfiguration(tenant, _tenantConfigFactoryAsync);
 
-                    var shellSettings = new ShellSettings(settings, configuration)
-                    {
-                        Name = tenant,
-                    };
+                    var shellSettings = new ShellSettings(settings, configuration) { Name = tenant, };
 
                     allSettings.Add(shellSettings);
-                };
+                }
+                ;
 
                 return allSettings;
             }
@@ -122,10 +117,7 @@ namespace OrchardCore.Environment.Shell
                 var settings = new ShellConfiguration(tenantSettingsBuilder);
                 var configuration = new ShellConfiguration(tenant, _tenantConfigFactoryAsync);
 
-                return new ShellSettings(settings, configuration)
-                {
-                    Name = tenant,
-                };
+                return new ShellSettings(settings, configuration) { Name = tenant, };
             }
             finally
             {
@@ -142,15 +134,9 @@ namespace OrchardCore.Environment.Shell
 
                 ArgumentNullException.ThrowIfNull(settings);
 
-                var configuration = new ConfigurationBuilder()
-                    .AddConfiguration(_configuration)
-                    .AddConfiguration(_configuration.GetSection(settings.Name))
-                    .Build();
+                var configuration = new ConfigurationBuilder().AddConfiguration(_configuration).AddConfiguration(_configuration.GetSection(settings.Name)).Build();
 
-                var shellSettings = new ShellSettings()
-                {
-                    Name = settings.Name
-                };
+                var shellSettings = new ShellSettings() { Name = settings.Name };
 
                 configuration.Bind(shellSettings);
 
@@ -246,15 +232,12 @@ namespace OrchardCore.Environment.Shell
                 return;
             }
 
-            var lastProviders = (_applicationConfiguration as IConfigurationRoot)?.Providers
-                .Where(p => p is EnvironmentVariablesConfigurationProvider ||
-                            p is CommandLineConfigurationProvider)
-                .ToArray()
-                ?? [];
+            var lastProviders =
+                (_applicationConfiguration as IConfigurationRoot)
+                    ?.Providers.Where(p => p is EnvironmentVariablesConfigurationProvider || p is CommandLineConfigurationProvider)
+                    .ToArray() ?? [];
 
-            var configurationBuilder = await new ConfigurationBuilder()
-                .AddConfiguration(_applicationConfiguration)
-                .AddSourcesAsync(_tenantsConfigSources);
+            var configurationBuilder = await new ConfigurationBuilder().AddConfiguration(_applicationConfiguration).AddSourcesAsync(_tenantsConfigSources);
 
             if (lastProviders.Length > 0)
             {
@@ -264,7 +247,8 @@ namespace OrchardCore.Environment.Shell
             _configurationRoot = configurationBuilder.Build();
             var configuration = _configurationRoot.GetSection("OrchardCore");
 
-            _configuredTenants = configuration.GetChildren()
+            _configuredTenants = configuration
+                .GetChildren()
                 .Where(section => Enum.TryParse<TenantState>(section["State"], ignoreCase: true, out _))
                 .Select(section => section.Key)
                 .Distinct()
@@ -297,9 +281,7 @@ namespace OrchardCore.Environment.Shell
         {
             using var disposable = _tenantsSettingsRoot as IDisposable;
 
-            _tenantsSettingsRoot = (await new ConfigurationBuilder()
-                .AddSourcesAsync(_tenantsSettingsSources))
-                .Build();
+            _tenantsSettingsRoot = (await new ConfigurationBuilder().AddSourcesAsync(_tenantsSettingsSources)).Build();
         }
 
         public void Dispose()

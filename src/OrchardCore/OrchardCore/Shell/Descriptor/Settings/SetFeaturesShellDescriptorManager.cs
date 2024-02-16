@@ -34,12 +34,7 @@ namespace OrchardCore.Environment.Shell.Descriptor.Settings
                     .Except(featureIds)
                     .Select(id => new ShellFeature(id));
 
-                _shellDescriptor = new ShellDescriptor
-                {
-                    Features = _shellFeatures
-                        .Concat(missingDependencies)
-                        .ToList()
-                };
+                _shellDescriptor = new ShellDescriptor { Features = _shellFeatures.Concat(missingDependencies).ToList() };
             }
 
             return _shellDescriptor;

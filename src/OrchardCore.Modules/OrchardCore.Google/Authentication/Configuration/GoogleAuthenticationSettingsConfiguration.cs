@@ -17,7 +17,8 @@ public class GoogleAuthenticationSettingsConfiguration : IConfigureOptions<Googl
     public GoogleAuthenticationSettingsConfiguration(
         GoogleAuthenticationService gitHubAuthenticationService,
         ShellSettings shellSettings,
-        ILogger<GoogleAuthenticationSettingsConfiguration> logger)
+        ILogger<GoogleAuthenticationSettingsConfiguration> logger
+    )
     {
         _googleAuthenticationService = gitHubAuthenticationService;
         _shellSettings = shellSettings;
@@ -26,9 +27,7 @@ public class GoogleAuthenticationSettingsConfiguration : IConfigureOptions<Googl
 
     public void Configure(GoogleAuthenticationSettings options)
     {
-        var settings = GetGoogleAuthenticationSettingsAsync()
-            .GetAwaiter()
-            .GetResult();
+        var settings = GetGoogleAuthenticationSettingsAsync().GetAwaiter().GetResult();
 
         if (settings != null)
         {

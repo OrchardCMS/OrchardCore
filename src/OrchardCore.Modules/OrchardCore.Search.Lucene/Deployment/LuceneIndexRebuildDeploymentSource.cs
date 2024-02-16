@@ -18,12 +18,14 @@ namespace OrchardCore.Search.Lucene.Deployment
 
             var indicesToRebuild = luceneIndexRebuildStep.IncludeAll ? [] : luceneIndexRebuildStep.IndexNames;
 
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "lucene-index-rebuild",
-                ["includeAll"] = luceneIndexRebuildStep.IncludeAll,
-                ["Indices"] = JArray.FromObject(indicesToRebuild),
-            });
+            result.Steps.Add(
+                new JsonObject
+                {
+                    ["name"] = "lucene-index-rebuild",
+                    ["includeAll"] = luceneIndexRebuildStep.IncludeAll,
+                    ["Indices"] = JArray.FromObject(indicesToRebuild),
+                }
+            );
 
             return Task.CompletedTask;
         }

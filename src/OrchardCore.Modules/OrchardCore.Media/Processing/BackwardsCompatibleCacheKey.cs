@@ -13,7 +13,6 @@ namespace OrchardCore.Media.Processing
         /// <inheritdoc/>
         public string Create(HttpContext context, CommandCollection commands)
         {
-
             var pathBase = context.Request.PathBase;
             if (pathBase.HasValue)
             {
@@ -27,7 +26,13 @@ namespace OrchardCore.Media.Processing
                 pathBase = new PathString(pathBase + "//");
             }
 
-            return CaseHandlingUriBuilder.BuildAbsolute(CaseHandlingUriBuilder.CaseHandling.LowerInvariant, context.Request.Host, pathBase, context.Request.Path, QueryString.Create(commands));
+            return CaseHandlingUriBuilder.BuildAbsolute(
+                CaseHandlingUriBuilder.CaseHandling.LowerInvariant,
+                context.Request.Host,
+                pathBase,
+                context.Request.Path,
+                QueryString.Create(commands)
+            );
         }
     }
 }

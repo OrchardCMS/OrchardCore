@@ -40,7 +40,7 @@ public class ElasticsearchService : ISearchService
         IOptions<ElasticConnectionOptions> elasticConnectionOptions,
         ILiquidTemplateManager liquidTemplateManager,
         ILogger<ElasticsearchService> logger
-        )
+    )
     {
         _siteService = siteService;
         _elasticIndexManager = elasticIndexManager;
@@ -95,11 +95,11 @@ public class ElasticsearchService : ISearchService
 
             if (searchType == ElasticSettings.CustomSearchType && !string.IsNullOrWhiteSpace(searchSettings.DefaultQuery))
             {
-                var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(searchSettings.DefaultQuery, _javaScriptEncoder,
-                    new Dictionary<string, FluidValue>()
-                    {
-                        ["term"] = new StringValue(term)
-                    });
+                var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(
+                    searchSettings.DefaultQuery,
+                    _javaScriptEncoder,
+                    new Dictionary<string, FluidValue>() { ["term"] = new StringValue(term) }
+                );
 
                 try
                 {

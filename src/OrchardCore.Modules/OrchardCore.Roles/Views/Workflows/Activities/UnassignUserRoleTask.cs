@@ -20,7 +20,12 @@ public class UnassignUserRoleTask : TaskActivity<UnassignUserRoleTask>
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
     protected readonly IStringLocalizer S;
 
-    public UnassignUserRoleTask(UserManager<IUser> userManager, IUserService userService, IWorkflowExpressionEvaluator expressionvaluator, IStringLocalizer<UnassignUserRoleTask> localizer)
+    public UnassignUserRoleTask(
+        UserManager<IUser> userManager,
+        IUserService userService,
+        IWorkflowExpressionEvaluator expressionvaluator,
+        IStringLocalizer<UnassignUserRoleTask> localizer
+    )
     {
         _userManager = userManager;
         _userService = userService;
@@ -44,8 +49,7 @@ public class UnassignUserRoleTask : TaskActivity<UnassignUserRoleTask>
         set => SetProperty(value);
     }
 
-    public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        => Outcomes(S["Done"], S["Failed"]);
+    public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext) => Outcomes(S["Done"], S["Failed"]);
 
     public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {

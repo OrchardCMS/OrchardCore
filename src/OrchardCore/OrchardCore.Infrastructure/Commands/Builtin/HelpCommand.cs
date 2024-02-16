@@ -12,8 +12,8 @@ namespace OrchardCore.Environment.Commands.Builtin
         private readonly IServiceProvider _serviceProvider;
         private readonly CommandHandlerDescriptorBuilder _builder = new();
 
-        public HelpCommand(IServiceProvider serviceProvider,
-            IStringLocalizer<HelpCommand> localizer) : base(localizer)
+        public HelpCommand(IServiceProvider serviceProvider, IStringLocalizer<HelpCommand> localizer)
+            : base(localizer)
         {
             _serviceProvider = serviceProvider;
         }
@@ -40,9 +40,7 @@ namespace OrchardCore.Environment.Commands.Builtin
         public async Task SingleCommandAsync(string[] commandNameStrings)
         {
             var command = string.Join(" ", commandNameStrings);
-            var descriptors = GetCommandDescriptors()
-                .Where(t => t.Names.Any(x => x.StartsWith(command, StringComparison.OrdinalIgnoreCase)))
-                .OrderBy(d => d.Names);
+            var descriptors = GetCommandDescriptors().Where(t => t.Names.Any(x => x.StartsWith(command, StringComparison.OrdinalIgnoreCase))).OrderBy(d => d.Names);
 
             if (!descriptors.Any())
             {
@@ -57,6 +55,7 @@ namespace OrchardCore.Environment.Commands.Builtin
                 }
             }
         }
+
         private IEnumerable<CommandDescriptor> GetCommandDescriptors()
         {
             var commandhandlers = _serviceProvider.GetServices<ICommandHandler>();

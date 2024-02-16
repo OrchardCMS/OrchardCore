@@ -38,7 +38,8 @@ namespace OrchardCore.AuditTrail.Controllers
             IAuditTrailAdminListQueryService auditTrailAdminListQueryService,
             IDisplayManager<AuditTrailEvent> displayManager,
             IDisplayManager<AuditTrailIndexOptions> auditTrailOptionsDisplayManager,
-            IStringLocalizer<AdminController> stringLocalizer)
+            IStringLocalizer<AdminController> stringLocalizer
+        )
         {
             _pagerOptions = pagerOptions.Value;
             _shapeFactory = shapeFactory;
@@ -51,17 +52,18 @@ namespace OrchardCore.AuditTrail.Controllers
             S = stringLocalizer;
         }
 
-        public async Task<ActionResult> Index([ModelBinder(BinderType = typeof(AuditTrailFilterEngineModelBinder), Name = "q")] QueryFilterResult<AuditTrailEvent> queryFilterResult, PagerParameters pagerParameters, string correlationId = "")
+        public async Task<ActionResult> Index(
+            [ModelBinder(BinderType = typeof(AuditTrailFilterEngineModelBinder), Name = "q")] QueryFilterResult<AuditTrailEvent> queryFilterResult,
+            PagerParameters pagerParameters,
+            string correlationId = ""
+        )
         {
             if (!await _authorizationService.AuthorizeAsync(User, AuditTrailPermissions.ViewAuditTrail))
             {
                 return Forbid();
             }
 
-            var options = new AuditTrailIndexOptions
-            {
-                FilterResult = queryFilterResult
-            };
+            var options = new AuditTrailIndexOptions { FilterResult = queryFilterResult };
 
             // This is used by Contents feature for routing so needs to be passed into the options.
             if (!string.IsNullOrEmpty(correlationId))
@@ -93,9 +95,7 @@ namespace OrchardCore.AuditTrail.Controllers
 
             foreach (var auditTrailEvent in result.Events)
             {
-                items.Add(
-                    await _displayManager.BuildDisplayAsync(auditTrailEvent, updater: _updateModelAccessor.ModelUpdater, displayType: "SummaryAdmin")
-                );
+                items.Add(await _displayManager.BuildDisplayAsync(auditTrailEvent, updater: _updateModelAccessor.ModelUpdater, displayType: "SummaryAdmin"));
             }
 
             var startIndex = (pager.Page - 1) * pager.PageSize + 1;
@@ -106,13 +106,16 @@ namespace OrchardCore.AuditTrail.Controllers
 
             var header = await _auditTrailOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
 
-            var shapeViewModel = await _shapeFactory.CreateAsync<AuditTrailListViewModel>("AuditTrailAdminList", viewModel =>
-            {
-                viewModel.Events = items;
-                viewModel.Pager = pagerShape;
-                viewModel.Options = options;
-                viewModel.Header = header;
-            });
+            var shapeViewModel = await _shapeFactory.CreateAsync<AuditTrailListViewModel>(
+                "AuditTrailAdminList",
+                viewModel =>
+                {
+                    viewModel.Events = items;
+                    viewModel.Pager = pagerShape;
+                    viewModel.Options = options;
+                    viewModel.Header = header;
+                }
+            );
 
             return View(shapeViewModel);
         }
@@ -149,7 +152,6 @@ namespace OrchardCore.AuditTrail.Controllers
             {
                 return NotFound();
             }
-
 
             var shape = await _displayManager.BuildDisplayAsync(auditTrailEvent, updater: _updateModelAccessor.ModelUpdater, displayType: "DetailAdmin");
 

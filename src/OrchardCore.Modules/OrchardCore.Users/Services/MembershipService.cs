@@ -10,9 +10,7 @@ namespace OrchardCore.Users.Services
         private readonly UserManager<IUser> _userManager;
         private readonly IUserClaimsPrincipalFactory<IUser> _claimsPrincipalFactory;
 
-        public MembershipService(
-            IUserClaimsPrincipalFactory<IUser> claimsPrincipalFactory,
-            UserManager<IUser> userManager)
+        public MembershipService(IUserClaimsPrincipalFactory<IUser> claimsPrincipalFactory, UserManager<IUser> userManager)
         {
             _claimsPrincipalFactory = claimsPrincipalFactory;
             _userManager = userManager;

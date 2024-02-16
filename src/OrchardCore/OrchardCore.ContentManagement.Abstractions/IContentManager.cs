@@ -34,7 +34,6 @@ namespace OrchardCore.ContentManagement
         /// <param name="options">The version to create the item with.</param>
         Task CreateAsync(ContentItem contentItem, VersionOptions options);
 
-
         /// <summary>
         /// Creates (puts) a new content item and manages removing and updating existing published or draft items.
         /// </summary>
@@ -161,7 +160,8 @@ namespace OrchardCore.ContentManagement
             return contentManager.CreateAsync(contentItem, VersionOptions.Published);
         }
 
-        public static Task<TAspect> PopulateAspectAsync<TAspect>(this IContentManager contentManager, IContent content) where TAspect : new()
+        public static Task<TAspect> PopulateAspectAsync<TAspect>(this IContentManager contentManager, IContent content)
+            where TAspect : new()
         {
             return contentManager.PopulateAspectAsync(content, new TAspect());
         }
@@ -215,7 +215,7 @@ namespace OrchardCore.ContentManagement
         }
 
         /// <summary>
-        /// Gets either the published container content item with the specified id, or if the json path supplied gets the contained content item. 
+        /// Gets either the published container content item with the specified id, or if the json path supplied gets the contained content item.
         /// </summary>
         /// <param name="contentManager">The <see cref="IContentManager"/> instance.</param>
         /// <param name="id">The content item id to load.</param>
@@ -254,27 +254,42 @@ namespace OrchardCore.ContentManagement
         /// <summary>
         /// Gets the latest version.
         /// </summary>
-        public static VersionOptions Latest { get { return new VersionOptions { IsLatest = true }; } }
+        public static VersionOptions Latest
+        {
+            get { return new VersionOptions { IsLatest = true }; }
+        }
 
         /// <summary>
         /// Gets the latest published version.
         /// </summary>
-        public static VersionOptions Published { get { return new VersionOptions { IsPublished = true }; } }
+        public static VersionOptions Published
+        {
+            get { return new VersionOptions { IsPublished = true }; }
+        }
 
         /// <summary>
         /// Gets the latest draft version.
         /// </summary>
-        public static VersionOptions Draft { get { return new VersionOptions { IsDraft = true }; } }
+        public static VersionOptions Draft
+        {
+            get { return new VersionOptions { IsDraft = true }; }
+        }
 
         /// <summary>
         /// Gets the latest version and creates a new version draft based on it.
         /// </summary>
-        public static VersionOptions DraftRequired { get { return new VersionOptions { IsDraft = true, IsDraftRequired = true }; } }
+        public static VersionOptions DraftRequired
+        {
+            get { return new VersionOptions { IsDraft = true, IsDraftRequired = true }; }
+        }
 
         /// <summary>
         /// Gets all versions.
         /// </summary>
-        public static VersionOptions AllVersions { get { return new VersionOptions { IsAllVersions = true }; } }
+        public static VersionOptions AllVersions
+        {
+            get { return new VersionOptions { IsAllVersions = true }; }
+        }
 
         public bool IsLatest { get; private set; }
         public bool IsPublished { get; private set; }

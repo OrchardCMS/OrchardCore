@@ -20,12 +20,16 @@ public class GraphQLContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisp
 
     public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition)
     {
-        return Initialize<GraphQLContentTypeSettingsViewModel>("GraphQLContentTypeSettings_Edit", model =>
-        {
-            model.Definition = contentTypeDefinition;
-            model.Settings = contentTypeDefinition.GetSettings<GraphQLContentTypeSettings>();
-            model.Options = _contentOptions;
-        }).Location("Content:5");
+        return Initialize<GraphQLContentTypeSettingsViewModel>(
+                "GraphQLContentTypeSettings_Edit",
+                model =>
+                {
+                    model.Definition = contentTypeDefinition;
+                    model.Settings = contentTypeDefinition.GetSettings<GraphQLContentTypeSettings>();
+                    model.Options = _contentOptions;
+                }
+            )
+            .Location("Content:5");
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypeDefinition contentTypeDefinition, UpdateTypeEditorContext context)

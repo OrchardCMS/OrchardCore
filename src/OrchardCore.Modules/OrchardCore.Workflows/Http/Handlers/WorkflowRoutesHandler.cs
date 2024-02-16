@@ -11,11 +11,7 @@ namespace OrchardCore.Workflows.Http.Handlers
         private readonly IWorkflowTypeStore _workflowTypeStore;
         private readonly IActivityLibrary _activityLibrary;
 
-        public WorkflowRoutesHandler(
-            IWorkflowInstanceRouteEntries workflowRouteEntries,
-            IWorkflowTypeStore workflowTypeStore,
-            IActivityLibrary activityLibrary
-        )
+        public WorkflowRoutesHandler(IWorkflowInstanceRouteEntries workflowRouteEntries, IWorkflowTypeStore workflowTypeStore, IActivityLibrary activityLibrary)
         {
             _workflowRouteEntries = workflowRouteEntries;
             _workflowTypeStore = workflowTypeStore;

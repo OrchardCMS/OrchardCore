@@ -18,11 +18,7 @@ namespace OrchardCore.Recipes.Services
         private readonly IHostEnvironment _hostingEnvironment;
         private readonly ILogger _logger;
 
-        public RecipeHarvester(
-            IRecipeReader recipeReader,
-            IExtensionManager extensionManager,
-            IHostEnvironment hostingEnvironment,
-            ILogger<RecipeHarvester> logger)
+        public RecipeHarvester(IRecipeReader recipeReader, IExtensionManager extensionManager, IHostEnvironment hostingEnvironment, ILogger<RecipeHarvester> logger)
         {
             _recipeReader = recipeReader;
             _extensionManager = extensionManager;
@@ -31,8 +27,7 @@ namespace OrchardCore.Recipes.Services
         }
 
         /// <inheritdoc/>
-        public virtual Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync()
-            => _extensionManager.GetExtensions().InvokeAsync(HarvestRecipes, _logger);
+        public virtual Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync() => _extensionManager.GetExtensions().InvokeAsync(HarvestRecipes, _logger);
 
         /// <summary>
         /// Returns a list of recipes for a content path.
@@ -43,7 +38,8 @@ namespace OrchardCore.Recipes.Services
         {
             var recipeDescriptors = new List<RecipeDescriptor>();
 
-            var recipeFiles = _hostingEnvironment.ContentRootFileProvider.GetDirectoryContents(path)
+            var recipeFiles = _hostingEnvironment
+                .ContentRootFileProvider.GetDirectoryContents(path)
                 .Where(f => !f.IsDirectory && f.Name.EndsWith(RecipesConstants.RecipeExtension, StringComparison.Ordinal));
 
             foreach (var recipeFile in recipeFiles)

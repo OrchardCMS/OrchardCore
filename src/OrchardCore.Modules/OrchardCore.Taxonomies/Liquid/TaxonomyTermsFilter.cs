@@ -29,10 +29,12 @@ namespace OrchardCore.Taxonomies.Liquid
                 taxonomyContentItemId = field.TaxonomyContentItemId;
                 termContentItemIds = field.TermContentItemIds;
             }
-            else if (input.Type == FluidValues.Object
+            else if (
+                input.Type == FluidValues.Object
                 && input.ToObjectValue() is JsonObject jobj
                 && jobj.ContainsKey(nameof(TaxonomyField.TermContentItemIds))
-                && jobj.ContainsKey(nameof(TaxonomyField.TaxonomyContentItemId)))
+                && jobj.ContainsKey(nameof(TaxonomyField.TaxonomyContentItemId))
+            )
             {
                 taxonomyContentItemId = jobj["TaxonomyContentItemId"].Value<string>();
                 termContentItemIds = jobj["TermContentItemIds"].Values<string>().ToArray();
@@ -58,9 +60,7 @@ namespace OrchardCore.Taxonomies.Liquid
 
             foreach (var termContentItemId in termContentItemIds)
             {
-                var term = TaxonomyOrchardHelperExtensions.FindTerm(
-                    (JsonArray)taxonomy.Content["TaxonomyPart"]["Terms"],
-                    termContentItemId);
+                var term = TaxonomyOrchardHelperExtensions.FindTerm((JsonArray)taxonomy.Content["TaxonomyPart"]["Terms"], termContentItemId);
 
                 if (term is not null)
                 {

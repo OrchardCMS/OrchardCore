@@ -41,7 +41,8 @@ namespace OrchardCore.Search.Lucene.QueryProviders
                     }
 
                     return regexpQuery;
-                default: throw new ArgumentException("Invalid regexp query");
+                default:
+                    throw new ArgumentException("Invalid regexp query");
             }
         }
     }

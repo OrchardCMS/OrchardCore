@@ -12,9 +12,7 @@ namespace OrchardCore.Media.AmazonS3
         private readonly IAuthorizationService _authorizationService;
         private readonly AwsStorageOptions _options;
 
-        public AdminController(
-            IAuthorizationService authorizationService,
-            IOptions<AwsStorageOptions> options)
+        public AdminController(IAuthorizationService authorizationService, IOptions<AwsStorageOptions> options)
         {
             _authorizationService = authorizationService;
             _options = options.Value;

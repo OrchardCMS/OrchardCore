@@ -7,8 +7,8 @@ namespace OrchardCore.Data;
 
 public static class SqliteHelper
 {
-    public static string GetConnectionString(SqliteOptions sqliteOptions, ShellOptions shellOptions, ShellSettings shellSettings)
-        => GetConnectionString(sqliteOptions, GetDatabaseFolder(shellOptions, shellSettings.Name), shellSettings);
+    public static string GetConnectionString(SqliteOptions sqliteOptions, ShellOptions shellOptions, ShellSettings shellSettings) =>
+        GetConnectionString(sqliteOptions, GetDatabaseFolder(shellOptions, shellSettings.Name), shellSettings);
 
     /// <summary>
     /// Orchard Core SQLite connection string helper that requires ShellSettings to be passed
@@ -52,7 +52,13 @@ public static class SqliteHelper
     public static string GetDatabaseFolder(ShellOptions shellOptions, string shellName) =>
         Path.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellName);
 
-    private static SqliteConnectionStringBuilder GetSqliteConnectionStringBuilder(SqliteOptions sqliteOptions, string databaseFolder, string databaseName, SqliteOpenMode sqliteOpenMode){
+    private static SqliteConnectionStringBuilder GetSqliteConnectionStringBuilder(
+        SqliteOptions sqliteOptions,
+        string databaseFolder,
+        string databaseName,
+        SqliteOpenMode sqliteOpenMode
+    )
+    {
         return new SqliteConnectionStringBuilder
         {
             DataSource = string.IsNullOrEmpty(databaseFolder) ? databaseName : Path.Combine(databaseFolder, databaseName),

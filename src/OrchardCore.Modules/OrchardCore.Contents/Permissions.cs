@@ -27,10 +27,7 @@ public class Permissions : IPermissionProvider
     public static readonly Permission EditContentOwner = CommonPermissions.EditContentOwner;
     public static readonly Permission AccessContentApi = new("AccessContentApi", "Access content via the api");
 
-    private readonly IEnumerable<Permission> _readerPermissions =
-    [
-        ViewContent,
-    ];
+    private readonly IEnumerable<Permission> _readerPermissions = [ViewContent,];
 
     private readonly IEnumerable<Permission> _allPermissions =
     [
@@ -51,70 +48,19 @@ public class Permissions : IPermissionProvider
         EditContentOwner,
     ];
 
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
+    public Task<IEnumerable<Permission>> GetPermissionsAsync() => Task.FromResult(_allPermissions);
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
-    [
-        new PermissionStereotype
-        {
-            Name = "Administrator",
-            Permissions =
-            [
-                PublishContent,
-                EditContent,
-                DeleteContent,
-                PreviewContent,
-                CloneContent,
-                AccessContentApi,
-                ListContent,
-                EditContentOwner,
-            ],
-        },
-        new PermissionStereotype
-        {
-            Name = "Editor",
-            Permissions =
-            [
-                PublishContent,
-                EditContent,
-                DeleteContent,
-                PreviewContent,
-                CloneContent,
-                ListContent,
-            ],
-        },
-        new PermissionStereotype
-        {
-            Name = "Author",
-            Permissions =
-            [
-                PublishOwnContent,
-                EditOwnContent,
-                DeleteOwnContent,
-                PreviewOwnContent,
-                CloneOwnContent,
-            ],
-        },
-        new PermissionStereotype
-        {
-            Name = "Contributor",
-            Permissions =
-            [
-                EditOwnContent,
-                PreviewOwnContent,
-                CloneOwnContent,
-            ],
-        },
-        new PermissionStereotype
-        {
-            Name = "Authenticated",
-            Permissions = _readerPermissions,
-        },
-        new PermissionStereotype
-        {
-            Name = "Anonymous",
-            Permissions = _readerPermissions,
-        },
-    ];
+        [
+            new PermissionStereotype
+            {
+                Name = "Administrator",
+                Permissions = [PublishContent, EditContent, DeleteContent, PreviewContent, CloneContent, AccessContentApi, ListContent, EditContentOwner,],
+            },
+            new PermissionStereotype { Name = "Editor", Permissions = [PublishContent, EditContent, DeleteContent, PreviewContent, CloneContent, ListContent,], },
+            new PermissionStereotype { Name = "Author", Permissions = [PublishOwnContent, EditOwnContent, DeleteOwnContent, PreviewOwnContent, CloneOwnContent,], },
+            new PermissionStereotype { Name = "Contributor", Permissions = [EditOwnContent, PreviewOwnContent, CloneOwnContent,], },
+            new PermissionStereotype { Name = "Authenticated", Permissions = _readerPermissions, },
+            new PermissionStereotype { Name = "Anonymous", Permissions = _readerPermissions, },
+        ];
 }

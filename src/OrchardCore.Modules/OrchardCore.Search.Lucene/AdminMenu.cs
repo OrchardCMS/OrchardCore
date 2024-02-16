@@ -15,24 +15,34 @@ public class AdminMenu(IStringLocalizer<AdminMenu> localizer) : INavigationProvi
             return Task.CompletedTask;
         }
 
-        builder
-            .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
-                .AddClass("search").Id("search")
-                .Add(S["Indexing"], S["Indexing"].PrefixPosition(), import => import
-                    .Add(S["Lucene Indices"], S["Lucene Indices"].PrefixPosition(), indexes => indexes
-                        .Action("Index", "Admin", "OrchardCore.Search.Lucene")
-                        .Permission(Permissions.ManageLuceneIndexes)
-                        .LocalNav()
-                     )
-                )
-                .Add(S["Queries"], S["Queries"].PrefixPosition(), import => import
-                    .Add(S["Run Lucene Query"], S["Run Lucene Query"].PrefixPosition(), queries => queries
-                        .Action("Query", "Admin", "OrchardCore.Search.Lucene")
-                        .Permission(Permissions.ManageLuceneIndexes)
-                        .LocalNav()
+        builder.Add(
+            S["Search"],
+            NavigationConstants.AdminMenuSearchPosition,
+            search =>
+                search
+                    .AddClass("search")
+                    .Id("search")
+                    .Add(
+                        S["Indexing"],
+                        S["Indexing"].PrefixPosition(),
+                        import =>
+                            import.Add(
+                                S["Lucene Indices"],
+                                S["Lucene Indices"].PrefixPosition(),
+                                indexes => indexes.Action("Index", "Admin", "OrchardCore.Search.Lucene").Permission(Permissions.ManageLuceneIndexes).LocalNav()
+                            )
                     )
-                )
-            );
+                    .Add(
+                        S["Queries"],
+                        S["Queries"].PrefixPosition(),
+                        import =>
+                            import.Add(
+                                S["Run Lucene Query"],
+                                S["Run Lucene Query"].PrefixPosition(),
+                                queries => queries.Action("Query", "Admin", "OrchardCore.Search.Lucene").Permission(Permissions.ManageLuceneIndexes).LocalNav()
+                            )
+                    )
+        );
 
         return Task.CompletedTask;
     }

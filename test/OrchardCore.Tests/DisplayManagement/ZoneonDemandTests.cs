@@ -67,9 +67,12 @@ namespace OrchardCore.Tests.DisplayManagement
         {
             var zoneOnDemand = CreateZoneOnDemand("SomeZone");
 
-            Shape zoneShape1 = zoneOnDemand, zoneShape2 = zoneOnDemand;
-            Composite zoneComposite1 = zoneOnDemand, zoneComposite2 = zoneOnDemand;
-            object zoneObject1 = zoneOnDemand, zoneObject2 = zoneOnDemand;
+            Shape zoneShape1 = zoneOnDemand,
+                zoneShape2 = zoneOnDemand;
+            Composite zoneComposite1 = zoneOnDemand,
+                zoneComposite2 = zoneOnDemand;
+            object zoneObject1 = zoneOnDemand,
+                zoneObject2 = zoneOnDemand;
 
             // Intended reference comparison.
             Assert.True(zoneShape1 == zoneShape2);
@@ -80,7 +83,10 @@ namespace OrchardCore.Tests.DisplayManagement
         [Fact]
         public void ZoneHoldingPropertiesMissingIndexThrows()
         {
-            Assert.Throws<KeyNotFoundException>(() => { _ = CreateZoneHolding().Properties["SomeZone"]; });
+            Assert.Throws<KeyNotFoundException>(() =>
+            {
+                _ = CreateZoneHolding().Properties["SomeZone"];
+            });
         }
 
         [Fact]

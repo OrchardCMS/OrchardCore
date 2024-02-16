@@ -13,9 +13,7 @@ namespace OrchardCore.Tenants.Services
         private readonly FeatureProfilesRuleOptions _featureProfilesRuleOptions;
         private readonly IHostEnvironment _hostEnvironment;
 
-        public FeatureProfilesSchemaService(
-            IOptions<FeatureProfilesRuleOptions> options,
-            IHostEnvironment hostEnvironment)
+        public FeatureProfilesSchemaService(IOptions<FeatureProfilesRuleOptions> options, IHostEnvironment hostEnvironment)
         {
             _hostEnvironment = hostEnvironment;
             _featureProfilesRuleOptions = options.Value;
@@ -31,11 +29,7 @@ namespace OrchardCore.Tenants.Services
 
             if (schema.Definitions.TryGetValue(nameof(FeatureRule), out var featureRule) && featureRule.ActualProperties.TryGetValue(nameof(FeatureRule.Rule), out var rule))
             {
-                var ruleProperty = new JsonSchema()
-                {
-                    Type = JsonObjectType.String,
-                    Description = "The rule to apply to this expression"
-                };
+                var ruleProperty = new JsonSchema() { Type = JsonObjectType.String, Description = "The rule to apply to this expression" };
 
                 foreach (var ruleOption in _featureProfilesRuleOptions.Rules.Keys)
                 {

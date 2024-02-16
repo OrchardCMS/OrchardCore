@@ -69,8 +69,8 @@ namespace OrchardCore.Redis
 
         // Callback for accepting any certificate as long as it exists, while ignoring other SSL policy errors.
         // This allows the use of self-signed certificates on the Redis server.
-        private static bool IgnoreCertificateErrors(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
-            => (sslPolicyErrors & SslPolicyErrors.RemoteCertificateNotAvailable) == 0;
+        private static bool IgnoreCertificateErrors(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) =>
+            (sslPolicyErrors & SslPolicyErrors.RemoteCertificateNotAvailable) == 0;
     }
 
     [Feature("OrchardCore.Redis.Cache")]

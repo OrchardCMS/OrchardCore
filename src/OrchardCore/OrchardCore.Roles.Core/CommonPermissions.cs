@@ -14,10 +14,6 @@ namespace OrchardCore.Roles
         private static readonly Permission _assignRole = new("AssignRole_{0}", "Assign Role - {0}", new[] { AssignRoles, ManageRoles });
 
         public static Permission CreatePermissionForAssignRole(string name) =>
-            new(
-                string.Format(_assignRole.Name, name),
-                string.Format(_assignRole.Description, name),
-                _assignRole.ImpliedBy
-            );
+            new(string.Format(_assignRole.Name, name), string.Format(_assignRole.Description, name), _assignRole.ImpliedBy);
     }
 }

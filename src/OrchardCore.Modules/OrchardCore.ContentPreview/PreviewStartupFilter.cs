@@ -11,39 +11,41 @@ namespace OrchardCore.ContentPreview
         {
             return app =>
             {
-                app.Use(async (context, next) =>
-                {
-                    await next();
-
-                    if (!context.Items.TryGetValue("PreviewPath", out var previewPathObject) || previewPathObject == null)
+                app.Use(
+                    async (context, next) =>
                     {
-                        return;
-                    }
+                        await next();
 
-                    var previewPath = previewPathObject.ToString();
-
-                    if (!string.IsNullOrWhiteSpace(previewPath) && previewPath.StartsWith('/'))
-                    {
-                        var originalPath = context.Request.Path;
-                        var originalQueryString = context.Request.QueryString;
-
-                        context.Request.Path = previewPath;
-                        context.Items.Remove("PreviewPath");
-
-                        context.SetEndpoint(endpoint: null);
-                        context.Request.RouteValues.Clear();
-
-                        try
+                        if (!context.Items.TryGetValue("PreviewPath", out var previewPathObject) || previewPathObject == null)
                         {
-                            await next();
+                            return;
                         }
-                        finally
+
+                        var previewPath = previewPathObject.ToString();
+
+                        if (!string.IsNullOrWhiteSpace(previewPath) && previewPath.StartsWith('/'))
                         {
-                            context.Request.QueryString = originalQueryString;
-                            context.Request.Path = originalPath;
+                            var originalPath = context.Request.Path;
+                            var originalQueryString = context.Request.QueryString;
+
+                            context.Request.Path = previewPath;
+                            context.Items.Remove("PreviewPath");
+
+                            context.SetEndpoint(endpoint: null);
+                            context.Request.RouteValues.Clear();
+
+                            try
+                            {
+                                await next();
+                            }
+                            finally
+                            {
+                                context.Request.QueryString = originalQueryString;
+                                context.Request.Path = originalPath;
+                            }
                         }
                     }
-                });
+                );
 
                 next(app);
             };

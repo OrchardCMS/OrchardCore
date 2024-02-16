@@ -33,7 +33,8 @@ public partial class NotificationIndexProvider : IndexProvider<Notification>
 
     public override void Describe(DescribeContext<Notification> context)
     {
-        context.For<NotificationIndex>()
+        context
+            .For<NotificationIndex>()
             .Map(notification =>
             {
                 var content = notification.Summary ?? string.Empty;

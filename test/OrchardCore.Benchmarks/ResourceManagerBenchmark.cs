@@ -11,10 +11,7 @@ namespace OrchardCore.Benchmark
     [MemoryDiagnoser]
     public class ResourceManagerBenchmark
     {
-        private static readonly ShellFileVersionProvider _fileVersionProvider = new(
-            [],
-            new FakeWebHostEnvironment(),
-            new MemoryCache(Options.Create(new MemoryCacheOptions())));
+        private static readonly ShellFileVersionProvider _fileVersionProvider = new([], new FakeWebHostEnvironment(), new MemoryCache(Options.Create(new MemoryCacheOptions())));
 
         private static readonly OptionsWrapper<ResourceManagementOptions> _options;
 
@@ -46,9 +43,7 @@ namespace OrchardCore.Benchmark
         public void RenderStylesheet()
 #pragma warning restore CA1822 // Mark members as static
         {
-            var manager = new ResourceManager(
-                options: _options,
-                fileVersionProvider: _fileVersionProvider);
+            var manager = new ResourceManager(options: _options, fileVersionProvider: _fileVersionProvider);
 
             manager.RegisterResource("stylesheet", "some1").UseVersion("1.0.0").ShouldAppendVersion(true);
             manager.RegisterResource("stylesheet", "some2").UseVersion("1.0.0").ShouldAppendVersion(true);

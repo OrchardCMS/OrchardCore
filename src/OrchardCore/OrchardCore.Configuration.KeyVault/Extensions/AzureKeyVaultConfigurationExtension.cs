@@ -21,13 +21,15 @@ namespace OrchardCore.Configuration.KeyVault.Extensions
         {
             ArgumentNullException.ThrowIfNull(builder);
 
-            builder.ConfigureAppConfiguration((context, builder) =>
-            {
-                // Here 'builder' is a config manager being a builder and also an 'IConfigurationRoot'
-                // if get from the 'context', allowing to get values from the providers already added
-                // without having to build a configuration on the fly that would need to be disposed.
-                AddOrchardCoreAzureKeyVault(builder, context.Configuration, tokenCredential);
-            });
+            builder.ConfigureAppConfiguration(
+                (context, builder) =>
+                {
+                    // Here 'builder' is a config manager being a builder and also an 'IConfigurationRoot'
+                    // if get from the 'context', allowing to get values from the providers already added
+                    // without having to build a configuration on the fly that would need to be disposed.
+                    AddOrchardCoreAzureKeyVault(builder, context.Configuration, tokenCredential);
+                }
+            );
 
             return builder;
         }
@@ -39,13 +41,15 @@ namespace OrchardCore.Configuration.KeyVault.Extensions
         {
             ArgumentNullException.ThrowIfNull(builder);
 
-            builder.ConfigureAppConfiguration((context, builder) =>
-            {
-                // Here 'builder' is a config manager being a builder and also an 'IConfigurationRoot'
-                // if get from the 'context', allowing to get values from the providers already added
-                // without having to build a configuration on the fly that would need to be disposed.
-                AddOrchardCoreAzureKeyVault(builder, context.Configuration, tokenCredential);
-            });
+            builder.ConfigureAppConfiguration(
+                (context, builder) =>
+                {
+                    // Here 'builder' is a config manager being a builder and also an 'IConfigurationRoot'
+                    // if get from the 'context', allowing to get values from the providers already added
+                    // without having to build a configuration on the fly that would need to be disposed.
+                    AddOrchardCoreAzureKeyVault(builder, context.Configuration, tokenCredential);
+                }
+            );
 
             return builder;
         }
@@ -53,8 +57,7 @@ namespace OrchardCore.Configuration.KeyVault.Extensions
         /// <summary>
         /// Adds Azure Key Vault as a Configuration Source.
         /// </summary>
-        public static ConfigurationManager AddOrchardCoreAzureKeyVault(
-            this ConfigurationManager manager, TokenCredential tokenCredential = null)
+        public static ConfigurationManager AddOrchardCoreAzureKeyVault(this ConfigurationManager manager, TokenCredential tokenCredential = null)
         {
             ArgumentNullException.ThrowIfNull(manager);
 
@@ -65,25 +68,25 @@ namespace OrchardCore.Configuration.KeyVault.Extensions
             return manager;
         }
 
-        private static void AddOrchardCoreAzureKeyVault(
-            this IConfigurationBuilder builder, IConfiguration configuration, TokenCredential tokenCredential)
+        private static void AddOrchardCoreAzureKeyVault(this IConfigurationBuilder builder, IConfiguration configuration, TokenCredential tokenCredential)
         {
             var keyVaultName = configuration["OrchardCore:OrchardCore_KeyVault_Azure:KeyVaultName"];
 
             if (string.IsNullOrEmpty(keyVaultName))
             {
-                throw new Exception("The 'KeyVaultName' property is no configured. Please configure it by specifying the 'OrchardCore:OrchardCore_KeyVault_Azure:KeyVaultName' settings key.");
+                throw new Exception(
+                    "The 'KeyVaultName' property is no configured. Please configure it by specifying the 'OrchardCore:OrchardCore_KeyVault_Azure:KeyVaultName' settings key."
+                );
             }
 
             if (!Uri.TryCreate($"https://{keyVaultName}.vault.azure.net", UriKind.Absolute, out var keyVaultEndpointUri))
             {
-                throw new Exception("Invalid value used for 'KeyVaultName' property. Please provide a valid key-vault name using the 'OrchardCore:OrchardCore_KeyVault_Azure:KeyVaultName' settings key.");
+                throw new Exception(
+                    "Invalid value used for 'KeyVaultName' property. Please provide a valid key-vault name using the 'OrchardCore:OrchardCore_KeyVault_Azure:KeyVaultName' settings key."
+                );
             }
 
-            var configOptions = new AzureKeyVaultConfigurationOptions()
-            {
-                Manager = new AzureKeyVaultSecretManager(),
-            };
+            var configOptions = new AzureKeyVaultConfigurationOptions() { Manager = new AzureKeyVaultSecretManager(), };
 
             if (double.TryParse(configuration["OrchardCore:OrchardCore_KeyVault_Azure:ReloadInterval"], out var interval))
             {

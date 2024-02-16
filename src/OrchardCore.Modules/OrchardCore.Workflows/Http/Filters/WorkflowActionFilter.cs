@@ -85,9 +85,7 @@ namespace OrchardCore.Workflows.Http.Filters
 
                 foreach (var entry in workflowEntries)
                 {
-                    if (workflows.TryGetValue(entry.WorkflowId, out var workflow) &&
-                        (string.IsNullOrWhiteSpace(correlationId) ||
-                        workflow.CorrelationId == correlationId))
+                    if (workflows.TryGetValue(entry.WorkflowId, out var workflow) && (string.IsNullOrWhiteSpace(correlationId) || workflow.CorrelationId == correlationId))
                     {
                         // If atomic, try to acquire a lock per workflow instance.
                         (var locker, var locked) = await _distributedLock.TryAcquireWorkflowLockAsync(workflow);

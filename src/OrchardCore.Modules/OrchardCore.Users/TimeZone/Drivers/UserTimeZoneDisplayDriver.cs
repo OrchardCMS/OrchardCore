@@ -31,12 +31,7 @@ namespace OrchardCore.Users.TimeZone.Drivers
                 .Location("Content:2");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(
-            User user,
-            UserTimeZone userTimeZone,
-            IUpdateModel updater,
-            BuildEditorContext context
-        )
+        public override async Task<IDisplayResult> UpdateAsync(User user, UserTimeZone userTimeZone, IUpdateModel updater, BuildEditorContext context)
         {
             var model = new UserTimeZoneViewModel();
 

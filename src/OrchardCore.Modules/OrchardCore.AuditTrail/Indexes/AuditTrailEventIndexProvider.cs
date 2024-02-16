@@ -8,7 +8,8 @@ namespace OrchardCore.AuditTrail.Indexes
         public AuditTrailEventIndexProvider() => CollectionName = AuditTrailEvent.Collection;
 
         public override void Describe(DescribeContext<AuditTrailEvent> context) =>
-            context.For<AuditTrailEventIndex>()
+            context
+                .For<AuditTrailEventIndex>()
                 .Map(auditTrailEvent =>
                 {
                     return new AuditTrailEventIndex

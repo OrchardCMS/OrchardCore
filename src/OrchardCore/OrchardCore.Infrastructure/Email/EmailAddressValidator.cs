@@ -8,7 +8,6 @@ namespace OrchardCore.Email
     public class EmailAddressValidator : IEmailAddressValidator
     {
         /// <inheritdoc/>
-        public bool Validate(string emailAddress)
-            => emailAddress?.IndexOf('@') > -1 && MailboxAddress.TryParse(emailAddress, out _);
+        public bool Validate(string emailAddress) => emailAddress?.IndexOf('@') > -1 && MailboxAddress.TryParse(emailAddress, out _);
     }
 }

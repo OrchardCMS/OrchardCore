@@ -1,20 +1,12 @@
 using OrchardCore.Modules.Manifest;
 
-[assembly: Module(
-    Author = ManifestConstants.OrchardCoreTeam,
-    Website = ManifestConstants.OrchardCoreWebsite,
-    Version = ManifestConstants.OrchardCoreVersion
-)]
+[assembly: Module(Author = ManifestConstants.OrchardCoreTeam, Website = ManifestConstants.OrchardCoreWebsite, Version = ManifestConstants.OrchardCoreVersion)]
 
 [assembly: Feature(
     Id = "OrchardCore.Recipes",
     Name = "Recipes",
     Description = "The Recipes module allows you to execute recipe steps from json files.",
-    Dependencies =
-    [
-        "OrchardCore.Recipes.Core",
-        "OrchardCore.Scripting",
-    ],
+    Dependencies = ["OrchardCore.Recipes.Core", "OrchardCore.Scripting",],
     Category = "Infrastructure",
     IsAlwaysEnabled = true
 )]

@@ -16,9 +16,7 @@ namespace OrchardCore.Search.Configuration
 
         public void Configure(SearchSettings options)
         {
-            var settings = _site.GetSiteSettingsAsync()
-                .GetAwaiter().GetResult()
-                .As<SearchSettings>();
+            var settings = _site.GetSiteSettingsAsync().GetAwaiter().GetResult().As<SearchSettings>();
 
             options.ProviderName = settings.ProviderName;
         }

@@ -18,7 +18,8 @@ namespace OrchardCore.Contents.Controllers
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
             IAuthorizationService authorizationService,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor
+        )
         {
             _authorizationService = authorizationService;
             _contentItemDisplayManager = contentItemDisplayManager;

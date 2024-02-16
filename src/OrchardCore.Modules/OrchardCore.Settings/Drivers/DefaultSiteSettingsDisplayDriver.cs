@@ -18,10 +18,7 @@ namespace OrchardCore.Settings.Drivers
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
 
-        public DefaultSiteSettingsDisplayDriver(
-            IShellHost shellHost,
-            ShellSettings shellSettings,
-            IStringLocalizer<DefaultSiteSettingsDisplayDriver> stringLocalizer)
+        public DefaultSiteSettingsDisplayDriver(IShellHost shellHost, ShellSettings shellSettings, IStringLocalizer<DefaultSiteSettingsDisplayDriver> stringLocalizer)
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
@@ -38,15 +35,9 @@ namespace OrchardCore.Settings.Drivers
             context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__General");
 
             var result = Combine(
-                Initialize<SiteSettingsViewModel>("Settings_Edit__Site", model => PopulateProperties(site, model))
-                    .Location("Content:1#Site;10")
-                    .OnGroup(GroupId),
-                Initialize<SiteSettingsViewModel>("Settings_Edit__Resources", model => PopulateProperties(site, model))
-                    .Location("Content:1#Resources;20")
-                    .OnGroup(GroupId),
-                Initialize<SiteSettingsViewModel>("Settings_Edit__Cache", model => PopulateProperties(site, model))
-                    .Location("Content:1#Cache;30")
-                    .OnGroup(GroupId)
+                Initialize<SiteSettingsViewModel>("Settings_Edit__Site", model => PopulateProperties(site, model)).Location("Content:1#Site;10").OnGroup(GroupId),
+                Initialize<SiteSettingsViewModel>("Settings_Edit__Resources", model => PopulateProperties(site, model)).Location("Content:1#Resources;20").OnGroup(GroupId),
+                Initialize<SiteSettingsViewModel>("Settings_Edit__Cache", model => PopulateProperties(site, model)).Location("Content:1#Cache;30").OnGroup(GroupId)
             );
 
             return Task.FromResult<IDisplayResult>(result);
@@ -112,7 +103,6 @@ namespace OrchardCore.Settings.Drivers
             model.CacheMode = site.CacheMode;
         }
 
-        private static bool IsGeneralGroup(BuildEditorContext context)
-            => context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase);
+        private static bool IsGeneralGroup(BuildEditorContext context) => context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase);
     }
 }

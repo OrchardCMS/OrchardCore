@@ -69,7 +69,8 @@ namespace OrchardCore.ContentManagement.Metadata
         /// <param name="manager"></param>
         [Obsolete($"Instead, utilize the {nameof(MigratePartSettingsAsync)} method. This current method is slated for removal in upcoming releases.")]
         public static void MigratePartSettings<TPart, TSettings>(this IContentDefinitionManager manager)
-            where TPart : ContentPart where TSettings : class
+            where TPart : ContentPart
+            where TSettings : class
         {
             var contentTypes = manager.LoadTypeDefinitions();
 
@@ -88,13 +89,19 @@ namespace OrchardCore.ContentManagement.Metadata
                     }
 
                     // Apply existing settings to type definition WithSettings<T>
-                    manager.AlterTypeDefinition(contentType.Name, typeBuilder =>
-                    {
-                        typeBuilder.WithPart(partDefinition.Name, partBuilder =>
+                    manager.AlterTypeDefinition(
+                        contentType.Name,
+                        typeBuilder =>
                         {
-                            partBuilder.WithSettings(existingSettings);
-                        });
-                    });
+                            typeBuilder.WithPart(
+                                partDefinition.Name,
+                                partBuilder =>
+                                {
+                                    partBuilder.WithSettings(existingSettings);
+                                }
+                            );
+                        }
+                    );
                 }
             }
         }
@@ -107,7 +114,8 @@ namespace OrchardCore.ContentManagement.Metadata
         /// <typeparam name="TSettings"></typeparam>
         /// <param name="manager"></param>
         public static async Task MigratePartSettingsAsync<TPart, TSettings>(this IContentDefinitionManager manager)
-            where TPart : ContentPart where TSettings : class
+            where TPart : ContentPart
+            where TSettings : class
         {
             var contentTypes = await manager.LoadTypeDefinitionsAsync();
 
@@ -126,15 +134,21 @@ namespace OrchardCore.ContentManagement.Metadata
                     }
 
                     // Apply existing settings to type definition WithSettings<T>
-                    await manager.AlterTypeDefinitionAsync(contentType.Name, typeBuilder =>
-                    {
-                        typeBuilder.WithPart(partDefinition.Name, partBuilder =>
+                    await manager.AlterTypeDefinitionAsync(
+                        contentType.Name,
+                        typeBuilder =>
                         {
-                            partBuilder.WithSettings(existingSettings);
-                        });
+                            typeBuilder.WithPart(
+                                partDefinition.Name,
+                                partBuilder =>
+                                {
+                                    partBuilder.WithSettings(existingSettings);
+                                }
+                            );
 
-                        return Task.CompletedTask;
-                    });
+                            return Task.CompletedTask;
+                        }
+                    );
                 }
             }
         }
@@ -148,40 +162,47 @@ namespace OrchardCore.ContentManagement.Metadata
         /// <param name="manager"></param>
         [Obsolete($"Instead, utilize the {nameof(MigrateFieldSettingsAsync)} method. This current method is slated for removal in upcoming releases.")]
         public static void MigrateFieldSettings<TField, TSettings>(this IContentDefinitionManager manager)
-            where TField : ContentField where TSettings : class
+            where TField : ContentField
+            where TSettings : class
         {
             var partDefinitions = manager.LoadPartDefinitions();
             foreach (var partDefinition in partDefinitions)
             {
-                manager.AlterPartDefinition(partDefinition.Name, partBuilder =>
-                {
-                    foreach (var fieldDefinition in partDefinition.Fields.Where(x => x.FieldDefinition.Name == typeof(TField).Name))
+                manager.AlterPartDefinition(
+                    partDefinition.Name,
+                    partBuilder =>
                     {
-                        var existingFieldSettings = fieldDefinition.Settings.ToObject<TSettings>();
-
-                        // Do this before creating builder, so settings are removed from the builder settings object.
-                        // Remove existing properties from JObject
-                        var fieldSettingsProperties = existingFieldSettings.GetType().GetProperties();
-                        var hasSetting = false;
-                        foreach (var property in fieldSettingsProperties)
+                        foreach (var fieldDefinition in partDefinition.Fields.Where(x => x.FieldDefinition.Name == typeof(TField).Name))
                         {
-                            if (fieldDefinition.Settings.ContainsKey(property.Name))
+                            var existingFieldSettings = fieldDefinition.Settings.ToObject<TSettings>();
+
+                            // Do this before creating builder, so settings are removed from the builder settings object.
+                            // Remove existing properties from JObject
+                            var fieldSettingsProperties = existingFieldSettings.GetType().GetProperties();
+                            var hasSetting = false;
+                            foreach (var property in fieldSettingsProperties)
                             {
-                                hasSetting = true;
-                                fieldDefinition.Settings.Remove(property.Name);
+                                if (fieldDefinition.Settings.ContainsKey(property.Name))
+                                {
+                                    hasSetting = true;
+                                    fieldDefinition.Settings.Remove(property.Name);
+                                }
+                            }
+
+                            // Only include settings if the definition already has at least one of these settings.
+                            if (hasSetting)
+                            {
+                                partBuilder.WithField(
+                                    fieldDefinition.Name,
+                                    fieldBuilder =>
+                                    {
+                                        fieldBuilder.WithSettings(existingFieldSettings);
+                                    }
+                                );
                             }
                         }
-
-                        // Only include settings if the definition already has at least one of these settings.
-                        if (hasSetting)
-                        {
-                            partBuilder.WithField(fieldDefinition.Name, fieldBuilder =>
-                            {
-                                fieldBuilder.WithSettings(existingFieldSettings);
-                            });
-                        }
                     }
-                });
+                );
             }
         }
 
@@ -193,41 +214,48 @@ namespace OrchardCore.ContentManagement.Metadata
         /// <typeparam name="TSettings"></typeparam>
         /// <param name="manager"></param>
         public static async Task MigrateFieldSettingsAsync<TField, TSettings>(this IContentDefinitionManager manager)
-            where TField : ContentField where TSettings : class
+            where TField : ContentField
+            where TSettings : class
         {
             var partDefinitions = await manager.LoadPartDefinitionsAsync();
 
             foreach (var partDefinition in partDefinitions)
             {
-                await manager.AlterPartDefinitionAsync(partDefinition.Name, partBuilder =>
-                {
-                    foreach (var fieldDefinition in partDefinition.Fields.Where(x => x.FieldDefinition.Name == typeof(TField).Name))
+                await manager.AlterPartDefinitionAsync(
+                    partDefinition.Name,
+                    partBuilder =>
                     {
-                        var existingFieldSettings = fieldDefinition.Settings.ToObject<TSettings>();
-
-                        // Do this before creating builder, so settings are removed from the builder settings object.
-                        // Remove existing properties from JObject
-                        var fieldSettingsProperties = existingFieldSettings.GetType().GetProperties();
-                        var hasSetting = false;
-                        foreach (var property in fieldSettingsProperties)
+                        foreach (var fieldDefinition in partDefinition.Fields.Where(x => x.FieldDefinition.Name == typeof(TField).Name))
                         {
-                            if (fieldDefinition.Settings.ContainsKey(property.Name))
+                            var existingFieldSettings = fieldDefinition.Settings.ToObject<TSettings>();
+
+                            // Do this before creating builder, so settings are removed from the builder settings object.
+                            // Remove existing properties from JObject
+                            var fieldSettingsProperties = existingFieldSettings.GetType().GetProperties();
+                            var hasSetting = false;
+                            foreach (var property in fieldSettingsProperties)
                             {
-                                hasSetting = true;
-                                fieldDefinition.Settings.Remove(property.Name);
+                                if (fieldDefinition.Settings.ContainsKey(property.Name))
+                                {
+                                    hasSetting = true;
+                                    fieldDefinition.Settings.Remove(property.Name);
+                                }
+                            }
+
+                            // Only include settings if the definition already has at least one of these settings.
+                            if (hasSetting)
+                            {
+                                partBuilder.WithField(
+                                    fieldDefinition.Name,
+                                    fieldBuilder =>
+                                    {
+                                        fieldBuilder.WithSettings(existingFieldSettings);
+                                    }
+                                );
                             }
                         }
-
-                        // Only include settings if the definition already has at least one of these settings.
-                        if (hasSetting)
-                        {
-                            partBuilder.WithField(fieldDefinition.Name, fieldBuilder =>
-                            {
-                                fieldBuilder.WithSettings(existingFieldSettings);
-                            });
-                        }
                     }
-                });
+                );
             }
         }
     }

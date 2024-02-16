@@ -25,7 +25,7 @@ namespace OrchardCore.Benchmark
          *
          * Job=ShortRun IterationCount = 3  LaunchCount=1
          * WarmupCount=3
-         * 
+         *
          * |          Method |     Mean |     Error |    StdDev |  Gen 0 | Allocated |
          * |---------------- |---------:|----------:|----------:|-------:|----------:|
          * | EvaluateSlugify | 1.477 us | 0.5187 us | 0.0284 us | 0.2174 |     456 B |
@@ -41,7 +41,9 @@ namespace OrchardCore.Benchmark
         [Benchmark]
         public void EvaluateSlugifyWithLongSlug()
         {
-            _slugService.Slugify("Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne");
+            _slugService.Slugify(
+                "Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne Je veux aller à Saint-Étienne"
+            );
         }
 #pragma warning restore CA1822 // Mark members as static
     }

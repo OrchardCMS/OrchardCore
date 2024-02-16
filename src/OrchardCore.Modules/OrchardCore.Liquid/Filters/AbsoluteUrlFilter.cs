@@ -14,6 +14,7 @@ namespace OrchardCore.Liquid.Filters
         {
             _urlHelperFactory = urlHelperFactory;
         }
+
         public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
         {
             var relativePath = input.ToStringValue();

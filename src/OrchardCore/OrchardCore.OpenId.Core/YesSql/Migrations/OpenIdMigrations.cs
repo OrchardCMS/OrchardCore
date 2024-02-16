@@ -24,138 +24,115 @@ namespace OrchardCore.OpenId.YesSql.Migrations
 
         public async Task<int> CreateAsync()
         {
-            await SchemaBuilder.CreateMapIndexTableAsync<OpenIdApplicationIndex>(table => table
-                .Column<string>("ApplicationId", column => column.WithLength(48))
-                .Column<string>("ClientId", column => column.Unique()),
-                collection: OpenIdApplicationCollection);
-
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdApplicationIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdApplication",
-                    "DocumentId",
-                    "ApplicationId",
-                    "ClientId"),
+            await SchemaBuilder.CreateMapIndexTableAsync<OpenIdApplicationIndex>(
+                table => table.Column<string>("ApplicationId", column => column.WithLength(48)).Column<string>("ClientId", column => column.Unique()),
                 collection: OpenIdApplicationCollection
             );
 
-            await SchemaBuilder.CreateReduceIndexTableAsync<OpenIdAppByLogoutUriIndex>(table => table
-                .Column<string>("LogoutRedirectUri")
-                .Column<int>("Count"),
-                collection: OpenIdApplicationCollection);
-
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdAppByLogoutUriIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdAppByLogoutUri_LogoutRedirectUri", "LogoutRedirectUri"),
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdApplicationIndex>(
+                table => table.CreateIndex("IDX_COL_OpenIdApplication", "DocumentId", "ApplicationId", "ClientId"),
                 collection: OpenIdApplicationCollection
             );
 
-            await SchemaBuilder.CreateReduceIndexTableAsync<OpenIdAppByRedirectUriIndex>(table => table
-                .Column<string>("RedirectUri")
-                .Column<int>("Count"),
-                collection: OpenIdApplicationCollection);
-
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdAppByRedirectUriIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdAppByRedirectUri_RedirectUri", "RedirectUri"),
+            await SchemaBuilder.CreateReduceIndexTableAsync<OpenIdAppByLogoutUriIndex>(
+                table => table.Column<string>("LogoutRedirectUri").Column<int>("Count"),
                 collection: OpenIdApplicationCollection
             );
 
-            await SchemaBuilder.CreateReduceIndexTableAsync<OpenIdAppByRoleNameIndex>(table => table
-                .Column<string>("RoleName")
-                .Column<int>("Count"),
-                collection: OpenIdApplicationCollection);
-
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdAppByRoleNameIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdAppByRoleName_RoleName", "RoleName"),
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdAppByLogoutUriIndex>(
+                table => table.CreateIndex("IDX_COL_OpenIdAppByLogoutUri_LogoutRedirectUri", "LogoutRedirectUri"),
                 collection: OpenIdApplicationCollection
             );
 
-            await SchemaBuilder.CreateMapIndexTableAsync<OpenIdAuthorizationIndex>(table => table
-                .Column<string>("AuthorizationId", column => column.WithLength(48))
-                .Column<string>("ApplicationId", column => column.WithLength(48))
-                .Column<string>("Status")
-                .Column<string>("Subject")
-                .Column<string>("Type")
-                .Column<DateTime>("CreationDate"),
-                collection: OpenIdAuthorizationCollection);
+            await SchemaBuilder.CreateReduceIndexTableAsync<OpenIdAppByRedirectUriIndex>(
+                table => table.Column<string>("RedirectUri").Column<int>("Count"),
+                collection: OpenIdApplicationCollection
+            );
 
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdAuthorizationIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdAuthorization_ApplicationId",
-                    "DocumentId",
-                    "ApplicationId",
-                    "Status",
-                    "Subject"),
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdAppByRedirectUriIndex>(
+                table => table.CreateIndex("IDX_COL_OpenIdAppByRedirectUri_RedirectUri", "RedirectUri"),
+                collection: OpenIdApplicationCollection
+            );
+
+            await SchemaBuilder.CreateReduceIndexTableAsync<OpenIdAppByRoleNameIndex>(
+                table => table.Column<string>("RoleName").Column<int>("Count"),
+                collection: OpenIdApplicationCollection
+            );
+
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdAppByRoleNameIndex>(
+                table => table.CreateIndex("IDX_COL_OpenIdAppByRoleName_RoleName", "RoleName"),
+                collection: OpenIdApplicationCollection
+            );
+
+            await SchemaBuilder.CreateMapIndexTableAsync<OpenIdAuthorizationIndex>(
+                table =>
+                    table
+                        .Column<string>("AuthorizationId", column => column.WithLength(48))
+                        .Column<string>("ApplicationId", column => column.WithLength(48))
+                        .Column<string>("Status")
+                        .Column<string>("Subject")
+                        .Column<string>("Type")
+                        .Column<DateTime>("CreationDate"),
                 collection: OpenIdAuthorizationCollection
             );
 
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdAuthorizationIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdAuthorization_AuthorizationId",
-                    "DocumentId",
-                    "AuthorizationId",
-                    "Status",
-                    "Type",
-                    "CreationDate"),
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdAuthorizationIndex>(
+                table => table.CreateIndex("IDX_COL_OpenIdAuthorization_ApplicationId", "DocumentId", "ApplicationId", "Status", "Subject"),
                 collection: OpenIdAuthorizationCollection
             );
 
-            await SchemaBuilder.CreateMapIndexTableAsync<OpenIdScopeIndex>(table => table
-                .Column<string>("Name", column => column.Unique())
-                .Column<string>("ScopeId", column => column.WithLength(48)),
-                collection: OpenIdScopeCollection);
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdAuthorizationIndex>(
+                table => table.CreateIndex("IDX_COL_OpenIdAuthorization_AuthorizationId", "DocumentId", "AuthorizationId", "Status", "Type", "CreationDate"),
+                collection: OpenIdAuthorizationCollection
+            );
 
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdScopeIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdScope",
-                    "DocumentId",
-                    "Name",
-                    "ScopeId"),
+            await SchemaBuilder.CreateMapIndexTableAsync<OpenIdScopeIndex>(
+                table => table.Column<string>("Name", column => column.Unique()).Column<string>("ScopeId", column => column.WithLength(48)),
                 collection: OpenIdScopeCollection
             );
 
-            await SchemaBuilder.CreateReduceIndexTableAsync<OpenIdScopeByResourceIndex>(table => table
-                .Column<string>("Resource")
-                .Column<int>("Count"),
-                collection: OpenIdScopeCollection);
-
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdScopeByResourceIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdScopeByResource_Resource",
-                    "Resource"),
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdScopeIndex>(
+                table => table.CreateIndex("IDX_COL_OpenIdScope", "DocumentId", "Name", "ScopeId"),
                 collection: OpenIdScopeCollection
             );
 
-            await SchemaBuilder.CreateMapIndexTableAsync<OpenIdTokenIndex>(table => table
-                .Column<string>("TokenId", column => column.WithLength(48))
-                .Column<string>("ApplicationId", column => column.WithLength(48))
-                .Column<string>("AuthorizationId", column => column.WithLength(48))
-                .Column<DateTime>("ExpirationDate")
-                .Column<string>("ReferenceId")
-                .Column<string>("Status")
-                .Column<string>("Subject")
-                .Column<string>("Type")
-                .Column<DateTime>("CreationDate"),
-                collection: OpenIdTokenCollection);
+            await SchemaBuilder.CreateReduceIndexTableAsync<OpenIdScopeByResourceIndex>(
+                table => table.Column<string>("Resource").Column<int>("Count"),
+                collection: OpenIdScopeCollection
+            );
 
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdTokenIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdToken_ApplicationId",
-                    "DocumentId",
-                    "ApplicationId",
-                    "Status",
-                    "Subject"),
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdScopeByResourceIndex>(
+                table => table.CreateIndex("IDX_COL_OpenIdScopeByResource_Resource", "Resource"),
+                collection: OpenIdScopeCollection
+            );
+
+            await SchemaBuilder.CreateMapIndexTableAsync<OpenIdTokenIndex>(
+                table =>
+                    table
+                        .Column<string>("TokenId", column => column.WithLength(48))
+                        .Column<string>("ApplicationId", column => column.WithLength(48))
+                        .Column<string>("AuthorizationId", column => column.WithLength(48))
+                        .Column<DateTime>("ExpirationDate")
+                        .Column<string>("ReferenceId")
+                        .Column<string>("Status")
+                        .Column<string>("Subject")
+                        .Column<string>("Type")
+                        .Column<DateTime>("CreationDate"),
                 collection: OpenIdTokenCollection
             );
 
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdTokenIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdToken_AuthorizationId",
-                    "DocumentId",
-                    "AuthorizationId",
-                    "Status",
-                    "Type",
-                    "CreationDate",
-                    "ExpirationDate"),
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdTokenIndex>(
+                table => table.CreateIndex("IDX_COL_OpenIdToken_ApplicationId", "DocumentId", "ApplicationId", "Status", "Subject"),
                 collection: OpenIdTokenCollection
             );
 
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdTokenIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdToken_TokenId",
-                    "DocumentId",
-                    "TokenId",
-                    "ReferenceId"),
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdTokenIndex>(
+                table => table.CreateIndex("IDX_COL_OpenIdToken_AuthorizationId", "DocumentId", "AuthorizationId", "Status", "Type", "CreationDate", "ExpirationDate"),
+                collection: OpenIdTokenCollection
+            );
+
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdTokenIndex>(
+                table => table.CreateIndex("IDX_COL_OpenIdToken_TokenId", "DocumentId", "TokenId", "ReferenceId"),
                 collection: OpenIdTokenCollection
             );
 
@@ -166,14 +143,15 @@ namespace OrchardCore.OpenId.YesSql.Migrations
         // This code can be removed in a later version.
         public async Task<int> UpdateFrom1Async()
         {
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdTokenIndex>(table => table
-                .AddColumn<string>("Type"));
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdTokenIndex>(table => table.AddColumn<string>("Type"));
 
             return 2;
         }
 
         private class OpenIdApplicationByPostLogoutRedirectUriIndex { }
+
         private class OpenIdApplicationByRedirectUriIndex { }
+
         private class OpenIdApplicationByRoleNameIndex { }
 
         // This code can be removed in a later version.
@@ -183,17 +161,11 @@ namespace OrchardCore.OpenId.YesSql.Migrations
             await SchemaBuilder.DropReduceIndexTableAsync<OpenIdApplicationByRedirectUriIndex>(null);
             await SchemaBuilder.DropReduceIndexTableAsync<OpenIdApplicationByRoleNameIndex>(null);
 
-            await SchemaBuilder.CreateReduceIndexTableAsync<OpenIdAppByLogoutUriIndex>(table => table
-                .Column<string>("LogoutRedirectUri")
-                .Column<int>("Count"));
+            await SchemaBuilder.CreateReduceIndexTableAsync<OpenIdAppByLogoutUriIndex>(table => table.Column<string>("LogoutRedirectUri").Column<int>("Count"));
 
-            await SchemaBuilder.CreateReduceIndexTableAsync<OpenIdAppByRedirectUriIndex>(table => table
-                .Column<string>("RedirectUri")
-                .Column<int>("Count"));
+            await SchemaBuilder.CreateReduceIndexTableAsync<OpenIdAppByRedirectUriIndex>(table => table.Column<string>("RedirectUri").Column<int>("Count"));
 
-            await SchemaBuilder.CreateReduceIndexTableAsync<OpenIdAppByRoleNameIndex>(table => table
-                .Column<string>("RoleName")
-                .Column<int>("Count"));
+            await SchemaBuilder.CreateReduceIndexTableAsync<OpenIdAppByRoleNameIndex>(table => table.Column<string>("RoleName").Column<int>("Count"));
 
             return 3;
         }
@@ -201,11 +173,9 @@ namespace OrchardCore.OpenId.YesSql.Migrations
         // This code can be removed in a later version.
         public async Task<int> UpdateFrom3Async()
         {
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdAuthorizationIndex>(table => table
-                .AddColumn<DateTime>("CreationDate"));
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdAuthorizationIndex>(table => table.AddColumn<DateTime>("CreationDate"));
 
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdTokenIndex>(table => table
-                .AddColumn<DateTime>("CreationDate"));
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdTokenIndex>(table => table.AddColumn<DateTime>("CreationDate"));
 
             return 4;
         }
@@ -213,60 +183,30 @@ namespace OrchardCore.OpenId.YesSql.Migrations
         // This code can be removed in a later version.
         public async Task<int> UpdateFrom4Async()
         {
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdApplicationIndex>(table => table
-                .CreateIndex("IDX_OpenIdApplicationIndex_DocumentId",
-                    "DocumentId",
-                    "ApplicationId",
-                    "ClientId")
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdApplicationIndex>(table =>
+                table.CreateIndex("IDX_OpenIdApplicationIndex_DocumentId", "DocumentId", "ApplicationId", "ClientId")
             );
 
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdAuthorizationIndex>(table => table
-                .CreateIndex("IDX_OpenIdAuthorizationIndex_DocumentId_ApplicationId",
-                    "DocumentId",
-                    "ApplicationId",
-                    "Status",
-                    "Subject")
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdAuthorizationIndex>(table =>
+                table.CreateIndex("IDX_OpenIdAuthorizationIndex_DocumentId_ApplicationId", "DocumentId", "ApplicationId", "Status", "Subject")
             );
 
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdAuthorizationIndex>(table => table
-                .CreateIndex("IDX_OpenIdAuthorizationIndex_DocumentId_AuthorizationId",
-                    "DocumentId",
-                    "AuthorizationId",
-                    "Status",
-                    "Type",
-                    "CreationDate")
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdAuthorizationIndex>(table =>
+                table.CreateIndex("IDX_OpenIdAuthorizationIndex_DocumentId_AuthorizationId", "DocumentId", "AuthorizationId", "Status", "Type", "CreationDate")
             );
 
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdScopeIndex>(table => table
-                .CreateIndex("IDX_OpenIdScopeIndex_DocumentId",
-                    "DocumentId",
-                    "Name",
-                    "ScopeId")
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdScopeIndex>(table => table.CreateIndex("IDX_OpenIdScopeIndex_DocumentId", "DocumentId", "Name", "ScopeId"));
+
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdTokenIndex>(table =>
+                table.CreateIndex("IDX_OpenIdTokenIndex_DocumentId_ApplicationId", "DocumentId", "ApplicationId", "Status", "Subject")
             );
 
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdTokenIndex>(table => table
-                .CreateIndex("IDX_OpenIdTokenIndex_DocumentId_ApplicationId",
-                    "DocumentId",
-                    "ApplicationId",
-                    "Status",
-                    "Subject")
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdTokenIndex>(table =>
+                table.CreateIndex("IDX_OpenIdTokenIndex_DocumentId_AuthorizationId", "DocumentId", "AuthorizationId", "Status", "Type", "CreationDate", "ExpirationDate")
             );
 
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdTokenIndex>(table => table
-                .CreateIndex("IDX_OpenIdTokenIndex_DocumentId_AuthorizationId",
-                    "DocumentId",
-                    "AuthorizationId",
-                    "Status",
-                    "Type",
-                    "CreationDate",
-                    "ExpirationDate")
-            );
-
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdTokenIndex>(table => table
-                .CreateIndex("IDX_OpenIdTokenIndex_DocumentId_TokenId",
-                    "DocumentId",
-                    "TokenId",
-                    "ReferenceId")
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdTokenIndex>(table =>
+                table.CreateIndex("IDX_OpenIdTokenIndex_DocumentId_TokenId", "DocumentId", "TokenId", "ReferenceId")
             );
 
             return 5;
@@ -275,21 +215,13 @@ namespace OrchardCore.OpenId.YesSql.Migrations
         // This code can be removed in a later version.
         public async Task<int> UpdateFrom5Async()
         {
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdAppByLogoutUriIndex>(table => table
-                .CreateIndex("IDX_OpenIdAppByLogoutUriIndex_LogoutRedirectUri", "LogoutRedirectUri")
-            );
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdAppByLogoutUriIndex>(table => table.CreateIndex("IDX_OpenIdAppByLogoutUriIndex_LogoutRedirectUri", "LogoutRedirectUri"));
 
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdAppByRedirectUriIndex>(table => table
-                .CreateIndex("IDX_OpenIdAppByRedirectUriIndex_RedirectUri", "RedirectUri")
-            );
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdAppByRedirectUriIndex>(table => table.CreateIndex("IDX_OpenIdAppByRedirectUriIndex_RedirectUri", "RedirectUri"));
 
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdAppByRoleNameIndex>(table => table
-                .CreateIndex("IDX_OpenIdAppByRoleNameIndex_RoleName", "RoleName")
-            );
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdAppByRoleNameIndex>(table => table.CreateIndex("IDX_OpenIdAppByRoleNameIndex_RoleName", "RoleName"));
 
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdScopeByResourceIndex>(table => table
-                .CreateIndex("IDX_OpenIdScopeByResourceIndex_Resource", "Resource")
-            );
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdScopeByResourceIndex>(table => table.CreateIndex("IDX_OpenIdScopeByResourceIndex_Resource", "Resource"));
 
             return 6;
         }
@@ -298,71 +230,55 @@ namespace OrchardCore.OpenId.YesSql.Migrations
         public async Task<int> UpdateFrom6Async()
         {
             // Create all index tables with the new collection value.
-            await SchemaBuilder.CreateMapIndexTableAsync<OpenIdTokenIndex>(table => table
-                .Column<string>("TokenId", column => column.WithLength(48))
-                .Column<string>("ApplicationId", column => column.WithLength(48))
-                .Column<string>("AuthorizationId", column => column.WithLength(48))
-                .Column<DateTime>("ExpirationDate")
-                .Column<string>("ReferenceId")
-                .Column<string>("Status")
-                .Column<string>("Subject")
-                .Column<string>("Type")
-                .Column<DateTime>("CreationDate"),
-                collection: OpenIdTokenCollection);
-
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdTokenIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdToken_ApplicationId",
-                    "DocumentId",
-                    "ApplicationId",
-                    "Status",
-                    "Subject"),
+            await SchemaBuilder.CreateMapIndexTableAsync<OpenIdTokenIndex>(
+                table =>
+                    table
+                        .Column<string>("TokenId", column => column.WithLength(48))
+                        .Column<string>("ApplicationId", column => column.WithLength(48))
+                        .Column<string>("AuthorizationId", column => column.WithLength(48))
+                        .Column<DateTime>("ExpirationDate")
+                        .Column<string>("ReferenceId")
+                        .Column<string>("Status")
+                        .Column<string>("Subject")
+                        .Column<string>("Type")
+                        .Column<DateTime>("CreationDate"),
                 collection: OpenIdTokenCollection
             );
 
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdTokenIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdToken_AuthorizationId",
-                    "DocumentId",
-                    "AuthorizationId",
-                    "Status",
-                    "Type",
-                    "CreationDate",
-                    "ExpirationDate"),
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdTokenIndex>(
+                table => table.CreateIndex("IDX_COL_OpenIdToken_ApplicationId", "DocumentId", "ApplicationId", "Status", "Subject"),
                 collection: OpenIdTokenCollection
             );
 
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdTokenIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdToken_TokenId",
-                    "DocumentId",
-                    "TokenId",
-                    "ReferenceId"),
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdTokenIndex>(
+                table => table.CreateIndex("IDX_COL_OpenIdToken_AuthorizationId", "DocumentId", "AuthorizationId", "Status", "Type", "CreationDate", "ExpirationDate"),
                 collection: OpenIdTokenCollection
             );
 
-            await SchemaBuilder.CreateMapIndexTableAsync<OpenIdAuthorizationIndex>(table => table
-                .Column<string>("AuthorizationId", column => column.WithLength(48))
-                .Column<string>("ApplicationId", column => column.WithLength(48))
-                .Column<string>("Status")
-                .Column<string>("Subject")
-                .Column<string>("Type")
-                .Column<DateTime>("CreationDate"),
-                collection: OpenIdAuthorizationCollection);
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdTokenIndex>(
+                table => table.CreateIndex("IDX_COL_OpenIdToken_TokenId", "DocumentId", "TokenId", "ReferenceId"),
+                collection: OpenIdTokenCollection
+            );
 
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdAuthorizationIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdAuthorization_ApplicationId",
-                    "DocumentId",
-                    "ApplicationId",
-                    "Status",
-                    "Subject"),
+            await SchemaBuilder.CreateMapIndexTableAsync<OpenIdAuthorizationIndex>(
+                table =>
+                    table
+                        .Column<string>("AuthorizationId", column => column.WithLength(48))
+                        .Column<string>("ApplicationId", column => column.WithLength(48))
+                        .Column<string>("Status")
+                        .Column<string>("Subject")
+                        .Column<string>("Type")
+                        .Column<DateTime>("CreationDate"),
                 collection: OpenIdAuthorizationCollection
             );
 
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdAuthorizationIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdAuthorization_AuthorizationId",
-                    "DocumentId",
-                    "AuthorizationId",
-                    "Status",
-                    "Type",
-                    "CreationDate"),
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdAuthorizationIndex>(
+                table => table.CreateIndex("IDX_COL_OpenIdAuthorization_ApplicationId", "DocumentId", "ApplicationId", "Status", "Subject"),
+                collection: OpenIdAuthorizationCollection
+            );
+
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdAuthorizationIndex>(
+                table => table.CreateIndex("IDX_COL_OpenIdAuthorization_AuthorizationId", "DocumentId", "AuthorizationId", "Status", "Type", "CreationDate"),
                 collection: OpenIdAuthorizationCollection
             );
 
@@ -402,70 +318,64 @@ namespace OrchardCore.OpenId.YesSql.Migrations
         // This code can be removed in a later version.
         public async Task<int> UpdateFrom7Async()
         {
-            // Create all index tables with the new collection value.  
-            await SchemaBuilder.CreateMapIndexTableAsync<OpenIdApplicationIndex>(table => table
-                .Column<string>("ApplicationId", column => column.WithLength(48))
-                .Column<string>("ClientId", column => column.Unique()),
-                collection: OpenIdApplicationCollection);
-
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdApplicationIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdApplication",
-                    "DocumentId",
-                    "ApplicationId",
-                    "ClientId"),
+            // Create all index tables with the new collection value.
+            await SchemaBuilder.CreateMapIndexTableAsync<OpenIdApplicationIndex>(
+                table => table.Column<string>("ApplicationId", column => column.WithLength(48)).Column<string>("ClientId", column => column.Unique()),
                 collection: OpenIdApplicationCollection
             );
 
-            await SchemaBuilder.CreateReduceIndexTableAsync<OpenIdAppByLogoutUriIndex>(table => table
-                .Column<string>("LogoutRedirectUri")
-                .Column<int>("Count"),
-                collection: OpenIdApplicationCollection);
-
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdAppByLogoutUriIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdAppByLogoutUri_LogoutRedirectUri", "LogoutRedirectUri"),
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdApplicationIndex>(
+                table => table.CreateIndex("IDX_COL_OpenIdApplication", "DocumentId", "ApplicationId", "ClientId"),
                 collection: OpenIdApplicationCollection
             );
 
-            await SchemaBuilder.CreateReduceIndexTableAsync<OpenIdAppByRedirectUriIndex>(table => table
-                .Column<string>("RedirectUri")
-                .Column<int>("Count"),
-                collection: OpenIdApplicationCollection);
-
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdAppByRedirectUriIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdAppByRedirectUri_RedirectUri", "RedirectUri"),
+            await SchemaBuilder.CreateReduceIndexTableAsync<OpenIdAppByLogoutUriIndex>(
+                table => table.Column<string>("LogoutRedirectUri").Column<int>("Count"),
                 collection: OpenIdApplicationCollection
             );
 
-            await SchemaBuilder.CreateReduceIndexTableAsync<OpenIdAppByRoleNameIndex>(table => table
-                .Column<string>("RoleName")
-                .Column<int>("Count"),
-                collection: OpenIdApplicationCollection);
-
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdAppByRoleNameIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdAppByRoleName_RoleName", "RoleName"),
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdAppByLogoutUriIndex>(
+                table => table.CreateIndex("IDX_COL_OpenIdAppByLogoutUri_LogoutRedirectUri", "LogoutRedirectUri"),
                 collection: OpenIdApplicationCollection
             );
 
-            await SchemaBuilder.CreateMapIndexTableAsync<OpenIdScopeIndex>(table => table
-                .Column<string>("Name", column => column.Unique())
-                .Column<string>("ScopeId", column => column.WithLength(48)),
-                collection: OpenIdScopeCollection);
+            await SchemaBuilder.CreateReduceIndexTableAsync<OpenIdAppByRedirectUriIndex>(
+                table => table.Column<string>("RedirectUri").Column<int>("Count"),
+                collection: OpenIdApplicationCollection
+            );
 
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdScopeIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdScope",
-                    "DocumentId",
-                    "Name",
-                    "ScopeId"),
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdAppByRedirectUriIndex>(
+                table => table.CreateIndex("IDX_COL_OpenIdAppByRedirectUri_RedirectUri", "RedirectUri"),
+                collection: OpenIdApplicationCollection
+            );
+
+            await SchemaBuilder.CreateReduceIndexTableAsync<OpenIdAppByRoleNameIndex>(
+                table => table.Column<string>("RoleName").Column<int>("Count"),
+                collection: OpenIdApplicationCollection
+            );
+
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdAppByRoleNameIndex>(
+                table => table.CreateIndex("IDX_COL_OpenIdAppByRoleName_RoleName", "RoleName"),
+                collection: OpenIdApplicationCollection
+            );
+
+            await SchemaBuilder.CreateMapIndexTableAsync<OpenIdScopeIndex>(
+                table => table.Column<string>("Name", column => column.Unique()).Column<string>("ScopeId", column => column.WithLength(48)),
                 collection: OpenIdScopeCollection
             );
 
-            await SchemaBuilder.CreateReduceIndexTableAsync<OpenIdScopeByResourceIndex>(table => table
-                .Column<string>("Resource")
-                .Column<int>("Count"),
-                collection: OpenIdScopeCollection);
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdScopeIndex>(
+                table => table.CreateIndex("IDX_COL_OpenIdScope", "DocumentId", "Name", "ScopeId"),
+                collection: OpenIdScopeCollection
+            );
 
-            await SchemaBuilder.AlterIndexTableAsync<OpenIdScopeByResourceIndex>(table => table
-                .CreateIndex("IDX_COL_OpenIdScopeByResource_Resource", "Resource"),
+            await SchemaBuilder.CreateReduceIndexTableAsync<OpenIdScopeByResourceIndex>(
+                table => table.Column<string>("Resource").Column<int>("Count"),
+                collection: OpenIdScopeCollection
+            );
+
+            await SchemaBuilder.AlterIndexTableAsync<OpenIdScopeByResourceIndex>(
+                table => table.CreateIndex("IDX_COL_OpenIdScopeByResource_Resource", "Resource"),
                 collection: OpenIdScopeCollection
             );
 

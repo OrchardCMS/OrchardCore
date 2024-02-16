@@ -121,18 +121,21 @@ namespace OrchardCore.Tenants
         {
             var tenantFileProvider = serviceProvider.GetRequiredService<ITenantFileProvider>();
 
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                FileProvider = tenantFileProvider,
-                DefaultContentType = "application/octet-stream",
-                ServeUnknownFileTypes = true,
-
-                // Cache the tenant static files for 30 days.
-                OnPrepareResponse = ctx =>
+            app.UseStaticFiles(
+                new StaticFileOptions
                 {
-                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = $"public, max-age={TimeSpan.FromDays(30).TotalSeconds}, s-max-age={TimeSpan.FromDays(365.25).TotalSeconds}";
+                    FileProvider = tenantFileProvider,
+                    DefaultContentType = "application/octet-stream",
+                    ServeUnknownFileTypes = true,
+
+                    // Cache the tenant static files for 30 days.
+                    OnPrepareResponse = ctx =>
+                    {
+                        ctx.Context.Response.Headers[HeaderNames.CacheControl] =
+                            $"public, max-age={TimeSpan.FromDays(30).TotalSeconds}, s-max-age={TimeSpan.FromDays(365.25).TotalSeconds}";
+                    }
                 }
-            });
+            );
         }
 
         private static string GetContentRoot(ShellOptions shellOptions, ShellSettings shellSettings) =>

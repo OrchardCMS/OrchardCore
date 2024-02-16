@@ -16,11 +16,14 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
             await context.InitializeAsync();
 
             // Act
-            var recipe = BlogPostDeploymentContext.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
-            {
-                jItem[nameof(ContentItem.ContentItemVersionId)] = "newVersion";
-                jItem[nameof(ContentItem.DisplayText)] = "new version";
-            });
+            var recipe = BlogPostDeploymentContext.GetContentStepRecipe(
+                context.OriginalBlogPost,
+                jItem =>
+                {
+                    jItem[nameof(ContentItem.ContentItemVersionId)] = "newVersion";
+                    jItem[nameof(ContentItem.DisplayText)] = "new version";
+                }
+            );
 
             // Create a second content item in the recipe data so we can confirm the behaviour
             // of the LuceneIndexingContentHandler.
@@ -35,14 +38,13 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
             await context.PostRecipeAsync(recipe);
 
             // Test
-            var result = await context
-                .GraphQLClient
-                .Content
-                .Query("RecentBlogPosts", builder =>
+            var result = await context.GraphQLClient.Content.Query(
+                "RecentBlogPosts",
+                builder =>
                 {
-                    builder
-                        .WithField("displayText");
-                });
+                    builder.WithField("displayText");
+                }
+            );
 
             var nodes = result["data"]["recentBlogPosts"];
 

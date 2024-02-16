@@ -11,30 +11,33 @@ namespace OrchardCore.Lists.Feeds
     {
         public override IDisplayResult Display(ListPart listPart, BuildPartDisplayContext context)
         {
-            return Dynamic("ListPartFeed", shape =>
-            {
-                shape.ContentItem = listPart.ContentItem;
-            })
-            .Location("Detail", "Content");
+            return Dynamic(
+                    "ListPartFeed",
+                    shape =>
+                    {
+                        shape.ContentItem = listPart.ContentItem;
+                    }
+                )
+                .Location("Detail", "Content");
         }
 
         public override IDisplayResult Edit(ListPart part)
         {
-            return Initialize<ListFeedEditViewModel>("ListPartFeed_Edit", m =>
-            {
-                m.DisableRssFeed = part.ContentItem.Content.ListPart.DisableRssFeed ?? false;
-                m.FeedProxyUrl = part.ContentItem.Content.ListPart.FeedProxyUrl;
-                m.FeedItemsCount = part.ContentItem.Content.ListPart.FeedItemsCount ?? 20;
-                m.ContentItem = part.ContentItem;
-            });
+            return Initialize<ListFeedEditViewModel>(
+                "ListPartFeed_Edit",
+                m =>
+                {
+                    m.DisableRssFeed = part.ContentItem.Content.ListPart.DisableRssFeed ?? false;
+                    m.FeedProxyUrl = part.ContentItem.Content.ListPart.FeedProxyUrl;
+                    m.FeedItemsCount = part.ContentItem.Content.ListPart.FeedItemsCount ?? 20;
+                    m.ContentItem = part.ContentItem;
+                }
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ListPart part, IUpdateModel updater)
         {
-            var model = new ListFeedEditViewModel
-            {
-                ContentItem = part.ContentItem,
-            };
+            var model = new ListFeedEditViewModel { ContentItem = part.ContentItem, };
 
             await updater.TryUpdateModelAsync(model, Prefix, t => t.DisableRssFeed, t => t.FeedProxyUrl, t => t.FeedItemsCount);
 

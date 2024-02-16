@@ -38,16 +38,18 @@ namespace OrchardCore.Settings.Services
 
         private Task<SiteSettings> GetDefaultSettingsAsync()
         {
-            return Task.FromResult(new SiteSettings
-            {
-                SiteSalt = Guid.NewGuid().ToString("N"),
-                SiteName = "My Orchard Project Application",
-                PageTitleFormat = "{% page_title Site.SiteName, position: \"after\", separator: \" - \" %}",
-                TimeZoneId = _clock.GetSystemTimeZone().TimeZoneId,
-                PageSize = 10,
-                MaxPageSize = 100,
-                MaxPagedCount = 0
-            });
+            return Task.FromResult(
+                new SiteSettings
+                {
+                    SiteSalt = Guid.NewGuid().ToString("N"),
+                    SiteName = "My Orchard Project Application",
+                    PageTitleFormat = "{% page_title Site.SiteName, position: \"after\", separator: \" - \" %}",
+                    TimeZoneId = _clock.GetSystemTimeZone().TimeZoneId,
+                    PageSize = 10,
+                    MaxPageSize = 100,
+                    MaxPagedCount = 0
+                }
+            );
         }
     }
 }

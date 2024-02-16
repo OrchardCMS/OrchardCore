@@ -18,8 +18,7 @@ public static class ServiceCollectionExtensions
         where TSource : IDeploymentSource
         where TStep : DeploymentStep, new()
     {
-        services.AddDeploymentSource<TSource>()
-            .AddDeploymentStep<TStep>();
+        services.AddDeploymentSource<TSource>().AddDeploymentStep<TStep>();
 
         return services;
     }
@@ -29,8 +28,7 @@ public static class ServiceCollectionExtensions
         where TStep : DeploymentStep, new()
         where TDisplayDriver : DisplayDriver<DeploymentStep, TStep>
     {
-        services.AddDeployment<TSource, TStep>()
-            .AddDeploymentStepDisplayDriver<TDisplayDriver, TStep>();
+        services.AddDeployment<TSource, TStep>().AddDeploymentStepDisplayDriver<TDisplayDriver, TStep>();
 
         return services;
     }
@@ -39,8 +37,7 @@ public static class ServiceCollectionExtensions
         where TStep : DeploymentStep, new()
         where TDisplayDriver : DisplayDriver<DeploymentStep, TStep>
     {
-        services.AddDeploymentStep<TStep>()
-            .AddDeploymentStepDisplayDriver<TDisplayDriver, TStep>();
+        services.AddDeploymentStep<TStep>().AddDeploymentStepDisplayDriver<TDisplayDriver, TStep>();
 
         return services;
     }

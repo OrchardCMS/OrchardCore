@@ -62,10 +62,7 @@ public static class ShellPipelineExtensions
 
         await ConfigurePipelineAsync(builder);
 
-        var shellPipeline = new ShellRequestPipeline
-        {
-            Next = builder.Build()
-        };
+        var shellPipeline = new ShellRequestPipeline { Next = builder.Build() };
 
         return shellPipeline;
     }
@@ -83,8 +80,7 @@ public static class ShellPipelineExtensions
         builder.UseRouting();
 
         // Try to retrieve the current 'IEndpointRouteBuilder'.
-        if (!builder.Properties.TryGetValue(EndpointRouteBuilder, out var obj) ||
-            obj is not IEndpointRouteBuilder routes)
+        if (!builder.Properties.TryGetValue(EndpointRouteBuilder, out var obj) || obj is not IEndpointRouteBuilder routes)
         {
             throw new InvalidOperationException("Failed to retrieve the current endpoint route builder.");
         }

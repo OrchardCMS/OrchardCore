@@ -6,9 +6,7 @@ namespace OrchardCore.ContentManagement.Handlers;
 public class ValidateContentPartContext : ValidateContentContext
 {
     public ValidateContentPartContext(ContentItem contentItem)
-        : base(contentItem)
-    {
-    }
+        : base(contentItem) { }
 
     public ContentTypePartDefinition ContentTypePartDefinition { get; set; }
 }

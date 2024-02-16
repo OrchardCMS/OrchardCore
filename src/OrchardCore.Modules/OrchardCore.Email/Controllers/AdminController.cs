@@ -16,11 +16,7 @@ namespace OrchardCore.Email.Controllers
         private readonly ISmtpService _smtpService;
         protected readonly IHtmlLocalizer H;
 
-        public AdminController(
-            IHtmlLocalizer<AdminController> h,
-            IAuthorizationService authorizationService,
-            INotifier notifier,
-            ISmtpService smtpService)
+        public AdminController(IHtmlLocalizer<AdminController> h, IAuthorizationService authorizationService, INotifier notifier, ISmtpService smtpService)
         {
             H = h;
             _authorizationService = authorizationService;

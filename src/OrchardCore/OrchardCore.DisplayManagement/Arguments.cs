@@ -33,18 +33,21 @@ namespace OrchardCore.DisplayManagement
 
         public static INamedEnumerable<object> From(object propertyObject)
         {
-            var propertiesAccessor = _propertiesAccessors.GetOrAdd(propertyObject.GetType(), type =>
-            {
-                var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
-                var names = properties.Select(x => x.Name).ToArray();
-
-                return obj =>
+            var propertiesAccessor = _propertiesAccessors.GetOrAdd(
+                propertyObject.GetType(),
+                type =>
                 {
-                    // properties and names are referenced in the closure
-                    var values = properties.Select(x => x.GetValue(obj, null)).ToArray();
-                    return new NamedEnumerable<object>(values, names);
-                };
-            });
+                    var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+                    var names = properties.Select(x => x.Name).ToArray();
+
+                    return obj =>
+                    {
+                        // properties and names are referenced in the closure
+                        var values = properties.Select(x => x.GetValue(obj, null)).ToArray();
+                        return new NamedEnumerable<object>(values, names);
+                    };
+                }
+            );
 
             return propertiesAccessor(propertyObject);
         }
@@ -209,10 +212,7 @@ namespace OrchardCore.DisplayManagement
 
                 ICollection<string> IDictionary<string, T>.Keys
                 {
-                    get
-                    {
-                        return _names;
-                    }
+                    get { return _names; }
                 }
 
                 ICollection<T> IDictionary<string, T>.Values

@@ -17,10 +17,13 @@ namespace OrchardCore.Forms.Drivers
 
         public override IDisplayResult Edit(LabelPart part, BuildPartEditorContext context)
         {
-            return Initialize<LabelPartEditViewModel>("LabelPart_Fields_Edit", m =>
-            {
-                m.For = part.For;
-            });
+            return Initialize<LabelPartEditViewModel>(
+                "LabelPart_Fields_Edit",
+                m =>
+                {
+                    m.For = part.For;
+                }
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(LabelPart part, IUpdateModel updater, UpdatePartEditorContext context)

@@ -21,15 +21,18 @@ namespace OrchardCore.ContentFields.Settings
 
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<PredefinedListSettingsViewModel>("TextFieldPredefinedListEditorSettings_Edit", model =>
-            {
-                var settings = partFieldDefinition.GetSettings<TextFieldPredefinedListEditorSettings>();
+            return Initialize<PredefinedListSettingsViewModel>(
+                    "TextFieldPredefinedListEditorSettings_Edit",
+                    model =>
+                    {
+                        var settings = partFieldDefinition.GetSettings<TextFieldPredefinedListEditorSettings>();
 
-                model.DefaultValue = settings.DefaultValue;
-                model.Editor = settings.Editor;
-                model.Options = JConvert.SerializeObject(settings.Options ?? [], JOptions.Indented);
-            })
-            .Location("Editor");
+                        model.DefaultValue = settings.DefaultValue;
+                        model.Editor = settings.Editor;
+                        model.Options = JConvert.SerializeObject(settings.Options ?? [], JOptions.Indented);
+                    }
+                )
+                .Location("Editor");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
@@ -45,9 +48,7 @@ namespace OrchardCore.ContentFields.Settings
                 {
                     settings.DefaultValue = model.DefaultValue;
                     settings.Editor = model.Editor;
-                    settings.Options = string.IsNullOrWhiteSpace(model.Options)
-                        ? []
-                        : JConvert.DeserializeObject<ListValueOption[]>(model.Options);
+                    settings.Options = string.IsNullOrWhiteSpace(model.Options) ? [] : JConvert.DeserializeObject<ListValueOption[]>(model.Options);
                 }
                 catch
                 {

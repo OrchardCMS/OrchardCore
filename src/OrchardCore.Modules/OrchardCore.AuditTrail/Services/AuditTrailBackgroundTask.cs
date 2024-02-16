@@ -15,8 +15,9 @@ namespace OrchardCore.AuditTrail.Services
         Title = "Audit Trail Events Purger",
         Schedule = "0 0 * * *",
         Description = "Regularly purges old Audit Trail events.",
-        LockTimeout = 3_000, LockExpiration = 30_000)]
-
+        LockTimeout = 3_000,
+        LockExpiration = 30_000
+    )]
     public class AuditTrailBackgroundTask : IBackgroundTask
     {
         public async Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
@@ -43,10 +44,13 @@ namespace OrchardCore.AuditTrail.Services
                 settings.LastRunUtc = clock.UtcNow;
 
                 var container = await siteService.LoadSiteSettingsAsync();
-                container.Alter<AuditTrailTrimmingSettings>(nameof(AuditTrailTrimmingSettings), settings =>
-                {
-                    settings.LastRunUtc = clock.UtcNow;
-                });
+                container.Alter<AuditTrailTrimmingSettings>(
+                    nameof(AuditTrailTrimmingSettings),
+                    settings =>
+                    {
+                        settings.LastRunUtc = clock.UtcNow;
+                    }
+                );
 
                 await siteService.UpdateSiteSettingsAsync(container);
             }

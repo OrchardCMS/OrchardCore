@@ -8,7 +8,8 @@ namespace OrchardCore.Sitemaps.Services
         SitemapSource Create();
     }
 
-    public class SitemapSourceFactory<TSitemapSource> : ISitemapSourceFactory where TSitemapSource : SitemapSource, new()
+    public class SitemapSourceFactory<TSitemapSource> : ISitemapSourceFactory
+        where TSitemapSource : SitemapSource, new()
     {
         private static readonly string _typeName = typeof(TSitemapSource).Name;
 
@@ -23,10 +24,7 @@ namespace OrchardCore.Sitemaps.Services
 
         public SitemapSource Create()
         {
-            return new TSitemapSource()
-            {
-                Id = _sitemapIdGenerator.GenerateUniqueId()
-            };
+            return new TSitemapSource() { Id = _sitemapIdGenerator.GenerateUniqueId() };
         }
     }
 }

@@ -20,14 +20,15 @@ namespace OrchardCore.Templates
                 return Task.CompletedTask;
             }
 
-            builder
-                .Add(S["Design"], design => design
-                    .Add(S["Templates"], S["Templates"].PrefixPosition(), import => import
-                        .Action("Index", "Template", "OrchardCore.Templates")
-                        .Permission(Permissions.ManageTemplates)
-                        .LocalNav()
+            builder.Add(
+                S["Design"],
+                design =>
+                    design.Add(
+                        S["Templates"],
+                        S["Templates"].PrefixPosition(),
+                        import => import.Action("Index", "Template", "OrchardCore.Templates").Permission(Permissions.ManageTemplates).LocalNav()
                     )
-                );
+            );
 
             return Task.CompletedTask;
         }

@@ -23,11 +23,7 @@ namespace OrchardCore.Feeds.Rss
 
         public FeedItem<TItem> AddItem<TItem>(FeedContext context, TItem item)
         {
-            var feedItem = new FeedItem<TItem>
-            {
-                Item = item,
-                Element = new XElement("item"),
-            };
+            var feedItem = new FeedItem<TItem> { Item = item, Element = new XElement("item"), };
             context.Response.Items.Add(feedItem);
             context.Response.Element.Add(feedItem.Element);
             return feedItem;

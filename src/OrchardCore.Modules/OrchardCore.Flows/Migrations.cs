@@ -17,14 +17,15 @@ namespace OrchardCore.Flows
 
         public async Task<int> CreateAsync()
         {
-            await _contentDefinitionManager.AlterPartDefinitionAsync("FlowPart", builder => builder
-                .Attachable()
-                .WithDescription("Provides a customizable body for your content item where you can build a content structure with widgets."));
+            await _contentDefinitionManager.AlterPartDefinitionAsync(
+                "FlowPart",
+                builder => builder.Attachable().WithDescription("Provides a customizable body for your content item where you can build a content structure with widgets.")
+            );
 
-            await _contentDefinitionManager.AlterPartDefinitionAsync("BagPart", builder => builder
-                .Attachable()
-                .Reusable()
-                .WithDescription("Provides a collection behavior for your content item where you can place other content items."));
+            await _contentDefinitionManager.AlterPartDefinitionAsync(
+                "BagPart",
+                builder => builder.Attachable().Reusable().WithDescription("Provides a collection behavior for your content item where you can place other content items.")
+            );
 
             // Shortcut other migration steps on new content definition schemas.
             return 3;
@@ -33,10 +34,10 @@ namespace OrchardCore.Flows
         // This code can be removed in a later version.
         public async Task<int> UpdateFrom1Async()
         {
-            await _contentDefinitionManager.AlterPartDefinitionAsync("BagPart", builder => builder
-                .Attachable()
-                .Reusable()
-                .WithDescription("Provides a collection behavior for your content item where you can place other content items."));
+            await _contentDefinitionManager.AlterPartDefinitionAsync(
+                "BagPart",
+                builder => builder.Attachable().Reusable().WithDescription("Provides a collection behavior for your content item where you can place other content items.")
+            );
 
             return 2;
         }

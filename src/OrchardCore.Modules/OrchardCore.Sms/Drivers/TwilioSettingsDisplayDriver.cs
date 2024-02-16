@@ -43,7 +43,8 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
         ShellSettings shellSettings,
         INotifier notifier,
         IHtmlLocalizer<TwilioSettingsDisplayDriver> htmlLocalizer,
-        IStringLocalizer<TwilioSettingsDisplayDriver> stringLocalizer)
+        IStringLocalizer<TwilioSettingsDisplayDriver> stringLocalizer
+    )
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
@@ -58,23 +59,26 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
 
     public override IDisplayResult Edit(TwilioSettings settings)
     {
-        return Initialize<TwilioSettingsViewModel>("TwilioSettings_Edit", model =>
-        {
-            model.IsEnabled = settings.IsEnabled;
-            model.PhoneNumber = settings.PhoneNumber;
-            model.AccountSID = settings.AccountSID;
-            model.HasAuthToken = !string.IsNullOrEmpty(settings.AuthToken);
-        }).Location("Content:5#Twilio")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings))
-        .OnGroup(SmsSettings.GroupId);
+        return Initialize<TwilioSettingsViewModel>(
+                "TwilioSettings_Edit",
+                model =>
+                {
+                    model.IsEnabled = settings.IsEnabled;
+                    model.PhoneNumber = settings.PhoneNumber;
+                    model.AccountSID = settings.AccountSID;
+                    model.HasAuthToken = !string.IsNullOrEmpty(settings.AuthToken);
+                }
+            )
+            .Location("Content:5#Twilio")
+            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings))
+            .OnGroup(SmsSettings.GroupId);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, TwilioSettings settings, IUpdateModel updater, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!context.GroupId.Equals(SmsSettings.GroupId, StringComparison.OrdinalIgnoreCase)
-            || !await _authorizationService.AuthorizeAsync(user, SmsPermissions.ManageSmsSettings))
+        if (!context.GroupId.Equals(SmsSettings.GroupId, StringComparison.OrdinalIgnoreCase) || !await _authorizationService.AuthorizeAsync(user, SmsPermissions.ManageSmsSettings))
         {
             return null;
         }
@@ -91,7 +95,11 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
 
                 if (hasChanges && smsSettings.DefaultProviderName == TwilioSmsProvider.TechnicalName)
                 {
-                    await _notifier.WarningAsync(H["You have successfully disabled the default SMS provider. The SMS service is now disable and will remain disabled until you designate a new default provider."]);
+                    await _notifier.WarningAsync(
+                        H[
+                            "You have successfully disabled the default SMS provider. The SMS service is now disable and will remain disabled until you designate a new default provider."
+                        ]
+                    );
 
                     smsSettings.DefaultProviderName = null;
 

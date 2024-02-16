@@ -8,7 +8,8 @@ namespace OrchardCore.AdminMenu.Services
         AdminNode Create();
     }
 
-    public class AdminNodeProviderFactory<TAdminNode> : IAdminNodeProviderFactory where TAdminNode : AdminNode, new()
+    public class AdminNodeProviderFactory<TAdminNode> : IAdminNodeProviderFactory
+        where TAdminNode : AdminNode, new()
     {
         private static readonly string _typeName = typeof(TAdminNode).Name;
 

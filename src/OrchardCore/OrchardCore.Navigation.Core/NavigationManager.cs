@@ -27,7 +27,8 @@ namespace OrchardCore.Navigation
             ILogger<NavigationManager> logger,
             ShellSettings shellSettings,
             IUrlHelperFactory urlHelperFactory,
-            IAuthorizationService authorizationService)
+            IAuthorizationService authorizationService
+        )
         {
             _navigationProviders = navigationProviders;
             _logger = logger;

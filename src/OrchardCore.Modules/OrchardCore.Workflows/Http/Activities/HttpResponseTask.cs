@@ -104,8 +104,7 @@ namespace OrchardCore.Workflows.Http.Activities
                 return [];
             }
 
-            return
-                from header in text.Split(_separator, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim())
+            return from header in text.Split(_separator, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim())
                 let pair = header.Split(':')
                 where pair.Length == 2
                 select new KeyValuePair<string, StringValues>(pair[0], pair[1]);

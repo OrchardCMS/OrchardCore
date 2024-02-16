@@ -32,7 +32,8 @@ namespace OrchardCore.ReCaptcha.TagHelpers
             IResourceManager resourceManager,
             ILocalizationService localizationService,
             IHttpContextAccessor httpContextAccessor,
-            ILogger<ReCaptchaTagHelper> logger)
+            ILogger<ReCaptchaTagHelper> logger
+        )
         {
             _resourceManager = resourceManager;
             _httpContextAccessor = httpContextAccessor;

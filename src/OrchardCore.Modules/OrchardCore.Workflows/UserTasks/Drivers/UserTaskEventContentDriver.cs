@@ -34,7 +34,8 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
             IWorkflowManager workflowManager,
             INotifier notifier,
             IHtmlLocalizer<UserTaskEventContentDriver> localizer,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor
+        )
         {
             _workflowStore = workflowStore;
             _activityLibrary = activityLibrary;
@@ -49,10 +50,15 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
         {
             var results = new List<IDisplayResult>
             {
-                Initialize<UserTaskEventContentViewModel>("Content_UserTaskButton", async model => {
-                    var actions = await GetUserTaskActionsAsync(contentItem.ContentItemId);
-                    model.Actions = actions;
-                }).Location("Actions:30"),
+                Initialize<UserTaskEventContentViewModel>(
+                        "Content_UserTaskButton",
+                        async model =>
+                        {
+                            var actions = await GetUserTaskActionsAsync(contentItem.ContentItemId);
+                            model.Actions = actions;
+                        }
+                    )
+                    .Location("Actions:30"),
             };
 
             return Combine(results.ToArray());

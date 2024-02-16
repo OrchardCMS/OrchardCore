@@ -74,7 +74,8 @@ namespace OrchardCore.Search.Lucene.Controllers
             IHtmlLocalizer<AdminController> htmlLocalizer,
             ILogger<AdminController> logger,
             IOptions<TemplateOptions> templateOptions,
-            ILocalizationService localizationService)
+            ILocalizationService localizationService
+        )
         {
             _session = session;
             _luceneIndexManager = luceneIndexManager;
@@ -114,10 +115,7 @@ namespace OrchardCore.Search.Lucene.Controllers
                 results = results.Where(q => q.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase));
             }
 
-            results = results
-                .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize)
-                .ToList();
+            results = results.Skip(pager.GetStartIndex()).Take(pager.PageSize).ToList();
 
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();
@@ -146,11 +144,7 @@ namespace OrchardCore.Search.Lucene.Controllers
 
         [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
-        public ActionResult IndexFilterPOST(AdminIndexViewModel model)
-            => RedirectToAction(nameof(Index), new RouteValueDictionary
-            {
-                { _optionsSearch, model.Options.Search }
-            });
+        public ActionResult IndexFilterPOST(AdminIndexViewModel model) => RedirectToAction(nameof(Index), new RouteValueDictionary { { _optionsSearch, model.Options.Search } });
 
         public async Task<ActionResult> Edit(string indexName = null)
         {
@@ -179,12 +173,12 @@ namespace OrchardCore.Search.Lucene.Controllers
                 AnalyzerName = IsCreate ? "standardanalyzer" : settings.AnalyzerName,
                 IndexLatest = settings.IndexLatest,
                 Culture = settings.Culture,
-                Cultures = ILocalizationService.GetAllCulturesAndAliases()
-                    .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name }).Prepend(new SelectListItem { Text = S["Any culture"], Value = "any" }),
-                Analyzers = _luceneAnalyzerManager.GetAnalyzers()
-                    .Select(x => new SelectListItem { Text = x.Name, Value = x.Name }),
-                IndexedContentTypes = IsCreate ? (await _contentDefinitionManager.ListTypeDefinitionsAsync())
-                    .Select(x => x.Name).ToArray() : settings.IndexedContentTypes,
+                Cultures = ILocalizationService
+                    .GetAllCulturesAndAliases()
+                    .Select(x => new SelectListItem { Text = x.Name + " (" + x.DisplayName + ")", Value = x.Name })
+                    .Prepend(new SelectListItem { Text = S["Any culture"], Value = "any" }),
+                Analyzers = _luceneAnalyzerManager.GetAnalyzers().Select(x => new SelectListItem { Text = x.Name, Value = x.Name }),
+                IndexedContentTypes = IsCreate ? (await _contentDefinitionManager.ListTypeDefinitionsAsync()).Select(x => x.Name).ToArray() : settings.IndexedContentTypes,
                 StoreSourceData = !IsCreate && settings.StoreSourceData
             };
 
@@ -221,13 +215,9 @@ namespace OrchardCore.Search.Lucene.Controllers
                 var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
 
                 model.Cultures = supportedCultures
-                    .Select(c => new SelectListItem
-                    {
-                        Text = $"{c} ({CultureInfo.GetCultureInfo(c).DisplayName})",
-                        Value = c
-                    }).Prepend(new SelectListItem { Text = S["Any culture"], Value = "any" });
-                model.Analyzers = _luceneAnalyzerManager.GetAnalyzers()
-                    .Select(x => new SelectListItem { Text = x.Name, Value = x.Name });
+                    .Select(c => new SelectListItem { Text = $"{c} ({CultureInfo.GetCultureInfo(c).DisplayName})", Value = c })
+                    .Prepend(new SelectListItem { Text = S["Any culture"], Value = "any" });
+                model.Analyzers = _luceneAnalyzerManager.GetAnalyzers().Select(x => new SelectListItem { Text = x.Name, Value = x.Name });
                 return View(model);
             }
 
@@ -235,7 +225,15 @@ namespace OrchardCore.Search.Lucene.Controllers
             {
                 try
                 {
-                    var settings = new LuceneIndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexLatest = model.IndexLatest, IndexedContentTypes = indexedContentTypes, Culture = model.Culture ?? "", StoreSourceData = model.StoreSourceData };
+                    var settings = new LuceneIndexSettings
+                    {
+                        IndexName = model.IndexName,
+                        AnalyzerName = model.AnalyzerName,
+                        IndexLatest = model.IndexLatest,
+                        IndexedContentTypes = indexedContentTypes,
+                        Culture = model.Culture ?? "",
+                        StoreSourceData = model.StoreSourceData
+                    };
 
                     // We call Rebuild in order to reset the index state cursor too in case the same index
                     // name was also used previously.
@@ -254,7 +252,15 @@ namespace OrchardCore.Search.Lucene.Controllers
             {
                 try
                 {
-                    var settings = new LuceneIndexSettings { IndexName = model.IndexName, AnalyzerName = model.AnalyzerName, IndexLatest = model.IndexLatest, IndexedContentTypes = indexedContentTypes, Culture = model.Culture ?? "", StoreSourceData = model.StoreSourceData };
+                    var settings = new LuceneIndexSettings
+                    {
+                        IndexName = model.IndexName,
+                        AnalyzerName = model.AnalyzerName,
+                        IndexLatest = model.IndexLatest,
+                        IndexedContentTypes = indexedContentTypes,
+                        Culture = model.Culture ?? "",
+                        StoreSourceData = model.StoreSourceData
+                    };
 
                     await _luceneIndexingService.UpdateIndexAsync(settings);
                 }
@@ -400,35 +406,42 @@ namespace OrchardCore.Search.Lucene.Controllers
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            await _luceneIndexManager.SearchAsync(model.IndexName, async searcher =>
-            {
-                var analyzer = _luceneAnalyzerManager.CreateAnalyzer(await _luceneIndexSettingsService.GetIndexAnalyzerAsync(model.IndexName));
-                var context = new LuceneQueryContext(searcher, LuceneSettings.DefaultVersion, analyzer);
-
-                var parameters = JConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
-
-                var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(model.DecodedQuery, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions.Value))));
-
-                try
+            await _luceneIndexManager.SearchAsync(
+                model.IndexName,
+                async searcher =>
                 {
-                    var parameterizedQuery = JsonNode.Parse(tokenizedContent).AsObject();
-                    var luceneTopDocs = await _queryService.SearchAsync(context, parameterizedQuery);
+                    var analyzer = _luceneAnalyzerManager.CreateAnalyzer(await _luceneIndexSettingsService.GetIndexAnalyzerAsync(model.IndexName));
+                    var context = new LuceneQueryContext(searcher, LuceneSettings.DefaultVersion, analyzer);
 
-                    if (luceneTopDocs != null)
+                    var parameters = JConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
+
+                    var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(
+                        model.DecodedQuery,
+                        _javaScriptEncoder,
+                        parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions.Value)))
+                    );
+
+                    try
                     {
-                        model.Documents = luceneTopDocs.TopDocs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)).ToList();
-                        model.Count = luceneTopDocs.Count;
-                    }
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e, "Error while executing query");
-                    ModelState.AddModelError(nameof(model.DecodedQuery), S["Invalid query : {0}", e.Message]);
-                }
+                        var parameterizedQuery = JsonNode.Parse(tokenizedContent).AsObject();
+                        var luceneTopDocs = await _queryService.SearchAsync(context, parameterizedQuery);
 
-                stopwatch.Stop();
-                model.Elapsed = stopwatch.Elapsed;
-            });
+                        if (luceneTopDocs != null)
+                        {
+                            model.Documents = luceneTopDocs.TopDocs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)).ToList();
+                            model.Count = luceneTopDocs.Count;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogError(e, "Error while executing query");
+                        ModelState.AddModelError(nameof(model.DecodedQuery), S["Invalid query : {0}", e.Message]);
+                    }
+
+                    stopwatch.Stop();
+                    model.Elapsed = stopwatch.Elapsed;
+                }
+            );
 
             return View(model);
         }

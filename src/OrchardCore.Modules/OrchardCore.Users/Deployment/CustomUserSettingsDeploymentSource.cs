@@ -44,18 +44,10 @@ public class CustomUserSettingsDeploymentSource : IDeploymentSource
                 userSettingsData.Add(JObject.FromObject(userSetting));
             }
 
-            userData.Add(new JsonObject
-            {
-                ["userId"] = user.UserId,
-                ["user-custom-user-settings"] = userSettingsData,
-            });
+            userData.Add(new JsonObject { ["userId"] = user.UserId, ["user-custom-user-settings"] = userSettingsData, });
         }
 
         // Adding custom user settings
-        result.Steps.Add(new JsonObject
-        {
-            ["name"] = "custom-user-settings",
-            ["custom-user-settings"] = userData,
-        });
+        result.Steps.Add(new JsonObject { ["name"] = "custom-user-settings", ["custom-user-settings"] = userData, });
     }
 }

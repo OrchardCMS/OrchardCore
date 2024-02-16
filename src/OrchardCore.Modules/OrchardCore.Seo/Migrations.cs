@@ -21,21 +21,21 @@ namespace OrchardCore.Seo
 
         public async Task<int> CreateAsync()
         {
-            await _contentDefinitionManager.AlterPartDefinitionAsync("SeoMetaPart", builder => builder
-                .Attachable()
-                .WithDescription("Provides a part that allows SEO meta descriptions to be applied to a content item.")
-                .WithField("DefaultSocialImage", field => field
-                    .OfType("MediaField")
-                    .WithDisplayName("Default social image")
-                    .WithSettings(new MediaFieldSettings { Multiple = false }))
-                .WithField("OpenGraphImage", field => field
-                    .OfType("MediaField")
-                    .WithDisplayName("Open graph image")
-                    .WithSettings(new MediaFieldSettings { Multiple = false }))
-                .WithField("TwitterImage", field => field
-                    .OfType("MediaField")
-                    .WithDisplayName("Twitter image")
-                    .WithSettings(new MediaFieldSettings { Multiple = false }))
+            await _contentDefinitionManager.AlterPartDefinitionAsync(
+                "SeoMetaPart",
+                builder =>
+                    builder
+                        .Attachable()
+                        .WithDescription("Provides a part that allows SEO meta descriptions to be applied to a content item.")
+                        .WithField(
+                            "DefaultSocialImage",
+                            field => field.OfType("MediaField").WithDisplayName("Default social image").WithSettings(new MediaFieldSettings { Multiple = false })
+                        )
+                        .WithField(
+                            "OpenGraphImage",
+                            field => field.OfType("MediaField").WithDisplayName("Open graph image").WithSettings(new MediaFieldSettings { Multiple = false })
+                        )
+                        .WithField("TwitterImage", field => field.OfType("MediaField").WithDisplayName("Twitter image").WithSettings(new MediaFieldSettings { Multiple = false }))
             );
 
             await _recipeMigrator.ExecuteAsync("socialmetasettings.recipe.json", this);

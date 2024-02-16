@@ -24,8 +24,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         /// </summary>
         public static ContentPartOptionBuilder UseDisplayDriver(this ContentPartOptionBuilder builder, Type partDisplayDriverType)
         {
-            return builder.ForDisplayMode(partDisplayDriverType)
-                .ForEditor(partDisplayDriverType);
+            return builder.ForDisplayMode(partDisplayDriverType).ForEditor(partDisplayDriverType);
         }
 
         /// <summary>

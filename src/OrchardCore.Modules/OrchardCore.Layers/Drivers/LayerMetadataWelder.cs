@@ -41,8 +41,7 @@ namespace OrchardCore.Layers.Drivers
                 layerMetadata = new LayerMetadata();
 
                 // Are we loading an editor that requires layer metadata?
-                if (await context.Updater.TryUpdateModelAsync(layerMetadata, Prefix, m => m.Zone, m => m.Position)
-                    && !string.IsNullOrEmpty(layerMetadata.Zone))
+                if (await context.Updater.TryUpdateModelAsync(layerMetadata, Prefix, m => m.Zone, m => m.Position) && !string.IsNullOrEmpty(layerMetadata.Zone))
                 {
                     model.Weld(layerMetadata);
                 }
@@ -52,13 +51,16 @@ namespace OrchardCore.Layers.Drivers
                 }
             }
 
-            return Initialize<LayerMetadataEditViewModel>("LayerMetadata_Edit", async shape =>
-            {
-                shape.Title = model.DisplayText;
-                shape.LayerMetadata = layerMetadata;
-                shape.Layers = (await _layerService.GetLayersAsync()).Layers;
-            })
-            .Location("Content:before");
+            return Initialize<LayerMetadataEditViewModel>(
+                    "LayerMetadata_Edit",
+                    async shape =>
+                    {
+                        shape.Title = model.DisplayText;
+                        shape.LayerMetadata = layerMetadata;
+                        shape.Layers = (await _layerService.GetLayersAsync()).Layers;
+                    }
+                )
+                .Location("Content:before");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentItem model, UpdateEditorContext context)

@@ -33,13 +33,11 @@ namespace OrchardCore.Environment.Shell.Builders
             return null;
         }
 
-        public static object? GetImplementationInstance(this ServiceDescriptor serviceDescriptor) => serviceDescriptor.IsKeyedService
-            ? serviceDescriptor.KeyedImplementationInstance
-            : serviceDescriptor.ImplementationInstance;
+        public static object? GetImplementationInstance(this ServiceDescriptor serviceDescriptor) =>
+            serviceDescriptor.IsKeyedService ? serviceDescriptor.KeyedImplementationInstance : serviceDescriptor.ImplementationInstance;
 
-        public static object? GetImplementationFactory(this ServiceDescriptor serviceDescriptor) => serviceDescriptor.IsKeyedService
-            ? serviceDescriptor.KeyedImplementationFactory
-            : serviceDescriptor.ImplementationFactory;
+        public static object? GetImplementationFactory(this ServiceDescriptor serviceDescriptor) =>
+            serviceDescriptor.IsKeyedService ? serviceDescriptor.KeyedImplementationFactory : serviceDescriptor.ImplementationFactory;
 
         public static bool TryGetImplementationType(this ServiceDescriptor serviceDescriptor, out Type? type)
         {
@@ -62,9 +60,8 @@ namespace OrchardCore.Environment.Shell.Builders
             return factory is not null;
         }
 
-        internal static Type? GetImplementationTypeInternal(this ServiceDescriptor serviceDescriptor) => serviceDescriptor.IsKeyedService
-            ? serviceDescriptor.KeyedImplementationType
-            : serviceDescriptor.ImplementationType;
+        internal static Type? GetImplementationTypeInternal(this ServiceDescriptor serviceDescriptor) =>
+            serviceDescriptor.IsKeyedService ? serviceDescriptor.KeyedImplementationType : serviceDescriptor.ImplementationType;
 
         internal static bool TryGetImplementationTypeInternal(this ServiceDescriptor serviceDescriptor, out Type? type)
         {

@@ -48,34 +48,37 @@ namespace OrchardCore.Autoroute.Drivers
 
         public override IDisplayResult Edit(AutoroutePart autoroutePart, BuildPartEditorContext context)
         {
-            return Initialize<AutoroutePartViewModel>("AutoroutePart_Edit", async model =>
-            {
-                model.Path = autoroutePart.Path;
-                model.AutoroutePart = autoroutePart;
-                model.ContentItem = autoroutePart.ContentItem;
-                model.SetHomepage = false;
-
-                var siteSettings = await _siteService.GetSiteSettingsAsync();
-                var homeRoute = siteSettings.HomeRoute;
-
-                if (homeRoute != null && homeRoute.TryGetValue(_options.ContainedContentItemIdKey, out var containedContentItemId))
+            return Initialize<AutoroutePartViewModel>(
+                "AutoroutePart_Edit",
+                async model =>
                 {
-                    if (string.Equals(autoroutePart.ContentItem.ContentItemId, containedContentItemId.ToString(), StringComparison.OrdinalIgnoreCase))
+                    model.Path = autoroutePart.Path;
+                    model.AutoroutePart = autoroutePart;
+                    model.ContentItem = autoroutePart.ContentItem;
+                    model.SetHomepage = false;
+
+                    var siteSettings = await _siteService.GetSiteSettingsAsync();
+                    var homeRoute = siteSettings.HomeRoute;
+
+                    if (homeRoute != null && homeRoute.TryGetValue(_options.ContainedContentItemIdKey, out var containedContentItemId))
+                    {
+                        if (string.Equals(autoroutePart.ContentItem.ContentItemId, containedContentItemId.ToString(), StringComparison.OrdinalIgnoreCase))
+                        {
+                            model.IsHomepage = true;
+                        }
+                    }
+                    else if (string.Equals(autoroutePart.ContentItem.ContentItemId, homeRoute?[_options.ContentItemIdKey]?.ToString(), StringComparison.OrdinalIgnoreCase))
                     {
                         model.IsHomepage = true;
                     }
-                }
-                else if (string.Equals(autoroutePart.ContentItem.ContentItemId, homeRoute?[_options.ContentItemIdKey]?.ToString(), StringComparison.OrdinalIgnoreCase))
-                {
-                    model.IsHomepage = true;
-                }
 
-                model.Disabled = autoroutePart.Disabled;
-                model.Absolute = autoroutePart.Absolute;
-                model.RouteContainedItems = autoroutePart.RouteContainedItems;
+                    model.Disabled = autoroutePart.Disabled;
+                    model.Absolute = autoroutePart.Absolute;
+                    model.RouteContainedItems = autoroutePart.RouteContainedItems;
 
-                model.Settings = context.TypePartDefinition.GetSettings<AutoroutePartSettings>();
-            });
+                    model.Settings = context.TypePartDefinition.GetSettings<AutoroutePartSettings>();
+                }
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(AutoroutePart model, IUpdateModel updater, UpdatePartEditorContext context)

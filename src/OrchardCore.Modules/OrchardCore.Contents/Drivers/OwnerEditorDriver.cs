@@ -21,10 +21,12 @@ namespace OrchardCore.Contents.Drivers
         private readonly UserManager<IUser> _userManager;
         protected readonly IStringLocalizer S;
 
-        public OwnerEditorDriver(IAuthorizationService authorizationService,
+        public OwnerEditorDriver(
+            IAuthorizationService authorizationService,
             IHttpContextAccessor httpContextAccessor,
             UserManager<IUser> userManager,
-            IStringLocalizer<OwnerEditorDriver> stringLocalizer)
+            IStringLocalizer<OwnerEditorDriver> stringLocalizer
+        )
         {
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
@@ -45,16 +47,19 @@ namespace OrchardCore.Contents.Drivers
 
             if (settings.DisplayOwnerEditor)
             {
-                return Initialize<OwnerEditorViewModel>("CommonPart_Edit__Owner", async model =>
-                {
-                    if (!string.IsNullOrEmpty(part.ContentItem.Owner))
+                return Initialize<OwnerEditorViewModel>(
+                    "CommonPart_Edit__Owner",
+                    async model =>
                     {
-                        // TODO Move this editor to a user picker.
-                        var user = await _userManager.FindByIdAsync(part.ContentItem.Owner);
+                        if (!string.IsNullOrEmpty(part.ContentItem.Owner))
+                        {
+                            // TODO Move this editor to a user picker.
+                            var user = await _userManager.FindByIdAsync(part.ContentItem.Owner);
 
-                        model.OwnerName = user?.UserName;
+                            model.OwnerName = user?.UserName;
+                        }
                     }
-                });
+                );
             }
 
             return null;

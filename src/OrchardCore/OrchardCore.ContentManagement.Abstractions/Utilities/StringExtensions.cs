@@ -71,9 +71,7 @@ namespace OrchardCore.ContentManagement.Utilities
 
         public static LocalizedString OrDefault(this string text, LocalizedString defaultValue)
         {
-            return string.IsNullOrEmpty(text)
-                ? defaultValue
-                : new LocalizedString(null, text);
+            return string.IsNullOrEmpty(text) ? defaultValue : new LocalizedString(null, text);
         }
 
         public static string RemoveTags(this string html, bool htmlDecode = false)
@@ -121,14 +119,12 @@ namespace OrchardCore.ContentManagement.Utilities
         public static string ReplaceNewLinesWith(this string text, string replacement)
         {
             return string.IsNullOrWhiteSpace(text)
-                       ? string.Empty
-                       : text
-                             .Replace("\r\n", "\r\r")
-                             .Replace("\n", string.Format(replacement, "\r\n"))
-                             .Replace("\r\r", string.Format(replacement, "\r\n"));
+                ? string.Empty
+                : text.Replace("\r\n", "\r\r").Replace("\n", string.Format(replacement, "\r\n")).Replace("\r\r", string.Format(replacement, "\r\n"));
         }
 
         private static readonly char[] _validSegmentChars = "/?#[]@\"^{}|`<>\t\r\n\f ".ToCharArray();
+
         public static bool IsValidUrlSegment(this string segment)
         {
             // valid isegment from rfc3987 - http://tools.ietf.org/html/rfc3987#page-8
@@ -159,10 +155,7 @@ namespace OrchardCore.ContentManagement.Utilities
             }
 
             name = RemoveDiacritics(name);
-            name = name.Strip(c =>
-                !c.IsLetter()
-                && !char.IsDigit(c)
-                );
+            name = name.Strip(c => !c.IsLetter() && !char.IsDigit(c));
 
             name = name.Trim();
 
@@ -180,21 +173,22 @@ namespace OrchardCore.ContentManagement.Utilities
             return name;
         }
 
-        private static readonly HashSet<string> _reservedNames = new(StringComparer.OrdinalIgnoreCase)
-        {
-            nameof(ContentItem.Id),
-            nameof(ContentItem.ContentItemId),
-            nameof(ContentItem.ContentItemVersionId),
-            nameof(ContentItem.ContentType),
-            nameof(ContentItem.Published),
-            nameof(ContentItem.Latest),
-            nameof(ContentItem.ModifiedUtc),
-            nameof(ContentItem.PublishedUtc),
-            nameof(ContentItem.CreatedUtc),
-            nameof(ContentItem.Owner),
-            nameof(ContentItem.Author),
-            nameof(ContentItem.DisplayText),
-        };
+        private static readonly HashSet<string> _reservedNames =
+            new(StringComparer.OrdinalIgnoreCase)
+            {
+                nameof(ContentItem.Id),
+                nameof(ContentItem.ContentItemId),
+                nameof(ContentItem.ContentItemVersionId),
+                nameof(ContentItem.ContentType),
+                nameof(ContentItem.Published),
+                nameof(ContentItem.Latest),
+                nameof(ContentItem.ModifiedUtc),
+                nameof(ContentItem.PublishedUtc),
+                nameof(ContentItem.CreatedUtc),
+                nameof(ContentItem.Owner),
+                nameof(ContentItem.Author),
+                nameof(ContentItem.DisplayText),
+            };
 
         public static bool IsReservedContentName(this string name)
         {
@@ -369,9 +363,7 @@ namespace OrchardCore.ContentManagement.Utilities
             if (rough == null)
                 return null;
 
-            return rough.EndsWith(trim, StringComparison.Ordinal)
-                       ? rough[..^trim.Length]
-                       : rough;
+            return rough.EndsWith(trim, StringComparison.Ordinal) ? rough[..^trim.Length] : rough;
         }
 
         public static string ReplaceLastOccurrence(this string source, string find, string replace)

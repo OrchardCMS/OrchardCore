@@ -18,10 +18,9 @@ namespace OrchardCore.Tenants.Workflows.Activities
             IShellHost shellHost,
             IWorkflowExpressionEvaluator expressionEvaluator,
             IWorkflowScriptEvaluator scriptEvaluator,
-            IStringLocalizer<CreateTenantTask> localizer)
-            : base(shellSettingsManager, shellHost, expressionEvaluator, scriptEvaluator, localizer)
-        {
-        }
+            IStringLocalizer<CreateTenantTask> localizer
+        )
+            : base(shellSettingsManager, shellHost, expressionEvaluator, scriptEvaluator, localizer) { }
 
         public override string Name => nameof(CreateTenantTask);
 
@@ -88,7 +87,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
             return Outcomes(S["Done"], S["Failed"]);
         }
 
-        public async override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             if (!ShellScope.Context.Settings.IsDefaultShell())
             {
@@ -118,10 +117,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
             var featureProfile = (await ExpressionEvaluator.EvaluateAsync(FeatureProfile, workflowContext, null))?.Trim();
 
             // Creates a default shell settings based on the configuration.
-            using var shellSettings = ShellSettingsManager
-                .CreateDefaultSettings()
-                .AsUninitialized()
-                .AsDisposable();
+            using var shellSettings = ShellSettingsManager.CreateDefaultSettings().AsUninitialized().AsDisposable();
 
             shellSettings.Name = tenantName;
 

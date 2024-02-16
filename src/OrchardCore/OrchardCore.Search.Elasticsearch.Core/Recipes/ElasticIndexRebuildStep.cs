@@ -27,35 +27,38 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
 
             if (model != null && (model.IncludeAll || model.Indices.Length > 0))
             {
-                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("elastic-index-rebuild", async scope =>
-                {
-                    var elasticIndexingService = scope.ServiceProvider.GetService<ElasticIndexingService>();
-                    var elasticIndexSettingsService = scope.ServiceProvider.GetService<ElasticIndexSettingsService>();
-                    var elasticIndexManager = scope.ServiceProvider.GetRequiredService<ElasticIndexManager>();
-
-                    var indexNames = model.IncludeAll ? (await elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray() : model.Indices;
-
-                    foreach (var indexName in indexNames)
+                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync(
+                    "elastic-index-rebuild",
+                    async scope =>
                     {
-                        var elasticIndexSettings = await elasticIndexSettingsService.GetSettingsAsync(indexName);
+                        var elasticIndexingService = scope.ServiceProvider.GetService<ElasticIndexingService>();
+                        var elasticIndexSettingsService = scope.ServiceProvider.GetService<ElasticIndexSettingsService>();
+                        var elasticIndexManager = scope.ServiceProvider.GetRequiredService<ElasticIndexManager>();
 
-                        if (elasticIndexSettings == null)
+                        var indexNames = model.IncludeAll ? (await elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray() : model.Indices;
+
+                        foreach (var indexName in indexNames)
                         {
-                            continue;
+                            var elasticIndexSettings = await elasticIndexSettingsService.GetSettingsAsync(indexName);
+
+                            if (elasticIndexSettings == null)
+                            {
+                                continue;
+                            }
+
+                            if (!await elasticIndexManager.ExistsAsync(indexName))
+                            {
+                                await elasticIndexingService.CreateIndexAsync(elasticIndexSettings);
+                            }
+                            else
+                            {
+                                await elasticIndexingService.RebuildIndexAsync(elasticIndexSettings);
+                            }
                         }
 
-                        if (!await elasticIndexManager.ExistsAsync(indexName))
-                        {
-                            await elasticIndexingService.CreateIndexAsync(elasticIndexSettings);
-                        }
-                        else
-                        {
-                            await elasticIndexingService.RebuildIndexAsync(elasticIndexSettings);
-                        }
+                        await elasticIndexingService.ProcessContentItemsAsync(indexNames);
                     }
-
-                    await elasticIndexingService.ProcessContentItemsAsync(indexNames);
-                });
+                );
             }
         }
     }

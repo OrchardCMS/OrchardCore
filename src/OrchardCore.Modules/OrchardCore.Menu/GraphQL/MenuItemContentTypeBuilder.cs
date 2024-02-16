@@ -17,12 +17,14 @@ namespace OrchardCore.Menu.GraphQL
                 return;
             }
 
-            contentItemType.AddField(new FieldType
-            {
-                Type = typeof(MenuItemsListQueryObjectType),
-                Name = nameof(MenuItemsListPart).ToFieldName(),
-                Resolver = new FuncFieldResolver<ContentItem, MenuItemsListPart>(context => context.Source.As<MenuItemsListPart>())
-            });
+            contentItemType.AddField(
+                new FieldType
+                {
+                    Type = typeof(MenuItemsListQueryObjectType),
+                    Name = nameof(MenuItemsListPart).ToFieldName(),
+                    Resolver = new FuncFieldResolver<ContentItem, MenuItemsListPart>(context => context.Source.As<MenuItemsListPart>())
+                }
+            );
 
             contentItemType.Interface<MenuItemInterface>();
         }

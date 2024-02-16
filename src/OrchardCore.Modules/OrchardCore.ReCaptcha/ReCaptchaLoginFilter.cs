@@ -19,11 +19,7 @@ namespace OrchardCore.ReCaptcha
 
         private ReCaptchaSettings _reCaptchaSettings;
 
-        public ReCaptchaLoginFilter(
-            ILayoutAccessor layoutAccessor,
-            ISiteService siteService,
-            ReCaptchaService reCaptchaService,
-            IShapeFactory shapeFactory)
+        public ReCaptchaLoginFilter(ILayoutAccessor layoutAccessor, ISiteService siteService, ReCaptchaService reCaptchaService, IShapeFactory shapeFactory)
         {
             _layoutAccessor = layoutAccessor;
             _siteService = siteService;
@@ -33,8 +29,7 @@ namespace OrchardCore.ReCaptcha
 
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
-            if (!context.IsViewOrPageResult()
-                || !string.Equals("OrchardCore.Users", Convert.ToString(context.RouteData.Values["area"]), StringComparison.OrdinalIgnoreCase))
+            if (!context.IsViewOrPageResult() || !string.Equals("OrchardCore.Users", Convert.ToString(context.RouteData.Values["area"]), StringComparison.OrdinalIgnoreCase))
             {
                 await next();
                 return;

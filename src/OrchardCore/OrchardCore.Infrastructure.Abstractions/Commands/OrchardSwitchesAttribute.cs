@@ -16,10 +16,7 @@ namespace OrchardCore.Environment.Commands
 
         public IEnumerable<string> Switches
         {
-            get
-            {
-                return (_switches ?? "").Trim().Split(',').Select(s => s.Trim());
-            }
+            get { return (_switches ?? "").Trim().Split(',').Select(s => s.Trim()); }
         }
     }
 }

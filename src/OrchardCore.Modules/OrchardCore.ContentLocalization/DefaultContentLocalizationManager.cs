@@ -35,7 +35,8 @@ namespace OrchardCore.ContentLocalization
             ILocalizationService localizationService,
             ILogger<DefaultContentLocalizationManager> logger,
             IEnumerable<IContentLocalizationHandler> handlers,
-            Entities.IIdGenerator iidGenerator)
+            Entities.IIdGenerator iidGenerator
+        )
         {
             _contentManager = contentManager;
             _session = session;
@@ -50,11 +51,9 @@ namespace OrchardCore.ContentLocalization
         public Task<ContentItem> GetContentItemAsync(string localizationSet, string culture)
         {
             var invariantCulture = culture.ToLowerInvariant();
-            return _session.Query<ContentItem, LocalizedContentItemIndex>(i =>
-                        (i.Published || i.Latest) &&
-                        i.LocalizationSet == localizationSet &&
-                        i.Culture == invariantCulture)
-                    .FirstOrDefaultAsync();
+            return _session
+                .Query<ContentItem, LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.LocalizationSet == localizationSet && i.Culture == invariantCulture)
+                .FirstOrDefaultAsync();
         }
 
         public Task<IEnumerable<ContentItem>> GetItemsForSetAsync(string localizationSet)
@@ -65,7 +64,9 @@ namespace OrchardCore.ContentLocalization
         public Task<IEnumerable<ContentItem>> GetItemsForSetsAsync(IEnumerable<string> localizationSets, string culture)
         {
             var invariantCulture = culture.ToLowerInvariant();
-            return _session.Query<ContentItem, LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.LocalizationSet.IsIn(localizationSets) && i.Culture == invariantCulture).ListAsync();
+            return _session
+                .Query<ContentItem, LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.LocalizationSet.IsIn(localizationSets) && i.Culture == invariantCulture)
+                .ListAsync();
         }
 
         public async Task<ContentItem> LocalizeAsync(ContentItem content, string targetCulture)
@@ -160,29 +161,37 @@ namespace OrchardCore.ContentLocalization
         /// OR null if nothing found.
         /// </summary>
         /// <returns>List of ContentItemId.</returns>
-        private static List<LocalizedContentItemIndex> GetSingleContentItemIdPerSet(IEnumerable<LocalizedContentItemIndex> indexValues, string currentCulture, string defaultCulture)
+        private static List<LocalizedContentItemIndex> GetSingleContentItemIdPerSet(
+            IEnumerable<LocalizedContentItemIndex> indexValues,
+            string currentCulture,
+            string defaultCulture
+        )
         {
-            return indexValues.GroupBy(l => l.LocalizationSet).Select(set =>
-            {
-                var currentCultureContentItem = set.FirstOrDefault(f => f.Culture == currentCulture);
-                if (currentCultureContentItem is not null)
+            return indexValues
+                .GroupBy(l => l.LocalizationSet)
+                .Select(set =>
                 {
-                    return currentCultureContentItem;
-                }
+                    var currentCultureContentItem = set.FirstOrDefault(f => f.Culture == currentCulture);
+                    if (currentCultureContentItem is not null)
+                    {
+                        return currentCultureContentItem;
+                    }
 
-                var defaultCultureContentItem = set.FirstOrDefault(f => f.Culture == defaultCulture);
-                if (defaultCultureContentItem is not null)
-                {
-                    return defaultCultureContentItem;
-                }
+                    var defaultCultureContentItem = set.FirstOrDefault(f => f.Culture == defaultCulture);
+                    if (defaultCultureContentItem is not null)
+                    {
+                        return defaultCultureContentItem;
+                    }
 
-                if (set.Any())
-                {
-                    return set.FirstOrDefault();
-                }
+                    if (set.Any())
+                    {
+                        return set.FirstOrDefault();
+                    }
 
-                return null;
-            }).OfType<LocalizedContentItemIndex>().ToList();
+                    return null;
+                })
+                .OfType<LocalizedContentItemIndex>()
+                .ToList();
         }
     }
 }

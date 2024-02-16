@@ -9,21 +9,15 @@ public class SearchMigrations : DataMigration
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
 
-    public SearchMigrations(IContentDefinitionManager contentDefinitionManager)
-        => _contentDefinitionManager = contentDefinitionManager;
+    public SearchMigrations(IContentDefinitionManager contentDefinitionManager) => _contentDefinitionManager = contentDefinitionManager;
 
     public async Task<int> CreateAsync()
     {
-        await _contentDefinitionManager.AlterPartDefinitionAsync("SearchFormPart", part => part
-            .WithDisplayName("Search Form Part")
-            .Attachable()
-        );
+        await _contentDefinitionManager.AlterPartDefinitionAsync("SearchFormPart", part => part.WithDisplayName("Search Form Part").Attachable());
 
-        await _contentDefinitionManager.AlterTypeDefinitionAsync("SearchForm", type => type
-            .Stereotype("Widget")
-            .DisplayedAs("Search Form")
-            .WithDescription("Provides a search form")
-            .WithPart("SearchFormPart")
+        await _contentDefinitionManager.AlterTypeDefinitionAsync(
+            "SearchForm",
+            type => type.Stereotype("Widget").DisplayedAs("Search Form").WithDescription("Provides a search form").WithPart("SearchFormPart")
         );
 
         return 1;

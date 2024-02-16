@@ -37,7 +37,8 @@ namespace OrchardCore.Users.Workflows.Activities
             IHttpContextAccessor httpContextAccessor,
             IUpdateModelAccessor updateModelAccessor,
             IStringLocalizer<RegisterUserTask> localizer,
-            HtmlEncoder htmlEncoder)
+            HtmlEncoder htmlEncoder
+        )
         {
             _userService = userService;
             _userManager = userManager;
@@ -108,7 +109,17 @@ namespace OrchardCore.Users.Workflows.Activities
                 }
 
                 var errors = new Dictionary<string, string>();
-                var user = (User)await _userService.CreateUserAsync(new User() { UserName = userName, Email = email, IsEnabled = !RequireModeration }, null, (key, message) => errors.Add(key, message));
+                var user = (User)
+                    await _userService.CreateUserAsync(
+                        new User()
+                        {
+                            UserName = userName,
+                            Email = email,
+                            IsEnabled = !RequireModeration
+                        },
+                        null,
+                        (key, message) => errors.Add(key, message)
+                    );
                 if (errors.Count > 0)
                 {
                     var updater = _updateModelAccessor.ModelUpdater;
@@ -125,8 +136,17 @@ namespace OrchardCore.Users.Workflows.Activities
                 {
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
-                    var uri = _linkGenerator.GetUriByAction(_httpContextAccessor.HttpContext, "ConfirmEmail",
-                        "Registration", new { area = "OrchardCore.Users", userId = user.UserId, code });
+                    var uri = _linkGenerator.GetUriByAction(
+                        _httpContextAccessor.HttpContext,
+                        "ConfirmEmail",
+                        "Registration",
+                        new
+                        {
+                            area = "OrchardCore.Users",
+                            userId = user.UserId,
+                            code
+                        }
+                    );
 
                     workflowContext.Properties["EmailConfirmationUrl"] = uri;
 

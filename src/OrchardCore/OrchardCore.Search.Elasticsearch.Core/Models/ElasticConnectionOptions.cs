@@ -51,16 +51,12 @@ namespace OrchardCore.Search.Elasticsearch.Core.Models
 
         private IConnectionSettingsValues _conntectionSettings;
 
-        public void SetFileConfigurationExists(bool fileConfigurationExists)
-            => _fileConfigurationExists = fileConfigurationExists;
+        public void SetFileConfigurationExists(bool fileConfigurationExists) => _fileConfigurationExists = fileConfigurationExists;
 
-        public bool FileConfigurationExists()
-            => _fileConfigurationExists;
+        public bool FileConfigurationExists() => _fileConfigurationExists;
 
-        public void SetConnectionSettings(IConnectionSettingsValues settings)
-         => _conntectionSettings = settings;
+        public void SetConnectionSettings(IConnectionSettingsValues settings) => _conntectionSettings = settings;
 
-        public IConnectionSettingsValues GetConnectionSettings()
-            => _conntectionSettings;
+        public IConnectionSettingsValues GetConnectionSettings() => _conntectionSettings;
     }
 }

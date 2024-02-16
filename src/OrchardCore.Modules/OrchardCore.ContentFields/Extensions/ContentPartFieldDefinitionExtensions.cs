@@ -8,13 +8,10 @@ public static class ContentPartFieldDefinitionExtensions
     /// <summary>
     /// Returns the value of the defined content field from the <paramref name="contentItem"/>.
     /// </summary>
-    public static TField GetContentField<TField>(
-        this ContentPartFieldDefinition fieldDefinition,
-        ContentItem contentItem)
+    public static TField GetContentField<TField>(this ContentPartFieldDefinition fieldDefinition, ContentItem contentItem)
         where TField : ContentField
     {
-        if (((JsonObject)contentItem.Content)[fieldDefinition.PartDefinition.Name] is not JsonObject jPart ||
-            jPart[fieldDefinition.Name] is not JsonObject jField)
+        if (((JsonObject)contentItem.Content)[fieldDefinition.PartDefinition.Name] is not JsonObject jPart || jPart[fieldDefinition.Name] is not JsonObject jField)
         {
             return null;
         }
@@ -28,7 +25,8 @@ public static class ContentPartFieldDefinitionExtensions
     /// </summary>
     public static IEnumerable<(ContentPartFieldDefinition Definition, TField Field)> GetContentFields<TField>(
         this IEnumerable<ContentPartFieldDefinition> fieldDefinitions,
-        ContentItem contentItem)
+        ContentItem contentItem
+    )
         where TField : ContentField
     {
         foreach (var fieldDefinition in fieldDefinitions)

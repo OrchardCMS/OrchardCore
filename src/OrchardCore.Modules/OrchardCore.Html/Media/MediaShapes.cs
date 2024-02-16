@@ -9,7 +9,8 @@ public class MediaShapes : ShapeTableProvider
 {
     public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
     {
-        builder.Describe("HtmlBodyPart_Edit")
+        builder
+            .Describe("HtmlBodyPart_Edit")
             .OnDisplaying(displaying =>
             {
                 var editor = displaying.Shape;

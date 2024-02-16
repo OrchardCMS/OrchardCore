@@ -19,9 +19,7 @@ namespace OrchardCore.Environment.Shell.Configuration
 
         public Task AddSourcesAsync(IConfigurationBuilder builder)
         {
-            builder
-                .AddTenantJsonFile($"{_appsettings}.json", optional: true)
-                .AddTenantJsonFile($"{_appsettings}.{_environment}.json", optional: true);
+            builder.AddTenantJsonFile($"{_appsettings}.json", optional: true).AddTenantJsonFile($"{_appsettings}.{_environment}.json", optional: true);
 
             return Task.CompletedTask;
         }

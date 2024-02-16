@@ -22,13 +22,7 @@ namespace OrchardCore.Mvc.HelloWorld
                 throw new Exception(":(");
             }
 
-            routes.MapAreaControllerRoute
-            (
-                name: "Home",
-                areaName: "OrchardCore.Mvc.HelloWorld",
-                pattern: "",
-                defaults: new { controller = "Home", action = "Index" }
-            );
+            routes.MapAreaControllerRoute(name: "Home", areaName: "OrchardCore.Mvc.HelloWorld", pattern: "", defaults: new { controller = "Home", action = "Index" });
         }
     }
 }

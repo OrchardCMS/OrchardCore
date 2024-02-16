@@ -18,12 +18,14 @@ namespace OrchardCore.Search.Lucene.Deployment
 
             var indicesToReset = luceneIndexResetStep.IncludeAll ? [] : luceneIndexResetStep.IndexNames;
 
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "lucene-index-reset",
-                ["includeAll"] = luceneIndexResetStep.IncludeAll,
-                ["Indices"] = JArray.FromObject(indicesToReset),
-            });
+            result.Steps.Add(
+                new JsonObject
+                {
+                    ["name"] = "lucene-index-reset",
+                    ["includeAll"] = luceneIndexResetStep.IncludeAll,
+                    ["Indices"] = JArray.FromObject(indicesToReset),
+                }
+            );
 
             return Task.CompletedTask;
         }

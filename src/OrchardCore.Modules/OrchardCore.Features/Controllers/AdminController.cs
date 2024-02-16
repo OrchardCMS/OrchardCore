@@ -40,7 +40,8 @@ namespace OrchardCore.Features.Controllers
             IOptions<AdminOptions> adminOptions,
             INotifier notifier,
             IStringLocalizer<AdminController> stringLocalizer,
-            IHtmlLocalizer<AdminController> htmlLocalizer)
+            IHtmlLocalizer<AdminController> htmlLocalizer
+        )
         {
             _authorizationService = authorizationService;
             _shellHost = shellHost;
@@ -62,18 +63,21 @@ namespace OrchardCore.Features.Controllers
 
             var viewModel = new FeaturesViewModel();
 
-            await ExecuteAsync(tenant, async (featureService, settings, isProxy) =>
-            {
-                // If the user provide an invalid tenant value, we'll set it to null so it's not available on the next request.
-                if (isProxy)
+            await ExecuteAsync(
+                tenant,
+                async (featureService, settings, isProxy) =>
                 {
-                    viewModel.IsProxy = true;
-                    tenant = settings.Name;
-                    viewModel.Name = settings.Name;
-                }
+                    // If the user provide an invalid tenant value, we'll set it to null so it's not available on the next request.
+                    if (isProxy)
+                    {
+                        viewModel.IsProxy = true;
+                        tenant = settings.Name;
+                        viewModel.Name = settings.Name;
+                    }
 
-                viewModel.Features = await featureService.GetModuleFeaturesAsync();
-            });
+                    viewModel.Features = await featureService.GetModuleFeaturesAsync();
+                }
+            );
 
             return View(viewModel);
         }
@@ -94,12 +98,20 @@ namespace OrchardCore.Features.Controllers
 
             if (ModelState.IsValid)
             {
-                await ExecuteAsync(tenant, async (featureService, settings, isProxy) =>
-                {
-                    var availableFeatures = await featureService.GetAvailableFeatures(model.FeatureIds);
+                await ExecuteAsync(
+                    tenant,
+                    async (featureService, settings, isProxy) =>
+                    {
+                        var availableFeatures = await featureService.GetAvailableFeatures(model.FeatureIds);
 
-                    await featureService.EnableOrDisableFeaturesAsync(availableFeatures, model.BulkAction, force, async (features, isEnabled) => await NotifyAsync(features, isEnabled));
-                });
+                        await featureService.EnableOrDisableFeaturesAsync(
+                            availableFeatures,
+                            model.BulkAction,
+                            force,
+                            async (features, isEnabled) => await NotifyAsync(features, isEnabled)
+                        );
+                    }
+                );
             }
 
             return RedirectToAction(nameof(Features));
@@ -115,26 +127,34 @@ namespace OrchardCore.Features.Controllers
 
             var found = false;
 
-            await ExecuteAsync(tenant, async (featureService, settings, isProxy) =>
-            {
-                var feature = await featureService.GetAvailableFeature(id);
-
-                if (feature == null)
+            await ExecuteAsync(
+                tenant,
+                async (featureService, settings, isProxy) =>
                 {
-                    return;
+                    var feature = await featureService.GetAvailableFeature(id);
+
+                    if (feature == null)
+                    {
+                        return;
+                    }
+
+                    found = true;
+
+                    if (!isProxy && id == FeaturesConstants.FeatureId)
+                    {
+                        await _notifier.ErrorAsync(H["This feature is always enabled and cannot be disabled."]);
+
+                        return;
+                    }
+
+                    await featureService.EnableOrDisableFeaturesAsync(
+                        new[] { feature },
+                        FeaturesBulkAction.Disable,
+                        true,
+                        async (features, isEnabled) => await NotifyAsync(features, isEnabled)
+                    );
                 }
-
-                found = true;
-
-                if (!isProxy && id == FeaturesConstants.FeatureId)
-                {
-                    await _notifier.ErrorAsync(H["This feature is always enabled and cannot be disabled."]);
-
-                    return;
-                }
-
-                await featureService.EnableOrDisableFeaturesAsync(new[] { feature }, FeaturesBulkAction.Disable, true, async (features, isEnabled) => await NotifyAsync(features, isEnabled));
-            });
+            );
 
             if (!found)
             {
@@ -154,19 +174,27 @@ namespace OrchardCore.Features.Controllers
 
             var found = false;
 
-            await ExecuteAsync(tenant, async (featureService, settings, isProxy) =>
-            {
-                var feature = await featureService.GetAvailableFeature(id);
-
-                if (feature == null)
+            await ExecuteAsync(
+                tenant,
+                async (featureService, settings, isProxy) =>
                 {
-                    return;
+                    var feature = await featureService.GetAvailableFeature(id);
+
+                    if (feature == null)
+                    {
+                        return;
+                    }
+
+                    found = true;
+
+                    await featureService.EnableOrDisableFeaturesAsync(
+                        new[] { feature },
+                        FeaturesBulkAction.Enable,
+                        true,
+                        async (features, isEnabled) => await NotifyAsync(features, isEnabled)
+                    );
                 }
-
-                found = true;
-
-                await featureService.EnableOrDisableFeaturesAsync(new[] { feature }, FeaturesBulkAction.Enable, true, async (features, isEnabled) => await NotifyAsync(features, isEnabled));
-            });
+            );
 
             if (!found)
             {
@@ -178,11 +206,13 @@ namespace OrchardCore.Features.Controllers
 
         private async Task ExecuteAsync(string tenant, Func<FeatureService, ShellSettings, bool, Task> action)
         {
-            if (_shellSettings.IsDefaultShell() &&
-                !string.IsNullOrWhiteSpace(tenant) &&
-                _shellHost.TryGetSettings(tenant, out var settings) &&
-                !settings.IsDefaultShell() &&
-                settings.IsRunning())
+            if (
+                _shellSettings.IsDefaultShell()
+                && !string.IsNullOrWhiteSpace(tenant)
+                && _shellHost.TryGetSettings(tenant, out var settings)
+                && !settings.IsDefaultShell()
+                && settings.IsRunning()
+            )
             {
                 // At this point, we know that this request is being executed from the Default tenant.
                 // Also, we were able to find a matching and running tenant that isn't the Default one.

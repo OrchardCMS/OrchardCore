@@ -21,7 +21,8 @@ namespace OrchardCore.Feeds.Controllers
             IEnumerable<IFeedBuilderProvider> feedFormatProviders,
             IFeedItemBuilder feedItemBuilder,
             IServiceProvider serviceProvider,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor
+        )
         {
             _feedQueryProviders = feedQueryProviders;
             _feedFormatProviders = feedFormatProviders;
@@ -53,33 +54,30 @@ namespace OrchardCore.Feeds.Controllers
                 queryMatches.Add(await provider.MatchAsync(context));
             }
 
-            var bestQueryMatch = queryMatches
-                .Where(match => match != null && match.FeedQuery != null)
-                .MaxBy(match => match.Priority);
+            var bestQueryMatch = queryMatches.Where(match => match != null && match.FeedQuery != null).MaxBy(match => match.Priority);
 
             if (bestQueryMatch == null || bestQueryMatch.FeedQuery == null)
             {
                 return NotFound();
             }
 
-            var document = await context.Builder.ProcessAsync(context, async () =>
-            {
-                await bestQueryMatch.FeedQuery.ExecuteAsync(context);
-
-                await _feedItemBuilder.PopulateAsync(context);
-
-                foreach (var contextualizer in context.Response.Contextualizers)
+            var document = await context.Builder.ProcessAsync(
+                context,
+                async () =>
                 {
-                    if (ControllerContext != null)
+                    await bestQueryMatch.FeedQuery.ExecuteAsync(context);
+
+                    await _feedItemBuilder.PopulateAsync(context);
+
+                    foreach (var contextualizer in context.Response.Contextualizers)
                     {
-                        contextualizer(new ContextualizeContext
+                        if (ControllerContext != null)
                         {
-                            ServiceProvider = _serviceProvider,
-                            Url = Url
-                        });
+                            contextualizer(new ContextualizeContext { ServiceProvider = _serviceProvider, Url = Url });
+                        }
                     }
                 }
-            });
+            );
 
             return Content(document.ToString(), "text/xml");
         }

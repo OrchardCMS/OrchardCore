@@ -44,8 +44,8 @@ namespace OrchardCore.Routing
                 lock (this)
                 {
                     // Try once to get and cache the default scheme but not me.
-                    _defaultScheme = _httpContextAccessor.HttpContext?.RequestServices
-                        .GetServices<IEndpointAddressScheme<RouteValuesAddress>>()
+                    _defaultScheme = _httpContextAccessor
+                        .HttpContext?.RequestServices.GetServices<IEndpointAddressScheme<RouteValuesAddress>>()
                         .Where(scheme => scheme.GetType() != GetType())
                         .LastOrDefault();
 

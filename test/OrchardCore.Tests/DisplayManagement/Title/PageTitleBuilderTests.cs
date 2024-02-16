@@ -126,11 +126,7 @@ namespace OrchardCore.DisplayManagement.Title
             var pageTitleBuilder = (PageTitleBuilder)_serviceProvider.GetService<IPageTitleBuilder>();
             pageTitleBuilder.Clear();
 
-            var elements = new IHtmlContent[]
-            {
-                new HtmlString(FirstPartTitle),
-                new HtmlString(SecondPartTitle)
-            };
+            var elements = new IHtmlContent[] { new HtmlString(FirstPartTitle), new HtmlString(SecondPartTitle) };
 
             pageTitleBuilder.AddSegments(elements, "after");
 

@@ -45,10 +45,12 @@ namespace OrchardCore.ReCaptcha
             services.AddScoped<IRegistrationFormEvents, RegistrationFormEventHandler>();
             services.AddScoped<ILoginFormEvent, LoginFormEventEventHandler>();
             services.AddScoped<IPasswordRecoveryFormEvents, PasswordRecoveryFormEventEventHandler>();
-            services.Configure<MvcOptions>((options) =>
-            {
-                options.Filters.Add<ReCaptchaLoginFilter>();
-            });
+            services.Configure<MvcOptions>(
+                (options) =>
+                {
+                    options.Filters.Add<ReCaptchaLoginFilter>();
+                }
+            );
         }
     }
 }

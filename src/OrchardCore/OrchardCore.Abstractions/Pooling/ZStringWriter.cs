@@ -17,11 +17,11 @@ namespace OrchardCore.Abstractions.Pooling
         private bool _isOpen;
         private UnicodeEncoding _encoding;
 
-        public ZStringWriter() : this(CultureInfo.CurrentCulture)
-        {
-        }
+        public ZStringWriter()
+            : this(CultureInfo.CurrentCulture) { }
 
-        public ZStringWriter(IFormatProvider formatProvider) : base(formatProvider)
+        public ZStringWriter(IFormatProvider formatProvider)
+            : base(formatProvider)
         {
             _sb = ZString.CreateStringBuilder();
             _isOpen = true;

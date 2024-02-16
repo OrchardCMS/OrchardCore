@@ -25,7 +25,9 @@ namespace OrchardCore.Resources.Liquid
                 switch (argument.Name)
                 {
 #pragma warning disable CA1806 // Do not ignore method results
-                    case "type": Enum.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(), out type); break;
+                    case "type":
+                        Enum.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(), out type);
+                        break;
 #pragma warning restore CA1806 // Do not ignore method results
                 }
             }

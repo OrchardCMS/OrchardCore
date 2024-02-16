@@ -8,11 +8,7 @@ namespace OrchardCore.Https
 {
     public class AdminMenu : INavigationProvider
     {
-        private static readonly RouteValueDictionary _routeValues = new()
-        {
-            { "area", "OrchardCore.Settings" },
-            { "groupId", HttpsSettingsDisplayDriver.GroupId },
-        };
+        private static readonly RouteValueDictionary _routeValues = new() { { "area", "OrchardCore.Settings" }, { "groupId", HttpsSettingsDisplayDriver.GroupId }, };
 
         protected readonly IStringLocalizer S;
 
@@ -28,16 +24,19 @@ namespace OrchardCore.Https
                 return Task.CompletedTask;
             }
 
-            builder
-                .Add(S["Security"], security => security
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["HTTPS"], S["HTTPS"].PrefixPosition(), https => https
-                            .Action("Index", "Admin", _routeValues)
-                            .Permission(Permissions.ManageHttps)
-                            .LocalNav()
-                        )
+            builder.Add(
+                S["Security"],
+                security =>
+                    security.Add(
+                        S["Settings"],
+                        settings =>
+                            settings.Add(
+                                S["HTTPS"],
+                                S["HTTPS"].PrefixPosition(),
+                                https => https.Action("Index", "Admin", _routeValues).Permission(Permissions.ManageHttps).LocalNav()
+                            )
                     )
-                );
+            );
 
             return Task.CompletedTask;
         }

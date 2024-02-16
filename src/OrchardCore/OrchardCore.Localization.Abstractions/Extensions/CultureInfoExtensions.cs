@@ -11,9 +11,7 @@ public static class CultureInfoExtensions
     /// Gets the language direction for a given culture.
     /// </summary>
     /// <param name="culture">The <see cref="CultureInfo"/>.</param>
-    public static string GetLanguageDirection(this CultureInfo culture) => culture.IsRightToLeft()
-        ? LanguageDirection.RTL
-        : LanguageDirection.LTR;
+    public static string GetLanguageDirection(this CultureInfo culture) => culture.IsRightToLeft() ? LanguageDirection.RTL : LanguageDirection.LTR;
 
     /// <summary>
     /// Gets whether the culture is RTL or not.

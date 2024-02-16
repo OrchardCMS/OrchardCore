@@ -81,6 +81,5 @@ public class AzureAIClientFactory(IOptions<AzureAISearchDefaultOptions> defaultO
         return _searchIndexClient;
     }
 
-    private ManagedIdentityCredential GetManagedIdentityCredential()
-        => new(_defaultOptions.IdentityClientId);
+    private ManagedIdentityCredential GetManagedIdentityCredential() => new(_defaultOptions.IdentityClientId);
 }

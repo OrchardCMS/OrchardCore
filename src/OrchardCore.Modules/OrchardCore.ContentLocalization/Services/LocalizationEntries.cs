@@ -18,8 +18,7 @@ namespace OrchardCore.ContentLocalization.Services
 
         private ImmutableDictionary<string, LocalizationEntry> _localizations = ImmutableDictionary<string, LocalizationEntry>.Empty;
 
-        private ImmutableDictionary<string, ImmutableList<LocalizationEntry>> _localizationSets =
-            ImmutableDictionary<string, ImmutableList<LocalizationEntry>>.Empty;
+        private ImmutableDictionary<string, ImmutableList<LocalizationEntry>> _localizationSets = ImmutableDictionary<string, ImmutableList<LocalizationEntry>>.Empty;
 
         private readonly SemaphoreSlim _semaphore = new(1);
 
@@ -135,10 +134,7 @@ namespace OrchardCore.ContentLocalization.Services
             {
                 if (_stateIdentifier != state.Identifier)
                 {
-                    var indexes = await Session
-                        .QueryIndex<LocalizedContentItemIndex>(i => i.Id > _lastIndexId)
-                        .OrderBy(i => i.Id)
-                        .ListAsync();
+                    var indexes = await Session.QueryIndex<LocalizedContentItemIndex>(i => i.Id > _lastIndexId).OrderBy(i => i.Id).ListAsync();
 
                     // A draft is indexed to check for conflicts, and to remove an entry, but only if an item is unpublished,
                     // so only if the entry 'DocumentId' matches, this because when a draft is saved more than once, the index
@@ -146,17 +142,23 @@ namespace OrchardCore.ContentLocalization.Services
 
                     var entriesToRemove = indexes
                         .Where(i => !i.Published || i.Culture == null)
-                        .SelectMany(i => _localizations.Values.Where(e =>
-                            // The item was removed.
-                            ((!i.Published && !i.Latest) ||
-                            // The part was removed.
-                            (i.Culture == null && i.Published) ||
-                            // The item was unpublished.
-                            (!i.Published && e.DocumentId == i.DocumentId)) &&
-                            (e.ContentItemId == i.ContentItemId)));
+                        .SelectMany(i =>
+                            _localizations.Values.Where(e =>
+                                // The item was removed.
+                                (
+                                    (!i.Published && !i.Latest)
+                                    ||
+                                    // The part was removed.
+                                    (i.Culture == null && i.Published)
+                                    ||
+                                    // The item was unpublished.
+                                    (!i.Published && e.DocumentId == i.DocumentId)
+                                ) && (e.ContentItemId == i.ContentItemId)
+                            )
+                        );
 
-                    var entriesToAdd = indexes.
-                        Where(i => i.Published && i.Culture != null)
+                    var entriesToAdd = indexes
+                        .Where(i => i.Published && i.Culture != null)
                         .Select(i => new LocalizationEntry
                         {
                             DocumentId = i.DocumentId,
@@ -192,10 +194,7 @@ namespace OrchardCore.ContentLocalization.Services
                 {
                     var state = await _localizationStateManager.GetOrCreateImmutableAsync();
 
-                    var indexes = await Session
-                        .QueryIndex<LocalizedContentItemIndex>(i => i.Published && i.Culture != null)
-                        .OrderBy(i => i.Id)
-                        .ListAsync();
+                    var indexes = await Session.QueryIndex<LocalizedContentItemIndex>(i => i.Published && i.Culture != null).OrderBy(i => i.Id).ListAsync();
 
                     var entries = indexes.Select(i => new LocalizationEntry
                     {

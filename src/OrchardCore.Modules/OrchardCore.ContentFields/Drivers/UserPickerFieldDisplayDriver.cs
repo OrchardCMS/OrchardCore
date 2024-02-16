@@ -23,9 +23,7 @@ namespace OrchardCore.ContentFields.Drivers
         private readonly ISession _session;
         protected readonly IStringLocalizer S;
 
-        public UserPickerFieldDisplayDriver(
-            ISession session,
-            IStringLocalizer<UserPickerFieldDisplayDriver> stringLocalizer)
+        public UserPickerFieldDisplayDriver(ISession session, IStringLocalizer<UserPickerFieldDisplayDriver> stringLocalizer)
         {
             _session = session;
             S = stringLocalizer;
@@ -33,43 +31,52 @@ namespace OrchardCore.ContentFields.Drivers
 
         public override IDisplayResult Display(UserPickerField field, BuildFieldDisplayContext context)
         {
-            return Initialize<DisplayUserPickerFieldViewModel>(GetDisplayShapeType(context), model =>
-            {
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-            })
-            .Location("Detail", "Content")
-            .Location("Summary", "Content");
+            return Initialize<DisplayUserPickerFieldViewModel>(
+                    GetDisplayShapeType(context),
+                    model =>
+                    {
+                        model.Field = field;
+                        model.Part = context.ContentPart;
+                        model.PartFieldDefinition = context.PartFieldDefinition;
+                    }
+                )
+                .Location("Detail", "Content")
+                .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(UserPickerField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditUserPickerFieldViewModel>(GetEditorShapeType(context), async model =>
-            {
-                model.UserIds = string.Join(",", field.UserIds);
-
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-                model.TypePartDefinition = context.TypePartDefinition;
-
-                if (field.UserIds.Length > 0)
+            return Initialize<EditUserPickerFieldViewModel>(
+                GetEditorShapeType(context),
+                async model =>
                 {
-                    var users = (await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(field.UserIds)).ListAsync())
-                        .OrderBy(o => Array.FindIndex(field.UserIds, x => string.Equals(o.UserId, x, StringComparison.OrdinalIgnoreCase)));
+                    model.UserIds = string.Join(",", field.UserIds);
 
-                    foreach (var user in users)
+                    model.Field = field;
+                    model.Part = context.ContentPart;
+                    model.PartFieldDefinition = context.PartFieldDefinition;
+                    model.TypePartDefinition = context.TypePartDefinition;
+
+                    if (field.UserIds.Length > 0)
                     {
-                        model.SelectedUsers.Add(new VueMultiselectUserViewModel
+                        var users = (await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(field.UserIds)).ListAsync()).OrderBy(o =>
+                            Array.FindIndex(field.UserIds, x => string.Equals(o.UserId, x, StringComparison.OrdinalIgnoreCase))
+                        );
+
+                        foreach (var user in users)
                         {
-                            Id = user.UserId,
-                            DisplayText = user.UserName,
-                            IsEnabled = user.IsEnabled
-                        });
+                            model.SelectedUsers.Add(
+                                new VueMultiselectUserViewModel
+                                {
+                                    Id = user.UserId,
+                                    DisplayText = user.UserName,
+                                    IsEnabled = user.IsEnabled
+                                }
+                            );
+                        }
                     }
                 }
-            });
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(UserPickerField field, IUpdateModel updater, UpdateFieldEditorContext context)
@@ -78,8 +85,7 @@ namespace OrchardCore.ContentFields.Drivers
 
             if (await updater.TryUpdateModelAsync(viewModel, Prefix, f => f.UserIds))
             {
-                field.UserIds = viewModel.UserIds == null
-                    ? [] : viewModel.UserIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                field.UserIds = viewModel.UserIds == null ? [] : viewModel.UserIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
                 var settings = context.PartFieldDefinition.GetSettings<UserPickerFieldSettings>();
 

@@ -20,10 +20,21 @@ namespace Microsoft.AspNetCore.Mvc.Localization
         {
             if (plural == null)
             {
-                throw new ArgumentNullException(nameof(plural), "Plural text can't be null. If you don't want to specify the plural text, use IStringLocalizer without Plural extension.");
+                throw new ArgumentNullException(
+                    nameof(plural),
+                    "Plural text can't be null. If you don't want to specify the plural text, use IStringLocalizer without Plural extension."
+                );
             }
 
-            return localizer[singular, new PluralizationArgument { Count = count, Forms = [singular, plural], Arguments = arguments }];
+            return localizer[
+                singular,
+                new PluralizationArgument
+                {
+                    Count = count,
+                    Forms = [singular, plural],
+                    Arguments = arguments
+                }
+            ];
         }
 
         /// <summary>
@@ -37,17 +48,31 @@ namespace Microsoft.AspNetCore.Mvc.Localization
         {
             if (pluralForms == null)
             {
-                throw new ArgumentNullException(nameof(pluralForms), "PluralForms array can't be null. If you don't want to specify the plural text, use IStringLocalizer without Plural extension.");
+                throw new ArgumentNullException(
+                    nameof(pluralForms),
+                    "PluralForms array can't be null. If you don't want to specify the plural text, use IStringLocalizer without Plural extension."
+                );
             }
 
             if (pluralForms.Length == 0)
             {
-                throw new ArgumentException("PluralForms array can't be empty, it must contain at least one element. If you don't want to specify the plural text, use IStringLocalizer without Plural extension.", nameof(pluralForms));
+                throw new ArgumentException(
+                    "PluralForms array can't be empty, it must contain at least one element. If you don't want to specify the plural text, use IStringLocalizer without Plural extension.",
+                    nameof(pluralForms)
+                );
             }
 
             var name = pluralForms[0];
 
-            return localizer[name, new PluralizationArgument { Count = count, Forms = pluralForms, Arguments = arguments }];
+            return localizer[
+                name,
+                new PluralizationArgument
+                {
+                    Count = count,
+                    Forms = pluralForms,
+                    Arguments = arguments
+                }
+            ];
         }
     }
 }

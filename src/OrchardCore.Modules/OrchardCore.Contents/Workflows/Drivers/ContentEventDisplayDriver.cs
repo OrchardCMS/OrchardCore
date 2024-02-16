@@ -11,7 +11,9 @@ using OrchardCore.Workflows.Display;
 
 namespace OrchardCore.Contents.Workflows.Drivers
 {
-    public abstract class ContentEventDisplayDriver<TActivity, TViewModel> : ActivityDisplayDriver<TActivity, TViewModel> where TActivity : ContentEvent where TViewModel : ContentEventViewModel<TActivity>, new()
+    public abstract class ContentEventDisplayDriver<TActivity, TViewModel> : ActivityDisplayDriver<TActivity, TViewModel>
+        where TActivity : ContentEvent
+        where TViewModel : ContentEventViewModel<TActivity>, new()
     {
         protected ContentEventDisplayDriver(IContentDefinitionManager contentDefinitionManager)
         {
@@ -25,7 +27,7 @@ namespace OrchardCore.Contents.Workflows.Drivers
             target.SelectedContentTypeNames = source.ContentTypeFilter;
         }
 
-        public async override Task<IDisplayResult> UpdateAsync(TActivity model, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(TActivity model, IUpdateModel updater)
         {
             var viewModel = new TViewModel();
             if (await updater.TryUpdateModelAsync(viewModel, Prefix, x => x.SelectedContentTypeNames))
@@ -39,19 +41,19 @@ namespace OrchardCore.Contents.Workflows.Drivers
         {
             return Combine(
                 Shape($"{typeof(TActivity).Name}_Fields_Thumbnail", new ContentEventViewModel<TActivity>(activity)).Location("Thumbnail", "Content"),
-                Factory($"{typeof(TActivity).Name}_Fields_Design", async ctx =>
-                {
-                    var contentTypeDefinitions = (await ContentDefinitionManager.ListTypeDefinitionsAsync()).ToDictionary(x => x.Name);
-                    var selectedContentTypeDefinitions = activity.ContentTypeFilter.Select(x => contentTypeDefinitions[x]).ToList();
+                Factory(
+                        $"{typeof(TActivity).Name}_Fields_Design",
+                        async ctx =>
+                        {
+                            var contentTypeDefinitions = (await ContentDefinitionManager.ListTypeDefinitionsAsync()).ToDictionary(x => x.Name);
+                            var selectedContentTypeDefinitions = activity.ContentTypeFilter.Select(x => contentTypeDefinitions[x]).ToList();
 
-                    var shape = new ContentEventViewModel<TActivity>
-                    {
-                        ContentTypeFilter = selectedContentTypeDefinitions,
-                        Activity = activity,
-                    };
+                            var shape = new ContentEventViewModel<TActivity> { ContentTypeFilter = selectedContentTypeDefinitions, Activity = activity, };
 
-                    return shape;
-                }).Location("Design", "Content")
+                            return shape;
+                        }
+                    )
+                    .Location("Design", "Content")
             );
         }
 
@@ -59,8 +61,7 @@ namespace OrchardCore.Contents.Workflows.Drivers
         /// Filters out any content type that doesn't exist.
         /// </summary>
         [Obsolete($"Instead, utilize the {nameof(FilterContentTypesQueryAsync)} method. This current method is slated for removal in upcoming releases.")]
-        protected IEnumerable<string> FilterContentTypesQuery(IEnumerable<string> contentTypeNames)
-            => FilterContentTypesQueryAsync(contentTypeNames).GetAwaiter().GetResult();
+        protected IEnumerable<string> FilterContentTypesQuery(IEnumerable<string> contentTypeNames) => FilterContentTypesQueryAsync(contentTypeNames).GetAwaiter().GetResult();
 
         protected async Task<IEnumerable<string>> FilterContentTypesQueryAsync(IEnumerable<string> contentTypeNames)
         {

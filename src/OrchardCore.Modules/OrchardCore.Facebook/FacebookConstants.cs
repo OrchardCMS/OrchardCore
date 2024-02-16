@@ -4,8 +4,7 @@ namespace OrchardCore.Facebook;
 
 public static class FacebookConstants
 {
-    public static readonly Permission ManageFacebookPixelPermission
-        = new("ManageFacebookPixel", "Manage Facebook Pixel settings.");
+    public static readonly Permission ManageFacebookPixelPermission = new("ManageFacebookPixel", "Manage Facebook Pixel settings.");
 
     public const string PixelSettingsGroupId = "facebook-pixel";
 

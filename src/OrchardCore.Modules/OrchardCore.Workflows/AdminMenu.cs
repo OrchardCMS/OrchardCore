@@ -20,14 +20,12 @@ namespace OrchardCore.Workflows
                 return Task.CompletedTask;
             }
 
-            builder
-                .Add(S["Workflows"], NavigationConstants.AdminMenuWorkflowsPosition, workflow => workflow
-                    .AddClass("workflows")
-                    .Id("workflows")
-                    .Action("Index", "WorkflowType", "OrchardCore.Workflows")
-                    .Permission(Permissions.ManageWorkflows)
-                    .LocalNav()
-                );
+            builder.Add(
+                S["Workflows"],
+                NavigationConstants.AdminMenuWorkflowsPosition,
+                workflow =>
+                    workflow.AddClass("workflows").Id("workflows").Action("Index", "WorkflowType", "OrchardCore.Workflows").Permission(Permissions.ManageWorkflows).LocalNav()
+            );
 
             return Task.CompletedTask;
         }

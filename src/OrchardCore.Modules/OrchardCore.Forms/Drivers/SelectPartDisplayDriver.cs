@@ -26,15 +26,18 @@ namespace OrchardCore.Forms.Drivers
 
         public override IDisplayResult Edit(SelectPart part)
         {
-            return Initialize<SelectPartEditViewModel>("SelectPart_Fields_Edit", m =>
-            {
-                m.Options = JConvert.SerializeObject(part.Options ?? [], JOptions.CamelCaseIndented);
-                m.DefaultValue = part.DefaultValue;
-                m.Editor = part.Editor;
-            });
+            return Initialize<SelectPartEditViewModel>(
+                "SelectPart_Fields_Edit",
+                m =>
+                {
+                    m.Options = JConvert.SerializeObject(part.Options ?? [], JOptions.CamelCaseIndented);
+                    m.DefaultValue = part.DefaultValue;
+                    m.Editor = part.Editor;
+                }
+            );
         }
 
-        public async override Task<IDisplayResult> UpdateAsync(SelectPart part, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(SelectPart part, IUpdateModel updater)
         {
             var viewModel = new SelectPartEditViewModel();
 
@@ -44,9 +47,7 @@ namespace OrchardCore.Forms.Drivers
                 try
                 {
                     part.Editor = viewModel.Editor;
-                    part.Options = string.IsNullOrWhiteSpace(viewModel.Options)
-                        ? []
-                        : JConvert.DeserializeObject<SelectOption[]>(viewModel.Options);
+                    part.Options = string.IsNullOrWhiteSpace(viewModel.Options) ? [] : JConvert.DeserializeObject<SelectOption[]>(viewModel.Options);
                 }
                 catch
                 {

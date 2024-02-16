@@ -1,12 +1,7 @@
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Users;
 
-[assembly: Module(
-    Name = "Users",
-    Author = ManifestConstants.OrchardCoreTeam,
-    Website = ManifestConstants.OrchardCoreWebsite,
-    Version = ManifestConstants.OrchardCoreVersion
-)]
+[assembly: Module(Name = "Users", Author = ManifestConstants.OrchardCoreTeam, Website = ManifestConstants.OrchardCoreWebsite, Version = ManifestConstants.OrchardCoreVersion)]
 
 [assembly: Feature(
     Id = UserConstants.Features.Users,
@@ -28,11 +23,7 @@ using OrchardCore.Users;
     Id = "OrchardCore.Users.Registration",
     Name = "Users Registration",
     Description = "The registration feature allows external users to sign up to the site and ask to confirm their email.",
-    Dependencies =
-    [
-        UserConstants.Features.Users,
-        "OrchardCore.Email",
-    ],
+    Dependencies = [UserConstants.Features.Users, "OrchardCore.Email",],
     Category = "Security"
 )]
 
@@ -40,11 +31,7 @@ using OrchardCore.Users;
     Id = "OrchardCore.Users.ResetPassword",
     Name = "Users Reset Password",
     Description = "The reset password feature allows users to reset their password.",
-    Dependencies =
-    [
-        UserConstants.Features.Users,
-        "OrchardCore.Email",
-    ],
+    Dependencies = [UserConstants.Features.Users, "OrchardCore.Email",],
     Category = "Security"
 )]
 
@@ -60,11 +47,7 @@ using OrchardCore.Users;
     Id = "OrchardCore.Users.CustomUserSettings",
     Name = "Custom User Settings",
     Description = "The custom user settings feature allows content types to become custom user settings.",
-    Dependencies =
-    [
-        UserConstants.Features.Users,
-        "OrchardCore.Contents",
-    ],
+    Dependencies = [UserConstants.Features.Users, "OrchardCore.Contents",],
     Category = "Settings"
 )]
 
@@ -72,11 +55,7 @@ using OrchardCore.Users;
     Id = "OrchardCore.Users.AuditTrail",
     Name = "Users Audit Trail",
     Description = "The users audit trail feature allows logging of user events.",
-    Dependencies =
-    [
-        UserConstants.Features.Users,
-        "OrchardCore.AuditTrail",
-    ],
+    Dependencies = [UserConstants.Features.Users, "OrchardCore.AuditTrail",],
     Category = "Security"
 )]
 
@@ -101,11 +80,7 @@ using OrchardCore.Users;
     Id = UserConstants.Features.AuthenticatorApp,
     Name = "Two-Factor Authenticator App Method",
     Description = "Provides users a two-factor authentication method through any Authentication App.",
-    Dependencies =
-    [
-        UserConstants.Features.Users,
-        UserConstants.Features.TwoFactorAuthentication,
-    ],
+    Dependencies = [UserConstants.Features.Users, UserConstants.Features.TwoFactorAuthentication,],
     Category = "Security"
 )]
 
@@ -113,13 +88,7 @@ using OrchardCore.Users;
     Id = UserConstants.Features.EmailAuthenticator,
     Name = "Two-Factor Email Method",
     Description = "Provides users a two-factor authentication method through an Email service.",
-    Dependencies =
-    [
-        UserConstants.Features.Users,
-        UserConstants.Features.TwoFactorAuthentication,
-        "OrchardCore.Liquid",
-        "OrchardCore.Email",
-    ],
+    Dependencies = [UserConstants.Features.Users, UserConstants.Features.TwoFactorAuthentication, "OrchardCore.Liquid", "OrchardCore.Email",],
     Category = "Security"
 )]
 
@@ -127,12 +96,6 @@ using OrchardCore.Users;
     Id = UserConstants.Features.SmsAuthenticator,
     Name = "Two-Factor SMS Method",
     Description = "Provides users a two-factor authentication method through an SMS service.",
-    Dependencies =
-    [
-        UserConstants.Features.Users,
-        UserConstants.Features.TwoFactorAuthentication,
-        "OrchardCore.Liquid",
-        "OrchardCore.Sms",
-    ],
+    Dependencies = [UserConstants.Features.Users, UserConstants.Features.TwoFactorAuthentication, "OrchardCore.Liquid", "OrchardCore.Sms",],
     Category = "Security"
 )]

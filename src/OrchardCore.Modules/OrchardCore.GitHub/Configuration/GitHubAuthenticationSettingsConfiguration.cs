@@ -18,7 +18,8 @@ public class GitHubAuthenticationSettingsConfiguration : IConfigureOptions<GitHu
     public GitHubAuthenticationSettingsConfiguration(
         IGitHubAuthenticationService gitHubAuthenticationService,
         ShellSettings shellSettings,
-        ILogger<GitHubAuthenticationSettingsConfiguration> logger)
+        ILogger<GitHubAuthenticationSettingsConfiguration> logger
+    )
     {
         _gitHubAuthenticationService = gitHubAuthenticationService;
         _shellSettings = shellSettings;
@@ -27,9 +28,7 @@ public class GitHubAuthenticationSettingsConfiguration : IConfigureOptions<GitHu
 
     public void Configure(GitHubAuthenticationSettings options)
     {
-        var settings = GetGitHubAuthenticationSettingsAsync()
-            .GetAwaiter()
-            .GetResult();
+        var settings = GetGitHubAuthenticationSettingsAsync().GetAwaiter().GetResult();
 
         if (settings != null)
         {

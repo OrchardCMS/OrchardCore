@@ -30,9 +30,7 @@ namespace OrchardCore.ResourceManagement
             private set { _attributes = value; }
         }
 
-        public RequireSettings()
-        {
-        }
+        public RequireSettings() { }
 
         public RequireSettings(ResourceManagementOptions options)
         {
@@ -215,7 +213,9 @@ namespace OrchardCore.ResourceManagement
         {
             if (dependent.Position == ResourcePosition.First && Position == ResourcePosition.Last)
             {
-                throw new InvalidOperationException($"Invalid dependency position of type '{dependent.Type}' for resource '{dependent.Name}' positioned at '{dependent.Position}' depending on '{Name}' positioned at '{Position}'");
+                throw new InvalidOperationException(
+                    $"Invalid dependency position of type '{dependent.Type}' for resource '{dependent.Name}' positioned at '{dependent.Position}' depending on '{Name}' positioned at '{Position}'"
+                );
             }
 
             // If a 'First' resource depends on a 'ByDependency' resource, position the dependency 'First'.
@@ -254,24 +254,31 @@ namespace OrchardCore.ResourceManagement
                 Type = Type,
                 Location = Location,
                 Position = Position
-            }
-                .Combine(other)
-                ;
+            }.Combine(other);
         }
 
         public RequireSettings Combine(RequireSettings other)
         {
-            AtLocation(Location).AtLocation(other.Location)
-            .WithBasePath(BasePath).WithBasePath(other.BasePath)
-            .UseCdn(CdnMode).UseCdn(other.CdnMode)
-            .UseCdnBaseUrl(CdnBaseUrl).UseCdnBaseUrl(other.CdnBaseUrl)
-            .UseDebugMode(DebugMode).UseDebugMode(other.DebugMode)
-            .UseCulture(Culture).UseCulture(other.Culture)
-            .UseCondition(Condition).UseCondition(other.Condition)
-            .UseVersion(Version).UseVersion(other.Version)
-            .ShouldAppendVersion(AppendVersion).ShouldAppendVersion(other.AppendVersion)
-            .Define(InlineDefinition).Define(other.InlineDefinition)
-            ;
+            AtLocation(Location)
+                .AtLocation(other.Location)
+                .WithBasePath(BasePath)
+                .WithBasePath(other.BasePath)
+                .UseCdn(CdnMode)
+                .UseCdn(other.CdnMode)
+                .UseCdnBaseUrl(CdnBaseUrl)
+                .UseCdnBaseUrl(other.CdnBaseUrl)
+                .UseDebugMode(DebugMode)
+                .UseDebugMode(other.DebugMode)
+                .UseCulture(Culture)
+                .UseCulture(other.Culture)
+                .UseCondition(Condition)
+                .UseCondition(other.Condition)
+                .UseVersion(Version)
+                .UseVersion(other.Version)
+                .ShouldAppendVersion(AppendVersion)
+                .ShouldAppendVersion(other.AppendVersion)
+                .Define(InlineDefinition)
+                .Define(other.InlineDefinition);
 
             _attributes = MergeAttributes(other);
             return this;

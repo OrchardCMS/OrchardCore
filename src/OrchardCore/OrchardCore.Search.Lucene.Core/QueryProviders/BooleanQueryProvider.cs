@@ -53,7 +53,8 @@ namespace OrchardCore.Search.Lucene.QueryProviders
                         break;
                     case "filter":
                         return CreateFilteredQuery(builder, context, boolQuery, property.Value);
-                    default: throw new ArgumentException($"Invalid property '{property.Key}' in boolean query");
+                    default:
+                        throw new ArgumentException($"Invalid property '{property.Key}' in boolean query");
                 }
 
                 if (!isProps)
@@ -73,7 +74,8 @@ namespace OrchardCore.Search.Lucene.QueryProviders
                                 boolQuery.Add(builder.CreateQueryFragment(context, item.AsObject()), occur);
                             }
                             break;
-                        default: throw new ArgumentException($"Invalid value in boolean query");
+                        default:
+                            throw new ArgumentException($"Invalid value in boolean query");
                     }
                 }
             }
@@ -117,7 +119,8 @@ namespace OrchardCore.Search.Lucene.QueryProviders
                         }
                     }
                     break;
-                default: throw new ArgumentException($"Invalid value in boolean query");
+                default:
+                    throw new ArgumentException($"Invalid value in boolean query");
             }
 
             return filteredQuery;

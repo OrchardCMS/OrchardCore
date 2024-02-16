@@ -133,7 +133,6 @@ namespace OrchardCore.DisplayManagement.RazorPages
 
                 return string.Empty;
             }
-
             set
             {
                 if (ThemeLayout is IShape layout)

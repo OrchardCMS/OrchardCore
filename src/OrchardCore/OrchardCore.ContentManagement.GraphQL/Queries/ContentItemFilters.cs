@@ -18,9 +18,7 @@ public class ContentItemFilters : GraphQLFilter<ContentItem>
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IAuthorizationService _authorizationService;
 
-    public ContentItemFilters(IHttpContextAccessor httpContextAccessor,
-        IContentDefinitionManager contentDefinitionManager,
-        IAuthorizationService authorizationService)
+    public ContentItemFilters(IHttpContextAccessor httpContextAccessor, IContentDefinitionManager contentDefinitionManager, IAuthorizationService authorizationService)
     {
         _httpContextAccessor = httpContextAccessor;
         _contentDefinitionManager = contentDefinitionManager;

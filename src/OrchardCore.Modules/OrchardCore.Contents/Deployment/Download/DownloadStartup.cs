@@ -30,18 +30,18 @@ namespace OrchardCore.Contents.Deployment.Download
             var downloadControllerName = typeof(DownloadController).ControllerName();
 
             routes.MapAreaControllerRoute(
-               name: "DownloadDisplay",
-               areaName: "OrchardCore.Contents",
-               pattern: _adminOptions.AdminUrlPrefix + "/Download/Display/{contentItemId}",
-               defaults: new { controller = downloadControllerName, action = nameof(DownloadController.Display) }
-           );
+                name: "DownloadDisplay",
+                areaName: "OrchardCore.Contents",
+                pattern: _adminOptions.AdminUrlPrefix + "/Download/Display/{contentItemId}",
+                defaults: new { controller = downloadControllerName, action = nameof(DownloadController.Display) }
+            );
 
             routes.MapAreaControllerRoute(
-               name: "DownloadDownload",
-               areaName: "OrchardCore.Contents",
-               pattern: _adminOptions.AdminUrlPrefix + "/Download/Download/{contentItemId}",
-               defaults: new { controller = downloadControllerName, action = nameof(DownloadController.Download) }
-           );
+                name: "DownloadDownload",
+                areaName: "OrchardCore.Contents",
+                pattern: _adminOptions.AdminUrlPrefix + "/Download/Download/{contentItemId}",
+                defaults: new { controller = downloadControllerName, action = nameof(DownloadController.Download) }
+            );
         }
     }
 }

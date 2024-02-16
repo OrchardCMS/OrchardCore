@@ -22,7 +22,8 @@ namespace OrchardCore.Users.Indexes
 
         public override void Describe(DescribeContext<User> context)
         {
-            context.For<UserByRoleNameIndex, string>()
+            context
+                .For<UserByRoleNameIndex, string>()
                 .Map(user =>
                 {
                     // Include a marker that the user does not have any roles, i.e. is Authenticated only.
@@ -30,30 +31,21 @@ namespace OrchardCore.Users.Indexes
                     {
                         return new UserByRoleNameIndex[]
                         {
-                            new() {
-                                RoleName = NormalizeKey("Authenticated"),
-                                Count = 1
-                            }
+                            new() { RoleName = NormalizeKey("Authenticated"), Count = 1 }
                         };
                     }
 
-                    return user.RoleNames.Select(x => new UserByRoleNameIndex
-                    {
-                        RoleName = NormalizeKey(x),
-                        Count = 1
-                    });
+                    return user.RoleNames.Select(x => new UserByRoleNameIndex { RoleName = NormalizeKey(x), Count = 1 });
                 })
                 .Group(index => index.RoleName)
-                .Reduce(group => new UserByRoleNameIndex
-                {
-                    RoleName = group.Key,
-                    Count = group.Sum(x => x.Count)
-                })
-                .Delete((index, map) =>
-                {
-                    index.Count -= map.Sum(x => x.Count);
-                    return index.Count > 0 ? index : null;
-                });
+                .Reduce(group => new UserByRoleNameIndex { RoleName = group.Key, Count = group.Sum(x => x.Count) })
+                .Delete(
+                    (index, map) =>
+                    {
+                        index.Count -= map.Sum(x => x.Count);
+                        return index.Count > 0 ? index : null;
+                    }
+                );
         }
 
         private string NormalizeKey(string key)

@@ -18,10 +18,7 @@ namespace OrchardCore.ContentFields.Controllers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IEnumerable<IContentPickerResultProvider> _resultProviders;
 
-        public ContentPickerAdminController(
-            IContentDefinitionManager contentDefinitionManager,
-            IEnumerable<IContentPickerResultProvider> resultProviders
-            )
+        public ContentPickerAdminController(IContentDefinitionManager contentDefinitionManager, IEnumerable<IContentPickerResultProvider> resultProviders)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _resultProviders = resultProviders;
@@ -34,8 +31,7 @@ namespace OrchardCore.ContentFields.Controllers
                 return BadRequest("Part and field are required parameters");
             }
 
-            var partFieldDefinition = (await _contentDefinitionManager.GetPartDefinitionAsync(part))?.Fields
-                .FirstOrDefault(f => f.Name == field);
+            var partFieldDefinition = (await _contentDefinitionManager.GetPartDefinitionAsync(part))?.Fields.FirstOrDefault(f => f.Name == field);
 
             var fieldSettings = partFieldDefinition?.GetSettings<ContentPickerFieldSettings>();
             if (fieldSettings == null)
@@ -45,8 +41,7 @@ namespace OrchardCore.ContentFields.Controllers
 
             var editor = partFieldDefinition.Editor() ?? "Default";
 
-            var resultProvider = _resultProviders.FirstOrDefault(p => p.Name == editor)
-                ?? _resultProviders.FirstOrDefault(p => p.Name == "Default");
+            var resultProvider = _resultProviders.FirstOrDefault(p => p.Name == editor) ?? _resultProviders.FirstOrDefault(p => p.Name == "Default");
 
             if (resultProvider == null)
             {
@@ -63,19 +58,29 @@ namespace OrchardCore.ContentFields.Controllers
                         var hasStereotype = contentType.TryGetStereotype(out var stereotype);
 
                         return hasStereotype && fieldSettings.DisplayedStereotypes.Contains(stereotype);
-                    }).Select(contentType => contentType.Name)
+                    })
+                    .Select(contentType => contentType.Name)
                     .ToArray();
             }
 
-            var results = await resultProvider.Search(new ContentPickerSearchContext
-            {
-                Query = query,
-                DisplayAllContentTypes = fieldSettings.DisplayAllContentTypes,
-                ContentTypes = contentTypes,
-                PartFieldDefinition = partFieldDefinition,
-            });
+            var results = await resultProvider.Search(
+                new ContentPickerSearchContext
+                {
+                    Query = query,
+                    DisplayAllContentTypes = fieldSettings.DisplayAllContentTypes,
+                    ContentTypes = contentTypes,
+                    PartFieldDefinition = partFieldDefinition,
+                }
+            );
 
-            return new ObjectResult(results.Select(r => new VueMultiselectItemViewModel() { Id = r.ContentItemId, DisplayText = r.DisplayText, HasPublished = r.HasPublished }));
+            return new ObjectResult(
+                results.Select(r => new VueMultiselectItemViewModel()
+                {
+                    Id = r.ContentItemId,
+                    DisplayText = r.DisplayText,
+                    HasPublished = r.HasPublished
+                })
+            );
         }
     }
 }

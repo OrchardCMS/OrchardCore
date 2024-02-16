@@ -46,17 +46,9 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
         ISmtpService smtpService,
         ILiquidTemplateManager liquidTemplateManager,
         HtmlEncoder htmlEncoder,
-        ITwoFactorAuthenticationHandlerCoordinator twoFactorAuthenticationHandlerCoordinator)
-        : base(
-            userManager,
-            distributedCache,
-            signInManager,
-            twoFactorAuthenticationHandlerCoordinator,
-            notifier,
-            siteService,
-            htmlLocalizer,
-            stringLocalizer,
-            twoFactorOptions)
+        ITwoFactorAuthenticationHandlerCoordinator twoFactorAuthenticationHandlerCoordinator
+    )
+        : base(userManager, distributedCache, signInManager, twoFactorAuthenticationHandlerCoordinator, notifier, siteService, htmlLocalizer, stringLocalizer, twoFactorOptions)
     {
         _userService = userService;
         _smtpService = smtpService;
@@ -160,11 +152,7 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
 
         if (user == null)
         {
-            return BadRequest(new
-            {
-                success = false,
-                message = errorMessage.Value,
-            });
+            return BadRequest(new { success = false, message = errorMessage.Value, });
         }
 
         var settings = (await SiteService.GetSiteSettingsAsync()).As<EmailAuthenticatorLoginSettings>();
@@ -180,40 +168,37 @@ public class EmailAuthenticatorController : TwoFactorAuthenticationBaseControlle
 
         var result = await _smtpService.SendAsync(message);
 
-        return Ok(new
-        {
-            success = result.Succeeded,
-            message = result.Succeeded ? S["A verification code has been sent via email. Please check your email for the code."].Value
-            : errorMessage.Value,
-        });
+        return Ok(
+            new
+            {
+                success = result.Succeeded,
+                message = result.Succeeded ? S["A verification code has been sent via email. Please check your email for the code."].Value : errorMessage.Value,
+            }
+        );
     }
 
     private Task<string> GetSubjectAsync(EmailAuthenticatorLoginSettings settings, IUser user, string code)
     {
-        var message = string.IsNullOrWhiteSpace(settings.Subject)
-        ? EmailAuthenticatorLoginSettings.DefaultSubject
-        : settings.Subject;
+        var message = string.IsNullOrWhiteSpace(settings.Subject) ? EmailAuthenticatorLoginSettings.DefaultSubject : settings.Subject;
 
         return GetContentAsync(message, user, code);
     }
 
     private Task<string> GetBodyAsync(EmailAuthenticatorLoginSettings settings, IUser user, string code)
     {
-        var message = string.IsNullOrWhiteSpace(settings.Body)
-        ? EmailAuthenticatorLoginSettings.DefaultBody
-        : settings.Body;
+        var message = string.IsNullOrWhiteSpace(settings.Body) ? EmailAuthenticatorLoginSettings.DefaultBody : settings.Body;
 
         return GetContentAsync(message, user, code);
     }
 
     private async Task<string> GetContentAsync(string message, IUser user, string code)
     {
-        var result = await _liquidTemplateManager.RenderHtmlContentAsync(message, _htmlEncoder, null,
-            new Dictionary<string, FluidValue>()
-            {
-                ["User"] = new ObjectValue(user),
-                ["Code"] = new StringValue(code),
-            });
+        var result = await _liquidTemplateManager.RenderHtmlContentAsync(
+            message,
+            _htmlEncoder,
+            null,
+            new Dictionary<string, FluidValue>() { ["User"] = new ObjectValue(user), ["Code"] = new StringValue(code), }
+        );
 
         using var writer = new StringWriter();
         result.WriteTo(writer, _htmlEncoder);

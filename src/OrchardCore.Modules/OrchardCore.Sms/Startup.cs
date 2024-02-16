@@ -25,9 +25,7 @@ public class Startup : StartupBase
     private readonly IHostEnvironment _hostEnvironment;
     private readonly AdminOptions _adminOptions;
 
-    public Startup(
-        IHostEnvironment hostEnvironment,
-        IOptions<AdminOptions> adminOptions)
+    public Startup(IHostEnvironment hostEnvironment, IOptions<AdminOptions> adminOptions)
     {
         _hostEnvironment = hostEnvironment;
         _adminOptions = adminOptions.Value;
@@ -43,8 +41,7 @@ public class Startup : StartupBase
             services.AddLogSmsProvider();
         }
 
-        services.AddTwilioSmsProvider()
-            .AddScoped<IDisplayDriver<ISite>, TwilioSettingsDisplayDriver>();
+        services.AddTwilioSmsProvider().AddScoped<IDisplayDriver<ISite>, TwilioSettingsDisplayDriver>();
 
         services.AddScoped<IPermissionProvider, SmsPermissionProvider>();
         services.AddScoped<INavigationProvider, AdminMenu>();

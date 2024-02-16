@@ -13,8 +13,6 @@ namespace OrchardCore.Environment.Extensions.Features
         /// <param name="extensionInfo"></param>
         /// <param name="manifestInfo"></param>
         /// <returns></returns>
-        IEnumerable<IFeatureInfo> GetFeatures(
-            IExtensionInfo extensionInfo,
-            IManifestInfo manifestInfo);
+        IEnumerable<IFeatureInfo> GetFeatures(IExtensionInfo extensionInfo, IManifestInfo manifestInfo);
     }
 }

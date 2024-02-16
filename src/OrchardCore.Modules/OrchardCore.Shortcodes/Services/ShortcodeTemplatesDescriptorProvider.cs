@@ -17,15 +17,14 @@ namespace OrchardCore.Shortcodes.Services
         {
             var document = await _shortcodeTemplatesManager.GetShortcodeTemplatesDocumentAsync();
 
-            return document.ShortcodeTemplates.Select(kvp =>
-                new ShortcodeDescriptor
-                {
-                    Name = kvp.Key,
-                    Hint = kvp.Value.Hint,
-                    DefaultValue = kvp.Value.DefaultValue,
-                    Usage = kvp.Value.Usage,
-                    Categories = kvp.Value.Categories
-                });
+            return document.ShortcodeTemplates.Select(kvp => new ShortcodeDescriptor
+            {
+                Name = kvp.Key,
+                Hint = kvp.Value.Hint,
+                DefaultValue = kvp.Value.DefaultValue,
+                Usage = kvp.Value.Usage,
+                Categories = kvp.Value.Categories
+            });
         }
     }
 }

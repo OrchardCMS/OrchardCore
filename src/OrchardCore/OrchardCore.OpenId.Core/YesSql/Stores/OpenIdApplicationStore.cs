@@ -21,11 +21,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
     public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApplication>
         where TApplication : OpenIdApplication, new()
     {
-        private static readonly JsonSerializerOptions _serializerOptions = new()
-        {
-            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-            WriteIndented = false
-        };
+        private static readonly JsonSerializerOptions _serializerOptions = new() { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, WriteIndented = false };
 
         private const string OpenIdCollection = OpenIdAuthorization.OpenIdCollection;
         private readonly ISession _session;
@@ -44,8 +40,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask<long> CountAsync<TResult>(Func<IQueryable<TApplication>, IQueryable<TResult>> query, CancellationToken cancellationToken)
-            => throw new NotSupportedException();
+        public virtual ValueTask<long> CountAsync<TResult>(Func<IQueryable<TApplication>, IQueryable<TResult>> query, CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
 
         /// <inheritdoc/>
         public virtual async ValueTask CreateAsync(TApplication application, CancellationToken cancellationToken)
@@ -106,9 +102,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.Query<TApplication, OpenIdAppByLogoutUriIndex>(
-                index => index.LogoutRedirectUri == uri,
-                collection: OpenIdCollection).ToAsyncEnumerable();
+            return _session.Query<TApplication, OpenIdAppByLogoutUriIndex>(index => index.LogoutRedirectUri == uri, collection: OpenIdCollection).ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>
@@ -118,9 +112,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.Query<TApplication, OpenIdAppByRedirectUriIndex>(
-                index => index.RedirectUri == uri,
-                collection: OpenIdCollection).ToAsyncEnumerable();
+            return _session.Query<TApplication, OpenIdAppByRedirectUriIndex>(index => index.RedirectUri == uri, collection: OpenIdCollection).ToAsyncEnumerable();
         }
 
         public virtual ValueTask<string> GetApplicationTypeAsync(TApplication application, CancellationToken cancellationToken)
@@ -133,8 +125,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual ValueTask<TResult> GetAsync<TState, TResult>(
             Func<IQueryable<TApplication>, TState, IQueryable<TResult>> query,
-            TState state, CancellationToken cancellationToken)
-            => throw new NotSupportedException();
+            TState state,
+            CancellationToken cancellationToken
+        ) => throw new NotSupportedException();
 
         /// <inheritdoc/>
         public virtual ValueTask<string> GetClientIdAsync(TApplication application, CancellationToken cancellationToken)
@@ -177,8 +170,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask<ImmutableDictionary<CultureInfo, string>> GetDisplayNamesAsync(
-            TApplication application, CancellationToken cancellationToken)
+        public virtual ValueTask<ImmutableDictionary<CultureInfo, string>> GetDisplayNamesAsync(TApplication application, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(application);
 
@@ -244,8 +236,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 return new ValueTask<ImmutableDictionary<string, JsonElement>>(ImmutableDictionary.Create<string, JsonElement>());
             }
 
-            return new ValueTask<ImmutableDictionary<string, JsonElement>>(
-                JConvert.DeserializeObject<ImmutableDictionary<string, JsonElement>>(application.Properties.ToString()));
+            return new ValueTask<ImmutableDictionary<string, JsonElement>>(JConvert.DeserializeObject<ImmutableDictionary<string, JsonElement>>(application.Properties.ToString()));
         }
 
         /// <inheritdoc/>
@@ -273,8 +264,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask<TApplication> InstantiateAsync(CancellationToken cancellationToken)
-            => new(new TApplication { ApplicationId = Guid.NewGuid().ToString("n") });
+        public virtual ValueTask<TApplication> InstantiateAsync(CancellationToken cancellationToken) => new(new TApplication { ApplicationId = Guid.NewGuid().ToString("n") });
 
         /// <inheritdoc/>
         public virtual IAsyncEnumerable<TApplication> ListAsync(int? count, int? offset, CancellationToken cancellationToken)
@@ -297,8 +287,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual IAsyncEnumerable<TResult> ListAsync<TState, TResult>(
             Func<IQueryable<TApplication>, TState, IQueryable<TResult>> query,
-            TState state, CancellationToken cancellationToken)
-            => throw new NotSupportedException();
+            TState state,
+            CancellationToken cancellationToken
+        ) => throw new NotSupportedException();
 
         /// <inheritdoc/>
         public virtual ValueTask SetApplicationTypeAsync(TApplication application, string type, CancellationToken cancellationToken)
@@ -311,8 +302,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask SetClientIdAsync(TApplication application,
-            string identifier, CancellationToken cancellationToken)
+        public virtual ValueTask SetClientIdAsync(TApplication application, string identifier, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(application);
 
@@ -399,8 +389,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask SetPostLogoutRedirectUrisAsync(TApplication application,
-            ImmutableArray<string> uris, CancellationToken cancellationToken)
+        public virtual ValueTask SetPostLogoutRedirectUrisAsync(TApplication application, ImmutableArray<string> uris, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(application);
 
@@ -427,8 +416,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask SetRedirectUrisAsync(TApplication application,
-            ImmutableArray<string> uris, CancellationToken cancellationToken)
+        public virtual ValueTask SetRedirectUrisAsync(TApplication application, ImmutableArray<string> uris, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(application);
 
@@ -438,8 +426,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask SetRequirementsAsync(TApplication application,
-            ImmutableArray<string> requirements, CancellationToken cancellationToken)
+        public virtual ValueTask SetRequirementsAsync(TApplication application, ImmutableArray<string> requirements, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(application);
 
@@ -449,8 +436,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask SetSettingsAsync(TApplication application,
-            ImmutableDictionary<string, string> settings, CancellationToken cancellationToken)
+        public virtual ValueTask SetSettingsAsync(TApplication application, ImmutableDictionary<string, string> settings, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(application);
 
@@ -474,10 +460,13 @@ namespace OrchardCore.OpenId.YesSql.Stores
             }
             catch (ConcurrencyException exception)
             {
-                throw new OpenIddictExceptions.ConcurrencyException(new StringBuilder()
-                    .AppendLine("The application was concurrently updated and cannot be persisted in its current state.")
-                    .Append("Reload the application from the database and retry the operation.")
-                    .ToString(), exception);
+                throw new OpenIddictExceptions.ConcurrencyException(
+                    new StringBuilder()
+                        .AppendLine("The application was concurrently updated and cannot be persisted in its current state.")
+                        .Append("Reload the application from the database and retry the operation.")
+                        .ToString(),
+                    exception
+                );
             }
         }
 

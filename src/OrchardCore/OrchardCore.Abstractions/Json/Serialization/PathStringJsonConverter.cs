@@ -21,6 +21,6 @@ public class PathStringJsonConverter : JsonConverter<PathString>
         return new PathString(result);
     }
 
-    public override void Write(Utf8JsonWriter writer, PathString value, JsonSerializerOptions options)
-        => JsonSerializer.Serialize(writer, value.ToString(), typeof(string), options);
+    public override void Write(Utf8JsonWriter writer, PathString value, JsonSerializerOptions options) =>
+        JsonSerializer.Serialize(writer, value.ToString(), typeof(string), options);
 }

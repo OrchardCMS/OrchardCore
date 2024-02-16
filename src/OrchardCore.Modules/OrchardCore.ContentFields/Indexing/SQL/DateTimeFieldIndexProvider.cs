@@ -28,7 +28,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
 
         public override void Describe(DescribeContext<ContentItem> context)
         {
-            context.For<DateTimeFieldIndex>()
+            context
+                .For<DateTimeFieldIndex>()
                 .Map(async contentItem =>
                 {
                     // Remove index records of soft deleted items.
@@ -69,18 +70,17 @@ namespace OrchardCore.ContentFields.Indexing.SQL
 
                     return fieldDefinitions
                         .GetContentFields<DateTimeField>(contentItem)
-                        .Select(pair =>
-                            new DateTimeFieldIndex
-                            {
-                                Latest = contentItem.Latest,
-                                Published = contentItem.Published,
-                                ContentItemId = contentItem.ContentItemId,
-                                ContentItemVersionId = contentItem.ContentItemVersionId,
-                                ContentType = contentItem.ContentType,
-                                ContentPart = pair.Definition.PartDefinition.Name,
-                                ContentField = pair.Definition.Name,
-                                DateTime = pair.Field.Value,
-                            });
+                        .Select(pair => new DateTimeFieldIndex
+                        {
+                            Latest = contentItem.Latest,
+                            Published = contentItem.Published,
+                            ContentItemId = contentItem.ContentItemId,
+                            ContentItemVersionId = contentItem.ContentItemVersionId,
+                            ContentType = contentItem.ContentType,
+                            ContentPart = pair.Definition.PartDefinition.Name,
+                            ContentField = pair.Definition.Name,
+                            DateTime = pair.Field.Value,
+                        });
                 });
         }
     }

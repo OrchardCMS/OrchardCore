@@ -8,11 +8,10 @@ namespace OrchardCore.Microsoft.Authentication.Deployment
     {
         public override IDisplayResult Display(AzureADDeploymentStep step)
         {
-            return
-                Combine(
-                    View("AzureADDeploymentStep_Summary", step).Location("Summary", "Content"),
-                    View("AzureADDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
-                );
+            return Combine(
+                View("AzureADDeploymentStep_Summary", step).Location("Summary", "Content"),
+                View("AzureADDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(AzureADDeploymentStep step)

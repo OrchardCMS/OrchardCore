@@ -24,22 +24,24 @@ namespace OrchardCore.ContentPreview.Settings
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            return Initialize<PreviewPartSettingsViewModel>("PreviewPartSettings_Edit", model =>
-            {
-                var settings = contentTypePartDefinition.GetSettings<PreviewPartSettings>();
+            return Initialize<PreviewPartSettingsViewModel>(
+                    "PreviewPartSettings_Edit",
+                    model =>
+                    {
+                        var settings = contentTypePartDefinition.GetSettings<PreviewPartSettings>();
 
-                model.Pattern = settings.Pattern;
-                model.PreviewPartSettings = settings;
-            }).Location("Content");
+                        model.Pattern = settings.Pattern;
+                        model.PreviewPartSettings = settings;
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
             var model = new PreviewPartSettingsViewModel();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix,
-                m => m.Pattern
-                );
+            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Pattern);
 
             if (!string.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
             {
@@ -47,10 +49,7 @@ namespace OrchardCore.ContentPreview.Settings
             }
             else
             {
-                context.Builder.WithSettings(new PreviewPartSettings
-                {
-                    Pattern = model.Pattern
-                });
+                context.Builder.WithSettings(new PreviewPartSettings { Pattern = model.Pattern });
             }
 
             return Edit(contentTypePartDefinition, context.Updater);

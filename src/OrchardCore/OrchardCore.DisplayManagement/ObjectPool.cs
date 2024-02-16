@@ -24,7 +24,8 @@ namespace OrchardCore.DisplayManagement
     /// Rationale:
     ///    If there is no intent for reusing the object, do not use pool - just use "new".
     /// </summary>
-    internal class ObjectPool<T> where T : class
+    internal class ObjectPool<T>
+        where T : class
     {
         [DebuggerDisplay("{Value,nq}")]
         private struct Element
@@ -84,15 +85,16 @@ namespace OrchardCore.DisplayManagement
                     // If you are seeing this message it means that object has been allocated from the pool
                     // and has not been returned back. This is not critical, but turns pool into rather
                     // inefficient kind of "new".
-                    Debug.WriteLine($"TRACEOBJECTPOOLLEAKS_BEGIN\nPool detected potential leaking of {typeof(T)}. \n Location of the leak: \n {GetTrace()} TRACEOBJECTPOOLLEAKS_END");
+                    Debug.WriteLine(
+                        $"TRACEOBJECTPOOLLEAKS_BEGIN\nPool detected potential leaking of {typeof(T)}. \n Location of the leak: \n {GetTrace()} TRACEOBJECTPOOLLEAKS_END"
+                    );
                 }
             }
         }
 #endif
 
         internal ObjectPool(Factory factory)
-            : this(factory, System.Environment.ProcessorCount * 2)
-        { }
+            : this(factory, System.Environment.ProcessorCount * 2) { }
 
         internal ObjectPool(Factory factory, int size)
         {

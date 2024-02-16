@@ -15,11 +15,7 @@ namespace OrchardCore.ReCaptcha.Workflows
         private readonly IUpdateModelAccessor _updateModelAccessor;
         protected readonly IStringLocalizer S;
 
-        public ValidateReCaptchaTask(
-            ReCaptchaService reCaptchaService,
-            IUpdateModelAccessor updateModelAccessor,
-            IStringLocalizer<ValidateReCaptchaTask> localizer
-        )
+        public ValidateReCaptchaTask(ReCaptchaService reCaptchaService, IUpdateModelAccessor updateModelAccessor, IStringLocalizer<ValidateReCaptchaTask> localizer)
         {
             _reCaptchaService = reCaptchaService;
             _updateModelAccessor = updateModelAccessor;
@@ -41,13 +37,15 @@ namespace OrchardCore.ReCaptcha.Workflows
         {
             var outcome = "Valid";
 
-            await _reCaptchaService.ValidateCaptchaAsync((key, error) =>
-            {
-                var updater = _updateModelAccessor.ModelUpdater;
-                outcome = "Invalid";
+            await _reCaptchaService.ValidateCaptchaAsync(
+                (key, error) =>
+                {
+                    var updater = _updateModelAccessor.ModelUpdater;
+                    outcome = "Invalid";
 
-                updater?.ModelState.TryAddModelError(Constants.ReCaptchaServerResponseHeaderName, S["Captcha validation failed. Try again."]);
-            });
+                    updater?.ModelState.TryAddModelError(Constants.ReCaptchaServerResponseHeaderName, S["Captcha validation failed. Try again."]);
+                }
+            );
 
             return Outcomes("Done", outcome);
         }

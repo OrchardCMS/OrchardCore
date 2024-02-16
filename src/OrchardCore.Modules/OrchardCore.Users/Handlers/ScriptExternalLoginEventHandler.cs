@@ -16,11 +16,7 @@ namespace OrchardCore.Users.Handlers
         private readonly IScriptingManager _scriptingManager;
         private readonly ISiteService _siteService;
 
-        public ScriptExternalLoginEventHandler(
-            ISiteService siteService,
-            IScriptingManager scriptingManager,
-            ILogger<ScriptExternalLoginEventHandler> logger
-        )
+        public ScriptExternalLoginEventHandler(ISiteService siteService, IScriptingManager scriptingManager, ILogger<ScriptExternalLoginEventHandler> logger)
         {
             _siteService = siteService;
             _scriptingManager = scriptingManager;
@@ -33,9 +29,15 @@ namespace OrchardCore.Users.Handlers
 
             if (registrationSettings.UseScriptToGenerateUsername)
             {
-                var context = new { userName = string.Empty, loginProvider = provider, externalClaims = claims };
+                var context = new
+                {
+                    userName = string.Empty,
+                    loginProvider = provider,
+                    externalClaims = claims
+                };
 
-                var script = $"js: function generateUsername(context) {{\n{registrationSettings.GenerateUsernameScript}\n}}\nvar context = {JConvert.SerializeObject(context, JOptions.CamelCase)};\ngenerateUsername(context);\nreturn context;";
+                var script =
+                    $"js: function generateUsername(context) {{\n{registrationSettings.GenerateUsernameScript}\n}}\nvar context = {JConvert.SerializeObject(context, JOptions.CamelCase)};\ngenerateUsername(context);\nreturn context;";
 
                 dynamic evaluationResult = _scriptingManager.Evaluate(script, null, null, null);
                 if (evaluationResult?.userName != null)
@@ -51,7 +53,8 @@ namespace OrchardCore.Users.Handlers
             var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
             if (loginSettings.UseScriptToSyncRoles)
             {
-                var script = $"js: function syncRoles(context) {{\n{loginSettings.SyncRolesScript}\n}}\nvar context={JConvert.SerializeObject(context, JOptions.CamelCase)};\nsyncRoles(context);\nreturn context;";
+                var script =
+                    $"js: function syncRoles(context) {{\n{loginSettings.SyncRolesScript}\n}}\nvar context={JConvert.SerializeObject(context, JOptions.CamelCase)};\nsyncRoles(context);\nreturn context;";
                 dynamic evaluationResult = _scriptingManager.Evaluate(script, null, null, null);
                 context.RolesToAdd.AddRange((evaluationResult.rolesToAdd as object[]).Select(i => i.ToString()));
                 context.RolesToRemove.AddRange((evaluationResult.rolesToRemove as object[]).Select(i => i.ToString()));

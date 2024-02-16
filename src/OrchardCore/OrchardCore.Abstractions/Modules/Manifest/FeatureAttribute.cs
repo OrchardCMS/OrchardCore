@@ -47,26 +47,8 @@ namespace OrchardCore.Modules.Manifest
         /// <param name="alwaysEnabled">Whether feature is always enabled.</param>
         /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
-        public FeatureAttribute(
-            string id,
-            string description,
-            string featureDependencies,
-            object defaultTenant,
-            object alwaysEnabled,
-            object enabledByDependencyOnly
-        ) : this(
-            id,
-            default,
-            default,
-            default,
-            description,
-            featureDependencies,
-            defaultTenant,
-            alwaysEnabled,
-            enabledByDependencyOnly
-        )
-        {
-        }
+        public FeatureAttribute(string id, string description, string featureDependencies, object defaultTenant, object alwaysEnabled, object enabledByDependencyOnly)
+            : this(id, default, default, default, description, featureDependencies, defaultTenant, alwaysEnabled, enabledByDependencyOnly) { }
 
         /// <summary>
         /// Constructs an instance of the attribute with some default values.
@@ -83,27 +65,8 @@ namespace OrchardCore.Modules.Manifest
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
         /// <param name="enabledByDependencyOnly">Whether feature is enabled by dependency only.
         /// Supported types are <see cref="string"/> and <see cref="bool"/> only.</param>
-        public FeatureAttribute(
-            string id,
-            string name,
-            string description,
-            string featureDependencies,
-            object defaultTenant,
-            object alwaysEnabled,
-            object enabledByDependencyOnly
-        ) : this(
-            id,
-            name,
-            default,
-            default,
-            description,
-            featureDependencies,
-            defaultTenant,
-            alwaysEnabled,
-            enabledByDependencyOnly
-        )
-        {
-        }
+        public FeatureAttribute(string id, string name, string description, string featureDependencies, object defaultTenant, object alwaysEnabled, object enabledByDependencyOnly)
+            : this(id, name, default, default, description, featureDependencies, defaultTenant, alwaysEnabled, enabledByDependencyOnly) { }
 
         /// <summary>
         /// Constructs an instance of the attribute with some default values.
@@ -167,10 +130,7 @@ namespace OrchardCore.Modules.Manifest
                 // Guards setting Id with strictly invalid values.
                 if (string.IsNullOrEmpty(value))
                 {
-                    throw new InvalidOperationException($"When '{nameof(Id)}' has been provided it should not be null or empty.")
-                    {
-                        Data = { { nameof(value), value } }
-                    };
+                    throw new InvalidOperationException($"When '{nameof(Id)}' has been provided it should not be null or empty.") { Data = { { nameof(value), value } } };
                 }
 
                 _id = value;
@@ -226,9 +186,7 @@ namespace OrchardCore.Modules.Manifest
         internal virtual string Describe(params FeatureAttribute[] additionalFeatures)
         {
             static bool IsNotNullOrEmpty(string s) => !string.IsNullOrEmpty(s);
-            var firstOrDefaultResult = GetValues(this).Concat(additionalFeatures)
-                .Select(feature => feature.Description)
-                .FirstOrDefault(IsNotNullOrEmpty);
+            var firstOrDefaultResult = GetValues(this).Concat(additionalFeatures).Select(feature => feature.Description).FirstOrDefault(IsNotNullOrEmpty);
             return firstOrDefaultResult ?? DefaultDescription;
         }
 
@@ -294,9 +252,7 @@ namespace OrchardCore.Modules.Manifest
         /// <returns></returns>
         internal virtual int Prioritize(params FeatureAttribute[] additionalFeatures)
         {
-            var firstPriority = GetValues(this).Concat(additionalFeatures)
-                .Select(feature => feature.InternalPriority)
-                .FirstOrDefault(priority => priority.HasValue);
+            var firstPriority = GetValues(this).Concat(additionalFeatures).Select(feature => feature.InternalPriority).FirstOrDefault(priority => priority.HasValue);
             return firstPriority ?? DefaultPriority;
         }
 

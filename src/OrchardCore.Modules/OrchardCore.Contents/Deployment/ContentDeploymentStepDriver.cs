@@ -12,20 +12,23 @@ namespace OrchardCore.Contents.Deployment
     {
         public override IDisplayResult Display(ContentDeploymentStep step)
         {
-            return
-                Combine(
-                    View("ContentDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                    View("ContentDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-                );
+            return Combine(
+                View("ContentDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("ContentDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(ContentDeploymentStep step)
         {
-            return Initialize<ContentDeploymentStepViewModel>("ContentDeploymentStep_Fields_Edit", model =>
-            {
-                model.ContentTypes = step.ContentTypes;
-                model.ExportAsSetupRecipe = step.ExportAsSetupRecipe;
-            }).Location("Content");
+            return Initialize<ContentDeploymentStepViewModel>(
+                    "ContentDeploymentStep_Fields_Edit",
+                    model =>
+                    {
+                        model.ContentTypes = step.ContentTypes;
+                        model.ExportAsSetupRecipe = step.ExportAsSetupRecipe;
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentDeploymentStep step, IUpdateModel updater)

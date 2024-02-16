@@ -24,7 +24,8 @@ namespace OrchardCore.Localization.PortableObject
         public PortableObjectStringLocalizerFactory(
             ILocalizationManager localizationManager,
             IOptions<RequestLocalizationOptions> requestLocalizationOptions,
-            ILogger<PortableObjectStringLocalizerFactory> logger)
+            ILogger<PortableObjectStringLocalizerFactory> logger
+        )
         {
             _localizationManager = localizationManager;
             _fallBackToParentCulture = requestLocalizationOptions.Value.FallBackToParentUICultures;

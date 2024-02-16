@@ -12,13 +12,16 @@ namespace OrchardCore.Spatial.Drivers
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<GeoPointFieldSettings>("GeoPointFieldSettings_Edit", model =>
-            {
-                var settings = partFieldDefinition.Settings.ToObject<GeoPointFieldSettings>();
+            return Initialize<GeoPointFieldSettings>(
+                    "GeoPointFieldSettings_Edit",
+                    model =>
+                    {
+                        var settings = partFieldDefinition.Settings.ToObject<GeoPointFieldSettings>();
 
-                model.Hint = settings.Hint;
-                model.Required = settings.Required;
-            })
+                        model.Hint = settings.Hint;
+                        model.Required = settings.Required;
+                    }
+                )
                 .Location("Content");
         }
 

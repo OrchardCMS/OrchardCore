@@ -4,9 +4,7 @@ namespace OrchardCore.Tests.Apis.Lucene
 {
     public class LuceneContext : SiteContext
     {
-        static LuceneContext()
-        {
-        }
+        static LuceneContext() { }
 
         public LuceneContext()
         {

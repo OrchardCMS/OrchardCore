@@ -14,9 +14,7 @@ namespace OrchardCore.Security.Extensions.Tests
             // Act
             applicationBuilder.UseSecurityHeaders();
 
-            applicationBuilder
-                .Build()
-                .Invoke(context);
+            applicationBuilder.Build().Invoke(context);
 
             // Assert
             Assert.Equal(SecurityHeaderDefaults.ContentSecurityPolicy, context.Response.Headers[SecurityHeaderNames.ContentSecurityPolicy]);
@@ -52,14 +50,18 @@ namespace OrchardCore.Security.Extensions.Tests
             // Act
             applicationBuilder.UseSecurityHeaders(options);
 
-            applicationBuilder
-                .Build()
-                .Invoke(context);
+            applicationBuilder.Build().Invoke(context);
 
             // Assert
-            Assert.Equal("child-src 'none',connect-src 'self' https://www.domain1.com https://www.domain2.com,default-src *", context.Response.Headers[SecurityHeaderNames.ContentSecurityPolicy]);
+            Assert.Equal(
+                "child-src 'none',connect-src 'self' https://www.domain1.com https://www.domain2.com,default-src *",
+                context.Response.Headers[SecurityHeaderNames.ContentSecurityPolicy]
+            );
             Assert.Equal(ContentTypeOptionsValue.NoSniff, context.Response.Headers[SecurityHeaderNames.XContentTypeOptions]);
-            Assert.Equal("camera=self,microphone=*,speaker-selection=self https://www.domain1.com https://www.domain2.com", context.Response.Headers[SecurityHeaderNames.PermissionsPolicy]);
+            Assert.Equal(
+                "camera=self,microphone=*,speaker-selection=self https://www.domain1.com https://www.domain2.com",
+                context.Response.Headers[SecurityHeaderNames.PermissionsPolicy]
+            );
             Assert.Equal(ReferrerPolicyValue.Origin, context.Response.Headers[SecurityHeaderNames.ReferrerPolicy]);
         }
 
@@ -76,21 +78,24 @@ namespace OrchardCore.Security.Extensions.Tests
                 config
                     .AddContentSecurityPolicy("child-src 'none'", "connect-src 'self' https://www.domain1.com https://www.domain2.com", "default-src *")
                     .AddContentTypeOptions()
-                    .AddPermissionsPolicy(new Dictionary<string, string>
-                    {
-                        { "camera", "self"},
-                        { "microphone", "*" },
-                        { "speaker", "self https://www.domain1.com https://www.domain2.com"}
-                    })
+                    .AddPermissionsPolicy(
+                        new Dictionary<string, string>
+                        {
+                            { "camera", "self" },
+                            { "microphone", "*" },
+                            { "speaker", "self https://www.domain1.com https://www.domain2.com" }
+                        }
+                    )
                     .AddReferrerPolicy(ReferrerPolicyValue.Origin);
             });
 
-            applicationBuilder
-                .Build()
-                .Invoke(context);
+            applicationBuilder.Build().Invoke(context);
 
             // Assert
-            Assert.Equal("child-src 'none',connect-src 'self' https://www.domain1.com https://www.domain2.com,default-src *", context.Response.Headers[SecurityHeaderNames.ContentSecurityPolicy]);
+            Assert.Equal(
+                "child-src 'none',connect-src 'self' https://www.domain1.com https://www.domain2.com,default-src *",
+                context.Response.Headers[SecurityHeaderNames.ContentSecurityPolicy]
+            );
             Assert.Equal(ContentTypeOptionsValue.NoSniff, context.Response.Headers[SecurityHeaderNames.XContentTypeOptions]);
             Assert.Equal("camera=self,microphone=*,speaker=self https://www.domain1.com https://www.domain2.com", context.Response.Headers[SecurityHeaderNames.PermissionsPolicy]);
             Assert.Equal(ReferrerPolicyValue.Origin, context.Response.Headers[SecurityHeaderNames.ReferrerPolicy]);

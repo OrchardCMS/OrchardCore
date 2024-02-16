@@ -11,9 +11,7 @@ namespace Microsoft.Extensions.Http
     internal sealed class LifetimeTrackingHttpMessageHandler : DelegatingHandler
     {
         public LifetimeTrackingHttpMessageHandler(HttpMessageHandler innerHandler)
-            : base(innerHandler)
-        {
-        }
+            : base(innerHandler) { }
 
         protected override void Dispose(bool disposing)
         {

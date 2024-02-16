@@ -66,7 +66,8 @@ namespace OrchardCore.Tenants.Controllers
             ILogger<AdminController> logger,
             IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
-            IHtmlLocalizer<AdminController> htmlLocalizer)
+            IHtmlLocalizer<AdminController> htmlLocalizer
+        )
         {
             _shellHost = shellHost;
             _shellSettingsManager = shellSettingsManager;
@@ -105,30 +106,40 @@ namespace OrchardCore.Tenants.Controllers
 
             var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
-            var entries = allSettings.Select(settings =>
-               {
-                   var entry = new ShellSettingsEntry
-                   {
-                       Category = settings["Category"],
-                       Description = settings["Description"],
-                       Name = settings.Name,
-                       ShellSettings = settings,
-                   };
+            var entries = allSettings
+                .Select(settings =>
+                {
+                    var entry = new ShellSettingsEntry
+                    {
+                        Category = settings["Category"],
+                        Description = settings["Description"],
+                        Name = settings.Name,
+                        ShellSettings = settings,
+                    };
 
-                   if (settings.IsUninitialized() && !string.IsNullOrEmpty(settings["Secret"]))
-                   {
-                       entry.Token = dataProtector.Protect(settings["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
-                   }
+                    if (settings.IsUninitialized() && !string.IsNullOrEmpty(settings["Secret"]))
+                    {
+                        entry.Token = dataProtector.Protect(settings["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
+                    }
 
-                   return entry;
-               }).ToList();
+                    return entry;
+                })
+                .ToList();
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                entries = entries.Where(t => t.Name.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1 ||
-                    (t.ShellSettings != null &&
-                     ((t.ShellSettings.RequestUrlHost != null && t.ShellSettings.RequestUrlHost.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1) ||
-                     (t.ShellSettings.RequestUrlPrefix != null && t.ShellSettings.RequestUrlPrefix.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1)))).ToList();
+                entries = entries
+                    .Where(t =>
+                        t.Name.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1
+                        || (
+                            t.ShellSettings != null
+                            && (
+                                (t.ShellSettings.RequestUrlHost != null && t.ShellSettings.RequestUrlHost.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1)
+                                || (t.ShellSettings.RequestUrlPrefix != null && t.ShellSettings.RequestUrlPrefix.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1)
+                            )
+                        )
+                    )
+                    .ToList();
             }
 
             if (!string.IsNullOrWhiteSpace(options.Category))
@@ -151,9 +162,7 @@ namespace OrchardCore.Tenants.Controllers
                 _ => entries.OrderByDescending(t => t.Name).ToList(),
             };
 
-            var results = entries
-                .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize).ToList();
+            var results = entries.Skip(pager.GetStartIndex()).Take(pager.PageSize).ToList();
 
             // Maintain previous route data when generating page links
             var routeData = new RouteData();
@@ -186,10 +195,7 @@ namespace OrchardCore.Tenants.Controllers
                 .Select(group => new SelectListItem(group.Key, group.Key, string.Equals(options.Category, group.Key, StringComparison.OrdinalIgnoreCase)))
                 .ToList();
 
-            model.Options.TenantsCategories.Insert(0, new SelectListItem(
-                S["All"],
-                string.Empty,
-                selected: string.IsNullOrEmpty(options.Category)));
+            model.Options.TenantsCategories.Insert(0, new SelectListItem(S["All"], string.Empty, selected: string.IsNullOrEmpty(options.Category)));
 
             model.Options.TenantsStates =
             [
@@ -216,15 +222,18 @@ namespace OrchardCore.Tenants.Controllers
 
         [HttpPost, ActionName("Index")]
         [FormValueRequired("submit.Filter")]
-        public ActionResult IndexFilterPOST(AdminIndexViewModel model)
-            => RedirectToAction("Index", new RouteValueDictionary
-            {
-                { "Options.Category", model.Options.Category },
-                { "Options.Status", model.Options.Status },
-                { "Options.OrderBy", model.Options.OrderBy },
-                { "Options.Search", model.Options.Search },
-                { "Options.TenantsStates", model.Options.TenantsStates }
-            });
+        public ActionResult IndexFilterPOST(AdminIndexViewModel model) =>
+            RedirectToAction(
+                "Index",
+                new RouteValueDictionary
+                {
+                    { "Options.Category", model.Options.Category },
+                    { "Options.Status", model.Options.Status },
+                    { "Options.OrderBy", model.Options.OrderBy },
+                    { "Options.Search", model.Options.Search },
+                    { "Options.TenantsStates", model.Options.TenantsStates }
+                }
+            );
 
         [HttpPost]
         [FormValueRequired("submit.BulkAction")]
@@ -308,10 +317,7 @@ namespace OrchardCore.Tenants.Controllers
             var recipes = recipeCollections.SelectMany(x => x).Where(x => x.IsSetupRecipe).OrderBy(r => r.DisplayName).ToArray();
 
             // Creates a default shell settings based on the configuration.
-            using var shellSettings = _shellSettingsManager
-                .CreateDefaultSettings()
-                .AsUninitialized()
-                .AsDisposable();
+            using var shellSettings = _shellSettingsManager.CreateDefaultSettings().AsUninitialized().AsDisposable();
 
             var currentFeatureProfiles = shellSettings.GetFeatureProfiles();
             var featureProfiles = await GetFeatureProfilesAsync(currentFeatureProfiles);
@@ -330,9 +336,7 @@ namespace OrchardCore.Tenants.Controllers
                 Schema = shellSettings["Schema"],
             };
 
-            model.DatabaseConfigurationPreset =
-                !string.IsNullOrEmpty(model.ConnectionString) ||
-                !string.IsNullOrEmpty(model.DatabaseProvider);
+            model.DatabaseConfigurationPreset = !string.IsNullOrEmpty(model.ConnectionString) || !string.IsNullOrEmpty(model.DatabaseProvider);
 
             model.Recipes = recipes;
 
@@ -360,10 +364,7 @@ namespace OrchardCore.Tenants.Controllers
             if (ModelState.IsValid)
             {
                 // Creates a default shell settings based on the configuration.
-                using var shellSettings = _shellSettingsManager
-                    .CreateDefaultSettings()
-                    .AsUninitialized()
-                    .AsDisposable();
+                using var shellSettings = _shellSettingsManager.CreateDefaultSettings().AsUninitialized().AsDisposable();
 
                 shellSettings.Name = model.Name;
                 shellSettings.RequestUrlHost = model.RequestUrlHost;

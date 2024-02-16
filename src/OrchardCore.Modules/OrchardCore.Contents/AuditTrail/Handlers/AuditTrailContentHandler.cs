@@ -26,11 +26,7 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
 
         private readonly HashSet<string> _restoring = [];
 
-        public AuditTrailContentHandler(
-            YesSql.ISession session,
-            ISiteService siteService,
-            IAuditTrailManager auditTrailManager,
-            IHttpContextAccessor httpContextAccessor)
+        public AuditTrailContentHandler(YesSql.ISession session, ISiteService siteService, IAuditTrailManager auditTrailManager, IHttpContextAccessor httpContextAccessor)
         {
             _session = session;
             _siteService = siteService;
@@ -38,23 +34,17 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public override Task DraftSavedAsync(SaveDraftContentContext context)
-            => RecordAuditTrailEventAsync(ContentAuditTrailEventConfiguration.Saved, context.ContentItem);
+        public override Task DraftSavedAsync(SaveDraftContentContext context) => RecordAuditTrailEventAsync(ContentAuditTrailEventConfiguration.Saved, context.ContentItem);
 
-        public override Task CreatedAsync(CreateContentContext context)
-            => RecordAuditTrailEventAsync(ContentAuditTrailEventConfiguration.Created, context.ContentItem);
+        public override Task CreatedAsync(CreateContentContext context) => RecordAuditTrailEventAsync(ContentAuditTrailEventConfiguration.Created, context.ContentItem);
 
-        public override Task PublishedAsync(PublishContentContext context)
-            => RecordAuditTrailEventAsync(ContentAuditTrailEventConfiguration.Published, context.ContentItem);
+        public override Task PublishedAsync(PublishContentContext context) => RecordAuditTrailEventAsync(ContentAuditTrailEventConfiguration.Published, context.ContentItem);
 
-        public override Task UnpublishedAsync(PublishContentContext context)
-            => RecordAuditTrailEventAsync(ContentAuditTrailEventConfiguration.Unpublished, context.ContentItem);
+        public override Task UnpublishedAsync(PublishContentContext context) => RecordAuditTrailEventAsync(ContentAuditTrailEventConfiguration.Unpublished, context.ContentItem);
 
-        public override Task RemovedAsync(RemoveContentContext context)
-            => RecordAuditTrailEventAsync(ContentAuditTrailEventConfiguration.Removed, context.ContentItem);
+        public override Task RemovedAsync(RemoveContentContext context) => RecordAuditTrailEventAsync(ContentAuditTrailEventConfiguration.Removed, context.ContentItem);
 
-        public override Task ClonedAsync(CloneContentContext context)
-            => RecordAuditTrailEventAsync(ContentAuditTrailEventConfiguration.Cloned, context.ContentItem);
+        public override Task ClonedAsync(CloneContentContext context) => RecordAuditTrailEventAsync(ContentAuditTrailEventConfiguration.Cloned, context.ContentItem);
 
         public override Task RestoringAsync(RestoreContentContext context)
         {
@@ -63,8 +53,7 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
             return Task.CompletedTask;
         }
 
-        public override Task RestoredAsync(RestoreContentContext context)
-            => RecordAuditTrailEventAsync(ContentAuditTrailEventConfiguration.Restored, context.ContentItem);
+        public override Task RestoredAsync(RestoreContentContext context) => RecordAuditTrailEventAsync(ContentAuditTrailEventConfiguration.Restored, context.ContentItem);
 
         private async Task RecordAuditTrailEventAsync(string name, IContent content)
         {
@@ -81,24 +70,18 @@ namespace OrchardCore.Contents.AuditTrail.Handlers
                 return;
             }
 
-            var versionNumber = await _session
-                .QueryIndex<ContentItemIndex>(index => index.ContentItemId == content.ContentItem.ContentItemId)
-                .CountAsync();
+            var versionNumber = await _session.QueryIndex<ContentItemIndex>(index => index.ContentItemId == content.ContentItem.ContentItemId).CountAsync();
 
             await _auditTrailManager.RecordEventAsync(
-                new AuditTrailContext<AuditTrailContentEvent>
-                (
+                new AuditTrailContext<AuditTrailContentEvent>(
                     name,
                     ContentAuditTrailEventConfiguration.Content,
                     content.ContentItem.ContentItemId,
                     _httpContextAccessor.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier),
                     _httpContextAccessor.HttpContext.User?.Identity?.Name,
-                    new AuditTrailContentEvent
-                    {
-                        ContentItem = content.ContentItem,
-                        VersionNumber = versionNumber
-                    }
-                ));
+                    new AuditTrailContentEvent { ContentItem = content.ContentItem, VersionNumber = versionNumber }
+                )
+            );
         }
     }
 }

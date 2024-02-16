@@ -25,9 +25,11 @@ namespace OrchardCore.Media.Drivers
         protected readonly IStringLocalizer S;
         private readonly ILogger _logger;
 
-        public MediaFieldDisplayDriver(AttachedMediaFieldFileService attachedMediaFieldFileService,
+        public MediaFieldDisplayDriver(
+            AttachedMediaFieldFileService attachedMediaFieldFileService,
             IStringLocalizer<MediaFieldDisplayDriver> localizer,
-            ILogger<MediaFieldDisplayDriver> logger)
+            ILogger<MediaFieldDisplayDriver> logger
+        )
         {
             _attachedMediaFieldFileService = attachedMediaFieldFileService;
             S = localizer;
@@ -36,55 +38,61 @@ namespace OrchardCore.Media.Drivers
 
         public override IDisplayResult Display(MediaField field, BuildFieldDisplayContext context)
         {
-            return Initialize<DisplayMediaFieldViewModel>(GetDisplayShapeType(context), model =>
-            {
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-            })
-            .Location("Detail", "Content")
-            .Location("Summary", "Content");
+            return Initialize<DisplayMediaFieldViewModel>(
+                    GetDisplayShapeType(context),
+                    model =>
+                    {
+                        model.Field = field;
+                        model.Part = context.ContentPart;
+                        model.PartFieldDefinition = context.PartFieldDefinition;
+                    }
+                )
+                .Location("Detail", "Content")
+                .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(MediaField field, BuildFieldEditorContext context)
         {
             var itemPaths = field.Paths?.ToList().Select(p => new EditMediaFieldItemInfo { Path = p }).ToArray() ?? [];
 
-            return Initialize<EditMediaFieldViewModel>(GetEditorShapeType(context), model =>
-            {
-                var settings = context.PartFieldDefinition.GetSettings<MediaFieldSettings>();
-
-                for (var i = 0; i < itemPaths.Length; i++)
+            return Initialize<EditMediaFieldViewModel>(
+                GetEditorShapeType(context),
+                model =>
                 {
-                    if (settings.AllowMediaText && i < field.MediaTexts?.Length)
-                    {
-                        itemPaths[i].MediaText = field.MediaTexts[i];
-                    }
+                    var settings = context.PartFieldDefinition.GetSettings<MediaFieldSettings>();
 
-                    if (settings.AllowAnchors)
+                    for (var i = 0; i < itemPaths.Length; i++)
                     {
-                        var anchors = field.GetAnchors();
-                        if (anchors != null && i < anchors.Length)
+                        if (settings.AllowMediaText && i < field.MediaTexts?.Length)
                         {
-                            itemPaths[i].Anchor = anchors[i];
+                            itemPaths[i].MediaText = field.MediaTexts[i];
+                        }
+
+                        if (settings.AllowAnchors)
+                        {
+                            var anchors = field.GetAnchors();
+                            if (anchors != null && i < anchors.Length)
+                            {
+                                itemPaths[i].Anchor = anchors[i];
+                            }
+                        }
+
+                        var filenames = field.GetAttachedFileNames();
+                        if (filenames != null && i < filenames.Length)
+                        {
+                            itemPaths[i].AttachedFileName = filenames[i];
                         }
                     }
 
-                    var filenames = field.GetAttachedFileNames();
-                    if (filenames != null && i < filenames.Length)
-                    {
-                        itemPaths[i].AttachedFileName = filenames[i];
-                    }
+                    model.Paths = JConvert.SerializeObject(itemPaths, JOptions.CamelCase);
+                    model.TempUploadFolder = _attachedMediaFieldFileService.MediaFieldsTempSubFolder;
+                    model.Field = field;
+                    model.Part = context.ContentPart;
+                    model.PartFieldDefinition = context.PartFieldDefinition;
+                    model.AllowMediaText = settings.AllowMediaText;
+                    model.AllowedExtensions = settings.AllowedExtensions ?? [];
                 }
-
-                model.Paths = JConvert.SerializeObject(itemPaths, JOptions.CamelCase);
-                model.TempUploadFolder = _attachedMediaFieldFileService.MediaFieldsTempSubFolder;
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-                model.AllowMediaText = settings.AllowMediaText;
-                model.AllowedExtensions = settings.AllowedExtensions ?? [];
-            });
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(MediaField field, IUpdateModel updater, UpdateFieldEditorContext context)
@@ -94,9 +102,7 @@ namespace OrchardCore.Media.Drivers
             if (await updater.TryUpdateModelAsync(model, Prefix, f => f.Paths))
             {
                 // Deserializing an empty string doesn't return an array
-                var items = string.IsNullOrWhiteSpace(model.Paths)
-                    ? []
-                    : JConvert.DeserializeObject<List<EditMediaFieldItemInfo>>(model.Paths, JOptions.CamelCase);
+                var items = string.IsNullOrWhiteSpace(model.Paths) ? [] : JConvert.DeserializeObject<List<EditMediaFieldItemInfo>>(model.Paths, JOptions.CamelCase);
 
                 // If it's an attached media field editor the files are automatically handled by _attachedMediaFieldFileService.
                 if (string.Equals(context.PartFieldDefinition.Editor(), "Attached", StringComparison.OrdinalIgnoreCase))
@@ -125,7 +131,11 @@ namespace OrchardCore.Media.Drivers
 
                         if (!settings.AllowedExtensions.Contains(extension))
                         {
-                            updater.ModelState.AddModelError(Prefix, nameof(model.Paths), S["Media extension is not allowed. Only media with '{0}' extensions are allowed.", string.Join(", ", settings.AllowedExtensions)]);
+                            updater.ModelState.AddModelError(
+                                Prefix,
+                                nameof(model.Paths),
+                                S["Media extension is not allowed. Only media with '{0}' extensions are allowed.", string.Join(", ", settings.AllowedExtensions)]
+                            );
                         }
                     }
                 }

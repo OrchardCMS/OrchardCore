@@ -48,17 +48,71 @@ namespace OrchardCore.Search.Lucene
             {
                 foreach (var partDefinition in contentTypeDefinition.Parts)
                 {
-                    await _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, partBuilder =>
+                    await _contentDefinitionManager.AlterPartDefinitionAsync(
+                        partDefinition.Name,
+                        partBuilder =>
+                        {
+                            if (
+                                partDefinition.Settings.TryGetPropertyValue("ContentIndexSettings", out var existingPartSettings)
+                                && !partDefinition.Settings.ContainsKey(nameof(LuceneContentIndexSettings))
+                            )
+                            {
+                                var included = existingPartSettings["Included"];
+                                var analyzed = existingPartSettings["Analyzed"];
+
+                                if (included is not null)
+                                {
+                                    if (analyzed is not null)
+                                    {
+                                        if ((bool)included && !(bool)analyzed)
+                                        {
+                                            existingPartSettings["Keyword"] = true;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if ((bool)included)
+                                        {
+                                            existingPartSettings["Keyword"] = true;
+                                        }
+                                    }
+                                }
+
+                                var jExistingPartSettings = existingPartSettings.AsObject();
+
+                                // We remove unnecessary properties from old releases.
+                                jExistingPartSettings.Remove("Analyzed");
+                                jExistingPartSettings.Remove("Tokenized");
+                                jExistingPartSettings.Remove("Template");
+
+                                partDefinition.Settings.Add(nameof(LuceneContentIndexSettings), jExistingPartSettings.Clone());
+                            }
+
+                            partDefinition.Settings.Remove("ContentIndexSettings");
+                        }
+                    );
+                }
+            }
+
+            var partDefinitions = await _contentDefinitionManager.LoadPartDefinitionsAsync();
+
+            foreach (var partDefinition in partDefinitions)
+            {
+                await _contentDefinitionManager.AlterPartDefinitionAsync(
+                    partDefinition.Name,
+                    partBuilder =>
                     {
-                        if (partDefinition.Settings.TryGetPropertyValue("ContentIndexSettings", out var existingPartSettings) &&
-                            !partDefinition.Settings.ContainsKey(nameof(LuceneContentIndexSettings)))
+                        if (
+                            partDefinition.Settings.TryGetPropertyValue("ContentIndexSettings", out var existingPartSettings)
+                            && !partDefinition.Settings.ContainsKey(nameof(LuceneContentIndexSettings))
+                        )
                         {
                             var included = existingPartSettings["Included"];
                             var analyzed = existingPartSettings["Analyzed"];
 
-                            if (included is not null)
+                            if (included != null)
                             {
-                                if (analyzed is not null)
+                                if (analyzed != null)
                                 {
                                     if ((bool)included && !(bool)analyzed)
                                     {
@@ -85,91 +139,49 @@ namespace OrchardCore.Search.Lucene
                         }
 
                         partDefinition.Settings.Remove("ContentIndexSettings");
-                    });
-                }
-            }
 
-            var partDefinitions = await _contentDefinitionManager.LoadPartDefinitionsAsync();
-
-            foreach (var partDefinition in partDefinitions)
-            {
-                await _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, partBuilder =>
-                {
-                    if (partDefinition.Settings.TryGetPropertyValue("ContentIndexSettings", out var existingPartSettings) &&
-                        !partDefinition.Settings.ContainsKey(nameof(LuceneContentIndexSettings)))
-                    {
-                        var included = existingPartSettings["Included"];
-                        var analyzed = existingPartSettings["Analyzed"];
-
-                        if (included != null)
+                        foreach (var fieldDefinition in partDefinition.Fields)
                         {
-                            if (analyzed != null)
+                            if (
+                                fieldDefinition.Settings.TryGetPropertyValue("ContentIndexSettings", out var existingFieldSettings)
+                                && !fieldDefinition.Settings.TryGetPropertyValue(nameof(LuceneContentIndexSettings), out _)
+                            )
                             {
-                                if ((bool)included && !(bool)analyzed)
+                                var included = existingFieldSettings["Included"];
+                                var analyzed = existingFieldSettings["Analyzed"];
+
+                                if (included != null)
                                 {
-                                    existingPartSettings["Keyword"] = true;
-                                }
-                            }
-                            else
-                            {
-                                if ((bool)included)
-                                {
-                                    existingPartSettings["Keyword"] = true;
-                                }
-                            }
-                        }
-
-                        var jExistingPartSettings = existingPartSettings.AsObject();
-
-                        // We remove unnecessary properties from old releases.
-                        jExistingPartSettings.Remove("Analyzed");
-                        jExistingPartSettings.Remove("Tokenized");
-                        jExistingPartSettings.Remove("Template");
-
-                        partDefinition.Settings.Add(nameof(LuceneContentIndexSettings), jExistingPartSettings.Clone());
-                    }
-
-                    partDefinition.Settings.Remove("ContentIndexSettings");
-
-                    foreach (var fieldDefinition in partDefinition.Fields)
-                    {
-                        if (fieldDefinition.Settings.TryGetPropertyValue("ContentIndexSettings", out var existingFieldSettings) &&
-                            !fieldDefinition.Settings.TryGetPropertyValue(nameof(LuceneContentIndexSettings), out _))
-                        {
-                            var included = existingFieldSettings["Included"];
-                            var analyzed = existingFieldSettings["Analyzed"];
-
-                            if (included != null)
-                            {
-                                if (analyzed != null)
-                                {
-                                    if ((bool)included && !(bool)analyzed)
+                                    if (analyzed != null)
                                     {
-                                        existingFieldSettings["Keyword"] = true;
+                                        if ((bool)included && !(bool)analyzed)
+                                        {
+                                            existingFieldSettings["Keyword"] = true;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if ((bool)included)
+                                        {
+                                            existingFieldSettings["Keyword"] = true;
+                                        }
                                     }
                                 }
-                                else
-                                {
-                                    if ((bool)included)
-                                    {
-                                        existingFieldSettings["Keyword"] = true;
-                                    }
-                                }
+
+                                var jExistingFieldSettings = existingFieldSettings.AsObject();
+
+                                // We remove unnecessary properties from old releases.
+                                jExistingFieldSettings.Remove("Analyzed");
+                                jExistingFieldSettings.Remove("Tokenized");
+                                jExistingFieldSettings.Remove("Template");
+
+                                fieldDefinition.Settings.Add(nameof(LuceneContentIndexSettings), jExistingFieldSettings.Clone());
                             }
 
-                            var jExistingFieldSettings = existingFieldSettings.AsObject();
-
-                            // We remove unnecessary properties from old releases.
-                            jExistingFieldSettings.Remove("Analyzed");
-                            jExistingFieldSettings.Remove("Tokenized");
-                            jExistingFieldSettings.Remove("Template");
-
-                            fieldDefinition.Settings.Add(nameof(LuceneContentIndexSettings), jExistingFieldSettings.Clone());
+                            fieldDefinition.Settings.Remove("ContentIndexSettings");
                         }
-
-                        fieldDefinition.Settings.Remove("ContentIndexSettings");
                     }
-                });
+                );
             }
 
             // Defer this until after the subsequent migrations have succeeded as the schema has changed.
@@ -198,27 +210,33 @@ namespace OrchardCore.Search.Lucene
                     var quotedContentColumnName = dialect.QuoteForColumnName("Content");
                     var quotedTypeColumnName = dialect.QuoteForColumnName("Type");
 
-                    var updateCmd = $"UPDATE {quotedTableName} SET {quotedContentColumnName} = REPLACE({quotedContentColumnName}, '\"$type\":\"OrchardCore.Lucene.LuceneQuery, OrchardCore.Lucene\"', '\"$type\":\"OrchardCore.Search.Lucene.LuceneQuery, OrchardCore.Search.Lucene\"') WHERE {quotedTypeColumnName}  = 'OrchardCore.Queries.Services.QueriesDocument, OrchardCore.Queries'";
+                    var updateCmd =
+                        $"UPDATE {quotedTableName} SET {quotedContentColumnName} = REPLACE({quotedContentColumnName}, '\"$type\":\"OrchardCore.Lucene.LuceneQuery, OrchardCore.Lucene\"', '\"$type\":\"OrchardCore.Search.Lucene.LuceneQuery, OrchardCore.Search.Lucene\"') WHERE {quotedTypeColumnName}  = 'OrchardCore.Queries.Services.QueriesDocument, OrchardCore.Queries'";
 
                     await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
 
-                    updateCmd = $"UPDATE {quotedTableName} SET {quotedContentColumnName} = REPLACE({quotedContentColumnName}, '\"$type\":\"OrchardCore.Lucene.Deployment.LuceneIndexDeploymentStep, OrchardCore.Lucene\"', '\"$type\":\"OrchardCore.Search.Lucene.Deployment.LuceneIndexDeploymentStep, OrchardCore.Search.Lucene\"') WHERE {quotedTypeColumnName}  = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions'";
+                    updateCmd =
+                        $"UPDATE {quotedTableName} SET {quotedContentColumnName} = REPLACE({quotedContentColumnName}, '\"$type\":\"OrchardCore.Lucene.Deployment.LuceneIndexDeploymentStep, OrchardCore.Lucene\"', '\"$type\":\"OrchardCore.Search.Lucene.Deployment.LuceneIndexDeploymentStep, OrchardCore.Search.Lucene\"') WHERE {quotedTypeColumnName}  = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions'";
 
                     await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
 
-                    updateCmd = $"UPDATE {quotedTableName} SET {quotedContentColumnName} = REPLACE({quotedContentColumnName}, '\"$type\":\"OrchardCore.Lucene.Deployment.LuceneSettingsDeploymentStep, OrchardCore.Lucene\"', '\"$type\":\"OrchardCore.Search.Lucene.Deployment.LuceneSettingsDeploymentStep, OrchardCore.Search.Lucene\"') WHERE {quotedTypeColumnName}  = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions'";
+                    updateCmd =
+                        $"UPDATE {quotedTableName} SET {quotedContentColumnName} = REPLACE({quotedContentColumnName}, '\"$type\":\"OrchardCore.Lucene.Deployment.LuceneSettingsDeploymentStep, OrchardCore.Lucene\"', '\"$type\":\"OrchardCore.Search.Lucene.Deployment.LuceneSettingsDeploymentStep, OrchardCore.Search.Lucene\"') WHERE {quotedTypeColumnName}  = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions'";
 
                     await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
 
-                    updateCmd = $"UPDATE {quotedTableName} SET {quotedContentColumnName} = REPLACE({quotedContentColumnName}, '\"$type\":\"OrchardCore.Lucene.Deployment.LuceneIndexResetDeploymentStep, OrchardCore.Lucene\"', '\"$type\":\"OrchardCore.Search.Lucene.Deployment.LuceneIndexResetDeploymentStep, OrchardCore.Search.Lucene\"') WHERE {quotedTypeColumnName}  = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions'";
+                    updateCmd =
+                        $"UPDATE {quotedTableName} SET {quotedContentColumnName} = REPLACE({quotedContentColumnName}, '\"$type\":\"OrchardCore.Lucene.Deployment.LuceneIndexResetDeploymentStep, OrchardCore.Lucene\"', '\"$type\":\"OrchardCore.Search.Lucene.Deployment.LuceneIndexResetDeploymentStep, OrchardCore.Search.Lucene\"') WHERE {quotedTypeColumnName}  = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions'";
 
                     await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
 
-                    updateCmd = $"UPDATE {quotedTableName} SET {quotedContentColumnName} = REPLACE({quotedContentColumnName}, '\"$type\":\"OrchardCore.Lucene.Deployment.LuceneIndexRebuildDeploymentStep, OrchardCore.Lucene\"', '\"$type\":\"OrchardCore.Search.Lucene.Deployment.LuceneIndexRebuildDeploymentStep, OrchardCore.Search.Lucene\"') WHERE {quotedTypeColumnName}  = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions'";
+                    updateCmd =
+                        $"UPDATE {quotedTableName} SET {quotedContentColumnName} = REPLACE({quotedContentColumnName}, '\"$type\":\"OrchardCore.Lucene.Deployment.LuceneIndexRebuildDeploymentStep, OrchardCore.Lucene\"', '\"$type\":\"OrchardCore.Search.Lucene.Deployment.LuceneIndexRebuildDeploymentStep, OrchardCore.Search.Lucene\"') WHERE {quotedTypeColumnName}  = 'OrchardCore.Deployment.DeploymentPlan, OrchardCore.Deployment.Abstractions'";
 
                     await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
 
-                    updateCmd = $"UPDATE {quotedTableName} SET {quotedTypeColumnName} = 'OrchardCore.Search.Lucene.Model.LuceneIndexSettingsDocument, OrchardCore.Search.Lucene' WHERE {quotedTypeColumnName}  = 'OrchardCore.Lucene.Model.LuceneIndexSettingsDocument, OrchardCore.Lucene'";
+                    updateCmd =
+                        $"UPDATE {quotedTableName} SET {quotedTypeColumnName} = 'OrchardCore.Search.Lucene.Model.LuceneIndexSettingsDocument, OrchardCore.Search.Lucene' WHERE {quotedTypeColumnName}  = 'OrchardCore.Lucene.Model.LuceneIndexSettingsDocument, OrchardCore.Lucene'";
 
                     await transaction.Connection.ExecuteAsync(updateCmd, null, transaction);
 

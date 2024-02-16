@@ -20,12 +20,10 @@ namespace OrchardCore.Lists.Indexes
             context.DocumentIndex.Set(
                 IndexingConstants.ContainedPartKey + IndexingConstants.IdsKey,
                 parent.ListContentItemId,
-                DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
+                DocumentIndexOptions.Keyword | DocumentIndexOptions.Store
+            );
 
-            context.DocumentIndex.Set(
-                IndexingConstants.ContainedPartKey + IndexingConstants.OrderKey,
-                parent.Order,
-                DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
+            context.DocumentIndex.Set(IndexingConstants.ContainedPartKey + IndexingConstants.OrderKey, parent.Order, DocumentIndexOptions.Keyword | DocumentIndexOptions.Store);
 
             return Task.CompletedTask;
         }

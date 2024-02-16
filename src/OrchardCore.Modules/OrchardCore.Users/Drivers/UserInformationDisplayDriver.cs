@@ -28,7 +28,8 @@ namespace OrchardCore.Users.Drivers
             IAuthorizationService authorizationService,
             IPhoneFormatValidator phoneFormatValidator,
             IStringLocalizer<UserInformationDisplayDriver> stringLocalizer,
-            ISiteService siteService)
+            ISiteService siteService
+        )
         {
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
@@ -48,30 +49,37 @@ namespace OrchardCore.Users.Drivers
             var settings = site.As<LoginSettings>();
             var canEditUserInfo = await CanEditUserInfoAsync(user);
             return Combine(
-                Initialize<EditUserNameViewModel>("UserName_Edit", model =>
-                {
-                    model.UserName = user.UserName;
+                Initialize<EditUserNameViewModel>(
+                        "UserName_Edit",
+                        model =>
+                        {
+                            model.UserName = user.UserName;
 
-                    model.AllowEditing = context.IsNew || (settings.AllowChangingUsername && canEditUserInfo);
+                            model.AllowEditing = context.IsNew || (settings.AllowChangingUsername && canEditUserInfo);
+                        }
+                    )
+                    .Location("Content:1"),
+                Initialize<EditUserEmailViewModel>(
+                        "UserEmail_Edit",
+                        model =>
+                        {
+                            model.Email = user.Email;
 
-                }).Location("Content:1"),
+                            model.AllowEditing = context.IsNew || (settings.AllowChangingEmail && canEditUserInfo);
+                        }
+                    )
+                    .Location("Content:1.3"),
+                Initialize<EditUserPhoneNumberViewModel>(
+                        "UserPhoneNumber_Edit",
+                        model =>
+                        {
+                            model.PhoneNumber = user.PhoneNumber;
+                            model.PhoneNumberConfirmed = user.PhoneNumberConfirmed;
 
-                Initialize<EditUserEmailViewModel>("UserEmail_Edit", model =>
-                {
-                    model.Email = user.Email;
-
-                    model.AllowEditing = context.IsNew || (settings.AllowChangingEmail && canEditUserInfo);
-
-                }).Location("Content:1.3"),
-
-                Initialize<EditUserPhoneNumberViewModel>("UserPhoneNumber_Edit", model =>
-                {
-                    model.PhoneNumber = user.PhoneNumber;
-                    model.PhoneNumberConfirmed = user.PhoneNumberConfirmed;
-
-                    model.AllowEditing = context.IsNew || (settings.AllowChangingPhoneNumber && canEditUserInfo);
-
-                }).Location("Content:1.3")
+                            model.AllowEditing = context.IsNew || (settings.AllowChangingPhoneNumber && canEditUserInfo);
+                        }
+                    )
+                    .Location("Content:1.3")
             );
         }
 

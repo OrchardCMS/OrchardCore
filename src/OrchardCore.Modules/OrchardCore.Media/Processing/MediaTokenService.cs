@@ -21,10 +21,7 @@ namespace OrchardCore.Media.Processing
         private readonly HashSet<string> _knownCommands = new(12);
         private readonly byte[] _hashKey;
 
-        public MediaTokenService(
-            IMemoryCache memoryCache,
-            IOptions<MediaTokenOptions> options,
-            IEnumerable<IImageWebProcessor> processors)
+        public MediaTokenService(IMemoryCache memoryCache, IOptions<MediaTokenOptions> options, IEnumerable<IImageWebProcessor> processors)
         {
             _memoryCache = memoryCache;
 
@@ -52,9 +49,11 @@ namespace OrchardCore.Media.Processing
             }
 
             // If no commands or only a version command don't bother tokenizing.
-            if (processingCommands is null
+            if (
+                processingCommands is null
                 || processingCommands.Count == 0
-                || processingCommands.Count == 1 && processingCommands.ContainsKey(ImageVersionProcessor.VersionCommand))
+                || processingCommands.Count == 1 && processingCommands.ContainsKey(ImageVersionProcessor.VersionCommand)
+            )
             {
                 return path;
             }
@@ -77,10 +76,7 @@ namespace OrchardCore.Media.Processing
             return AddQueryString(path.AsSpan(0, pathIndex), processingCommands);
         }
 
-        private void ParseQuery(
-            string queryString,
-            out Dictionary<string, StringValues> processingCommands,
-            out Dictionary<string, StringValues> otherCommands)
+        private void ParseQuery(string queryString, out Dictionary<string, StringValues> processingCommands, out Dictionary<string, StringValues> otherCommands)
         {
             processingCommands = null;
             otherCommands = null;
@@ -172,9 +168,7 @@ namespace OrchardCore.Media.Processing
 
                 // Only allocate on stack if it's small enough.
                 var requiredLength = Encoding.UTF8.GetByteCount(chars);
-                var stringBytes = requiredLength < 1024
-                    ? stackalloc byte[requiredLength]
-                    : new byte[requiredLength];
+                var stringBytes = requiredLength < 1024 ? stackalloc byte[requiredLength] : new byte[requiredLength];
 
                 // 256 for SHA-256, fits in stack nicely.
                 Span<byte> hashBytes = stackalloc byte[hmac.HashSize];
@@ -193,9 +187,7 @@ namespace OrchardCore.Media.Processing
         /// Custom version of <see cref="QueryHelpers.AddQueryString(string,string,string)"/> that takes our pre-built
         /// dictionary, uri as ReadOnlySpan&lt;char&gt; and uses ZString. Otherwise same logic.
         /// </summary>
-        private static string AddQueryString(
-            ReadOnlySpan<char> uri,
-            Dictionary<string, StringValues> queryString)
+        private static string AddQueryString(ReadOnlySpan<char> uri, Dictionary<string, StringValues> queryString)
         {
             var anchorIndex = uri.IndexOf('#');
             var uriToBeAppended = uri;

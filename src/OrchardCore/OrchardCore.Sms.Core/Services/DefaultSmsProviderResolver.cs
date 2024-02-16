@@ -19,7 +19,8 @@ public class DefaultSmsProviderResolver : ISmsProviderResolver
         ISiteService siteService,
         ILogger<DefaultSmsProviderResolver> logger,
         IOptions<SmsProviderOptions> smsProviderOptions,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider
+    )
     {
         _siteService = siteService;
         _logger = logger;

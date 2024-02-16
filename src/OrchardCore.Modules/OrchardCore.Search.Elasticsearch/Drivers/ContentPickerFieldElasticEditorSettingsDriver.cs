@@ -20,14 +20,17 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
 
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<ContentPickerFieldElasticEditorSettings>("ContentPickerFieldElasticEditorSettings_Edit", async model =>
-            {
-                var settings = partFieldDefinition.Settings.ToObject<ContentPickerFieldElasticEditorSettings>();
+            return Initialize<ContentPickerFieldElasticEditorSettings>(
+                    "ContentPickerFieldElasticEditorSettings_Edit",
+                    async model =>
+                    {
+                        var settings = partFieldDefinition.Settings.ToObject<ContentPickerFieldElasticEditorSettings>();
 
-                model.Index = settings.Index;
+                        model.Index = settings.Index;
 
-                model.Indices = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
-            })
+                        model.Indices = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
+                    }
+                )
                 .Location("Editor");
         }
 

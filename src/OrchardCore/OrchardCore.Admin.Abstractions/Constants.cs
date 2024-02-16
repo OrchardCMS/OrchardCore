@@ -1,4 +1,3 @@
-
 namespace OrchardCore.Admin
 {
     public static class Constants

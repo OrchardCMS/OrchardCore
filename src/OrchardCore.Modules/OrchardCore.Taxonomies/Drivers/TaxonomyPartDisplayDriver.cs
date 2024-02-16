@@ -27,21 +27,27 @@ namespace OrchardCore.Taxonomies.Drivers
         public override IDisplayResult Display(TaxonomyPart part, BuildPartDisplayContext context)
         {
             var hasItems = part.Terms.Count > 0;
-            return Initialize<TaxonomyPartViewModel>(hasItems ? "TaxonomyPart" : "TaxonomyPart_Empty", m =>
-            {
-                m.ContentItem = part.ContentItem;
-                m.TaxonomyPart = part;
-            })
-            .Location("Detail", "Content");
+            return Initialize<TaxonomyPartViewModel>(
+                    hasItems ? "TaxonomyPart" : "TaxonomyPart_Empty",
+                    m =>
+                    {
+                        m.ContentItem = part.ContentItem;
+                        m.TaxonomyPart = part;
+                    }
+                )
+                .Location("Detail", "Content");
         }
 
         public override IDisplayResult Edit(TaxonomyPart part)
         {
-            return Initialize<TaxonomyPartEditViewModel>("TaxonomyPart_Edit", model =>
-            {
-                model.TermContentType = part.TermContentType;
-                model.TaxonomyPart = part;
-            });
+            return Initialize<TaxonomyPartEditViewModel>(
+                "TaxonomyPart_Edit",
+                model =>
+                {
+                    model.TermContentType = part.TermContentType;
+                    model.TaxonomyPart = part;
+                }
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(TaxonomyPart part, IUpdateModel updater)

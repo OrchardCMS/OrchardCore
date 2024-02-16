@@ -14,9 +14,7 @@ namespace OrchardCore.Twitter.Services
         private readonly ISiteService _siteService;
         protected readonly IStringLocalizer S;
 
-        public TwitterSettingsService(
-            ISiteService siteService,
-            IStringLocalizer<TwitterSettingsService> stringLocalizer)
+        public TwitterSettingsService(ISiteService siteService, IStringLocalizer<TwitterSettingsService> stringLocalizer)
         {
             _siteService = siteService;
             S = stringLocalizer;
@@ -39,13 +37,16 @@ namespace OrchardCore.Twitter.Services
             ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
-            container.Alter<TwitterSettings>(nameof(TwitterSettings), aspect =>
-            {
-                aspect.ConsumerKey = settings.ConsumerKey;
-                aspect.ConsumerSecret = settings.ConsumerSecret;
-                aspect.AccessToken = settings.AccessToken;
-                aspect.AccessTokenSecret = settings.AccessTokenSecret;
-            });
+            container.Alter<TwitterSettings>(
+                nameof(TwitterSettings),
+                aspect =>
+                {
+                    aspect.ConsumerKey = settings.ConsumerKey;
+                    aspect.ConsumerSecret = settings.ConsumerSecret;
+                    aspect.AccessToken = settings.AccessToken;
+                    aspect.AccessTokenSecret = settings.AccessTokenSecret;
+                }
+            );
 
             await _siteService.UpdateSiteSettingsAsync(container);
         }

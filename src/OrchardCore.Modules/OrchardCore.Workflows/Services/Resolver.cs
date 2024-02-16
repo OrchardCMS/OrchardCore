@@ -9,6 +9,7 @@ namespace OrchardCore.Workflows.Services
     public class Resolver<T>
     {
         private readonly IServiceProvider _serviceProvider;
+
         public Resolver(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;

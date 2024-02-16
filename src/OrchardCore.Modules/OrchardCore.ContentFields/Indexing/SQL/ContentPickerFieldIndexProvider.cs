@@ -28,7 +28,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
 
         public override void Describe(DescribeContext<ContentItem> context)
         {
-            context.For<ContentPickerFieldIndex>()
+            context
+                .For<ContentPickerFieldIndex>()
                 .Map(async contentItem =>
                 {
                     // Remove index records of soft deleted items.
@@ -70,20 +71,18 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     // Get all field values
                     return fieldDefinitions
                         .GetContentFields<ContentPickerField>(contentItem)
-                        .SelectMany(pair =>
-                            pair.Field.ContentItemIds.Select(id => (pair.Definition, ContentItemId: id)))
-                        .Select(pair =>
-                            new ContentPickerFieldIndex
-                            {
-                                Latest = contentItem.Latest,
-                                Published = contentItem.Published,
-                                ContentItemId = contentItem.ContentItemId,
-                                ContentItemVersionId = contentItem.ContentItemVersionId,
-                                ContentType = contentItem.ContentType,
-                                ContentPart = pair.Definition.PartDefinition.Name,
-                                ContentField = pair.Definition.Name,
-                                SelectedContentItemId = pair.ContentItemId,
-                            });
+                        .SelectMany(pair => pair.Field.ContentItemIds.Select(id => (pair.Definition, ContentItemId: id)))
+                        .Select(pair => new ContentPickerFieldIndex
+                        {
+                            Latest = contentItem.Latest,
+                            Published = contentItem.Published,
+                            ContentItemId = contentItem.ContentItemId,
+                            ContentItemVersionId = contentItem.ContentItemVersionId,
+                            ContentType = contentItem.ContentType,
+                            ContentPart = pair.Definition.PartDefinition.Name,
+                            ContentField = pair.Definition.Name,
+                            SelectedContentItemId = pair.ContentItemId,
+                        });
                 });
         }
     }

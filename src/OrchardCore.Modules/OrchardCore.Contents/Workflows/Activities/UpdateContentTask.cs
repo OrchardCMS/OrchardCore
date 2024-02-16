@@ -29,7 +29,8 @@ namespace OrchardCore.Contents.Workflows.Activities
             IWorkflowExpressionEvaluator expressionEvaluator,
             IWorkflowScriptEvaluator scriptEvaluator,
             IStringLocalizer<UpdateContentTask> localizer,
-            JavaScriptEncoder javaScriptEncoder)
+            JavaScriptEncoder javaScriptEncoder
+        )
             : base(contentManager, scriptEvaluator, localizer)
         {
             _updateModelAccessor = updateModelAccessor;
@@ -57,11 +58,12 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public WorkflowExpression<string> ContentProperties
         {
-            get => GetProperty(() =>
-                // new WorkflowExpression<string>(JsonConvert.SerializeObject(new { DisplayText = S["Enter a title"].Value }, Formatting.Indented)));
-                new WorkflowExpression<string>(JConvert.SerializeObject(new { DisplayText = S["Enter a title"].Value })));
-
-
+            get =>
+                GetProperty(
+                    () =>
+                        // new WorkflowExpression<string>(JsonConvert.SerializeObject(new { DisplayText = S["Enter a title"].Value }, Formatting.Indented)));
+                        new WorkflowExpression<string>(JConvert.SerializeObject(new { DisplayText = S["Enter a title"].Value }))
+                );
             set => SetProperty(value);
         }
 
@@ -70,10 +72,10 @@ namespace OrchardCore.Contents.Workflows.Activities
             return Outcomes(S["Done"], S["Failed"]);
         }
 
-        public async override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var contentItemId = (await GetContentItemIdAsync(workflowContext))
-                ?? throw new InvalidOperationException($"The {nameof(UpdateContentTask)} failed to evaluate the 'ContentItemId'.");
+            var contentItemId =
+                (await GetContentItemIdAsync(workflowContext)) ?? throw new InvalidOperationException($"The {nameof(UpdateContentTask)} failed to evaluate the 'ContentItemId'.");
 
             var inlineEventOfSameContentItemId = string.Equals(InlineEvent.ContentItemId, contentItemId, StringComparison.OrdinalIgnoreCase);
 
@@ -81,12 +83,16 @@ namespace OrchardCore.Contents.Workflows.Activities
             {
                 if (InlineEvent.Name == nameof(ContentPublishedEvent))
                 {
-                    throw new InvalidOperationException($"The '{nameof(UpdateContentTask)}' can't update the content item as it is executed inline from a '{nameof(ContentPublishedEvent)}' of the same content item, please use an event that is triggered earlier.");
+                    throw new InvalidOperationException(
+                        $"The '{nameof(UpdateContentTask)}' can't update the content item as it is executed inline from a '{nameof(ContentPublishedEvent)}' of the same content item, please use an event that is triggered earlier."
+                    );
                 }
 
                 if (InlineEvent.Name == nameof(ContentDraftSavedEvent))
                 {
-                    throw new InvalidOperationException($"The '{nameof(UpdateContentTask)}' can't update the content item as it is executed inline from a '{nameof(ContentDraftSavedEvent)}' of the same content item, please use an event that is triggered earlier.");
+                    throw new InvalidOperationException(
+                        $"The '{nameof(UpdateContentTask)}' can't update the content item as it is executed inline from a '{nameof(ContentDraftSavedEvent)}' of the same content item, please use an event that is triggered earlier."
+                    );
                 }
             }
 
@@ -110,17 +116,23 @@ namespace OrchardCore.Contents.Workflows.Activities
             {
                 if (InlineEvent.Name == nameof(ContentUpdatedEvent))
                 {
-                    throw new InvalidOperationException($"The '{nameof(UpdateContentTask)}' can't update the content item as it is executed inline from a starting '{nameof(ContentUpdatedEvent)}' of the same content type, which would result in an infinitive loop.");
+                    throw new InvalidOperationException(
+                        $"The '{nameof(UpdateContentTask)}' can't update the content item as it is executed inline from a starting '{nameof(ContentUpdatedEvent)}' of the same content type, which would result in an infinitive loop."
+                    );
                 }
 
                 if (Publish && InlineEvent.Name == nameof(ContentPublishedEvent))
                 {
-                    throw new InvalidOperationException($"The '{nameof(UpdateContentTask)}' can't publish the content item as it is executed inline from a starting '{nameof(ContentPublishedEvent)}' of the same content type, which would result in an infinitive loop.");
+                    throw new InvalidOperationException(
+                        $"The '{nameof(UpdateContentTask)}' can't publish the content item as it is executed inline from a starting '{nameof(ContentPublishedEvent)}' of the same content type, which would result in an infinitive loop."
+                    );
                 }
 
                 if (!Publish && InlineEvent.Name == nameof(ContentDraftSavedEvent))
                 {
-                    throw new InvalidOperationException($"The '{nameof(UpdateContentTask)}' can't update the content item as it is executed inline from a starting '{nameof(ContentDraftSavedEvent)}' of the same content type, which would result in an infinitive loop.");
+                    throw new InvalidOperationException(
+                        $"The '{nameof(UpdateContentTask)}' can't update the content item as it is executed inline from a starting '{nameof(ContentDraftSavedEvent)}' of the same content type, which would result in an infinitive loop."
+                    );
                 }
             }
 
@@ -160,9 +172,10 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             if (inlineEventOfSameContentItemId)
             {
-                _updateModelAccessor.ModelUpdater.ModelState.AddModelError(nameof(UpdateContentTask),
-                    $"The '{workflowContext.WorkflowType.Name}:{nameof(UpdateContentTask)}' failed to update the content item: "
-                    + string.Join(", ", result.Errors));
+                _updateModelAccessor.ModelUpdater.ModelState.AddModelError(
+                    nameof(UpdateContentTask),
+                    $"The '{workflowContext.WorkflowType.Name}:{nameof(UpdateContentTask)}' failed to update the content item: " + string.Join(", ", result.Errors)
+                );
             }
 
             workflowContext.LastResult = result;

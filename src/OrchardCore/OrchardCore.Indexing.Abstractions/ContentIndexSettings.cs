@@ -42,4 +42,3 @@ namespace OrchardCore.Indexing
         }
     }
 }
-

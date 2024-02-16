@@ -3,7 +3,5 @@ using YesSql.Filters.Query;
 
 namespace OrchardCore.Contents.Services
 {
-    public interface IContentsAdminListFilterParser : IQueryParser<ContentItem>
-    {
-    }
+    public interface IContentsAdminListFilterParser : IQueryParser<ContentItem> { }
 }

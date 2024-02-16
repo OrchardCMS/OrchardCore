@@ -12,9 +12,7 @@ namespace OrchardCore.Mvc.Core.Utilities
                 throw new ArgumentException($"The specified type must inherit from '{nameof(Controller)}'", nameof(controllerType));
             }
 
-            return controllerType.Name.EndsWith(nameof(Controller), StringComparison.OrdinalIgnoreCase)
-                ? controllerType.Name[..^nameof(Controller).Length]
-                : controllerType.Name;
+            return controllerType.Name.EndsWith(nameof(Controller), StringComparison.OrdinalIgnoreCase) ? controllerType.Name[..^nameof(Controller).Length] : controllerType.Name;
         }
     }
 }

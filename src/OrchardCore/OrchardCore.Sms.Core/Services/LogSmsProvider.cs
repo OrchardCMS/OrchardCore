@@ -13,9 +13,7 @@ public class LogSmsProvider : ISmsProvider
 
     public LocalizedString Name => S["Log - writes messages to the logs"];
 
-    public LogSmsProvider(
-        IStringLocalizer<LogSmsProvider> stringLocalizer,
-        ILogger<LogSmsProvider> logger)
+    public LogSmsProvider(IStringLocalizer<LogSmsProvider> stringLocalizer, ILogger<LogSmsProvider> logger)
     {
         S = stringLocalizer;
         _logger = logger;

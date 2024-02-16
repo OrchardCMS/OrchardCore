@@ -164,9 +164,7 @@ namespace OrchardCore.Tests.Commands
         [Fact]
         public async Task TestCommandArgumentsArePassedCorrectlyWithNormalParametersAndAParamsParameters()
         {
-            var commandContext = CreateCommandContext("ConcatAllParams",
-                new Dictionary<string, string>(),
-                ["left-", "center-", "right"]);
+            var commandContext = CreateCommandContext("ConcatAllParams", new Dictionary<string, string>(), ["left-", "center-", "right"]);
             await _handler.ExecuteAsync(commandContext);
             Assert.Equal("left-center-right", commandContext.Output.ToString());
         }
@@ -195,9 +193,8 @@ namespace OrchardCore.Tests.Commands
 
     public class StubCommandHandler : DefaultCommandHandler
     {
-        public StubCommandHandler() : base(new NullStringLocalizerFactory().Create(typeof(object)))
-        {
-        }
+        public StubCommandHandler()
+            : base(new NullStringLocalizerFactory().Create(typeof(object))) { }
 
         [OrchardSwitch]
         public bool Verbose { get; set; }

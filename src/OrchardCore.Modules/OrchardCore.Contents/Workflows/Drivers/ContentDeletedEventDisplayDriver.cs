@@ -6,8 +6,7 @@ namespace OrchardCore.Contents.Workflows.Drivers
 {
     public class ContentDeletedEventDisplayDriver : ContentEventDisplayDriver<ContentDeletedEvent, ContentDeletedEventViewModel>
     {
-        public ContentDeletedEventDisplayDriver(IContentDefinitionManager contentDefinitionManager) : base(contentDefinitionManager)
-        {
-        }
+        public ContentDeletedEventDisplayDriver(IContentDefinitionManager contentDefinitionManager)
+            : base(contentDefinitionManager) { }
     }
 }

@@ -22,17 +22,21 @@ namespace OrchardCore.Flows.Settings
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            return Initialize<FlowPartSettingsViewModel>("FlowPartSettings_Edit", async model =>
-            {
-                model.FlowPartSettings = contentTypePartDefinition.GetSettings<FlowPartSettings>();
-                model.ContainedContentTypes = model.FlowPartSettings.ContainedContentTypes;
-                model.ContentTypes = [];
+            return Initialize<FlowPartSettingsViewModel>(
+                    "FlowPartSettings_Edit",
+                    async model =>
+                    {
+                        model.FlowPartSettings = contentTypePartDefinition.GetSettings<FlowPartSettings>();
+                        model.ContainedContentTypes = model.FlowPartSettings.ContainedContentTypes;
+                        model.ContentTypes = [];
 
-                foreach (var contentTypeDefinition in (await _contentDefinitionManager.ListTypeDefinitionsAsync()).Where(t => t.GetStereotype() == "Widget"))
-                {
-                    model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
-                }
-            }).Location("Content");
+                        foreach (var contentTypeDefinition in (await _contentDefinitionManager.ListTypeDefinitionsAsync()).Where(t => t.GetStereotype() == "Widget"))
+                        {
+                            model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
+                        }
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
@@ -41,10 +45,7 @@ namespace OrchardCore.Flows.Settings
 
             await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.ContainedContentTypes);
 
-            context.Builder.WithSettings(new FlowPartSettings
-            {
-                ContainedContentTypes = model.ContainedContentTypes
-            });
+            context.Builder.WithSettings(new FlowPartSettings { ContainedContentTypes = model.ContainedContentTypes });
 
             return Edit(contentTypePartDefinition, context.Updater);
         }

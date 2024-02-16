@@ -24,8 +24,7 @@ namespace OrchardCore.OpenId.YesSql.Models
         /// <summary>
         /// Gets or sets the localized descriptions associated with the scope.
         /// </summary>
-        public ImmutableDictionary<CultureInfo, string> Descriptions { get; set; }
-            = ImmutableDictionary.Create<CultureInfo, string>();
+        public ImmutableDictionary<CultureInfo, string> Descriptions { get; set; } = ImmutableDictionary.Create<CultureInfo, string>();
 
         /// <summary>
         /// Gets or sets the display name associated with the current scope.
@@ -35,8 +34,7 @@ namespace OrchardCore.OpenId.YesSql.Models
         /// <summary>
         /// Gets or sets the localized display names associated with the scope.
         /// </summary>
-        public ImmutableDictionary<CultureInfo, string> DisplayNames { get; set; }
-            = ImmutableDictionary.Create<CultureInfo, string>();
+        public ImmutableDictionary<CultureInfo, string> DisplayNames { get; set; } = ImmutableDictionary.Create<CultureInfo, string>();
 
         /// <summary>
         /// Gets or sets the physical identifier associated with the current scope.

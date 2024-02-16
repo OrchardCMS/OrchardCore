@@ -30,7 +30,8 @@ namespace OrchardCore.Roles.Services
             IDocumentManager<RolesDocument> documentManager,
             IEnumerable<IPermissionProvider> permissionProviders,
             ITypeFeatureProvider typeFeatureProvider,
-            ILogger<RoleUpdater> logger)
+            ILogger<RoleUpdater> logger
+        )
         {
             _shellDescriptor = shellDescriptor;
             _extensionManager = extensionManager;
@@ -52,8 +53,7 @@ namespace OrchardCore.Roles.Services
         {
             _installedFeatures.Add(feature.Id);
 
-            var providers = _permissionProviders
-                .Where(provider => _typeFeatureProvider.GetFeatureForDependency(provider.GetType()).Id == feature.Id);
+            var providers = _permissionProviders.Where(provider => _typeFeatureProvider.GetFeatureForDependency(provider.GetType()).Id == feature.Id);
 
             if (!providers.Any())
             {
@@ -73,8 +73,7 @@ namespace OrchardCore.Roles.Services
                         continue;
                     }
 
-                    var permissions = (stereotype.Permissions ?? [])
-                        .Select(stereotype => stereotype.Name);
+                    var permissions = (stereotype.Permissions ?? []).Select(stereotype => stereotype.Name);
 
                     if (UpdateRole(role, permissions, _logger))
                     {
@@ -96,8 +95,7 @@ namespace OrchardCore.Roles.Services
                 return;
             }
 
-            var providers = _permissionProviders
-                .Where(provider => _typeFeatureProvider.GetFeatureForDependency(provider.GetType()).Id == feature.Id);
+            var providers = _permissionProviders.Where(provider => _typeFeatureProvider.GetFeatureForDependency(provider.GetType()).Id == feature.Id);
 
             if (!providers.Any())
             {
@@ -108,8 +106,7 @@ namespace OrchardCore.Roles.Services
             var rolesDocument = await _documentManager.GetOrCreateMutableAsync();
             foreach (var role in rolesDocument.Roles)
             {
-                if (!rolesDocument.MissingFeaturesByRole.TryGetValue(role.RoleName, out var missingFeatures) ||
-                    !missingFeatures.Contains(feature.Id))
+                if (!rolesDocument.MissingFeaturesByRole.TryGetValue(role.RoleName, out var missingFeatures) || !missingFeatures.Contains(feature.Id))
                 {
                     continue;
                 }
@@ -136,10 +133,7 @@ namespace OrchardCore.Roles.Services
             }
 
             // Get installed features that are no more enabled.
-            var missingFeatures = _shellDescriptor.Installed
-                .Except(_shellDescriptor.Features)
-                .Select(feature => feature.Id)
-                .ToArray();
+            var missingFeatures = _shellDescriptor.Installed.Except(_shellDescriptor.Features).Select(feature => feature.Id).ToArray();
 
             // And defining at least one 'IPermissionProvider'.
             rolesDocument.MissingFeaturesByRole[roleName] = (await _extensionManager.LoadFeaturesAsync(missingFeatures))
@@ -158,9 +152,7 @@ namespace OrchardCore.Roles.Services
                 return;
             }
 
-            var permissions = stereotypes
-                .SelectMany(stereotype => stereotype.Permissions ?? [])
-                .Select(stereotype => stereotype.Name);
+            var permissions = stereotypes.SelectMany(stereotype => stereotype.Permissions ?? []).Select(stereotype => stereotype.Name);
 
             UpdateRole(role, permissions, _logger);
         }
@@ -186,9 +178,7 @@ namespace OrchardCore.Roles.Services
                 return false;
             }
 
-            var permissions = stereotypes
-                .SelectMany(stereotype => stereotype.Permissions ?? [])
-                .Select(stereotype => stereotype.Name);
+            var permissions = stereotypes.SelectMany(stereotype => stereotype.Permissions ?? []).Select(stereotype => stereotype.Name);
 
             if (!permissions.Any())
             {
@@ -200,13 +190,9 @@ namespace OrchardCore.Roles.Services
 
         private static bool UpdateRole(Role role, IEnumerable<string> permissions, ILogger logger)
         {
-            var currentPermissions = role.RoleClaims
-                .Where(roleClaim => roleClaim.ClaimType == Permission.ClaimType)
-                .Select(roleClaim => roleClaim.ClaimValue);
+            var currentPermissions = role.RoleClaims.Where(roleClaim => roleClaim.ClaimType == Permission.ClaimType).Select(roleClaim => roleClaim.ClaimValue);
 
-            var distinctPermissions = currentPermissions
-                .Union(permissions)
-                .Distinct();
+            var distinctPermissions = currentPermissions.Union(permissions).Distinct();
 
             var additionalPermissions = distinctPermissions.Except(currentPermissions);
             if (!additionalPermissions.Any())

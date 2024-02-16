@@ -59,7 +59,8 @@ namespace OrchardCore.Workflows.Controllers
             IHtmlLocalizer<WorkflowController> htmlLocalizer,
             IDistributedLock distributedLock,
             IStringLocalizer<WorkflowController> stringLocalizer,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor
+        )
         {
             _pagerOptions = pagerOptions.Value;
             _session = session;
@@ -90,8 +91,7 @@ namespace OrchardCore.Workflows.Controllers
 
             var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
 
-            var query = _session.QueryIndex<WorkflowIndex>()
-                .Where(x => x.WorkflowTypeId == workflowType.WorkflowTypeId);
+            var query = _session.QueryIndex<WorkflowIndex>().Where(x => x.WorkflowTypeId == workflowType.WorkflowTypeId);
 
             query = model.Options.Filter switch
             {
@@ -148,22 +148,15 @@ namespace OrchardCore.Workflows.Controllers
                 new SelectListItem(S["Finished"], nameof(WorkflowFilter.Finished)),
             ];
 
-            viewModel.Options.WorkflowsBulkAction =
-            [
-                new SelectListItem(S["Delete"], nameof(WorkflowBulkAction.Delete)),
-            ];
+            viewModel.Options.WorkflowsBulkAction = [new SelectListItem(S["Delete"], nameof(WorkflowBulkAction.Delete)),];
 
             return View(viewModel);
         }
 
         [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
-        public ActionResult IndexFilterPOST(WorkflowIndexViewModel model)
-            => RedirectToAction(nameof(Index), new RouteValueDictionary
-            {
-                { "Options.Filter", model.Options.Filter },
-                { "Options.OrderBy", model.Options.OrderBy },
-            });
+        public ActionResult IndexFilterPOST(WorkflowIndexViewModel model) =>
+            RedirectToAction(nameof(Index), new RouteValueDictionary { { "Options.Filter", model.Options.Filter }, { "Options.OrderBy", model.Options.OrderBy }, });
 
         public async Task<IActionResult> Details(long id)
         {
@@ -188,7 +181,9 @@ namespace OrchardCore.Workflows.Controllers
 
             foreach (var activityContext in activityContexts)
             {
-                activityDesignShapes.Add(await BuildActivityDisplayAsync(activityContext, workflowType.Id, blockingActivities.ContainsKey(activityContext.ActivityRecord.ActivityId), "Design"));
+                activityDesignShapes.Add(
+                    await BuildActivityDisplayAsync(activityContext, workflowType.Id, blockingActivities.ContainsKey(activityContext.ActivityRecord.ActivityId), "Design")
+                );
             }
 
             var activitiesDataQuery = activityContexts.Select(x => new
@@ -326,7 +321,15 @@ namespace OrchardCore.Workflows.Controllers
                         return BadRequest();
                 }
             }
-            return RedirectToAction(nameof(Index), new { workflowTypeId, pagenum = pagerParameters.Page, pagesize = pagerParameters.PageSize });
+            return RedirectToAction(
+                nameof(Index),
+                new
+                {
+                    workflowTypeId,
+                    pagenum = pagerParameters.Page,
+                    pagesize = pagerParameters.PageSize
+                }
+            );
         }
 
         private async Task<dynamic> BuildActivityDisplayAsync(ActivityContext activityContext, long workflowTypeId, bool isBlocking, string displayType)

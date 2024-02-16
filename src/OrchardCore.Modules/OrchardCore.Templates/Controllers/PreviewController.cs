@@ -29,7 +29,8 @@ namespace OrchardCore.Templates.Controllers
             IAuthorizationService authorizationService,
             ISiteService siteService,
             IUpdateModelAccessor updateModelAccessor,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor
+        )
         {
             _contentManager = contentManager;
             _contentHandleManager = contentHandleManager;
@@ -77,8 +78,7 @@ namespace OrchardCore.Templates.Controllers
             {
                 var index = handle.IndexOf(_homeUrl, StringComparison.Ordinal);
 
-                handle = (index < 0 ? handle : handle[_homeUrl.Length..])
-                    .ToUriComponents(UriFormat.SafeUnescaped);
+                handle = (index < 0 ? handle : handle[_homeUrl.Length..]).ToUriComponents(UriFormat.SafeUnescaped);
 
                 contentItemId = await _contentHandleManager.GetContentItemIdAsync("slug:" + handle);
             }

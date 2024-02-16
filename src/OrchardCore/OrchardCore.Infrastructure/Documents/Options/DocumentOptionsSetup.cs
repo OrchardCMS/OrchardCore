@@ -21,15 +21,9 @@ namespace OrchardCore.Documents.Options
 
         public void Configure(string name, DocumentOptions options)
         {
-            var sharedConfig = _shellConfiguration
-                .GetSection("OrchardCore_Documents")
-                .Get<DocumentSharedOptions>()
-                ?? new DocumentSharedOptions();
+            var sharedConfig = _shellConfiguration.GetSection("OrchardCore_Documents").Get<DocumentSharedOptions>() ?? new DocumentSharedOptions();
 
-            var namedConfig = _shellConfiguration
-                .GetSection(name)
-                .Get<DocumentNamedOptions>()
-                ?? new DocumentNamedOptions();
+            var namedConfig = _shellConfiguration.GetSection(name).Get<DocumentNamedOptions>() ?? new DocumentNamedOptions();
 
             // Only from the named config or default.
             options.CacheKey = namedConfig.CacheKey ?? name;
@@ -42,9 +36,7 @@ namespace OrchardCore.Documents.Options
             options.CheckConcurrency = namedConfig.CheckConcurrency ?? sharedConfig.CheckConcurrency ?? true;
             options.CheckConsistency = namedConfig.CheckConsistency ?? sharedConfig.CheckConsistency ?? true;
 
-            options.SynchronizationLatency = namedConfig.SynchronizationLatency
-                ?? sharedConfig.SynchronizationLatency
-                ?? TimeSpan.FromSeconds(1);
+            options.SynchronizationLatency = namedConfig.SynchronizationLatency ?? sharedConfig.SynchronizationLatency ?? TimeSpan.FromSeconds(1);
 
             options.Serializer = DefaultDocumentSerializer.Instance;
 

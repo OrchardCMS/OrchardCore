@@ -17,6 +17,7 @@ namespace OrchardCore.Contents.ViewModels
             BulkAction = ViewModels.ContentsBulkAction.None;
             ContentsStatus = ContentsStatus.Latest;
         }
+
         public string SearchText { get; set; }
         public string OriginalSearchText { get; set; }
 

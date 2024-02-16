@@ -20,11 +20,7 @@ namespace OrchardCore.Tests.Routing
                 var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
 
                 // Act
-                var initialEntries = new List<AutorouteEntry>()
-                {
-                    new("container", "container-path"),
-                    new("container", "contained-path", "contained")
-                };
+                var initialEntries = new List<AutorouteEntry>() { new("container", "container-path"), new("container", "contained-path", "contained") };
 
                 entries.AddEntries(initialEntries);
 
@@ -54,11 +50,7 @@ namespace OrchardCore.Tests.Routing
                 var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
 
                 // Act
-                var initialEntries = new List<AutorouteEntry>()
-                {
-                    new("container", "container-path"),
-                    new("container", "contained-path", "contained")
-                };
+                var initialEntries = new List<AutorouteEntry>() { new("container", "container-path"), new("container", "contained-path", "contained") };
 
                 entries.AddEntries(initialEntries);
 
@@ -88,11 +80,7 @@ namespace OrchardCore.Tests.Routing
                 var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
 
                 // Act
-                var initialEntries = new List<AutorouteEntry>()
-                {
-                    new("container", "container-path"),
-                    new("container", "contained-path", "contained")
-                };
+                var initialEntries = new List<AutorouteEntry>() { new("container", "container-path"), new("container", "contained-path", "contained") };
 
                 entries.AddEntries(initialEntries);
 
@@ -132,11 +120,7 @@ namespace OrchardCore.Tests.Routing
 
                 entries.AddEntries(initialEntries);
 
-                var updatedEntries = new List<AutorouteEntry>()
-                {
-                    new("container", "container-path"),
-                    new("container", "contained-path1", "contained1")
-                };
+                var updatedEntries = new List<AutorouteEntry>() { new("container", "container-path"), new("container", "contained-path1", "contained1") };
 
                 entries.AddEntries(updatedEntries);
 
@@ -165,19 +149,11 @@ namespace OrchardCore.Tests.Routing
                 var entries = scope.ServiceProvider.GetRequiredService<IStubAutorouteEntries>();
 
                 // Act
-                var initialEntries = new List<AutorouteEntry>()
-                {
-                    new("container", "container-path"),
-                    new("container", "contained-path-old", "contained")
-                };
+                var initialEntries = new List<AutorouteEntry>() { new("container", "container-path"), new("container", "contained-path-old", "contained") };
 
                 entries.AddEntries(initialEntries);
 
-                var updatedEntries = new List<AutorouteEntry>()
-                {
-                    new("container", "container-path"),
-                    new("container", "contained-path-new", "contained")
-                };
+                var updatedEntries = new List<AutorouteEntry>() { new("container", "container-path"), new("container", "contained-path-new", "contained") };
 
                 entries.AddEntries(updatedEntries);
 
@@ -226,11 +202,7 @@ namespace OrchardCore.Tests.Routing
 
         private static ShellContext CreateShellContext()
         {
-            return new ShellContext()
-            {
-                Settings = new ShellSettings().AsDefaultShell().AsRunning(),
-                ServiceProvider = CreateServiceProvider()
-            };
+            return new ShellContext() { Settings = new ShellSettings().AsDefaultShell().AsRunning(), ServiceProvider = CreateServiceProvider() };
         }
 
         private static ServiceProvider CreateServiceProvider()
@@ -249,9 +221,13 @@ namespace OrchardCore.Tests.Routing
 
         private class StubAutorouteEntries : AutorouteEntries, IStubAutorouteEntries
         {
-            public StubAutorouteEntries() : base(null) { }
+            public StubAutorouteEntries()
+                : base(null) { }
+
             public new void AddEntries(IEnumerable<AutorouteEntry> entries) => base.AddEntries(entries);
+
             public new void RemoveEntries(IEnumerable<AutorouteEntry> entries) => base.RemoveEntries(entries);
+
             protected override Task InitializeEntriesAsync() => Task.CompletedTask;
         }
     }

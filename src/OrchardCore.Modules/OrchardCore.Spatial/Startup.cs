@@ -22,9 +22,7 @@ namespace OrchardCore.Spatial
             services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
 
             // Coordinate Field
-            services.AddContentField<GeoPointField>()
-                .UseDisplayDriver<GeoPointFieldDisplayDriver>()
-                .AddHandler<GeoPointFieldHandler>();
+            services.AddContentField<GeoPointField>().UseDisplayDriver<GeoPointFieldDisplayDriver>().AddHandler<GeoPointFieldHandler>();
 
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, GeoPointFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, GeoPointFieldIndexHandler>();

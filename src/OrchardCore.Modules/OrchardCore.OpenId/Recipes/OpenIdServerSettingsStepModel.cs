@@ -6,6 +6,7 @@ namespace OrchardCore.OpenId.Recipes
     public class OpenIdServerSettingsStepModel
     {
         public TokenFormat AccessTokenFormat { get; set; } = TokenFormat.DataProtection;
+
         [Url]
         public string Authority { get; set; }
         public bool DisableAccessTokenEncryption { get; set; }

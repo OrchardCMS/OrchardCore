@@ -280,51 +280,56 @@ namespace OrchardCore.Users
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<TemplateOptions>(o =>
-            {
-                o.Filters.AddFilter("has_claim", UserFilters.HasClaim);
-                o.Filters.AddFilter("user_id", UserFilters.UserId);
-
-                o.MemberAccessStrategy.Register<ClaimsPrincipal>();
-                o.MemberAccessStrategy.Register<ClaimsIdentity>();
-
-                o.Scope.SetValue("User", new ObjectValue(new LiquidUserAccessor()));
-                o.MemberAccessStrategy.Register<LiquidUserAccessor, FluidValue>((obj, name, ctx) =>
+            services
+                .Configure<TemplateOptions>(o =>
                 {
-                    var user = ((LiquidTemplateContext)ctx).Services.GetRequiredService<IHttpContextAccessor>().HttpContext?.User;
-                    if (user != null)
-                    {
-                        return name switch
+                    o.Filters.AddFilter("has_claim", UserFilters.HasClaim);
+                    o.Filters.AddFilter("user_id", UserFilters.UserId);
+
+                    o.MemberAccessStrategy.Register<ClaimsPrincipal>();
+                    o.MemberAccessStrategy.Register<ClaimsIdentity>();
+
+                    o.Scope.SetValue("User", new ObjectValue(new LiquidUserAccessor()));
+                    o.MemberAccessStrategy.Register<LiquidUserAccessor, FluidValue>(
+                        (obj, name, ctx) =>
                         {
-                            nameof(ClaimsPrincipal.Identity) => new ObjectValue(user.Identity),
-                            _ => NilValue.Instance
-                        };
-                    }
+                            var user = ((LiquidTemplateContext)ctx).Services.GetRequiredService<IHttpContextAccessor>().HttpContext?.User;
+                            if (user != null)
+                            {
+                                return name switch
+                                {
+                                    nameof(ClaimsPrincipal.Identity) => new ObjectValue(user.Identity),
+                                    _ => NilValue.Instance
+                                };
+                            }
 
-                    return NilValue.Instance;
-                });
+                            return NilValue.Instance;
+                        }
+                    );
 
-                o.MemberAccessStrategy.Register<User, FluidValue>((user, name, context) =>
-                {
-                    return name switch
-                    {
-                        nameof(User.UserId) => new StringValue(user.UserId),
-                        nameof(User.UserName) => new StringValue(user.UserName),
-                        nameof(User.NormalizedUserName) => new StringValue(user.NormalizedUserName),
-                        nameof(User.Email) => new StringValue(user.Email),
-                        nameof(User.NormalizedEmail) => new StringValue(user.NormalizedEmail),
-                        nameof(User.EmailConfirmed) => user.EmailConfirmed ? BooleanValue.True : BooleanValue.False,
-                        nameof(User.IsEnabled) => user.IsEnabled ? BooleanValue.True : BooleanValue.False,
-                        nameof(User.RoleNames) => new ArrayValue(user.RoleNames.Select(x => new StringValue(x))),
-                        nameof(User.Properties) => new ObjectValue(user.Properties),
-                        _ => NilValue.Instance
-                    };
-                });
-            })
-           .AddLiquidFilter<UsersByIdFilter>("users_by_id")
-           .AddLiquidFilter<HasPermissionFilter>("has_permission")
-           .AddLiquidFilter<IsInRoleFilter>("is_in_role")
-           .AddLiquidFilter<UserEmailFilter>("user_email");
+                    o.MemberAccessStrategy.Register<User, FluidValue>(
+                        (user, name, context) =>
+                        {
+                            return name switch
+                            {
+                                nameof(User.UserId) => new StringValue(user.UserId),
+                                nameof(User.UserName) => new StringValue(user.UserName),
+                                nameof(User.NormalizedUserName) => new StringValue(user.NormalizedUserName),
+                                nameof(User.Email) => new StringValue(user.Email),
+                                nameof(User.NormalizedEmail) => new StringValue(user.NormalizedEmail),
+                                nameof(User.EmailConfirmed) => user.EmailConfirmed ? BooleanValue.True : BooleanValue.False,
+                                nameof(User.IsEnabled) => user.IsEnabled ? BooleanValue.True : BooleanValue.False,
+                                nameof(User.RoleNames) => new ArrayValue(user.RoleNames.Select(x => new StringValue(x))),
+                                nameof(User.Properties) => new ObjectValue(user.Properties),
+                                _ => NilValue.Instance
+                            };
+                        }
+                    );
+                })
+                .AddLiquidFilter<UsersByIdFilter>("users_by_id")
+                .AddLiquidFilter<HasPermissionFilter>("has_permission")
+                .AddLiquidFilter<IsInRoleFilter>("is_in_role")
+                .AddLiquidFilter<UserEmailFilter>("user_email");
         }
     }
 
@@ -380,7 +385,10 @@ namespace OrchardCore.Users
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSiteSettingsPropertyDeploymentStep<ChangeEmailDeploymentStartup, ChangeEmailDeploymentStartup>(S => S["Change Email settings"], S => S["Exports the Change Email settings."]);
+            services.AddSiteSettingsPropertyDeploymentStep<ChangeEmailDeploymentStartup, ChangeEmailDeploymentStartup>(
+                S => S["Change Email settings"],
+                S => S["Exports the Change Email settings."]
+            );
         }
     }
 
@@ -434,7 +442,10 @@ namespace OrchardCore.Users
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSiteSettingsPropertyDeploymentStep<RegistrationSettings, RegistrationDeploymentStartup>(S => S["Registration settings"], S => S["Exports the Registration settings."]);
+            services.AddSiteSettingsPropertyDeploymentStep<RegistrationSettings, RegistrationDeploymentStartup>(
+                S => S["Registration settings"],
+                S => S["Exports the Registration settings."]
+            );
         }
     }
 
@@ -446,7 +457,6 @@ namespace OrchardCore.Users
         private const string ResetPasswordPath = "ResetPassword";
         private const string ResetPasswordConfirmationPath = "ResetPasswordConfirmation";
         private const string ResetPasswordControllerName = "ResetPassword";
-
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
@@ -494,7 +504,10 @@ namespace OrchardCore.Users
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSiteSettingsPropertyDeploymentStep<ResetPasswordSettings, ResetPasswordDeploymentStartup>(S => S["Reset Password settings"], S => S["Exports the Reset Password settings."]);
+            services.AddSiteSettingsPropertyDeploymentStep<ResetPasswordSettings, ResetPasswordDeploymentStartup>(
+                S => S["Reset Password settings"],
+                S => S["Exports the Reset Password settings."]
+            );
         }
     }
 

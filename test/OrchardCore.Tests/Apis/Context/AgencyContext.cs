@@ -2,9 +2,7 @@ namespace OrchardCore.Tests.Apis.Context
 {
     public class AgencyContext : SiteContext
     {
-        static AgencyContext()
-        {
-        }
+        static AgencyContext() { }
 
         public AgencyContext()
         {

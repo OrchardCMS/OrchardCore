@@ -29,7 +29,8 @@ public class AdminController : Controller
         INotifier notifier,
         IAuthorizationService authorizationService,
         IHtmlLocalizer<AdminController> htmlLocalizer,
-        IStringLocalizer<AdminController> stringLocalizer)
+        IStringLocalizer<AdminController> stringLocalizer
+    )
     {
         _smsProviderOptions = smsProviderOptions.Value;
         _phoneFormatValidator = phoneFormatValidator;
@@ -77,11 +78,7 @@ public class AdminController : Controller
             }
             else
             {
-                var result = await provider.SendAsync(new SmsMessage()
-                {
-                    To = model.PhoneNumber,
-                    Body = S["This is a test SMS message."]
-                });
+                var result = await provider.SendAsync(new SmsMessage() { To = model.PhoneNumber, Body = S["This is a test SMS message."] });
 
                 if (result.Succeeded)
                 {
@@ -103,8 +100,8 @@ public class AdminController : Controller
 
     private void PopulateModel(SmsTestViewModel model)
     {
-        model.Providers = _smsProviderOptions.Providers
-            .Where(entry => entry.Value.IsEnabled)
+        model.Providers = _smsProviderOptions
+            .Providers.Where(entry => entry.Value.IsEnabled)
             .Select(entry => new SelectListItem(entry.Key, entry.Key))
             .OrderBy(item => item.Text)
             .ToArray();

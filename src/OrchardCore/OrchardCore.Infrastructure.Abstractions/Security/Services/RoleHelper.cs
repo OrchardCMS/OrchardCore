@@ -5,10 +5,6 @@ namespace OrchardCore.Security.Services
 {
     public class RoleHelper
     {
-        public static readonly HashSet<string> SystemRoleNames = new(StringComparer.OrdinalIgnoreCase)
-        {
-            "Anonymous",
-            "Authenticated",
-        };
+        public static readonly HashSet<string> SystemRoleNames = new(StringComparer.OrdinalIgnoreCase) { "Anonymous", "Authenticated", };
     }
 }

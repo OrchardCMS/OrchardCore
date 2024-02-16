@@ -31,29 +31,32 @@ namespace OrchardCore.Lists.AdminNodes
 
         public override IDisplayResult Edit(ListsAdminNode treeNode)
         {
-            return Initialize<ListsAdminNodeViewModel>("ListsAdminNode_Fields_TreeEdit", async model =>
-            {
-                model.ContentType = treeNode.ContentType;
-                model.ContentTypes = await GetContentTypesSelectListAsync();
-                model.IconForContentItems = treeNode.IconForContentItems;
-                model.AddContentTypeAsParent = treeNode.AddContentTypeAsParent;
-                model.IconForParentLink = treeNode.IconForParentLink;
-            }).Location("Content");
+            return Initialize<ListsAdminNodeViewModel>(
+                    "ListsAdminNode_Fields_TreeEdit",
+                    async model =>
+                    {
+                        model.ContentType = treeNode.ContentType;
+                        model.ContentTypes = await GetContentTypesSelectListAsync();
+                        model.IconForContentItems = treeNode.IconForContentItems;
+                        model.AddContentTypeAsParent = treeNode.AddContentTypeAsParent;
+                        model.IconForParentLink = treeNode.IconForParentLink;
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ListsAdminNode treeNode, IUpdateModel updater)
         {
             var model = new ListsAdminNodeViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix,
-                x => x.ContentType, x => x.IconForContentItems,
-                x => x.AddContentTypeAsParent, x => x.IconForParentLink))
+            if (await updater.TryUpdateModelAsync(model, Prefix, x => x.ContentType, x => x.IconForContentItems, x => x.AddContentTypeAsParent, x => x.IconForParentLink))
             {
                 treeNode.ContentType = model.ContentType;
                 treeNode.IconForContentItems = model.IconForContentItems;
                 treeNode.AddContentTypeAsParent = model.AddContentTypeAsParent;
                 treeNode.IconForParentLink = model.IconForParentLink;
-            };
+            }
+            ;
 
             return Edit(treeNode);
         }

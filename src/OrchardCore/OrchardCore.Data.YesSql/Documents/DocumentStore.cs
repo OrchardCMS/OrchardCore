@@ -28,16 +28,15 @@ namespace OrchardCore.Data.Documents
         }
 
         /// <inheritdoc />
-        public async Task<T> GetOrCreateMutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new()
+        public async Task<T> GetOrCreateMutableAsync<T>(Func<Task<T>> factoryAsync = null)
+            where T : class, new()
         {
             if (_loaded.TryGetValue(typeof(T), out var loaded))
             {
                 return loaded as T;
             }
 
-            var document = await _session.Query<T>().FirstOrDefaultAsync()
-                ?? await (factoryAsync?.Invoke() ?? Task.FromResult((T)null))
-                ?? new T();
+            var document = await _session.Query<T>().FirstOrDefaultAsync() ?? await (factoryAsync?.Invoke() ?? Task.FromResult((T)null)) ?? new T();
 
             _loaded[typeof(T)] = document;
 
@@ -45,7 +44,8 @@ namespace OrchardCore.Data.Documents
         }
 
         /// <inheritdoc />
-        public async Task<(bool, T)> GetOrCreateImmutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new()
+        public async Task<(bool, T)> GetOrCreateImmutableAsync<T>(Func<Task<T>> factoryAsync = null)
+            where T : class, new()
         {
             if (_loaded.TryGetValue(typeof(T), out var loaded))
             {
@@ -75,9 +75,7 @@ namespace OrchardCore.Data.Documents
 
             AfterCommitFailure<T>(exception =>
             {
-                throw new DocumentStoreCommitException(
-                    $"The '{typeof(T).Name}' could not be persisted and cached as it has been changed by another process.",
-                    exception);
+                throw new DocumentStoreCommitException($"The '{typeof(T).Name}' could not be persisted and cached as it has been changed by another process.", exception);
             });
         }
 

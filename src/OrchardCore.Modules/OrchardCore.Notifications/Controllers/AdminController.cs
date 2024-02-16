@@ -46,7 +46,6 @@ public class AdminController : Controller, IUpdateModel
     public AdminController(
         IAuthorizationService authorizationService,
         ISession session,
-
         IOptions<PagerOptions> pagerOptions,
         IDisplayManager<Notification> notificationDisplayManager,
         INotificationsAdminListQueryService notificationsAdminListQueryService,
@@ -55,7 +54,8 @@ public class AdminController : Controller, IUpdateModel
         IClock clock,
         IShapeFactory shapeFactory,
         IStringLocalizer<AdminController> stringLocalizer,
-        IHtmlLocalizer<AdminController> htmlLocalizer)
+        IHtmlLocalizer<AdminController> htmlLocalizer
+    )
     {
         _authorizationService = authorizationService;
         _session = session;
@@ -74,7 +74,8 @@ public class AdminController : Controller, IUpdateModel
     public async Task<IActionResult> List(
         [ModelBinder(BinderType = typeof(NotificationFilterEngineModelBinder), Name = "q")] QueryFilterResult<Notification> queryFilterResult,
         PagerParameters pagerParameters,
-        ListNotificationOptions options)
+        ListNotificationOptions options
+    )
     {
         if (!await _authorizationService.AuthorizeAsync(HttpContext.User, NotificationPermissions.ManageNotifications))
         {
@@ -90,16 +91,8 @@ public class AdminController : Controller, IUpdateModel
         // Populate route values to maintain previous route data when generating page links.
         options.RouteValues.TryAdd("q", options.FilterResult.ToString());
 
-        options.Statuses =
-        [
-            new(S["Read"], nameof(NotificationStatus.Read)),
-            new(S["Unread"], nameof(NotificationStatus.Unread)),
-        ];
-        options.Sorts =
-        [
-            new(S["Recently created"], nameof(NotificationOrder.Latest)),
-            new(S["Previously created"], nameof(NotificationOrder.Oldest)),
-        ];
+        options.Statuses = [new(S["Read"], nameof(NotificationStatus.Read)), new(S["Unread"], nameof(NotificationStatus.Unread)),];
+        options.Sorts = [new(S["Recently created"], nameof(NotificationOrder.Latest)), new(S["Previously created"], nameof(NotificationOrder.Oldest)),];
         options.BulkActions =
         [
             new(S["Mark as read"], nameof(NotificationBulkAction.Read)),
@@ -131,13 +124,16 @@ public class AdminController : Controller, IUpdateModel
 
         var header = await _notificationOptionsDisplayManager.BuildEditorAsync(options, this, false, string.Empty, string.Empty);
 
-        var shapeViewModel = await _shapeFactory.CreateAsync<ListNotificationsViewModel>("NotificationsAdminList", viewModel =>
-        {
-            viewModel.Options = options;
-            viewModel.Header = header;
-            viewModel.Notifications = notificationSummaries;
-            viewModel.Pager = pagerShape;
-        });
+        var shapeViewModel = await _shapeFactory.CreateAsync<ListNotificationsViewModel>(
+            "NotificationsAdminList",
+            viewModel =>
+            {
+                viewModel.Options = options;
+                viewModel.Header = header;
+                viewModel.Notifications = notificationSummaries;
+                viewModel.Pager = pagerShape;
+            }
+        );
 
         return View(shapeViewModel);
     }
@@ -172,7 +168,12 @@ public class AdminController : Controller, IUpdateModel
 
         if (itemIds?.Count() > 0)
         {
-            var notifications = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId.IsIn(itemIds), collection: NotificationConstants.NotificationCollection).ListAsync();
+            var notifications = await _session
+                .Query<Notification, NotificationIndex>(
+                    x => x.UserId == CurrentUserId() && x.NotificationId.IsIn(itemIds),
+                    collection: NotificationConstants.NotificationCollection
+                )
+                .ListAsync();
             var utcNow = _clock.UtcNow;
             var counter = 0;
 
@@ -245,7 +246,9 @@ public class AdminController : Controller, IUpdateModel
             return Forbid();
         }
 
-        var notifications = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && !x.IsRead, collection: NotificationConstants.NotificationCollection).ListAsync();
+        var notifications = await _session
+            .Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && !x.IsRead, collection: NotificationConstants.NotificationCollection)
+            .ListAsync();
 
         var utcNow = _clock.UtcNow;
         var counter = 0;
@@ -278,7 +281,12 @@ public class AdminController : Controller, IUpdateModel
 
         if (!string.IsNullOrWhiteSpace(notificationId))
         {
-            var notification = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId == notificationId && x.IsRead != markAsRead, collection: NotificationConstants.NotificationCollection).FirstOrDefaultAsync();
+            var notification = await _session
+                .Query<Notification, NotificationIndex>(
+                    x => x.UserId == CurrentUserId() && x.NotificationId == notificationId && x.IsRead != markAsRead,
+                    collection: NotificationConstants.NotificationCollection
+                )
+                .FirstOrDefaultAsync();
 
             if (notification != null)
             {
@@ -313,7 +321,12 @@ public class AdminController : Controller, IUpdateModel
 
         if (!string.IsNullOrWhiteSpace(notificationId))
         {
-            var notification = await _session.Query<Notification, NotificationIndex>(x => x.UserId == CurrentUserId() && x.NotificationId == notificationId, collection: NotificationConstants.NotificationCollection).FirstOrDefaultAsync();
+            var notification = await _session
+                .Query<Notification, NotificationIndex>(
+                    x => x.UserId == CurrentUserId() && x.NotificationId == notificationId,
+                    collection: NotificationConstants.NotificationCollection
+                )
+                .FirstOrDefaultAsync();
 
             if (notification != null)
             {
@@ -324,11 +337,8 @@ public class AdminController : Controller, IUpdateModel
         return RedirectTo(returnUrl);
     }
 
-    private IActionResult RedirectTo(string returnUrl)
-        => !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)
-        ? (IActionResult)this.LocalRedirect(returnUrl, true)
-        : RedirectToAction(nameof(List));
+    private IActionResult RedirectTo(string returnUrl) =>
+        !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl) ? (IActionResult)this.LocalRedirect(returnUrl, true) : RedirectToAction(nameof(List));
 
-    private string CurrentUserId()
-        => User.FindFirstValue(ClaimTypes.NameIdentifier);
+    private string CurrentUserId() => User.FindFirstValue(ClaimTypes.NameIdentifier);
 }

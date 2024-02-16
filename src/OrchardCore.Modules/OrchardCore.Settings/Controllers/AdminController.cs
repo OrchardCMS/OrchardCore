@@ -29,7 +29,8 @@ namespace OrchardCore.Settings.Controllers
             INotifier notifier,
             IHtmlLocalizer<AdminController> h,
             IOptions<CultureOptions> cultureOptions,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor
+        )
         {
             _siteSettingsDisplayManager = siteSettingsDisplayManager;
             _siteService = siteService;

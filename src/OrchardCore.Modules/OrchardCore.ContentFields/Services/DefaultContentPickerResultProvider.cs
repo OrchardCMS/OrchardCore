@@ -23,7 +23,12 @@ namespace OrchardCore.ContentFields.Services
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
 
-        public DefaultContentPickerResultProvider(IContentManager contentManager, IContentDefinitionManager contentDefinitionManager, ISession session, ILiquidTemplateManager templateManager)
+        public DefaultContentPickerResultProvider(
+            IContentManager contentManager,
+            IContentDefinitionManager contentDefinitionManager,
+            ISession session,
+            ILiquidTemplateManager templateManager
+        )
         {
             _templateManager = templateManager;
             _contentManager = contentManager;
@@ -38,14 +43,10 @@ namespace OrchardCore.ContentFields.Services
             var contentTypes = searchContext.ContentTypes;
             if (searchContext.DisplayAllContentTypes)
             {
-                contentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
-                    .Where(x => !x.HasStereotype())
-                    .Select(x => x.Name)
-                    .AsEnumerable();
+                contentTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync()).Where(x => !x.HasStereotype()).Select(x => x.Name).AsEnumerable();
             }
 
-            var query = _session.Query<ContentItem, ContentItemIndex>()
-                .With<ContentItemIndex>(x => x.ContentType.IsIn(contentTypes) && x.Latest);
+            var query = _session.Query<ContentItem, ContentItemIndex>().With<ContentItemIndex>(x => x.ContentType.IsIn(contentTypes) && x.Latest);
 
             if (!string.IsNullOrEmpty(searchContext.Query))
             {
@@ -62,13 +63,19 @@ namespace OrchardCore.ContentFields.Services
                 var cultureAspect = await _contentManager.PopulateAspectAsync(contentItem, new CultureAspect());
                 using (CultureScope.Create(cultureAspect.Culture))
                 {
-                    results.Add(new ContentPickerResult
-                    {
-                        ContentItemId = contentItem.ContentItemId,
-                        DisplayText = await _templateManager.RenderStringAsync(settings.TitlePattern, NullEncoder.Default, contentItem,
-                            new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(contentItem) }),
-                        HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem)
-                    });
+                    results.Add(
+                        new ContentPickerResult
+                        {
+                            ContentItemId = contentItem.ContentItemId,
+                            DisplayText = await _templateManager.RenderStringAsync(
+                                settings.TitlePattern,
+                                NullEncoder.Default,
+                                contentItem,
+                                new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(contentItem) }
+                            ),
+                            HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem)
+                        }
+                    );
                 }
             }
 

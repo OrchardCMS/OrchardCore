@@ -41,17 +41,9 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
         IDistributedCache distributedCache,
         UrlEncoder urlEncoder,
         ShellSettings shellSettings,
-        ITwoFactorAuthenticationHandlerCoordinator twoFactorAuthenticationHandlerCoordinator)
-        : base(
-            userManager,
-            distributedCache,
-            signInManager,
-            twoFactorAuthenticationHandlerCoordinator,
-            notifier,
-            siteService,
-            htmlLocalizer,
-            stringLocalizer,
-            twoFactorOptions)
+        ITwoFactorAuthenticationHandlerCoordinator twoFactorAuthenticationHandlerCoordinator
+    )
+        : base(userManager, distributedCache, signInManager, twoFactorAuthenticationHandlerCoordinator, notifier, siteService, htmlLocalizer, stringLocalizer, twoFactorOptions)
     {
         _urlEncoder = urlEncoder;
         _shellSettings = shellSettings;
@@ -134,12 +126,15 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
             return UserNotFound();
         }
 
-        return await RemoveTwoFactorProviderAync(user, async () =>
-        {
-            await UserManager.ResetAuthenticatorKeyAsync(user);
+        return await RemoveTwoFactorProviderAync(
+            user,
+            async () =>
+            {
+                await UserManager.ResetAuthenticatorKeyAsync(user);
 
-            await Notifier.SuccessAsync(H["Your authenticator app key has been reset."]);
-        });
+                await Notifier.SuccessAsync(H["Your authenticator app key has been reset."]);
+            }
+        );
     }
 
     private async Task<EnableAuthenticatorViewModel> LoadSharedKeyAndQrCodeUriAsync(IUser user, AuthenticatorAppLoginSettings settings)
@@ -162,8 +157,7 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
         };
     }
 
-    private Task<string> GetUserDisplayNameAsync(IUser user, bool showEmail)
-        => showEmail ? UserManager.GetEmailAsync(user) : UserManager.GetUserNameAsync(user);
+    private Task<string> GetUserDisplayNameAsync(IUser user, bool showEmail) => showEmail ? UserManager.GetEmailAsync(user) : UserManager.GetUserNameAsync(user);
 
     private static string FormatKey(string unformattedKey)
     {
@@ -188,12 +182,6 @@ public class AuthenticatorAppController : TwoFactorAuthenticationBaseController
 
         var issuer = string.IsNullOrWhiteSpace(site.SiteName) ? _shellSettings.Name : site.SiteName.Trim();
 
-        return string.Format(
-            CultureInfo.InvariantCulture,
-            AuthenticatorUriFormat,
-            _urlEncoder.Encode(issuer),
-            _urlEncoder.Encode(displayName),
-            unformattedKey,
-            tokenLength);
+        return string.Format(CultureInfo.InvariantCulture, AuthenticatorUriFormat, _urlEncoder.Encode(issuer), _urlEncoder.Encode(displayName), unformattedKey, tokenLength);
     }
 }

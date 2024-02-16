@@ -26,7 +26,8 @@ namespace OrchardCore.Benchmark
 
         static RuleBenchmark()
         {
-            var services = RuleTests.CreateRuleServiceCollection()
+            var services = RuleTests
+                .CreateRuleServiceCollection()
                 .AddCondition<HomepageCondition, HomepageConditionEvaluator, ConditionFactory<HomepageCondition>>()
                 .AddSingleton<IGlobalMethodProvider, DefaultLayersMethodProvider>()
                 .AddMemoryCache()
@@ -48,16 +49,7 @@ namespace OrchardCore.Benchmark
             _scope = _engine.CreateScope(scriptingManager.GlobalMethodProviders.SelectMany(x => x.GetMethods()), serviceProvider, null, null);
 
             _ruleService = serviceProvider.GetRequiredService<IRuleService>();
-            _rule = new Rule
-            {
-                Conditions =
-                [
-                    new HomepageCondition
-                    {
-                        Value = true
-                    }
-                ]
-            };
+            _rule = new Rule { Conditions = [new HomepageCondition { Value = true }] };
         }
 
         // Summary 19th May 2021: dotnet run -c Release --filter *RuleBenchmark* --framework netcoreapp3.1 --job short

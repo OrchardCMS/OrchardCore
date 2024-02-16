@@ -33,26 +33,17 @@ namespace OrchardCore.DisplayManagement.Descriptors
         private readonly List<Func<ShapeDisplayContext, Task>> _processingAsync;
         private readonly List<Func<ShapeDisplayContext, Task>> _displayedAsync;
 
-        public ShapeDescriptorIndex(
-            string shapeType,
-            IEnumerable<string> alterationKeys,
-            ConcurrentDictionary<string, FeatureShapeDescriptor> descriptors)
+        public ShapeDescriptorIndex(string shapeType, IEnumerable<string> alterationKeys, ConcurrentDictionary<string, FeatureShapeDescriptor> descriptors)
         {
             ShapeType = shapeType;
             _descriptors = descriptors;
 
             // pre-calculate as much as we can
-            _alternationDescriptors = alterationKeys
-                .Select(key => _descriptors[key])
-                .ToList();
+            _alternationDescriptors = alterationKeys.Select(key => _descriptors[key]).ToList();
 
-            _wrappers = _alternationDescriptors
-                .SelectMany(sd => sd.Wrappers)
-                .ToList();
+            _wrappers = _alternationDescriptors.SelectMany(sd => sd.Wrappers).ToList();
 
-            _bindingSources = _alternationDescriptors
-                .SelectMany(sd => sd.BindingSources)
-                .ToList();
+            _bindingSources = _alternationDescriptors.SelectMany(sd => sd.BindingSources).ToList();
 
             _bindings = _alternationDescriptors
                 .SelectMany(sd => sd.Bindings)
@@ -60,36 +51,24 @@ namespace OrchardCore.DisplayManagement.Descriptors
                 .Select(kv => kv.Last())
                 .ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase);
 
-            _creatingAsync = _alternationDescriptors
-                .SelectMany(sd => sd.CreatingAsync)
-                .ToList();
+            _creatingAsync = _alternationDescriptors.SelectMany(sd => sd.CreatingAsync).ToList();
 
-            _createdAsync = _alternationDescriptors
-                .SelectMany(sd => sd.CreatedAsync)
-                .ToList();
+            _createdAsync = _alternationDescriptors.SelectMany(sd => sd.CreatedAsync).ToList();
 
-            _displayingAsync = _alternationDescriptors
-                .SelectMany(sd => sd.DisplayingAsync)
-                .ToList();
+            _displayingAsync = _alternationDescriptors.SelectMany(sd => sd.DisplayingAsync).ToList();
 
-            _processingAsync = _alternationDescriptors
-                .SelectMany(sd => sd.ProcessingAsync)
-                .ToList();
+            _processingAsync = _alternationDescriptors.SelectMany(sd => sd.ProcessingAsync).ToList();
 
-            _displayedAsync = _alternationDescriptors
-                .SelectMany(sd => sd.DisplayedAsync)
-                .ToList();
+            _displayedAsync = _alternationDescriptors.SelectMany(sd => sd.DisplayedAsync).ToList();
         }
 
         /// <summary>
         /// The BindingSource is informational text about the source of the Binding delegate. Not used except for
         /// troubleshooting.
         /// </summary>
-        public override string BindingSource =>
-            Bindings.TryGetValue(ShapeType, out var binding) ? binding.BindingSource : null;
+        public override string BindingSource => Bindings.TryGetValue(ShapeType, out var binding) ? binding.BindingSource : null;
 
-        public override Func<DisplayContext, Task<IHtmlContent>> Binding =>
-            Bindings.TryGetValue(ShapeType, out var binding) ? binding.BindingAsync : null;
+        public override Func<DisplayContext, Task<IHtmlContent>> Binding => Bindings.TryGetValue(ShapeType, out var binding) ? binding.BindingAsync : null;
 
         public override IDictionary<string, ShapeBinding> Bindings => _bindings;
 
@@ -153,10 +132,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
                 return null;
             }
 
-            return new PlacementInfo
-            {
-                Location = DefaultPlacement
-            };
+            return new PlacementInfo { Location = DefaultPlacement };
         }
 
         public string ShapeType { get; set; }
@@ -165,11 +141,9 @@ namespace OrchardCore.DisplayManagement.Descriptors
         /// The BindingSource is informational text about the source of the Binding delegate. Not used except for
         /// troubleshooting.
         /// </summary>
-        public virtual string BindingSource =>
-            Bindings.TryGetValue(ShapeType, out var binding) ? binding.BindingSource : null;
+        public virtual string BindingSource => Bindings.TryGetValue(ShapeType, out var binding) ? binding.BindingSource : null;
 
-        public virtual Func<DisplayContext, Task<IHtmlContent>> Binding =>
-            Bindings[ShapeType].BindingAsync;
+        public virtual Func<DisplayContext, Task<IHtmlContent>> Binding => Bindings[ShapeType].BindingAsync;
 
         public virtual IDictionary<string, ShapeBinding> Bindings { get; set; }
 

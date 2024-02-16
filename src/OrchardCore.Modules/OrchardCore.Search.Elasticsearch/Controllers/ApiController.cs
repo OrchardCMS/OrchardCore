@@ -17,9 +17,7 @@ namespace OrchardCore.Search.Elasticsearch
         private readonly IAuthorizationService _authorizationService;
         private readonly ElasticQuerySource _elasticQuerySource;
 
-        public ApiController(
-            IAuthorizationService authorizationService,
-            ElasticQuerySource elasticQuerySource)
+        public ApiController(IAuthorizationService authorizationService, ElasticQuerySource elasticQuerySource)
         {
             _authorizationService = authorizationService;
             _elasticQuerySource = elasticQuerySource;
@@ -90,9 +88,7 @@ namespace OrchardCore.Search.Elasticsearch
                 ReturnContentItems = returnContentItems
             };
 
-            var queryParameters = queryModel.Parameters != null ?
-                JConvert.DeserializeObject<Dictionary<string, object>>(queryModel.Parameters)
-                : [];
+            var queryParameters = queryModel.Parameters != null ? JConvert.DeserializeObject<Dictionary<string, object>>(queryModel.Parameters) : [];
 
             var result = _elasticQuerySource.ExecuteQueryAsync(elasticQuery, queryParameters);
             return result;

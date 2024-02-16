@@ -37,7 +37,8 @@ namespace OrchardCore.Localization
             IHostEnvironment hostingEnvironment,
             IOptions<ShellOptions> shellOptions,
             IOptions<LocalizationOptions> localizationOptions,
-            ShellSettings shellSettings)
+            ShellSettings shellSettings
+        )
         {
             _extensionsManager = extensionsManager;
 

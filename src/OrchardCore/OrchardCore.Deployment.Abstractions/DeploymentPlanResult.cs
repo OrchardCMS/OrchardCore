@@ -33,6 +33,7 @@ namespace OrchardCore.Deployment
         public JsonObject Recipe { get; }
         public IList<JsonObject> Steps { get; init; } = [];
         public IFileBuilder FileBuilder { get; }
+
         public async Task FinalizeAsync()
         {
             Recipe["steps"] = JArray.FromObject(Steps);

@@ -7,7 +7,8 @@ namespace OrchardCore.Users.Services
 {
     public class UserQueryContext : QueryExecutionContext<User>
     {
-        public UserQueryContext(IServiceProvider serviceProvider, IQuery<User> query) : base(query)
+        public UserQueryContext(IServiceProvider serviceProvider, IQuery<User> query)
+            : base(query)
         {
             ServiceProvider = serviceProvider;
         }

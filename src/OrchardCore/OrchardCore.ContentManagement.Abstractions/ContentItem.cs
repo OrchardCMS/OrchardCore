@@ -9,7 +9,8 @@ namespace OrchardCore.ContentManagement
     [JsonConverter(typeof(ContentItemConverter))]
     public class ContentItem : ContentElement
     {
-        public ContentItem() : base()
+        public ContentItem()
+            : base()
         {
             ContentItem = this;
         }

@@ -19,11 +19,7 @@ public class Permissions : IPermissionProvider
 
     public async Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        var permissions = new List<Permission>()
-        {
-            ManageLuceneIndexes,
-            QueryLuceneApi,
-        };
+        var permissions = new List<Permission>() { ManageLuceneIndexes, QueryLuceneApi, };
 
         var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync();
 
@@ -36,22 +32,8 @@ public class Permissions : IPermissionProvider
     }
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
-    [
-        new PermissionStereotype
-        {
-            Name = "Administrator",
-            Permissions =
-            [
-                ManageLuceneIndexes,
-            ],
-        },
-        new PermissionStereotype
-        {
-            Name = "Editor",
-            Permissions =
-            [
-                QueryLuceneApi,
-            ],
-        },
-    ];
+        [
+            new PermissionStereotype { Name = "Administrator", Permissions = [ManageLuceneIndexes,], },
+            new PermissionStereotype { Name = "Editor", Permissions = [QueryLuceneApi,], },
+        ];
 }

@@ -19,11 +19,7 @@ public class SmsTaskDisplayDriver : ActivityDisplayDriver<SmsTask, SmsTaskViewMo
 
     protected readonly IStringLocalizer S;
 
-    public SmsTaskDisplayDriver(
-        IPhoneFormatValidator phoneFormatValidator,
-        ILiquidTemplateManager liquidTemplateManager,
-        IStringLocalizer<SmsTaskDisplayDriver> stringLocalizer
-        )
+    public SmsTaskDisplayDriver(IPhoneFormatValidator phoneFormatValidator, ILiquidTemplateManager liquidTemplateManager, IStringLocalizer<SmsTaskDisplayDriver> stringLocalizer)
     {
         _phoneFormatValidator = phoneFormatValidator;
         _liquidTemplateManager = liquidTemplateManager;
@@ -36,7 +32,7 @@ public class SmsTaskDisplayDriver : ActivityDisplayDriver<SmsTask, SmsTaskViewMo
         model.Body = activity.Body.Expression;
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(SmsTask activity, IUpdateModel updater)
+    public override async Task<IDisplayResult> UpdateAsync(SmsTask activity, IUpdateModel updater)
     {
         var viewModel = new SmsTaskViewModel();
 

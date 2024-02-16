@@ -16,11 +16,7 @@ namespace OrchardCore.Forms.Workflows.Activities
         private readonly IUpdateModelAccessor _updateModelAccessor;
         protected readonly IStringLocalizer S;
 
-        public ValidateFormFieldTask(
-            IHttpContextAccessor httpContextAccessor,
-            IUpdateModelAccessor updateModelAccessor,
-            IStringLocalizer<ValidateFormFieldTask> localizer
-        )
+        public ValidateFormFieldTask(IHttpContextAccessor httpContextAccessor, IUpdateModelAccessor updateModelAccessor, IStringLocalizer<ValidateFormFieldTask> localizer)
         {
             _httpContextAccessor = httpContextAccessor;
             _updateModelAccessor = updateModelAccessor;

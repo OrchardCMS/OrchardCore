@@ -13,22 +13,32 @@ namespace OrchardCore.DisplayManagement.Shapes
             _shape = shape;
         }
 
-        public ShapeMetadata Metadata { get { return _shape.Metadata; } }
+        public ShapeMetadata Metadata
+        {
+            get { return _shape.Metadata; }
+        }
 
-        public string Id { get { return _shape.Id; } }
-        public IList<string> Classes { get { return _shape.Classes; } }
-        public IDictionary<string, string> Attributes { get { return _shape.Attributes; } }
-        public IEnumerable<dynamic> Items { get { return _shape.Items; } }
+        public string Id
+        {
+            get { return _shape.Id; }
+        }
+        public IList<string> Classes
+        {
+            get { return _shape.Classes; }
+        }
+        public IDictionary<string, string> Attributes
+        {
+            get { return _shape.Attributes; }
+        }
+        public IEnumerable<dynamic> Items
+        {
+            get { return _shape.Items; }
+        }
 
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
         public KeyValuePairs[] Properties
         {
-            get
-            {
-                return _shape.Properties
-                    .Select(entry => new KeyValuePairs(entry.Key, entry.Value))
-                    .ToArray();
-            }
+            get { return _shape.Properties.Select(entry => new KeyValuePairs(entry.Key, entry.Value)).ToArray(); }
         }
 
         [DebuggerDisplay(" { _shapeType == null ? _value : \"Shape: \" + _shapeType}", Name = "{_key,nq}")]

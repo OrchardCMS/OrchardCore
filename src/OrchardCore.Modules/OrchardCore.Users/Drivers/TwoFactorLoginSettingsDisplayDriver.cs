@@ -21,7 +21,8 @@ public class TwoFactorLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, T
     public TwoFactorLoginSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IStringLocalizer<TwoFactorLoginSettingsDisplayDriver> stringLocalizer)
+        IStringLocalizer<TwoFactorLoginSettingsDisplayDriver> stringLocalizer
+    )
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
@@ -30,20 +31,26 @@ public class TwoFactorLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, T
 
     public override IDisplayResult Edit(TwoFactorLoginSettings settings)
     {
-        return Initialize<TwoFactorLoginSettings>("TwoFactorLoginSettings_Edit", model =>
-        {
-            model.NumberOfRecoveryCodesToGenerate = settings.NumberOfRecoveryCodesToGenerate;
-            model.RequireTwoFactorAuthentication = settings.RequireTwoFactorAuthentication;
-            model.AllowRememberClientTwoFactorAuthentication = settings.AllowRememberClientTwoFactorAuthentication;
-        }).Location("Content:5#Two-Factor Authentication")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
-        .OnGroup(LoginSettingsDisplayDriver.GroupId);
+        return Initialize<TwoFactorLoginSettings>(
+                "TwoFactorLoginSettings_Edit",
+                model =>
+                {
+                    model.NumberOfRecoveryCodesToGenerate = settings.NumberOfRecoveryCodesToGenerate;
+                    model.RequireTwoFactorAuthentication = settings.RequireTwoFactorAuthentication;
+                    model.AllowRememberClientTwoFactorAuthentication = settings.AllowRememberClientTwoFactorAuthentication;
+                }
+            )
+            .Location("Content:5#Two-Factor Authentication")
+            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
+            .OnGroup(LoginSettingsDisplayDriver.GroupId);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(TwoFactorLoginSettings section, BuildEditorContext context)
     {
-        if (!context.GroupId.Equals(LoginSettingsDisplayDriver.GroupId, StringComparison.OrdinalIgnoreCase)
-            || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
+        if (
+            !context.GroupId.Equals(LoginSettingsDisplayDriver.GroupId, StringComparison.OrdinalIgnoreCase)
+            || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers)
+        )
         {
             return null;
         }

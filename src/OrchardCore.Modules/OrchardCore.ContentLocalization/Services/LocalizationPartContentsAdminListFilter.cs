@@ -32,9 +32,7 @@ namespace OrchardCore.ContentLocalization.Services
                 if (viewModel.ShowLocalizedContentTypes)
                 {
                     var localizedTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
-                        .Where(x =>
-                            x.Parts.Any(p =>
-                                p.PartDefinition.Name == nameof(LocalizationPart)))
+                        .Where(x => x.Parts.Any(p => p.PartDefinition.Name == nameof(LocalizationPart)))
                         .Select(x => x.Name);
 
                     query.With<ContentItemIndex>(x => x.ContentType.IsIn(localizedTypes));

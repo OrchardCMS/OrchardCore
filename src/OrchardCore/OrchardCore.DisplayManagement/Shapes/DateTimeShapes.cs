@@ -19,12 +19,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         protected readonly IStringLocalizer S;
         protected readonly IHtmlLocalizer H;
 
-        public DateTimeShapes(
-            IClock clock,
-            IStringLocalizer<DateTimeShapes> localizer,
-            IHtmlLocalizer<DateTimeShapes> htmlLocalizer,
-            ILocalClock localClock
-            )
+        public DateTimeShapes(IClock clock, IStringLocalizer<DateTimeShapes> localizer, IHtmlLocalizer<DateTimeShapes> htmlLocalizer, ILocalClock localClock)
         {
             _localClock = localClock;
             _clock = clock;
@@ -110,9 +105,7 @@ namespace OrchardCore.DisplayManagement.Shapes
                 return H.Plural(-time.Seconds, "in 1 second", "in {0} seconds");
             }
 
-            return time.TotalMilliseconds > 0
-                       ? H["a moment ago"]
-                       : H["in a moment"];
+            return time.TotalMilliseconds > 0 ? H["a moment ago"] : H["in a moment"];
         }
 
         [Shape]

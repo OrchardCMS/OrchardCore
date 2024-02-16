@@ -45,10 +45,7 @@ namespace OrchardCore.Media.Services
                     if (formFeature == null || formFeature.Form == null)
                     {
                         // Request form has not been read yet, so set the limits
-                        var formOptions = new FormOptions
-                        {
-                            MultipartBodyLengthLimit = _maxFileSize
-                        };
+                        var formOptions = new FormOptions { MultipartBodyLengthLimit = _maxFileSize };
 
                         features.Set<IFormFeature>(new FormFeature(context.HttpContext.Request, formOptions));
                     }

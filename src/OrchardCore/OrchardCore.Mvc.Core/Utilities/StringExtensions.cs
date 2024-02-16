@@ -110,9 +110,7 @@ namespace OrchardCore.Mvc.Utilities
 
         public static LocalizedString OrDefault(this string text, LocalizedString defaultValue)
         {
-            return string.IsNullOrEmpty(text)
-                ? defaultValue
-                : new LocalizedString(null, text);
+            return string.IsNullOrEmpty(text) ? defaultValue : new LocalizedString(null, text);
         }
 
         public static string RemoveTags(this string html, bool htmlDecode = false)
@@ -160,14 +158,12 @@ namespace OrchardCore.Mvc.Utilities
         public static string ReplaceNewLinesWith(this string text, string replacement)
         {
             return string.IsNullOrWhiteSpace(text)
-                       ? string.Empty
-                       : text
-                             .Replace("\r\n", "\r\r")
-                             .Replace("\n", string.Format(replacement, "\r\n"))
-                             .Replace("\r\r", string.Format(replacement, "\r\n"));
+                ? string.Empty
+                : text.Replace("\r\n", "\r\r").Replace("\n", string.Format(replacement, "\r\n")).Replace("\r\r", string.Format(replacement, "\r\n"));
         }
 
         private static readonly char[] _validSegmentChars = "/?#[]@\"^{}|`<>\t\r\n\f ".ToCharArray();
+
         public static bool IsValidUrlSegment(this string segment)
         {
             // Valid isegment from rfc3987 - http://tools.ietf.org/html/rfc3987#page-8
@@ -198,10 +194,7 @@ namespace OrchardCore.Mvc.Utilities
             }
 
             name = RemoveDiacritics(name);
-            name = name.Strip(c =>
-                !c.IsLetter()
-                && !char.IsDigit(c)
-                );
+            name = name.Strip(c => !c.IsLetter() && !char.IsDigit(c));
 
             name = name.Trim();
 
@@ -406,9 +399,7 @@ namespace OrchardCore.Mvc.Utilities
                 return null;
             }
 
-            return rough.EndsWith(trim, StringComparison.Ordinal)
-                       ? rough[..^trim.Length]
-                       : rough;
+            return rough.EndsWith(trim, StringComparison.Ordinal) ? rough[..^trim.Length] : rough;
         }
 
         public static string ReplaceLastOccurrence(this string source, string find, string replace)
@@ -465,35 +456,39 @@ namespace OrchardCore.Mvc.Utilities
                 }
             }
 
-            var result = string.Create(attribute.Length - delimitersCount, new { attribute, upperAfterDelimiter }, (buffer, state) =>
-            {
-                var nextIsUpper = true;
-                var k = 0;
-
-                for (var i = 0; i < state.attribute.Length; i++)
+            var result = string.Create(
+                attribute.Length - delimitersCount,
+                new { attribute, upperAfterDelimiter },
+                (buffer, state) =>
                 {
-                    var c = state.attribute[i];
+                    var nextIsUpper = true;
+                    var k = 0;
 
-                    if (c == state.upperAfterDelimiter)
+                    for (var i = 0; i < state.attribute.Length; i++)
                     {
-                        nextIsUpper = true;
-                        continue;
-                    }
+                        var c = state.attribute[i];
 
-                    if (nextIsUpper)
-                    {
-                        buffer[k] = char.ToUpperInvariant(c);
-                    }
-                    else
-                    {
-                        buffer[k] = c;
-                    }
+                        if (c == state.upperAfterDelimiter)
+                        {
+                            nextIsUpper = true;
+                            continue;
+                        }
 
-                    nextIsUpper = false;
+                        if (nextIsUpper)
+                        {
+                            buffer[k] = char.ToUpperInvariant(c);
+                        }
+                        else
+                        {
+                            buffer[k] = c;
+                        }
 
-                    k++;
+                        nextIsUpper = false;
+
+                        k++;
+                    }
                 }
-            });
+            );
 
             return result;
         }

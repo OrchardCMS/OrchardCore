@@ -21,11 +21,7 @@ namespace OrchardCore.Workflows.ViewModels
         {
             var workflowTypes = await workflowTypeStore.ListAsync();
             var selections = workflowTypes
-                .Select(x => new WorkflowTypeSelection
-                {
-                    IsSelected = x.WorkflowTypeId == selectedWorkflowTypeId,
-                    WorkflowType = x
-                })
+                .Select(x => new WorkflowTypeSelection { IsSelected = x.WorkflowTypeId == selectedWorkflowTypeId, WorkflowType = x })
                 .OrderBy(x => x.WorkflowType.Name)
                 .ToList();
 

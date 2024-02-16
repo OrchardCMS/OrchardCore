@@ -26,11 +26,7 @@ namespace OrchardCore.Demo.Pages
         [BindProperty]
         public string Text { get; set; }
 
-        public ListModel(
-            IContentManager contentManager,
-            IContentItemDisplayManager contentDisplay,
-            IUpdateModelAccessor updateModelAccessor,
-            ISession session)
+        public ListModel(IContentManager contentManager, IContentItemDisplayManager contentDisplay, IUpdateModelAccessor updateModelAccessor, ISession session)
         {
             _contentManager = contentManager;
             _contentDisplay = contentDisplay;
@@ -40,8 +36,7 @@ namespace OrchardCore.Demo.Pages
 
         public async Task OnGetAsync(string _)
         {
-            var query = _session.Query<ContentItem, ContentItemIndex>()
-                .With<ContentItemIndex>(x => x.ContentType == "Foo" && x.Published);
+            var query = _session.Query<ContentItem, ContentItemIndex>().With<ContentItemIndex>(x => x.ContentType == "Foo" && x.Published);
 
             var contentItems = await query.ListAsync();
             var updater = _updateModelAccessor.ModelUpdater;

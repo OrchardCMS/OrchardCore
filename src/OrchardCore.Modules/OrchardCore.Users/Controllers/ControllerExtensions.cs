@@ -65,11 +65,26 @@ namespace OrchardCore.Users.Controllers
 
             if (settings.UsersCanRegister != UserRegistrationType.NoRegistration)
             {
-                await registrationEvents.InvokeAsync((e, modelState) => e.RegistrationValidationAsync((key, message) => modelState.AddModelError(key, message)), controller.ModelState, logger);
+                await registrationEvents.InvokeAsync(
+                    (e, modelState) => e.RegistrationValidationAsync((key, message) => modelState.AddModelError(key, message)),
+                    controller.ModelState,
+                    logger
+                );
 
                 if (controller.ModelState.IsValid)
                 {
-                    var user = await userService.CreateUserAsync(new User { UserName = model.UserName, Email = model.Email, EmailConfirmed = !settings.UsersMustValidateEmail, IsEnabled = !settings.UsersAreModerated }, model.Password, (key, message) => controller.ModelState.AddModelError(key, message)) as User;
+                    var user =
+                        await userService.CreateUserAsync(
+                            new User
+                            {
+                                UserName = model.UserName,
+                                Email = model.Email,
+                                EmailConfirmed = !settings.UsersMustValidateEmail,
+                                IsEnabled = !settings.UsersAreModerated
+                            },
+                            model.Password,
+                            (key, message) => controller.ModelState.AddModelError(key, message)
+                        ) as User;
 
                     if (user != null && controller.ModelState.IsValid)
                     {

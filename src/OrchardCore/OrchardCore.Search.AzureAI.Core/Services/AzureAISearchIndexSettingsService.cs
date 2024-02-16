@@ -12,8 +12,7 @@ public class AzureAISearchIndexSettingsService
     /// <summary>
     /// Loads the index settings document from the store for updating and that should not be cached.
     /// </summary>
-    public Task<AzureAISearchIndexSettingsDocument> LoadDocumentAsync()
-        => DocumentManager.GetOrCreateMutableAsync();
+    public Task<AzureAISearchIndexSettingsDocument> LoadDocumentAsync() => DocumentManager.GetOrCreateMutableAsync();
 
     /// <summary>
     /// Gets the index settings document from the cache for sharing and that should not be updated.
@@ -30,8 +29,7 @@ public class AzureAISearchIndexSettingsService
         return document;
     }
 
-    public async Task<IEnumerable<AzureAISearchIndexSettings>> GetSettingsAsync()
-        => (await GetDocumentAsync()).IndexSettings.Values;
+    public async Task<IEnumerable<AzureAISearchIndexSettings>> GetSettingsAsync() => (await GetDocumentAsync()).IndexSettings.Values;
 
     public async Task<AzureAISearchIndexSettings> GetAsync(string indexName)
     {
@@ -59,6 +57,6 @@ public class AzureAISearchIndexSettingsService
         await DocumentManager.UpdateAsync(document);
     }
 
-    private static IDocumentManager<AzureAISearchIndexSettingsDocument> DocumentManager
-        => ShellScope.Services.GetRequiredService<IDocumentManager<AzureAISearchIndexSettingsDocument>>();
+    private static IDocumentManager<AzureAISearchIndexSettingsDocument> DocumentManager =>
+        ShellScope.Services.GetRequiredService<IDocumentManager<AzureAISearchIndexSettingsDocument>>();
 }
