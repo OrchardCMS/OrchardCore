@@ -19,7 +19,6 @@ public class JsonSerializerOptionsConfiguration : IConfigureOptions<JsonSerializ
     public void Configure(JsonSerializerOptions options)
     {
         options.DefaultIgnoreCondition = JOptions.Base.DefaultIgnoreCondition;
-
         options.ReferenceHandler = JOptions.Base.ReferenceHandler;
         options.ReadCommentHandling = JOptions.Base.ReadCommentHandling;
         options.PropertyNameCaseInsensitive = JOptions.Base.PropertyNameCaseInsensitive;
