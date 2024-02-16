@@ -1,7 +1,9 @@
 using System;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Options;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -13,10 +15,14 @@ namespace OrchardCore.Settings.Recipes
     public class SettingsStep : IRecipeStepHandler
     {
         private readonly ISiteService _siteService;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public SettingsStep(ISiteService siteService)
+        public SettingsStep(
+            ISiteService siteService,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             _siteService = siteService;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -90,7 +96,7 @@ namespace OrchardCore.Settings.Recipes
                         break;
 
                     case "HomeRoute":
-                        site.HomeRoute = property.Value.ToObject<RouteValueDictionary>();
+                        site.HomeRoute = property.Value.ToObject<RouteValueDictionary>(_jsonSerializerOptions);
                         break;
 
                     case "CacheMode":

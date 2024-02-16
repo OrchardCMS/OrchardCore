@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Builders;
@@ -67,8 +68,9 @@ namespace OrchardCore.ContentManagement.Metadata
         /// <typeparam name="TPart"></typeparam>
         /// <typeparam name="TSettings"></typeparam>
         /// <param name="manager"></param>
+        /// <param name="jsonSerializerOptions"></param>
         [Obsolete($"Instead, utilize the {nameof(MigratePartSettingsAsync)} method. This current method is slated for removal in upcoming releases.")]
-        public static void MigratePartSettings<TPart, TSettings>(this IContentDefinitionManager manager)
+        public static void MigratePartSettings<TPart, TSettings>(this IContentDefinitionManager manager, JsonSerializerOptions jsonSerializerOptions = null)
             where TPart : ContentPart where TSettings : class
         {
             var contentTypes = manager.LoadTypeDefinitions();
@@ -78,7 +80,7 @@ namespace OrchardCore.ContentManagement.Metadata
                 var partDefinition = contentType.Parts.FirstOrDefault(x => x.PartDefinition.Name == typeof(TPart).Name);
                 if (partDefinition != null)
                 {
-                    var existingSettings = partDefinition.Settings.ToObject<TSettings>();
+                    var existingSettings = partDefinition.Settings.ToObject<TSettings>(jsonSerializerOptions);
 
                     // Remove existing properties from JObject
                     var properties = typeof(TSettings).GetProperties();
@@ -106,7 +108,8 @@ namespace OrchardCore.ContentManagement.Metadata
         /// <typeparam name="TPart"></typeparam>
         /// <typeparam name="TSettings"></typeparam>
         /// <param name="manager"></param>
-        public static async Task MigratePartSettingsAsync<TPart, TSettings>(this IContentDefinitionManager manager)
+        /// <param name="jsonSerializerOptions"></param>
+        public static async Task MigratePartSettingsAsync<TPart, TSettings>(this IContentDefinitionManager manager, JsonSerializerOptions jsonSerializerOptions)
             where TPart : ContentPart where TSettings : class
         {
             var contentTypes = await manager.LoadTypeDefinitionsAsync();
@@ -116,7 +119,7 @@ namespace OrchardCore.ContentManagement.Metadata
                 var partDefinition = contentType.Parts.FirstOrDefault(x => x.PartDefinition.Name == typeof(TPart).Name);
                 if (partDefinition != null)
                 {
-                    var existingSettings = partDefinition.Settings.ToObject<TSettings>();
+                    var existingSettings = partDefinition.Settings.ToObject<TSettings>(jsonSerializerOptions);
 
                     // Remove existing properties from JObject
                     var properties = typeof(TSettings).GetProperties();
@@ -145,9 +148,10 @@ namespace OrchardCore.ContentManagement.Metadata
         /// </summary>
         /// <typeparam name="TField"></typeparam>
         /// <typeparam name="TSettings"></typeparam>
+        /// <param name="jsonSerializerOptions"></param>
         /// <param name="manager"></param>
         [Obsolete($"Instead, utilize the {nameof(MigrateFieldSettingsAsync)} method. This current method is slated for removal in upcoming releases.")]
-        public static void MigrateFieldSettings<TField, TSettings>(this IContentDefinitionManager manager)
+        public static void MigrateFieldSettings<TField, TSettings>(this IContentDefinitionManager manager, JsonSerializerOptions jsonSerializerOptions = null)
             where TField : ContentField where TSettings : class
         {
             var partDefinitions = manager.LoadPartDefinitions();
@@ -157,7 +161,7 @@ namespace OrchardCore.ContentManagement.Metadata
                 {
                     foreach (var fieldDefinition in partDefinition.Fields.Where(x => x.FieldDefinition.Name == typeof(TField).Name))
                     {
-                        var existingFieldSettings = fieldDefinition.Settings.ToObject<TSettings>();
+                        var existingFieldSettings = fieldDefinition.Settings.ToObject<TSettings>(jsonSerializerOptions);
 
                         // Do this before creating builder, so settings are removed from the builder settings object.
                         // Remove existing properties from JObject
@@ -192,7 +196,8 @@ namespace OrchardCore.ContentManagement.Metadata
         /// <typeparam name="TField"></typeparam>
         /// <typeparam name="TSettings"></typeparam>
         /// <param name="manager"></param>
-        public static async Task MigrateFieldSettingsAsync<TField, TSettings>(this IContentDefinitionManager manager)
+        /// <param name="jsonSerializerOptions"></param>
+        public static async Task MigrateFieldSettingsAsync<TField, TSettings>(this IContentDefinitionManager manager, JsonSerializerOptions jsonSerializerOptions)
             where TField : ContentField where TSettings : class
         {
             var partDefinitions = await manager.LoadPartDefinitionsAsync();
@@ -203,7 +208,7 @@ namespace OrchardCore.ContentManagement.Metadata
                 {
                     foreach (var fieldDefinition in partDefinition.Fields.Where(x => x.FieldDefinition.Name == typeof(TField).Name))
                     {
-                        var existingFieldSettings = fieldDefinition.Settings.ToObject<TSettings>();
+                        var existingFieldSettings = fieldDefinition.Settings.ToObject<TSettings>(jsonSerializerOptions);
 
                         // Do this before creating builder, so settings are removed from the builder settings object.
                         // Remove existing properties from JObject

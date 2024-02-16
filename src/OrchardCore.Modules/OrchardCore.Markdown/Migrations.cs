@@ -1,5 +1,7 @@
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
@@ -11,10 +13,14 @@ namespace OrchardCore.Markdown
     public class Migrations : DataMigration
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public Migrations(IContentDefinitionManager contentDefinitionManager)
+        public Migrations(
+            IContentDefinitionManager contentDefinitionManager,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             _contentDefinitionManager = contentDefinitionManager;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task<int> CreateAsync()
@@ -31,7 +37,7 @@ namespace OrchardCore.Markdown
         // This code can be removed in a later version.
         public async Task<int> UpdateFrom1Async()
         {
-            await _contentDefinitionManager.MigrateFieldSettingsAsync<MarkdownField, MarkdownFieldSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<MarkdownField, MarkdownFieldSettings>(_jsonSerializerOptions);
 
             return 2;
         }

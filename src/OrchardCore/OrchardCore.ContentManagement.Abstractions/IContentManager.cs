@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Handlers;
@@ -220,9 +221,10 @@ namespace OrchardCore.ContentManagement
         /// <param name="contentManager">The <see cref="IContentManager"/> instance.</param>
         /// <param name="id">The content item id to load.</param>
         /// <param name="jsonPath">The json path of the contained content item.</param>
-        public static Task<ContentItem> GetAsync(this IContentManager contentManager, string id, string jsonPath)
+        /// <param name="jsonSerializerOptions"></param>
+        public static Task<ContentItem> GetAsync(this IContentManager contentManager, string id, string jsonPath, JsonSerializerOptions jsonSerializerOptions)
         {
-            return contentManager.GetAsync(id, jsonPath, VersionOptions.Published);
+            return contentManager.GetAsync(id, jsonPath, VersionOptions.Published, jsonSerializerOptions);
         }
 
         /// <summary>
@@ -232,7 +234,8 @@ namespace OrchardCore.ContentManagement
         /// <param name="id">The id content item id to load.</param>
         /// <param name="options">The version option.</param>
         /// <param name="jsonPath">The json path of the contained content item.</param>
-        public static async Task<ContentItem> GetAsync(this IContentManager contentManager, string id, string jsonPath, VersionOptions options)
+        /// <param name="jsonSerializerOptions"></param>
+        public static async Task<ContentItem> GetAsync(this IContentManager contentManager, string id, string jsonPath, VersionOptions options, JsonSerializerOptions jsonSerializerOptions)
         {
             var contentItem = await contentManager.GetAsync(id, options);
 
@@ -240,7 +243,7 @@ namespace OrchardCore.ContentManagement
             if (!string.IsNullOrEmpty(jsonPath))
             {
                 var root = (JsonObject)contentItem.Content;
-                contentItem = root.SelectNode(jsonPath)?.ToObject<ContentItem>();
+                contentItem = root.SelectNode(jsonPath)?.ToObject<ContentItem>(jsonSerializerOptions);
 
                 return contentItem;
             }

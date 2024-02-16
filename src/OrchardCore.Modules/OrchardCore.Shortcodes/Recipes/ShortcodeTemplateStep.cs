@@ -1,6 +1,8 @@
 using System;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Shortcodes.Models;
@@ -14,10 +16,14 @@ namespace OrchardCore.Shortcodes.Recipes
     public class ShortcodeTemplateStep : IRecipeStepHandler
     {
         private readonly ShortcodeTemplatesManager _templatesManager;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public ShortcodeTemplateStep(ShortcodeTemplatesManager templatesManager)
+        public ShortcodeTemplateStep(
+            ShortcodeTemplatesManager templatesManager,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             _templatesManager = templatesManager;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -32,7 +38,7 @@ namespace OrchardCore.Shortcodes.Recipes
                 foreach (var property in templates)
                 {
                     var name = property.Key;
-                    var value = property.Value.ToObject<ShortcodeTemplate>();
+                    var value = property.Value.ToObject<ShortcodeTemplate>(_jsonSerializerOptions);
 
                     await _templatesManager.UpdateShortcodeTemplateAsync(name, value);
                 }

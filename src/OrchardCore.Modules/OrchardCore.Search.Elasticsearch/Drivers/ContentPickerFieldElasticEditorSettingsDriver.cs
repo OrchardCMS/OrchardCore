@@ -1,6 +1,8 @@
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Views;
@@ -12,17 +14,21 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
     public class ContentPickerFieldElasticEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver
     {
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public ContentPickerFieldElasticEditorSettingsDriver(ElasticIndexSettingsService elasticIndexSettingsService)
+        public ContentPickerFieldElasticEditorSettingsDriver(
+            ElasticIndexSettingsService elasticIndexSettingsService,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             _elasticIndexSettingsService = elasticIndexSettingsService;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
             return Initialize<ContentPickerFieldElasticEditorSettings>("ContentPickerFieldElasticEditorSettings_Edit", async model =>
             {
-                var settings = partFieldDefinition.Settings.ToObject<ContentPickerFieldElasticEditorSettings>();
+                var settings = partFieldDefinition.Settings.ToObject<ContentPickerFieldElasticEditorSettings>(_jsonSerializerOptions);
 
                 model.Index = settings.Index;
 

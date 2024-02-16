@@ -218,7 +218,7 @@ namespace OrchardCore.Menu.Controllers
                 return NotFound();
             }
 
-            var existing = menuItem.ToObject<ContentItem>();
+            var existing = menuItem.ToObject<ContentItem>(_jsonSerializerOptions);
 
             // Create a new item to take into account the current type definition.
             var contentItem = await _contentManager.NewAsync(existing.ContentType);

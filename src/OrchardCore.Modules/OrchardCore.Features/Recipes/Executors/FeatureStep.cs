@@ -1,7 +1,9 @@
 using System;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -14,10 +16,14 @@ namespace OrchardCore.Features.Recipes.Executors
     public class FeatureStep : IRecipeStepHandler
     {
         private readonly IShellFeaturesManager _shellFeaturesManager;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public FeatureStep(IShellFeaturesManager shellFeaturesManager)
+        public FeatureStep(
+            IShellFeaturesManager shellFeaturesManager,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             _shellFeaturesManager = shellFeaturesManager;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -27,7 +33,7 @@ namespace OrchardCore.Features.Recipes.Executors
                 return;
             }
 
-            var step = context.Step.ToObject<FeatureStepModel>();
+            var step = context.Step.ToObject<FeatureStepModel>(_jsonSerializerOptions);
 
             var features = (await _shellFeaturesManager.GetAvailableFeaturesAsync());
 

@@ -1,8 +1,10 @@
 using System;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.BackgroundJobs;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -16,6 +18,13 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
     /// </summary>
     public class ElasticIndexResetStep : IRecipeStepHandler
     {
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
+
+        public ElasticIndexResetStep(IOptions<JsonSerializerOptions> jsonSerializerOptions)
+        {
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
+        }
+
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!string.Equals(context.Name, "elastic-index-reset", StringComparison.OrdinalIgnoreCase))
@@ -23,7 +32,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<ElasticIndexResetDeploymentStep>();
+            var model = context.Step.ToObject<ElasticIndexResetDeploymentStep>(_jsonSerializerOptions);
 
             if (model != null && (model.IncludeAll || model.Indices.Length > 0))
             {

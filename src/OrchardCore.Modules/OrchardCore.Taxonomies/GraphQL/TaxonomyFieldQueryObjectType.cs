@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
@@ -11,7 +13,7 @@ namespace OrchardCore.Taxonomies.GraphQL
 {
     public class TaxonomyFieldQueryObjectType : ObjectGraphType<TaxonomyField>
     {
-        public TaxonomyFieldQueryObjectType()
+        public TaxonomyFieldQueryObjectType(IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             Name = nameof(TaxonomyField);
 
@@ -51,7 +53,8 @@ namespace OrchardCore.Taxonomies.GraphQL
                     {
                         var term = TaxonomyOrchardHelperExtensions.FindTerm(
                             (JsonArray)taxonomy.Content["TaxonomyPart"]["Terms"],
-                            termContentItemId);
+                            termContentItemId,
+                            jsonSerializerOptions.Value);
 
                         terms.Add(term);
                     }

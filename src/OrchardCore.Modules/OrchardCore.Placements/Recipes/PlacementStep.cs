@@ -1,6 +1,8 @@
 using System;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy;
 using OrchardCore.Placements.Services;
 using OrchardCore.Recipes.Models;
@@ -14,10 +16,14 @@ namespace OrchardCore.Placements.Recipes
     public class PlacementStep : IRecipeStepHandler
     {
         private readonly PlacementsManager _placementsManager;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public PlacementStep(PlacementsManager placementsManager)
+        public PlacementStep(
+            PlacementsManager placementsManager,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             _placementsManager = placementsManager;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -32,7 +38,7 @@ namespace OrchardCore.Placements.Recipes
                 foreach (var property in templates)
                 {
                     var name = property.Key;
-                    var value = property.Value.ToObject<PlacementNode[]>();
+                    var value = property.Value.ToObject<PlacementNode[]>(_jsonSerializerOptions);
 
                     await _placementsManager.UpdateShapePlacementsAsync(name, value);
                 }

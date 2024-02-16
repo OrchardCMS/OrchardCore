@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Cysharp.Text;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Contents.ViewModels;
@@ -28,17 +30,21 @@ namespace OrchardCore.Taxonomies.Drivers
         private readonly ISiteService _siteService;
         private readonly IContentManager _contentManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
+
         protected readonly IStringLocalizer S;
 
         public TaxonomyContentsAdminListDisplayDriver(
             ISiteService siteService,
             IContentManager contentManager,
             IContentDefinitionManager contentDefinitionManager,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions,
             IStringLocalizer<TaxonomyContentsAdminListDisplayDriver> stringLocalizer)
         {
             _siteService = siteService;
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
             S = stringLocalizer;
         }
 
@@ -132,7 +138,7 @@ namespace OrchardCore.Taxonomies.Drivers
             return await EditAsync(model, updater);
         }
 
-        private static void PopulateTermEntries(List<FilterTermEntry> termEntries, IEnumerable<ContentItem> contentItems, int level)
+        private void PopulateTermEntries(List<FilterTermEntry> termEntries, IEnumerable<ContentItem> contentItems, int level)
         {
             foreach (var contentItem in contentItems)
             {
@@ -140,7 +146,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
                 if (((JsonObject)contentItem.Content)["Terms"] is JsonArray termsArray)
                 {
-                    children = termsArray.ToObject<ContentItem[]>();
+                    children = termsArray.ToObject<ContentItem[]>(_jsonSerializerOptions);
                 }
 
                 var termEntry = new FilterTermEntry

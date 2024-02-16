@@ -1,5 +1,7 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
@@ -9,11 +11,18 @@ namespace OrchardCore.ContentFields.Settings
 {
     public class YoutubeFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<YoutubeField>
     {
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
+
+        public YoutubeFieldSettingsDriver(IOptions<JsonSerializerOptions> jsonSerializerOptions)
+        {
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
+        }
+
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
             return Initialize<YoutubeFieldSettings>("YoutubeFieldSetting_Edit", model =>
             {
-                var settings = partFieldDefinition.Settings.ToObject<YoutubeFieldSettings>();
+                var settings = partFieldDefinition.Settings.ToObject<YoutubeFieldSettings>(_jsonSerializerOptions);
 
                 model.Height = model.Height != default ? model.Height : 315;
                 model.Width = model.Width != default ? model.Width : 560;

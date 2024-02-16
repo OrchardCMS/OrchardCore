@@ -6,6 +6,7 @@ using System.Text.Json.Nodes;
 using System.Text.Json.Settings;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Workflows;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -29,8 +30,9 @@ namespace OrchardCore.Contents.Workflows.Activities
             IWorkflowExpressionEvaluator expressionEvaluator,
             IWorkflowScriptEvaluator scriptEvaluator,
             IStringLocalizer<UpdateContentTask> localizer,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions,
             JavaScriptEncoder javaScriptEncoder)
-            : base(contentManager, scriptEvaluator, localizer)
+            : base(contentManager, scriptEvaluator, jsonSerializerOptions, localizer)
         {
             _updateModelAccessor = updateModelAccessor;
             _expressionEvaluator = expressionEvaluator;

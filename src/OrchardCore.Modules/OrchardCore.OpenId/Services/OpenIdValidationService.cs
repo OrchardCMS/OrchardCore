@@ -59,7 +59,7 @@ namespace OrchardCore.OpenId.Services
         {
             if (container.Properties.TryGetPropertyValue(nameof(OpenIdValidationSettings), out var settings))
             {
-                return settings.ToObject<OpenIdValidationSettings>();
+                return settings.ToObject<OpenIdValidationSettings>(_jsonSerializerOptions);
             }
 
             // If the OpenID validation settings haven't been populated yet, assume the validation

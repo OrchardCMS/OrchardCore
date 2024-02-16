@@ -1,8 +1,10 @@
 using System;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Security;
@@ -16,10 +18,14 @@ namespace OrchardCore.Roles.Recipes
     public class RolesStep : IRecipeStepHandler
     {
         private readonly RoleManager<IRole> _roleManager;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public RolesStep(RoleManager<IRole> roleManager)
+        public RolesStep(
+            RoleManager<IRole> roleManager,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             _roleManager = roleManager;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -29,12 +35,14 @@ namespace OrchardCore.Roles.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<RolesStepModel>();
+            var model = context.Step.ToObject<RolesStepModel>(_jsonSerializerOptions);
 
             foreach (var importedRole in model.Roles)
             {
                 if (string.IsNullOrWhiteSpace(importedRole.Name))
+                {
                     continue;
+                }
 
                 var role = (Role)await _roleManager.FindByNameAsync(importedRole.Name);
                 var isNewRole = role == null;

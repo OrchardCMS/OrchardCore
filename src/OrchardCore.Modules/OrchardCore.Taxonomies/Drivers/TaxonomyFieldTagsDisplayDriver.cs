@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -21,14 +22,18 @@ namespace OrchardCore.Taxonomies.Drivers
     public class TaxonomyFieldTagsDisplayDriver : ContentFieldDisplayDriver<TaxonomyField>
     {
         private readonly IContentManager _contentManager;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
+
         protected readonly IStringLocalizer S;
 
         public TaxonomyFieldTagsDisplayDriver(
             IContentManager contentManager,
-            IStringLocalizer<TaxonomyFieldTagsDisplayDriver> s)
+            IOptions<JsonSerializerOptions> jsonSerializerOptions,
+            IStringLocalizer<TaxonomyFieldTagsDisplayDriver> stringLocalizer)
         {
             _contentManager = contentManager;
-            S = s;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
+            S = stringLocalizer;
         }
 
         public override IDisplayResult Display(TaxonomyField field, BuildFieldDisplayContext context)
@@ -53,7 +58,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 if (model.Taxonomy != null)
                 {
                     var termEntries = new List<TermEntry>();
-                    TaxonomyFieldDriverHelper.PopulateTermEntries(termEntries, field, model.Taxonomy.As<TaxonomyPart>().Terms, 0);
+                    TaxonomyFieldDriverHelper.PopulateTermEntries(termEntries, field, model.Taxonomy.As<TaxonomyPart>().Terms, 0, _jsonSerializerOptions);
                     var tagTermEntries = termEntries.Select(te => new TagTermEntry
                     {
                         ContentItemId = te.ContentItemId,
@@ -105,7 +110,8 @@ namespace OrchardCore.Taxonomies.Drivers
                 {
                     var term = TaxonomyOrchardHelperExtensions.FindTerm(
                         (JsonArray)taxonomy.Content["TaxonomyPart"]["Terms"],
-                        termContentItemId);
+                        termContentItemId,
+                        _jsonSerializerOptions);
 
                     terms.Add(term);
                 }

@@ -102,7 +102,7 @@ namespace OrchardCore.Users.Drivers
 
             if (user.Properties.TryGetPropertyValue(settingsType.Name, out property))
             {
-                var existing = property.ToObject<ContentItem>();
+                var existing = property.ToObject<ContentItem>(_jsonSerializerOptions);
 
                 // Create a new item to take into account the current type definition.
                 contentItem = await _contentManager.NewAsync(existing.ContentType);

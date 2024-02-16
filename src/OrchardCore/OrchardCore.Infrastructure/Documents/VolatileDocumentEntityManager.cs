@@ -1,3 +1,6 @@
+using System.Text.Json;
+using Microsoft.Extensions.Options;
+
 namespace OrchardCore.Documents
 {
     /// <summary>
@@ -5,7 +8,10 @@ namespace OrchardCore.Documents
     /// </summary>
     public class VolatileDocumentEntityManager<TDocumentEntity> : DocumentEntityManager<TDocumentEntity>, IVolatileDocumentEntityManager<TDocumentEntity> where TDocumentEntity : class, IDocumentEntity, new()
     {
-        public VolatileDocumentEntityManager(IVolatileDocumentManager<TDocumentEntity> documentManager) : base(documentManager)
+        public VolatileDocumentEntityManager(
+            IVolatileDocumentManager<TDocumentEntity> documentManager,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
+            : base(documentManager, jsonSerializerOptions)
         {
         }
     }

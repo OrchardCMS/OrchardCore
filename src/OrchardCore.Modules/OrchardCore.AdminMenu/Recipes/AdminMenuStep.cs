@@ -33,7 +33,7 @@ namespace OrchardCore.AdminMenu.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<AdminMenuStepModel>();
+            var model = context.Step.ToObject<AdminMenuStepModel>(_serializationOptions);
 
             foreach (var token in model.Data.Cast<JsonObject>())
             {

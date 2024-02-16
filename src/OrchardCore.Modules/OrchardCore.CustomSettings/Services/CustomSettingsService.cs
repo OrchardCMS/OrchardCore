@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -18,6 +20,7 @@ namespace OrchardCore.CustomSettings.Services
         private readonly IContentManager _contentManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly Lazy<Task<IDictionary<string, ContentTypeDefinition>>> _settingsTypes;
 
@@ -26,12 +29,14 @@ namespace OrchardCore.CustomSettings.Services
             IContentManager contentManager,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions,
             IContentDefinitionManager contentDefinitionManager)
         {
             _siteService = siteService;
             _contentManager = contentManager;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
             _contentDefinitionManager = contentDefinitionManager;
             _settingsTypes = new Lazy<Task<IDictionary<string, ContentTypeDefinition>>>(async () => await GetContentTypeAsync());
         }
@@ -114,7 +119,7 @@ namespace OrchardCore.CustomSettings.Services
 
             if (site.Properties.TryGetPropertyValue(settingsType.Name, out property))
             {
-                var existing = property.ToObject<ContentItem>();
+                var existing = property.ToObject<ContentItem>(_jsonSerializerOptions);
 
                 // Create a new item to take into account the current type definition.
                 contentItem = await _contentManager.NewAsync(existing.ContentType);

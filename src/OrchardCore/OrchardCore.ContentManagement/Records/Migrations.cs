@@ -1,6 +1,8 @@
 using System;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
@@ -11,9 +13,14 @@ namespace OrchardCore.ContentManagement.Records
     public class Migrations : DataMigration
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        public Migrations(IContentDefinitionManager contentDefinitionManager)
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
+
+        public Migrations(
+            IContentDefinitionManager contentDefinitionManager,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             _contentDefinitionManager = contentDefinitionManager;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task<int> CreateAsync()
@@ -105,7 +112,7 @@ namespace OrchardCore.ContentManagement.Records
             var contentTypeDefinitions = await _contentDefinitionManager.LoadTypeDefinitionsAsync();
             foreach (var contentTypeDefinition in contentTypeDefinitions)
             {
-                var existingContentTypeSettings = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>();
+                var existingContentTypeSettings = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>(_jsonSerializerOptions);
 
                 // Do this before creating builder, so settings are removed from the builder settings object.
                 // Remove existing properties from JObject
@@ -121,7 +128,7 @@ namespace OrchardCore.ContentManagement.Records
 
                     foreach (var contentTypePartDefinition in contentTypeDefinition.Parts)
                     {
-                        var existingTypePartSettings = contentTypePartDefinition.Settings.ToObject<ContentTypePartSettings>();
+                        var existingTypePartSettings = contentTypePartDefinition.Settings.ToObject<ContentTypePartSettings>(_jsonSerializerOptions);
 
                         // Remove existing properties from JObject
                         var contentTypePartSettingsProperties = existingTypePartSettings.GetType().GetProperties();
@@ -148,7 +155,7 @@ namespace OrchardCore.ContentManagement.Records
             var partDefinitions = await _contentDefinitionManager.LoadPartDefinitionsAsync();
             foreach (var partDefinition in partDefinitions)
             {
-                var existingPartSettings = partDefinition.Settings.ToObject<ContentPartSettings>();
+                var existingPartSettings = partDefinition.Settings.ToObject<ContentPartSettings>(_jsonSerializerOptions);
 
                 // Do this before creating builder, so settings are removed from the builder settings object.
                 // Remove existing properties from JObject
@@ -163,7 +170,7 @@ namespace OrchardCore.ContentManagement.Records
                     partBuilder.WithSettings(existingPartSettings);
                     foreach (var fieldDefinition in partDefinition.Fields)
                     {
-                        var existingFieldSettings = fieldDefinition.Settings.ToObject<ContentPartFieldSettings>();
+                        var existingFieldSettings = fieldDefinition.Settings.ToObject<ContentPartFieldSettings>(_jsonSerializerOptions);
 
                         // Do this before creating builder, so settings are removed from the builder settings object.
                         // Remove existing properties from JObject

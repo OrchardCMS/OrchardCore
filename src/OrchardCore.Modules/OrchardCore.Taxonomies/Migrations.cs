@@ -1,4 +1,6 @@
+using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
@@ -13,10 +15,14 @@ namespace OrchardCore.Taxonomies
     public class Migrations : DataMigration
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public Migrations(IContentDefinitionManager contentDefinitionManager)
+        public Migrations(
+            IContentDefinitionManager contentDefinitionManager,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             _contentDefinitionManager = contentDefinitionManager;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task<int> CreateAsync()
@@ -84,7 +90,7 @@ namespace OrchardCore.Taxonomies
         // This code can be removed in a later version.
         public async Task<int> UpdateFrom1Async()
         {
-            await _contentDefinitionManager.MigrateFieldSettingsAsync<TaxonomyField, TaxonomyFieldSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<TaxonomyField, TaxonomyFieldSettings>(_jsonSerializerOptions);
             return 2;
         }
 

@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
@@ -12,7 +14,11 @@ namespace OrchardCore.Contents.Workflows.Activities
 {
     public class DeleteContentTask : ContentTask
     {
-        public DeleteContentTask(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<DeleteContentTask> localizer) : base(contentManager, scriptEvaluator, localizer)
+        public DeleteContentTask(IContentManager contentManager,
+            IWorkflowScriptEvaluator scriptEvaluator,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions,
+            IStringLocalizer<DeleteContentTask> localizer)
+            : base(contentManager, scriptEvaluator, jsonSerializerOptions, localizer)
         {
         }
 

@@ -1,7 +1,9 @@
 using System;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Recipes.Models;
@@ -14,6 +16,13 @@ namespace OrchardCore.Contents.Recipes
     /// </summary>
     public class ContentStep : IRecipeStepHandler
     {
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
+
+        public ContentStep(IOptions<JsonSerializerOptions> jsonSerializerOptions)
+        {
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
+        }
+
         public Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!string.Equals(context.Name, "Content", StringComparison.OrdinalIgnoreCase))
@@ -21,8 +30,8 @@ namespace OrchardCore.Contents.Recipes
                 return Task.CompletedTask;
             }
 
-            var model = context.Step.ToObject<ContentStepModel>();
-            var contentItems = model.Data.ToObject<ContentItem[]>();
+            var model = context.Step.ToObject<ContentStepModel>(_jsonSerializerOptions);
+            var contentItems = model.Data.ToObject<ContentItem[]>(_jsonSerializerOptions);
 
             // If the shell is activated there is no migration in progress.
             if (ShellScope.Context.IsActivated)

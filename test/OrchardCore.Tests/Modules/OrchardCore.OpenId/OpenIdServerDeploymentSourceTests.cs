@@ -121,7 +121,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 Step = (JsonObject)deploy["steps"][0],
             };
 
-            var recipeStep = new OpenIdServerSettingsStep(recipeServerServiceMock.Object);
+            var jsonOptionsMock = new Mock<IOptions<JsonSerializerOptions>>();
+
+            var recipeStep = new OpenIdServerSettingsStep(recipeServerServiceMock.Object, jsonOptionsMock.Object);
             await recipeStep.ExecuteAsync(recipeContext);
 
             // Assert

@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
@@ -31,10 +32,13 @@ namespace OrchardCore.Recipes
 
                 var recipeEventHandlers = new List<IRecipeEventHandler> { new RecipeEventHandler() };
                 var loggerMock = new Mock<ILogger<RecipeExecutor>>();
+                var jsonOptionsMock = new Mock<IOptions<JsonSerializerOptions>>();
+
                 var recipeExecutor = new RecipeExecutor(
                     shellHostMock.Object,
                     scope.ShellContext.Settings,
                     recipeEventHandlers,
+                    jsonOptionsMock.Object,
                     loggerMock.Object);
 
                 // Act
@@ -57,7 +61,7 @@ namespace OrchardCore.Recipes
             ServiceProvider = CreateServiceProvider(),
         };
 
-        private static IServiceProvider CreateServiceProvider() => new ServiceCollection()
+        private static ServiceProvider CreateServiceProvider() => new ServiceCollection()
             .AddScripting()
             .AddSingleton<IDistributedLock, LocalLock>()
             .AddLogging()

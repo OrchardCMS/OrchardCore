@@ -1,7 +1,9 @@
 using System;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -11,13 +13,17 @@ namespace OrchardCore.OpenId.Recipes
     public class OpenIdApplicationStep : IRecipeStepHandler
     {
         private readonly IOpenIdApplicationManager _applicationManager;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         /// <summary>
         /// This recipe step adds an OpenID Connect app.
         /// </summary>
-        public OpenIdApplicationStep(IOpenIdApplicationManager applicationManager)
+        public OpenIdApplicationStep(
+            IOpenIdApplicationManager applicationManager,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             _applicationManager = applicationManager;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -27,7 +33,7 @@ namespace OrchardCore.OpenId.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<OpenIdApplicationStepModel>();
+            var model = context.Step.ToObject<OpenIdApplicationStepModel>(_jsonSerializerOptions);
             var app = await _applicationManager.FindByClientIdAsync(model.ClientId);
 
             var settings = new OpenIdApplicationSettings()

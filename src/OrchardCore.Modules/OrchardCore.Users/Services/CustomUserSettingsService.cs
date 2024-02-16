@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -15,17 +17,20 @@ public class CustomUserSettingsService
 {
     private readonly IContentManager _contentManager;
     private readonly IContentDefinitionManager _contentDefinitionManager;
+    private readonly JsonSerializerOptions _jsonSerializerOptions;
     private readonly Lazy<Task<IDictionary<string, ContentTypeDefinition>>> _settingsTypes;
     private readonly ISession _session;
 
     public CustomUserSettingsService(
         IContentManager contentManager,
         IContentDefinitionManager contentDefinitionManager,
+        IOptions<JsonSerializerOptions> jsonSerializerOptions,
         ISession session)
     {
         _contentManager = contentManager;
         _contentDefinitionManager = contentDefinitionManager;
-        _settingsTypes = new Lazy<Task<IDictionary<string, ContentTypeDefinition>>>(async () => await GetContentTypeAsync());
+        _jsonSerializerOptions = jsonSerializerOptions.Value;
+        _settingsTypes = new Lazy<Task<IDictionary<string, ContentTypeDefinition>>>(GetContentTypeAsync);
         _session = session;
     }
 
@@ -108,7 +113,7 @@ public class CustomUserSettingsService
 
         if (user.Properties.TryGetPropertyValue(settingsType.Name, out var property))
         {
-            var existing = property.ToObject<ContentItem>();
+            var existing = property.ToObject<ContentItem>(_jsonSerializerOptions);
 
             // Create a new item to take into account the current type definition.
             contentItem = await _contentManager.NewAsync(existing.ContentType);

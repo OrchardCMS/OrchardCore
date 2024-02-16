@@ -1,8 +1,10 @@
 using System;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.BackgroundJobs;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -14,6 +16,13 @@ namespace OrchardCore.Search.Lucene.Recipes
     /// </summary>
     public class LuceneIndexRebuildStep : IRecipeStepHandler
     {
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
+
+        public LuceneIndexRebuildStep(IOptions<JsonSerializerOptions> jsonSerializerOptions)
+        {
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
+        }
+
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!string.Equals(context.Name, "lucene-index-rebuild", StringComparison.OrdinalIgnoreCase))
@@ -21,7 +30,7 @@ namespace OrchardCore.Search.Lucene.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<LuceneIndexRebuildStepModel>();
+            var model = context.Step.ToObject<LuceneIndexRebuildStepModel>(_jsonSerializerOptions);
 
             if (model.IncludeAll || model.Indices.Length > 0)
             {

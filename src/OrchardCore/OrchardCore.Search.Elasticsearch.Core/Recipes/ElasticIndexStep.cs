@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Search.Elasticsearch.Core.Models;
@@ -17,13 +19,16 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
     {
         private readonly ElasticIndexingService _elasticIndexingService;
         private readonly ElasticIndexManager _elasticIndexManager;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         public ElasticIndexStep(
             ElasticIndexingService elasticIndexingService,
-            ElasticIndexManager elasticIndexManager
+            ElasticIndexManager elasticIndexManager,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions
             )
         {
             _elasticIndexManager = elasticIndexManager;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
             _elasticIndexingService = elasticIndexingService;
         }
 
@@ -39,7 +44,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
             {
                 foreach (var index in jsonArray)
                 {
-                    var elasticIndexSettings = index.ToObject<Dictionary<string, ElasticIndexSettings>>().FirstOrDefault();
+                    var elasticIndexSettings = index.ToObject<Dictionary<string, ElasticIndexSettings>>(_jsonSerializerOptions).FirstOrDefault();
 
                     if (!await _elasticIndexManager.ExistsAsync(elasticIndexSettings.Key))
                     {

@@ -1,6 +1,8 @@
 using System;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.Microsoft.Authentication.Services;
 using OrchardCore.Microsoft.Authentication.Settings;
 using OrchardCore.Recipes.Models;
@@ -14,10 +16,14 @@ namespace OrchardCore.Microsoft.Authentication.Recipes
     public class MicrosoftAccountSettingsStep : IRecipeStepHandler
     {
         private readonly IMicrosoftAccountService _microsoftAccountService;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public MicrosoftAccountSettingsStep(IMicrosoftAccountService microsoftAccountService)
+        public MicrosoftAccountSettingsStep(
+            IMicrosoftAccountService microsoftAccountService,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             _microsoftAccountService = microsoftAccountService;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -27,7 +33,7 @@ namespace OrchardCore.Microsoft.Authentication.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<MicrosoftAccountSettingsStepModel>();
+            var model = context.Step.ToObject<MicrosoftAccountSettingsStepModel>(_jsonSerializerOptions);
             var settings = await _microsoftAccountService.LoadSettingsAsync();
 
             settings.AppId = model.AppId;

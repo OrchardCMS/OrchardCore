@@ -70,7 +70,7 @@ namespace OrchardCore.OpenId.Services
         {
             if (container.Properties.TryGetPropertyValue(nameof(OpenIdServerSettings), out var settings))
             {
-                return settings.ToObject<OpenIdServerSettings>();
+                return settings.ToObject<OpenIdServerSettings>(_jsonSerializerOptions);
             }
 
             // If the OpenID server settings haven't been populated yet, the authorization,

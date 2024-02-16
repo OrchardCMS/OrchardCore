@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.Liquid;
 using OrchardCore.Taxonomies.Fields;
@@ -13,10 +15,14 @@ namespace OrchardCore.Taxonomies.Liquid
     public class TaxonomyTermsFilter : ILiquidFilter
     {
         private readonly IContentManager _contentManager;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public TaxonomyTermsFilter(IContentManager contentManager)
+        public TaxonomyTermsFilter(
+            IContentManager contentManager,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             _contentManager = contentManager;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
@@ -60,7 +66,8 @@ namespace OrchardCore.Taxonomies.Liquid
             {
                 var term = TaxonomyOrchardHelperExtensions.FindTerm(
                     (JsonArray)taxonomy.Content["TaxonomyPart"]["Terms"],
-                    termContentItemId);
+                    termContentItemId,
+                    _jsonSerializerOptions);
 
                 if (term is not null)
                 {

@@ -1,6 +1,8 @@
 using System;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.Facebook.Services;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -13,10 +15,14 @@ namespace OrchardCore.Facebook.Recipes
     public class FacebookSettingsStep : IRecipeStepHandler
     {
         private readonly IFacebookService _facebookService;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public FacebookSettingsStep(IFacebookService facebookService)
+        public FacebookSettingsStep(
+            IFacebookService facebookService,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             _facebookService = facebookService;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -26,7 +32,7 @@ namespace OrchardCore.Facebook.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<FacebookCoreSettingsStepModel>();
+            var model = context.Step.ToObject<FacebookCoreSettingsStepModel>(_jsonSerializerOptions);
             var settings = await _facebookService.GetSettingsAsync();
 
             settings.AppId = model.AppId;

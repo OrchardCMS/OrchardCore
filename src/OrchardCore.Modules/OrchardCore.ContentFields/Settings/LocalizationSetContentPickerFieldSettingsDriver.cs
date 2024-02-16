@@ -1,5 +1,7 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
@@ -11,11 +13,18 @@ namespace OrchardCore.ContentFields.Settings
     [RequireFeatures("OrchardCore.ContentLocalization")]
     public class LocalizationSetContentPickerFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<LocalizationSetContentPickerField>
     {
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
+
+        public LocalizationSetContentPickerFieldSettingsDriver(IOptions<JsonSerializerOptions> jsonSerializerOptions)
+        {
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
+        }
+
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
             return Initialize<LocalizationSetContentPickerFieldSettings>("LocalizationSetContentPickerFieldSettings_Edit", model =>
             {
-                var settings = partFieldDefinition.Settings.ToObject<LocalizationSetContentPickerFieldSettings>();
+                var settings = partFieldDefinition.Settings.ToObject<LocalizationSetContentPickerFieldSettings>(_jsonSerializerOptions);
 
                 model.Hint = settings.Hint;
                 model.Required = settings.Required;

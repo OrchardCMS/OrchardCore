@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Settings;
 using System.Threading.Tasks;
@@ -36,6 +37,7 @@ namespace OrchardCore.Autoroute.Handlers
         private readonly ISiteService _siteService;
         private readonly ITagCache _tagCache;
         private readonly ISession _session;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly IServiceProvider _serviceProvider;
         protected readonly IStringLocalizer S;
 
@@ -49,6 +51,7 @@ namespace OrchardCore.Autoroute.Handlers
             ISiteService siteService,
             ITagCache tagCache,
             ISession session,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions,
             IServiceProvider serviceProvider,
             IStringLocalizer<AutoroutePartHandler> stringLocalizer)
         {
@@ -59,6 +62,7 @@ namespace OrchardCore.Autoroute.Handlers
             _siteService = siteService;
             _tagCache = tagCache;
             _session = session;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
             _serviceProvider = serviceProvider;
             S = stringLocalizer;
         }
@@ -202,7 +206,7 @@ namespace OrchardCore.Autoroute.Handlers
 
                 foreach (var jItem in jItems.Cast<JsonObject>())
                 {
-                    var contentItem = jItem.ToObject<ContentItem>();
+                    var contentItem = jItem.ToObject<ContentItem>(_jsonSerializerOptions);
                     var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem);
 
                     if (!handlerAspect.Disabled)
@@ -250,7 +254,7 @@ namespace OrchardCore.Autoroute.Handlers
 
                 foreach (var jItem in jItems.Cast<JsonObject>())
                 {
-                    var contentItem = jItem.ToObject<ContentItem>();
+                    var contentItem = jItem.ToObject<ContentItem>(_jsonSerializerOptions);
                     var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem);
 
                     if (!handlerAspect.Disabled)
@@ -282,7 +286,7 @@ namespace OrchardCore.Autoroute.Handlers
 
                 foreach (var jItem in jItems.Cast<JsonObject>())
                 {
-                    var contentItem = jItem.ToObject<ContentItem>();
+                    var contentItem = jItem.ToObject<ContentItem>(_jsonSerializerOptions);
                     var containedAutoroutePart = contentItem.As<AutoroutePart>();
 
                     // This is only relevant if the content items have an autoroute part as we adjust the part value as required to guarantee a unique route.

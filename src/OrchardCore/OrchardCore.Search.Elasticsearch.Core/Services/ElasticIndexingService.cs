@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -36,6 +37,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         private readonly ISiteService _siteService;
         private readonly IContentManager _contentManager;
         private readonly IEnumerable<IContentItemIndexHandler> _contentItemIndexHandlers;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly IStore _store;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILogger _logger;
@@ -50,6 +52,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             ISiteService siteService,
             IContentManager contentManager,
             IEnumerable<IContentItemIndexHandler> contentItemIndexHandlers,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions,
             IStore store,
             IContentDefinitionManager contentDefinitionManager,
             ILogger<ElasticIndexingService> logger)
@@ -63,6 +66,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             _siteService = siteService;
             _contentManager = contentManager;
             _contentItemIndexHandlers = contentItemIndexHandlers;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
             _store = store;
             _contentDefinitionManager = contentDefinitionManager;
             _logger = logger;
@@ -311,7 +315,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                             if (included is not null && (bool)included)
                             {
-                                partDefinition.Settings.Add(nameof(ElasticContentIndexSettings), JNode.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>()));
+                                partDefinition.Settings.Add(nameof(ElasticContentIndexSettings), JNode.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>(_jsonSerializerOptions)));
                             }
                         }
                     });
@@ -330,7 +334,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                         if (included != null && (bool)included)
                         {
-                            partDefinition.Settings.Add(nameof(ElasticContentIndexSettings), JNode.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>()));
+                            partDefinition.Settings.Add(nameof(ElasticContentIndexSettings), JNode.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>(_jsonSerializerOptions)));
                         }
                     }
 
@@ -342,7 +346,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                             if (included != null && (bool)included)
                             {
-                                fieldDefinition.Settings.Add(nameof(ElasticContentIndexSettings), JNode.FromObject(existingFieldSettings.ToObject<ElasticContentIndexSettings>()));
+                                fieldDefinition.Settings.Add(nameof(ElasticContentIndexSettings), JNode.FromObject(existingFieldSettings.ToObject<ElasticContentIndexSettings>(_jsonSerializerOptions)));
                             }
                         }
                     }

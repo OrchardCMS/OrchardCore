@@ -34,7 +34,7 @@ namespace OrchardCore.ContentTypes
         {
             if (context.Name == "ReplaceContentDefinition" || context.Name == "ContentDefinition")
             {
-                var step = context.Step.ToObject<ContentDefinitionStepModel>();
+                var step = context.Step.ToObject<ContentDefinitionStepModel>(_jsonSerializerOptions);
 
                 foreach (var contentType in step.ContentTypes)
                 {

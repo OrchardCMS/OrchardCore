@@ -4,6 +4,7 @@ using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Workflows;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -16,15 +17,19 @@ namespace OrchardCore.Contents.Workflows.Activities
 {
     public abstract class ContentActivity : Activity
     {
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
+
         protected readonly IStringLocalizer S;
 
         protected ContentActivity(
             IContentManager contentManager,
             IWorkflowScriptEvaluator scriptEvaluator,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions,
             IStringLocalizer localizer)
         {
             ContentManager = contentManager;
             ScriptEvaluator = scriptEvaluator;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
             S = localizer;
         }
 
@@ -78,7 +83,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             if (workflowContext.Input.TryGetValue(ContentEventConstants.ContentEventInputKey, out var contentEvent))
             {
-                var contentEventContext = ((JsonObject)contentEvent).ToObject<ContentEventContext>();
+                var contentEventContext = ((JsonObject)contentEvent).ToObject<ContentEventContext>(_jsonSerializerOptions);
 
                 if (contentEventContext?.ContentItemVersionId != null)
                 {
@@ -92,7 +97,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             if (contentItem == null && workflowContext.Input.TryGetValue(ContentEventConstants.ContentItemInputKey, out var contentItemEvent))
             {
-                var item = ((JsonObject)contentItemEvent).ToObject<ContentItem>();
+                var item = ((JsonObject)contentItemEvent).ToObject<ContentItem>(_jsonSerializerOptions);
 
                 if (item?.ContentItemId != null)
                 {
@@ -127,8 +132,8 @@ namespace OrchardCore.Contents.Workflows.Activities
                 else
                 {
                     // Try to map the result to a content item.
-                    var json = JConvert.SerializeObject(result);
-                    content = JConvert.DeserializeObject<ContentItem>(json);
+                    var json = JConvert.SerializeObject(result, _jsonSerializerOptions);
+                    content = JConvert.DeserializeObject<ContentItem>(json, _jsonSerializerOptions);
                 }
             }
             else

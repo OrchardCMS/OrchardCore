@@ -1,6 +1,8 @@
 using System;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.GitHub.Services;
 using OrchardCore.GitHub.Settings;
 using OrchardCore.Recipes.Models;
@@ -14,10 +16,14 @@ namespace OrchardCore.GitHub.Recipes
     public class GitHubAuthenticationSettingsStep : IRecipeStepHandler
     {
         private readonly IGitHubAuthenticationService _githubAuthenticationService;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public GitHubAuthenticationSettingsStep(IGitHubAuthenticationService githubLoginService)
+        public GitHubAuthenticationSettingsStep(
+            IGitHubAuthenticationService githubLoginService,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             _githubAuthenticationService = githubLoginService;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -26,7 +32,7 @@ namespace OrchardCore.GitHub.Recipes
             {
                 return;
             }
-            var model = context.Step.ToObject<GitHubLoginSettingsStepModel>();
+            var model = context.Step.ToObject<GitHubLoginSettingsStepModel>(_jsonSerializerOptions);
             var settings = await _githubAuthenticationService.LoadSettingsAsync();
 
             settings.ClientID = model.ConsumerKey;

@@ -1,6 +1,9 @@
 @model OrchardCore.Taxonomies.ViewModels.DisplayTaxonomyFieldViewModel
+@using Microsoft.Extensions.Options
 @using OrchardCore.Mvc.Utilities
+@using System.Text.Json
 
+@inject IOptions<JsonSerializerOptions> JsonSerializerOptions
 @{
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
 }
@@ -8,7 +11,7 @@
 <div class="field field-type-taxonomyfield field-name-@name">
     @foreach (var contentItemId in Model.TermContentItemIds)
     {
-        var term = await Orchard.GetTaxonomyTermAsync(Model.TaxonomyContentItemId, contentItemId);
+        var term = await Orchard.GetTaxonomyTermAsync(Model.TaxonomyContentItemId, contentItemId, JsonSerializerOptions.Value);
         <span class="taxonomy-term">@term</span>
     }
 </div>

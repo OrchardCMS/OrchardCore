@@ -1,7 +1,9 @@
 using System;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Users.Models;
@@ -12,13 +14,16 @@ namespace OrchardCore.Users.Recipes;
 public class UsersStep : IRecipeStepHandler
 {
     private readonly UserManager<IUser> _userManager;
+    private readonly JsonSerializerOptions _jsonSerializerOptions;
     private readonly ISession _session;
 
     public UsersStep(
         UserManager<IUser> userManager,
+        IOptions<JsonSerializerOptions> jsonSerializerOptions,
         ISession session)
     {
         _userManager = userManager;
+        _jsonSerializerOptions = jsonSerializerOptions.Value;
         _session = session;
     }
 
@@ -29,7 +34,7 @@ public class UsersStep : IRecipeStepHandler
             return;
         }
 
-        var model = context.Step.ToObject<UsersStepModel>();
+        var model = context.Step.ToObject<UsersStepModel>(_jsonSerializerOptions);
 
         foreach (var importedUser in model.Users)
         {

@@ -1,6 +1,8 @@
 using System;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -13,10 +15,14 @@ namespace OrchardCore.ContentTypes.RecipeSteps
     public class DeleteContentDefinitionStep : IRecipeStepHandler
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public DeleteContentDefinitionStep(IContentDefinitionManager contentDefinitionManager)
+        public DeleteContentDefinitionStep(
+            IContentDefinitionManager contentDefinitionManager,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             _contentDefinitionManager = contentDefinitionManager;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -26,7 +32,7 @@ namespace OrchardCore.ContentTypes.RecipeSteps
                 return;
             }
 
-            var step = context.Step.ToObject<DeleteContentDefinitionStepModel>();
+            var step = context.Step.ToObject<DeleteContentDefinitionStepModel>(_jsonSerializerOptions);
 
             foreach (var contentType in step.ContentTypes)
             {

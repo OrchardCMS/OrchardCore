@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Workflows;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -13,7 +15,12 @@ namespace OrchardCore.Contents.Workflows.Activities
 {
     public class RetrieveContentTask : ContentTask
     {
-        public RetrieveContentTask(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<RetrieveContentTask> localizer) : base(contentManager, scriptEvaluator, localizer)
+        public RetrieveContentTask(
+            IContentManager contentManager,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions,
+            IWorkflowScriptEvaluator scriptEvaluator,
+            IStringLocalizer<RetrieveContentTask> localizer)
+            : base(contentManager, scriptEvaluator, jsonSerializerOptions, localizer)
         {
         }
 

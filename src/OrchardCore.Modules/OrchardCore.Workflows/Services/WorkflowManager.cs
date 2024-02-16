@@ -556,7 +556,7 @@ namespace OrchardCore.Workflows.Services
 
         private async Task PersistAsync(WorkflowExecutionContext workflowContext)
         {
-            var state = workflowContext.Workflow.State.ToObject<WorkflowState>();
+            var state = workflowContext.Workflow.State.ToObject<WorkflowState>(_jsonSerializerOptions);
 
             state.Input = await SerializeAsync(workflowContext.Input);
             state.Output = await SerializeAsync(workflowContext.Output);

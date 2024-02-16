@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using OrchardCore.OpenId.Abstractions.Descriptors;
 using OrchardCore.OpenId.Abstractions.Managers;
@@ -34,7 +35,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 .Returns(
                     new ValueTask<object>(actual));
 
-            var step = new OpenIdApplicationStep(appManagerMock.Object);
+            var jsonOptionsMock = new Mock<IOptions<JsonSerializerOptions>>();
+
+            var step = new OpenIdApplicationStep(appManagerMock.Object, jsonOptionsMock.Object);
             var recipe = JsonNode.Parse(GetRecipeFileContent(recipeName));
             var context = new RecipeExecutionContext
             {
@@ -125,7 +128,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 .Returns(
                     new ValueTask());
 
-            var step = new OpenIdApplicationStep(appManagerMock.Object);
+            var jsonOptionsMock = new Mock<IOptions<JsonSerializerOptions>>();
+
+            var step = new OpenIdApplicationStep(appManagerMock.Object, jsonOptionsMock.Object);
             var recipe = JsonNode.Parse(GetRecipeFileContent(recipeName));
             var context = new RecipeExecutionContext
             {

@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Search.Lucene.Model;
@@ -15,15 +17,18 @@ namespace OrchardCore.Search.Lucene.Recipes
     public class LuceneIndexStep : IRecipeStepHandler
     {
         private readonly LuceneIndexingService _luceneIndexingService;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly LuceneIndexManager _luceneIndexManager;
 
         public LuceneIndexStep(
             LuceneIndexingService luceneIndexingService,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions,
             LuceneIndexManager luceneIndexManager
             )
         {
             _luceneIndexManager = luceneIndexManager;
             _luceneIndexingService = luceneIndexingService;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -38,7 +43,7 @@ namespace OrchardCore.Search.Lucene.Recipes
             {
                 foreach (var index in jsonArray)
                 {
-                    var luceneIndexSettings = index.ToObject<Dictionary<string, LuceneIndexSettings>>().FirstOrDefault();
+                    var luceneIndexSettings = index.ToObject<Dictionary<string, LuceneIndexSettings>>(_jsonSerializerOptions).FirstOrDefault();
 
                     if (!_luceneIndexManager.Exists(luceneIndexSettings.Key))
                     {

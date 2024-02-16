@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
@@ -12,7 +14,12 @@ namespace OrchardCore.Contents.Workflows.Activities
 {
     public class UnpublishContentTask : ContentTask
     {
-        public UnpublishContentTask(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<UnpublishContentTask> localizer) : base(contentManager, scriptEvaluator, localizer)
+        public UnpublishContentTask(
+            IContentManager contentManager,
+            IWorkflowScriptEvaluator scriptEvaluator,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions,
+            IStringLocalizer<UnpublishContentTask> localizer)
+            : base(contentManager, scriptEvaluator, jsonSerializerOptions, localizer)
         {
         }
 

@@ -1,5 +1,7 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Views;
@@ -10,11 +12,18 @@ namespace OrchardCore.Spatial.Drivers
 {
     public class GeoPointFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<GeoPointField>
     {
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
+
+        public GeoPointFieldSettingsDriver(IOptions<JsonSerializerOptions> jsonSerializerOptions)
+        {
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
+        }
+
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
             return Initialize<GeoPointFieldSettings>("GeoPointFieldSettings_Edit", model =>
             {
-                var settings = partFieldDefinition.Settings.ToObject<GeoPointFieldSettings>();
+                var settings = partFieldDefinition.Settings.ToObject<GeoPointFieldSettings>(_jsonSerializerOptions);
 
                 model.Hint = settings.Hint;
                 model.Required = settings.Required;

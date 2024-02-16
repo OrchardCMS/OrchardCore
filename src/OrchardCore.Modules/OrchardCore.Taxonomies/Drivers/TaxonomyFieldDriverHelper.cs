@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using OrchardCore.ContentManagement;
 using OrchardCore.Taxonomies.Fields;
@@ -14,7 +15,7 @@ namespace OrchardCore.Taxonomies.Drivers
         /// Populates a list of <see cref="TermEntry"/> with the hierarchy of terms.
         /// The list is ordered so that roots appear right before their child terms.
         /// </summary>
-        public static void PopulateTermEntries(List<TermEntry> termEntries, TaxonomyField field, IEnumerable<ContentItem> contentItems, int level)
+        public static void PopulateTermEntries(List<TermEntry> termEntries, TaxonomyField field, IEnumerable<ContentItem> contentItems, int level, JsonSerializerOptions jsonSerializerOptions = null)
         {
             foreach (var contentItem in contentItems)
             {
@@ -22,7 +23,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
                 if (((JsonObject)contentItem.Content)["Terms"] is JsonArray termsArray)
                 {
-                    children = termsArray.ToObject<ContentItem[]>();
+                    children = termsArray.ToObject<ContentItem[]>(jsonSerializerOptions);
                 }
 
                 var termEntry = new TermEntry
@@ -38,7 +39,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
                 if (children.Length > 0)
                 {
-                    PopulateTermEntries(termEntries, field, children, level + 1);
+                    PopulateTermEntries(termEntries, field, children, level + 1, jsonSerializerOptions);
                 }
             }
         }

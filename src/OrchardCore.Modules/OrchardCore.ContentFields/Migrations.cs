@@ -1,5 +1,7 @@
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentManagement.Metadata;
@@ -13,11 +15,16 @@ namespace OrchardCore.ContentFields
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ShellDescriptor _shellDescriptor;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public Migrations(IContentDefinitionManager contentDefinitionManager, ShellDescriptor shellDescriptor)
+        public Migrations(
+            IContentDefinitionManager contentDefinitionManager,
+            ShellDescriptor shellDescriptor,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _shellDescriptor = shellDescriptor;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         // New installations don't need to be upgraded, but because there is no initial migration record,
@@ -37,42 +44,42 @@ namespace OrchardCore.ContentFields
         private async Task UpgradeAsync()
         {
             // Boolean field
-            await _contentDefinitionManager.MigrateFieldSettingsAsync<BooleanField, BooleanFieldSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<BooleanField, BooleanFieldSettings>(_jsonSerializerOptions);
 
             // Content picker field
-            await _contentDefinitionManager.MigrateFieldSettingsAsync<ContentPickerField, ContentPickerFieldSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<ContentPickerField, ContentPickerFieldSettings>(_jsonSerializerOptions);
 
             // Date field
-            await _contentDefinitionManager.MigrateFieldSettingsAsync<DateField, DateFieldSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<DateField, DateFieldSettings>(_jsonSerializerOptions);
 
             // Date time field
-            await _contentDefinitionManager.MigrateFieldSettingsAsync<DateTimeField, DateTimeFieldSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<DateTimeField, DateTimeFieldSettings>(_jsonSerializerOptions);
 
             // Html field
-            await _contentDefinitionManager.MigrateFieldSettingsAsync<HtmlField, HtmlFieldSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<HtmlField, HtmlFieldSettings>(_jsonSerializerOptions);
 
             // Link field
-            await _contentDefinitionManager.MigrateFieldSettingsAsync<LinkField, LinkFieldSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<LinkField, LinkFieldSettings>(_jsonSerializerOptions);
 
             // Localization set content picker field
-            await _contentDefinitionManager.MigrateFieldSettingsAsync<LocalizationSetContentPickerField, LocalizationSetContentPickerFieldSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<LocalizationSetContentPickerField, LocalizationSetContentPickerFieldSettings>(_jsonSerializerOptions);
 
             // MultiText field
-            await _contentDefinitionManager.MigrateFieldSettingsAsync<MultiTextField, MultiTextFieldSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<MultiTextField, MultiTextFieldSettings>(_jsonSerializerOptions);
 
             // Numeric field
-            await _contentDefinitionManager.MigrateFieldSettingsAsync<NumericField, NumericFieldSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<NumericField, NumericFieldSettings>(_jsonSerializerOptions);
 
             // Text field
-            await _contentDefinitionManager.MigrateFieldSettingsAsync<TextField, TextFieldHeaderDisplaySettings>();
-            await _contentDefinitionManager.MigrateFieldSettingsAsync<TextField, TextFieldPredefinedListEditorSettings>();
-            await _contentDefinitionManager.MigrateFieldSettingsAsync<TextField, TextFieldSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<TextField, TextFieldHeaderDisplaySettings>(_jsonSerializerOptions);
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<TextField, TextFieldPredefinedListEditorSettings>(_jsonSerializerOptions);
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<TextField, TextFieldSettings>(_jsonSerializerOptions);
 
             // Time field
-            await _contentDefinitionManager.MigrateFieldSettingsAsync<TimeField, TimeFieldSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<TimeField, TimeFieldSettings>(_jsonSerializerOptions);
 
             // YouTube field
-            await _contentDefinitionManager.MigrateFieldSettingsAsync<YoutubeField, YoutubeFieldSettings>();
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<YoutubeField, YoutubeFieldSettings>(_jsonSerializerOptions);
 
             // Keep in sync the upgrade process.
             await UpdateFrom1Async();

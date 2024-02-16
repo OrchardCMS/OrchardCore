@@ -1,4 +1,6 @@
+using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.Autoroute.Core.Indexes;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement.Metadata;
@@ -11,10 +13,14 @@ namespace OrchardCore.Autoroute
     public class Migrations : DataMigration
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public Migrations(IContentDefinitionManager contentDefinitionManager)
+        public Migrations(
+            IContentDefinitionManager contentDefinitionManager,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             _contentDefinitionManager = contentDefinitionManager;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task<int> CreateAsync()
@@ -40,7 +46,7 @@ namespace OrchardCore.Autoroute
         // This code can be removed in a later version.
         public async Task<int> UpdateFrom1Async()
         {
-            await _contentDefinitionManager.MigratePartSettingsAsync<AutoroutePart, AutoroutePartSettings>();
+            await _contentDefinitionManager.MigratePartSettingsAsync<AutoroutePart, AutoroutePartSettings>(_jsonSerializerOptions);
 
             return 2;
         }

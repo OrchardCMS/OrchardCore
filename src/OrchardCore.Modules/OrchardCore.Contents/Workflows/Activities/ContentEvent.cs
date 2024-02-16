@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -11,7 +13,12 @@ namespace OrchardCore.Contents.Workflows.Activities
 {
     public abstract class ContentEvent : ContentActivity, IEvent
     {
-        protected ContentEvent(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer localizer) : base(contentManager, scriptEvaluator, localizer)
+        protected ContentEvent(
+            IContentManager contentManager,
+            IWorkflowScriptEvaluator scriptEvaluator,
+            IStringLocalizer localizer,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
+            : base(contentManager, scriptEvaluator, jsonSerializerOptions, localizer)
         {
         }
 

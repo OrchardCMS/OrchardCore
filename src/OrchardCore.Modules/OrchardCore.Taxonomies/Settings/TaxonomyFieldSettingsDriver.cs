@@ -1,5 +1,7 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Views;
@@ -9,11 +11,18 @@ namespace OrchardCore.Taxonomies.Settings
 {
     public class TaxonomyFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<TaxonomyField>
     {
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
+
+        public TaxonomyFieldSettingsDriver(IOptions<JsonSerializerOptions> jsonSerializerOptions)
+        {
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
+        }
+
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
             return Initialize<TaxonomyFieldSettings>("TaxonomyFieldSettings_Edit", model =>
             {
-                var settings = partFieldDefinition.Settings.ToObject<TaxonomyFieldSettings>();
+                var settings = partFieldDefinition.Settings.ToObject<TaxonomyFieldSettings>(_jsonSerializerOptions);
 
                 model.Hint = settings.Hint;
                 model.Required = settings.Required;

@@ -1,6 +1,8 @@
 using System;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.OpenId.Abstractions.Descriptors;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.Recipes.Models;
@@ -11,13 +13,17 @@ namespace OrchardCore.OpenId.Recipes
     public class OpenIdScopeStep : IRecipeStepHandler
     {
         private readonly IOpenIdScopeManager _scopeManager;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         /// <summary>
         /// This recipe step adds an OpenID Connect scope.
         /// </summary>
-        public OpenIdScopeStep(IOpenIdScopeManager scopeManager)
+        public OpenIdScopeStep(
+            IOpenIdScopeManager scopeManager,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             _scopeManager = scopeManager;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -27,7 +33,7 @@ namespace OrchardCore.OpenId.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<OpenIdScopeStepModel>();
+            var model = context.Step.ToObject<OpenIdScopeStepModel>(_jsonSerializerOptions);
             var scope = await _scopeManager.FindByNameAsync(model.ScopeName);
             var descriptor = new OpenIdScopeDescriptor();
             var isNew = true;
