@@ -22,6 +22,8 @@ jobs:
           $date = Get-Date -Format "yyyy-MM-dd"
           $branchName = "contributor-map/$date-update"
 
+          # Without this, the branch will be created from the default branch (main) instead of the current one.
+          git checkout -b ${{ github.ref_name}}
           git checkout -b $branchName
           git push origin $branchName
 
