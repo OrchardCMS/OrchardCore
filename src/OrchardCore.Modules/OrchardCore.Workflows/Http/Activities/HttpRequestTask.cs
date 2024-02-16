@@ -85,10 +85,11 @@ namespace OrchardCore.Workflows.Http.Activities
             { 599, "Network Connect Timeout Error" }
         };
 
-        private readonly HttpClient _httpClient;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        protected readonly IStringLocalizer S;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly UrlEncoder _urlEncoder;
+
+        protected readonly IStringLocalizer S;
 
         public HttpRequestTask(
             IWorkflowExpressionEvaluator expressionEvaluator,
@@ -99,7 +100,7 @@ namespace OrchardCore.Workflows.Http.Activities
         {
             _expressionEvaluator = expressionEvaluator;
             _urlEncoder = urlEncoder;
-            _httpClient = httpClientFactory.CreateClient();
+            _httpClientFactory = httpClientFactory;
             S = localizer;
         }
 
@@ -183,8 +184,12 @@ namespace OrchardCore.Workflows.Http.Activities
                 request.Content = new StringContent(body, Encoding.UTF8, contentType);
             }
 
-            var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead);
+            var httpClient = _httpClientFactory.CreateClient();
+
+            var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead);
+
             var responseCodes = ParseResponseCodes(HttpResponseCodes);
+
             var outcome = responseCodes.FirstOrDefault(x => x == (int)response.StatusCode);
 
             workflowContext.LastResult = new

@@ -20,8 +20,8 @@ namespace OrchardCore.Media.Recipes
     {
         private readonly IMediaFileStore _mediaFileStore;
         private readonly HashSet<string> _allowedFileExtensions;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger _logger;
-        private readonly HttpClient _httpClient;
 
         public MediaStep(
             IMediaFileStore mediaFileStore,
@@ -31,7 +31,7 @@ namespace OrchardCore.Media.Recipes
         {
             _mediaFileStore = mediaFileStore;
             _allowedFileExtensions = options.Value.AllowedFileExtensions;
-            _httpClient = httpClientFactory.CreateClient();
+            _httpClientFactory = httpClientFactory;
             _logger = logger;
         }
 
@@ -67,7 +67,10 @@ namespace OrchardCore.Media.Recipes
                 }
                 else if (!string.IsNullOrWhiteSpace(file.SourceUrl))
                 {
-                    var response = await _httpClient.GetAsync(file.SourceUrl);
+                    var httpClient = _httpClientFactory.CreateClient();
+
+                    var response = await httpClient.GetAsync(file.SourceUrl);
+
                     if (response.IsSuccessStatusCode)
                     {
                         stream = await response.Content.ReadAsStreamAsync();
