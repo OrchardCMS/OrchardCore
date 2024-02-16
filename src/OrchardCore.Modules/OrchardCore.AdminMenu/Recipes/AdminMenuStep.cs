@@ -18,7 +18,9 @@ namespace OrchardCore.AdminMenu.Recipes
         private readonly IAdminMenuService _adminMenuService;
         private readonly JsonSerializerOptions _serializationOptions;
 
-        public AdminMenuStep(IAdminMenuService adminMenuService, IOptions<JsonSerializerOptions> serializationOptions)
+        public AdminMenuStep(
+            IAdminMenuService adminMenuService,
+            IOptions<JsonSerializerOptions> serializationOptions)
         {
             _adminMenuService = adminMenuService;
 

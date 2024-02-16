@@ -22,8 +22,6 @@ namespace OrchardCore.Layers.Deployment
         {
             _layerService = layerService;
             _siteService = siteService;
-
-            // The recipe step contains polymorphic types which need to be resolved
             _jsonSerializerOptions = serializationOptions.Value;
         }
 
