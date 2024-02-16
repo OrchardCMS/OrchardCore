@@ -11,7 +11,6 @@ using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.Contents.AuditTrail.Services;
 using OrchardCore.Contents.AuditTrail.Settings;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 using YesSql;
 

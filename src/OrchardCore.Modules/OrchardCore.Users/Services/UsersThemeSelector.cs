@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Theming;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 

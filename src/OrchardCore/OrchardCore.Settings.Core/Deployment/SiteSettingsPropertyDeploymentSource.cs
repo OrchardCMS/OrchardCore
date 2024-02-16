@@ -2,7 +2,6 @@ using System.Linq;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.Deployment;
-using OrchardCore.Entities;
 
 namespace OrchardCore.Settings.Deployment
 {

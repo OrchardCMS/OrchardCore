@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,7 +47,7 @@ namespace OrchardCore.OpenId.Controllers
             _shellSettings = shellSettings;
         }
 
-        [AllowAnonymous, HttpGet, HttpPost, IgnoreAntiforgeryToken]
+        [AllowAnonymous, DisableCors, HttpGet, HttpPost, IgnoreAntiforgeryToken]
         public async Task<IActionResult> Authorize()
         {
             var response = HttpContext.GetOpenIddictServerResponse();
@@ -193,7 +194,7 @@ namespace OrchardCore.OpenId.Controllers
             }
         }
 
-        [ActionName(nameof(Authorize))]
+        [ActionName(nameof(Authorize)), DisableCors]
         [FormValueRequired("submit.Accept"), HttpPost]
         public async Task<IActionResult> AuthorizeAccept()
         {
@@ -280,7 +281,7 @@ namespace OrchardCore.OpenId.Controllers
             }
         }
 
-        [ActionName(nameof(Authorize))]
+        [ActionName(nameof(Authorize)), DisableCors]
         [FormValueRequired("submit.Deny"), HttpPost]
         public IActionResult AuthorizeDeny()
         {
@@ -299,7 +300,7 @@ namespace OrchardCore.OpenId.Controllers
             return Forbid(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
 
-        [AllowAnonymous, HttpGet, HttpPost, IgnoreAntiforgeryToken]
+        [AllowAnonymous, DisableCors, HttpGet, HttpPost, IgnoreAntiforgeryToken]
         public async Task<IActionResult> Logout()
         {
             var response = HttpContext.GetOpenIddictServerResponse();
@@ -328,7 +329,7 @@ namespace OrchardCore.OpenId.Controllers
             return View(new LogoutViewModel { RequestId = request.RequestId });
         }
 
-        [ActionName(nameof(Logout)), AllowAnonymous]
+        [ActionName(nameof(Logout)), AllowAnonymous, DisableCors]
         [FormValueRequired("submit.Accept"), HttpPost]
         public async Task<IActionResult> LogoutAccept()
         {
@@ -361,7 +362,7 @@ namespace OrchardCore.OpenId.Controllers
             return SignOut(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
 
-        [ActionName(nameof(Logout)), AllowAnonymous]
+        [ActionName(nameof(Logout)), AllowAnonymous, DisableCors]
         [FormValueRequired("submit.Deny"), HttpPost]
         public IActionResult LogoutDeny()
         {

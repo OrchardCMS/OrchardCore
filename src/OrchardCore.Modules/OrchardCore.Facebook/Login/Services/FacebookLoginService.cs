@@ -4,7 +4,6 @@ using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using OrchardCore.Entities;
 using OrchardCore.Facebook.Login.Settings;
 using OrchardCore.Settings;
 

@@ -27,25 +27,13 @@ namespace OrchardCore.Media.Azure
     [Feature("OrchardCore.Media.Azure.Storage")]
     public class Startup : Modules.StartupBase
     {
-        private readonly AdminOptions _adminOptions;
         private readonly ILogger _logger;
         private readonly IShellConfiguration _configuration;
 
-        public Startup(IOptions<AdminOptions> adminOptions, ILogger<Startup> logger, IShellConfiguration configuration)
+        public Startup(ILogger<Startup> logger, IShellConfiguration configuration)
         {
-            _adminOptions = adminOptions.Value;
             _logger = logger;
             _configuration = configuration;
-        }
-
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapAreaControllerRoute(
-                name: "AzureBlob.Options",
-                areaName: "OrchardCore.Media.Azure",
-                pattern: _adminOptions.AdminUrlPrefix + "/MediaAzureBlob/Options",
-                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Options) }
-            );
         }
 
         public override int Order => 10;

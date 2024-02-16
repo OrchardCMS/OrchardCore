@@ -1,7 +1,6 @@
 using System.Text.Json.Nodes;
 using GraphQL;
 using GraphQL.Execution;
-using GraphQL.Resolvers;
 using GraphQL.Types;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Queries;
@@ -12,7 +11,6 @@ using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
-using YesSql;
 using YesSql.Indexes;
 using YesSql.Provider.Sqlite;
 using YesSql.Serialization;

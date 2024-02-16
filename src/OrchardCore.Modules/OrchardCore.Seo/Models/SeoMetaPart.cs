@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel;
 using OrchardCore.ContentManagement;
 using OrchardCore.Media.Fields;

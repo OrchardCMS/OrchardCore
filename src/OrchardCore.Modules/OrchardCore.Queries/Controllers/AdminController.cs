@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -18,6 +19,7 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.Queries.Controllers
 {
+    [Admin("Queries/{action}/{id?}", "Queries{action}")]
     public class AdminController : Controller
     {
         private const string _optionsSearch = "Options.Search";

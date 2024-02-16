@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Environment.Extensions.Features
 {
     public class FeatureInfo : IFeatureInfo

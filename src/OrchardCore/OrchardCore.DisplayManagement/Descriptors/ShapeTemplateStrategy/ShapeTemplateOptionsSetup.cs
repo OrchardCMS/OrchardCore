@@ -1,5 +1,4 @@
 using System;
-using System.Net.Mime;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OrchardCore.Modules;

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Queries.Sql.ViewModels;
@@ -42,6 +43,7 @@ namespace OrchardCore.Queries.Sql.Controllers
             _templateOptions = templateOptions.Value;
         }
 
+        [Admin("Queries/Sql/Query", "QueriesRunSql")]
         public Task<IActionResult> Query(string query)
         {
             query = string.IsNullOrWhiteSpace(query) ? "" : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query));

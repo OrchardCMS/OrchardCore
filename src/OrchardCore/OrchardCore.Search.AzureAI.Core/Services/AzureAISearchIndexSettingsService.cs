@@ -12,12 +12,17 @@ public class AzureAISearchIndexSettingsService
     /// <summary>
     /// Loads the index settings document from the store for updating and that should not be cached.
     /// </summary>
-    public Task<AzureAISearchIndexSettingsDocument> LoadDocumentAsync() => DocumentManager.GetOrCreateMutableAsync();
+#pragma warning disable CA1822 // Mark members as static
+    public Task<AzureAISearchIndexSettingsDocument> LoadDocumentAsync()
+#pragma warning restore CA1822 // Mark members as static
+        => DocumentManager.GetOrCreateMutableAsync();
 
     /// <summary>
     /// Gets the index settings document from the cache for sharing and that should not be updated.
     /// </summary>
+#pragma warning disable CA1822 // Mark members as static
     public async Task<AzureAISearchIndexSettingsDocument> GetDocumentAsync()
+#pragma warning restore CA1822 // Mark members as static
     {
         var document = await DocumentManager.GetOrCreateImmutableAsync();
 
@@ -29,7 +34,8 @@ public class AzureAISearchIndexSettingsService
         return document;
     }
 
-    public async Task<IEnumerable<AzureAISearchIndexSettings>> GetSettingsAsync() => (await GetDocumentAsync()).IndexSettings.Values;
+    public async Task<IEnumerable<AzureAISearchIndexSettings>> GetSettingsAsync()
+        => (await GetDocumentAsync()).IndexSettings.Values;
 
     public async Task<AzureAISearchIndexSettings> GetAsync(string indexName)
     {
@@ -57,6 +63,6 @@ public class AzureAISearchIndexSettingsService
         await DocumentManager.UpdateAsync(document);
     }
 
-    private static IDocumentManager<AzureAISearchIndexSettingsDocument> DocumentManager =>
-        ShellScope.Services.GetRequiredService<IDocumentManager<AzureAISearchIndexSettingsDocument>>();
+    private static IDocumentManager<AzureAISearchIndexSettingsDocument> DocumentManager
+        => ShellScope.Services.GetRequiredService<IDocumentManager<AzureAISearchIndexSettingsDocument>>();
 }

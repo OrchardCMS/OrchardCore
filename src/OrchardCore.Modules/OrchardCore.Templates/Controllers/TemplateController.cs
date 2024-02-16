@@ -20,7 +20,7 @@ using OrchardCore.Templates.ViewModels;
 
 namespace OrchardCore.Templates.Controllers
 {
-    [Admin]
+    [Admin("Templates/{action}/{name?}", "Templates.{action}")]
     public class TemplateController : Controller
     {
         private const string _optionsSearch = "Options.Search";
@@ -64,6 +64,7 @@ namespace OrchardCore.Templates.Controllers
             return Index(options, pagerParameters);
         }
 
+        [Admin("Templates", "Templates.Index")]
         public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
         {
             if (!options.AdminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))

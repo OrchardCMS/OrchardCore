@@ -1,8 +1,6 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Filters;
 using OrchardCore.Admin;
-using OrchardCore.Entities;
 using OrchardCore.Facebook.Settings;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Settings;

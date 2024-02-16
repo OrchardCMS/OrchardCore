@@ -10,7 +10,6 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
-using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.ContentFields.Fields
 {

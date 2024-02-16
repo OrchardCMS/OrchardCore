@@ -1,5 +1,3 @@
-using System;
-using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.GraphQL.Options;

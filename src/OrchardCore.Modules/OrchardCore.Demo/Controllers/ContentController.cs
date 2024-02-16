@@ -55,7 +55,7 @@ namespace OrchardCore.Demo.Controllers
             return View(shape);
         }
 
-        [Admin]
+        [Admin("Demo/Content/Edit", "Demo.Content.Edit")]
         public async Task<ActionResult> Edit(string contentItemId)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId);

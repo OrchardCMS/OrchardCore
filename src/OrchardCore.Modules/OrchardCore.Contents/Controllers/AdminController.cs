@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
@@ -83,6 +84,7 @@ namespace OrchardCore.Contents.Controllers
         }
 
         [HttpGet]
+        [Admin("Contents/ContentItems/{contentTypeId?}", "ListContentItems")]
         public async Task<IActionResult> List(
             [ModelBinder(BinderType = typeof(ContentItemFilterEngineModelBinder), Name = "q")] QueryFilterResult<ContentItem> queryFilterResult,
             ContentOptionsViewModel options,
@@ -316,6 +318,7 @@ namespace OrchardCore.Contents.Controllers
             return RedirectToAction(nameof(List));
         }
 
+        [Admin("Contents/ContentTypes/{id}/Create", "CreateContentItem")]
         public async Task<IActionResult> Create(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -394,6 +397,7 @@ namespace OrchardCore.Contents.Controllers
             );
         }
 
+        [Admin("Contents/ContentItems/{contentItemId}/Display", "AdminContentItem")]
         public async Task<IActionResult> Display(string contentItemId)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
@@ -413,6 +417,7 @@ namespace OrchardCore.Contents.Controllers
             return View(model);
         }
 
+        [Admin("Contents/ContentItems/{contentItemId}/Edit", "EditContentItem")]
         public async Task<IActionResult> Edit(string contentItemId)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
@@ -494,6 +499,7 @@ namespace OrchardCore.Contents.Controllers
         }
 
         [HttpPost]
+        [Admin("Contents/ContentItems/{contentItemId}/Clone", "AdminCloneContentItem")]
         public async Task<IActionResult> Clone(string contentItemId, string returnUrl)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
@@ -524,6 +530,7 @@ namespace OrchardCore.Contents.Controllers
         }
 
         [HttpPost]
+        [Admin("Contents/ContentItems/{contentItemId}/DiscardDraft", "AdminDiscardDraftContentItem")]
         public async Task<IActionResult> DiscardDraft(string contentItemId, string returnUrl)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
@@ -553,6 +560,7 @@ namespace OrchardCore.Contents.Controllers
         }
 
         [HttpPost]
+        [Admin("Contents/ContentItems/{contentItemId}/Delete", "AdminDeleteContentItem")]
         public async Task<IActionResult> Remove(string contentItemId, string returnUrl)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
@@ -577,6 +585,7 @@ namespace OrchardCore.Contents.Controllers
         }
 
         [HttpPost]
+        [Admin("Contents/ContentItems/{contentItemId}/Publish", "AdminPublishContentItem")]
         public async Task<IActionResult> Publish(string contentItemId, string returnUrl)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
@@ -607,6 +616,7 @@ namespace OrchardCore.Contents.Controllers
         }
 
         [HttpPost]
+        [Admin("Contents/ContentItems/{contentItemId}/Unpublish", "AdminUnpublishContentItem")]
         public async Task<IActionResult> Unpublish(string contentItemId, string returnUrl)
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);

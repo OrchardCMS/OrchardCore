@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
@@ -29,6 +28,14 @@ namespace OrchardCore.GitHub.Configuration
         {
             if (_gitHubAuthenticationSettings == null)
             {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(_gitHubAuthenticationSettings.ClientID) ||
+                string.IsNullOrWhiteSpace(_gitHubAuthenticationSettings.ClientSecret))
+            {
+                _logger.LogWarning("The Github login provider is enabled but not configured.");
+
                 return;
             }
 

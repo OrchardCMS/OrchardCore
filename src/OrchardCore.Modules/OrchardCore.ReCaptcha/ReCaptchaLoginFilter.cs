@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Filters;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
-using OrchardCore.Entities;
 using OrchardCore.ReCaptcha.Configuration;
 using OrchardCore.ReCaptcha.Services;
 using OrchardCore.Settings;

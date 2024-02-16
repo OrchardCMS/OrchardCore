@@ -42,6 +42,7 @@ namespace OrchardCore.Cors.Controllers
         }
 
         [HttpGet]
+        [Admin("Cors", "CorsIndex")]
         public async Task<ActionResult> Index()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageCorsSettings))

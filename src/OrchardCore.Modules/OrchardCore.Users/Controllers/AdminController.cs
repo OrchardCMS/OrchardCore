@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -28,6 +29,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Users.Controllers
 {
+    [Admin("Users/{action}/{id?}", "Users{action}")]
     public class AdminController : Controller
     {
         private readonly UserManager<IUser> _userManager;

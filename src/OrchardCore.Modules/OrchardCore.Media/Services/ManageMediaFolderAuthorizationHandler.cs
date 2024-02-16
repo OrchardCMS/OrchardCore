@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage;
 using OrchardCore.Security;
-using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Media.Services
 {

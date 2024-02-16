@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.ContentLocalization.Records;
 using OrchardCore.ContentLocalization.ViewModels;
 using OrchardCore.ContentManagement;

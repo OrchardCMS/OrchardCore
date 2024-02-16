@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Options;
-using OrchardCore.Entities;
 using OrchardCore.Search.Models;
 using OrchardCore.Settings;
 

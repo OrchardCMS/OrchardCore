@@ -19,7 +19,7 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.Deployment.Remote.Controllers
 {
-    [Admin]
+    [Admin("Deployment/RemoteInstance/{action}/{id?}", "DeploymentRemoteInstancesCreate{action}")]
     public class RemoteInstanceController : Controller
     {
         private const string _optionsSearch = "Options.Search";

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
@@ -16,6 +17,7 @@ using YesSql;
 
 namespace OrchardCore.Menu.Controllers
 {
+    [Admin("Menu/{action}/{id?}", "Menu{action}")]
     public class AdminController : Controller
     {
         private readonly IContentManager _contentManager;

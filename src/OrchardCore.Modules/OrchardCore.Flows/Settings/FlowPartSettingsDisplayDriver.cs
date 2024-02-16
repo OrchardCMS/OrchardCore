@@ -1,4 +1,3 @@
-using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;

@@ -20,7 +20,7 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.AdminMenu.Controllers
 {
-    [Admin]
+    [Admin("AdminMenu/{action}/{id?}", "AdminMenu{action}")]
     public class MenuController : Controller
     {
         private const string _optionsSearch = "Options.Search";

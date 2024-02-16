@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.BackgroundJobs;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement;
@@ -34,6 +35,7 @@ using YesSql;
 
 namespace OrchardCore.Search.Elasticsearch
 {
+    [Admin("elasticsearch/{action}/{id?}", "Elasticsearch.{action}")]
     public class AdminController : Controller
     {
         private const string _optionsSearch = "Options.Search";

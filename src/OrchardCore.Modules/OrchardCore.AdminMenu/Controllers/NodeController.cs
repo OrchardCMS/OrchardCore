@@ -14,7 +14,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.AdminMenu.Controllers
 {
-    [Admin]
+    [Admin("AdminMenu/Node/{action}", "AdminMenuNode{action}")]
     public class NodeController : Controller
     {
         private readonly IAuthorizationService _authorizationService;

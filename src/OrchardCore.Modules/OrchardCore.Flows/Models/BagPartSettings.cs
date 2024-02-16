@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Flows.Models
 {
     public class BagPartSettings

@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
@@ -30,6 +29,14 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
         {
             if (_microsoftAccountSettings == null)
             {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(_microsoftAccountSettings.AppId) ||
+                string.IsNullOrWhiteSpace(_microsoftAccountSettings.AppSecret))
+            {
+                _logger.LogWarning("The Microsoft login provider is enabled but not configured.");
+
                 return;
             }
 
