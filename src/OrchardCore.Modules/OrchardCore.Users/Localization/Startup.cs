@@ -17,7 +17,6 @@ public class Startup : StartupBase
         services.AddScoped<IDisplayDriver<User>, UserLocalizationDisplayDriver>();
         services.AddScoped<IUserClaimsProvider, UserLocalizationClaimsProvider>();
 
-        services.Configure<RequestLocalizationOptions>(options =>
-            options.AddInitialRequestCultureProvider(new UserLocalizationRequestCultureProvider()));
+        services.Configure<RequestLocalizationOptions>(options => options.AddInitialRequestCultureProvider(new UserLocalizationRequestCultureProvider()));
     }
 }

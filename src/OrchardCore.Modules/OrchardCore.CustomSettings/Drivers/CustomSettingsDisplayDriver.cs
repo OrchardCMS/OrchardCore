@@ -18,9 +18,7 @@ namespace OrchardCore.CustomSettings.Drivers
         private readonly CustomSettingsService _customSettingsService;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
 
-        public CustomSettingsDisplayDriver(
-            CustomSettingsService customSettingsService,
-            IContentItemDisplayManager contentItemDisplayManager)
+        public CustomSettingsDisplayDriver(CustomSettingsService customSettingsService, IContentItemDisplayManager contentItemDisplayManager)
         {
             _customSettingsService = customSettingsService;
             _contentItemDisplayManager = contentItemDisplayManager;
@@ -42,10 +40,15 @@ namespace OrchardCore.CustomSettings.Drivers
             var isNew = false;
             var contentItem = await _customSettingsService.GetSettingsAsync(site, contentTypeDefinition, () => isNew = true);
 
-            var shape = Initialize<CustomSettingsEditViewModel>(CustomSettingsConstants.Stereotype, async ctx =>
-            {
-                ctx.Editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, context.Updater, isNew);
-            }).Location("Content:3").OnGroup(contentTypeDefinition.Name);
+            var shape = Initialize<CustomSettingsEditViewModel>(
+                    CustomSettingsConstants.Stereotype,
+                    async ctx =>
+                    {
+                        ctx.Editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, context.Updater, isNew);
+                    }
+                )
+                .Location("Content:3")
+                .OnGroup(contentTypeDefinition.Name);
 
             return shape;
         }

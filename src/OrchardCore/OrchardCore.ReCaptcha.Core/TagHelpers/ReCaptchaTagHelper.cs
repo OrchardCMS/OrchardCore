@@ -103,10 +103,7 @@ namespace OrchardCore.ReCaptcha.TagHelpers
                 query = query.Add("onload", OnLoad);
             }
 
-            var settingsUrl = new UriBuilder(_settings.ReCaptchaScriptUri)
-            {
-                Query = query.ToString()
-            };
+            var settingsUrl = new UriBuilder(_settings.ReCaptchaScriptUri) { Query = query.ToString() };
 
             return settingsUrl.ToString();
         }

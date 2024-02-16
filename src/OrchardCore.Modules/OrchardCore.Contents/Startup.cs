@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Authorization;
@@ -50,8 +52,6 @@ using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Handlers;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
-using System;
-using System.Threading.Tasks;
 using YesSql.Filters.Query;
 
 namespace OrchardCore.Contents

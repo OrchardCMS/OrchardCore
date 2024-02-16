@@ -32,8 +32,7 @@ public class Startup : StartupBase
             services.AddLogSmsProvider();
         }
 
-        services.AddTwilioSmsProvider()
-            .AddScoped<IDisplayDriver<ISite>, TwilioSettingsDisplayDriver>();
+        services.AddTwilioSmsProvider().AddScoped<IDisplayDriver<ISite>, TwilioSettingsDisplayDriver>();
 
         services.AddScoped<IPermissionProvider, SmsPermissionProvider>();
         services.AddScoped<INavigationProvider, AdminMenu>();

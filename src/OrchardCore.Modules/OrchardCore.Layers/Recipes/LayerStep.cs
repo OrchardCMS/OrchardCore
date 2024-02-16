@@ -32,17 +32,15 @@ namespace OrchardCore.Layers.Recipes
             IRuleMigrator ruleMigrator,
             IConditionIdGenerator conditionIdGenerator,
             IEnumerable<IConditionFactory> factories,
-            IOptions<JsonDerivedTypesOptions> derivedTypesOptions)
+            IOptions<JsonDerivedTypesOptions> derivedTypesOptions
+        )
         {
             _layerService = layerService;
             _ruleMigrator = ruleMigrator;
             _conditionIdGenerator = conditionIdGenerator;
             _factories = factories;
 
-            _serializationOptions = new()
-            {
-                TypeInfoResolver = new PolymorphicJsonTypeInfoResolver(derivedTypesOptions.Value)
-            };
+            _serializationOptions = new() { TypeInfoResolver = new PolymorphicJsonTypeInfoResolver(derivedTypesOptions.Value) };
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)

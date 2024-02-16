@@ -32,8 +32,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(_microsoftAccountSettings.AppId) ||
-                string.IsNullOrWhiteSpace(_microsoftAccountSettings.AppSecret))
+            if (string.IsNullOrWhiteSpace(_microsoftAccountSettings.AppId) || string.IsNullOrWhiteSpace(_microsoftAccountSettings.AppSecret))
             {
                 _logger.LogWarning("The Microsoft login provider is enabled but not configured.");
 

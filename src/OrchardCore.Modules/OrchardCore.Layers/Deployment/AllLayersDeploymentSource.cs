@@ -17,19 +17,13 @@ namespace OrchardCore.Layers.Deployment
         private readonly ISiteService _siteService;
         private readonly JsonSerializerOptions _serializationOptions;
 
-        public AllLayersDeploymentSource(
-            ILayerService layerService,
-            ISiteService siteService,
-            IOptions<JsonDerivedTypesOptions> derivedTypesOptions)
+        public AllLayersDeploymentSource(ILayerService layerService, ISiteService siteService, IOptions<JsonDerivedTypesOptions> derivedTypesOptions)
         {
             _layerService = layerService;
             _siteService = siteService;
 
             // The recipe step contains polymorphic types which need to be resolved
-            _serializationOptions = new()
-            {
-                TypeInfoResolver = new PolymorphicJsonTypeInfoResolver(derivedTypesOptions.Value)
-            };
+            _serializationOptions = new() { TypeInfoResolver = new PolymorphicJsonTypeInfoResolver(derivedTypesOptions.Value) };
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
@@ -43,20 +37,12 @@ namespace OrchardCore.Layers.Deployment
 
             var layers = await _layerService.GetLayersAsync();
 
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "Layers",
-                ["Layers"] = JArray.FromObject(layers.Layers, _serializationOptions),
-            });
+            result.Steps.Add(new JsonObject { ["name"] = "Layers", ["Layers"] = JArray.FromObject(layers.Layers, _serializationOptions), });
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
 
             // Adding Layer settings
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "Settings",
-                ["LayerSettings"] = JObject.FromObject(siteSettings.As<LayerSettings>()),
-            });
+            result.Steps.Add(new JsonObject { ["name"] = "Settings", ["LayerSettings"] = JObject.FromObject(siteSettings.As<LayerSettings>()), });
         }
     }
 }

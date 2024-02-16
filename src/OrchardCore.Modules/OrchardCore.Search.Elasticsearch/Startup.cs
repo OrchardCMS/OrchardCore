@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,8 +25,6 @@ using OrchardCore.Search.Elasticsearch.Services;
 using OrchardCore.Search.Lucene.Handler;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 
 namespace OrchardCore.Search.Elasticsearch
 {
@@ -41,12 +41,14 @@ namespace OrchardCore.Search.Elasticsearch
         {
             services.AddTransient<IConfigureOptions<ElasticConnectionOptions>, ElasticConnectionOptionsConfigurations>();
 
-            services.AddSingleton<IElasticClient>((sp) =>
-            {
-                var options = sp.GetRequiredService<IOptions<ElasticConnectionOptions>>().Value;
+            services.AddSingleton<IElasticClient>(
+                (sp) =>
+                {
+                    var options = sp.GetRequiredService<IOptions<ElasticConnectionOptions>>().Value;
 
-                return new ElasticClient(options.GetConnectionSettings() ?? new ConnectionSettings());
-            });
+                    return new ElasticClient(options.GetConnectionSettings() ?? new ConnectionSettings());
+                }
+            );
 
             services.Configure<ElasticsearchOptions>(o =>
             {
@@ -57,10 +59,7 @@ namespace OrchardCore.Search.Elasticsearch
                 var jsonNode = configuration.GetSection(nameof(o.Analyzers)).AsJsonNode();
                 var jsonElement = JsonSerializer.Deserialize<JsonElement>(jsonNode);
 
-                var analyzersObject = JsonObject.Create(jsonElement, new JsonNodeOptions()
-                {
-                    PropertyNameCaseInsensitive = true,
-                });
+                var analyzersObject = JsonObject.Create(jsonElement, new JsonNodeOptions() { PropertyNameCaseInsensitive = true, });
 
                 if (analyzersObject != null)
                 {
@@ -83,10 +82,7 @@ namespace OrchardCore.Search.Elasticsearch
                 if (o.Analyzers.Count == 0)
                 {
                     // When no analyzers are configured, we'll define a default analyzer.
-                    o.Analyzers.Add(ElasticsearchConstants.DefaultAnalyzer, new JsonObject
-                    {
-                        ["type"] = "standard",
-                    });
+                    o.Analyzers.Add(ElasticsearchConstants.DefaultAnalyzer, new JsonObject { ["type"] = "standard", });
                 }
             });
 

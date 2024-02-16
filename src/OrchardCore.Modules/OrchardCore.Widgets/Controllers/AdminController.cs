@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
@@ -6,7 +7,6 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Widgets.Models;
 using OrchardCore.Widgets.ViewModels;
-using System.Threading.Tasks;
 
 namespace OrchardCore.Widgets.Controllers
 {

@@ -56,13 +56,13 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                 }
 
                 var partType = _partTypes.GetOrAdd(part.PartDefinition.Name, key => typeActivator.GetTypeActivator(key).Type);
-                var queryGraphType = _partObjectGraphTypes
-                    .GetOrAdd(part.PartDefinition.Name,
-                        partName =>
-                        {
-                            return queryObjectGraphTypes.FirstOrDefault(x => x.GetType().BaseType.GetGenericArguments().First().Name == partName);
-                        }
-                    );
+                var queryGraphType = _partObjectGraphTypes.GetOrAdd(
+                    part.PartDefinition.Name,
+                    partName =>
+                    {
+                        return queryObjectGraphTypes.FirstOrDefault(x => x.GetType().BaseType.GetGenericArguments().First().Name == partName);
+                    }
+                );
 
                 var collapsePart = _contentOptions.ShouldCollapse(part);
 
@@ -126,10 +126,13 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
                     }
                 }
 
-                var inputGraphTypeResolved = _partInputObjectGraphTypes.GetOrAdd(part.PartDefinition.Name, partName =>
-                {
-                    return queryInputGraphTypes.FirstOrDefault(x => x.GetType().BaseType.GetGenericArguments().FirstOrDefault()?.Name == part.PartDefinition.Name);
-                });
+                var inputGraphTypeResolved = _partInputObjectGraphTypes.GetOrAdd(
+                    part.PartDefinition.Name,
+                    partName =>
+                    {
+                        return queryInputGraphTypes.FirstOrDefault(x => x.GetType().BaseType.GetGenericArguments().FirstOrDefault()?.Name == part.PartDefinition.Name);
+                    }
+                );
 
                 if (inputGraphTypeResolved != null)
                 {

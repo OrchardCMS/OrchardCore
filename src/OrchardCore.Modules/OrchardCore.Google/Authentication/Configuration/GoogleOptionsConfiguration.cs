@@ -8,9 +8,7 @@ using OrchardCore.Google.Authentication.Settings;
 
 namespace OrchardCore.Google.Authentication.Configuration
 {
-    public class GoogleOptionsConfiguration :
-        IConfigureOptions<AuthenticationOptions>,
-        IConfigureNamedOptions<GoogleOptions>
+    public class GoogleOptionsConfiguration : IConfigureOptions<AuthenticationOptions>, IConfigureNamedOptions<GoogleOptions>
     {
         private readonly GoogleAuthenticationSettings _googleAuthenticationSettings;
         private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -19,7 +17,8 @@ namespace OrchardCore.Google.Authentication.Configuration
         public GoogleOptionsConfiguration(
             IOptions<GoogleAuthenticationSettings> googleAuthenticationSettings,
             IDataProtectionProvider dataProtectionProvider,
-            ILogger<GoogleOptionsConfiguration> logger)
+            ILogger<GoogleOptionsConfiguration> logger
+        )
         {
             _googleAuthenticationSettings = googleAuthenticationSettings.Value;
             _dataProtectionProvider = dataProtectionProvider;
@@ -33,19 +32,21 @@ namespace OrchardCore.Google.Authentication.Configuration
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(_googleAuthenticationSettings.ClientID) ||
-                string.IsNullOrWhiteSpace(_googleAuthenticationSettings.ClientSecret))
+            if (string.IsNullOrWhiteSpace(_googleAuthenticationSettings.ClientID) || string.IsNullOrWhiteSpace(_googleAuthenticationSettings.ClientSecret))
             {
                 _logger.LogWarning("The Google login provider is enabled but not configured.");
 
                 return;
             }
 
-            options.AddScheme(GoogleDefaults.AuthenticationScheme, builder =>
-            {
-                builder.DisplayName = "Google";
-                builder.HandlerType = typeof(GoogleHandler);
-            });
+            options.AddScheme(
+                GoogleDefaults.AuthenticationScheme,
+                builder =>
+                {
+                    builder.DisplayName = "Google";
+                    builder.HandlerType = typeof(GoogleHandler);
+                }
+            );
         }
 
         public void Configure(string name, GoogleOptions options)

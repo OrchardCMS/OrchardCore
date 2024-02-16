@@ -34,8 +34,7 @@ public class AzureAISearchIndexSettingsService
         return document;
     }
 
-    public async Task<IEnumerable<AzureAISearchIndexSettings>> GetSettingsAsync()
-        => (await GetDocumentAsync()).IndexSettings.Values;
+    public async Task<IEnumerable<AzureAISearchIndexSettings>> GetSettingsAsync() => (await GetDocumentAsync()).IndexSettings.Values;
 
     public async Task<AzureAISearchIndexSettings> GetAsync(string indexName)
     {
@@ -63,6 +62,6 @@ public class AzureAISearchIndexSettingsService
         await DocumentManager.UpdateAsync(document);
     }
 
-    private static IDocumentManager<AzureAISearchIndexSettingsDocument> DocumentManager
-        => ShellScope.Services.GetRequiredService<IDocumentManager<AzureAISearchIndexSettingsDocument>>();
+    private static IDocumentManager<AzureAISearchIndexSettingsDocument> DocumentManager =>
+        ShellScope.Services.GetRequiredService<IDocumentManager<AzureAISearchIndexSettingsDocument>>();
 }
