@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Email.Services;
+namespace OrchardCore.Email.Smtp.Services;
 
 public class SmtpOptionsConfiguration : IConfigureOptions<SmtpOptions>
 {

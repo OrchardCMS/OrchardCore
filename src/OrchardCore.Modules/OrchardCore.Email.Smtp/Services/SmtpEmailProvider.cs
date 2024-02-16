@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
 
-namespace OrchardCore.Email.Services;
+namespace OrchardCore.Email.Smtp.Services;
 
 /// <summary>
 /// Represents a SMTP service that allows to send emails.

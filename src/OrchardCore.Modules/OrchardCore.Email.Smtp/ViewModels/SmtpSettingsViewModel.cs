@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Email.ViewModels;
+namespace OrchardCore.Email.Smtp.ViewModels;
 
 public class SmtpSettingsViewModel
 {

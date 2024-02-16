@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Email.Core.Services;
 using OrchardCore.Environment.Shell.Builders;
@@ -12,18 +11,15 @@ namespace OrchardCore.Email;
 public class DefaultEmailProviderResolver : IEmailProviderResolver
 {
     private readonly ISiteService _siteService;
-    private readonly ILogger _logger;
     private readonly IServiceProvider _serviceProvider;
     private readonly EmailProviderOptions _providerOptions;
 
     public DefaultEmailProviderResolver(
         ISiteService siteService,
-        ILogger<DefaultEmailProviderResolver> logger,
         IOptions<EmailProviderOptions> providerOptions,
         IServiceProvider serviceProvider)
     {
         _siteService = siteService;
-        _logger = logger;
         _serviceProvider = serviceProvider;
         _providerOptions = providerOptions.Value;
     }

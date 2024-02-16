@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Email.Smtp.Services;
 
 namespace OrchardCore.Email.Services;
 

@@ -11,14 +11,14 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Email.Services;
-using OrchardCore.Email.ViewModels;
+using OrchardCore.Email.Smtp.Services;
+using OrchardCore.Email.Smtp.ViewModels;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Email.Drivers
+namespace OrchardCore.Email.Smtp.Drivers
 {
     public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSettings>
     {
