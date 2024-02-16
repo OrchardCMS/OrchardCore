@@ -209,4 +209,7 @@ src/Templates/**/content/**/[Oo]bj/
 
 # BenchmarkDotNet artifacts
 BenchmarkDotNet.Artifacts
-
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
