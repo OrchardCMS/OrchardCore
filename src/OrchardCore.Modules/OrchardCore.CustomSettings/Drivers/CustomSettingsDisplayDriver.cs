@@ -1,5 +1,7 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.CustomSettings.Services;
 using OrchardCore.CustomSettings.ViewModels;
@@ -17,13 +19,16 @@ namespace OrchardCore.CustomSettings.Drivers
     {
         private readonly CustomSettingsService _customSettingsService;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         public CustomSettingsDisplayDriver(
             CustomSettingsService customSettingsService,
-            IContentItemDisplayManager contentItemDisplayManager)
+            IContentItemDisplayManager contentItemDisplayManager,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             _customSettingsService = customSettingsService;
             _contentItemDisplayManager = contentItemDisplayManager;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public override async Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
@@ -68,7 +73,7 @@ namespace OrchardCore.CustomSettings.Drivers
 
             await _contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, isNew);
 
-            site.Properties[contentTypeDefinition.Name] = JObject.FromObject(contentItem);
+            site.Properties[contentTypeDefinition.Name] = JObject.FromObject(contentItem, _jsonSerializerOptions);
 
             return await EditAsync(site, context);
         }

@@ -1,10 +1,12 @@
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Settings;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -27,6 +29,7 @@ namespace OrchardCore.Taxonomies.Controllers
         private readonly ISession _session;
         protected readonly IHtmlLocalizer H;
         private readonly INotifier _notifier;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public AdminController(
@@ -36,6 +39,7 @@ namespace OrchardCore.Taxonomies.Controllers
             IContentItemDisplayManager contentItemDisplayManager,
             IContentDefinitionManager contentDefinitionManager,
             INotifier notifier,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions,
             IHtmlLocalizer<AdminController> localizer,
             IUpdateModelAccessor updateModelAccessor)
         {
@@ -45,6 +49,7 @@ namespace OrchardCore.Taxonomies.Controllers
             _contentDefinitionManager = contentDefinitionManager;
             _session = session;
             _notifier = notifier;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
             _updateModelAccessor = updateModelAccessor;
             H = localizer;
         }
@@ -153,7 +158,7 @@ namespace OrchardCore.Taxonomies.Controllers
                     parentTaxonomyItem["Terms"] = taxonomyItems = [];
                 }
 
-                taxonomyItems.Add(JObject.FromObject(contentItem));
+                taxonomyItems.Add(JObject.FromObject(contentItem, _jsonSerializerOptions));
             }
 
             await _session.SaveAsync(taxonomy);

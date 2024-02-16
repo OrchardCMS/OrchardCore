@@ -1,6 +1,8 @@
 using System;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.Settings.Deployment
@@ -8,10 +10,14 @@ namespace OrchardCore.Settings.Deployment
     public class SiteSettingsDeploymentSource : IDeploymentSource
     {
         private readonly ISiteService _siteService;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public SiteSettingsDeploymentSource(ISiteService siteService)
+        public SiteSettingsDeploymentSource(
+            ISiteService siteService,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             _siteService = siteService;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
@@ -87,7 +93,7 @@ namespace OrchardCore.Settings.Deployment
                         break;
 
                     case "HomeRoute":
-                        data.Add(nameof(ISite.HomeRoute), JObject.FromObject(site.HomeRoute));
+                        data.Add(nameof(ISite.HomeRoute), JObject.FromObject(site.HomeRoute, _jsonSerializerOptions));
                         break;
 
                     case "CacheMode":

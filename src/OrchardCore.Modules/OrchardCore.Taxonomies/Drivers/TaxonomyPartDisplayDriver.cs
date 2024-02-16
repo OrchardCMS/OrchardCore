@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -19,9 +21,14 @@ namespace OrchardCore.Taxonomies.Drivers
     {
         protected readonly IStringLocalizer S;
 
-        public TaxonomyPartDisplayDriver(IStringLocalizer<TaxonomyPartDisplayDriver> stringLocalizer)
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
+
+        public TaxonomyPartDisplayDriver(
+            IStringLocalizer<TaxonomyPartDisplayDriver> stringLocalizer,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             S = stringLocalizer;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public override IDisplayResult Display(TaxonomyPart part, BuildPartDisplayContext context)
@@ -68,7 +75,7 @@ namespace OrchardCore.Taxonomies.Drivers
                         taxonomyItems.Add(ProcessItem(originalTaxonomyItems, item as JsonObject));
                     }
 
-                    part.Terms = taxonomyItems.ToObject<List<ContentItem>>();
+                    part.Terms = taxonomyItems.ToObject<List<ContentItem>>(_jsonSerializerOptions);
                 }
 
                 part.TermContentType = model.TermContentType;
@@ -80,7 +87,7 @@ namespace OrchardCore.Taxonomies.Drivers
         /// <summary>
         /// Clone the content items at the specific index.
         /// </summary>
-        private static JsonObject GetTaxonomyItemAt(List<ContentItem> taxonomyItems, int[] indexes)
+        private JsonObject GetTaxonomyItemAt(List<ContentItem> taxonomyItems, int[] indexes)
         {
             ContentItem taxonomyItem = null;
 
@@ -99,7 +106,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 taxonomyItems = terms?.ToObject<List<ContentItem>>();
             }
 
-            var newObj = JObject.FromObject(taxonomyItem);
+            var newObj = JObject.FromObject(taxonomyItem, _jsonSerializerOptions);
 
             if (newObj["Terms"] != null)
             {
@@ -109,7 +116,7 @@ namespace OrchardCore.Taxonomies.Drivers
             return newObj;
         }
 
-        private static JsonObject ProcessItem(TaxonomyPart originalItems, JsonObject item)
+        private JsonObject ProcessItem(TaxonomyPart originalItems, JsonObject item)
         {
             var contentItem = GetTaxonomyItemAt(originalItems.Terms, item["index"].ToString().Split('-').Select(x => Convert.ToInt32(x)).ToArray());
 

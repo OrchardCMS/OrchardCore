@@ -1,14 +1,17 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
 using OrchardCore.Search.AzureAI.Models;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Search.AzureAI.Deployment;
 
-public class AzureAISearchSettingsDeploymentSource(ISiteService siteService) : IDeploymentSource
+public class AzureAISearchSettingsDeploymentSource(ISiteService siteService, IOptions<JsonSerializerOptions> jsonSerializerOptions) : IDeploymentSource
 {
     private readonly ISiteService _siteService = siteService;
+    private readonly JsonSerializerOptions _jsonSerializerOptions = jsonSerializerOptions.Value;
 
     public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
     {
@@ -26,7 +29,7 @@ public class AzureAISearchSettingsDeploymentSource(ISiteService siteService) : I
         result.Steps.Add(new JsonObject
         {
             ["name"] = "Settings",
-            [nameof(AzureAISearchSettings)] = JObject.FromObject(settings),
+            [nameof(AzureAISearchSettings)] = JObject.FromObject(settings, _jsonSerializerOptions),
         });
     }
 }

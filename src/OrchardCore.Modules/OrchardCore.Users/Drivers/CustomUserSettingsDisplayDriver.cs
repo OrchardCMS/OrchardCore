@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
@@ -22,6 +24,7 @@ namespace OrchardCore.Users.Drivers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContentManager _contentManager;
         private readonly IAuthorizationService _authorizationService;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public CustomUserSettingsDisplayDriver(
@@ -29,12 +32,14 @@ namespace OrchardCore.Users.Drivers
             IContentDefinitionManager contentDefinitionManager,
             IContentManager contentManager,
             IAuthorizationService authorizationService,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions,
             IHttpContextAccessor httpContextAccessor)
         {
             _contentItemDisplayManager = contentItemDisplayManager;
             _contentDefinitionManager = contentDefinitionManager;
             _contentManager = contentManager;
             _authorizationService = authorizationService;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -80,7 +85,7 @@ namespace OrchardCore.Users.Drivers
                 var isNew = false;
                 var contentItem = await GetUserSettingsAsync(user, contentTypeDefinition, () => isNew = true);
                 await _contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, isNew, context.GroupId, Prefix);
-                user.Properties[contentTypeDefinition.Name] = JObject.FromObject(contentItem);
+                user.Properties[contentTypeDefinition.Name] = JObject.FromObject(contentItem, _jsonSerializerOptions);
             }
 
             return await EditAsync(user, context);

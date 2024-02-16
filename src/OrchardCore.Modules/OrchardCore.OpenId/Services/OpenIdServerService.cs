@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
@@ -29,6 +30,8 @@ namespace OrchardCore.OpenId.Services
         private readonly IOptionsMonitor<ShellOptions> _shellOptions;
         private readonly ShellSettings _shellSettings;
         private readonly ISiteService _siteService;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
+
         protected readonly IStringLocalizer S;
 
         public OpenIdServerService(
@@ -38,6 +41,7 @@ namespace OrchardCore.OpenId.Services
             IOptionsMonitor<ShellOptions> shellOptions,
             ShellSettings shellSettings,
             ISiteService siteService,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions,
             IStringLocalizer<OpenIdServerService> stringLocalizer)
         {
             _dataProtector = dataProtectionProvider.CreateProtector(nameof(OpenIdServerService));
@@ -46,6 +50,7 @@ namespace OrchardCore.OpenId.Services
             _shellOptions = shellOptions;
             _shellSettings = shellSettings;
             _siteService = siteService;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
             S = stringLocalizer;
         }
 
@@ -89,7 +94,7 @@ namespace OrchardCore.OpenId.Services
             ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
-            container.Properties[nameof(OpenIdServerSettings)] = JObject.FromObject(settings);
+            container.Properties[nameof(OpenIdServerSettings)] = JObject.FromObject(settings, _jsonSerializerOptions);
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 

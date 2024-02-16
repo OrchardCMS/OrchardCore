@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.AuditTrail.Drivers;
 using OrchardCore.AuditTrail.Indexes;
 using OrchardCore.AuditTrail.Models;
@@ -21,11 +23,16 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
         private readonly Dictionary<string, string> _latestVersionId = [];
         private readonly IAuditTrailManager _auditTrailManager;
         private readonly ISession _session;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public AuditTrailContentEventDisplayDriver(IAuditTrailManager auditTrailManager, ISession session)
+        public AuditTrailContentEventDisplayDriver(
+            IAuditTrailManager auditTrailManager,
+            ISession session,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             _auditTrailManager = auditTrailManager;
             _session = session;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public override async Task<IDisplayResult> DisplayAsync(AuditTrailEvent auditTrailEvent, AuditTrailContentEvent contentEvent, BuildDisplayContext context)
@@ -67,8 +74,8 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
 
                     if (previousContentItem != null)
                     {
-                        var current = JObject.FromObject(contentEvent.ContentItem);
-                        var previous = JObject.FromObject(previousContentItem);
+                        var current = JObject.FromObject(contentEvent.ContentItem, _jsonSerializerOptions);
+                        var previous = JObject.FromObject(previousContentItem, _jsonSerializerOptions);
                         previous.Remove(nameof(AuditTrailPart));
                         current.Remove(nameof(AuditTrailPart));
 
@@ -94,8 +101,8 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
 
                     if (previousContentItem != null)
                     {
-                        var current = JObject.FromObject(contentEvent.ContentItem);
-                        var previous = JObject.FromObject(previousContentItem);
+                        var current = JObject.FromObject(contentEvent.ContentItem, _jsonSerializerOptions);
+                        var previous = JObject.FromObject(previousContentItem, _jsonSerializerOptions);
                         previous.Remove(nameof(AuditTrailPart));
                         current.Remove(nameof(AuditTrailPart));
 

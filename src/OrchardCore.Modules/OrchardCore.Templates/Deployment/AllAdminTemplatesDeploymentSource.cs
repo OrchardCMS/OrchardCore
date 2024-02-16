@@ -1,6 +1,8 @@
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
 using OrchardCore.Templates.Models;
 using OrchardCore.Templates.Services;
@@ -10,10 +12,14 @@ namespace OrchardCore.Templates.Deployment
     public class AllAdminTemplatesDeploymentSource : IDeploymentSource
     {
         private readonly AdminTemplatesManager _templatesManager;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public AllAdminTemplatesDeploymentSource(AdminTemplatesManager templatesManager)
+        public AllAdminTemplatesDeploymentSource(
+            AdminTemplatesManager templatesManager,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             _templatesManager = templatesManager;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
@@ -35,14 +41,14 @@ namespace OrchardCore.Templates.Deployment
                     var fileName = "AdminTemplates/" + template.Key.Replace("__", "-").Replace("_", ".") + ".liquid";
                     var templateValue = new Template { Description = template.Value.Description, Content = $"[file:text('{fileName}')]" };
                     await result.FileBuilder.SetFileAsync(fileName, Encoding.UTF8.GetBytes(template.Value.Content));
-                    templateObjects[template.Key] = JObject.FromObject(templateValue);
+                    templateObjects[template.Key] = JObject.FromObject(templateValue, _jsonSerializerOptions);
                 }
             }
             else
             {
                 foreach (var template in templates.Templates)
                 {
-                    templateObjects[template.Key] = JObject.FromObject(template.Value);
+                    templateObjects[template.Key] = JObject.FromObject(template.Value, _jsonSerializerOptions);
                 }
             }
 

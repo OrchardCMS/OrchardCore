@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
 using OrchardCore.Roles.Recipes;
 using OrchardCore.Security;
@@ -14,11 +16,16 @@ namespace OrchardCore.Roles.Deployment
     public class AllRolesDeploymentSource : IDeploymentSource
     {
         private readonly RoleManager<IRole> _roleManager;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly IRoleService _roleService;
 
-        public AllRolesDeploymentSource(RoleManager<IRole> roleManager, IRoleService roleService)
+        public AllRolesDeploymentSource(
+            RoleManager<IRole> roleManager,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions,
+            IRoleService roleService)
         {
             _roleManager = roleManager;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
             _roleService = roleService;
         }
 
@@ -48,7 +55,7 @@ namespace OrchardCore.Roles.Deployment
                             Name = currentRole.RoleName,
                             Description = currentRole.RoleDescription,
                             Permissions = currentRole.RoleClaims.Where(x => x.ClaimType == Permission.ClaimType).Select(x => x.ClaimValue).ToArray()
-                        }));
+                        }, _jsonSerializerOptions));
                 }
             }
 

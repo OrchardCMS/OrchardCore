@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Settings;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.CompiledQueries;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
@@ -28,6 +30,7 @@ namespace OrchardCore.ContentManagement
         private readonly ISession _session;
         private readonly ILogger _logger;
         private readonly IContentManagerSession _contentManagerSession;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly IContentItemIdGenerator _idGenerator;
         private readonly IClock _clock;
 
@@ -37,6 +40,7 @@ namespace OrchardCore.ContentManagement
             IEnumerable<IContentHandler> handlers,
             ISession session,
             IContentItemIdGenerator idGenerator,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions,
             ILogger<DefaultContentManager> logger,
             IClock clock)
         {
@@ -46,6 +50,7 @@ namespace OrchardCore.ContentManagement
             _session = session;
             _idGenerator = idGenerator;
             _contentManagerSession = contentManagerSession;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
             _logger = logger;
             _clock = clock;
         }
@@ -730,7 +735,7 @@ namespace OrchardCore.ContentManagement
                         // would be further ahead, on a timeline, between the two.
 
                         // var jImporting = JObject.FromObject(importingItem);
-                        var jImporting = JObject.FromObject(importingItem);
+                        var jImporting = JObject.FromObject(importingItem, _jsonSerializerOptions);
 
                         // Removed Published and Latest from consideration when evaluating.
                         // Otherwise an import of an unchanged (but published) version would overwrite a newer published version.
@@ -738,7 +743,7 @@ namespace OrchardCore.ContentManagement
                         jImporting.Remove(nameof(ContentItem.Latest));
 
                         // var jOriginal = JObject.FromObject(originalVersion);
-                        var jOriginal = JObject.FromObject(originalVersion);
+                        var jOriginal = JObject.FromObject(originalVersion, _jsonSerializerOptions);
 
                         jOriginal.Remove(nameof(ContentItem.Published));
                         jOriginal.Remove(nameof(ContentItem.Latest));

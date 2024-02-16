@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Settings;
@@ -14,13 +16,16 @@ namespace OrchardCore.OpenId.Services
     {
         private readonly ISiteService _siteService;
         protected readonly IStringLocalizer S;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         public OpenIdClientService(
             ISiteService siteService,
-            IStringLocalizer<OpenIdClientService> stringLocalizer)
+            IStringLocalizer<OpenIdClientService> stringLocalizer,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             _siteService = siteService;
             S = stringLocalizer;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task<OpenIdClientSettings> GetSettingsAsync()
@@ -40,7 +45,7 @@ namespace OrchardCore.OpenId.Services
             ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
-            container.Properties[nameof(OpenIdClientSettings)] = JObject.FromObject(settings);
+            container.Properties[nameof(OpenIdClientSettings)] = JObject.FromObject(settings, _jsonSerializerOptions);
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 

@@ -13,7 +13,7 @@ namespace OrchardCore.Layers.Deployment
     {
         private readonly ILayerService _layerService;
         private readonly ISiteService _siteService;
-        private readonly JsonSerializerOptions _serializationOptions;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         public AllLayersDeploymentSource(
             ILayerService layerService,
@@ -24,7 +24,7 @@ namespace OrchardCore.Layers.Deployment
             _siteService = siteService;
 
             // The recipe step contains polymorphic types which need to be resolved
-            _serializationOptions = serializationOptions.Value;
+            _jsonSerializerOptions = serializationOptions.Value;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
@@ -41,7 +41,7 @@ namespace OrchardCore.Layers.Deployment
             result.Steps.Add(new JsonObject
             {
                 ["name"] = "Layers",
-                ["Layers"] = JArray.FromObject(layers.Layers, _serializationOptions),
+                ["Layers"] = JArray.FromObject(layers.Layers, _jsonSerializerOptions),
             });
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
@@ -50,7 +50,7 @@ namespace OrchardCore.Layers.Deployment
             result.Steps.Add(new JsonObject
             {
                 ["name"] = "Settings",
-                ["LayerSettings"] = JObject.FromObject(siteSettings.As<LayerSettings>()),
+                ["LayerSettings"] = JObject.FromObject(siteSettings.As<LayerSettings>(), _jsonSerializerOptions),
             });
         }
     }

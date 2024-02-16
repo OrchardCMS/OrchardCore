@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.Facebook.Login.Settings;
 using OrchardCore.Settings;
 
@@ -12,11 +14,14 @@ namespace OrchardCore.Facebook.Login.Services
     public class FacebookLoginService : IFacebookLoginService
     {
         private readonly ISiteService _siteService;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         public FacebookLoginService(
-            ISiteService siteService)
+            ISiteService siteService,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             _siteService = siteService;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task<FacebookLoginSettings> GetSettingsAsync()
@@ -36,7 +41,7 @@ namespace OrchardCore.Facebook.Login.Services
             ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
-            container.Properties[nameof(FacebookLoginSettings)] = JObject.FromObject(settings);
+            container.Properties[nameof(FacebookLoginSettings)] = JObject.FromObject(settings, _jsonSerializerOptions);
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 
