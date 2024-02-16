@@ -472,13 +472,16 @@ namespace Microsoft.Extensions.DependencyInjection
                 (services, serviceProvider) =>
                 {
                     var settings = serviceProvider.GetRequiredService<ShellSettings>();
+                    var env = serviceProvider.GetRequiredService<IHostEnvironment>();
                     var cookieName = "__orchantiforgery_" + settings.VersionId;
 
                     // Re-register the antiforgery services to be tenant-aware.
                     var collection = new ServiceCollection().AddAntiforgery(options =>
                     {
                         options.Cookie.Name = cookieName;
-                        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                        options.Cookie.SecurePolicy = env.IsProduction()
+                            ? CookieSecurePolicy.Always
+                            : CookieSecurePolicy.SameAsRequest;
 
                         // Don't set the cookie builder 'Path' so that it uses the 'IAuthenticationFeature' value
                         // set by the pipeline and comming from the request 'PathBase' which already ends with the
