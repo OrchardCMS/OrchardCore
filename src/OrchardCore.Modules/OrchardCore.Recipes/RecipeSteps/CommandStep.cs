@@ -1,10 +1,8 @@
 using System;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Cysharp.Text;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Environment.Commands.Parameters;
 using OrchardCore.Recipes.Models;
@@ -20,19 +18,16 @@ namespace OrchardCore.Recipes.RecipeSteps
         private readonly ICommandManager _commandManager;
         private readonly ICommandParser _commandParser;
         private readonly ICommandParametersParser _commandParameterParser;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly ILogger _logger;
 
         public CommandStep(ICommandManager commandManager,
             ICommandParser commandParser,
             ICommandParametersParser commandParameterParser,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions,
             ILogger<CommandStep> logger)
         {
             _commandManager = commandManager;
             _commandParser = commandParser;
             _commandParameterParser = commandParameterParser;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
             _logger = logger;
         }
 
@@ -43,7 +38,7 @@ namespace OrchardCore.Recipes.RecipeSteps
                 return;
             }
 
-            var step = context.Step.ToObject<CommandStepModel>(_jsonSerializerOptions);
+            var step = context.Step.ToObject<CommandStepModel>();
 
             foreach (var command in step.Commands)
             {

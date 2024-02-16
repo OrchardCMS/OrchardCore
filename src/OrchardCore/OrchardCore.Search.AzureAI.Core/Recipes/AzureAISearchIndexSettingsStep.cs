@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OrchardCore.BackgroundJobs;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -23,20 +21,17 @@ public class AzureAISearchIndexSettingsStep : IRecipeStepHandler
     private readonly AzureAIIndexDocumentManager _azureAIIndexDocumentManager;
     private readonly AzureAISearchIndexSettingsService _azureAISearchIndexSettingsService;
     private readonly ILogger _logger;
-    private readonly JsonSerializerOptions _jsonSerializerOptions;
 
     public AzureAISearchIndexSettingsStep(
         AzureAISearchIndexManager indexManager,
         AzureAIIndexDocumentManager azureAIIndexDocumentManager,
         AzureAISearchIndexSettingsService azureAISearchIndexSettingsService,
-        ILogger<AzureAISearchIndexSettingsStep> logger,
-        IOptions<JsonSerializerOptions> jsonSerializerOptions)
+        ILogger<AzureAISearchIndexSettingsStep> logger)
     {
         _indexManager = indexManager;
         _azureAIIndexDocumentManager = azureAIIndexDocumentManager;
         _azureAISearchIndexSettingsService = azureAISearchIndexSettingsService;
         _logger = logger;
-        _jsonSerializerOptions = jsonSerializerOptions.Value;
     }
 
     public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -55,7 +50,7 @@ public class AzureAISearchIndexSettingsStep : IRecipeStepHandler
 
         foreach (var index in indexes)
         {
-            var indexSettings = index.ToObject<AzureAISearchIndexSettings>(_jsonSerializerOptions);
+            var indexSettings = index.ToObject<AzureAISearchIndexSettings>();
 
             if (!AzureAISearchIndexNamingHelper.TryGetSafeIndexName(indexSettings.IndexName, out var indexName))
             {

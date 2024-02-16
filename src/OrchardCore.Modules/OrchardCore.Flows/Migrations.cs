@@ -1,6 +1,4 @@
-using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
@@ -11,14 +9,10 @@ namespace OrchardCore.Flows
     public class Migrations : DataMigration
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public Migrations(
-            IContentDefinitionManager contentDefinitionManager,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions)
+        public Migrations(IContentDefinitionManager contentDefinitionManager)
         {
             _contentDefinitionManager = contentDefinitionManager;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task<int> CreateAsync()
@@ -51,7 +45,7 @@ namespace OrchardCore.Flows
         // This code can be removed in a later version.
         public async Task<int> UpdateFrom2Async()
         {
-            await _contentDefinitionManager.MigratePartSettingsAsync<BagPart, BagPartSettings>(_jsonSerializerOptions);
+            await _contentDefinitionManager.MigratePartSettingsAsync<BagPart, BagPartSettings>();
 
             return 3;
         }

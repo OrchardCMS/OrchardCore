@@ -1,8 +1,6 @@
 using System.Linq;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Views;
@@ -12,21 +10,17 @@ namespace OrchardCore.Search.Lucene.Settings
     public class ContentPickerFieldLuceneEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver
     {
         private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public ContentPickerFieldLuceneEditorSettingsDriver(
-            LuceneIndexSettingsService luceneIndexSettingsService,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions)
+        public ContentPickerFieldLuceneEditorSettingsDriver(LuceneIndexSettingsService luceneIndexSettingsService)
         {
             _luceneIndexSettingsService = luceneIndexSettingsService;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
             return Initialize<ContentPickerFieldLuceneEditorSettings>("ContentPickerFieldLuceneEditorSettings_Edit", async model =>
             {
-                var settings = partFieldDefinition.Settings.ToObject<ContentPickerFieldLuceneEditorSettings>(_jsonSerializerOptions);
+                var settings = partFieldDefinition.Settings.ToObject<ContentPickerFieldLuceneEditorSettings>();
 
                 model.Index = settings.Index;
                 model.Indices = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();

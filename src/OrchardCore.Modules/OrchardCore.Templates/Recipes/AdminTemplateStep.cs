@@ -1,8 +1,6 @@
 using System;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Templates.Models;
@@ -16,14 +14,10 @@ namespace OrchardCore.Templates.Recipes
     public class AdminTemplateStep : IRecipeStepHandler
     {
         private readonly AdminTemplatesManager _adminTemplatesManager;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public AdminTemplateStep(
-            AdminTemplatesManager templatesManager,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions)
+        public AdminTemplateStep(AdminTemplatesManager templatesManager)
         {
             _adminTemplatesManager = templatesManager;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -38,7 +32,7 @@ namespace OrchardCore.Templates.Recipes
                 foreach (var property in templates)
                 {
                     var name = property.Key;
-                    var value = property.Value.ToObject<Template>(_jsonSerializerOptions);
+                    var value = property.Value.ToObject<Template>();
 
                     await _adminTemplatesManager.UpdateTemplateAsync(name, value);
                 }

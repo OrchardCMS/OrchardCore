@@ -1,6 +1,4 @@
-using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell;
@@ -14,16 +12,13 @@ namespace OrchardCore.Media
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ShellDescriptor _shellDescriptor;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         public Migrations(
             IContentDefinitionManager contentDefinitionManager,
-            ShellDescriptor shellDescriptor,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions)
+            ShellDescriptor shellDescriptor)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _shellDescriptor = shellDescriptor;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         // New installations don't need to be upgraded, but because there is no initial migration record,
@@ -42,7 +37,7 @@ namespace OrchardCore.Media
         // Upgrade an existing installation.
         private async Task UpgradeAsync()
         {
-            await _contentDefinitionManager.MigrateFieldSettingsAsync<MediaField, MediaFieldSettings>(_jsonSerializerOptions);
+            await _contentDefinitionManager.MigrateFieldSettingsAsync<MediaField, MediaFieldSettings>();
         }
     }
 }

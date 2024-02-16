@@ -27,9 +27,7 @@ namespace OrchardCore.Layers.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var allLayersStep = step as AllLayersDeploymentStep;
-
-            if (allLayersStep == null)
+            if (step is not AllLayersDeploymentStep allLayersStep)
             {
                 return;
             }
@@ -48,7 +46,7 @@ namespace OrchardCore.Layers.Deployment
             result.Steps.Add(new JsonObject
             {
                 ["name"] = "Settings",
-                ["LayerSettings"] = JObject.FromObject(siteSettings.As<LayerSettings>(), _jsonSerializerOptions),
+                ["LayerSettings"] = JObject.FromObject(siteSettings.As<LayerSettings>()),
             });
         }
     }

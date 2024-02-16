@@ -83,7 +83,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             if (workflowContext.Input.TryGetValue(ContentEventConstants.ContentEventInputKey, out var contentEvent))
             {
-                var contentEventContext = ((JsonObject)contentEvent).ToObject<ContentEventContext>(_jsonSerializerOptions);
+                var contentEventContext = ((JsonObject)contentEvent).ToObject<ContentEventContext>();
 
                 if (contentEventContext?.ContentItemVersionId != null)
                 {

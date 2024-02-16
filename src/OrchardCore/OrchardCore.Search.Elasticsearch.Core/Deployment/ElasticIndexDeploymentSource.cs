@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
@@ -13,21 +11,15 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment
     public class ElasticIndexDeploymentSource : IDeploymentSource
     {
         private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public ElasticIndexDeploymentSource(
-            ElasticIndexSettingsService elasticIndexSettingsService,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions)
+        public ElasticIndexDeploymentSource(ElasticIndexSettingsService elasticIndexSettingsService)
         {
             _elasticIndexSettingsService = elasticIndexSettingsService;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var elasticIndexStep = step as ElasticIndexDeploymentStep;
-
-            if (elasticIndexStep == null)
+            if (step is not ElasticIndexDeploymentStep elasticIndexStep)
             {
                 return;
             }
@@ -46,7 +38,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment
                         { index.IndexName, index },
                     };
 
-                    data.Add(JObject.FromObject(indexSettingsDict, _jsonSerializerOptions));
+                    data.Add(JObject.FromObject(indexSettingsDict));
                 }
             }
 

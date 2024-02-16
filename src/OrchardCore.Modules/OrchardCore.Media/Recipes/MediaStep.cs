@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.FileProviders;
@@ -20,7 +19,6 @@ namespace OrchardCore.Media.Recipes
     public class MediaStep : IRecipeStepHandler
     {
         private readonly IMediaFileStore _mediaFileStore;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly HashSet<string> _allowedFileExtensions;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger _logger;
@@ -28,12 +26,10 @@ namespace OrchardCore.Media.Recipes
         public MediaStep(
             IMediaFileStore mediaFileStore,
             IOptions<MediaOptions> options,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions,
             IHttpClientFactory httpClientFactory,
             ILogger<MediaStep> logger)
         {
             _mediaFileStore = mediaFileStore;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
             _allowedFileExtensions = options.Value.AllowedFileExtensions;
             _httpClientFactory = httpClientFactory;
             _logger = logger;
@@ -46,7 +42,7 @@ namespace OrchardCore.Media.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<MediaStepModel>(_jsonSerializerOptions);
+            var model = context.Step.ToObject<MediaStepModel>();
 
             foreach (var file in model.Files)
             {

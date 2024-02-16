@@ -30,7 +30,6 @@ namespace OrchardCore.OpenId.Services
         private readonly IOptionsMonitor<ShellOptions> _shellOptions;
         private readonly ShellSettings _shellSettings;
         private readonly ISiteService _siteService;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         protected readonly IStringLocalizer S;
 
@@ -41,7 +40,6 @@ namespace OrchardCore.OpenId.Services
             IOptionsMonitor<ShellOptions> shellOptions,
             ShellSettings shellSettings,
             ISiteService siteService,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions,
             IStringLocalizer<OpenIdServerService> stringLocalizer)
         {
             _dataProtector = dataProtectionProvider.CreateProtector(nameof(OpenIdServerService));
@@ -50,7 +48,6 @@ namespace OrchardCore.OpenId.Services
             _shellOptions = shellOptions;
             _shellSettings = shellSettings;
             _siteService = siteService;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
             S = stringLocalizer;
         }
 
@@ -70,7 +67,7 @@ namespace OrchardCore.OpenId.Services
         {
             if (container.Properties.TryGetPropertyValue(nameof(OpenIdServerSettings), out var settings))
             {
-                return settings.ToObject<OpenIdServerSettings>(_jsonSerializerOptions);
+                return settings.ToObject<OpenIdServerSettings>(JOptions.Default);
             }
 
             // If the OpenID server settings haven't been populated yet, the authorization,
@@ -94,7 +91,7 @@ namespace OrchardCore.OpenId.Services
             ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
-            container.Properties[nameof(OpenIdServerSettings)] = JObject.FromObject(settings, _jsonSerializerOptions);
+            container.Properties[nameof(OpenIdServerSettings)] = JObject.FromObject(settings, JOptions.Default);
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 

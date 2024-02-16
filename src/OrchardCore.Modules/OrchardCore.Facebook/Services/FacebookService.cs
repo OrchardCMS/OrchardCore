@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
 using OrchardCore.Facebook.Settings;
 using OrchardCore.Settings;
 
@@ -14,17 +12,15 @@ namespace OrchardCore.Facebook.Services
     public class FacebookService : IFacebookService
     {
         private readonly ISiteService _siteService;
+
         protected readonly IStringLocalizer S;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         public FacebookService(
             ISiteService siteService,
-            IStringLocalizer<FacebookService> stringLocalizer,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions)
+            IStringLocalizer<FacebookService> stringLocalizer)
         {
             _siteService = siteService;
             S = stringLocalizer;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task<FacebookSettings> GetSettingsAsync()
@@ -38,7 +34,7 @@ namespace OrchardCore.Facebook.Services
             ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
-            container.Properties[nameof(FacebookSettings)] = JObject.FromObject(settings, _jsonSerializerOptions);
+            container.Properties[nameof(FacebookSettings)] = JObject.FromObject(settings);
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 

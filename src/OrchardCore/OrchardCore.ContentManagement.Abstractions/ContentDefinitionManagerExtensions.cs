@@ -109,7 +109,7 @@ namespace OrchardCore.ContentManagement.Metadata
         /// <typeparam name="TSettings"></typeparam>
         /// <param name="manager"></param>
         /// <param name="jsonSerializerOptions"></param>
-        public static async Task MigratePartSettingsAsync<TPart, TSettings>(this IContentDefinitionManager manager, JsonSerializerOptions jsonSerializerOptions)
+        public static async Task MigratePartSettingsAsync<TPart, TSettings>(this IContentDefinitionManager manager, JsonSerializerOptions jsonSerializerOptions = null)
             where TPart : ContentPart where TSettings : class
         {
             var contentTypes = await manager.LoadTypeDefinitionsAsync();
@@ -197,7 +197,7 @@ namespace OrchardCore.ContentManagement.Metadata
         /// <typeparam name="TSettings"></typeparam>
         /// <param name="manager"></param>
         /// <param name="jsonSerializerOptions"></param>
-        public static async Task MigrateFieldSettingsAsync<TField, TSettings>(this IContentDefinitionManager manager, JsonSerializerOptions jsonSerializerOptions)
+        public static async Task MigrateFieldSettingsAsync<TField, TSettings>(this IContentDefinitionManager manager, JsonSerializerOptions jsonSerializerOptions = null)
             where TField : ContentField where TSettings : class
         {
             var partDefinitions = await manager.LoadPartDefinitionsAsync();

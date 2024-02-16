@@ -1,8 +1,6 @@
 using System;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -16,17 +14,14 @@ namespace OrchardCore.Themes.Recipes
     public class ThemesStep : IRecipeStepHandler
     {
         private readonly ISiteThemeService _siteThemeService;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly IAdminThemeService _adminThemeService;
 
         public ThemesStep(
             ISiteThemeService siteThemeService,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions,
             IAdminThemeService adminThemeService)
         {
             _adminThemeService = adminThemeService;
             _siteThemeService = siteThemeService;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -36,7 +31,7 @@ namespace OrchardCore.Themes.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<ThemeStepModel>(_jsonSerializerOptions);
+            var model = context.Step.ToObject<ThemeStepModel>();
 
             if (!string.IsNullOrEmpty(model.Site))
             {

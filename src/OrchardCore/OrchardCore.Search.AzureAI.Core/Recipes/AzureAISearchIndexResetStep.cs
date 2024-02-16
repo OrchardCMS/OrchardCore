@@ -1,10 +1,8 @@
 using System;
 using System.Linq;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OrchardCore.BackgroundJobs;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -15,13 +13,6 @@ namespace OrchardCore.Search.AzureAI.Recipes;
 
 public class AzureAISearchIndexResetStep : IRecipeStepHandler
 {
-    private readonly JsonSerializerOptions _jsonSerializerOptions;
-
-    public AzureAISearchIndexResetStep(IOptions<JsonSerializerOptions> jsonSerializerOptions)
-    {
-        _jsonSerializerOptions = jsonSerializerOptions.Value;
-    }
-
     public async Task ExecuteAsync(RecipeExecutionContext context)
     {
         if (!string.Equals(context.Name, AzureAISearchIndexResetDeploymentSource.Name, StringComparison.OrdinalIgnoreCase))
@@ -29,7 +20,7 @@ public class AzureAISearchIndexResetStep : IRecipeStepHandler
             return;
         }
 
-        var model = context.Step.ToObject<AzureAISearchIndexResetDeploymentStep>(_jsonSerializerOptions);
+        var model = context.Step.ToObject<AzureAISearchIndexResetDeploymentStep>();
 
         if (model == null)
         {

@@ -43,7 +43,7 @@ namespace OrchardCore.Workflows.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<WorkflowStepModel>(_jsonSerializerOptions);
+            var model = context.Step.ToObject<WorkflowStepModel>();
 
             foreach (var token in model.Data.Cast<JsonObject>())
             {

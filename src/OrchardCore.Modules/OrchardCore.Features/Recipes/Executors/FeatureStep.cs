@@ -1,9 +1,7 @@
 using System;
 using System.Linq;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -16,14 +14,11 @@ namespace OrchardCore.Features.Recipes.Executors
     public class FeatureStep : IRecipeStepHandler
     {
         private readonly IShellFeaturesManager _shellFeaturesManager;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         public FeatureStep(
-            IShellFeaturesManager shellFeaturesManager,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions)
+            IShellFeaturesManager shellFeaturesManager)
         {
             _shellFeaturesManager = shellFeaturesManager;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -33,14 +28,14 @@ namespace OrchardCore.Features.Recipes.Executors
                 return;
             }
 
-            var step = context.Step.ToObject<FeatureStepModel>(_jsonSerializerOptions);
+            var step = context.Step.ToObject<FeatureStepModel>();
 
-            var features = (await _shellFeaturesManager.GetAvailableFeaturesAsync());
+            var features = await _shellFeaturesManager.GetAvailableFeaturesAsync();
 
-            var featuresToDisable = features.Where(x => step.Disable?.Contains(x.Id) == true).ToList();
-            var featuresToEnable = features.Where(x => step.Enable?.Contains(x.Id) == true).ToList();
+            var featuresToDisable = features.Where(x => step.Disable?.Contains(x.Id) == true).ToArray();
+            var featuresToEnable = features.Where(x => step.Enable?.Contains(x.Id) == true).ToArray();
 
-            if (featuresToDisable.Count > 0 || featuresToEnable.Count > 0)
+            if (featuresToDisable.Length > 0 || featuresToEnable.Length > 0)
             {
                 await _shellFeaturesManager.UpdateFeaturesAsync(featuresToDisable, featuresToEnable, true);
             }

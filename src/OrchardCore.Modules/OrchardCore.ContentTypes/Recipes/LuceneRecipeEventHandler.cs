@@ -1,7 +1,5 @@
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.Metadata.Records;
 using OrchardCore.Recipes.Events;
 using OrchardCore.Recipes.Models;
@@ -13,13 +11,6 @@ namespace OrchardCore.ContentTypes
     /// </summary>
     public class LuceneRecipeEventHandler : IRecipeEventHandler
     {
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
-
-        public LuceneRecipeEventHandler(IOptions<JsonSerializerOptions> jsonSerializerOptions)
-        {
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
-        }
-
         public RecipeExecutionContext Context { get; private set; }
 
         public Task RecipeStepExecutedAsync(RecipeExecutionContext context) => Task.CompletedTask;
@@ -34,7 +25,7 @@ namespace OrchardCore.ContentTypes
         {
             if (context.Name == "ReplaceContentDefinition" || context.Name == "ContentDefinition")
             {
-                var step = context.Step.ToObject<ContentDefinitionStepModel>(_jsonSerializerOptions);
+                var step = context.Step.ToObject<ContentDefinitionStepModel>();
 
                 foreach (var contentType in step.ContentTypes)
                 {
@@ -81,7 +72,7 @@ namespace OrchardCore.ContentTypes
                     }
                 }
 
-                context.Step = JObject.FromObject(step, _jsonSerializerOptions);
+                context.Step = JObject.FromObject(step);
             }
 
             return Task.CompletedTask;

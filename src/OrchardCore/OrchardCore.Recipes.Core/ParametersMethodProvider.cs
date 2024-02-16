@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using OrchardCore.Scripting;
 
@@ -10,9 +9,9 @@ namespace OrchardCore.Recipes
     {
         private readonly GlobalMethod _globalMethod;
 
-        public ParametersMethodProvider(object environment, JsonSerializerOptions jsonSerializerOptions)
+        public ParametersMethodProvider(object environment)
         {
-            var environmentObject = JObject.FromObject(environment, jsonSerializerOptions);
+            var environmentObject = JObject.FromObject(environment);
 
             _globalMethod = new GlobalMethod
             {

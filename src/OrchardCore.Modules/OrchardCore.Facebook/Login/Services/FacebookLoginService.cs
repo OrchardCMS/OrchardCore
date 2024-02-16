@@ -41,7 +41,7 @@ namespace OrchardCore.Facebook.Login.Services
             ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
-            container.Properties[nameof(FacebookLoginSettings)] = JObject.FromObject(settings, _jsonSerializerOptions);
+            container.Properties[nameof(FacebookLoginSettings)] = JObject.FromObject(settings, JOptions.Default);
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 

@@ -1,7 +1,5 @@
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
 using OrchardCore.Users.Models;
 using YesSql;
@@ -11,14 +9,10 @@ namespace OrchardCore.Users.Deployment;
 public class AllUsersDeploymentSource : IDeploymentSource
 {
     private readonly ISession _session;
-    private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-    public AllUsersDeploymentSource(
-        ISession session,
-        IOptions<JsonSerializerOptions> jsonSerializerOptions)
+    public AllUsersDeploymentSource(ISession session)
     {
         _session = session;
-        _jsonSerializerOptions = jsonSerializerOptions.Value;
     }
 
     public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
@@ -53,7 +47,7 @@ public class AllUsersDeploymentSource : IDeploymentSource
                     IsLockoutEnabled = user.IsLockoutEnabled,
                     AccessFailedCount = user.AccessFailedCount,
                     RoleNames = user.RoleNames,
-                }, _jsonSerializerOptions));
+                }));
         }
 
         result.Steps.Add(new JsonObject

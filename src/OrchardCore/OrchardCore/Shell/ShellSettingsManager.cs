@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.CommandLine;
 using Microsoft.Extensions.Configuration.EnvironmentVariables;
-using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Models;
 
@@ -19,7 +17,6 @@ namespace OrchardCore.Environment.Shell
         private readonly IConfiguration _applicationConfiguration;
         private readonly IShellsConfigurationSources _tenantsConfigSources;
         private readonly IShellConfigurationSources _tenantConfigSources;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly IShellsSettingsSources _tenantsSettingsSources;
 
         private IConfiguration _configuration;
@@ -36,13 +33,11 @@ namespace OrchardCore.Environment.Shell
             IConfiguration applicationConfiguration,
             IShellsConfigurationSources tenantsConfigSources,
             IShellConfigurationSources tenantConfigSources,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions,
             IShellsSettingsSources tenantsSettingsSources)
         {
             _applicationConfiguration = applicationConfiguration;
             _tenantsConfigSources = tenantsConfigSources;
             _tenantConfigSources = tenantConfigSources;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
             _tenantsSettingsSources = tenantsSettingsSources;
         }
 
@@ -179,7 +174,7 @@ namespace OrchardCore.Environment.Shell
 
                 tenantSettings.Remove("Name");
 
-                await _tenantsSettingsSources.SaveAsync(settings.Name, tenantSettings.ToObject<Dictionary<string, string>>(_jsonSerializerOptions));
+                await _tenantsSettingsSources.SaveAsync(settings.Name, tenantSettings.ToObject<Dictionary<string, string>>());
 
                 var tenantConfig = new Dictionary<string, string>();
                 foreach (var config in settings.ShellConfiguration.AsEnumerable())

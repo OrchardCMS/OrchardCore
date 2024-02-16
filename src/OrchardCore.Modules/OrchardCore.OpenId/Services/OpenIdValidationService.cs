@@ -2,7 +2,6 @@ using System;
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,7 +22,6 @@ namespace OrchardCore.OpenId.Services
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _shellHost;
         private readonly ISiteService _siteService;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         protected readonly IStringLocalizer S;
 
@@ -32,14 +30,12 @@ namespace OrchardCore.OpenId.Services
             ShellSettings shellSettings,
             IShellHost shellHost,
             ISiteService siteService,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions,
             IStringLocalizer<OpenIdValidationService> stringLocalizer)
         {
             _shellDescriptor = shellDescriptor;
             _shellSettings = shellSettings;
             _shellHost = shellHost;
             _siteService = siteService;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
             S = stringLocalizer;
         }
 
@@ -59,7 +55,7 @@ namespace OrchardCore.OpenId.Services
         {
             if (container.Properties.TryGetPropertyValue(nameof(OpenIdValidationSettings), out var settings))
             {
-                return settings.ToObject<OpenIdValidationSettings>(_jsonSerializerOptions);
+                return settings.ToObject<OpenIdValidationSettings>();
             }
 
             // If the OpenID validation settings haven't been populated yet, assume the validation
@@ -80,7 +76,7 @@ namespace OrchardCore.OpenId.Services
             ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
-            container.Properties[nameof(OpenIdValidationSettings)] = JObject.FromObject(settings, _jsonSerializerOptions);
+            container.Properties[nameof(OpenIdValidationSettings)] = JObject.FromObject(settings);
             await _siteService.UpdateSiteSettingsAsync(container);
         }
 

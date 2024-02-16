@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -16,14 +14,10 @@ namespace OrchardCore.Recipes.RecipeSteps
     public class RecipesStep : IRecipeStepHandler
     {
         private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public RecipesStep(
-            IEnumerable<IRecipeHarvester> recipeHarvesters,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions)
+        public RecipesStep(IEnumerable<IRecipeHarvester> recipeHarvesters)
         {
             _recipeHarvesters = recipeHarvesters;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -33,7 +27,7 @@ namespace OrchardCore.Recipes.RecipeSteps
                 return;
             }
 
-            var step = context.Step.ToObject<InternalStep>(_jsonSerializerOptions);
+            var step = context.Step.ToObject<InternalStep>();
 
             var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(harvester => harvester.HarvestRecipesAsync()));
             var recipes = recipeCollections.SelectMany(recipe => recipe).ToDictionary(recipe => recipe.Name);

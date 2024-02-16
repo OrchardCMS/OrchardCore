@@ -1,19 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
 using OrchardCore.Search.AzureAI.Models;
 using OrchardCore.Search.AzureAI.Services;
 
 namespace OrchardCore.Search.AzureAI.Deployment;
 
-public class AzureAISearchIndexDeploymentSource(AzureAISearchIndexSettingsService indexSettingsService, IOptions<JsonSerializerOptions> jsonSerializerOptions) : IDeploymentSource
+public class AzureAISearchIndexDeploymentSource(AzureAISearchIndexSettingsService indexSettingsService) : IDeploymentSource
 {
     private readonly AzureAISearchIndexSettingsService _indexSettingsService = indexSettingsService;
-    private readonly JsonSerializerOptions _jsonSerializerOptions = jsonSerializerOptions.Value;
 
     public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
     {
@@ -36,7 +33,7 @@ public class AzureAISearchIndexDeploymentSource(AzureAISearchIndexSettingsServic
                     { index.IndexName, index },
                 };
 
-                data.Add(JObject.FromObject(indexSettingsDict, _jsonSerializerOptions));
+                data.Add(JObject.FromObject(indexSettingsDict));
             }
         }
 

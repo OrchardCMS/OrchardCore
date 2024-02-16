@@ -28,15 +28,14 @@ public class CustomUserSettingsDeploymentSource : IDeploymentSource
 
     public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
     {
-        var customUserSettingsStep = step as CustomUserSettingsDeploymentStep;
-        if (customUserSettingsStep == null)
+        if (step is not CustomUserSettingsDeploymentStep customUserSettingsStep)
         {
             return;
         }
 
         var settingsTypes = customUserSettingsStep.IncludeAll
-            ? (await _customUserSettingsService.GetAllSettingsTypesAsync()).ToList()
-            : (await _customUserSettingsService.GetSettingsTypesAsync(customUserSettingsStep.SettingsTypeNames)).ToList();
+            ? (await _customUserSettingsService.GetAllSettingsTypesAsync()).ToArray()
+            : (await _customUserSettingsService.GetSettingsTypesAsync(customUserSettingsStep.SettingsTypeNames)).ToArray();
 
         // Todo: check permissions for each settings type
         var userData = new JsonArray();

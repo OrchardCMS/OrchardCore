@@ -8,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
@@ -23,7 +22,6 @@ namespace OrchardCore.Recipes.Services
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
         private readonly IEnumerable<IRecipeEventHandler> _recipeEventHandlers;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly ILogger _logger;
 
         private readonly Dictionary<string, List<IGlobalMethodProvider>> _methodProviders = [];
@@ -32,13 +30,11 @@ namespace OrchardCore.Recipes.Services
             IShellHost shellHost,
             ShellSettings shellSettings,
             IEnumerable<IRecipeEventHandler> recipeEventHandlers,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions,
             ILogger<RecipeExecutor> logger)
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
             _recipeEventHandlers = recipeEventHandlers;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
             _logger = logger;
         }
 
@@ -51,7 +47,7 @@ namespace OrchardCore.Recipes.Services
                 var methodProviders = new List<IGlobalMethodProvider>();
                 _methodProviders.Add(executionId, methodProviders);
 
-                methodProviders.Add(new ParametersMethodProvider(environment, _jsonSerializerOptions));
+                methodProviders.Add(new ParametersMethodProvider(environment));
                 methodProviders.Add(new ConfigurationMethodProvider(_shellSettings.ShellConfiguration));
 
                 var result = new RecipeResult { ExecutionId = executionId };
