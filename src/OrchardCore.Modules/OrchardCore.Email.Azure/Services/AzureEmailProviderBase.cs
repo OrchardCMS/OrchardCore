@@ -7,19 +7,16 @@ using Azure;
 using Azure.Communication.Email;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OrchardCore.Email.Azure.Models;
 
-namespace OrchardCore.Email.Azure;
+namespace OrchardCore.Email.Azure.Services;
 
-public class AzureEmailProvider : IEmailProvider
+public abstract class AzureEmailProviderBase
 {
-    public const string TechnicalName = "Azure";
-
     // Common supported file extensions and their corresponding MIME types for email attachments
     // using Azure Communication Services Email.
     // For more info <see href="https://learn.microsoft.com/en-us/azure/communication-services/concepts/email/email-attachment-allowed-mime-types" />
-    private static readonly Dictionary<string, string> _allowedMimeTypes = new()
+    protected static readonly Dictionary<string, string> _allowedMimeTypes = new()
     {
         { ".3gp", "video/3gpp" },
         { ".3g2", "video/3gpp2" },
@@ -90,22 +87,17 @@ public class AzureEmailProvider : IEmailProvider
 
     protected readonly IStringLocalizer S;
 
-    public AzureEmailProvider(
-        IOptions<AzureEmailOptions> options,
-        ILogger<AzureEmailProvider> logger,
-        IStringLocalizer<AzureEmailProvider> stringLocalizer)
+    public AzureEmailProviderBase(
+        AzureEmailOptions options,
+        ILogger logger,
+        IStringLocalizer stringLocalizer)
     {
-        _providerOptions = options.Value;
+        _providerOptions = options;
         _logger = logger;
         S = stringLocalizer;
     }
 
-    /// <summary>
-    /// The name of the provider.
-    /// </summary>
-    public LocalizedString DisplayName => S["Azure Communication Service"];
-
-    public async Task<EmailResult> SendAsync(MailMessage message)
+    public virtual async Task<EmailResult> SendAsync(MailMessage message)
     {
         ArgumentNullException.ThrowIfNull(message);
 
@@ -132,9 +124,14 @@ public class AzureEmailProvider : IEmailProvider
             var emailMessage = FromMailMessage(message, out result);
 
             var client = new EmailClient(_providerOptions.ConnectionString);
-            await client.SendAsync(WaitUntil.Completed, emailMessage);
+            var emailResult = await client.SendAsync(WaitUntil.Completed, emailMessage);
 
-            result = EmailResult.SuccessResult;
+            if (emailResult.HasValue)
+            {
+                return EmailResult.SuccessResult;
+            }
+
+            return EmailResult.FailedResult(S["An error occurred while sending an email."]);
         }
         catch (Exception ex)
         {

@@ -1,53 +1,50 @@
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using OrchardCore.Email.Azure.Models;
 using OrchardCore.Email.Core.Services;
-using OrchardCore.Email.Services;
-using OrchardCore.Environment.Shell.Configuration;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Azure.Services;
 
 public class AzureEmailProviderOptionsConfigurations : IConfigureOptions<EmailProviderOptions>
 {
-    private readonly IShellConfiguration _shellConfiguration;
-    private readonly ISiteService _siteService;
+    private readonly AzureEmailOptions _azureOptions;
+    private readonly DefaultAzureEmailOptions _defaultAzureOptions;
 
     public AzureEmailProviderOptionsConfigurations(
-        IShellConfiguration shellConfiguration,
-        ISiteService siteService)
+        IOptions<AzureEmailOptions> azureOptions,
+        IOptions<DefaultAzureEmailOptions> defaultAzureOptions)
     {
-        _shellConfiguration = shellConfiguration;
-        _siteService = siteService;
+        _azureOptions = azureOptions.Value;
+        _defaultAzureOptions = defaultAzureOptions.Value;
     }
 
     public void Configure(EmailProviderOptions options)
     {
-        var typeOptions = new EmailProviderTypeOptions(typeof(AzureEmailProvider));
+        ConfigureTenantProvider(options);
 
-        var settings = _siteService.GetSiteSettingsAsync()
-            .GetAwaiter()
-            .GetResult()
-            .As<AzureEmailSettings>();
-
-        var azureEmailOptions = _shellConfiguration.GetSection(AzureEmailOptionsConfiguration.SectionName).Get<AzureEmailOptions>();
-
-        var hasConnectionString = !string.IsNullOrEmpty(settings.ConnectionString);
-
-        if (!hasConnectionString)
+        if (_defaultAzureOptions.ConfigurationExists())
         {
-            hasConnectionString = !string.IsNullOrWhiteSpace(azureEmailOptions?.ConnectionString);
+            // Only configure the default provider, if settings are provided by the configuration provider.
+            ConfigureDefaultProvider(options);
         }
+    }
 
-        var hasDefaultSender = !string.IsNullOrEmpty(settings.DefaultSender);
-
-        if (!hasDefaultSender)
+    private void ConfigureTenantProvider(EmailProviderOptions options)
+    {
+        var typeOptions = new EmailProviderTypeOptions(typeof(AzureEmailProvider))
         {
-            hasDefaultSender = !string.IsNullOrWhiteSpace(azureEmailOptions?.DefaultSender);
-        }
-
-        typeOptions.IsEnabled = hasConnectionString && hasDefaultSender;
+            IsEnabled = _azureOptions.ConfigurationExists(),
+        };
 
         options.TryAddProvider(AzureEmailProvider.TechnicalName, typeOptions);
+    }
+
+    private static void ConfigureDefaultProvider(EmailProviderOptions options)
+    {
+        var typeOptions = new EmailProviderTypeOptions(typeof(DefaultAzureEmailProvider))
+        {
+            IsEnabled = true,
+        };
+
+        options.TryAddProvider(DefaultAzureEmailProvider.TechnicalName, typeOptions);
     }
 }

@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -12,7 +11,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Email;
 using OrchardCore.Email.Azure;
-using OrchardCore.Email.Azure.Models;
+using OrchardCore.Email.Azure.Services;
 using OrchardCore.Email.Azure.ViewModels;
 using OrchardCore.Email.Services;
 using OrchardCore.Entities;
@@ -64,17 +63,11 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
             return null;
         }
 
-        var azureEmailOptions = _shellConfiguration.GetSection(AzureEmailOptionsConfiguration.SectionName).Get<AzureEmailOptions>();
-
         return Initialize<AzureEmailSettingsViewModel>("AzureEmailSettings_Edit", model =>
         {
-            var hasFileConnectionString = !string.IsNullOrWhiteSpace(azureEmailOptions?.ConnectionString);
-
-            model.DefaultSender = settings.DefaultSender ?? azureEmailOptions.DefaultSender;
-            model.ConfigurationExists = !string.IsNullOrWhiteSpace(settings.ConnectionString) && !string.IsNullOrWhiteSpace(settings.DefaultSender);
-            model.FileConfigurationExists = hasFileConnectionString;
-            model.PreventAdminSettingsOverride = azureEmailOptions?.PreventAdminSettingsOverride ?? false;
-
+            model.IsEnabled = settings.IsEnabled;
+            model.DefaultSender = settings.DefaultSender;
+            model.HasConnectionString = !string.IsNullOrWhiteSpace(settings.ConnectionString);
         }).Location("Content:5#Azure")
         .OnGroup(EmailSettings.GroupId);
     }
@@ -92,19 +85,31 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
 
         if (await updater.TryUpdateModelAsync(model, Prefix))
         {
-            var hasChanges = false;
+            var emailSettings = site.As<EmailSettings>();
 
-            var azureEmailOptions = _shellConfiguration.GetSection(AzureEmailOptionsConfiguration.SectionName).Get<AzureEmailOptions>();
+            var hasChanges = model.IsEnabled != settings.IsEnabled;
 
-            if (azureEmailOptions is null || !azureEmailOptions.PreventAdminSettingsOverride)
+            if (!model.IsEnabled)
             {
+                if (hasChanges && emailSettings.DefaultProviderName == AzureEmailProvider.TechnicalName)
+                {
+                    emailSettings.DefaultProviderName = null;
+
+                    site.Put(emailSettings);
+                }
+
+                settings.IsEnabled = false;
+            }
+            else
+            {
+                settings.IsEnabled = true;
+
                 hasChanges |= model.DefaultSender != settings.DefaultSender;
 
                 settings.DefaultSender = model.DefaultSender;
 
                 if (string.IsNullOrWhiteSpace(model.ConnectionString)
-                    && settings.ConnectionString is null
-                    && string.IsNullOrWhiteSpace(azureEmailOptions?.ConnectionString))
+                    && settings.ConnectionString is null)
                 {
                     context.Updater.ModelState.AddModelError(Prefix, nameof(model.ConnectionString), S["Connection string is required."]);
                 }
@@ -124,9 +129,7 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
 
             if (context.Updater.ModelState.IsValid)
             {
-                var emailSettings = site.As<EmailSettings>();
-
-                if (string.IsNullOrEmpty(emailSettings.DefaultProviderName))
+                if (settings.IsEnabled && string.IsNullOrEmpty(emailSettings.DefaultProviderName))
                 {
                     // If we are enabling the only provider, set it as the default one.
                     emailSettings.DefaultProviderName = AzureEmailProvider.TechnicalName;

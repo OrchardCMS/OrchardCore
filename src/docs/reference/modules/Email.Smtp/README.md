@@ -2,7 +2,7 @@
 
 This module provides an Email provider for sending emails through the Simple Mail Transfer Protocol (SMTP).
 
-# Configuring SMTP Provider
+## Simple Mail Transfer Protocol (SMTP) Settings
 
 To enable the `SMTP` provider, navigate to `Configurations` → `Settings` → `Email`. Click on the `SMTP` tab, click the Enable checkbox, and provide your SMTP configuration. Then in the `Providers` tab, select SMTP as your default provider.
 
@@ -27,11 +27,9 @@ Here are the available SMTP settings
 !!! note
     You must configure `ProxyHost` and `ProxyPort` if the SMTP server runs through a proxy server.
 
-## Email Settings Configuration
+## Simple Mail Transfer Protocol (Default SMTP) Configuration
 
-The `OrchardCore.Email` module in Orchard Core CMS offers users the capability to configure email settings through various sources. By default, users can configure these settings using the admin area. However, the module also allows users to override these default settings by specifying configuration values in alternative sources, such as app settings or environment variables. In this configuration hierarchy, values provided in app settings or environment variables take precedence over those configured in the admin area. This design provides users with flexibility in managing email configurations based on their preferences and specific deployment environments.
-
-The following configuration values can be customized:
+You may configure the Default SMTP provider by the configuration provider using the following settings:
 
 ```json
 "OrchardCore_Email": {
@@ -53,6 +51,10 @@ The following configuration values can be customized:
 ```
 
 For more information about configurations, please refer to [Configuration](../../core/Configuration/README.md).
+
+!!! note
+    Configuration of the Default SMTP provider is not possible through Admin Settings. Utilize the configuration provider for the necessary setup. The provider will appear only if the configuration exists.
+
 
 ## Credits
 
