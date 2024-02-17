@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "install:media-app": "cd Assets/js/vue/MediaApp && npm install",
+    "install:media-app": "cd Assets/js/vue/media-app && npm install",
     "postinstall": "run-s install:*"
   },
   "devDependencies": {
