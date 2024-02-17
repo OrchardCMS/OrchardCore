@@ -80,7 +80,7 @@ namespace OrchardCore.Taxonomies.Drivers
         /// <summary>
         /// Clone the content items at the specific index.
         /// </summary>
-        private JsonObject GetTaxonomyItemAt(List<ContentItem> taxonomyItems, int[] indexes)
+        private static JsonObject GetTaxonomyItemAt(List<ContentItem> taxonomyItems, int[] indexes)
         {
             ContentItem taxonomyItem = null;
 
@@ -109,7 +109,7 @@ namespace OrchardCore.Taxonomies.Drivers
             return newObj;
         }
 
-        private JsonObject ProcessItem(TaxonomyPart originalItems, JsonObject item)
+        private static JsonObject ProcessItem(TaxonomyPart originalItems, JsonObject item)
         {
             var contentItem = GetTaxonomyItemAt(originalItems.Terms, item["index"].ToString().Split('-').Select(x => Convert.ToInt32(x)).ToArray());
 

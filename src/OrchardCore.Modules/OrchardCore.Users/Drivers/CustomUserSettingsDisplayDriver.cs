@@ -24,7 +24,6 @@ namespace OrchardCore.Users.Drivers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContentManager _contentManager;
         private readonly IAuthorizationService _authorizationService;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public CustomUserSettingsDisplayDriver(
@@ -32,14 +31,12 @@ namespace OrchardCore.Users.Drivers
             IContentDefinitionManager contentDefinitionManager,
             IContentManager contentManager,
             IAuthorizationService authorizationService,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions,
             IHttpContextAccessor httpContextAccessor)
         {
             _contentItemDisplayManager = contentItemDisplayManager;
             _contentDefinitionManager = contentDefinitionManager;
             _contentManager = contentManager;
             _authorizationService = authorizationService;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -85,7 +82,7 @@ namespace OrchardCore.Users.Drivers
                 var isNew = false;
                 var contentItem = await GetUserSettingsAsync(user, contentTypeDefinition, () => isNew = true);
                 await _contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, isNew, context.GroupId, Prefix);
-                user.Properties[contentTypeDefinition.Name] = JObject.FromObject(contentItem, _jsonSerializerOptions);
+                user.Properties[contentTypeDefinition.Name] = JObject.FromObject(contentItem);
             }
 
             return await EditAsync(user, context);
@@ -102,7 +99,7 @@ namespace OrchardCore.Users.Drivers
 
             if (user.Properties.TryGetPropertyValue(settingsType.Name, out property))
             {
-                var existing = property.ToObject<ContentItem>(_jsonSerializerOptions);
+                var existing = property.ToObject<ContentItem>();
 
                 // Create a new item to take into account the current type definition.
                 contentItem = await _contentManager.NewAsync(existing.ContentType);
