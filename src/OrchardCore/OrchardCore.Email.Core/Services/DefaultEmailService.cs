@@ -37,6 +37,19 @@ public class DefaultEmailService : IEmailService
             return EmailResult.FailedResult(S["Email settings must be configured before an Email message can be sent."]);
         }
 
+        var validationContext = new MailMessageValidationContext();
+
+        await _emailServiceEvents.InvokeAsync((e) => e.ValidatingAsync(message, validationContext), _logger);
+
+        await _emailServiceEvents.InvokeAsync((e) => e.ValidatedAsync(message, validationContext), _logger);
+
+        if (validationContext.Errors.Count > 0)
+        {
+            await _emailServiceEvents.InvokeAsync((e) => e.FailedAsync(message), _logger);
+
+            return EmailResult.FailedResult(validationContext.Errors.ToArray());
+        }
+
         await _emailServiceEvents.InvokeAsync((e) => e.SendingAsync(message), _logger);
 
         var result = await provider.SendAsync(message);

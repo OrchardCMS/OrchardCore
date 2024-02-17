@@ -56,11 +56,15 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email.Workflows
 
             var localizer = new Mock<IStringLocalizer<SmtpEmailProvider>>();
             var emailServiceLocalizer = new Mock<IStringLocalizer<DefaultEmailService>>();
+            var emailValidator = new Mock<IEmailAddressValidator>();
+
+            emailValidator.Setup(x => x.Validate(It.IsAny<string>()))
+                .Returns(true);
 
             options.Setup(o => o.Value)
                 .Returns(smtpOptions);
 
-            var smtp = new SmtpEmailProvider(options.Object, logger.Object, localizer.Object);
+            var smtp = new SmtpEmailProvider(options.Object, emailValidator.Object, logger.Object, localizer.Object);
 
             var resolver = new Mock<IEmailProviderResolver>();
             resolver.Setup(x => x.GetAsync(It.IsAny<string>()))

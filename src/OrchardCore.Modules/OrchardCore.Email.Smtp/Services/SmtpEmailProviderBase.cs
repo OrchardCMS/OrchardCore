@@ -19,26 +19,23 @@ public abstract class SmtpEmailProviderBase
     private const string EmailExtension = ".eml";
 
     private readonly SmtpOptions _providerOptions;
+    private readonly IEmailAddressValidator _emailAddressValidator;
     private readonly ILogger _logger;
 
     protected readonly IStringLocalizer S;
 
     public SmtpEmailProviderBase(
         SmtpOptions options,
+        IEmailAddressValidator emailAddressValidator,
         ILogger logger,
         IStringLocalizer stringLocalizer)
     {
         _providerOptions = options;
+        _emailAddressValidator = emailAddressValidator;
         _logger = logger;
         S = stringLocalizer;
     }
 
-    /// <summary>
-    /// Sends the specified message to an SMTP server for delivery.
-    /// </summary>
-    /// <param name="message">The message to be sent.</param>
-    /// <returns>A <see cref="EmailResult"/> that holds information about the sent message, for instance if it has sent successfully or if it has failed.</returns>
-    /// <remarks>This method allows to send an email without setting <see cref="MailMessage.To"/> if <see cref="MailMessage.Cc"/> or <see cref="MailMessage.Bcc"/> is provided.</remarks>
     public virtual async Task<EmailResult> SendAsync(MailMessage message)
     {
         ArgumentNullException.ThrowIfNull(message);
@@ -52,13 +49,18 @@ public abstract class SmtpEmailProviderBase
         var response = default(string);
         try
         {
-            // Set the MailMessage.From, to avoid the confusion between Options.DefaultSender (Author) and submitter (Sender).
-            var senderAddress = string.IsNullOrWhiteSpace(message.From)
+            var senderAddress = string.IsNullOrWhiteSpace(message.Sender)
                 ? _providerOptions.DefaultSender
-                : message.From;
+                : message.Sender;
 
+            // Set the MailMessage.From, to avoid the confusion between DefaultSender (Author) and submitter (Sender).
             if (!string.IsNullOrWhiteSpace(senderAddress))
             {
+                if (!_emailAddressValidator.Validate(senderAddress))
+                {
+                    return EmailResult.FailedResult(S["Invalid email address for the sender: '{0}'.", senderAddress]);
+                }
+
                 message.From = senderAddress;
             }
 

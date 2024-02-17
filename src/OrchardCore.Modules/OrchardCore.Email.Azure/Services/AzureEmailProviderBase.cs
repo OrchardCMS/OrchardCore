@@ -83,16 +83,19 @@ public abstract class AzureEmailProviderBase
     };
 
     private readonly AzureEmailOptions _providerOptions;
+    private readonly IEmailAddressValidator _emailAddressValidator;
     private readonly ILogger _logger;
 
     protected readonly IStringLocalizer S;
 
     public AzureEmailProviderBase(
         AzureEmailOptions options,
+        IEmailAddressValidator emailAddressValidator,
         ILogger logger,
         IStringLocalizer stringLocalizer)
     {
         _providerOptions = options;
+        _emailAddressValidator = emailAddressValidator;
         _logger = logger;
         S = stringLocalizer;
     }
@@ -106,22 +109,30 @@ public abstract class AzureEmailProviderBase
             return EmailResult.FailedResult(S["The Azure Email Provider is disabled."]);
         }
 
-        EmailResult result;
+        var senderAddress = string.IsNullOrWhiteSpace(message.Sender)
+            ? _providerOptions.DefaultSender
+            : message.Sender;
 
         try
         {
             _logger.LogDebug("Attempting to send email to {Email}.", message.To);
 
-            var senderAddress = string.IsNullOrWhiteSpace(message.From)
-                ? _providerOptions.DefaultSender
-                : message.From;
-
             if (!string.IsNullOrWhiteSpace(senderAddress))
             {
+                if (!_emailAddressValidator.Validate(senderAddress))
+                {
+                    return EmailResult.FailedResult(S["Invalid email address for the sender: '{0}'.", senderAddress]);
+                }
+
                 message.From = senderAddress;
             }
+            var errors = new List<LocalizedString>();
+            var emailMessage = FromMailMessage(message, errors);
 
-            var emailMessage = FromMailMessage(message, out result);
+            if (errors.Count > 0)
+            {
+                return EmailResult.FailedResult(errors.ToArray());
+            }
 
             var client = new EmailClient(_providerOptions.ConnectionString);
             var emailResult = await client.SendAsync(WaitUntil.Completed, emailMessage);
@@ -135,16 +146,14 @@ public abstract class AzureEmailProviderBase
         }
         catch (Exception ex)
         {
-            // IMPORTANT, do not expose ex.Message as it could contain the connection string in a raw format!
-            result = EmailResult.FailedResult(S["An error occurred while sending an email."]);
-
             _logger.LogError(ex, "An error occurred while sending an email using the Azure Email Provider.");
-        }
 
-        return result;
+            // IMPORTANT, do not expose ex.Message as it could contain the connection string in a raw format!
+            return EmailResult.FailedResult(S["An error occurred while sending an email."]);
+        }
     }
 
-    private EmailMessage FromMailMessage(MailMessage message, out EmailResult result)
+    private EmailMessage FromMailMessage(MailMessage message, List<LocalizedString> errors)
     {
         var recipients = message.GetRecipients();
 
@@ -204,13 +213,11 @@ public abstract class AzureEmailProviderBase
             }
             else
             {
-                result = EmailResult.FailedResult(S["Unable to attach the file named '{0}' since its type is not supported.", attachment.Filename]);
+                errors.Add(S["Unable to attach the file named '{0}' since its type is not supported.", attachment.Filename]);
 
                 _logger.LogWarning("The MIME type for the attachment '{attachment}' is not supported.", attachment.Filename);
             }
         }
-
-        result = EmailResult.SuccessResult;
 
         return emailMessage;
     }

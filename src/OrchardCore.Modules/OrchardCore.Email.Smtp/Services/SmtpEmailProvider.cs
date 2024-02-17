@@ -10,9 +10,10 @@ public class SmtpEmailProvider : SmtpEmailProviderBase, IEmailProvider
 
     public SmtpEmailProvider(
         IOptions<SmtpOptions> options,
+        IEmailAddressValidator emailAddressValidator,
         ILogger<SmtpEmailProvider> logger,
         IStringLocalizer<SmtpEmailProvider> stringLocalizer)
-        : base(options.Value, logger, stringLocalizer)
+        : base(options.Value, emailAddressValidator, logger, stringLocalizer)
     {
     }
 

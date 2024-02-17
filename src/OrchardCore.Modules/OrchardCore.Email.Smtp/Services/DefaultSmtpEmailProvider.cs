@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -10,9 +10,10 @@ public class DefaultSmtpEmailProvider : SmtpEmailProviderBase, IEmailProvider
 
     public DefaultSmtpEmailProvider(
         IOptions<DefaultSmtpOptions> options,
+        IEmailAddressValidator emailAddressValidator,
         ILogger<DefaultSmtpEmailProvider> logger,
         IStringLocalizer<DefaultSmtpEmailProvider> stringLocalizer)
-        : base(options.Value, logger, stringLocalizer)
+        : base(options.Value, emailAddressValidator, logger, stringLocalizer)
     {
     }
 

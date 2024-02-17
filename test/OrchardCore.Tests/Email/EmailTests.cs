@@ -273,7 +273,12 @@ namespace OrchardCore.Tests.Email
 
             var logger = new Mock<ILogger<SmtpEmailProvider>>();
             var localizer = new Mock<IStringLocalizer<SmtpEmailProvider>>();
-            var smtp = new SmtpEmailProvider(options.Object, logger.Object, localizer.Object);
+            var emailValidator = new Mock<IEmailAddressValidator>();
+
+            emailValidator.Setup(x => x.Validate(It.IsAny<string>()))
+                .Returns(true);
+
+            var smtp = new SmtpEmailProvider(options.Object, emailValidator.Object, logger.Object, localizer.Object);
 
             return smtp;
         }
