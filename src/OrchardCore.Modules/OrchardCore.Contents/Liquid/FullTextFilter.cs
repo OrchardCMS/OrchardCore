@@ -71,7 +71,7 @@ namespace OrchardCore.Contents.Liquid
             }
         }
 
-        private ContentItem GetContentItem(FluidValue input)
+        private static ContentItem GetContentItem(FluidValue input)
         {
             var obj = input.ToObjectValue();
 

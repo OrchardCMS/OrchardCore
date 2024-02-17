@@ -20,16 +20,13 @@ namespace OrchardCore.Taxonomies.Drivers
     public class TaxonomyFieldDisplayDriver : ContentFieldDisplayDriver<TaxonomyField>
     {
         private readonly IContentManager _contentManager;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
         protected readonly IStringLocalizer S;
 
         public TaxonomyFieldDisplayDriver(
             IContentManager contentManager,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions,
             IStringLocalizer<TaxonomyFieldDisplayDriver> localizer)
         {
             _contentManager = contentManager;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
             S = localizer;
         }
 
@@ -55,7 +52,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 if (model.Taxonomy != null)
                 {
                     var termEntries = new List<TermEntry>();
-                    TaxonomyFieldDriverHelper.PopulateTermEntries(termEntries, field, model.Taxonomy.As<TaxonomyPart>().Terms, 0, _jsonSerializerOptions);
+                    TaxonomyFieldDriverHelper.PopulateTermEntries(termEntries, field, model.Taxonomy.As<TaxonomyPart>().Terms, 0);
 
                     model.TermEntries = termEntries;
                     model.UniqueValue = termEntries.FirstOrDefault(x => x.Selected)?.ContentItemId;

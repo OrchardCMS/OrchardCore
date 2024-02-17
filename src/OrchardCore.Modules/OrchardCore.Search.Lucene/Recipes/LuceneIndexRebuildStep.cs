@@ -12,17 +12,10 @@ using OrchardCore.Recipes.Services;
 namespace OrchardCore.Search.Lucene.Recipes
 {
     /// <summary>
-    /// This recipe step rebuilds a lucene index.
+    /// This recipe step rebuilds a Lucene index.
     /// </summary>
     public class LuceneIndexRebuildStep : IRecipeStepHandler
     {
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
-
-        public LuceneIndexRebuildStep(IOptions<JsonSerializerOptions> jsonSerializerOptions)
-        {
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
-        }
-
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!string.Equals(context.Name, "lucene-index-rebuild", StringComparison.OrdinalIgnoreCase))
@@ -30,7 +23,7 @@ namespace OrchardCore.Search.Lucene.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<LuceneIndexRebuildStepModel>(_jsonSerializerOptions);
+            var model = context.Step.ToObject<LuceneIndexRebuildStepModel>();
 
             if (model.IncludeAll || model.Indices.Length > 0)
             {

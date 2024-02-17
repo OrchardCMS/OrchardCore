@@ -1,8 +1,6 @@
 using System.Linq;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
@@ -14,16 +12,13 @@ public class CustomUserSettingsDeploymentSource : IDeploymentSource
 {
     private readonly CustomUserSettingsService _customUserSettingsService;
     private readonly ISession _session;
-    private readonly JsonSerializerOptions _jsonSerializerOptions;
 
     public CustomUserSettingsDeploymentSource(
         CustomUserSettingsService customUserSettingsService,
-        ISession session,
-        IOptions<JsonSerializerOptions> jsonSerializerOptions)
+        ISession session)
     {
         _customUserSettingsService = customUserSettingsService;
         _session = session;
-        _jsonSerializerOptions = jsonSerializerOptions.Value;
     }
 
     public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
@@ -47,7 +42,7 @@ public class CustomUserSettingsDeploymentSource : IDeploymentSource
             foreach (var settingsType in settingsTypes)
             {
                 var userSetting = await _customUserSettingsService.GetSettingsAsync(user, settingsType);
-                userSettingsData.Add(JObject.FromObject(userSetting, _jsonSerializerOptions));
+                userSettingsData.Add(JObject.FromObject(userSetting));
             }
 
             userData.Add(new JsonObject

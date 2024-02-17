@@ -66,6 +66,8 @@ namespace OrchardCore.Media
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpClient();
+
             services.AddSingleton<IAnchorTag, MediaAnchorTag>();
 
             // Resized media and remote media caches cleanups.

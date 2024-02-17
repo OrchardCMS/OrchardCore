@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data;
@@ -28,16 +26,13 @@ namespace OrchardCore.Taxonomies.Indexing
     public class TaxonomyIndexProvider : IndexProvider<ContentItem>, IScopedIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly HashSet<string> _ignoredTypes = [];
         private IContentDefinitionManager _contentDefinitionManager;
 
         public TaxonomyIndexProvider(
-            IServiceProvider serviceProvider,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions)
+            IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public override void Describe(DescribeContext<ContentItem> context)
@@ -98,7 +93,7 @@ namespace OrchardCore.Taxonomies.Indexing
                             continue;
                         }
 
-                        var field = ((JsonObject)jField).ToObject<TaxonomyField>(_jsonSerializerOptions);
+                        var field = ((JsonObject)jField).ToObject<TaxonomyField>();
 
                         foreach (var termContentItemId in field.TermContentItemIds)
                         {

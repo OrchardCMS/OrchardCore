@@ -30,7 +30,6 @@ namespace OrchardCore.Taxonomies.Drivers
         private readonly ISiteService _siteService;
         private readonly IContentManager _contentManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         protected readonly IStringLocalizer S;
 
@@ -38,13 +37,11 @@ namespace OrchardCore.Taxonomies.Drivers
             ISiteService siteService,
             IContentManager contentManager,
             IContentDefinitionManager contentDefinitionManager,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions,
             IStringLocalizer<TaxonomyContentsAdminListDisplayDriver> stringLocalizer)
         {
             _siteService = siteService;
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
             S = stringLocalizer;
         }
 
@@ -146,7 +143,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
                 if (((JsonObject)contentItem.Content)["Terms"] is JsonArray termsArray)
                 {
-                    children = termsArray.ToObject<ContentItem[]>(_jsonSerializerOptions);
+                    children = termsArray.ToObject<ContentItem[]>();
                 }
 
                 var termEntry = new FilterTermEntry

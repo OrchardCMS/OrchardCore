@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
@@ -57,18 +55,14 @@ namespace OrchardCore.Autoroute.Core.Indexes
     public class AutoroutePartIndexProvider : ContentHandlerBase, IIndexProvider, IScopedIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly HashSet<ContentItem> _itemRemoved = [];
         private readonly HashSet<string> _partRemoved = [];
         private IContentDefinitionManager _contentDefinitionManager;
         private IContentManager _contentManager;
 
-        public AutoroutePartIndexProvider(
-            IServiceProvider serviceProvider,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions)
+        public AutoroutePartIndexProvider(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public override Task RemovedAsync(RemoveContentContext context)
@@ -171,7 +165,7 @@ namespace OrchardCore.Autoroute.Core.Indexes
 
                 foreach (var jItem in items.Cast<JsonObject>())
                 {
-                    var contentItem = jItem.ToObject<ContentItem>(_jsonSerializerOptions);
+                    var contentItem = jItem.ToObject<ContentItem>();
                     var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem);
 
                     if (!handlerAspect.Disabled)

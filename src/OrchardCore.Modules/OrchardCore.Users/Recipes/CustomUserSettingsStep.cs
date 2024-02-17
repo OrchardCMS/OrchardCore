@@ -1,9 +1,7 @@
 using System;
 using System.Linq;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -18,14 +16,10 @@ namespace OrchardCore.Users.Recipes;
 public class CustomUserSettingsStep : IRecipeStepHandler
 {
     private readonly ISession _session;
-    private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-    public CustomUserSettingsStep(
-        ISession session,
-        IOptions<JsonSerializerOptions> jsonSerializerOptions)
+    public CustomUserSettingsStep(ISession session)
     {
         _session = session;
-        _jsonSerializerOptions = jsonSerializerOptions.Value;
     }
 
     public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -68,7 +62,7 @@ public class CustomUserSettingsStep : IRecipeStepHandler
 
             foreach (var userSetting in userSettings.Cast<JsonObject>())
             {
-                var contentItem = userSetting.ToObject<ContentItem>(_jsonSerializerOptions);
+                var contentItem = userSetting.ToObject<ContentItem>();
                 user.Properties[contentItem.ContentType] = userSetting;
             }
 

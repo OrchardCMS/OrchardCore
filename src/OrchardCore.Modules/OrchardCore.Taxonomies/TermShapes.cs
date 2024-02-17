@@ -1,11 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
@@ -18,13 +16,6 @@ namespace OrchardCore.Taxonomies
 {
     public class TermShapes : ShapeTableProvider
     {
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
-
-        public TermShapes(IOptions<JsonSerializerOptions> jsonSerializerOptions)
-        {
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
-        }
-
         public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
         {
             // Add standard alternates to a TermPart because it is rendered by a content display driver not a part display driver.
@@ -98,7 +89,7 @@ namespace OrchardCore.Taxonomies
                     var termContentItemId = termShape.GetProperty<string>("TermContentItemId");
                     if (!string.IsNullOrEmpty(termContentItemId))
                     {
-                        level = FindTerm((JsonArray)taxonomyContentItem.Content.TaxonomyPart.Terms, termContentItemId, level, _jsonSerializerOptions, out var termContentItem);
+                        level = FindTerm((JsonArray)taxonomyContentItem.Content.TaxonomyPart.Terms, termContentItemId, level, out var termContentItem);
 
                         if (termContentItem == null)
                         {
@@ -144,7 +135,7 @@ namespace OrchardCore.Taxonomies
                         ContentItem[] childTerms = null;
                         if (((JsonObject)termContentItem.Content)["Terms"] is JsonArray termsArray)
                         {
-                            childTerms = termsArray.ToObject<ContentItem[]>(_jsonSerializerOptions);
+                            childTerms = termsArray.ToObject<ContentItem[]>();
                         }
 
                         var shape = await shapeFactory.CreateAsync("TermItem", Arguments.From(new
@@ -182,7 +173,7 @@ namespace OrchardCore.Taxonomies
                             ContentItem[] childTerms = null;
                             if (((JsonObject)termContentItem.Content)["Terms"] is JsonArray termsArray)
                             {
-                                childTerms = termsArray.ToObject<ContentItem[]>(_jsonSerializerOptions);
+                                childTerms = termsArray.ToObject<ContentItem[]>();
                             }
                             var shape = await shapeFactory.CreateAsync("TermItem", Arguments.From(new
                             {
@@ -259,21 +250,21 @@ namespace OrchardCore.Taxonomies
             return ValueTask.CompletedTask;
         }
 
-        private static int FindTerm(JsonArray termsArray, string termContentItemId, int level, JsonSerializerOptions jsonSerializerOptions, out ContentItem contentItem)
+        private static int FindTerm(JsonArray termsArray, string termContentItemId, int level, out ContentItem contentItem)
         {
             foreach (var term in termsArray.Cast<JsonObject>())
             {
                 var contentItemId = term["ContentItemId"]?.ToString();
                 if (contentItemId == termContentItemId)
                 {
-                    contentItem = term.ToObject<ContentItem>(jsonSerializerOptions);
+                    contentItem = term.ToObject<ContentItem>();
                     return level;
                 }
 
                 if (term["Terms"] is JsonArray children)
                 {
                     level += 1;
-                    level = FindTerm(children, termContentItemId, level, jsonSerializerOptions, out var foundContentItem);
+                    level = FindTerm(children, termContentItemId, level, out var foundContentItem);
 
                     if (foundContentItem != null)
                     {

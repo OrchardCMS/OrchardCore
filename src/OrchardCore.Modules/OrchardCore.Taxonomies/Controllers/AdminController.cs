@@ -27,10 +27,10 @@ namespace OrchardCore.Taxonomies.Controllers
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
-        protected readonly IHtmlLocalizer H;
         private readonly INotifier _notifier;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+
+        protected readonly IHtmlLocalizer H;
 
         public AdminController(
             ISession session,
@@ -39,7 +39,6 @@ namespace OrchardCore.Taxonomies.Controllers
             IContentItemDisplayManager contentItemDisplayManager,
             IContentDefinitionManager contentDefinitionManager,
             INotifier notifier,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions,
             IHtmlLocalizer<AdminController> localizer,
             IUpdateModelAccessor updateModelAccessor)
         {
@@ -49,7 +48,6 @@ namespace OrchardCore.Taxonomies.Controllers
             _contentDefinitionManager = contentDefinitionManager;
             _session = session;
             _notifier = notifier;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
             _updateModelAccessor = updateModelAccessor;
             H = localizer;
         }
@@ -158,7 +156,7 @@ namespace OrchardCore.Taxonomies.Controllers
                     parentTaxonomyItem["Terms"] = taxonomyItems = [];
                 }
 
-                taxonomyItems.Add(JObject.FromObject(contentItem, _jsonSerializerOptions));
+                taxonomyItems.Add(JObject.FromObject(contentItem));
             }
 
             await _session.SaveAsync(taxonomy);
@@ -195,7 +193,7 @@ namespace OrchardCore.Taxonomies.Controllers
                 return NotFound();
             }
 
-            var contentItem = taxonomyItem.ToObject<ContentItem>(_jsonSerializerOptions);
+            var contentItem = taxonomyItem.ToObject<ContentItem>();
             contentItem.Weld<TermPart>();
             contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
 
@@ -248,7 +246,7 @@ namespace OrchardCore.Taxonomies.Controllers
                 return NotFound();
             }
 
-            var existing = taxonomyItem.ToObject<ContentItem>(_jsonSerializerOptions);
+            var existing = taxonomyItem.ToObject<ContentItem>();
 
             // Create a new item to take into account the current type definition.
             var contentItem = await _contentManager.NewAsync(existing.ContentType);

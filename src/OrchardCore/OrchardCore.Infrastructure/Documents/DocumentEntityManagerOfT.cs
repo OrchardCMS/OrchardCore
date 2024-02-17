@@ -1,5 +1,3 @@
-using System.Text.Json;
-using Microsoft.Extensions.Options;
 using OrchardCore.Data.Documents;
 
 namespace OrchardCore.Documents
@@ -10,10 +8,8 @@ namespace OrchardCore.Documents
     public class DocumentEntityManager<TDocumentStore, TDocumentEntity> : DocumentEntityManager<TDocumentEntity>, IDocumentEntityManager<TDocumentStore, TDocumentEntity>
         where TDocumentStore : IDocumentStore where TDocumentEntity : class, IDocumentEntity, new()
     {
-        public DocumentEntityManager(
-            IDocumentManager<TDocumentEntity> documentManager,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions)
-            : base(documentManager, jsonSerializerOptions)
+        public DocumentEntityManager(IDocumentManager<TDocumentEntity> documentManager)
+            : base(documentManager)
         {
         }
     }
