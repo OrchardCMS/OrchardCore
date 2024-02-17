@@ -14,7 +14,7 @@ using MimeKit;
 
 namespace OrchardCore.Email.Smtp.Services;
 
-public abstract class SmtpEmailProviderBase
+public abstract class SmtpEmailProviderBase : IEmailProvider
 {
     private const string EmailExtension = ".eml";
 
@@ -35,6 +35,8 @@ public abstract class SmtpEmailProviderBase
         _logger = logger;
         S = stringLocalizer;
     }
+
+    public abstract LocalizedString DisplayName { get; }
 
     public virtual async Task<EmailResult> SendAsync(MailMessage message)
     {

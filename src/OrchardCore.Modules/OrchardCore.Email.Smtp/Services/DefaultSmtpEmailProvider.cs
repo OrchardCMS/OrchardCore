@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Email.Smtp.Services;
 
-public class DefaultSmtpEmailProvider : SmtpEmailProviderBase, IEmailProvider
+public class DefaultSmtpEmailProvider : SmtpEmailProviderBase
 {
     public const string TechnicalName = "DefaultSMTP";
 
@@ -17,5 +17,5 @@ public class DefaultSmtpEmailProvider : SmtpEmailProviderBase, IEmailProvider
     {
     }
 
-    public LocalizedString DisplayName => S["Simple Mail Transfer Protocol (Default SMTP)"];
+    public override LocalizedString DisplayName => S["Simple Mail Transfer Protocol (Default SMTP)"];
 }

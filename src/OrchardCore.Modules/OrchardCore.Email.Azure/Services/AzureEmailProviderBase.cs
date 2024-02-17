@@ -11,7 +11,7 @@ using OrchardCore.Email.Azure.Models;
 
 namespace OrchardCore.Email.Azure.Services;
 
-public abstract class AzureEmailProviderBase
+public abstract class AzureEmailProviderBase : IEmailProvider
 {
     // Common supported file extensions and their corresponding MIME types for email attachments
     // using Azure Communication Services Email.
@@ -99,6 +99,8 @@ public abstract class AzureEmailProviderBase
         _logger = logger;
         S = stringLocalizer;
     }
+
+    public abstract LocalizedString DisplayName { get; }
 
     public virtual async Task<EmailResult> SendAsync(MailMessage message)
     {
