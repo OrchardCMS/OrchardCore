@@ -20,9 +20,8 @@ public static class TaxonomyOrchardHelperExtensions
     /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="taxonomyContentItemId">The taxonomy content item id.</param>
     /// <param name="termContentItemId">The term content item id.</param>
-    /// <param name="jsonSerializerOptions"></param>
     /// <returns>A content item id <c>null</c> if it was not found.</returns>
-    public static async Task<ContentItem> GetTaxonomyTermAsync(this IOrchardHelper orchardHelper, string taxonomyContentItemId, string termContentItemId, JsonSerializerOptions jsonSerializerOptions)
+    public static async Task<ContentItem> GetTaxonomyTermAsync(this IOrchardHelper orchardHelper, string taxonomyContentItemId, string termContentItemId)
     {
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
         var taxonomy = await contentManager.GetAsync(taxonomyContentItemId);
@@ -32,7 +31,7 @@ public static class TaxonomyOrchardHelperExtensions
             return null;
         }
 
-        return FindTerm((JsonArray)taxonomy.Content.TaxonomyPart.Terms, termContentItemId, jsonSerializerOptions);
+        return FindTerm((JsonArray)taxonomy.Content.TaxonomyPart.Terms, termContentItemId);
     }
 
     /// <summary>
@@ -41,9 +40,8 @@ public static class TaxonomyOrchardHelperExtensions
     /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="taxonomyContentItemId">The taxonomy content item id.</param>
     /// <param name="termContentItemId">The term content item id.</param>
-    /// <param name="jsonSerializerOptions">The serializer options.</param>
     /// <returns>A list content items.</returns>
-    public static async Task<List<ContentItem>> GetInheritedTermsAsync(this IOrchardHelper orchardHelper, string taxonomyContentItemId, string termContentItemId, JsonSerializerOptions jsonSerializerOptions)
+    public static async Task<List<ContentItem>> GetInheritedTermsAsync(this IOrchardHelper orchardHelper, string taxonomyContentItemId, string termContentItemId)
     {
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
         var taxonomy = await contentManager.GetAsync(taxonomyContentItemId);
@@ -55,7 +53,7 @@ public static class TaxonomyOrchardHelperExtensions
 
         var terms = new List<ContentItem>();
 
-        FindTermHierarchy((JsonArray)taxonomy.Content.TaxonomyPart.Terms, termContentItemId, terms, jsonSerializerOptions);
+        FindTermHierarchy((JsonArray)taxonomy.Content.TaxonomyPart.Terms, termContentItemId, terms);
 
         return terms;
     }
@@ -73,7 +71,7 @@ public static class TaxonomyOrchardHelperExtensions
         return await contentManager.LoadAsync(contentItems);
     }
 
-    internal static ContentItem FindTerm(JsonArray termsArray, string termContentItemId, JsonSerializerOptions jsonSerializerOptions)
+    internal static ContentItem FindTerm(JsonArray termsArray, string termContentItemId)
     {
         foreach (var term in termsArray.Cast<JsonObject>())
         {
@@ -81,12 +79,12 @@ public static class TaxonomyOrchardHelperExtensions
 
             if (contentItemId == termContentItemId)
             {
-                return term.ToObject<ContentItem>(jsonSerializerOptions);
+                return term.ToObject<ContentItem>();
             }
 
             if (term["Terms"] is JsonArray children)
             {
-                var found = FindTerm(children, termContentItemId, jsonSerializerOptions);
+                var found = FindTerm(children, termContentItemId);
 
                 if (found != null)
                 {
@@ -98,7 +96,7 @@ public static class TaxonomyOrchardHelperExtensions
         return null;
     }
 
-    internal static bool FindTermHierarchy(JsonArray termsArray, string termContentItemId, List<ContentItem> terms, JsonSerializerOptions jsonSerializerOptions)
+    internal static bool FindTermHierarchy(JsonArray termsArray, string termContentItemId, List<ContentItem> terms)
     {
         foreach (var term in termsArray.Cast<JsonObject>())
         {
@@ -113,11 +111,11 @@ public static class TaxonomyOrchardHelperExtensions
 
             if (term["Terms"] is JsonArray children)
             {
-                var found = FindTermHierarchy(children, termContentItemId, terms, jsonSerializerOptions);
+                var found = FindTermHierarchy(children, termContentItemId, terms);
 
                 if (found)
                 {
-                    terms.Add(term.ToObject<ContentItem>(jsonSerializerOptions));
+                    terms.Add(term.ToObject<ContentItem>());
 
                     return true;
                 }

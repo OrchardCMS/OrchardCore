@@ -1,7 +1,5 @@
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
@@ -11,14 +9,10 @@ namespace OrchardCore.OpenId.Deployment
     public class OpenIdValidationDeploymentSource : IDeploymentSource
     {
         private readonly IOpenIdValidationService _openIdValidationService;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public OpenIdValidationDeploymentSource(
-            IOpenIdValidationService openIdValidationService,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions)
+        public OpenIdValidationDeploymentSource(IOpenIdValidationService openIdValidationService)
         {
             _openIdValidationService = openIdValidationService;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
@@ -36,7 +30,7 @@ namespace OrchardCore.OpenId.Deployment
             var jObject = new JsonObject { ["name"] = nameof(OpenIdValidationSettings) };
 
             // Merge settings as the recipe step doesn't use a child property.
-            jObject.Merge(JObject.FromObject(validationSettings, _jsonSerializerOptions));
+            jObject.Merge(JObject.FromObject(validationSettings));
 
             result.Steps.Add(jObject);
         }

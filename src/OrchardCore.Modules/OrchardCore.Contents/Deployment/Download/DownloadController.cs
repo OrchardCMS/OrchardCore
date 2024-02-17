@@ -17,17 +17,13 @@ namespace OrchardCore.Contents.Deployment.Download
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentManager _contentManager;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         public DownloadController(
             IAuthorizationService authorizationService,
-            IContentManager contentManager,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions
-            )
+            IContentManager contentManager)
         {
             _authorizationService = authorizationService;
             _contentManager = contentManager;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         [HttpGet]
@@ -55,7 +51,7 @@ namespace OrchardCore.Contents.Deployment.Download
             var model = new DisplayJsonContentItemViewModel
             {
                 ContentItem = contentItem,
-                ContentItemJson = JObject.FromObject(contentItem, _jsonSerializerOptions).ToString()
+                ContentItemJson = JObject.FromObject(contentItem).ToString()
             };
 
             return View(model);
@@ -83,7 +79,7 @@ namespace OrchardCore.Contents.Deployment.Download
                 return Forbid();
             }
 
-            var jItem = JObject.FromObject(contentItem, _jsonSerializerOptions);
+            var jItem = JObject.FromObject(contentItem);
 
             return File(Encoding.UTF8.GetBytes(jItem.ToString()), "application/json", $"{contentItem.ContentItemId}.json");
         }

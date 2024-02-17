@@ -1,7 +1,5 @@
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
 using OrchardCore.OpenId.Recipes;
 using OrchardCore.OpenId.Services;
@@ -12,14 +10,10 @@ namespace OrchardCore.OpenId.Deployment
     public class OpenIdServerDeploymentSource : IDeploymentSource
     {
         private readonly IOpenIdServerService _openIdServerService;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public OpenIdServerDeploymentSource(
-            IOpenIdServerService openIdServerService,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions)
+        public OpenIdServerDeploymentSource(IOpenIdServerService openIdServerService)
         {
             _openIdServerService = openIdServerService;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
@@ -76,7 +70,7 @@ namespace OrchardCore.OpenId.Deployment
                 ["name"] = nameof(OpenIdServerSettings),
             };
 
-            obj.Merge(JObject.FromObject(settingsModel, _jsonSerializerOptions));
+            obj.Merge(JObject.FromObject(settingsModel));
 
             result.Steps.Add(obj);
         }

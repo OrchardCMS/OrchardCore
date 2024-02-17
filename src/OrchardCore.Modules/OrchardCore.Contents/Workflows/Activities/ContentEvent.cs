@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -16,9 +14,8 @@ namespace OrchardCore.Contents.Workflows.Activities
         protected ContentEvent(
             IContentManager contentManager,
             IWorkflowScriptEvaluator scriptEvaluator,
-            IStringLocalizer localizer,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions)
-            : base(contentManager, scriptEvaluator, jsonSerializerOptions, localizer)
+            IStringLocalizer localizer)
+            : base(contentManager, scriptEvaluator, localizer)
         {
         }
 

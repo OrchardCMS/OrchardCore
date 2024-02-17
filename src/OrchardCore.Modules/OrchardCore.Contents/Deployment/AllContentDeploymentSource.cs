@@ -12,14 +12,10 @@ namespace OrchardCore.Contents.Deployment
     public class AllContentDeploymentSource : IDeploymentSource
     {
         private readonly ISession _session;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public AllContentDeploymentSource(
-            ISession session,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions)
+        public AllContentDeploymentSource(ISession session)
         {
             _session = session;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
@@ -40,7 +36,7 @@ namespace OrchardCore.Contents.Deployment
 
             foreach (var contentItem in await _session.Query<ContentItem, ContentItemIndex>(x => x.Published).ListAsync())
             {
-                var objectData = JObject.FromObject(contentItem, _jsonSerializerOptions);
+                var objectData = JObject.FromObject(contentItem);
 
                 // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql
                 objectData.Remove(nameof(ContentItem.Id));

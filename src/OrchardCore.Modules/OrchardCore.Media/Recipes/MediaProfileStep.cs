@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using OrchardCore.Media.Models;
 using OrchardCore.Media.Services;
 using OrchardCore.Recipes.Models;
@@ -17,14 +15,10 @@ namespace OrchardCore.Media.Recipes
     public class MediaProfileStep : IRecipeStepHandler
     {
         private readonly MediaProfilesManager _mediaProfilesManager;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public MediaProfileStep(
-            MediaProfilesManager mediaProfilesManager,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions)
+        public MediaProfileStep(MediaProfilesManager mediaProfilesManager)
         {
             _mediaProfilesManager = mediaProfilesManager;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -34,7 +28,7 @@ namespace OrchardCore.Media.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<MediaProfileStepModel>(_jsonSerializerOptions);
+            var model = context.Step.ToObject<MediaProfileStepModel>();
 
             foreach (var mediaProfile in model.MediaProfiles)
             {

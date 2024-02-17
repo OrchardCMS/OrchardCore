@@ -13,14 +13,10 @@ namespace OrchardCore.Autoroute
     public class Migrations : DataMigration
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public Migrations(
-            IContentDefinitionManager contentDefinitionManager,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions)
+        public Migrations(IContentDefinitionManager contentDefinitionManager)
         {
             _contentDefinitionManager = contentDefinitionManager;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task<int> CreateAsync()
@@ -46,7 +42,7 @@ namespace OrchardCore.Autoroute
         // This code can be removed in a later version.
         public async Task<int> UpdateFrom1Async()
         {
-            await _contentDefinitionManager.MigratePartSettingsAsync<AutoroutePart, AutoroutePartSettings>(_jsonSerializerOptions);
+            await _contentDefinitionManager.MigratePartSettingsAsync<AutoroutePart, AutoroutePartSettings>();
 
             return 2;
         }

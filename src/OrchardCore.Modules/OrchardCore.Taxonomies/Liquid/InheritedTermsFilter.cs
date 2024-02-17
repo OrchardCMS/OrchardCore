@@ -1,10 +1,8 @@
 using System.Collections.Generic;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.Liquid;
 
@@ -13,14 +11,10 @@ namespace OrchardCore.Taxonomies.Liquid
     public class InheritedTermsFilter : ILiquidFilter
     {
         private readonly IContentManager _contentManager;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public InheritedTermsFilter(
-            IContentManager contentManager,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions)
+        public InheritedTermsFilter(IContentManager contentManager)
         {
             _contentManager = contentManager;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
@@ -42,7 +36,7 @@ namespace OrchardCore.Taxonomies.Liquid
 
             var terms = new List<ContentItem>();
 
-            TaxonomyOrchardHelperExtensions.FindTermHierarchy((JsonArray)taxonomy.Content.TaxonomyPart.Terms, termContentItemId, terms, _jsonSerializerOptions);
+            TaxonomyOrchardHelperExtensions.FindTermHierarchy((JsonArray)taxonomy.Content.TaxonomyPart.Terms, termContentItemId, terms);
 
             return FluidValue.Create(terms, ctx.Options);
         }

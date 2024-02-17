@@ -19,18 +19,15 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
         private readonly IContentManager _contentManager;
         private readonly ISession _session;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         public ExportContentToDeploymentTargetDeploymentSource(
             IContentManager contentManager,
             ISession session,
-            IUpdateModelAccessor updateModelAccessor,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions)
+            IUpdateModelAccessor updateModelAccessor)
         {
             _contentManager = contentManager;
             _session = session;
             _updateModelAccessor = updateModelAccessor;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
@@ -57,7 +54,7 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
                 var contentItem = await _contentManager.GetAsync(model.ContentItemId, model.Latest ? VersionOptions.Latest : VersionOptions.Published);
                 if (contentItem != null)
                 {
-                    var objectData = JObject.FromObject(contentItem, _jsonSerializerOptions);
+                    var objectData = JObject.FromObject(contentItem);
                     objectData.Remove(nameof(ContentItem.Id));
                     data.Add(objectData);
                 }
@@ -69,7 +66,7 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 
                 foreach (var contentItem in checkedContentItems)
                 {
-                    var objectData = JObject.FromObject(contentItem, _jsonSerializerOptions);
+                    var objectData = JObject.FromObject(contentItem);
                     objectData.Remove(nameof(ContentItem.Id));
                     data.Add(objectData);
                 }

@@ -1,11 +1,9 @@
 using System;
-using System.Text.Json;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OrchardCore.Autoroute.Core.Indexes;
 using OrchardCore.Autoroute.Core.Services;
 using OrchardCore.Autoroute.Drivers;
@@ -61,8 +59,7 @@ namespace OrchardCore.Autoroute
 
                         if (found)
                         {
-                            var options = context.Services.GetService<IOptions<JsonSerializerOptions>>();
-                            return FluidValue.Create(await contentManager.GetAsync(entry.ContentItemId, entry.JsonPath, options.Value), context.Options);
+                            return FluidValue.Create(await contentManager.GetAsync(entry.ContentItemId, entry.JsonPath), context.Options);
                         }
 
                         return NilValue.Instance;

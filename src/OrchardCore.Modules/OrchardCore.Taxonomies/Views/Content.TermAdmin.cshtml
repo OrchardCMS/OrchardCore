@@ -1,10 +1,7 @@
 @using System.Text.Json.Nodes
-@using Microsoft.Extensions.Options
-@using System.Text.Json
 
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 @inject OrchardCore.DisplayManagement.ModelBinding.IUpdateModelAccessor ModelUpdaterAccessor
-@inject IOptions<JsonSerializerOptions> JsonSerializerOptions
 @{
     ContentItem contentItem = Model.ContentItem;
     var termsArray = (JsonArray)contentItem.Content.Terms;
@@ -56,7 +53,7 @@
         <ol class="menu-item menu-item-links">
             @foreach (JsonObject termObject in termsArray)
             {
-                var term = termObject.ToObject<ContentItem>(JsonSerializerOptions.Value);
+                var term = termObject.ToObject<ContentItem>();
                 dynamic termShape = await ContentItemDisplayManager.BuildDisplayAsync(term, updater, "TermAdmin");
                 termShape.TaxonomyPart = Model.TaxonomyPart;
                 termShape.Index = Model.Index + "-" + index++;

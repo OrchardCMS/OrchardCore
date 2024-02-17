@@ -221,10 +221,9 @@ namespace OrchardCore.ContentManagement
         /// <param name="contentManager">The <see cref="IContentManager"/> instance.</param>
         /// <param name="id">The content item id to load.</param>
         /// <param name="jsonPath">The json path of the contained content item.</param>
-        /// <param name="jsonSerializerOptions"></param>
-        public static Task<ContentItem> GetAsync(this IContentManager contentManager, string id, string jsonPath, JsonSerializerOptions jsonSerializerOptions)
+        public static Task<ContentItem> GetAsync(this IContentManager contentManager, string id, string jsonPath)
         {
-            return contentManager.GetAsync(id, jsonPath, VersionOptions.Published, jsonSerializerOptions);
+            return contentManager.GetAsync(id, jsonPath, VersionOptions.Published);
         }
 
         /// <summary>
@@ -234,8 +233,7 @@ namespace OrchardCore.ContentManagement
         /// <param name="id">The id content item id to load.</param>
         /// <param name="options">The version option.</param>
         /// <param name="jsonPath">The json path of the contained content item.</param>
-        /// <param name="jsonSerializerOptions"></param>
-        public static async Task<ContentItem> GetAsync(this IContentManager contentManager, string id, string jsonPath, VersionOptions options, JsonSerializerOptions jsonSerializerOptions)
+        public static async Task<ContentItem> GetAsync(this IContentManager contentManager, string id, string jsonPath, VersionOptions options)
         {
             var contentItem = await contentManager.GetAsync(id, options);
 
@@ -243,7 +241,7 @@ namespace OrchardCore.ContentManagement
             if (!string.IsNullOrEmpty(jsonPath))
             {
                 var root = (JsonObject)contentItem.Content;
-                contentItem = root.SelectNode(jsonPath)?.ToObject<ContentItem>(jsonSerializerOptions);
+                contentItem = root.SelectNode(jsonPath)?.ToObject<ContentItem>();
 
                 return contentItem;
             }

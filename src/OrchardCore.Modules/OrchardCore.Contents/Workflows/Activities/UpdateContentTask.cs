@@ -30,9 +30,8 @@ namespace OrchardCore.Contents.Workflows.Activities
             IWorkflowExpressionEvaluator expressionEvaluator,
             IWorkflowScriptEvaluator scriptEvaluator,
             IStringLocalizer<UpdateContentTask> localizer,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions,
             JavaScriptEncoder javaScriptEncoder)
-            : base(contentManager, scriptEvaluator, jsonSerializerOptions, localizer)
+            : base(contentManager, scriptEvaluator, localizer)
         {
             _updateModelAccessor = updateModelAccessor;
             _expressionEvaluator = expressionEvaluator;

@@ -11,9 +11,8 @@ namespace OrchardCore.Contents.Workflows.Activities
         public ContentCreatedEvent(
             IContentManager contentManager,
             IWorkflowScriptEvaluator scriptEvaluator,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions,
             IStringLocalizer<ContentCreatedEvent> localizer)
-            : base(contentManager, scriptEvaluator, localizer, jsonSerializerOptions)
+            : base(contentManager, scriptEvaluator, localizer)
         {
         }
 

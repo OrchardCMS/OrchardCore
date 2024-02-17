@@ -1,10 +1,8 @@
 using System;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement;
@@ -18,18 +16,15 @@ namespace OrchardCore.Contents.Liquid
         private const int DefaultMaxContentItemRecursions = 20;
 
         private readonly IContentItemRecursionHelper<BuildDisplayFilter> _buildDisplayRecursionHelper;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public BuildDisplayFilter(
             IContentItemRecursionHelper<BuildDisplayFilter> buildDisplayRecursionHelper,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions,
             IContentItemDisplayManager contentItemDisplayManager,
             IUpdateModelAccessor updateModelAccessor)
         {
             _buildDisplayRecursionHelper = buildDisplayRecursionHelper;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
             _contentItemDisplayManager = contentItemDisplayManager;
             _updateModelAccessor = updateModelAccessor;
         }
@@ -49,7 +44,7 @@ namespace OrchardCore.Contents.Liquid
 
                 if (obj is JsonObject jObject)
                 {
-                    contentItem = jObject.ToObject<ContentItem>(_jsonSerializerOptions);
+                    contentItem = jObject.ToObject<ContentItem>();
                 }
             }
 

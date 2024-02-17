@@ -1,11 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Models;
 using OrchardCore.Liquid;
@@ -16,16 +14,13 @@ namespace OrchardCore.Contents.Liquid
     {
         private readonly IContentManager _contentManager;
         private readonly IContentItemRecursionHelper<FullTextFilter> _fullTextRecursionHelper;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         public FullTextFilter(
             IContentManager contentManager,
-            IContentItemRecursionHelper<FullTextFilter> fullTextRecursionHelper,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions)
+            IContentItemRecursionHelper<FullTextFilter> fullTextRecursionHelper)
         {
             _contentManager = contentManager;
             _fullTextRecursionHelper = fullTextRecursionHelper;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
@@ -86,7 +81,7 @@ namespace OrchardCore.Contents.Liquid
 
                 if (obj is JsonObject jObject)
                 {
-                    contentItem = jObject.ToObject<ContentItem>(_jsonSerializerOptions);
+                    contentItem = jObject.ToObject<ContentItem>();
                     // If input is a 'JObject' but which not represents a 'ContentItem',
                     // a 'ContentItem' is still created but with some null properties.
                     if (contentItem?.ContentItemId == null)

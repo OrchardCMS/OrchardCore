@@ -27,7 +27,7 @@ namespace OrchardCore.Layers.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            if (step is not AllLayersDeploymentStep allLayersStep)
+            if (step is not AllLayersDeploymentStep)
             {
                 return;
             }

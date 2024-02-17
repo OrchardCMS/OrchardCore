@@ -1,8 +1,6 @@
 using System;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Recipes.Models;
@@ -16,14 +14,10 @@ namespace OrchardCore.OpenId.Recipes
     public class OpenIdClientSettingsStep : IRecipeStepHandler
     {
         private readonly IOpenIdClientService _clientService;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public OpenIdClientSettingsStep(
-            IOpenIdClientService clientService,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions)
+        public OpenIdClientSettingsStep(IOpenIdClientService clientService)
         {
             _clientService = clientService;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -33,7 +27,7 @@ namespace OrchardCore.OpenId.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<OpenIdClientSettingsStepModel>(_jsonSerializerOptions);
+            var model = context.Step.ToObject<OpenIdClientSettingsStepModel>();
             var settings = await _clientService.LoadSettingsAsync();
 
             settings.Scopes = model.Scopes.Split(' ', ',');

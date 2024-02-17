@@ -5,7 +5,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using OrchardCore.Facebook.Login.Settings;
 using OrchardCore.Settings;
 
@@ -14,14 +13,10 @@ namespace OrchardCore.Facebook.Login.Services
     public class FacebookLoginService : IFacebookLoginService
     {
         private readonly ISiteService _siteService;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public FacebookLoginService(
-            ISiteService siteService,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions)
+        public FacebookLoginService(ISiteService siteService)
         {
             _siteService = siteService;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task<FacebookLoginSettings> GetSettingsAsync()

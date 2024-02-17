@@ -99,11 +99,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             jsonOptions.Converters.Add(System.Text.Json.Serialization.DynamicJsonConverter.Instance);
             jsonOptions.Converters.Add(PathStringJsonConverter.Instance);
 
-            var jsonSerializerOptions = new Mock<IOptions<JsonSerializerOptions>>();
-            jsonSerializerOptions.Setup(x => x.Value)
-                .Returns(jsonOptions);
-
-            var deploymentSource = new OpenIdServerDeploymentSource(deployServerServiceMock.Object, jsonSerializerOptions.Object);
+            var deploymentSource = new OpenIdServerDeploymentSource(deployServerServiceMock.Object);
 
             // Act
             await deploymentSource.ProcessDeploymentStepAsync(new OpenIdServerDeploymentStep(), result);

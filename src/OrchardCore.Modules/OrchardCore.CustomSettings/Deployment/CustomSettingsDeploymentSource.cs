@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using OrchardCore.CustomSettings.Services;
 using OrchardCore.Deployment;
 
@@ -12,14 +10,10 @@ namespace OrchardCore.CustomSettings.Deployment
     public class CustomSettingsDeploymentSource : IDeploymentSource
     {
         private readonly CustomSettingsService _customSettingsService;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public CustomSettingsDeploymentSource(
-            CustomSettingsService customSettingsService,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions)
+        public CustomSettingsDeploymentSource(CustomSettingsService customSettingsService)
         {
             _customSettingsService = customSettingsService;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
@@ -50,7 +44,7 @@ namespace OrchardCore.CustomSettings.Deployment
             foreach (var settingsType in settingsTypes)
             {
                 var settings = await _customSettingsService.GetSettingsAsync(settingsType);
-                settingsList.Add(new(settings.ContentType, JObject.FromObject(settings, _jsonSerializerOptions)));
+                settingsList.Add(new(settings.ContentType, JObject.FromObject(settings)));
             }
 
             // Adding custom settings

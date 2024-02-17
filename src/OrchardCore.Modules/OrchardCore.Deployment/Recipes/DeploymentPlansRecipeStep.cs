@@ -39,7 +39,7 @@ namespace OrchardCore.Deployment.Recipes
 
             var deploymentStepFactories = _serviceProvider.GetServices<IDeploymentStepFactory>().ToDictionary(f => f.Name);
 
-            var model = context.Step.ToObject<DeploymentPlansModel>(_jsonSerializerOptions);
+            var model = context.Step.ToObject<DeploymentPlansModel>();
 
             var unknownTypes = new List<string>();
             var deploymentPlans = new List<DeploymentPlan>();

@@ -1,12 +1,10 @@
 using System.Linq;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Settings;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -29,7 +27,6 @@ namespace OrchardCore.Menu.Controllers
         private readonly ISession _session;
         private readonly INotifier _notifier;
         protected readonly IHtmlLocalizer H;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public AdminController(
@@ -40,7 +37,6 @@ namespace OrchardCore.Menu.Controllers
             IContentDefinitionManager contentDefinitionManager,
             INotifier notifier,
             IHtmlLocalizer<AdminController> localizer,
-            IOptions<JsonSerializerOptions> jsonSerializerOptions,
             IUpdateModelAccessor updateModelAccessor)
         {
             _contentManager = contentManager;
@@ -51,7 +47,6 @@ namespace OrchardCore.Menu.Controllers
             _notifier = notifier;
             _updateModelAccessor = updateModelAccessor;
             H = localizer;
-            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task<IActionResult> Create(string id, string menuContentItemId, string menuItemId)
@@ -141,7 +136,7 @@ namespace OrchardCore.Menu.Controllers
                     };
                 }
 
-                menuItems.Add(JObject.FromObject(contentItem, _jsonSerializerOptions));
+                menuItems.Add(JObject.FromObject(contentItem));
             }
 
             await _contentManager.SaveDraftAsync(menu);
@@ -172,7 +167,7 @@ namespace OrchardCore.Menu.Controllers
                 return NotFound();
             }
 
-            var contentItem = menuItem.ToObject<ContentItem>(_jsonSerializerOptions);
+            var contentItem = menuItem.ToObject<ContentItem>();
 
             dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
 
@@ -218,7 +213,7 @@ namespace OrchardCore.Menu.Controllers
                 return NotFound();
             }
 
-            var existing = menuItem.ToObject<ContentItem>(_jsonSerializerOptions);
+            var existing = menuItem.ToObject<ContentItem>();
 
             // Create a new item to take into account the current type definition.
             var contentItem = await _contentManager.NewAsync(existing.ContentType);
