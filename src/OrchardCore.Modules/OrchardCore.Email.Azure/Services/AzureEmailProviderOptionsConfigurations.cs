@@ -21,7 +21,7 @@ public class AzureEmailProviderOptionsConfigurations : IConfigureOptions<EmailPr
     {
         ConfigureTenantProvider(options);
 
-        if (_defaultAzureOptions.ConfigurationExists())
+        if (_defaultAzureOptions.IsEnabled)
         {
             // Only configure the default provider, if settings are provided by the configuration provider.
             ConfigureDefaultProvider(options);
