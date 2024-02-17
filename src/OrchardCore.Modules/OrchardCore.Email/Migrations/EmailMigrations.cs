@@ -1,9 +1,8 @@
 using System.Linq;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Settings;
 
@@ -36,11 +35,8 @@ public class EmailMigrations : DataMigration
 
             var smtpSettings = site.As<SmtpSettings>();
 
-            var configuration = scope.ServiceProvider.GetRequiredService<IShellConfiguration>();
-
-            var configSettings = configuration.GetSection("OrchardCore.Email").Get<SmtpSettings>();
-
-            if (!string.IsNullOrEmpty(smtpSettings.DefaultSender) || !string.IsNullOrEmpty(configSettings?.DefaultSender))
+            if (!string.IsNullOrEmpty(smtpSettings.DefaultSender)
+                || scope.ServiceProvider.GetService<IOptions<SmtpOptions>>()?.Value.ConfigurationExists() == true)
             {
                 // Enable the SMTP feature.
                 var allFeatures = await featuresManager.GetAvailableFeaturesAsync();
@@ -55,6 +51,7 @@ public class EmailMigrations : DataMigration
                 await featuresManager.EnableFeaturesAsync([smtpFeature]);
             }
         });
+
         return 1;
     }
 }
