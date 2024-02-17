@@ -39,8 +39,8 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
         IDataProtectionProvider dataProtectionProvider,
         IShellHost shellHost,
         ShellSettings shellSettings,
-        IStringLocalizer<AzureEmailSettingsDisplayDriver> stringLocalizer,
         IEmailAddressValidator emailValidator,
+        IStringLocalizer<AzureEmailSettingsDisplayDriver> stringLocalizer,
         IHtmlLocalizer<AzureEmailSettingsDisplayDriver> htmlLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
@@ -48,8 +48,8 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
         _dataProtectionProvider = dataProtectionProvider;
         _shellHost = shellHost;
         _shellSettings = shellSettings;
-        S = stringLocalizer;
         _emailValidator = emailValidator;
+        S = stringLocalizer;
         H = htmlLocalizer;
     }
 
