@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Https.Drivers;
 using OrchardCore.Https.Services;
 using OrchardCore.Https.Settings;
@@ -45,9 +46,18 @@ namespace OrchardCore.Https
                 .Configure<IHttpsService>((options, service) =>
                 {
                     var settings = service.GetSettingsAsync().GetAwaiter().GetResult();
+
                     if (settings.RequireHttpsPermanent)
                     {
                         options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
+                    }
+
+                    if (settings.RequireHttps || settings.RequireHttpsPermanent)
+                    {
+                        services.AddAntiforgery(options =>
+                        {
+                            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                        });
                     }
 
                     options.HttpsPort = settings.SslPort;
