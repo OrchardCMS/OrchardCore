@@ -130,11 +130,6 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
             }
             else
             {
-                if (string.IsNullOrEmpty(emailSettings.DefaultProviderName))
-                {
-                    await _notifier.WarningAsync(H["No designated default email provider is currently enabled. Please select and set one of the available email providers as the default."]);
-                }
-
                 if (model.DeliveryMethod == SmtpDeliveryMethod.Network
                     && string.IsNullOrWhiteSpace(model.Host))
                 {
@@ -190,7 +185,7 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
 
             if (context.Updater.ModelState.IsValid)
             {
-                if (string.IsNullOrEmpty(emailSettings.DefaultProviderName))
+                if (settings.IsEnabled == true && string.IsNullOrEmpty(emailSettings.DefaultProviderName))
                 {
                     // If we are enabling the only provider, set it as the default one.
                     emailSettings.DefaultProviderName = SmtpEmailProvider.TechnicalName;

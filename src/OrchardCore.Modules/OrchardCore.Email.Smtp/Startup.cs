@@ -25,8 +25,7 @@ public class Startup
             .AddScoped<IDisplayDriver<ISite>, SmtpSettingsDisplayDriver>()
             .AddTransient<IConfigureOptions<SmtpOptions>, SmtpOptionsConfiguration>();
 
-        services.AddEmailProviderOptionsConfiguration<DefaultSmtpProviderOptionsConfigurations>()
-            .Configure<DefaultSmtpOptions>(options =>
+        services.Configure<DefaultSmtpOptions>(options =>
             {
                 _shellConfiguration.GetSection("OrchardCore_Email").Bind(options);
 
