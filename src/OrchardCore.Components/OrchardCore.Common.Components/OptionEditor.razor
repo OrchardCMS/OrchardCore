@@ -173,11 +173,23 @@
 
 	private async Task OptionItemChangeAsync(Action update)
 	{
-		update();
+        // validate provided delegate
+        if (update is not null)
+        {
+            try
+            {
+		        update();
+            }
+            catch(Exception)
+            {
+                // ignore
+            }
+        }
+
+        // Options may have changed independent of "update" delegate, e.g. inline, so we apply update routine anyway
 		TryUpdateOptionsJson(Options);
 		await TriggerEventAsync();
 	}
-
 
 	protected override Task OnInitializedAsync()
 	{
