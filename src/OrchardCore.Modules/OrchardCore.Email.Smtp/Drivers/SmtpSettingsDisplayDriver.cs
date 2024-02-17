@@ -9,7 +9,6 @@ using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Email.Smtp.Services;
 using OrchardCore.Email.Smtp.ViewModels;
@@ -30,8 +29,8 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
     private readonly ShellSettings _shellSettings;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly SmtpOptions _smtpOptions;
-    private readonly INotifier _notifier;
     private readonly IAuthorizationService _authorizationService;
+    private readonly IEmailAddressValidator _emailValidator;
 
     protected readonly IHtmlLocalizer H;
     protected readonly IStringLocalizer S;
@@ -42,8 +41,8 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
         ShellSettings shellSettings,
         IHttpContextAccessor httpContextAccessor,
         IOptions<SmtpOptions> options,
-        INotifier notifier,
         IAuthorizationService authorizationService,
+        IEmailAddressValidator emailAddressValidator,
         IHtmlLocalizer<SmtpSettingsDisplayDriver> htmlLocalizer,
         IStringLocalizer<SmtpSettingsDisplayDriver> stringLocalizer)
     {
@@ -52,8 +51,8 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
         _shellSettings = shellSettings;
         _httpContextAccessor = httpContextAccessor;
         _smtpOptions = options.Value;
-        _notifier = notifier;
         _authorizationService = authorizationService;
+        _emailValidator = emailAddressValidator;
         H = htmlLocalizer;
         S = stringLocalizer;
     }
@@ -65,9 +64,7 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
             return null;
         }
 
-        var user = _httpContextAccessor.HttpContext?.User;
-
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageEmailSettings))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageEmailSettings))
         {
             return null;
         }
@@ -102,9 +99,7 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
             return null;
         }
 
-        var user = _httpContextAccessor.HttpContext?.User;
-
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageEmailSettings))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageEmailSettings))
         {
             return null;
         }
@@ -130,6 +125,15 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
             }
             else
             {
+                if (string.IsNullOrEmpty(model.DefaultSender))
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.DefaultSender), S["The Default Sender is a required field."]);
+                }
+                else if (!_emailValidator.Validate(model.DefaultSender))
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.DefaultSender), S["The Default Sender is invalid."]);
+                }
+
                 if (model.DeliveryMethod == SmtpDeliveryMethod.Network
                     && string.IsNullOrWhiteSpace(model.Host))
                 {

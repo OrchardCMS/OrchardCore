@@ -16,7 +16,6 @@ using OrchardCore.Email.Azure.ViewModels;
 using OrchardCore.Email.Services;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
 
@@ -29,7 +28,7 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IShellHost _shellHost;
     private readonly ShellSettings _shellSettings;
-    private readonly IShellConfiguration _shellConfiguration;
+    private readonly IEmailAddressValidator _emailValidator;
 
     protected IStringLocalizer S;
     protected IHtmlLocalizer H;
@@ -40,8 +39,8 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
         IDataProtectionProvider dataProtectionProvider,
         IShellHost shellHost,
         ShellSettings shellSettings,
-        IShellConfiguration shellConfiguration,
         IStringLocalizer<AzureEmailSettingsDisplayDriver> stringLocalizer,
+        IEmailAddressValidator emailValidator,
         IHtmlLocalizer<AzureEmailSettingsDisplayDriver> htmlLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
@@ -49,16 +48,14 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
         _dataProtectionProvider = dataProtectionProvider;
         _shellHost = shellHost;
         _shellSettings = shellSettings;
-        _shellConfiguration = shellConfiguration;
         S = stringLocalizer;
+        _emailValidator = emailValidator;
         H = htmlLocalizer;
     }
 
     public override async Task<IDisplayResult> EditAsync(AzureEmailSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
-
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageEmailSettings))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageEmailSettings))
         {
             return null;
         }
@@ -105,6 +102,15 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
                 settings.IsEnabled = true;
 
                 hasChanges |= model.DefaultSender != settings.DefaultSender;
+
+                if (string.IsNullOrEmpty(model.DefaultSender))
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.DefaultSender), S["The Default Sender is a required field."]);
+                }
+                else if (!_emailValidator.Validate(model.DefaultSender))
+                {
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.DefaultSender), S["The Default Sender is invalid."]);
+                }
 
                 settings.DefaultSender = model.DefaultSender;
 
