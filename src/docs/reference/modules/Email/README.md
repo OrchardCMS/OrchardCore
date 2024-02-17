@@ -96,3 +96,7 @@ public class TestController
 ## Testing Provider
 
 After configuring a provider, you may test it by visiting `Configuration` → `Settings` → `Email Test`.
+
+## Events
+
+You can easily monitor various events triggered during the message-sending process by either implementing the `IEmailServiceEvents` or inheriting from `EmailServiceEventsBase` base class, then registering your service.

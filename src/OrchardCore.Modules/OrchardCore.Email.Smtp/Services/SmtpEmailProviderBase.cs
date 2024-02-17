@@ -64,7 +64,7 @@ public abstract class SmtpEmailProviderBase : IEmailProvider
                 message.From = senderAddress;
             }
 
-            var mimeMessage = FromMailMessage(message);
+            var mimeMessage = GetMimeMessage(message);
 
             if (_providerOptions.DeliveryMethod == SmtpDeliveryMethod.Network)
             {
@@ -88,7 +88,7 @@ public abstract class SmtpEmailProviderBase : IEmailProvider
         }
     }
 
-    private MimeMessage FromMailMessage(MailMessage message)
+    private MimeMessage GetMimeMessage(MailMessage message)
     {
         var mimeMessage = new MimeMessage();
         var submitterAddress = string.IsNullOrWhiteSpace(message.Sender)

@@ -26,10 +26,10 @@ public class Startup
             .AddTransient<IConfigureOptions<SmtpOptions>, SmtpOptionsConfiguration>();
 
         services.Configure<DefaultSmtpOptions>(options =>
-            {
-                _shellConfiguration.GetSection("OrchardCore_Email").Bind(options);
+        {
+            _shellConfiguration.GetSection("OrchardCore_Email").Bind(options);
 
-                options.IsEnabled = options.ConfigurationExists();
-            });
+            options.IsEnabled = options.ConfigurationExists();
+        });
     }
 }
