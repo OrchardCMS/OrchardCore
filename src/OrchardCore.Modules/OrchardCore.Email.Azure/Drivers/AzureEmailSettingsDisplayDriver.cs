@@ -31,7 +31,6 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
     private readonly IEmailAddressValidator _emailValidator;
 
     protected IStringLocalizer S;
-    protected IHtmlLocalizer H;
 
     public AzureEmailSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
@@ -40,8 +39,7 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
         IShellHost shellHost,
         ShellSettings shellSettings,
         IEmailAddressValidator emailValidator,
-        IStringLocalizer<AzureEmailSettingsDisplayDriver> stringLocalizer,
-        IHtmlLocalizer<AzureEmailSettingsDisplayDriver> htmlLocalizer)
+        IStringLocalizer<AzureEmailSettingsDisplayDriver> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
@@ -50,7 +48,6 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
         _shellSettings = shellSettings;
         _emailValidator = emailValidator;
         S = stringLocalizer;
-        H = htmlLocalizer;
     }
 
     public override async Task<IDisplayResult> EditAsync(AzureEmailSettings settings, BuildEditorContext context)
@@ -71,9 +68,7 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, AzureEmailSettings settings, IUpdateModel updater, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
-
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageEmailSettings))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageEmailSettings))
         {
             return null;
         }

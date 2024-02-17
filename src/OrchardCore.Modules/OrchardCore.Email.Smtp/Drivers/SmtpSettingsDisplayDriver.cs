@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Entities;
@@ -32,7 +31,6 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
     private readonly IAuthorizationService _authorizationService;
     private readonly IEmailAddressValidator _emailValidator;
 
-    protected readonly IHtmlLocalizer H;
     protected readonly IStringLocalizer S;
 
     public SmtpSettingsDisplayDriver(
@@ -43,7 +41,6 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
         IOptions<SmtpOptions> options,
         IAuthorizationService authorizationService,
         IEmailAddressValidator emailAddressValidator,
-        IHtmlLocalizer<SmtpSettingsDisplayDriver> htmlLocalizer,
         IStringLocalizer<SmtpSettingsDisplayDriver> stringLocalizer)
     {
         _dataProtectionProvider = dataProtectionProvider;
@@ -53,7 +50,6 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
         _smtpOptions = options.Value;
         _authorizationService = authorizationService;
         _emailValidator = emailAddressValidator;
-        H = htmlLocalizer;
         S = stringLocalizer;
     }
 
@@ -71,8 +67,7 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
 
         return Initialize<SmtpSettingsViewModel>("SmtpSettings_Edit", model =>
         {
-            // When IsEnabled is not set, we fall back on loaded SmtpOption to see if the settings were loaded via a configuration provider.
-
+            // For backward compatibility, if IsEnabled is null, we check to see if there are already valid configuration.
             model.IsEnabled = settings.IsEnabled ?? _smtpOptions.ConfigurationExists();
             model.DefaultSender = settings.DefaultSender;
             model.DeliveryMethod = settings.DeliveryMethod;
@@ -145,6 +140,7 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
                     updater.ModelState.AddModelError(Prefix, nameof(model.PickupDirectoryLocation), S["The {0} field is required.", "Pickup directory location"]);
                 }
 
+                hasChanges |= model.DefaultSender != settings.DefaultSender;
                 hasChanges |= model.Host != settings.Host;
                 hasChanges |= model.Port != settings.Port;
                 hasChanges |= model.AutoSelectEncryption != settings.AutoSelectEncryption;
@@ -173,6 +169,7 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
                 }
 
                 settings.IsEnabled = true;
+                settings.DefaultSender = model.DefaultSender;
                 settings.Host = model.Host;
                 settings.Port = model.Port;
                 settings.AutoSelectEncryption = model.AutoSelectEncryption;
