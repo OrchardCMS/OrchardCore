@@ -47,13 +47,11 @@ public abstract class SmtpEmailProviderBase : IEmailProvider
             return EmailResult.FailedResult(S["The SMTP Email Provider is disabled."]);
         }
 
-        EmailResult result;
-        var response = default(string);
         try
         {
-            var senderAddress = string.IsNullOrWhiteSpace(message.Sender)
+            var senderAddress = string.IsNullOrWhiteSpace(message.From)
                 ? _providerOptions.DefaultSender
-                : message.Sender;
+                : message.From;
 
             // Set the MailMessage.From, to avoid the confusion between DefaultSender (Author) and submitter (Sender).
             if (!string.IsNullOrWhiteSpace(senderAddress))
@@ -68,28 +66,26 @@ public abstract class SmtpEmailProviderBase : IEmailProvider
 
             var mimeMessage = FromMailMessage(message);
 
-            switch (_providerOptions.DeliveryMethod)
+            if (_providerOptions.DeliveryMethod == SmtpDeliveryMethod.Network)
             {
-                case SmtpDeliveryMethod.Network:
-                    response = await SendOnlineMessageAsync(mimeMessage);
-                    break;
-                case SmtpDeliveryMethod.SpecifiedPickupDirectory:
-                    await SendOfflineMessageAsync(mimeMessage, _providerOptions.PickupDirectoryLocation);
-                    break;
-                default:
-                    throw new NotSupportedException($"The '{_providerOptions.DeliveryMethod}' delivery method is not supported.");
+                var response = await SendOnlineMessageAsync(mimeMessage);
+
+                return EmailResult.GetSuccessResult(response);
             }
 
-            result = EmailResult.SuccessResult;
+            if (_providerOptions.DeliveryMethod == SmtpDeliveryMethod.SpecifiedPickupDirectory)
+            {
+                await SendOfflineMessageAsync(mimeMessage, _providerOptions.PickupDirectoryLocation);
+
+                return EmailResult.SuccessResult;
+            }
+
+            throw new NotSupportedException($"The '{_providerOptions.DeliveryMethod}' delivery method is not supported.");
         }
         catch (Exception ex)
         {
-            result = EmailResult.FailedResult([S["An error occurred while sending an email: '{0}'", ex.Message]]);
+            return EmailResult.FailedResult([S["An error occurred while sending an email: '{0}'", ex.Message]]);
         }
-
-        result.Response = response;
-
-        return result;
     }
 
     private MimeMessage FromMailMessage(MailMessage message)

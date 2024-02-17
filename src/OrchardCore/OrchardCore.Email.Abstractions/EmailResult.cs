@@ -38,4 +38,11 @@ public class EmailResult
             Succeeded = false,
             Errors = errors
         };
+
+    public static EmailResult GetSuccessResult(string response)
+        => new()
+        {
+            Succeeded = true,
+            Response = response,
+        };
 }

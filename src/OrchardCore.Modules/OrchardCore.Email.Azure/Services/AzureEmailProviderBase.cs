@@ -111,9 +111,9 @@ public abstract class AzureEmailProviderBase : IEmailProvider
             return EmailResult.FailedResult(S["The Azure Email Provider is disabled."]);
         }
 
-        var senderAddress = string.IsNullOrWhiteSpace(message.Sender)
+        var senderAddress = string.IsNullOrWhiteSpace(message.From)
             ? _providerOptions.DefaultSender
-            : message.Sender;
+            : message.From;
 
         try
         {
