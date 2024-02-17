@@ -8,7 +8,7 @@ using Microsoft.JSInterop;
 
 namespace OrchardCore.Common.Components;
 
-public class ColloctedJSComponent : ComponentBase, IAsyncDisposable
+public class CollocatedJSComponent : ComponentBase, IAsyncDisposable
 {
     [Inject]
     private IJSRuntime? JS { get; set; }
