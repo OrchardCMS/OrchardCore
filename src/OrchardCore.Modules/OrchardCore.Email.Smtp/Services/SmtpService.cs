@@ -48,32 +48,17 @@ public class SmtpService : ISmtpService
 
     private IEmailProvider GetSmtpProvider()
     {
-        IEmailProvider provider = null;
+        var type = _emailProviderOptions.Providers.Where(x => x.Key.Contains("SMTP"))
+            .OrderBy(entry => !entry.Value.IsEnabled ? 0 : 1)
+            .ThenBy(entry => entry.Key != DefaultSmtpEmailProvider.TechnicalName ? 0 : 1)
+            .Select(x => x.Value)
+            .LastOrDefault()?.Type;
 
-        if (_emailProviderOptions.Providers.TryGetValue(DefaultSmtpEmailProvider.TechnicalName, out var defaultSmtpProvider)
-            && defaultSmtpProvider.IsEnabled)
+        if (type is not null)
         {
-            provider = _serviceProvider.CreateInstance<IEmailProvider>(defaultSmtpProvider.Type);
+            return _serviceProvider.CreateInstance<IEmailProvider>(type);
         }
 
-        if (provider == null)
-        {
-            if (_emailProviderOptions.Providers.TryGetValue(SmtpEmailProvider.TechnicalName, out var smtpProvider)
-                && smtpProvider.IsEnabled)
-            {
-                provider = _serviceProvider.CreateInstance<IEmailProvider>(smtpProvider.Type);
-            }
-
-            if (provider is null && defaultSmtpProvider is not null)
-            {
-                provider = _serviceProvider.CreateInstance<IEmailProvider>(defaultSmtpProvider.Type);
-            }
-            else if (provider is null && smtpProvider is not null)
-            {
-                provider = _serviceProvider.CreateInstance<IEmailProvider>(smtpProvider.Type);
-            }
-        }
-
-        return provider;
+        return null;
     }
 }
