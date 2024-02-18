@@ -14,7 +14,7 @@ public class EmailTestViewModel
     public string To { get; set; }
 
     [EmailAddress(ErrorMessage = "Invalid Email.")]
-    public string Sender { get; set; }
+    public string From { get; set; }
 
     public string Bcc { get; set; }
 

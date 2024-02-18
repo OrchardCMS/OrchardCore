@@ -44,12 +44,20 @@ public class EmailResult
     /// </summary>
     /// <param name="errors">An optional array of <see cref="LocalizedString"/> which caused the operation to fail.</param>
     public static EmailResult FailedResult(params LocalizedString[] errors)
+        => FailedResult(string.Empty, errors);
+
+    /// <summary>
+    /// Creates an <see cref="EmailResult"/> indicating a failed email sending operation, with a list of errors if applicable.
+    /// </summary>
+    /// <param name="propertyName"></param>
+    /// <param name="errors">An optional array of <see cref="LocalizedString"/> which caused the operation to fail.</param>
+    public static EmailResult FailedResult(string propertyName, params LocalizedString[] errors)
         => new()
         {
             Succeeded = false,
             Errors = new Dictionary<string, List<LocalizedString>>()
             {
-                { string.Empty, errors.ToList() }
+                { propertyName ?? string.Empty, errors.ToList() }
             }
         };
 

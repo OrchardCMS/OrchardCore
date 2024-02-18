@@ -47,25 +47,27 @@ public abstract class SmtpEmailProviderBase : IEmailProvider
             return EmailResult.FailedResult(S["The SMTP Email Provider is disabled."]);
         }
 
-        try
+        var senderAddress = string.IsNullOrWhiteSpace(message.From)
+            ? _providerOptions.DefaultSender
+            : message.From;
+
+        _logger.LogDebug("Attempting to send email to {Email}.", message.To);
+
+        // Set the MailMessage.From, to avoid the confusion between DefaultSender (Author) and submitter (Sender).
+        if (!string.IsNullOrWhiteSpace(senderAddress))
         {
-            var senderAddress = string.IsNullOrWhiteSpace(message.From)
-                ? _providerOptions.DefaultSender
-                : message.From;
-
-            // Set the MailMessage.From, to avoid the confusion between DefaultSender (Author) and submitter (Sender).
-            if (!string.IsNullOrWhiteSpace(senderAddress))
+            if (!_emailAddressValidator.Validate(senderAddress))
             {
-                if (!_emailAddressValidator.Validate(senderAddress))
-                {
-                    return EmailResult.FailedResult(S["Invalid email address for the sender: '{0}'.", senderAddress]);
-                }
-
-                message.From = senderAddress;
+                return EmailResult.FailedResult(nameof(message.From), S["Invalid email address for the sender: '{0}'.", senderAddress]);
             }
 
-            var mimeMessage = GetMimeMessage(message);
+            message.From = senderAddress;
+        }
 
+        var mimeMessage = GetMimeMessage(message);
+
+        try
+        {
             if (_providerOptions.DeliveryMethod == SmtpDeliveryMethod.Network)
             {
                 var response = await SendOnlineMessageAsync(mimeMessage);

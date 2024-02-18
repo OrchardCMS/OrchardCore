@@ -123,9 +123,9 @@ public class AdminController : Controller
             ReplyTo = testSettings.ReplyTo
         };
 
-        if (!string.IsNullOrWhiteSpace(testSettings.Sender))
+        if (!string.IsNullOrWhiteSpace(testSettings.From))
         {
-            message.Sender = testSettings.Sender;
+            message.Sender = testSettings.From;
         }
 
         if (!string.IsNullOrWhiteSpace(testSettings.Subject))
