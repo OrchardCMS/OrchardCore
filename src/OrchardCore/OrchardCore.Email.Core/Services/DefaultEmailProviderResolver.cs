@@ -44,7 +44,8 @@ public class DefaultEmailProviderResolver : IEmailProviderResolver
 
             throw new InvalidEmailProviderException(name);
         }
-        else if (_providerOptions.Providers.Count > 0)
+
+        if (_providerOptions.Providers.Count > 0)
         {
             var lastProvider = _providerOptions.Providers.Values.LastOrDefault(x => x.IsEnabled)
                 ?? _providerOptions.Providers.Values.Last();

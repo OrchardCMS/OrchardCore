@@ -37,10 +37,7 @@ public class DefaultEmailService : IEmailService
             return EmailResult.FailedResult(S["Email settings must be configured before an Email message can be sent."]);
         }
 
-        var validationContext = new MailMessageValidationContext()
-        {
-            Provider = provider,
-        };
+        var validationContext = new MailMessageValidationContext(provider);
 
         await _emailServiceEvents.InvokeAsync((e) => e.ValidatingAsync(message, validationContext), _logger);
 

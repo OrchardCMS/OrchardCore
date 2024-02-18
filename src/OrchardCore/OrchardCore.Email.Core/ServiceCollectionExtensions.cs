@@ -10,8 +10,9 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IEmailService, DefaultEmailService>();
         services.AddScoped<IEmailProviderResolver, DefaultEmailProviderResolver>();
-        services.AddTransient<IConfigureOptions<EmailSettings>, EmailSettingsConfiguration>();
         services.AddScoped<IEmailServiceEvents, EmailMessageValidator>();
+
+        services.AddTransient<IConfigureOptions<EmailSettings>, EmailSettingsConfiguration>();
 
         return services;
     }

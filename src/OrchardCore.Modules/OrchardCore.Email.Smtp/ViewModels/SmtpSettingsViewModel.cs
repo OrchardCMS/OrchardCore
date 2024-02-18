@@ -7,7 +7,6 @@ public class SmtpSettingsViewModel
 {
     public bool IsEnabled { get; set; }
 
-    [EmailAddress]
     public string DefaultSender { get; set; }
 
     public string Host { get; set; }

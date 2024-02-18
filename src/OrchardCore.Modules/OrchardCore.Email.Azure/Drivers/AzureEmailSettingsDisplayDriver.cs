@@ -1,8 +1,8 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
@@ -52,6 +52,11 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
 
     public override async Task<IDisplayResult> EditAsync(AzureEmailSettings settings, BuildEditorContext context)
     {
+        if (!IsEmailGroup(context))
+        {
+            return null;
+        }
+
         if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageEmailSettings))
         {
             return null;
@@ -68,6 +73,11 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, AzureEmailSettings settings, IUpdateModel updater, BuildEditorContext context)
     {
+        if (!IsEmailGroup(context))
+        {
+            return null;
+        }
+
         if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageEmailSettings))
         {
             return null;
@@ -149,4 +159,7 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
 
         return await EditAsync(settings, context);
     }
+
+    private static bool IsEmailGroup(BuildEditorContext context)
+        => context.GroupId.Equals(EmailSettings.GroupId, StringComparison.OrdinalIgnoreCase);
 }

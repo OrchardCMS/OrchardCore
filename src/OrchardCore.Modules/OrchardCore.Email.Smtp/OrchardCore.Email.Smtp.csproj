@@ -31,8 +31,4 @@
     <PackageReference Include="MailKit" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
-
 </Project>
