@@ -92,7 +92,10 @@ public class AdminController : Controller
 
                 foreach (var error in result.Errors)
                 {
-                    ModelState.AddModelError(string.Empty, error);
+                    foreach (var errorMessage in error.Value)
+                    {
+                        ModelState.AddModelError(error.Key, errorMessage);
+                    }
                 }
             }
             catch (InvalidEmailProviderException)

@@ -47,7 +47,7 @@ public class DefaultEmailService : IEmailService
         {
             await _emailServiceEvents.InvokeAsync((e) => e.FailedAsync(message), _logger);
 
-            return EmailResult.FailedResult(validationContext.Errors.ToArray());
+            return EmailResult.FailedResult(validationContext.Errors);
         }
 
         await _emailServiceEvents.InvokeAsync((e) => e.SendingAsync(message), _logger);

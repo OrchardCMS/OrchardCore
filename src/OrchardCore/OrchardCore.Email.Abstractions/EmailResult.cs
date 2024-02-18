@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Email;
@@ -16,7 +17,7 @@ public class EmailResult
     /// <summary>
     /// An <see cref="IEnumerable{LocalizedString}"/> containing errors that may occurred during the email sending operation.
     /// </summary>
-    public IEnumerable<LocalizedString> Errors { get; protected set; }
+    public IDictionary<string, List<LocalizedString>> Errors { get; protected set; }
 
     /// <summary>
     /// Get or sets the response text from the email sending service.
@@ -31,12 +32,25 @@ public class EmailResult
     /// <summary>
     /// Creates an <see cref="EmailResult"/> indicating a failed email sending operation, with a list of errors if applicable.
     /// </summary>
+    public static EmailResult FailedResult(IDictionary<string, List<LocalizedString>> errors)
+        => new()
+        {
+            Succeeded = false,
+            Errors = errors
+        };
+
+    /// <summary>
+    /// Creates an <see cref="EmailResult"/> indicating a failed email sending operation, with a list of errors if applicable.
+    /// </summary>
     /// <param name="errors">An optional array of <see cref="LocalizedString"/> which caused the operation to fail.</param>
     public static EmailResult FailedResult(params LocalizedString[] errors)
         => new()
         {
             Succeeded = false,
-            Errors = errors
+            Errors = new Dictionary<string, List<LocalizedString>>()
+            {
+                { string.Empty, errors.ToList() }
+            }
         };
 
     public static EmailResult GetSuccessResult(string response)

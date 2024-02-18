@@ -8,7 +8,7 @@ public class MailMessageValidationContext
 {
     public IEmailProvider Provider { get; }
 
-    public List<LocalizedString> Errors { get; } = [];
+    public Dictionary<string, List<LocalizedString>> Errors { get; } = [];
 
     public MailMessageValidationContext(IEmailProvider provider)
     {

@@ -151,9 +151,12 @@ namespace OrchardCore.Users.Workflows.Activities
                         var updater = _updateModelAccessor.ModelUpdater;
                         if (updater != null)
                         {
-                            foreach (var item in result.Errors)
+                            foreach (var error in result.Errors)
                             {
-                                updater.ModelState.TryAddModelError(item.Name, item.Value);
+                                foreach (var errorMessage in error.Value)
+                                {
+                                    updater.ModelState.TryAddModelError(error.Key, errorMessage);
+                                }
                             }
                         }
                         outcome = "Invalid";

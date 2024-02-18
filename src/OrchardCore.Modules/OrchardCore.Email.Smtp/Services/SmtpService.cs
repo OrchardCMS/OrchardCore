@@ -43,7 +43,7 @@ public class SmtpService : ISmtpService
             return SmtpResult.Success;
         }
 
-        return SmtpResult.Failed(result.Errors.ToArray());
+        return SmtpResult.Failed(result.Errors.SelectMany(x => x.Value).ToArray());
     }
 
     private IEmailProvider GetSmtpProvider()

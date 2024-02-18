@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Email;
@@ -21,6 +23,9 @@ public class SmtpResult : EmailResult
         => new()
         {
             Succeeded = false,
-            Errors = errors
+            Errors = new Dictionary<string, List<LocalizedString>>()
+            {
+                { string.Empty, errors.ToList() }
+            }
         };
 }
