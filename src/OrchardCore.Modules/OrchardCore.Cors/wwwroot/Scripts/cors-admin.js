@@ -42,7 +42,7 @@ var corsApp = new Vue({
   },
   data: {
     selectedPolicy: null,
-    policies: null,
+    policies: [],
     defaultPolicyName: null
   },
   updated: function updated() {
@@ -51,25 +51,25 @@ var corsApp = new Vue({
   methods: {
     newPolicy: function newPolicy() {
       this.selectedPolicy = {
-        Name: 'New policy',
-        AllowedOrigins: [],
-        AllowAnyOrigin: true,
-        AllowedMethods: [],
-        AllowAnyMethod: true,
-        AllowedHeaders: [],
-        AllowAnyHeader: true,
-        AllowCredentials: true,
-        IsDefaultPolicy: false
+        name: 'New policy',
+        allowedOrigins: [],
+        allowAnyOrigin: true,
+        allowedMethods: [],
+        allowAnyMethod: true,
+        allowedHeaders: [],
+        allowAnyHeader: true,
+        allowCredentials: true,
+        isDefaultPolicy: false
       };
     },
     editPolicy: function editPolicy(policy) {
       this.selectedPolicy = Object.assign({}, policy);
-      this.selectedPolicy.OriginalName = this.selectedPolicy.Name;
+      this.selectedPolicy.originalName = this.selectedPolicy.name;
     },
     deletePolicy: function deletePolicy(policy, event) {
       this.selectedPolicy = null;
       var policyToRemove = this.policies.filter(function (item) {
-        return item.Name === policy.Name;
+        return item.name === policy.name;
       });
       if (policyToRemove.length > 0) this.policies.splice($.inArray(policyToRemove[0], this.policies), 1);
       event.stopPropagation();
@@ -81,9 +81,9 @@ var corsApp = new Vue({
           return p.IsDefaultPolicy = false;
         });
       }
-      if (policy.OriginalName) {
+      if (policy.originalName) {
         var policyIndex = this.policies.findIndex(function (oldPolicy) {
-          return oldPolicy.Name === policy.OriginalName;
+          return oldPolicy.name === policy.originalName;
         });
         this.policies[policyIndex] = policy;
       } else {

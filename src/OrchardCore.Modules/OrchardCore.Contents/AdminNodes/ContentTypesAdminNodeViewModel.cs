@@ -1,12 +1,10 @@
-using System;
-
 namespace OrchardCore.Contents.AdminNodes
 {
     public class ContentTypesAdminNodeViewModel
     {
         public bool ShowAll { get; set; }
         public string IconClass { get; set; }
-        public ContentTypeEntryViewModel[] ContentTypes { get; set; } = Array.Empty<ContentTypeEntryViewModel>();
+        public ContentTypeEntryViewModel[] ContentTypes { get; set; } = [];
     }
 
     public class ContentTypeEntryViewModel

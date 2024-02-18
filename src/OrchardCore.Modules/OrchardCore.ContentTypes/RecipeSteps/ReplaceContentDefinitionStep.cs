@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Records;
@@ -82,8 +83,8 @@ namespace OrchardCore.ContentTypes.RecipeSteps
 
         private class ReplaceContentDefinitionStepModel
         {
-            public ContentTypeDefinitionRecord[] ContentTypes { get; set; } = Array.Empty<ContentTypeDefinitionRecord>();
-            public ContentPartDefinitionRecord[] ContentParts { get; set; } = Array.Empty<ContentPartDefinitionRecord>();
+            public ContentTypeDefinitionRecord[] ContentTypes { get; set; } = [];
+            public ContentPartDefinitionRecord[] ContentParts { get; set; } = [];
         }
     }
 }

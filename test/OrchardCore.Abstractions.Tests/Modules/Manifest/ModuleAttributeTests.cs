@@ -644,7 +644,7 @@ namespace OrchardCore.Modules.Manifest
             Assert.Contains(features, _ =>
                 _.Id == string.Join(".", baseId, One) &&
                 _.Name == _.Id &&
-                _.Category == Two.ToLower() &&
+                _.Category.Equals(Two, StringComparison.CurrentCultureIgnoreCase) &&
                 _.InternalPriority == _3 &&
                 _.Description == four &&
                 _.Dependencies.SequenceEqual(GetValues(five, six, seven)) &&

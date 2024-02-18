@@ -157,10 +157,7 @@ namespace OrchardCore.Lists.Services
             PagerSlim pager,
             ContainedItemOptions containedItemOptions)
         {
-            if (containedItemOptions == null)
-            {
-                throw new ArgumentNullException(nameof(containedItemOptions));
-            }
+            ArgumentNullException.ThrowIfNull(containedItemOptions);
 
             IQuery<ContentItem> query = null;
             if (pager.Before != null)

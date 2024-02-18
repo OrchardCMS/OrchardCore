@@ -507,6 +507,19 @@ The following properties are available on the `Culture` object.
 | `Name` | `en-US` | The request's culture as an ISO language code. |
 | `Dir` | `rtl` | The text writing direction. |
 
+### Environment
+
+Represents the current hosting environment.
+
+The following properties are available on the `Environment` object.
+
+| Property | Description |
+| --------- |------------ |
+| `IsDevelopment` | Checks if the current hosting environment name is `Development`. |
+| `IsStaging` | Checks if the current hosting environment name is `Staging`. |
+| `IsProduction` | Checks if the current hosting environment name is `Production`. |
+| `Name` | Gets hosting environment name. |
+
 ### HttpContext
 
 Represents the HttpContext of the current request.

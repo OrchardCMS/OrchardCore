@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.CommandLine;
 using Microsoft.Extensions.Configuration.EnvironmentVariables;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Models;
 
@@ -140,10 +140,7 @@ namespace OrchardCore.Environment.Shell
             {
                 await EnsureConfigurationAsync();
 
-                if (settings is null)
-                {
-                    throw new ArgumentNullException(nameof(settings));
-                }
+                ArgumentNullException.ThrowIfNull(settings);
 
                 var configuration = new ConfigurationBuilder()
                     .AddConfiguration(_configuration)
@@ -222,10 +219,7 @@ namespace OrchardCore.Environment.Shell
             {
                 await EnsureConfigurationAsync();
 
-                if (settings is null)
-                {
-                    throw new ArgumentNullException(nameof(settings));
-                }
+                ArgumentNullException.ThrowIfNull(settings);
 
                 await _tenantsSettingsSources.RemoveAsync(settings.Name);
 
@@ -256,7 +250,7 @@ namespace OrchardCore.Environment.Shell
                 .Where(p => p is EnvironmentVariablesConfigurationProvider ||
                             p is CommandLineConfigurationProvider)
                 .ToArray()
-                ?? Array.Empty<IConfigurationProvider>();
+                ?? [];
 
             var configurationBuilder = await new ConfigurationBuilder()
                 .AddConfiguration(_applicationConfiguration)

@@ -12,10 +12,11 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Layers.Services;
 using OrchardCore.Layers.ViewModels;
 using OrchardCore.Rules;
+using OrchardCore.Rules.Services;
 
 namespace OrchardCore.Layers.Controllers
 {
-    [Admin]
+    [Admin("Layers/Rules/{action}", "Layers.Rules.{action}")]
     public class LayerRuleController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
@@ -25,8 +26,8 @@ namespace OrchardCore.Layers.Controllers
         private readonly IConditionIdGenerator _conditionIdGenerator;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+
         protected readonly IHtmlLocalizer H;
-        protected readonly dynamic New;
 
         public LayerRuleController(
             IAuthorizationService authorizationService,
@@ -34,7 +35,6 @@ namespace OrchardCore.Layers.Controllers
             IEnumerable<IConditionFactory> factories,
             ILayerService layerService,
             IConditionIdGenerator conditionIdGenerator,
-            IShapeFactory shapeFactory,
             IHtmlLocalizer<LayerRuleController> htmlLocalizer,
             INotifier notifier,
             IUpdateModelAccessor updateModelAccessor)
@@ -46,7 +46,6 @@ namespace OrchardCore.Layers.Controllers
             _conditionIdGenerator = conditionIdGenerator;
             _notifier = notifier;
             _updateModelAccessor = updateModelAccessor;
-            New = shapeFactory;
             H = htmlLocalizer;
         }
 
@@ -84,7 +83,7 @@ namespace OrchardCore.Layers.Controllers
                 Name = name,
                 ConditionGroupId = conditionGroup.ConditionId,
                 ConditionType = type,
-                Editor = await _displayManager.BuildEditorAsync(condition, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "")
+                Editor = await _displayManager.BuildEditorAsync(condition, updater: _updateModelAccessor.ModelUpdater, isNew: true, string.Empty, string.Empty)
             };
 
             return View(model);
@@ -239,6 +238,7 @@ namespace OrchardCore.Layers.Controllers
             return RedirectToAction(nameof(Edit), "Admin", new { name });
         }
 
+        [Admin("Layers/Rules/Order", "Layers.Rules.Order")]
         public async Task<IActionResult> UpdateOrder(string name, string conditionId, string toConditionId, int toPosition)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
@@ -271,7 +271,7 @@ namespace OrchardCore.Layers.Controllers
             return Ok();
         }
 
-        private Condition FindCondition(Condition condition, string conditionId)
+        private static Condition FindCondition(Condition condition, string conditionId)
         {
             if (string.Equals(condition.ConditionId, conditionId, StringComparison.OrdinalIgnoreCase))
             {
@@ -283,7 +283,7 @@ namespace OrchardCore.Layers.Controllers
                 return null;
             }
 
-            if (!conditionGroup.Conditions.Any())
+            if (conditionGroup.Conditions.Count == 0)
             {
                 return null;
             }
@@ -304,14 +304,14 @@ namespace OrchardCore.Layers.Controllers
             return null;
         }
 
-        private ConditionGroup FindConditionGroup(ConditionGroup condition, string groupconditionId)
+        private static ConditionGroup FindConditionGroup(ConditionGroup condition, string groupConditionId)
         {
-            if (string.Equals(condition.ConditionId, groupconditionId, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(condition.ConditionId, groupConditionId, StringComparison.OrdinalIgnoreCase))
             {
                 return condition;
             }
 
-            if (!condition.Conditions.Any())
+            if (condition.Conditions.Count == 0)
             {
                 return null;
             }
@@ -321,7 +321,7 @@ namespace OrchardCore.Layers.Controllers
             foreach (var nestedCondition in condition.Conditions.OfType<ConditionGroup>())
             {
                 // Search in inner conditions.
-                result = FindConditionGroup(nestedCondition, groupconditionId);
+                result = FindConditionGroup(nestedCondition, groupConditionId);
 
                 if (result != null)
                 {
@@ -332,7 +332,7 @@ namespace OrchardCore.Layers.Controllers
             return null;
         }
 
-        private ConditionGroup FindConditionParent(ConditionGroup condition, string conditionId)
+        private static ConditionGroup FindConditionParent(ConditionGroup condition, string conditionId)
         {
             ConditionGroup result;
 

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -70,6 +71,7 @@ public class AdminController : Controller, IUpdateModel
         H = htmlLocalizer;
     }
 
+    [Admin("notifications", "ListNotifications")]
     public async Task<IActionResult> List(
         [ModelBinder(BinderType = typeof(NotificationFilterEngineModelBinder), Name = "q")] QueryFilterResult<Notification> queryFilterResult,
         PagerParameters pagerParameters,
@@ -106,19 +108,11 @@ public class AdminController : Controller, IUpdateModel
             new(S["Remove"], nameof(NotificationBulkAction.Remove)),
         ];
 
-        var routeData = new RouteData(options.RouteValues);
         var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
         var queryResult = await _notificationsAdminListQueryService.QueryAsync(pager.Page, pager.PageSize, options, this);
 
-        dynamic pagerShape = await _shapeFactory.CreateAsync("Pager", Arguments.From(new
-        {
-            pager.Page,
-            pager.PageSize,
-            TotalItemCount = queryResult.TotalCount
-        }));
-
-        pagerShape.RouteData(routeData);
+        dynamic pagerShape = await _shapeFactory.PagerAsync(pager, queryResult.TotalCount, options.RouteValues);
 
         var notificationSummaries = new List<dynamic>();
 

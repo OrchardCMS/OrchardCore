@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
@@ -55,7 +54,7 @@ public class UnassignUserRoleTask : TaskActivity<UnassignUserRoleTask>
 
         if (u is User user)
         {
-            foreach(var role in Roles)
+            foreach (var role in Roles)
             {
                 if (user.RoleNames.Contains(role))
                 {

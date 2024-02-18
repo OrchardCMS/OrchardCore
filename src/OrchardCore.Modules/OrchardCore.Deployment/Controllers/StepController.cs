@@ -23,15 +23,14 @@ namespace OrchardCore.Deployment.Controllers
         private readonly ISession _session;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+
         protected readonly IHtmlLocalizer H;
-        protected readonly dynamic New;
 
         public StepController(
             IAuthorizationService authorizationService,
             IDisplayManager<DeploymentStep> displayManager,
             IEnumerable<IDeploymentStepFactory> factories,
             ISession session,
-            IShapeFactory shapeFactory,
             IHtmlLocalizer<StepController> htmlLocalizer,
             INotifier notifier,
             IUpdateModelAccessor updateModelAccessor)
@@ -42,10 +41,10 @@ namespace OrchardCore.Deployment.Controllers
             _session = session;
             _notifier = notifier;
             _updateModelAccessor = updateModelAccessor;
-            New = shapeFactory;
             H = htmlLocalizer;
         }
 
+        [Admin("DeploymentPlan/{id}/Step/Create", "DeploymentPlanCreateStep")]
         public async Task<IActionResult> Create(long id, string type)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
@@ -75,7 +74,7 @@ namespace OrchardCore.Deployment.Controllers
                 DeploymentStep = step,
                 DeploymentStepId = step.Id,
                 DeploymentStepType = type,
-                Editor = await _displayManager.BuildEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "")
+                Editor = await _displayManager.BuildEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: true, string.Empty, string.Empty)
             };
 
             model.Editor.DeploymentStep = step;
@@ -124,6 +123,7 @@ namespace OrchardCore.Deployment.Controllers
             return View(model);
         }
 
+        [Admin("DeploymentPlan/{id}/Step/{stepId}/Edit", "DeploymentPlanEditStep")]
         public async Task<IActionResult> Edit(long id, string stepId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
@@ -199,6 +199,7 @@ namespace OrchardCore.Deployment.Controllers
         }
 
         [HttpPost]
+        [Admin("DeploymentPlan/{id}/Step/{stepId}/Delete", "DeploymentPlanDeleteStep")]
         public async Task<IActionResult> Delete(long id, string stepId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))

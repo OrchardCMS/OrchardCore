@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -61,7 +60,7 @@ namespace OrchardCore.Media.GraphQL
             return Task.CompletedTask;
         }
 
-        private async Task<IEnumerable<IFileStoreEntry>> ResolveAsync(IResolveFieldContext resolveContext)
+        private async ValueTask<IEnumerable<IFileStoreEntry>> ResolveAsync(IResolveFieldContext resolveContext)
         {
             var mediaFileStore = resolveContext.RequestServices.GetService<IMediaFileStore>();
 

@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel;
 
 namespace OrchardCore.ContentFields.Settings
@@ -13,9 +12,9 @@ namespace OrchardCore.ContentFields.Settings
 
         public bool DisplayAllContentTypes { get; set; }
 
-        public string[] DisplayedContentTypes { get; set; } = Array.Empty<string>();
+        public string[] DisplayedContentTypes { get; set; } = [];
 
-        public string[] DisplayedStereotypes { get; set; } = Array.Empty<string>();
+        public string[] DisplayedStereotypes { get; set; } = [];
 
         /// <summary>
         /// The Liquid pattern used to build the title.

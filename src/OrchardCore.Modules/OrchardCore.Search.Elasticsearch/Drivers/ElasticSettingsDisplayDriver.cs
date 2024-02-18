@@ -3,14 +3,17 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using Nest;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
@@ -21,23 +24,26 @@ namespace OrchardCore.Search.Elasticsearch.Drivers;
 
 public class ElasticSettingsDisplayDriver : SectionDisplayDriver<ISite, ElasticSettings>
 {
-    public const string GroupId = "elasticsearch";
-
     private static readonly char[] _separator = [',', ' '];
+
     private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
     {
         WriteIndented = true,
     };
+
     private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
+    private readonly ElasticConnectionOptions _elasticConnectionOptions;
     private readonly IElasticClient _elasticClient;
+
     protected readonly IStringLocalizer S;
 
     public ElasticSettingsDisplayDriver(
         ElasticIndexSettingsService elasticIndexSettingsService,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
+        IOptions<ElasticConnectionOptions> elasticConnectionOptions,
         IElasticClient elasticClient,
         IStringLocalizer<ElasticSettingsDisplayDriver> stringLocalizer
         )
@@ -45,6 +51,7 @@ public class ElasticSettingsDisplayDriver : SectionDisplayDriver<ISite, ElasticS
         _elasticIndexSettingsService = elasticIndexSettingsService;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
+        _elasticConnectionOptions = elasticConnectionOptions.Value;
         _elasticClient = elasticClient;
         S = stringLocalizer;
     }
@@ -62,13 +69,18 @@ public class ElasticSettingsDisplayDriver : SectionDisplayDriver<ISite, ElasticS
                 new(S["Query String Query"], ElasticSettings.QueryStringSearchType),
                 new(S["Custom Query"], ElasticSettings.CustomSearchType),
             ];
-        }).Location("Content:2")
+        }).Location("Content:2#Elasticsearch;10")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageElasticIndexes))
-        .OnGroup(GroupId);
+        .OnGroup(SearchConstants.SearchSettingsGroupId);
 
     public override async Task<IDisplayResult> UpdateAsync(ElasticSettings section, BuildEditorContext context)
     {
-        if (!string.Equals(GroupId, context.GroupId, StringComparison.OrdinalIgnoreCase))
+        if (!SearchConstants.SearchSettingsGroupId.EqualsOrdinalIgnoreCase(context.GroupId))
+        {
+            return null;
+        }
+
+        if (!_elasticConnectionOptions.FileConfigurationExists())
         {
             return null;
         }
@@ -79,7 +91,6 @@ public class ElasticSettingsDisplayDriver : SectionDisplayDriver<ISite, ElasticS
         }
 
         var model = new ElasticSettingsViewModel();
-
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
         section.DefaultQuery = null;
@@ -93,18 +104,16 @@ public class ElasticSettingsDisplayDriver : SectionDisplayDriver<ISite, ElasticS
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.DefaultQuery), S["Please provide the default query."]);
             }
-            else if (!JsonHelpers.TryParse(model.DefaultQuery, out var document))
+            else if (!JObject.TryParse(model.DefaultQuery, out var jsonObject))
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.DefaultQuery), S["The provided query is not formatted correctly."]);
             }
             else
             {
-                section.DefaultQuery = JsonSerializer.Serialize(document, _jsonSerializerOptions);
-
+                section.DefaultQuery = jsonObject.ToJsonString(JOptions.Indented);
                 try
                 {
                     using var stream = new MemoryStream(Encoding.UTF8.GetBytes(model.DefaultQuery));
-
                     var searchRequest = await _elasticClient.RequestResponseSerializer.DeserializeAsync<SearchRequest>(stream);
                 }
                 catch
