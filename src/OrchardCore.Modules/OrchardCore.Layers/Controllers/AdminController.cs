@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
@@ -20,11 +21,13 @@ using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Services;
 using OrchardCore.Layers.ViewModels;
 using OrchardCore.Rules;
+using OrchardCore.Rules.Services;
 using OrchardCore.Settings;
 using YesSql;
 
 namespace OrchardCore.Layers.Controllers
 {
+    [Admin("Layers/{action}/{id?}", "Layers.{action}")]
     public class AdminController : Controller
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
@@ -83,6 +86,7 @@ namespace OrchardCore.Layers.Controllers
             _logger = logger;
         }
 
+        [Admin("Layers", "Layers.Index")]
         public async Task<IActionResult> Index()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
@@ -98,8 +102,8 @@ namespace OrchardCore.Layers.Controllers
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var contentDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
 
-            model.Zones = siteSettings.As<LayerSettings>().Zones ?? Array.Empty<string>();
-            model.Widgets = new Dictionary<string, List<dynamic>>();
+            model.Zones = siteSettings.As<LayerSettings>().Zones ?? [];
+            model.Widgets = [];
 
             foreach (var widget in widgets.OrderBy(x => x.Position))
             {
@@ -107,7 +111,7 @@ namespace OrchardCore.Layers.Controllers
                 List<dynamic> list;
                 if (!model.Widgets.TryGetValue(zone, out list))
                 {
-                    model.Widgets.Add(zone, list = new List<dynamic>());
+                    model.Widgets.Add(zone, list = []);
                 }
 
                 if (contentDefinitions.Any(c => c.Name == widget.ContentItem.ContentType))
@@ -339,7 +343,7 @@ namespace OrchardCore.Layers.Controllers
             // The state will be updated once the ambient session is committed.
             await _layerStateManager.UpdateAsync(new LayerState());
 
-            if (Request.Headers != null && Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            if (Request.Headers != null && Request.Headers.XRequestedWith == "XMLHttpRequest")
             {
                 return Ok();
             }

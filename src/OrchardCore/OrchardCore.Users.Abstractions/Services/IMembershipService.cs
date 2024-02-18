@@ -19,7 +19,7 @@ namespace OrchardCore.Users.Services
         /// Checks the user password.
         /// </summary>
         /// <param name="userName">The username.</param>
-        /// <param name="password">The user password</param>
+        /// <param name="password">The user password.</param>
         /// <returns>Returns<c>true</c> if the password is correct, otherwise <c>false</c>.</returns>
         Task<bool> CheckPasswordAsync(string userName, string password);
 

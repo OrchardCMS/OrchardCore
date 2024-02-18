@@ -61,7 +61,7 @@ public static class ShellSettingsExtensions
     public static bool HasUrlHost(this ShellSettings settings, string urlHost) =>
         settings.HasUrlHost(urlHost
             ?.Split(ShellSettings.HostSeparators, StringSplitOptions.RemoveEmptyEntries)
-            ?? Array.Empty<string>());
+            ?? []);
 
     /// <summary>
     /// Whether or not the tenant has one of the provided url hosts.

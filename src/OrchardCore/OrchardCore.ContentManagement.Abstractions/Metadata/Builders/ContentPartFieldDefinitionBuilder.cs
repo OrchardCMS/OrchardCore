@@ -1,12 +1,12 @@
 using System;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentManagement.Metadata.Builders
 {
     public abstract class ContentPartFieldDefinitionBuilder
     {
-        protected readonly JObject _settings;
+        protected readonly JsonObject _settings;
 
         public ContentPartFieldDefinition Current { get; private set; }
         public abstract string Name { get; }
@@ -17,7 +17,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         {
             Current = field;
 
-            _settings = new JObject(field.Settings);
+            _settings = field.Settings.Clone();
         }
 
         [Obsolete("Use WithSettings<T>. This will be removed in a future version.")]
@@ -30,26 +30,19 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         [Obsolete("Use WithSettings<T>. This will be removed in a future version.")]
         public ContentPartFieldDefinitionBuilder WithSetting(string name, string[] values)
         {
-            _settings[name] = new JArray(values);
+            _settings[name] = JArray.FromObject(values);
             return this;
         }
 
-        public ContentPartFieldDefinitionBuilder MergeSettings(JObject settings)
+        public ContentPartFieldDefinitionBuilder MergeSettings(JsonObject settings)
         {
             _settings.Merge(settings, ContentBuilderSettings.JsonMergeSettings);
             return this;
         }
 
-        [Obsolete("Use MergeSettings<T>. This will be removed in a future version.")]
-        public ContentPartFieldDefinitionBuilder MergeSettings(object model)
-        {
-            _settings.Merge(JObject.FromObject(model), ContentBuilderSettings.JsonMergeSettings);
-            return this;
-        }
-
         public ContentPartFieldDefinitionBuilder MergeSettings<T>(Action<T> setting) where T : class, new()
         {
-            var existingJObject = _settings[typeof(T).Name] as JObject;
+            var existingJObject = _settings[typeof(T).Name] as JsonObject;
             // If existing settings do not exist, create.
             if (existingJObject == null)
             {
@@ -65,10 +58,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentPartFieldDefinitionBuilder WithSettings<T>(T settings)
         {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+            ArgumentNullException.ThrowIfNull(settings);
 
             var jObject = JObject.FromObject(settings, ContentBuilderSettings.IgnoreDefaultValuesSerializer);
             _settings[typeof(T).Name] = jObject;

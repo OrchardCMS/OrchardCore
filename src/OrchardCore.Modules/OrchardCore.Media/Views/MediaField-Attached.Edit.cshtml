@@ -40,7 +40,7 @@
                 <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa-solid fa-trash-alt" aria-hidden="true"></i></a>
             </div>
             <label class="selected-media-name form-label">
-                <code class="text-end" v-if="selectedMedia">@T["{{{{ selectedMedia.name }}}}{{{{ selectedMedia.mediaText === '' ? '' : ', ' + selectedMedia.mediaText }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
+                <code class="text-end" v-if="selectedMedia">@T["{{{{ selectedMedia.attachedFileName !== null && selectedMedia.attachedFileName !== '' ? selectedMedia.attachedFileName : selectedMedia.name }}}}{{{{ selectedMedia.mediaText === '' ? '' : ', ' + selectedMedia.mediaText }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
             </label>
         </div>
 

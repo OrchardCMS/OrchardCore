@@ -142,7 +142,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
 
         private class ConfiguredFeatures
         {
-            public string[] Features { get; set; } = Array.Empty<string>();
+            public string[] Features { get; set; } = [];
         }
     }
 }
