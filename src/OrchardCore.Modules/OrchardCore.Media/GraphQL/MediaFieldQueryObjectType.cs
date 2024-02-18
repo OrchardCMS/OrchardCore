@@ -28,7 +28,7 @@ namespace OrchardCore.Media.GraphQL
                 });
 
             Field<ListGraphType<StringGraphType>, IEnumerable<string>>("fileNames")
-                .Description("the media fileNames")
+                .Description("the media file names")
                 .PagingArguments()
                 .Resolve(x =>
                 {
@@ -55,8 +55,7 @@ namespace OrchardCore.Media.GraphQL
                     return paths.Select(p => mediaFileStore.MapPathToPublicUrl(p));
                 });
 
-            Field<ListGraphType<MediaFileItemType>, IEnumerable<MediaFileItem>>()
-                .Name("files")
+            Field<ListGraphType<MediaFileItemType>, IEnumerable<MediaFileItem>>("files")
                 .Description("the files of the media items")
                 .PagingArguments()
                 .Resolve(x =>
@@ -90,9 +89,9 @@ namespace OrchardCore.Media.GraphQL
     {
         public MediaFileItemType()
         {
-            Field<StringGraphType>("fileName", "the file name of the media file item", resolve: x => x.Source.FileName);
-            Field<StringGraphType>("path", "the path of the media file item", resolve: x => x.Source.Path);
-            Field<StringGraphType>("url", "the url name of the media file item", resolve: x => x.Source.Url);
+            Field<StringGraphType>("fileName").Description("the file name of the media file item").Resolve(x => x.Source.FileName);
+            Field<StringGraphType>("path").Description("the path of the media file item").Resolve(x => x.Source.Path);
+            Field<StringGraphType>("url").Description("the url name of the media file item").Resolve(x => x.Source.Url);
         }
     }
 
