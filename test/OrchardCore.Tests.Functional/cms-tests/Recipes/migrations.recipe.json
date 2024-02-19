@@ -51,6 +51,7 @@
         "OrchardCore.Deployment",
         "OrchardCore.Deployment.Remote",
         "OrchardCore.Feeds",
+        "OrchardCore.Email",
         "OrchardCore.Flows",
         "OrchardCore.Html",
         "OrchardCore.Indexing",
