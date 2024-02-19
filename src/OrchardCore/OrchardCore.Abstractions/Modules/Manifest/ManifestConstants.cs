@@ -10,4 +10,9 @@ public static class ManifestConstants
     public const string OrchardCoreWebsite = "https://orchardcore.net";
 
     public const string AdminTag = "Admin";
+
+    public static class Features
+    {
+        public const string BlazorUI = "OrchardCore.Admin.BlazorUI";
+    }
 }

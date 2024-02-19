@@ -19,6 +19,7 @@ using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
+using OrchardCore.Modules.Manifest;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Mvc.Routing;
 using OrchardCore.Navigation;
@@ -90,7 +91,7 @@ namespace OrchardCore.Admin
         }
     }
 
-   
+    [Modules.Feature(ManifestConstants.Features.BlazorUI)]
     public class AdminComponentsStartup : StartupBase
     {
         public override int Order => 1;
@@ -106,6 +107,7 @@ namespace OrchardCore.Admin
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            app.UseAntiforgery();
             app.UseStaticFiles();
             routes.MapRazorComponents<OrchardAdminApp>()
                 .AddInteractiveServerRenderMode()

@@ -1,5 +1,7 @@
-<h3>Future Admin App in Blazor</h3>
-
-@code {
-
-}
+@using Microsoft.AspNetCore.Components.Routing
+<Router AppAssembly="GetType().Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="routeData" />
+        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+    </Found>
+</Router>
