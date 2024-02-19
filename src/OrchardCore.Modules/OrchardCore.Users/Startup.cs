@@ -188,6 +188,8 @@ namespace OrchardCore.Users
 
             services.AddScoped<IDisplayDriver<UserIndexOptions>, UserOptionsDisplayDriver>();
 
+            services.AddScoped<IUserControllerService, DefaultUserControllerService>();
+
             services.AddSingleton<IUsersAdminListFilterParser>(sp =>
             {
                 var filterProviders = sp.GetServices<IUsersAdminListFilterProvider>();
