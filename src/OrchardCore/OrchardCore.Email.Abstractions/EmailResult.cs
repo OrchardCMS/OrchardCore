@@ -10,14 +10,17 @@ namespace OrchardCore.Email;
 public class EmailResult
 {
     /// <summary>
-    /// Returns an <see cref="EmailResult"/> indicating a successful Smtp operation.
+    /// Returns an <see cref="EmailResult"/> indicating a successful email operation.
     /// </summary>
-    public static readonly EmailResult SuccessResult = new() { Succeeded = true };
+    public static readonly EmailResult SuccessResult = new()
+    {
+        Succeeded = true
+    };
 
     /// <summary>
-    /// An <see cref="IEnumerable{LocalizedString}"/> containing errors that may occurred during the email sending operation.
+    /// An <see cref="LocalizedString"/> array containing errors that may occurred during the email sending operation.
     /// </summary>
-    public IDictionary<string, List<LocalizedString>> Errors { get; protected set; }
+    public IReadOnlyDictionary<string, LocalizedString[]> Errors { get; protected set; }
 
     /// <summary>
     /// Get or sets the response text from the email sending service.
@@ -32,11 +35,21 @@ public class EmailResult
     /// <summary>
     /// Creates an <see cref="EmailResult"/> indicating a failed email sending operation, with a list of errors if applicable.
     /// </summary>
+    public static EmailResult FailedResult(IDictionary<string, IList<LocalizedString>> errors)
+        => new()
+        {
+            Succeeded = false,
+            Errors = errors.ToDictionary(x => x.Key, x => x.Value.ToArray()),
+        };
+
+    /// <summary>
+    /// Creates an <see cref="EmailResult"/> indicating a failed email sending operation, with a list of errors if applicable.
+    /// </summary>
     public static EmailResult FailedResult(IDictionary<string, List<LocalizedString>> errors)
         => new()
         {
             Succeeded = false,
-            Errors = errors
+            Errors = errors.ToDictionary(x => x.Key, x => x.Value.ToArray()),
         };
 
     /// <summary>
@@ -55,12 +68,15 @@ public class EmailResult
         => new()
         {
             Succeeded = false,
-            Errors = new Dictionary<string, List<LocalizedString>>()
+            Errors = new Dictionary<string, LocalizedString[]>()
             {
-                { propertyName ?? string.Empty, errors.ToList() }
+                { propertyName ?? string.Empty, errors }
             }
         };
 
+    /// <summary>
+    /// Returns an <see cref="EmailResult"/> indicating a successful email operation.
+    /// </summary>
     public static EmailResult GetSuccessResult(string response)
         => new()
         {

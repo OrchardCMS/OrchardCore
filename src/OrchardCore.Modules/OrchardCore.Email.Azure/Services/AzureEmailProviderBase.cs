@@ -127,7 +127,7 @@ public abstract class AzureEmailProviderBase : IEmailProvider
             message.From = senderAddress;
         }
 
-        var errors = new Dictionary<string, List<LocalizedString>>();
+        var errors = new Dictionary<string, IList<LocalizedString>>();
         var emailMessage = FromMailMessage(message, errors);
 
         if (errors.Count > 0)
@@ -156,7 +156,7 @@ public abstract class AzureEmailProviderBase : IEmailProvider
         }
     }
 
-    private EmailMessage FromMailMessage(MailMessage message, Dictionary<string, List<LocalizedString>> errors)
+    private EmailMessage FromMailMessage(MailMessage message, Dictionary<string, IList<LocalizedString>> errors)
     {
         var recipients = message.GetRecipients();
 

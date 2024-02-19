@@ -60,12 +60,14 @@ public class EmailMessageValidator : EmailServiceEventsBase
         return Task.CompletedTask;
     }
 
-    private static void AddError(MailMessageValidationContext context, string key, IEnumerable<LocalizedString> invalidSender)
+    private static void AddError(MailMessageValidationContext context, string key, IEnumerable<LocalizedString> errorMessages)
     {
-        if (invalidSender.Any())
+        if (!errorMessages.Any())
         {
-            context.Errors.TryAdd(key, []);
-            context.Errors[key].AddRange(invalidSender);
+            return;
         }
+
+        context.Errors.TryAdd(key, []);
+        context.Errors[key].AddRange(errorMessages);
     }
 }
