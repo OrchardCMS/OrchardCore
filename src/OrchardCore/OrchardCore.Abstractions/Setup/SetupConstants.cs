@@ -14,5 +14,13 @@ namespace OrchardCore.Abstractions.Setup
         public const string DatabaseSchema = "DatabaseSchema";
         public const string SiteTimeZone = "SiteTimeZone";
         public const string FeatureProfile = "FeatureProfile";
+
+    }
+
+    public static class ShellOptionConstants
+    {
+        public const string OrchardAppData = "ORCHARD_APP_DATA";
+        public const string DefaultAppDataPath = "App_Data";
+        public const string DefaultSitesPath = "Sites";
     }
 }
