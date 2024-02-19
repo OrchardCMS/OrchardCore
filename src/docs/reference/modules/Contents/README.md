@@ -423,6 +423,137 @@ query {
 }
 ```
 
+## Extending Admin UI Search
+
+Additional options have been introduced to enable control over the behavior of the full-text search in the administration user interface for users.
+
+For instance, when a user performs a search, the default behavior is to check if the search terms are present in the `NormalizedUserName` column of the `UserIndex` table. However, what if a user wants to search for a user using other logic like First or Last name, which is not part of the `UserName` field?
+
+With the newly added options, we can now allow searching for user based on either the username or any custom logic. To modify the default behavior, two steps need to be taken:
+
+ 1. Implement `IUsersAdminListFilterProvider` interface by defining a custom lookup logic. For example:
+
+    ```csharp
+    public class FullnameUsersAdminListFilterProvider : IUsersAdminListFilterProvider
+    {
+        public void Build(QueryEngineBuilder<User> builder)
+        {
+            builder
+                .WithNamedTerm("fullname", builder => builder
+                    .ManyCondition(
+                        (val, query, ctx) =>
+                        {
+                            var context = (UserQueryContext)ctx;
+                            var userManager = context.ServiceProvider.GetRequiredService<UserManager<IUser>>();
+                            var normalizedUserName = userManager.NormalizeName(val);
+
+                            // The index name 'UserFullnameIndex' does not exists. 
+                            // It is a custom index that you would create or use other custom index or logic.
+                            var filteredQuery = query.Any(
+                                (q) => q.With<UserIndex>(i => i.NormalizedUserName != null && i.NormalizedUserName.Contains(normalizedUserName)),
+                                (q) => q.With<UserFullnameIndex>(i =>
+                                   (i.FirstName != null && i.FirstName.Contains(val)) ||
+                                   (i.LastName != null && i.LastName.Contains(val)) ||
+                                   (i.MiddleName != null && i.MiddleName.Contains(val))
+                                )
+                            );
+
+                            return new ValueTask<IQuery<User>>(filteredQuery);
+                        },
+                        (val, query, ctx) =>
+                        {
+                            var context = (UserQueryContext)ctx;
+                            var userManager = context.ServiceProvider.GetRequiredService<UserManager<IUser>>();
+                            var normalizedUserName = userManager.NormalizeName(val);
+
+                            var filteredQuery = query.All(
+                                (q) => q.With<UserIndex>(i => i.NormalizedUserName == null || i.NormalizedUserName.NotContains(normalizedUserName)),
+                                (q) => q.With<UserFullnameIndex>(i =>
+                                   (i.FirstName == null || i.FirstName.NotContains(val)) &&
+                                   (i.LastName == null || i.LastName.NotContains(val)) &&
+                                   (i.MiddleName == null || i.MiddleName.NotContains(val))
+                                )
+                            );
+
+                            return new ValueTask<IQuery<User>>(filteredQuery);
+                        }
+                    )
+                );
+        }
+    }
+    ```
+
+ 2. Register the custom default term name as a search option by adding it to the `UsersAdminListFilterOptions.` For example:
+
+    ```csharp
+    services.Configure<UsersAdminListFilterOptions>(options =>
+    {
+        options.TermName = "fullname";
+    });
+    ```
+
+### `OrchardCore.Seo` Module
+
+The `Seo` feature now provides `robots.txt` out of the box when the filesystem does not contain one. New settings are available at **Configuration** >> **Settings** >> **SEO** to allow you to configure what should be included into the `robots.txt` file.
+
+!!! note
+    If the [Sitemaps](../modules/Sitemaps) feature is enabled, all sitemap indexes and sitemaps are added to the `robots.txt` by default.
+
+### `OrchardCore.Contents` Module
+
+#### List Content Types by Stereotype
+
+The Contents admin UI now provides a way to manage content items of content types that share the same Stereotype.
+
+For example, lets say we want list all content items of a content types that use `Test` stereotype. To do that, add an admin menu item that directs the user to `/Admin/Contents/ContentItems?stereotype=Test`. Adding `stereotype=Test` to the URL will render the UI using any content type that has `Test` as it's stereotype.
+
+
+## Full-Text Search for Admin UI
+
+Starting with version 1.7, a new options have been introduced to enable control over the behavior of the full-text search in the administration user interface for content items.
+
+For instance, consider a content type called `Product.` Currently, when a user performs a search, the default behavior is to check if the search terms are present in the `DisplayText` column of the `ContentItemIndex` for the content item. However, what if a user wants to search for a product using its serial number, which is not part of the `DisplayText` field?
+
+With the newly added options, we can now allow searching for products based on either the display text or the serial number. To modify the default behavior, two steps need to be taken:
+
+ 1. Implement `IContentsAdminListFilterProvider` interface by defining a custom lookup logic. For example:
+
+    ```csharp
+    public class ProductContentsAdminListFilterProvider : IContentsAdminListFilterProvider
+    {
+        public void Build(QueryEngineBuilder<ContentItem> builder)
+        {
+            builder
+                .WithNamedTerm("producttext", builder => builder
+                    .ManyCondition(
+                        (val, query) => query.Any(
+                            (q) => q.With<ContentItemIndex>(i => i.DisplayText != null && i.DisplayText.Contains(val)),
+                            (q) => q.With<ProductIndex>(i => i.SerialNumber != null && i.SerialNumber.Contains(val))
+                        ),
+                        (val, query) => query.All(
+                            (q) => q.With<ContentItemIndex>(i => i.DisplayText == null || i.DisplayText.NotContains(val)),
+                            (q) => q.With<ProductIndex>(i => i.SerialNumber == null || i.SerialNumber.NotContains(val))
+                        )
+                    )
+                );
+        }
+    }
+    ```
+
+ 2. Register the custom default term name as a search option by adding it to the `ContentsAdminListFilterOptions.` For example:
+
+    ```csharp
+    services.Configure<ContentsAdminListFilterOptions>(options =>
+    {
+        options.DefaultTermNames.Add("Product", "producttext");
+    });
+    ```
+
+Now, when a user searches for a product's serial number in the administration UI, we will utilize the `producttext` filter instead of the default `text` filter to perform the search.
+
+The `UseExactMatch` option in the `ContentsAdminListFilterOptions` class modifies the default search behavior by enclosing searched terms within quotation marks, creating an exact match search by default, this unless if the search text explicitly uses 'OR' or 'AND' operators.
+
+
 ## Videos
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/j6xuupq9FYY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
