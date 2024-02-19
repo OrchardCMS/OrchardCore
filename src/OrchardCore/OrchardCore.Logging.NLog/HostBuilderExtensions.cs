@@ -16,7 +16,9 @@ public static class HostBuilderExtensions
             .ConfigureAppConfiguration((context, _) =>
             {
                 var environment = context.HostingEnvironment;
-                LogManager.Configuration.Variables["configDir"] = environment.ContentRootPath;
+                var appData = System.Environment.GetEnvironmentVariable("ORCHARD_APP_DATA");
+                var configDir = string.IsNullOrWhiteSpace(appData) ? $"{environment.ContentRootPath}/App_Data" : appData;
+                LogManager.Configuration.Variables["configDir"] = configDir;
             });
     }
 }
