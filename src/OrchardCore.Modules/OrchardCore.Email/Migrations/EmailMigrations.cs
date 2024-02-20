@@ -14,10 +14,9 @@ public class EmailMigrations : DataMigration
 
     public int Create()
     {
-        // In version 1.9, the OrchardCore.Email.Smtp was split from OrchardCore.Email.
-        // To ensure we keep the change backward compatible, we added this migration step
-        // to auto enable the new SMTP feature for current site that are using the Email service
-        // and the site has SmtpSettings.
+        // In version 1.9, the OrchardCore.Email.Smtp was split from OrchardCore.Email. To ensure we keep the change
+        // backward compatible, we added this migration step to auto-enable the new SMTP feature for sites that use the
+        // Email service and have SmtpSettings.
         ShellScope.AddDeferredTask(async scope =>
         {
             var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
