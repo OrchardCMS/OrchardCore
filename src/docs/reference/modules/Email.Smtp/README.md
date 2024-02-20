@@ -27,7 +27,7 @@ Here are the available SMTP settings
 !!! note
     You must configure `ProxyHost` and `ProxyPort` if the SMTP server runs through a proxy server.
 
-## Simple Mail Transfer Protocol (Default SMTP) Configuration
+## Default Simple Mail Transfer Protocol (SMTP) Configuration
 
 You may configure the Default SMTP provider by the configuration provider using the following settings:
 
