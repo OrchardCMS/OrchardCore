@@ -67,7 +67,8 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
 
         return Initialize<SmtpSettingsViewModel>("SmtpSettings_Edit", model =>
         {
-            // For backward compatibility, if IsEnabled is null, we check to see if there are already valid configuration.
+            // For backward compatibility with instances before the SMTP provider was factored out of
+            // OrchardCore.Email, if IsEnabled is null, we check to see if there's already valid configuration.
             model.IsEnabled = settings.IsEnabled ?? _smtpOptions.ConfigurationExists();
             model.DefaultSender = settings.DefaultSender;
             model.DeliveryMethod = settings.DeliveryMethod;
