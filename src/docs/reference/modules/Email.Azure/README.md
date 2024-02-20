@@ -1,6 +1,6 @@
 # Azure Email (`OrchardCore.Email.Azure`)
 
-This module provides an Email provider for sending emails through the [Azure Communication Email Services](https://learn.microsoft.com/en-us/azure/communication-services/concepts/email/email-overview).
+This module provides an Email provider for sending emails through [Azure Communication Services Email](https://learn.microsoft.com/en-us/azure/communication-services/concepts/email/email-overview).
 
 ## Azure Communication Service Settings
 
