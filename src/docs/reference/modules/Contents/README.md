@@ -425,7 +425,7 @@ query {
 
 ## List Content Types by Stereotype
 
-Starting with version 1.7, the Contents admin UI now provides a way to manage content items of content types that share the same Stereotype.
+Starting with version 1.7, the Contents admin UI provides a way to manage content items of content types that share the same Stereotype.
 
 For example, lets say we want list all content items of a content types that use `Test` stereotype. To do that, add an admin menu item that directs the user to `/Admin/Contents/ContentItems?stereotype=Test`. Adding `stereotype=Test` to the URL will render the UI using any content type that has `Test` as it's stereotype.
 
