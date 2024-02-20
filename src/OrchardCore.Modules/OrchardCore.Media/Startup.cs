@@ -68,6 +68,7 @@ namespace OrchardCore.Media
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpClient();
             services.AddSingleton<IJSLocalizer, MediaJSLocalizer>();
             services.AddSingleton<IJSLocalizer, NullJSLocalizer>();
             services.AddSingleton<IAnchorTag, MediaAnchorTag>();
