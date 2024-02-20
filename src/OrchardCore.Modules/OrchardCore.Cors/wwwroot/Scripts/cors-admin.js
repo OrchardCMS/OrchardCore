@@ -42,7 +42,7 @@ var corsApp = new Vue({
   },
   data: {
     selectedPolicy: null,
-    policies: [],
+    policies: null,
     defaultPolicyName: null
   },
   updated: function updated() {
@@ -76,12 +76,12 @@ var corsApp = new Vue({
       this.save();
     },
     updatePolicy: function updatePolicy(policy, event) {
-      if (policy.IsDefaultPolicy) {
+      if (policy.isDefaultPolicy) {
         this.policies.forEach(function (p) {
-          return p.IsDefaultPolicy = false;
+          return p.isDefaultPolicy = false;
         });
       }
-      if (policy.originalName) {
+      if (policy.OriginalName) {
         var policyIndex = this.policies.findIndex(function (oldPolicy) {
           return oldPolicy.name === policy.originalName;
         });
