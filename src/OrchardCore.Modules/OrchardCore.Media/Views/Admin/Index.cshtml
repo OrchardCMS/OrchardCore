@@ -6,9 +6,12 @@
     var siteId = ShellSettings.TenantId;
 }
 
-<script asp-name="media" version="2" at="Foot"></script>
+<script type="module" asp-name="media" version="2" at="Foot" depends-on="jQuery"></script>
 <style asp-name="media" version="2" at="Head"></style>
-<div id="mediaApp">
+
+<h1 style="display:none">@RenderTitleSegments(T["Assets"])</h1>
+
+<div id="media-app">
     <media-app
         site-id="@siteId"
         translations="@Json.Serialize(jsLocalizations).ToString()"
@@ -18,42 +21,3 @@
     >
     </media-app>
 </div>
-
-<script at="Foot">
-    @* mediaApp is absolutely positioned. When a warning is shown we need to move it down to avoid overlapping. *@
-    $(function () {
-        if (!$('.message').length) { return; };
-        var mediaAppInitialTop = 0;
-        var mediaAppLoaded = false;
-
-        var repositionMediaApp = function () {
-
-            var messagesHeight = 0;
-            $('.message').each(function () {
-                messagesHeight += $(this).outerHeight(true);
-            });
-
-            var newTop = mediaAppInitialTop + messagesHeight;
-
-            $('#mediaApp').css('top', newTop + 'px');
-        }
-
-        $(window).on('resize', function () {
-            if (mediaAppLoaded) {
-                repositionMediaApp();
-            }
-        });
-
-        // before moving we need to wait until the vuejs mediaapp is loaded.
-        var checkMediaAppIsLoaded = setInterval(function () {
-            if ($('#mediaApp').length) {
-                mediaAppInitialTop = $('#mediaApp').offset().top;
-                clearInterval(checkMediaAppIsLoaded);
-                mediaAppLoaded = true;
-                repositionMediaApp();
-            }
-        }, 100);
-    });
-</script>
-
-<h1 style="display:none">@RenderTitleSegments(T["Assets"])</h1>

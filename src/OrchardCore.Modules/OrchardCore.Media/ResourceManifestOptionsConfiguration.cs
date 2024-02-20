@@ -32,7 +32,7 @@ namespace OrchardCore.Media
             _manifest
                 .DefineScript("media")
                 .SetUrl("~/OrchardCore.Media/Scripts/media2.js")
-                .SetDependencies("vuejs:3", "sortable", "vuedraggable:3", "jQuery-ui")
+                .SetDependencies("vuejs:3", "sortable", "vuedraggable:3", "jQuery-iframe-transport")
                 .SetVersion("2.0.0");
 
             _manifest

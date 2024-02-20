@@ -24,6 +24,7 @@
   "devDependencies": {
     "@types/debug": "^4.1.8",
     "@types/jquery": "^3.5.19",
+    "@types/node": "^18.18.5",
     "@vitejs/plugin-vue": "^3.2.0",
     "bootstrap": "5.3.2",
     "mitt": "^3.0.0",

@@ -367,6 +367,7 @@ export default defineComponent({
 
     },
     mounted: function () {
+        console.log("allo");
         let me = this;
         registerNotificationBus();
 
