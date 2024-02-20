@@ -29,6 +29,8 @@ namespace OrchardCore.Workflows.Http
                 o.Filters.Add(typeof(WorkflowActionFilter));
             });
 
+            services.AddHttpClient();
+
             services.AddLiquidFilter<SignalUrlFilter>("signal_url");
 
             services.AddScoped<IWorkflowTypeEventHandler, WorkflowTypeRoutesHandler>();

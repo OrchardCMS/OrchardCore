@@ -19,7 +19,6 @@ using OrchardCore.Templates.Cms.Module.Settings;
 using OrchardCore.Templates.Cms.Module.ViewModels;
 #endif
 
-
 namespace OrchardCore.Templates.Cms.Module
 {
     public class Startup : StartupBase
