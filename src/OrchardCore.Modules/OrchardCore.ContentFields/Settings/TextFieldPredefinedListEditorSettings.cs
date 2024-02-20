@@ -27,10 +27,8 @@ namespace OrchardCore.ContentFields.Settings
         {
         }
 
-        public ListValueOption(string name)
+        public ListValueOption(string name) : this(name, name)
         {
-            Name = name;
-            Value = name;
         }
 
         public ListValueOption(string name, string value)
