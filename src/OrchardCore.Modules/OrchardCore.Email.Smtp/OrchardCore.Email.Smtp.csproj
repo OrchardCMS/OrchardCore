@@ -7,7 +7,7 @@
     <Description>
       $(OCFrameworkDescription)
 
-      Provides the configuration of email settings and a default email service utilizing Simple Mail Transfer Protocol SMTP.
+      Provides the configuration of email settings and a default email service utilizing Simple Mail Transfer Protocol (SMTP).
     </Description>
     <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
   </PropertyGroup>
