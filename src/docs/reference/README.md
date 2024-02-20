@@ -116,7 +116,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - [Response Compression](modules/ResponseCompression/README.md)
 - [Email](modules/Email/README.md)
 - [SMTP Provider](modules/Email.Smtp/README.md)
-- [Email Azure Provider](modules/Email.Azure/README.md)
+- [Azure Email Provider](modules/Email.Azure/README.md)
 - [Redis](modules/Redis/README.md)
 - [Deployment](modules/Deployment/README.md)
 - [Diagnostics](modules/Diagnostics/README.md)
