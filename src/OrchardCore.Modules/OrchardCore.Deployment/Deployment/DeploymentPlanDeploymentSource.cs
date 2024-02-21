@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Deployment.Deployment
 {
@@ -9,13 +11,16 @@ namespace OrchardCore.Deployment.Deployment
     {
         private readonly IDeploymentPlanService _deploymentPlanService;
         private readonly IEnumerable<IDeploymentStepFactory> _deploymentStepFactories;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
         public DeploymentPlanDeploymentSource(
             IDeploymentPlanService deploymentPlanService,
-            IEnumerable<IDeploymentStepFactory> deploymentStepFactories)
+            IEnumerable<IDeploymentStepFactory> deploymentStepFactories,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             _deploymentPlanService = deploymentPlanService;
             _deploymentStepFactories = deploymentStepFactories;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep deploymentStep, DeploymentPlanResult result)
@@ -52,7 +57,7 @@ namespace OrchardCore.Deployment.Deployment
             result.Steps.Add(new JsonObject
             {
                 ["name"] = "deployment",
-                ["Plans"] = JArray.FromObject(plans),
+                ["Plans"] = JArray.FromObject(plans, _jsonSerializerOptions),
             });
         }
 

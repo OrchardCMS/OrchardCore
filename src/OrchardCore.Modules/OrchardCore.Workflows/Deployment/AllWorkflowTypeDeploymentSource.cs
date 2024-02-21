@@ -1,5 +1,7 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
 using OrchardCore.Workflows.Services;
 
@@ -8,17 +10,19 @@ namespace OrchardCore.Workflows.Deployment
     public class AllWorkflowTypeDeploymentSource : IDeploymentSource
     {
         private readonly IWorkflowTypeStore _workflowTypeStore;
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
 
-        public AllWorkflowTypeDeploymentSource(IWorkflowTypeStore workflowTypeStore)
+        public AllWorkflowTypeDeploymentSource(
+            IWorkflowTypeStore workflowTypeStore,
+            IOptions<JsonSerializerOptions> jsonSerializerOptions)
         {
             _workflowTypeStore = workflowTypeStore;
+            _jsonSerializerOptions = jsonSerializerOptions.Value;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var allContentStep = step as AllWorkflowTypeDeploymentStep;
-
-            if (allContentStep == null)
+            if (step is not AllWorkflowTypeDeploymentStep)
             {
                 return;
             }
@@ -32,7 +36,7 @@ namespace OrchardCore.Workflows.Deployment
 
             foreach (var workflow in await _workflowTypeStore.ListAsync())
             {
-                var objectData = JObject.FromObject(workflow);
+                var objectData = JObject.FromObject(workflow, _jsonSerializerOptions);
 
                 // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql
                 objectData.Remove(nameof(workflow.Id));
