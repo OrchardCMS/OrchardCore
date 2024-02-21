@@ -25,7 +25,7 @@ public class CustomUserSettingsService
     {
         _contentManager = contentManager;
         _contentDefinitionManager = contentDefinitionManager;
-        _settingsTypes = new Lazy<Task<IDictionary<string, ContentTypeDefinition>>>(async () => await GetContentTypeAsync());
+        _settingsTypes = new Lazy<Task<IDictionary<string, ContentTypeDefinition>>>(GetContentTypeAsync);
         _session = session;
     }
 

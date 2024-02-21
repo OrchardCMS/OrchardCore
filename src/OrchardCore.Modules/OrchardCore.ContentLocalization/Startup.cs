@@ -1,3 +1,5 @@
+using System;
+using System.Globalization;
 using Fluid;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -23,8 +25,6 @@ using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Sitemaps.Builders;
-using System;
-using System.Globalization;
 
 namespace OrchardCore.ContentLocalization
 {

@@ -18,8 +18,7 @@ namespace OrchardCore.Spatial.Drivers
 
                 model.Hint = settings.Hint;
                 model.Required = settings.Required;
-            })
-                .Location("Content");
+            }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
