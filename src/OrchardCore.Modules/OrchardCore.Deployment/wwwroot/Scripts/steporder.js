@@ -22,7 +22,7 @@ function updateStepOrders(oldIndex, newIndex) {
 }
 $(function () {
   var sortable = document.getElementById("stepOrder");
-  if (sortable) {
+  if (!sortable) {
     return;
   }
   var sortable = Sortable.create(sortable, {
