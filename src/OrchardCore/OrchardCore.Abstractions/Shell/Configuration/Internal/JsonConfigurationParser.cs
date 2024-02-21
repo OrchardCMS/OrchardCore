@@ -54,15 +54,10 @@ public sealed class JsonConfigurationParser
 
     private async Task<IDictionary<string, string?>> ParseStreamAsync(Stream input)
     {
-        var jsonDocumentOptions = new JsonDocumentOptions
-        {
-            CommentHandling = JsonCommentHandling.Skip,
-            AllowTrailingCommas = true,
-        };
-
         try
         {
-            using (var doc = await JsonDocument.ParseAsync(input, jsonDocumentOptions))
+            // Use JOptions.Document to allow comments and trailing commas
+            using (var doc = await JsonDocument.ParseAsync(input, JOptions.Document))
             {
                 if (doc.RootElement.ValueKind != JsonValueKind.Object)
                 {

@@ -1,5 +1,6 @@
 using System.IO;
 using System.IO.Compression;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -129,7 +130,7 @@ namespace OrchardCore.Deployment.Controllers
                 return Forbid();
             }
 
-            if (!model.Json.IsJson())
+            if (!model.Json.IsJson(JOptions.Document))
             {
                 ModelState.AddModelError(nameof(model.Json), S["The recipe is written in an incorrect json format."]);
             }
