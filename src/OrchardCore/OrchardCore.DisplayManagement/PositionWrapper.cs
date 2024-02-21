@@ -58,15 +58,23 @@ namespace OrchardCore.DisplayManagement
             {
                 // Update the new Position
                 if (position != null)
+                {
                     wrapper.Position = position;
+                }
                 return wrapper;
             }
             else if (value is IHtmlContent content)
+            {
                 return new PositionWrapper(content, position);
+            }
             else if (value is string stringContent)
+            {
                 return new PositionWrapper(stringContent, position);
+            }
             else
+            {
                 return null;
+            }
         }
 
         public static IHtmlContent UnWrap(PositionWrapper wrapper)
