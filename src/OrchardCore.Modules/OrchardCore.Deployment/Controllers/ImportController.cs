@@ -130,7 +130,7 @@ namespace OrchardCore.Deployment.Controllers
                 return Forbid();
             }
 
-            if (!model.Json.IsJson(null, JOptions.Document))
+            if (!model.Json.IsJson(JOptions.Document))
             {
                 ModelState.AddModelError(nameof(model.Json), S["The recipe is written in an incorrect json format."]);
             }
