@@ -52,9 +52,9 @@ namespace OrchardCore.DisplayManagement
             throw new System.NotImplementedException();
         }
 
-        public static PositionWrapper TryWrap(object value, string position)
+        public static IPositioned TryWrap(object value, string position)
         {
-            if (value is PositionWrapper wrapper)
+            if (value is IPositioned wrapper)
             {
                 // Update the new Position
                 if (position != null)
