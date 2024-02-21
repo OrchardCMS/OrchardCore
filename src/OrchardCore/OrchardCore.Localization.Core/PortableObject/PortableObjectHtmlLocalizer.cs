@@ -14,14 +14,14 @@ namespace OrchardCore.Localization.PortableObject
         /// Creates a new instance of <see cref="PortableObjectHtmlLocalizer"/>.
         /// </summary>
         /// <param name="localizer"></param>
-        public PortableObjectHtmlLocalizer(IStringLocalizer localizer) : base(localizer)
+        public PortableObjectHtmlLocalizer(IStringLocalizer localizer)
+            : base(localizer)
         {
             _localizer = localizer;
         }
 
         /// <inheritdocs />
-        public override LocalizedHtmlString this[string name]
-            => ToHtmlString(_localizer[name]);
+        public override LocalizedHtmlString this[string name] => ToHtmlString(_localizer[name]);
 
         /// <inheritdocs />
         public override LocalizedHtmlString this[string name, params object[] arguments]

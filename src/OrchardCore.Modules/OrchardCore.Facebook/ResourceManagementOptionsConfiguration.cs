@@ -11,14 +11,9 @@ namespace OrchardCore.Facebook
         {
             _manifest = new ResourceManifest();
 
-            _manifest
-                .DefineScript("fb")
-                .SetDependencies("fbsdk")
-                .SetUrl("~/OrchardCore.Facebook/sdk/fb.js");
+            _manifest.DefineScript("fb").SetDependencies("fbsdk").SetUrl("~/OrchardCore.Facebook/sdk/fb.js");
 
-            _manifest
-                .DefineScript("fbsdk")
-                .SetUrl("~/OrchardCore.Facebook/sdk/fbsdk.js");
+            _manifest.DefineScript("fbsdk").SetUrl("~/OrchardCore.Facebook/sdk/fbsdk.js");
         }
 
         public void Configure(ResourceManagementOptions options) => options.ResourceManifests.Add(_manifest);

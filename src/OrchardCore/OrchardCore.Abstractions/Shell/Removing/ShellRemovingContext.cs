@@ -14,7 +14,6 @@ public class ShellRemovingContext
     public string ErrorMessage
     {
         get => Error != null ? $"{_errorMessage} {Error.GetType().FullName}: {Error.Message}" : _errorMessage;
-
         set => _errorMessage = value;
     }
 

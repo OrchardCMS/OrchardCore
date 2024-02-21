@@ -9,8 +9,6 @@ public class TwoFactorMethodLoginEmailDisplayDriver : DisplayDriver<TwoFactorMet
 {
     public override IDisplayResult Edit(TwoFactorMethod model)
     {
-        return View("EmailAuthenticatorValidation", model)
-        .Location("Content")
-        .OnGroup(TokenOptions.DefaultEmailProvider);
+        return View("EmailAuthenticatorValidation", model).Location("Content").OnGroup(TokenOptions.DefaultEmailProvider);
     }
 }

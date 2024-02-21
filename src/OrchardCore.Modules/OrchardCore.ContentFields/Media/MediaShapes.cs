@@ -9,7 +9,8 @@ namespace OrchardCore.ContentFields.Media
     {
         public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
         {
-            builder.Describe("HtmlField_Edit")
+            builder
+                .Describe("HtmlField_Edit")
                 .OnDisplaying(displaying =>
                 {
                     var editor = displaying.Shape;

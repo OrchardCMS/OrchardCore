@@ -20,35 +20,24 @@ namespace OrchardCore.OpenId.YesSql.Indexes
     {
         private const string OpenIdCollection = OpenIdScope.OpenIdCollection;
 
-        public OpenIdScopeIndexProvider()
-            => CollectionName = OpenIdCollection;
+        public OpenIdScopeIndexProvider() => CollectionName = OpenIdCollection;
 
         public override void Describe(DescribeContext<OpenIdScope> context)
         {
-            context.For<OpenIdScopeIndex>()
-                .Map(scope => new OpenIdScopeIndex
-                {
-                    Name = scope.Name,
-                    ScopeId = scope.ScopeId
-                });
+            context.For<OpenIdScopeIndex>().Map(scope => new OpenIdScopeIndex { Name = scope.Name, ScopeId = scope.ScopeId });
 
-            context.For<OpenIdScopeByResourceIndex, string>()
-                .Map(scope => scope.Resources.Select(resource => new OpenIdScopeByResourceIndex
-                {
-                    Resource = resource,
-                    Count = 1
-                }))
+            context
+                .For<OpenIdScopeByResourceIndex, string>()
+                .Map(scope => scope.Resources.Select(resource => new OpenIdScopeByResourceIndex { Resource = resource, Count = 1 }))
                 .Group(index => index.Resource)
-                .Reduce(group => new OpenIdScopeByResourceIndex
-                {
-                    Resource = group.Key,
-                    Count = group.Sum(x => x.Count)
-                })
-                .Delete((index, map) =>
-                {
-                    index.Count -= map.Sum(x => x.Count);
-                    return index.Count > 0 ? index : null;
-                });
+                .Reduce(group => new OpenIdScopeByResourceIndex { Resource = group.Key, Count = group.Sum(x => x.Count) })
+                .Delete(
+                    (index, map) =>
+                    {
+                        index.Count -= map.Sum(x => x.Count);
+                        return index.Count > 0 ? index : null;
+                    }
+                );
         }
     }
 }

@@ -26,8 +26,7 @@ namespace OrchardCore.Sitemaps.Handlers
             foreach (var sitemap in sitemaps)
             {
                 // Do not break out of this loop, as it must check each sitemap.
-                foreach (var source in sitemap.SitemapSources
-                    .Select(s => s as CustomPathSitemapSource))
+                foreach (var source in sitemap.SitemapSources.Select(s => s as CustomPathSitemapSource))
                 {
                     if (source == null)
                     {

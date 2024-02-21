@@ -6,10 +6,11 @@ namespace OrchardCore.Shortcodes
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddShortcode<T>(this IServiceCollection services, string name) where T : class, IShortcodeProvider =>
-            services.AddShortcode(name, null);
+        public static IServiceCollection AddShortcode<T>(this IServiceCollection services, string name)
+            where T : class, IShortcodeProvider => services.AddShortcode(name, null);
 
-        public static IServiceCollection AddShortcode<T>(this IServiceCollection services, string name, Action<ShortcodeOption> describe) where T : class, IShortcodeProvider
+        public static IServiceCollection AddShortcode<T>(this IServiceCollection services, string name, Action<ShortcodeOption> describe)
+            where T : class, IShortcodeProvider
         {
             services.Configure<ShortcodeOptions>(options => options.AddShortcode(name, describe));
             services.AddScoped<IShortcodeProvider, T>();

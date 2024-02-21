@@ -23,10 +23,12 @@ namespace OrchardCore.Html.Handlers
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
 
-        public HtmlBodyPartHandler(IContentDefinitionManager contentDefinitionManager,
+        public HtmlBodyPartHandler(
+            IContentDefinitionManager contentDefinitionManager,
             IShortcodeService shortcodeService,
             ILiquidTemplateManager liquidTemplateManager,
-            HtmlEncoder htmlEncoder)
+            HtmlEncoder htmlEncoder
+        )
         {
             _contentDefinitionManager = contentDefinitionManager;
             _shortcodeService = shortcodeService;
@@ -55,16 +57,15 @@ namespace OrchardCore.Html.Handlers
                             ContentItem = part.ContentItem,
                         };
 
-                        html = await _liquidTemplateManager.RenderStringAsync(html, _htmlEncoder, model,
-                            new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
+                        html = await _liquidTemplateManager.RenderStringAsync(
+                            html,
+                            _htmlEncoder,
+                            model,
+                            new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) }
+                        );
                     }
 
-                    html = await _shortcodeService.ProcessAsync(html,
-                        new Context
-                        {
-                            ["ContentItem"] = part.ContentItem,
-                            ["TypePartDefinition"] = contentTypePartDefinition
-                        });
+                    html = await _shortcodeService.ProcessAsync(html, new Context { ["ContentItem"] = part.ContentItem, ["TypePartDefinition"] = contentTypePartDefinition });
 
                     bodyAspect.Body = new HtmlString(html);
                 }

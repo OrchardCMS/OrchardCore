@@ -69,14 +69,7 @@ namespace OrchardCore.Autoroute.Routing
                     }
                 }
 
-                var endpoint = new RouteEndpoint
-                (
-                    c => null,
-                    RoutePatternFactory.Parse(autorouteEntry.Path, routeValues, null),
-                    0,
-                    null,
-                    null
-                );
+                var endpoint = new RouteEndpoint(c => null, RoutePatternFactory.Parse(autorouteEntry.Path, routeValues, null), 0, null, null);
 
                 return new[] { endpoint };
             }

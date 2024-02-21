@@ -44,7 +44,8 @@ namespace OrchardCore.BackgroundTasks.Controllers
             IShapeFactory shapeFactory,
             IHtmlLocalizer<BackgroundTaskController> htmlLocalizer,
             IStringLocalizer<BackgroundTaskController> stringLocalizer,
-            INotifier notifier)
+            INotifier notifier
+        )
         {
             _authorizationService = authorizationService;
             _backgroundTasks = backgroundTasks;
@@ -92,7 +93,8 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                items = items.Where(entry => entry.Title != null && entry.Title.Contains(options.Search, StringComparison.OrdinalIgnoreCase)
+                items = items.Where(entry =>
+                    entry.Title != null && entry.Title.Contains(options.Search, StringComparison.OrdinalIgnoreCase)
                     || (entry.Description != null && entry.Description.Contains(options.Search, StringComparison.OrdinalIgnoreCase))
                 );
             }
@@ -106,11 +108,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
                 items = items.Where(entry => !entry.Enable);
             }
 
-            options.Statuses =
-            [
-                new SelectListItem(S["Enabled"], "enabled"),
-                new SelectListItem(S["Disabled"], "disabled")
-            ];
+            options.Statuses = [new SelectListItem(S["Enabled"], "enabled"), new SelectListItem(S["Disabled"], "disabled")];
 
             var taskItems = items.ToList();
             var routeData = new RouteData();
@@ -140,12 +138,8 @@ namespace OrchardCore.BackgroundTasks.Controllers
 
         [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
-        public ActionResult IndexFilterPOST(BackgroundTaskIndexViewModel model)
-            => RedirectToAction(nameof(Index), new RouteValueDictionary
-            {
-                { _optionsSearch, model.Options.Search },
-                { _optionsStatus, model.Options.Status },
-            });
+        public ActionResult IndexFilterPOST(BackgroundTaskIndexViewModel model) =>
+            RedirectToAction(nameof(Index), new RouteValueDictionary { { _optionsSearch, model.Options.Search }, { _optionsStatus, model.Options.Status }, });
 
         public async Task<IActionResult> Edit(string name)
         {

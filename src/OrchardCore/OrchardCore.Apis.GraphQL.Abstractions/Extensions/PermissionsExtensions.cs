@@ -24,7 +24,11 @@ namespace OrchardCore.Apis.GraphQL
             }
         }
 
-        public static FieldBuilder<TSourceType, TReturnType> RequirePermission<TSourceType, TReturnType>(this FieldBuilder<TSourceType, TReturnType> builder, Permission permission, object resource = null)
+        public static FieldBuilder<TSourceType, TReturnType> RequirePermission<TSourceType, TReturnType>(
+            this FieldBuilder<TSourceType, TReturnType> builder,
+            Permission permission,
+            object resource = null
+        )
         {
             builder.FieldType.RequirePermission(permission, resource);
             return builder;

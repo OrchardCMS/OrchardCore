@@ -106,14 +106,12 @@ namespace OrchardCore.Modules.Manifest
             var allAttributeCtors = typeof(TAttribute).GetConstructors(CtorFlags);
 
             // Identify the Ctor with the Parameters aligned to the Classified Arguments.
-            var allAttributeCtorWithParameterTypes = allAttributeCtors.Select(ctor => new
-            {
-                Callback = ctor,
-                Types = ctor.GetParameters().Select(_ => _.ParameterType).ToArray(),
-            }).ToArray();
+            var allAttributeCtorWithParameterTypes = allAttributeCtors
+                .Select(ctor => new { Callback = ctor, Types = ctor.GetParameters().Select(_ => _.ParameterType).ToArray(), })
+                .ToArray();
 
-            var attributeCtor = allAttributeCtorWithParameterTypes.SingleOrDefault(_ => _.Types.SequenceEqual(types))
-                ?.Callback
+            var attributeCtor =
+                allAttributeCtorWithParameterTypes.SingleOrDefault(_ => _.Types.SequenceEqual(types))?.Callback
                 ?? throw new ArgumentException($"Unable to align ctor to args({args.Length}).", nameof(args));
 
             var feature = attributeCtor.Invoke(args);
@@ -199,7 +197,7 @@ namespace OrchardCore.Modules.Manifest
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="values"></param>
@@ -213,7 +211,7 @@ namespace OrchardCore.Modules.Manifest
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="values"></param>
@@ -319,21 +317,18 @@ namespace OrchardCore.Modules.Manifest
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="pairs"></param>
         /// <returns></returns>
         protected virtual string RenderKeyValuePairs(params RenderKeyValuePair[] pairs) =>
-            string.Join(
-                string.Join(", ", pairs.Select(_ => $"{_}")), "{}".ToCharArray().Select(_ => $"{_}")
-            );
+            string.Join(string.Join(", ", pairs.Select(_ => $"{_}")), "{}".ToCharArray().Select(_ => $"{_}"));
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="pairs"></param>
-        protected virtual void ReportKeyValuePairs(params RenderKeyValuePair[] pairs) =>
-            OutputHelper.WriteLine($"{RenderKeyValuePairs(pairs)}");
+        protected virtual void ReportKeyValuePairs(params RenderKeyValuePair[] pairs) => OutputHelper.WriteLine($"{RenderKeyValuePairs(pairs)}");
 
         /// <summary>
         /// Override in order to enhance the Default coverage.
@@ -354,7 +349,8 @@ namespace OrchardCore.Modules.Manifest
             Assert.Equal($"{DefaultPriority}", feature.Priority);
         }
 
-        private static bool DefaultAssemblyAttribPredicate<T>(T _) where T : Attribute => _ is not null;
+        private static bool DefaultAssemblyAttribPredicate<T>(T _)
+            where T : Attribute => _ is not null;
 
         /// <summary>
         /// Returns the Attributes of type <typeparamref name="T"/> exposed by the

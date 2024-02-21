@@ -24,7 +24,8 @@ namespace OrchardCore.Contents.Workflows.Activities
             IWorkflowExpressionEvaluator expressionEvaluator,
             IWorkflowScriptEvaluator scriptEvaluator,
             IStringLocalizer<CreateContentTask> localizer,
-            JavaScriptEncoder javaScriptEncoder)
+            JavaScriptEncoder javaScriptEncoder
+        )
             : base(contentManager, scriptEvaluator, localizer)
         {
             _expressionEvaluator = expressionEvaluator;
@@ -65,28 +66,36 @@ namespace OrchardCore.Contents.Workflows.Activities
             return Outcomes(S["Done"], S["Failed"]);
         }
 
-        public async override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             if (InlineEvent.IsStart && InlineEvent.ContentType == ContentType)
             {
                 if (InlineEvent.Name == nameof(ContentUpdatedEvent))
                 {
-                    throw new InvalidOperationException($"The '{nameof(CreateContentTask)}' can't update the content item as it is executed inline from a starting '{nameof(ContentUpdatedEvent)}' of the same content type, which would result in an infinitive loop.");
+                    throw new InvalidOperationException(
+                        $"The '{nameof(CreateContentTask)}' can't update the content item as it is executed inline from a starting '{nameof(ContentUpdatedEvent)}' of the same content type, which would result in an infinitive loop."
+                    );
                 }
 
                 if (InlineEvent.Name == nameof(ContentCreatedEvent))
                 {
-                    throw new InvalidOperationException($"The '{nameof(CreateContentTask)}' can't create the content item as it is executed inline from a starting '{nameof(ContentCreatedEvent)}' of the same content type, which would result in an infinitive loop.");
+                    throw new InvalidOperationException(
+                        $"The '{nameof(CreateContentTask)}' can't create the content item as it is executed inline from a starting '{nameof(ContentCreatedEvent)}' of the same content type, which would result in an infinitive loop."
+                    );
                 }
 
                 if (Publish && InlineEvent.Name == nameof(ContentPublishedEvent))
                 {
-                    throw new InvalidOperationException($"The '{nameof(CreateContentTask)}' can't publish the content item as it is executed inline from a starting '{nameof(ContentPublishedEvent)}' of the same content type, which would result in an infinitive loop.");
+                    throw new InvalidOperationException(
+                        $"The '{nameof(CreateContentTask)}' can't publish the content item as it is executed inline from a starting '{nameof(ContentPublishedEvent)}' of the same content type, which would result in an infinitive loop."
+                    );
                 }
 
                 if (!Publish && InlineEvent.Name == nameof(ContentDraftSavedEvent))
                 {
-                    throw new InvalidOperationException($"The '{nameof(CreateContentTask)}' can't create the content item as it is executed inline from a starting '{nameof(ContentDraftSavedEvent)}' of the same content type, which would result in an infinitive loop.");
+                    throw new InvalidOperationException(
+                        $"The '{nameof(CreateContentTask)}' can't create the content item as it is executed inline from a starting '{nameof(ContentDraftSavedEvent)}' of the same content type, which would result in an infinitive loop."
+                    );
                 }
             }
 

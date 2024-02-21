@@ -14,10 +14,7 @@ public class ShellSettingsRemovingHandler : IShellRemovingHandler
     protected readonly IStringLocalizer S;
     private readonly ILogger _logger;
 
-    public ShellSettingsRemovingHandler(
-        IShellHost shellHost,
-        IStringLocalizer<ShellSettingsRemovingHandler> localizer,
-        ILogger<ShellSettingsRemovingHandler> logger)
+    public ShellSettingsRemovingHandler(IShellHost shellHost, IStringLocalizer<ShellSettingsRemovingHandler> localizer, ILogger<ShellSettingsRemovingHandler> logger)
     {
         _shellHost = shellHost;
         S = localizer;
@@ -40,10 +37,7 @@ public class ShellSettingsRemovingHandler : IShellRemovingHandler
         }
         catch (Exception ex)
         {
-            _logger.LogError(
-                ex,
-                "Failed to remove the shell settings of tenant '{TenantName}'.",
-                context.ShellSettings.Name);
+            _logger.LogError(ex, "Failed to remove the shell settings of tenant '{TenantName}'.", context.ShellSettings.Name);
 
             context.ErrorMessage = S["Failed to remove the shell settings."];
             context.Error = ex;

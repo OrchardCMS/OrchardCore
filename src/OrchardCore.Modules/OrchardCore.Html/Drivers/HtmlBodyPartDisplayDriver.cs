@@ -27,11 +27,13 @@ namespace OrchardCore.Html.Drivers
         private readonly IShortcodeService _shortcodeService;
         protected readonly IStringLocalizer S;
 
-        public HtmlBodyPartDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
+        public HtmlBodyPartDisplayDriver(
+            ILiquidTemplateManager liquidTemplateManager,
             IHtmlSanitizerService htmlSanitizerService,
             HtmlEncoder htmlEncoder,
             IShortcodeService shortcodeService,
-            IStringLocalizer<HtmlBodyPartDisplayDriver> localizer)
+            IStringLocalizer<HtmlBodyPartDisplayDriver> localizer
+        )
         {
             _liquidTemplateManager = liquidTemplateManager;
             _htmlSanitizerService = htmlSanitizerService;
@@ -49,13 +51,16 @@ namespace OrchardCore.Html.Drivers
 
         public override IDisplayResult Edit(HtmlBodyPart HtmlBodyPart, BuildPartEditorContext context)
         {
-            return Initialize<HtmlBodyPartViewModel>(GetEditorShapeType(context), model =>
-            {
-                model.Html = HtmlBodyPart.Html;
-                model.ContentItem = HtmlBodyPart.ContentItem;
-                model.HtmlBodyPart = HtmlBodyPart;
-                model.TypePartDefinition = context.TypePartDefinition;
-            });
+            return Initialize<HtmlBodyPartViewModel>(
+                GetEditorShapeType(context),
+                model =>
+                {
+                    model.Html = HtmlBodyPart.Html;
+                    model.ContentItem = HtmlBodyPart.ContentItem;
+                    model.HtmlBodyPart = HtmlBodyPart;
+                    model.TypePartDefinition = context.TypePartDefinition;
+                }
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(HtmlBodyPart model, IUpdateModel updater, UpdatePartEditorContext context)
@@ -69,7 +74,11 @@ namespace OrchardCore.Html.Drivers
                 if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
                 {
                     var partName = context.TypePartDefinition.DisplayName();
-                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Html), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
+                    updater.ModelState.AddModelError(
+                        Prefix,
+                        nameof(viewModel.Html),
+                        S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]
+                    );
                 }
                 else
                 {
@@ -89,16 +98,18 @@ namespace OrchardCore.Html.Drivers
 
             if (!settings.SanitizeHtml)
             {
-                model.Html = await _liquidTemplateManager.RenderStringAsync(htmlBodyPart.Html, _htmlEncoder, model,
-                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
+                model.Html = await _liquidTemplateManager.RenderStringAsync(
+                    htmlBodyPart.Html,
+                    _htmlEncoder,
+                    model,
+                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) }
+                );
             }
 
-            model.Html = await _shortcodeService.ProcessAsync(model.Html,
-                new Context
-                {
-                    ["ContentItem"] = htmlBodyPart.ContentItem,
-                    ["TypePartDefinition"] = context.TypePartDefinition
-                });
+            model.Html = await _shortcodeService.ProcessAsync(
+                model.Html,
+                new Context { ["ContentItem"] = htmlBodyPart.ContentItem, ["TypePartDefinition"] = context.TypePartDefinition }
+            );
         }
     }
 }

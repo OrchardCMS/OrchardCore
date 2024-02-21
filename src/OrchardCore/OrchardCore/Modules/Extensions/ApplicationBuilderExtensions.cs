@@ -17,13 +17,10 @@ namespace Microsoft.AspNetCore.Builder
             var env = app.ApplicationServices.GetRequiredService<IHostEnvironment>();
             var appContext = app.ApplicationServices.GetRequiredService<IApplicationContext>();
 
-            env.ContentRootFileProvider = new CompositeFileProvider(
-                new ModuleEmbeddedFileProvider(appContext),
-                env.ContentRootFileProvider);
+            env.ContentRootFileProvider = new CompositeFileProvider(new ModuleEmbeddedFileProvider(appContext), env.ContentRootFileProvider);
 
             // Init also the web host 'ContentRootFileProvider'.
-            app.ApplicationServices.GetRequiredService<IWebHostEnvironment>()
-                .ContentRootFileProvider = env.ContentRootFileProvider;
+            app.ApplicationServices.GetRequiredService<IWebHostEnvironment>().ContentRootFileProvider = env.ContentRootFileProvider;
 
             app.UseMiddleware<PoweredByMiddleware>();
 

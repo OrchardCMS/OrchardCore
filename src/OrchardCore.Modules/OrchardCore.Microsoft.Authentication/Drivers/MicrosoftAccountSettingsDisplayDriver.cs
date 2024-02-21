@@ -29,7 +29,8 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
             IHttpContextAccessor httpContextAccessor,
             IShellHost shellHost,
             ShellSettings shellSettings,
-            ILogger<MicrosoftAccountSettingsDisplayDriver> logger)
+            ILogger<MicrosoftAccountSettingsDisplayDriver> logger
+        )
         {
             _authorizationService = authorizationService;
             _dataProtectionProvider = dataProtectionProvider;
@@ -47,33 +48,38 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
                 return null;
             }
 
-            return Initialize<MicrosoftAccountSettingsViewModel>("MicrosoftAccountSettings_Edit", model =>
-            {
-                model.AppId = settings.AppId;
-                if (!string.IsNullOrWhiteSpace(settings.AppSecret))
-                {
-                    try
+            return Initialize<MicrosoftAccountSettingsViewModel>(
+                    "MicrosoftAccountSettings_Edit",
+                    model =>
                     {
-                        var protector = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount);
-                        model.AppSecret = protector.Unprotect(settings.AppSecret);
+                        model.AppId = settings.AppId;
+                        if (!string.IsNullOrWhiteSpace(settings.AppSecret))
+                        {
+                            try
+                            {
+                                var protector = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount);
+                                model.AppSecret = protector.Unprotect(settings.AppSecret);
+                            }
+                            catch (CryptographicException)
+                            {
+                                _logger.LogError("The app secret could not be decrypted. It may have been encrypted using a different key.");
+                                model.AppSecret = string.Empty;
+                                model.HasDecryptionError = true;
+                            }
+                        }
+                        else
+                        {
+                            model.AppSecret = string.Empty;
+                        }
+                        if (settings.CallbackPath.HasValue)
+                        {
+                            model.CallbackPath = settings.CallbackPath.Value;
+                        }
+                        model.SaveTokens = settings.SaveTokens;
                     }
-                    catch (CryptographicException)
-                    {
-                        _logger.LogError("The app secret could not be decrypted. It may have been encrypted using a different key.");
-                        model.AppSecret = string.Empty;
-                        model.HasDecryptionError = true;
-                    }
-                }
-                else
-                {
-                    model.AppSecret = string.Empty;
-                }
-                if (settings.CallbackPath.HasValue)
-                {
-                    model.CallbackPath = settings.CallbackPath.Value;
-                }
-                model.SaveTokens = settings.SaveTokens;
-            }).Location("Content:5").OnGroup(MicrosoftAuthenticationConstants.Features.MicrosoftAccount);
+                )
+                .Location("Content:5")
+                .OnGroup(MicrosoftAuthenticationConstants.Features.MicrosoftAccount);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(MicrosoftAccountSettings settings, BuildEditorContext context)

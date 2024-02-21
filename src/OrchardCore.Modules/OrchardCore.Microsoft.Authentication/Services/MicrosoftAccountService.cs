@@ -14,9 +14,7 @@ namespace OrchardCore.Microsoft.Authentication.Services
         private readonly ISiteService _siteService;
         protected readonly IStringLocalizer S;
 
-        public MicrosoftAccountService(
-            ISiteService siteService,
-            IStringLocalizer<MicrosoftAccountService> stringLocalizer)
+        public MicrosoftAccountService(ISiteService siteService, IStringLocalizer<MicrosoftAccountService> stringLocalizer)
         {
             _siteService = siteService;
             S = stringLocalizer;
@@ -39,12 +37,15 @@ namespace OrchardCore.Microsoft.Authentication.Services
             ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
-            container.Alter<MicrosoftAccountSettings>(nameof(MicrosoftAccountSettings), aspect =>
-            {
-                aspect.AppId = settings.AppId;
-                aspect.AppSecret = settings.AppSecret;
-                aspect.CallbackPath = settings.CallbackPath;
-            });
+            container.Alter<MicrosoftAccountSettings>(
+                nameof(MicrosoftAccountSettings),
+                aspect =>
+                {
+                    aspect.AppId = settings.AppId;
+                    aspect.AppSecret = settings.AppSecret;
+                    aspect.CallbackPath = settings.CallbackPath;
+                }
+            );
 
             await _siteService.UpdateSiteSettingsAsync(container);
         }

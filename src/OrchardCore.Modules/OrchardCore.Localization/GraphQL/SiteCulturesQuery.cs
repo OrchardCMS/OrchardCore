@@ -26,10 +26,8 @@ namespace OrchardCore.Localization.GraphQL
         /// </summary>
         /// <param name="localizer">The <see cref="IStringLocalizer"/>.</param>
         /// <param name="graphQLContentOptions">The <see cref="GraphQLContentOptions"/>.</param>
-        /// 
-        public SiteCulturesQuery(
-            IStringLocalizer<SiteCulturesQuery> localizer,
-            IOptions<GraphQLContentOptions> graphQLContentOptions)
+        ///
+        public SiteCulturesQuery(IStringLocalizer<SiteCulturesQuery> localizer, IOptions<GraphQLContentOptions> graphQLContentOptions)
         {
             S = localizer;
             _graphQLContentOptions = graphQLContentOptions.Value;
@@ -65,13 +63,11 @@ namespace OrchardCore.Localization.GraphQL
             var defaultCulture = await localizationService.GetDefaultCultureAsync();
             var supportedCultures = await localizationService.GetSupportedCulturesAsync();
 
-            var cultures = supportedCultures.Select(culture =>
-               new SiteCulture
-               {
-                   Culture = culture,
-                   IsDefault = string.Equals(defaultCulture, culture, StringComparison.OrdinalIgnoreCase),
-               }
-           );
+            var cultures = supportedCultures.Select(culture => new SiteCulture
+            {
+                Culture = culture,
+                IsDefault = string.Equals(defaultCulture, culture, StringComparison.OrdinalIgnoreCase),
+            });
 
             return cultures;
         }

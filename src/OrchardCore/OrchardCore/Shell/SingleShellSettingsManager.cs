@@ -8,11 +8,9 @@ namespace OrchardCore.Environment.Shell
     {
         public ShellSettings CreateDefaultSettings() => new ShellSettings().AsDefaultShell().AsRunning();
 
-        public Task<IEnumerable<ShellSettings>> LoadSettingsAsync() =>
-            Task.FromResult((new ShellSettings[] { CreateDefaultSettings() }).AsEnumerable());
+        public Task<IEnumerable<ShellSettings>> LoadSettingsAsync() => Task.FromResult((new ShellSettings[] { CreateDefaultSettings() }).AsEnumerable());
 
-        public Task<IEnumerable<string>> LoadSettingsNamesAsync() =>
-            Task.FromResult((new string[] { ShellSettings.DefaultShellName }).AsEnumerable());
+        public Task<IEnumerable<string>> LoadSettingsNamesAsync() => Task.FromResult((new string[] { ShellSettings.DefaultShellName }).AsEnumerable());
 
         public Task<ShellSettings> LoadSettingsAsync(string tenant) => Task.FromResult(CreateDefaultSettings());
 

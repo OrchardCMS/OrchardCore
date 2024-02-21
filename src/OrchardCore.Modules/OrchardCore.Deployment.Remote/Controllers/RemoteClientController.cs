@@ -45,7 +45,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             IStringLocalizer<RemoteClientController> stringLocalizer,
             IHtmlLocalizer<RemoteClientController> htmlLocalizer,
             INotifier notifier
-            )
+        )
         {
             _authorizationService = authorizationService;
             _pagerOptions = pagerOptions.Value;
@@ -95,21 +95,15 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 Options = options
             };
 
-            model.Options.ContentsBulkAction =
-            [
-                new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
-            ];
+            model.Options.ContentsBulkAction = [new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),];
 
             return View(model);
         }
 
         [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
-        public ActionResult IndexFilterPOST(RemoteClientIndexViewModel model)
-            => RedirectToAction(nameof(Index), new RouteValueDictionary
-            {
-                { _optionsSearch, model.Options.Search }
-            });
+        public ActionResult IndexFilterPOST(RemoteClientIndexViewModel model) =>
+            RedirectToAction(nameof(Index), new RouteValueDictionary { { _optionsSearch, model.Options.Search } });
 
         public async Task<IActionResult> Create()
         {

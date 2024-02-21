@@ -46,7 +46,8 @@ namespace OrchardCore.Placements.Controllers
             IStringLocalizer<AdminController> stringLocalizer,
             INotifier notifier,
             IOptions<PagerOptions> pagerOptions,
-            IShapeFactory shapeFactory)
+            IShapeFactory shapeFactory
+        )
         {
             _logger = logger;
             _authorizationService = authorizationService;
@@ -71,10 +72,7 @@ namespace OrchardCore.Placements.Controllers
 
             var shapeTypes = await _placementsManager.ListShapePlacementsAsync();
 
-            var shapeList = shapeTypes.Select(entry => new ShapePlacementViewModel
-            {
-                ShapeType = entry.Key
-            }).ToList();
+            var shapeList = shapeTypes.Select(entry => new ShapePlacementViewModel { ShapeType = entry.Key }).ToList();
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
@@ -83,9 +81,7 @@ namespace OrchardCore.Placements.Controllers
 
             var count = shapeList.Count;
 
-            shapeList = shapeList.OrderBy(x => x.ShapeType)
-                .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize).ToList();
+            shapeList = shapeList.OrderBy(x => x.ShapeType).Skip(pager.GetStartIndex()).Take(pager.PageSize).ToList();
 
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();
@@ -104,21 +100,15 @@ namespace OrchardCore.Placements.Controllers
                 Options = options,
             };
 
-            model.Options.ContentsBulkAction =
-            [
-                new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
-            ];
+            model.Options.ContentsBulkAction = [new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),];
 
             return View(model);
         }
 
         [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
-        public ActionResult IndexFilterPOST(ListShapePlacementsViewModel model)
-            => RedirectToAction(nameof(Index), new RouteValueDictionary
-            {
-                { _optionsSearch, model.Options.Search }
-            });
+        public ActionResult IndexFilterPOST(ListShapePlacementsViewModel model) =>
+            RedirectToAction(nameof(Index), new RouteValueDictionary { { _optionsSearch, model.Options.Search } });
 
         public async Task<IActionResult> Create(string suggestion, string returnUrl = null)
         {
@@ -140,7 +130,14 @@ namespace OrchardCore.Placements.Controllers
             return View(nameof(Edit), viewModel);
         }
 
-        public async Task<IActionResult> Edit(string shapeType, string displayType = null, string contentType = null, string contentPart = null, string differentiator = null, string returnUrl = null)
+        public async Task<IActionResult> Edit(
+            string shapeType,
+            string displayType = null,
+            string contentType = null,
+            string contentPart = null,
+            string differentiator = null,
+            string returnUrl = null
+        )
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManagePlacements))
             {
@@ -151,11 +148,7 @@ namespace OrchardCore.Placements.Controllers
 
             if (placementNodes.Count == 0 || ShouldCreateNode(placementNodes, displayType, contentType, contentPart, differentiator))
             {
-                var generatedNode = new PlacementNode
-                {
-                    DisplayType = displayType,
-                    Differentiator = differentiator
-                };
+                var generatedNode = new PlacementNode { DisplayType = displayType, Differentiator = differentiator };
 
                 if (!string.IsNullOrEmpty(contentType))
                 {
@@ -170,11 +163,7 @@ namespace OrchardCore.Placements.Controllers
                 placementNodes.Add(generatedNode);
             }
 
-            var viewModel = new EditShapePlacementViewModel
-            {
-                ShapeType = shapeType,
-                Nodes = JConvert.SerializeObject(placementNodes, JOptions.Indented)
-            };
+            var viewModel = new EditShapePlacementViewModel { ShapeType = shapeType, Nodes = JConvert.SerializeObject(placementNodes, JOptions.Indented) };
 
             ViewData["ReturnUrl"] = returnUrl;
             return View(viewModel);
@@ -199,8 +188,7 @@ namespace OrchardCore.Placements.Controllers
 
             try
             {
-                var placementNodes = JConvert.DeserializeObject<PlacementNode[]>(viewModel.Nodes)
-                    ?? Enumerable.Empty<PlacementNode>();
+                var placementNodes = JConvert.DeserializeObject<PlacementNode[]>(viewModel.Nodes) ?? Enumerable.Empty<PlacementNode>();
 
                 // Remove empty nodes.
                 placementNodes = placementNodes.Where(node => !IsEmpty(node));
@@ -310,10 +298,11 @@ namespace OrchardCore.Placements.Controllers
             else
             {
                 return !nodes.Any(node =>
-                    (string.IsNullOrEmpty(displayType) || node.DisplayType == displayType) &&
-                    (string.IsNullOrEmpty(contentType) || (node.Filters.ContainsKey("contentType") && FilterEquals(node.Filters["contentType"], contentType))) &&
-                    (string.IsNullOrEmpty(contentPart) || (node.Filters.ContainsKey("contentPart") && FilterEquals(node.Filters["contentPart"], contentPart))) &&
-                    (string.IsNullOrEmpty(differentiator) || node.Differentiator == differentiator));
+                    (string.IsNullOrEmpty(displayType) || node.DisplayType == displayType)
+                    && (string.IsNullOrEmpty(contentType) || (node.Filters.ContainsKey("contentType") && FilterEquals(node.Filters["contentType"], contentType)))
+                    && (string.IsNullOrEmpty(contentPart) || (node.Filters.ContainsKey("contentPart") && FilterEquals(node.Filters["contentPart"], contentPart)))
+                    && (string.IsNullOrEmpty(differentiator) || node.Differentiator == differentiator)
+                );
             }
         }
 
@@ -324,7 +313,6 @@ namespace OrchardCore.Placements.Controllers
                 && (node.Alternates == null || node.Alternates.Length == 0)
                 && (node.Wrappers == null || node.Wrappers.Length == 0);
         }
-
 
         private static bool FilterEquals(object node, string value)
         {

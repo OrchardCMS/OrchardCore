@@ -8,12 +8,14 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static OrchardCoreBuilder ConfigureTwitterSettings(this OrchardCoreBuilder builder)
         {
-            builder.ConfigureServices((tenantServices, serviceProvider) =>
-            {
-                var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_Twitter");
+            builder.ConfigureServices(
+                (tenantServices, serviceProvider) =>
+                {
+                    var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_Twitter");
 
-                tenantServices.PostConfigure<TwitterSettings>(settings => configurationSection.Bind(settings));
-            });
+                    tenantServices.PostConfigure<TwitterSettings>(settings => configurationSection.Bind(settings));
+                }
+            );
 
             return builder;
         }

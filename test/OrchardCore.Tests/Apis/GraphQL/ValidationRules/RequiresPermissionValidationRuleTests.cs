@@ -13,20 +13,13 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
 {
     public class RequiresPermissionValidationRuleTests
     {
-        internal readonly static Dictionary<string, Permission> _permissions = new()
-        {
-            { "permissionOne",  new Permission("TestPermissionOne", "TestPermissionOne") },
-            { "permissionTwo",  new Permission("TestPermissionTwo", "TestPermissionTwo") }
-        };
+        internal static readonly Dictionary<string, Permission> _permissions =
+            new() { { "permissionOne", new Permission("TestPermissionOne", "TestPermissionOne") }, { "permissionTwo", new Permission("TestPermissionTwo", "TestPermissionTwo") } };
 
         [Fact]
         public async Task FieldsWithNoRequirePermissionsShouldResolve()
         {
-            var options = BuildExecutionOptions("query { test { noPermissions } }",
-                            new PermissionsContext
-                            {
-                                UsePermissionsContext = true
-                            });
+            var options = BuildExecutionOptions("query { test { noPermissions } }", new PermissionsContext { UsePermissionsContext = true });
 
             var executer = new DocumentExecuter();
 
@@ -45,12 +38,10 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
         [InlineData("permissionTwo", "Fantastic Fox Loves Permission Two")]
         public async Task FieldsWithRequirePermissionsShouldResolveWhenUserHasPermissions(string fieldName, string expectedFieldValue)
         {
-            var options = BuildExecutionOptions($"query {{ test {{{fieldName}}} }}",
-                            new PermissionsContext
-                            {
-                                UsePermissionsContext = true,
-                                AuthorizedPermissions = new[] { _permissions[fieldName] }
-                            });
+            var options = BuildExecutionOptions(
+                $"query {{ test {{{fieldName}}} }}",
+                new PermissionsContext { UsePermissionsContext = true, AuthorizedPermissions = new[] { _permissions[fieldName] } }
+            );
 
             var executer = new DocumentExecuter();
 
@@ -67,11 +58,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
         [Fact]
         public async Task FieldsWithRequirePermissionsShouldNotResolveWhenUserDoesntHavePermissions()
         {
-            var options = BuildExecutionOptions("query { test { permissionOne } }",
-                new PermissionsContext
-                {
-                    UsePermissionsContext = true
-                });
+            var options = BuildExecutionOptions("query { test { permissionOne } }", new PermissionsContext { UsePermissionsContext = true });
 
             var executer = new DocumentExecuter();
 
@@ -83,12 +70,10 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
         [Fact]
         public async Task FieldsWithMultipleRequirePermissionsShouldResolveWhenUserHasAllPermissions()
         {
-            var options = BuildExecutionOptions("query { test { permissionMultiple  } }",
-                            new PermissionsContext
-                            {
-                                UsePermissionsContext = true,
-                                AuthorizedPermissions = _permissions.Values
-                            });
+            var options = BuildExecutionOptions(
+                "query { test { permissionMultiple  } }",
+                new PermissionsContext { UsePermissionsContext = true, AuthorizedPermissions = _permissions.Values }
+            );
 
             var executer = new DocumentExecuter();
 
@@ -123,10 +108,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
             {
                 Query = query,
                 Schema = new ValidationSchema(),
-                UserContext = new GraphQLUserContext
-                {
-                    User = new ClaimsPrincipal(new StubIdentity())
-                },
+                UserContext = new GraphQLUserContext { User = new ClaimsPrincipal(new StubIdentity()) },
                 ValidationRules = DocumentValidator.CoreRules.Concat(serviceProvider.GetServices<IValidationRule>())
             };
         }
@@ -145,9 +127,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
         {
             public ValidationQueryRoot()
             {
-                Field<TestField>("test")
-                    .Returns<object>()
-                    .Resolve(_ => new object());
+                Field<TestField>("test").Returns<object>().Resolve(_ => new object());
             }
         }
 
@@ -155,25 +135,17 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules
         {
             public TestField()
             {
-                Field<StringGraphType>("NoPermissions")
-                     .Returns<string>()
-                     .Resolve(_ => "Fantastic Fox Hates Permissions");
+                Field<StringGraphType>("NoPermissions").Returns<string>().Resolve(_ => "Fantastic Fox Hates Permissions");
 
-                Field<StringGraphType>("PermissionOne")
-                    .Returns<string>()
-                    .RequirePermission(_permissions["permissionOne"])
-                    .Resolve(_ => "Fantastic Fox Loves Permission One");
+                Field<StringGraphType>("PermissionOne").Returns<string>().RequirePermission(_permissions["permissionOne"]).Resolve(_ => "Fantastic Fox Loves Permission One");
 
-                Field<StringGraphType>("PermissionTwo")
-                     .Returns<string>()
-                     .RequirePermission(_permissions["permissionTwo"])
-                     .Resolve(_ => "Fantastic Fox Loves Permission Two");
+                Field<StringGraphType>("PermissionTwo").Returns<string>().RequirePermission(_permissions["permissionTwo"]).Resolve(_ => "Fantastic Fox Loves Permission Two");
 
                 Field<StringGraphType>("PermissionMultiple")
-                     .Returns<string>()
-                     .RequirePermission(_permissions["permissionOne"])
-                     .RequirePermission(_permissions["permissionTwo"])
-                     .Resolve(_ => "Fantastic Fox Loves Multiple Permissions");
+                    .Returns<string>()
+                    .RequirePermission(_permissions["permissionOne"])
+                    .RequirePermission(_permissions["permissionTwo"])
+                    .Resolve(_ => "Fantastic Fox Loves Multiple Permissions");
             }
         }
     }

@@ -30,9 +30,7 @@ namespace OrchardCore.Security.Options
         public SecurityHeadersOptions AddContentSecurityPolicy(Dictionary<string, string> policies)
         {
             ContentSecurityPolicy = policies
-                .Where(kvp => kvp.Value != null ||
-                    kvp.Key == ContentSecurityPolicyValue.Sandbox ||
-                    kvp.Key == ContentSecurityPolicyValue.UpgradeInsecureRequests)
+                .Where(kvp => kvp.Value != null || kvp.Key == ContentSecurityPolicyValue.Sandbox || kvp.Key == ContentSecurityPolicyValue.UpgradeInsecureRequests)
                 .Select(kvp => kvp.Key + (kvp.Value != null ? " " + kvp.Value : string.Empty))
                 .ToArray();
 
@@ -55,10 +53,7 @@ namespace OrchardCore.Security.Options
 
         public SecurityHeadersOptions AddPermissionsPolicy(IDictionary<string, string> policies)
         {
-            PermissionsPolicy = policies
-                .Where(kvp => kvp.Value != PermissionsPolicyOriginValue.None)
-                .Select(kvp => kvp.Key + "=" + kvp.Value)
-                .ToArray();
+            PermissionsPolicy = policies.Where(kvp => kvp.Value != PermissionsPolicyOriginValue.None).Select(kvp => kvp.Key + "=" + kvp.Value).ToArray();
 
             return this;
         }

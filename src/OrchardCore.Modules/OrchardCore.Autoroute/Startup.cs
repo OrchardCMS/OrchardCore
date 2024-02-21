@@ -41,36 +41,40 @@ namespace OrchardCore.Autoroute
             {
                 o.MemberAccessStrategy.Register<AutoroutePartViewModel>();
 
-                o.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("Slug", (obj, context) =>
-                {
-                    var liquidTemplateContext = (LiquidTemplateContext)context;
-
-                    return new LiquidPropertyAccessor(liquidTemplateContext, async (slug, context) =>
+                o.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>(
+                    "Slug",
+                    (obj, context) =>
                     {
-                        var autorouteEntries = context.Services.GetRequiredService<IAutorouteEntries>();
-                        var contentManager = context.Services.GetRequiredService<IContentManager>();
+                        var liquidTemplateContext = (LiquidTemplateContext)context;
 
-                        if (!slug.StartsWith('/'))
-                        {
-                            slug = "/" + slug;
-                        }
+                        return new LiquidPropertyAccessor(
+                            liquidTemplateContext,
+                            async (slug, context) =>
+                            {
+                                var autorouteEntries = context.Services.GetRequiredService<IAutorouteEntries>();
+                                var contentManager = context.Services.GetRequiredService<IContentManager>();
 
-                        (var found, var entry) = await autorouteEntries.TryGetEntryByPathAsync(slug);
+                                if (!slug.StartsWith('/'))
+                                {
+                                    slug = "/" + slug;
+                                }
 
-                        if (found)
-                        {
-                            return FluidValue.Create(await contentManager.GetAsync(entry.ContentItemId, entry.JsonPath), context.Options);
-                        }
+                                (var found, var entry) = await autorouteEntries.TryGetEntryByPathAsync(slug);
 
-                        return NilValue.Instance;
-                    });
-                });
+                                if (found)
+                                {
+                                    return FluidValue.Create(await contentManager.GetAsync(entry.ContentItemId, entry.JsonPath), context.Options);
+                                }
+
+                                return NilValue.Instance;
+                            }
+                        );
+                    }
+                );
             });
 
             // Autoroute Part
-            services.AddContentPart<AutoroutePart>()
-                .UseDisplayDriver<AutoroutePartDisplayDriver>()
-                .AddHandler<AutoroutePartHandler>();
+            services.AddContentPart<AutoroutePart>().UseDisplayDriver<AutoroutePartDisplayDriver>().AddHandler<AutoroutePartHandler>();
 
             services.AddScoped<IContentHandler, DefaultRouteContentHandler>();
             services.AddScoped<IContentHandler, AutorouteContentHandler>();

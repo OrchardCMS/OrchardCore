@@ -14,9 +14,7 @@ namespace OrchardCore.Google.Authentication.Services
         private readonly ISiteService _siteService;
         protected readonly IStringLocalizer S;
 
-        public GoogleAuthenticationService(
-            ISiteService siteService,
-            IStringLocalizer<GoogleAuthenticationService> stringLocalizer)
+        public GoogleAuthenticationService(ISiteService siteService, IStringLocalizer<GoogleAuthenticationService> stringLocalizer)
         {
             _siteService = siteService;
             S = stringLocalizer;
@@ -39,12 +37,15 @@ namespace OrchardCore.Google.Authentication.Services
             ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
-            container.Alter<GoogleAuthenticationSettings>(nameof(GoogleAuthenticationSettings), aspect =>
-            {
-                aspect.ClientID = settings.ClientID;
-                aspect.ClientSecret = settings.ClientSecret;
-                aspect.CallbackPath = settings.CallbackPath;
-            });
+            container.Alter<GoogleAuthenticationSettings>(
+                nameof(GoogleAuthenticationSettings),
+                aspect =>
+                {
+                    aspect.ClientID = settings.ClientID;
+                    aspect.ClientSecret = settings.ClientSecret;
+                    aspect.CallbackPath = settings.CallbackPath;
+                }
+            );
 
             await _siteService.UpdateSiteSettingsAsync(container);
         }
@@ -57,18 +58,12 @@ namespace OrchardCore.Google.Authentication.Services
 
             if (string.IsNullOrEmpty(settings.ClientID))
             {
-                results.Add(new ValidationResult(S["The Client ID is required."], new[]
-                {
-                    nameof(settings.ClientID)
-                }));
+                results.Add(new ValidationResult(S["The Client ID is required."], new[] { nameof(settings.ClientID) }));
             }
 
             if (string.IsNullOrEmpty(settings.ClientSecret))
             {
-                results.Add(new ValidationResult(S["The Client Secret is required."], new[]
-                {
-                    nameof(settings.ClientSecret)
-                }));
+                results.Add(new ValidationResult(S["The Client Secret is required."], new[] { nameof(settings.ClientSecret) }));
             }
 
             return results;

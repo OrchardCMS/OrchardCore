@@ -14,7 +14,8 @@ namespace OrchardCore.AuditTrail.Services.Models
             string value,
             Func<string, IQuery<AuditTrailEvent>, QueryExecutionContext<AuditTrailEvent>, ValueTask<IQuery<AuditTrailEvent>>> query,
             Func<IServiceProvider, AuditTrailAdminListOption, AuditTrailIndexOptions, SelectListItem> selectListItem,
-            bool isDefault)
+            bool isDefault
+        )
         {
             ArgumentNullException.ThrowIfNull(value);
             ArgumentNullException.ThrowIfNull(query);

@@ -80,7 +80,8 @@ namespace OrchardCore.Search.Elasticsearch
             IShapeFactory shapeFactory,
             ILocalizationService localizationService,
             IStringLocalizer<AdminController> stringLocalizer,
-            IHtmlLocalizer<AdminController> htmlLocalizer)
+            IHtmlLocalizer<AdminController> htmlLocalizer
+        )
         {
             _session = session;
             _siteService = siteService;
@@ -115,9 +116,7 @@ namespace OrchardCore.Search.Elasticsearch
                 return NotConfigured();
             }
 
-            var indexes = (await _elasticIndexSettingsService.GetSettingsAsync())
-                .Select(i => new IndexViewModel { Name = i.IndexName })
-                .ToList();
+            var indexes = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(i => new IndexViewModel { Name = i.IndexName }).ToList();
 
             var totalIndexes = indexes.Count;
             var siteSettings = await _siteService.GetSiteSettingsAsync();
@@ -128,10 +127,7 @@ namespace OrchardCore.Search.Elasticsearch
                 indexes = indexes.Where(q => q.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            indexes = indexes
-                .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize)
-                .ToList();
+            indexes = indexes.Skip(pager.GetStartIndex()).Take(pager.PageSize).ToList();
 
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();
@@ -157,17 +153,12 @@ namespace OrchardCore.Search.Elasticsearch
                 new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
             ];
 
-
             return View(model);
         }
 
         [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
-        public IActionResult IndexFilterPOST(AdminIndexViewModel model)
-            => RedirectToAction(nameof(Index), new RouteValueDictionary
-            {
-                { _optionsSearch, model.Options.Search }
-            });
+        public IActionResult IndexFilterPOST(AdminIndexViewModel model) => RedirectToAction(nameof(Index), new RouteValueDictionary { { _optionsSearch, model.Options.Search } });
 
         public async Task<IActionResult> Edit(string indexName = null)
         {
@@ -440,11 +431,7 @@ namespace OrchardCore.Search.Elasticsearch
         {
             var mappings = await _elasticIndexManager.GetIndexMappings(indexName);
             var formattedJson = JNode.Parse(mappings).ToJsonString(System.Text.Json.JOptions.Indented);
-            return View(new MappingsViewModel
-            {
-                IndexName = _elasticIndexManager.GetFullIndexName(indexName),
-                Mappings = formattedJson
-            });
+            return View(new MappingsViewModel { IndexName = _elasticIndexManager.GetFullIndexName(indexName), Mappings = formattedJson });
         }
 
         public async Task<IActionResult> SyncSettings()
@@ -466,11 +453,13 @@ namespace OrchardCore.Search.Elasticsearch
                 return NotConfigured();
             }
 
-            return await Query(new AdminQueryViewModel
-            {
-                IndexName = indexName,
-                DecodedQuery = string.IsNullOrWhiteSpace(query) ? string.Empty : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query))
-            });
+            return await Query(
+                new AdminQueryViewModel
+                {
+                    IndexName = indexName,
+                    DecodedQuery = string.IsNullOrWhiteSpace(query) ? string.Empty : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query))
+                }
+            );
         }
 
         [HttpPost]
@@ -518,7 +507,11 @@ namespace OrchardCore.Search.Elasticsearch
             stopwatch.Start();
 
             var parameters = JConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
-            var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(model.DecodedQuery, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions.Value))));
+            var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(
+                model.DecodedQuery,
+                _javaScriptEncoder,
+                parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions.Value)))
+            );
 
             try
             {
@@ -629,24 +622,21 @@ namespace OrchardCore.Search.Elasticsearch
         {
             var supportedCultures = await _localizationService.GetSupportedCulturesAsync();
 
-            model.Cultures = supportedCultures.Select(c => new SelectListItem
-            {
-                Text = $"{c} ({CultureInfo.GetCultureInfo(c).DisplayName})",
-                Value = c
-            });
+            model.Cultures = supportedCultures.Select(c => new SelectListItem { Text = $"{c} ({CultureInfo.GetCultureInfo(c).DisplayName})", Value = c });
 
-            model.Analyzers = _elasticSearchOptions.Analyzers
-                .Select(x => new SelectListItem { Text = x.Key, Value = x.Key });
+            model.Analyzers = _elasticSearchOptions.Analyzers.Select(x => new SelectListItem { Text = x.Key, Value = x.Key });
         }
 
-        private ViewResult NotConfigured()
-            => View("NotConfigured");
+        private ViewResult NotConfigured() => View("NotConfigured");
 
-        private static Task ProcessContentItemsAsync(string indexName)
-            => HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("sync-content-items-elasticsearch-" + indexName, async (scope) =>
-            {
-                var indexingService = scope.ServiceProvider.GetRequiredService<ElasticIndexingService>();
-                await indexingService.ProcessContentItemsAsync(indexName);
-            });
+        private static Task ProcessContentItemsAsync(string indexName) =>
+            HttpBackgroundJob.ExecuteAfterEndOfRequestAsync(
+                "sync-content-items-elasticsearch-" + indexName,
+                async (scope) =>
+                {
+                    var indexingService = scope.ServiceProvider.GetRequiredService<ElasticIndexingService>();
+                    await indexingService.ProcessContentItemsAsync(indexName);
+                }
+            );
     }
 }

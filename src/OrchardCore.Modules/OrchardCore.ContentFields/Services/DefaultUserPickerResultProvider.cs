@@ -18,10 +18,7 @@ namespace OrchardCore.ContentFields.Services
         private readonly UserManager<IUser> _userManager;
         private readonly ISession _session;
 
-        public DefaultUserPickerResultProvider(
-            RoleManager<IRole> roleManager,
-            UserManager<IUser> userManager,
-            ISession session)
+        public DefaultUserPickerResultProvider(RoleManager<IRole> roleManager, UserManager<IUser> userManager, ISession session)
         {
             _roleManager = roleManager;
             _userManager = userManager;
@@ -51,12 +48,14 @@ namespace OrchardCore.ContentFields.Services
 
             foreach (var user in users)
             {
-                results.Add(new UserPickerResult
-                {
-                    UserId = user.UserId,
-                    DisplayText = user.UserName,
-                    IsEnabled = user.IsEnabled
-                });
+                results.Add(
+                    new UserPickerResult
+                    {
+                        UserId = user.UserId,
+                        DisplayText = user.UserName,
+                        IsEnabled = user.IsEnabled
+                    }
+                );
             }
 
             return results.OrderBy(x => x.DisplayText);

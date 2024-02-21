@@ -23,7 +23,8 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
         public ShapePlacementParsingStrategy(
             IHostEnvironment hostingEnvironment,
             IShellFeaturesManager shellFeaturesManager,
-            IEnumerable<IPlacementNodeFilterProvider> placementParseMatchProviders)
+            IEnumerable<IPlacementNodeFilterProvider> placementParseMatchProviders
+        )
         {
             _hostingEnvironment = hostingEnvironment;
             _shellFeaturesManager = shellFeaturesManager;
@@ -32,8 +33,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
         public override async ValueTask DiscoverAsync(ShapeTableBuilder builder)
         {
-            var enabledFeatures = (await _shellFeaturesManager.GetEnabledFeaturesAsync())
-                .Where(Feature => !builder.ExcludedFeatureIds.Contains(Feature.Id));
+            var enabledFeatures = (await _shellFeaturesManager.GetEnabledFeaturesAsync()).Where(Feature => !builder.ExcludedFeatureIds.Contains(Feature.Id));
 
             foreach (var featureDescriptor in enabledFeatures)
             {
@@ -45,8 +45,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
         {
             // TODO : (ngm) Replace with configuration Provider and read from that.
             // Dont use JSON Deserializer directly.
-            var virtualFileInfo = _hostingEnvironment
-                .GetExtensionFileInfo(featureDescriptor.Extension, "placement.json");
+            var virtualFileInfo = _hostingEnvironment.GetExtensionFileInfo(featureDescriptor.Extension, "placement.json");
 
             if (virtualFileInfo.Exists)
             {
@@ -79,10 +78,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
                         predicate = matches.Aggregate(predicate, BuildPredicate);
                     }
 
-                    var placement = new PlacementInfo
-                    {
-                        Location = filter.Location,
-                    };
+                    var placement = new PlacementInfo { Location = filter.Location, };
 
                     if (filter.Alternates?.Length > 0)
                     {
@@ -96,9 +92,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 
                     placement.ShapeType = filter.ShapeType;
 
-                    builder.Describe(shapeType)
-                        .From(featureDescriptor)
-                        .Placement(ctx => predicate(ctx), placement);
+                    builder.Describe(shapeType).From(featureDescriptor).Placement(ctx => predicate(ctx), placement);
                 }
             }
         }
@@ -118,14 +112,16 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
             return true;
         }
 
-        private Func<ShapePlacementContext, bool> BuildPredicate(Func<ShapePlacementContext, bool> predicate,
-              KeyValuePair<string, object> term)
+        private Func<ShapePlacementContext, bool> BuildPredicate(Func<ShapePlacementContext, bool> predicate, KeyValuePair<string, object> term)
         {
             return BuildPredicate(predicate, term, _placementParseMatchProviders);
         }
 
-        public static Func<ShapePlacementContext, bool> BuildPredicate(Func<ShapePlacementContext, bool> predicate,
-                KeyValuePair<string, object> term, IEnumerable<IPlacementNodeFilterProvider> placementMatchProviders)
+        public static Func<ShapePlacementContext, bool> BuildPredicate(
+            Func<ShapePlacementContext, bool> predicate,
+            KeyValuePair<string, object> term,
+            IEnumerable<IPlacementNodeFilterProvider> placementMatchProviders
+        )
         {
             if (placementMatchProviders != null)
             {

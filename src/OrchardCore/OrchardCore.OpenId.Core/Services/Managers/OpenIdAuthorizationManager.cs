@@ -10,17 +10,16 @@ using OrchardCore.OpenId.Abstractions.Stores;
 
 namespace OrchardCore.OpenId.Services.Managers
 {
-    public class OpenIdAuthorizationManager<TAuthorization> : OpenIddictAuthorizationManager<TAuthorization>,
-        IOpenIdAuthorizationManager where TAuthorization : class
+    public class OpenIdAuthorizationManager<TAuthorization> : OpenIddictAuthorizationManager<TAuthorization>, IOpenIdAuthorizationManager
+        where TAuthorization : class
     {
         public OpenIdAuthorizationManager(
             IOpenIddictAuthorizationCache<TAuthorization> cache,
             ILogger<OpenIddictAuthorizationManager<TAuthorization>> logger,
             IOptionsMonitor<OpenIddictCoreOptions> options,
-            IOpenIddictAuthorizationStoreResolver resolver)
-            : base(cache, logger, options, resolver)
-        {
-        }
+            IOpenIddictAuthorizationStoreResolver resolver
+        )
+            : base(cache, logger, options, resolver) { }
 
         /// <summary>
         /// Retrieves an authorization using its physical identifier.
@@ -38,9 +37,9 @@ namespace OrchardCore.OpenId.Services.Managers
                 throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
             }
 
-            return Store is IOpenIdApplicationStore<TAuthorization> store ?
-                store.FindByPhysicalIdAsync(identifier, cancellationToken) :
-                Store.FindByIdAsync(identifier, cancellationToken);
+            return Store is IOpenIdApplicationStore<TAuthorization> store
+                ? store.FindByPhysicalIdAsync(identifier, cancellationToken)
+                : Store.FindByIdAsync(identifier, cancellationToken);
         }
 
         /// <summary>
@@ -56,15 +55,15 @@ namespace OrchardCore.OpenId.Services.Managers
         {
             ArgumentNullException.ThrowIfNull(authorization);
 
-            return Store is IOpenIdAuthorizationStore<TAuthorization> store ?
-                store.GetPhysicalIdAsync(authorization, cancellationToken) :
-                Store.GetIdAsync(authorization, cancellationToken);
+            return Store is IOpenIdAuthorizationStore<TAuthorization> store
+                ? store.GetPhysicalIdAsync(authorization, cancellationToken)
+                : Store.GetIdAsync(authorization, cancellationToken);
         }
 
-        async ValueTask<object> IOpenIdAuthorizationManager.FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
-            => await FindByPhysicalIdAsync(identifier, cancellationToken);
+        async ValueTask<object> IOpenIdAuthorizationManager.FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken) =>
+            await FindByPhysicalIdAsync(identifier, cancellationToken);
 
-        ValueTask<string> IOpenIdAuthorizationManager.GetPhysicalIdAsync(object authorization, CancellationToken cancellationToken)
-            => GetPhysicalIdAsync((TAuthorization)authorization, cancellationToken);
+        ValueTask<string> IOpenIdAuthorizationManager.GetPhysicalIdAsync(object authorization, CancellationToken cancellationToken) =>
+            GetPhysicalIdAsync((TAuthorization)authorization, cancellationToken);
     }
 }

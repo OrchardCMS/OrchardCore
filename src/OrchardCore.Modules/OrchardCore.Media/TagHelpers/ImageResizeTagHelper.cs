@@ -29,7 +29,6 @@ namespace OrchardCore.Media.TagHelpers
         private readonly MediaOptions _mediaOptions;
         private readonly IMediaTokenService _mediaTokenService;
 
-
         [HtmlAttributeName(ImageSizeWidthAttributeName)]
         public int? ImageWidth { get; set; }
 
@@ -57,10 +56,7 @@ namespace OrchardCore.Media.TagHelpers
         [HtmlAttributeName("src")]
         public string Src { get; set; }
 
-        public ImageResizeTagHelper(
-            IMediaProfileService mediaProfileService,
-            IOptions<MediaOptions> mediaOptions,
-            IMediaTokenService mediaTokenService)
+        public ImageResizeTagHelper(IMediaProfileService mediaProfileService, IOptions<MediaOptions> mediaOptions, IMediaTokenService mediaTokenService)
         {
             _mediaProfileService = mediaProfileService;
             _mediaOptions = mediaOptions.Value;
@@ -88,7 +84,17 @@ namespace OrchardCore.Media.TagHelpers
                 queryStringParams = await _mediaProfileService.GetMediaProfileCommands(ImageProfile);
             }
 
-            var resizedSrc = ImageSharpUrlFormatter.GetImageResizeUrl(imgSrc, queryStringParams, ImageWidth, ImageHeight, ResizeMode, ImageQuality, ImageFormat, ImageAnchor, ImageBackgroundColor);
+            var resizedSrc = ImageSharpUrlFormatter.GetImageResizeUrl(
+                imgSrc,
+                queryStringParams,
+                ImageWidth,
+                ImageHeight,
+                ResizeMode,
+                ImageQuality,
+                ImageFormat,
+                ImageAnchor,
+                ImageBackgroundColor
+            );
 
             if (_mediaOptions.UseTokenizedQueryString)
             {

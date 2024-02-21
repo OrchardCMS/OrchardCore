@@ -23,10 +23,12 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
         private readonly IOptions<GraphQLSettings> _settingsAccessor;
         protected readonly IStringLocalizer S;
 
-        public ContentTypeQuery(IHttpContextAccessor httpContextAccessor,
+        public ContentTypeQuery(
+            IHttpContextAccessor httpContextAccessor,
             IOptions<GraphQLContentOptions> contentOptionsAccessor,
             IOptions<GraphQLSettings> settingsAccessor,
-            IStringLocalizer<ContentTypeQuery> localizer)
+            IStringLocalizer<ContentTypeQuery> localizer
+        )
         {
             _httpContextAccessor = httpContextAccessor;
             _contentOptionsAccessor = contentOptionsAccessor;
@@ -54,11 +56,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                     continue;
                 }
 
-                var typeType = new ContentItemType(_contentOptionsAccessor)
-                {
-                    Name = typeDefinition.Name,
-                    Description = S["Represents a {0}.", typeDefinition.DisplayName]
-                };
+                var typeType = new ContentItemType(_contentOptionsAccessor) { Name = typeDefinition.Name, Description = S["Represents a {0}.", typeDefinition.DisplayName] };
 
                 var query = new ContentItemsFieldType(typeDefinition.Name, schema, _contentOptionsAccessor, _settingsAccessor)
                 {

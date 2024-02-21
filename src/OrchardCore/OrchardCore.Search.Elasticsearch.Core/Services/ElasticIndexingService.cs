@@ -52,7 +52,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             IEnumerable<IContentItemIndexHandler> contentItemIndexHandlers,
             IStore store,
             IContentDefinitionManager contentDefinitionManager,
-            ILogger<ElasticIndexingService> logger)
+            ILogger<ElasticIndexingService> logger
+        )
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
@@ -79,8 +80,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
             if (indexNames != null && indexNames.Length > 0)
             {
-                indexSettingsList = indexSettingsList
-                    .Where(x => indexNames.Contains(x.IndexName, StringComparer.OrdinalIgnoreCase));
+                indexSettingsList = indexSettingsList.Where(x => indexNames.Contains(x.IndexName, StringComparer.OrdinalIgnoreCase));
             }
 
             if (!indexSettingsList.Any())
@@ -113,10 +113,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                     break;
                 }
 
-                var updatedContentItemIds = tasks
-                    .Where(x => x.Type == IndexingTaskTypes.Update)
-                    .Select(x => x.ContentItemId)
-                    .ToList();
+                var updatedContentItemIds = tasks.Where(x => x.Type == IndexingTaskTypes.Update).Select(x => x.ContentItemId).ToList();
 
                 Dictionary<string, ContentItem> allPublished = null;
                 Dictionary<string, ContentItem> allLatest = null;
@@ -125,14 +122,19 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
                 if (indexSettingsList.Any(x => !x.IndexLatest))
                 {
-                    var publishedContentItems = await readOnlySession.Query<ContentItem, ContentItemIndex>(index => index.Published && index.ContentType.IsIn(allContentTypes) && index.ContentItemId.IsIn(updatedContentItemIds)).ListAsync();
-                    allPublished = publishedContentItems.DistinctBy(x => x.ContentItemId)
-                    .ToDictionary(k => k.ContentItemId);
+                    var publishedContentItems = await readOnlySession
+                        .Query<ContentItem, ContentItemIndex>(index =>
+                            index.Published && index.ContentType.IsIn(allContentTypes) && index.ContentItemId.IsIn(updatedContentItemIds)
+                        )
+                        .ListAsync();
+                    allPublished = publishedContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId);
                 }
 
                 if (indexSettingsList.Any(x => x.IndexLatest))
                 {
-                    var latestContentItems = await readOnlySession.Query<ContentItem, ContentItemIndex>(index => index.Latest && index.ContentType.IsIn(allContentTypes) && index.ContentItemId.IsIn(updatedContentItemIds)).ListAsync();
+                    var latestContentItems = await readOnlySession
+                        .Query<ContentItem, ContentItemIndex>(index => index.Latest && index.ContentType.IsIn(allContentTypes) && index.ContentItemId.IsIn(updatedContentItemIds))
+                        .ListAsync();
                     allLatest = latestContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId);
                 }
 
@@ -153,17 +155,28 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
                         continue;
                     }
 
-                    BuildIndexContext publishedIndexContext = null, latestIndexContext = null;
+                    BuildIndexContext publishedIndexContext = null,
+                        latestIndexContext = null;
 
                     if (allPublished != null && allPublished.TryGetValue(task.ContentItemId, out var publishedContentItem))
                     {
-                        publishedIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId, publishedContentItem.ContentItemVersionId), publishedContentItem, [publishedContentItem.ContentType], new ElasticContentIndexSettings());
+                        publishedIndexContext = new BuildIndexContext(
+                            new DocumentIndex(task.ContentItemId, publishedContentItem.ContentItemVersionId),
+                            publishedContentItem,
+                            [publishedContentItem.ContentType],
+                            new ElasticContentIndexSettings()
+                        );
                         await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(publishedIndexContext), _logger);
                     }
 
                     if (allLatest != null && allLatest.TryGetValue(task.ContentItemId, out var latestContentItem))
                     {
-                        latestIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId, latestContentItem.ContentItemVersionId), latestContentItem, [latestContentItem.ContentType], new ElasticContentIndexSettings());
+                        latestIndexContext = new BuildIndexContext(
+                            new DocumentIndex(task.ContentItemId, latestContentItem.ContentItemVersionId),
+                            latestContentItem,
+                            [latestContentItem.ContentType],
+                            new ElasticContentIndexSettings()
+                        );
                         await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(latestIndexContext), _logger);
                     }
 
@@ -241,8 +254,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
         /// <summary>
         /// Update an existing index.
         /// </summary>
-        public Task UpdateIndexAsync(ElasticIndexSettings elasticIndexSettings)
-            => _elasticIndexSettingsService.UpdateIndexAsync(elasticIndexSettings);
+        public Task UpdateIndexAsync(ElasticIndexSettings elasticIndexSettings) => _elasticIndexSettingsService.UpdateIndexAsync(elasticIndexSettings);
 
         /// <summary>
         /// Deletes permanently an index.
@@ -303,18 +315,24 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             {
                 foreach (var partDefinition in contentTypeDefinition.Parts)
                 {
-                    await _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, partBuilder =>
-                    {
-                        if (partDefinition.Settings.TryGetPropertyValue("LuceneContentIndexSettings", out var existingPartSettings))
+                    await _contentDefinitionManager.AlterPartDefinitionAsync(
+                        partDefinition.Name,
+                        partBuilder =>
                         {
-                            var included = existingPartSettings["Included"];
-
-                            if (included is not null && (bool)included)
+                            if (partDefinition.Settings.TryGetPropertyValue("LuceneContentIndexSettings", out var existingPartSettings))
                             {
-                                partDefinition.Settings.Add(nameof(ElasticContentIndexSettings), JNode.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>()));
+                                var included = existingPartSettings["Included"];
+
+                                if (included is not null && (bool)included)
+                                {
+                                    partDefinition.Settings.Add(
+                                        nameof(ElasticContentIndexSettings),
+                                        JNode.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>())
+                                    );
+                                }
                             }
                         }
-                    });
+                    );
                 }
             }
 
@@ -322,31 +340,37 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
 
             foreach (var partDefinition in partDefinitions)
             {
-                await _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, partBuilder =>
-                {
-                    if (partDefinition.Settings.TryGetPropertyValue("LuceneContentIndexSettings", out var existingPartSettings))
+                await _contentDefinitionManager.AlterPartDefinitionAsync(
+                    partDefinition.Name,
+                    partBuilder =>
                     {
-                        var included = existingPartSettings["Included"];
-
-                        if (included != null && (bool)included)
+                        if (partDefinition.Settings.TryGetPropertyValue("LuceneContentIndexSettings", out var existingPartSettings))
                         {
-                            partDefinition.Settings.Add(nameof(ElasticContentIndexSettings), JNode.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>()));
-                        }
-                    }
-
-                    foreach (var fieldDefinition in partDefinition.Fields)
-                    {
-                        if (fieldDefinition.Settings.TryGetPropertyValue("LuceneContentIndexSettings", out var existingFieldSettings))
-                        {
-                            var included = existingFieldSettings["Included"];
+                            var included = existingPartSettings["Included"];
 
                             if (included != null && (bool)included)
                             {
-                                fieldDefinition.Settings.Add(nameof(ElasticContentIndexSettings), JNode.FromObject(existingFieldSettings.ToObject<ElasticContentIndexSettings>()));
+                                partDefinition.Settings.Add(nameof(ElasticContentIndexSettings), JNode.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>()));
+                            }
+                        }
+
+                        foreach (var fieldDefinition in partDefinition.Fields)
+                        {
+                            if (fieldDefinition.Settings.TryGetPropertyValue("LuceneContentIndexSettings", out var existingFieldSettings))
+                            {
+                                var included = existingFieldSettings["Included"];
+
+                                if (included != null && (bool)included)
+                                {
+                                    fieldDefinition.Settings.Add(
+                                        nameof(ElasticContentIndexSettings),
+                                        JNode.FromObject(existingFieldSettings.ToObject<ElasticContentIndexSettings>())
+                                    );
+                                }
                             }
                         }
                     }
-                });
+                );
             }
         }
     }

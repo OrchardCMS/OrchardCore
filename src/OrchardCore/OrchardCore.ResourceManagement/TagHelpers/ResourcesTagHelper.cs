@@ -24,9 +24,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
         private readonly IResourceManager _resourceManager;
         private readonly ILogger _logger;
 
-        public ResourcesTagHelper(
-            IResourceManager resourceManager,
-            ILogger<ResourcesTagHelper> logger)
+        public ResourcesTagHelper(IResourceManager resourceManager, ILogger<ResourcesTagHelper> logger)
         {
             _resourceManager = resourceManager;
             _logger = logger;

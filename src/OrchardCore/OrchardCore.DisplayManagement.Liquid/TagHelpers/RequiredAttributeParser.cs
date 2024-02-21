@@ -28,9 +28,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 
             private static readonly char[] _invalidPlainAttributeNameCharacters = [' ', '\t', ',', RequiredAttributeWildcardSuffix];
 
-            private static readonly char[] _invalidCssAttributeNameCharacters = (new[] { ' ', '\t', ',', ']' })
-                .Concat(_cssValueComparisons.Keys)
-                .ToArray();
+            private static readonly char[] _invalidCssAttributeNameCharacters = (new[] { ' ', '\t', ',', ']' }).Concat(_cssValueComparisons.Keys).ToArray();
 
             private static readonly char[] _invalidCssQuotelessValueCharacters = [' ', '\t', ']'];
 
@@ -100,8 +98,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                     {
                         break;
                     }
-                }
-                while (!AtEnd);
+                } while (!AtEnd);
             }
 
             private void ParsePlainSelector(RequiredAttributeDescriptorBuilder attributeBuilder)

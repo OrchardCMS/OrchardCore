@@ -19,7 +19,8 @@ namespace OrchardCore.Taxonomies
         public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
         {
             // Add standard alternates to a TermPart because it is rendered by a content display driver not a part display driver.
-            builder.Describe("TermPart")
+            builder
+                .Describe("TermPart")
                 .OnDisplaying(context =>
                 {
                     var viewModel = context.Shape as TermPartViewModel;
@@ -37,7 +38,8 @@ namespace OrchardCore.Taxonomies
                     }
                 });
 
-            builder.Describe("Term")
+            builder
+                .Describe("Term")
                 .OnProcessing(async context =>
                 {
                     var termShape = context.Shape;
@@ -58,9 +60,10 @@ namespace OrchardCore.Taxonomies
                     var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
                     var handleManager = context.ServiceProvider.GetRequiredService<IContentHandleManager>();
 
-                    var taxonomyContentItemId = termShape.TryGetProperty("Alias", out object alias) && alias != null
-                        ? await handleManager.GetContentItemIdAsync(alias.ToString())
-                        : termShape.Properties["TaxonomyContentItemId"].ToString();
+                    var taxonomyContentItemId =
+                        termShape.TryGetProperty("Alias", out object alias) && alias != null
+                            ? await handleManager.GetContentItemIdAsync(alias.ToString())
+                            : termShape.Properties["TaxonomyContentItemId"].ToString();
 
                     if (taxonomyContentItemId == null)
                     {
@@ -96,10 +99,7 @@ namespace OrchardCore.Taxonomies
                             return;
                         }
 
-                        termItems =
-                        [
-                            termContentItem
-                        ];
+                        termItems = [termContentItem];
                     }
                     else
                     {
@@ -138,14 +138,19 @@ namespace OrchardCore.Taxonomies
                             childTerms = termsArray.ToObject<ContentItem[]>();
                         }
 
-                        var shape = await shapeFactory.CreateAsync("TermItem", Arguments.From(new
-                        {
-                            Level = level,
-                            Term = termShape,
-                            TermContentItem = termContentItem,
-                            Terms = childTerms ?? [],
-                            TaxonomyContentItem = taxonomyContentItem
-                        }));
+                        var shape = await shapeFactory.CreateAsync(
+                            "TermItem",
+                            Arguments.From(
+                                new
+                                {
+                                    Level = level,
+                                    Term = termShape,
+                                    TermContentItem = termContentItem,
+                                    Terms = childTerms ?? [],
+                                    TaxonomyContentItem = taxonomyContentItem
+                                }
+                            )
+                        );
 
                         shape.Metadata.Differentiator = differentiator;
 
@@ -154,7 +159,8 @@ namespace OrchardCore.Taxonomies
                     }
                 });
 
-            builder.Describe("TermItem")
+            builder
+                .Describe("TermItem")
                 .OnDisplaying(async context =>
                 {
                     var termItem = context.Shape;
@@ -175,14 +181,19 @@ namespace OrchardCore.Taxonomies
                             {
                                 childTerms = termsArray.ToObject<ContentItem[]>();
                             }
-                            var shape = await shapeFactory.CreateAsync("TermItem", Arguments.From(new
-                            {
-                                Level = level + 1,
-                                TaxonomyContentItem = taxonomyContentItem,
-                                TermContentItem = termContentItem,
-                                Term = termShape,
-                                Terms = childTerms ?? []
-                            }));
+                            var shape = await shapeFactory.CreateAsync(
+                                "TermItem",
+                                Arguments.From(
+                                    new
+                                    {
+                                        Level = level + 1,
+                                        TaxonomyContentItem = taxonomyContentItem,
+                                        TermContentItem = termContentItem,
+                                        Term = termShape,
+                                        Terms = childTerms ?? []
+                                    }
+                                )
+                            );
 
                             shape.Metadata.Differentiator = differentiator;
 
@@ -215,7 +226,8 @@ namespace OrchardCore.Taxonomies
                     }
                 });
 
-            builder.Describe("TermContentItem")
+            builder
+                .Describe("TermContentItem")
                 .OnDisplaying(displaying =>
                 {
                     var termItem = displaying.Shape;

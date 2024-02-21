@@ -8,11 +8,10 @@ namespace OrchardCore.Tenants.Deployment
     {
         public override IDisplayResult Display(AllFeatureProfilesDeploymentStep step)
         {
-            return
-                Combine(
-                    View("AllFeatureProfilesDeploymentStep_Summary", step).Location("Summary", "Content"),
-                    View("AllFeatureProfilesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
-                );
+            return Combine(
+                View("AllFeatureProfilesDeploymentStep_Summary", step).Location("Summary", "Content"),
+                View("AllFeatureProfilesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(AllFeatureProfilesDeploymentStep step)

@@ -6,8 +6,7 @@ namespace OrchardCore.Contents.Workflows.Drivers
 {
     public class ContentUnpublishedEventDisplayDriver : ContentEventDisplayDriver<ContentUnpublishedEvent, ContentUnpublishedEventViewModel>
     {
-        public ContentUnpublishedEventDisplayDriver(IContentDefinitionManager contentDefinitionManager) : base(contentDefinitionManager)
-        {
-        }
+        public ContentUnpublishedEventDisplayDriver(IContentDefinitionManager contentDefinitionManager)
+            : base(contentDefinitionManager) { }
     }
 }

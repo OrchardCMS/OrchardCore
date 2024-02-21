@@ -8,11 +8,7 @@ namespace OrchardCore.Email
 {
     public class AdminMenu : INavigationProvider
     {
-        private static readonly RouteValueDictionary _routeValues = new()
-        {
-            { "area", "OrchardCore.Settings" },
-            { "groupId", SmtpSettingsDisplayDriver.GroupId },
-        };
+        private static readonly RouteValueDictionary _routeValues = new() { { "area", "OrchardCore.Settings" }, { "groupId", SmtpSettingsDisplayDriver.GroupId }, };
 
         protected readonly IStringLocalizer S;
 
@@ -28,17 +24,19 @@ namespace OrchardCore.Email
                 return Task.CompletedTask;
             }
 
-            builder
-                .Add(S["Configuration"], configuration => configuration
-                    .Add(S["Settings"], settings => settings
-                       .Add(S["Email"], S["Email"].PrefixPosition(), entry => entry
-                          .AddClass("email").Id("email")
-                          .Action("Index", "Admin", _routeValues)
-                          .Permission(Permissions.ManageEmailSettings)
-                          .LocalNav()
-                        )
+            builder.Add(
+                S["Configuration"],
+                configuration =>
+                    configuration.Add(
+                        S["Settings"],
+                        settings =>
+                            settings.Add(
+                                S["Email"],
+                                S["Email"].PrefixPosition(),
+                                entry => entry.AddClass("email").Id("email").Action("Index", "Admin", _routeValues).Permission(Permissions.ManageEmailSettings).LocalNav()
+                            )
                     )
-                );
+            );
 
             return Task.CompletedTask;
         }

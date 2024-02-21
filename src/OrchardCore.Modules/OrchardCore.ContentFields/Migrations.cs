@@ -87,16 +87,22 @@ namespace OrchardCore.ContentFields
             {
                 if (partDefinition.Fields.Any(x => x.FieldDefinition.Name == "HtmlField"))
                 {
-                    await _contentDefinitionManager.AlterPartDefinitionAsync(partDefinition.Name, partBuilder =>
-                    {
-                        foreach (var fieldDefinition in partDefinition.Fields.Where(x => x.FieldDefinition.Name == "HtmlField"))
+                    await _contentDefinitionManager.AlterPartDefinitionAsync(
+                        partDefinition.Name,
+                        partBuilder =>
                         {
-                            partBuilder.WithField(fieldDefinition.Name, fieldBuilder =>
+                            foreach (var fieldDefinition in partDefinition.Fields.Where(x => x.FieldDefinition.Name == "HtmlField"))
                             {
-                                fieldBuilder.MergeSettings<HtmlFieldSettings>(x => x.SanitizeHtml = false);
-                            });
+                                partBuilder.WithField(
+                                    fieldDefinition.Name,
+                                    fieldBuilder =>
+                                    {
+                                        fieldBuilder.MergeSettings<HtmlFieldSettings>(x => x.SanitizeHtml = false);
+                                    }
+                                );
+                            }
                         }
-                    });
+                    );
                 }
             }
 

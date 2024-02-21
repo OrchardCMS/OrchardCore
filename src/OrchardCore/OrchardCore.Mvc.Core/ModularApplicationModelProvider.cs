@@ -15,10 +15,7 @@ namespace OrchardCore.Mvc
         private readonly IHostEnvironment _hostingEnvironment;
         private readonly ShellSettings _shellSettings;
 
-        public ModularApplicationModelProvider(
-            ITypeFeatureProvider typeFeatureProvider,
-            IHostEnvironment hostingEnvironment,
-            ShellSettings shellSettings)
+        public ModularApplicationModelProvider(ITypeFeatureProvider typeFeatureProvider, IHostEnvironment hostingEnvironment, ShellSettings shellSettings)
         {
             _typeFeatureProvider = typeFeatureProvider;
             _hostingEnvironment = hostingEnvironment;
@@ -27,10 +24,7 @@ namespace OrchardCore.Mvc
 
         public int Order
         {
-            get
-            {
-                return 1000;
-            }
+            get { return 1000; }
         }
 
         public void OnProvidersExecuted(ApplicationModelProviderContext context)
@@ -65,8 +59,6 @@ namespace OrchardCore.Mvc
             }
         }
 
-        public void OnProvidersExecuting(ApplicationModelProviderContext context)
-        {
-        }
+        public void OnProvidersExecuting(ApplicationModelProviderContext context) { }
     }
 }

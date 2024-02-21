@@ -17,10 +17,7 @@ namespace OrchardCore.ReCaptcha.Services
 {
     public class ReCaptchaService
     {
-        private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
-        {
-            PropertyNamingPolicy = SnakeCaseNamingPolicy.Instance,
-        };
+        private static readonly JsonSerializerOptions _jsonSerializerOptions = new() { PropertyNamingPolicy = SnakeCaseNamingPolicy.Instance, };
 
         private readonly ReCaptchaSettings _reCaptchaSettings;
         private readonly IHttpClientFactory _httpClientFactory;
@@ -36,7 +33,8 @@ namespace OrchardCore.ReCaptcha.Services
             IEnumerable<IDetectRobots> robotDetectors,
             IHttpContextAccessor httpContextAccessor,
             ILogger<ReCaptchaService> logger,
-            IStringLocalizer<ReCaptchaService> stringLocalizer)
+            IStringLocalizer<ReCaptchaService> stringLocalizer
+        )
         {
             _httpClientFactory = httpClientFactory;
             _reCaptchaSettings = optionsAccessor.Value;
@@ -50,34 +48,27 @@ namespace OrchardCore.ReCaptcha.Services
         /// <summary>
         /// Flags the behavior as that of a robot.
         /// </summary>
-        public void MaybeThisIsARobot()
-            => _robotDetectors.Invoke(i => i.FlagAsRobot(), _logger);
+        public void MaybeThisIsARobot() => _robotDetectors.Invoke(i => i.FlagAsRobot(), _logger);
 
         /// <summary>
         /// Determines if the request has been made by a robot.
         /// </summary>
         /// <returns>Yes (true) or no (false).</returns>
-        public bool IsThisARobot()
-            => _robotDetectors.Invoke(i => i.DetectRobot(), _logger)
-            .Any(a => a.IsRobot);
+        public bool IsThisARobot() => _robotDetectors.Invoke(i => i.DetectRobot(), _logger).Any(a => a.IsRobot);
 
         /// <summary>
         /// Clears all robot markers, we are dealing with a human.
         /// </summary>
         /// <returns></returns>
-        public void ThisIsAHuman()
-            => _robotDetectors.Invoke(i => i.IsNotARobot(), _logger);
+        public void ThisIsAHuman() => _robotDetectors.Invoke(i => i.IsNotARobot(), _logger);
 
         /// <summary>
         /// Verifies the ReCaptcha response with the ReCaptcha webservice.
         /// </summary>
         /// <param name="reCaptchaResponse"></param>
         /// <returns></returns>
-        public async Task<bool> VerifyCaptchaResponseAsync(string reCaptchaResponse)
-            => !string.IsNullOrWhiteSpace(reCaptchaResponse)
-                && _reCaptchaSettings.IsValid()
-                && await VerifyAsync(reCaptchaResponse);
-
+        public async Task<bool> VerifyCaptchaResponseAsync(string reCaptchaResponse) =>
+            !string.IsNullOrWhiteSpace(reCaptchaResponse) && _reCaptchaSettings.IsValid() && await VerifyAsync(reCaptchaResponse);
 
         /// <summary>
         /// Validates the captcha that is in the Form of the current request.
@@ -119,11 +110,7 @@ namespace OrchardCore.ReCaptcha.Services
         {
             try
             {
-                var content = new FormUrlEncodedContent(new Dictionary<string, string>
-                {
-                    { "secret", _reCaptchaSettings.SecretKey },
-                    { "response", responseToken }
-                });
+                var content = new FormUrlEncodedContent(new Dictionary<string, string> { { "secret", _reCaptchaSettings.SecretKey }, { "response", responseToken } });
 
                 var httpClient = _httpClientFactory.CreateClient(nameof(ReCaptchaService));
                 var response = await httpClient.PostAsync(_verifyHost, content);

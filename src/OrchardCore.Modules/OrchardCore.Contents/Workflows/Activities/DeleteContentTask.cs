@@ -12,9 +12,8 @@ namespace OrchardCore.Contents.Workflows.Activities
 {
     public class DeleteContentTask : ContentTask
     {
-        public DeleteContentTask(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<DeleteContentTask> localizer) : base(contentManager, scriptEvaluator, localizer)
-        {
-        }
+        public DeleteContentTask(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<DeleteContentTask> localizer)
+            : base(contentManager, scriptEvaluator, localizer) { }
 
         public override string Name => nameof(DeleteContentTask);
 
@@ -29,8 +28,8 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var content = (await GetContentAsync(workflowContext))
-                ?? throw new InvalidOperationException($"The '{nameof(DeleteContentTask)}' failed to retrieve the content item.");
+            var content =
+                (await GetContentAsync(workflowContext)) ?? throw new InvalidOperationException($"The '{nameof(DeleteContentTask)}' failed to retrieve the content item.");
 
             if (string.Equals(InlineEvent.ContentItemId, content.ContentItem.ContentItemId, StringComparison.OrdinalIgnoreCase))
             {
@@ -51,7 +50,9 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             if (InlineEvent.IsStart && InlineEvent.ContentType == contentItem.ContentType && InlineEvent.Name == nameof(ContentDeletedEvent))
             {
-                throw new InvalidOperationException($"The '{nameof(DeleteContentTask)}' can't delete the content item as it is executed inline from a starting '{nameof(ContentDeletedEvent)}' of the same content type, which would result in an infinitive loop.");
+                throw new InvalidOperationException(
+                    $"The '{nameof(DeleteContentTask)}' can't delete the content item as it is executed inline from a starting '{nameof(ContentDeletedEvent)}' of the same content type, which would result in an infinitive loop."
+                );
             }
 
             await ContentManager.RemoveAsync(contentItem);

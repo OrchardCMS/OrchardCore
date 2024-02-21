@@ -49,8 +49,11 @@ namespace OrchardCore.Media.Processing
         }
 
         public Task ActivatingAsync() => Task.CompletedTask;
+
         public Task RemovingAsync(ShellRemovingContext context) => Task.CompletedTask;
+
         public Task TerminatedAsync() => Task.CompletedTask;
+
         public Task TerminatingAsync() => Task.CompletedTask;
 
         public override Task EnabledAsync(IFeatureInfo feature) => SetMediaTokenSettingsAsync(feature);

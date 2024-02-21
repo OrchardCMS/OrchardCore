@@ -18,18 +18,21 @@ namespace OrchardCore.Queries
             _executeQuery = new GlobalMethod
             {
                 Name = "executeQuery",
-                Method = serviceProvider => (Func<string, object, object>)((name, parameters) =>
-                {
-                    var queryManager = serviceProvider.GetRequiredService<IQueryManager>();
-                    var query = queryManager.GetQueryAsync(name).GetAwaiter().GetResult();
-                    if (query == null)
-                    {
-                        return null;
-                    }
+                Method = serviceProvider =>
+                    (Func<string, object, object>)(
+                        (name, parameters) =>
+                        {
+                            var queryManager = serviceProvider.GetRequiredService<IQueryManager>();
+                            var query = queryManager.GetQueryAsync(name).GetAwaiter().GetResult();
+                            if (query == null)
+                            {
+                                return null;
+                            }
 
-                    var result = queryManager.ExecuteQueryAsync(query, (IDictionary<string, object>)parameters).GetAwaiter().GetResult();
-                    return result.Items;
-                }),
+                            var result = queryManager.ExecuteQueryAsync(query, (IDictionary<string, object>)parameters).GetAwaiter().GetResult();
+                            return result.Items;
+                        }
+                    ),
             };
         }
 

@@ -14,22 +14,20 @@ namespace OrchardCore.Tests.Apis.Context
         public ContentItem OriginalBlogPost { get; private set; }
         public string OriginalBlogPostVersionId { get; private set; }
 
-        static BlogPostDeploymentContext()
-        {
-        }
+        static BlogPostDeploymentContext() { }
 
         public override async Task InitializeAsync()
         {
             await base.InitializeAsync();
             await RunRecipeAsync(BlogContext.luceneRecipeName, BlogContext.luceneRecipePath);
 
-            var result = await GraphQLClient
-                .Content
-                .Query("blogPost", builder =>
+            var result = await GraphQLClient.Content.Query(
+                "blogPost",
+                builder =>
                 {
-                    builder
-                        .WithField("contentItemId");
-                });
+                    builder.WithField("contentItemId");
+                }
+            );
 
             BlogPostContentItemId = result["data"]["blogPost"][0]["contentItemId"].ToString();
 

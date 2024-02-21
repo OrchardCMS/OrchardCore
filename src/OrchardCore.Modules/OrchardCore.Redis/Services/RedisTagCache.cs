@@ -16,11 +16,7 @@ namespace OrchardCore.Redis.Services
         private readonly IEnumerable<ITagRemovedEventHandler> _tagRemovedEventHandlers;
         private readonly ILogger _logger;
 
-        public RedisTagCache(
-            IRedisService redis,
-            ShellSettings shellSettings,
-            IEnumerable<ITagRemovedEventHandler> tagRemovedEventHandlers,
-            ILogger<RedisTagCache> logger)
+        public RedisTagCache(IRedisService redis, ShellSettings shellSettings, IEnumerable<ITagRemovedEventHandler> tagRemovedEventHandlers, ILogger<RedisTagCache> logger)
         {
             _redis = redis;
             _prefix = redis.InstancePrefix + shellSettings.Name + ":Tag:";

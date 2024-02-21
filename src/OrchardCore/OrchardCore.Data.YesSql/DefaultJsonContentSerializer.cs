@@ -31,8 +31,7 @@ namespace YesSql.Serialization
 
         public DefaultJsonContentSerializer(JsonSerializerOptions options) => _options = options;
 
-        public object Deserialize(string content, Type type)
-            => JsonSerializer.Deserialize(content, type, _options);
+        public object Deserialize(string content, Type type) => JsonSerializer.Deserialize(content, type, _options);
 
         public dynamic DeserializeDynamic(string content) => JsonSerializer.Deserialize<dynamic>(content, _options);
 

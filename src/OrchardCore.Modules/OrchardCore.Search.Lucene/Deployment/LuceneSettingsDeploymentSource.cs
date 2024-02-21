@@ -25,11 +25,7 @@ namespace OrchardCore.Search.Lucene.Deployment
             var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
 
             // Adding Lucene settings
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "Settings",
-                ["LuceneSettings"] = JObject.FromObject(luceneSettings),
-            });
+            result.Steps.Add(new JsonObject { ["name"] = "Settings", ["LuceneSettings"] = JObject.FromObject(luceneSettings), });
         }
     }
 }

@@ -36,7 +36,5 @@ namespace OrchardCore.Layers.Handlers
         }
     }
 
-    public class LayerState : Document
-    {
-    }
+    public class LayerState : Document { }
 }

@@ -19,10 +19,7 @@ namespace OrchardCore.AdminMenu.Deployment
             _adminMenuService = adminMenuService;
 
             // The recipe step contains polymorphic types which need to be resolved
-            _serializationOptions = new()
-            {
-                TypeInfoResolver = new PolymorphicJsonTypeInfoResolver(derivedTypesOptions.Value)
-            };
+            _serializationOptions = new() { TypeInfoResolver = new PolymorphicJsonTypeInfoResolver(derivedTypesOptions.Value) };
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
@@ -35,11 +32,7 @@ namespace OrchardCore.AdminMenu.Deployment
             }
 
             var data = new JsonArray();
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "AdminMenu",
-                ["data"] = data,
-            });
+            result.Steps.Add(new JsonObject { ["name"] = "AdminMenu", ["data"] = data, });
 
             foreach (var adminMenu in (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu)
             {

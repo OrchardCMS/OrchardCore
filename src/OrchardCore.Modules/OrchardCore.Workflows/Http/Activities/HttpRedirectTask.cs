@@ -17,11 +17,7 @@ namespace OrchardCore.Workflows.Http.Activities
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
         protected readonly IStringLocalizer S;
 
-        public HttpRedirectTask(
-            IStringLocalizer<HttpRedirectTask> localizer,
-            IHttpContextAccessor httpContextAccessor,
-            IWorkflowExpressionEvaluator expressionEvaluator
-        )
+        public HttpRedirectTask(IStringLocalizer<HttpRedirectTask> localizer, IHttpContextAccessor httpContextAccessor, IWorkflowExpressionEvaluator expressionEvaluator)
         {
             S = localizer;
             _httpContextAccessor = httpContextAccessor;

@@ -9,7 +9,7 @@ namespace OrchardCore.Data.Migration;
 public static class DataMigrationExtensions
 {
     /// <summary>
-    /// Executes the create method of the provided data migration. 
+    /// Executes the create method of the provided data migration.
     /// </summary>
     public static async Task<int> ExecuteCreateMethodAsync(this IDataMigration migration)
     {
@@ -31,7 +31,7 @@ public static class DataMigrationExtensions
     }
 
     /// <summary>
-    /// Executes the update methods of the provided data migration. 
+    /// Executes the update methods of the provided data migration.
     /// </summary>
     public static async Task<int> ExecuteUpdateMethodsAsync(this IDataMigration migration, int version)
     {
@@ -86,8 +86,7 @@ public static class DataMigrationExtensions
 
     private static (int Version, MethodInfo MethodInfo) GetUpdateMethod(MethodInfo methodInfo)
     {
-        if (methodInfo.Name.StartsWith("UpdateFrom", StringComparison.Ordinal) &&
-            (methodInfo.ReturnType == typeof(int) || methodInfo.ReturnType == typeof(Task<int>)))
+        if (methodInfo.Name.StartsWith("UpdateFrom", StringComparison.Ordinal) && (methodInfo.ReturnType == typeof(int) || methodInfo.ReturnType == typeof(Task<int>)))
         {
             var version = methodInfo.Name.EndsWith("Async", StringComparison.Ordinal)
                 ? methodInfo.Name["UpdateFrom".Length..^"Async".Length]

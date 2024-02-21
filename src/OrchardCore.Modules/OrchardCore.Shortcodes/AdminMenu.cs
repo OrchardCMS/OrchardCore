@@ -20,14 +20,15 @@ namespace OrchardCore.Shortcodes
                 return Task.CompletedTask;
             }
 
-            builder
-                .Add(S["Design"], design => design
-                    .Add(S["Shortcodes"], S["Shortcodes"].PrefixPosition(), import => import
-                        .Action("Index", "Admin", "OrchardCore.Shortcodes")
-                        .Permission(Permissions.ManageShortcodeTemplates)
-                        .LocalNav()
+            builder.Add(
+                S["Design"],
+                design =>
+                    design.Add(
+                        S["Shortcodes"],
+                        S["Shortcodes"].PrefixPosition(),
+                        import => import.Action("Index", "Admin", "OrchardCore.Shortcodes").Permission(Permissions.ManageShortcodeTemplates).LocalNav()
                     )
-                );
+            );
 
             return Task.CompletedTask;
         }

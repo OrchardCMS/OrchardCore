@@ -9,17 +9,13 @@ namespace OrchardCore.Tests.Extensions
 {
     public class ExtensionManagerTests
     {
-        private static readonly IHostEnvironment _hostingEnvironment
-            = new StubHostingEnvironment();
+        private static readonly IHostEnvironment _hostingEnvironment = new StubHostingEnvironment();
 
-        private static readonly IApplicationContext _applicationContext
-            = new ModularApplicationContext(_hostingEnvironment, [new ModuleNamesProvider()]);
+        private static readonly IApplicationContext _applicationContext = new ModularApplicationContext(_hostingEnvironment, [new ModuleNamesProvider()]);
 
-        private static readonly IFeaturesProvider _moduleFeatureProvider =
-            new FeaturesProvider(new[] { new ThemeFeatureBuilderEvents() });
+        private static readonly IFeaturesProvider _moduleFeatureProvider = new FeaturesProvider(new[] { new ThemeFeatureBuilderEvents() });
 
-        private static readonly IFeaturesProvider _themeFeatureProvider =
-            new FeaturesProvider(new[] { new ThemeFeatureBuilderEvents() });
+        private static readonly IFeaturesProvider _themeFeatureProvider = new FeaturesProvider(new[] { new ThemeFeatureBuilderEvents() });
 
         private readonly ExtensionManager _moduleScopedExtensionManager;
         private readonly ExtensionManager _themeScopedExtensionManager;
@@ -34,7 +30,7 @@ namespace OrchardCore.Tests.Extensions
                 new TypeFeatureProvider(),
                 _moduleFeatureProvider,
                 new NullLogger<ExtensionManager>()
-                );
+            );
 
             _themeScopedExtensionManager = new ExtensionManager(
                 _applicationContext,
@@ -43,7 +39,7 @@ namespace OrchardCore.Tests.Extensions
                 new TypeFeatureProvider(),
                 _themeFeatureProvider,
                 new NullLogger<ExtensionManager>()
-                );
+            );
 
             _moduleThemeScopedExtensionManager = new ExtensionManager(
                 _applicationContext,
@@ -52,7 +48,7 @@ namespace OrchardCore.Tests.Extensions
                 new TypeFeatureProvider(),
                 _themeFeatureProvider,
                 new NullLogger<ExtensionManager>()
-                );
+            );
         }
 
         private class ModuleNamesProvider : IModuleNamesProvider
@@ -61,14 +57,7 @@ namespace OrchardCore.Tests.Extensions
 
             public ModuleNamesProvider()
             {
-                _moduleNames =
-                [
-                    "BaseThemeSample",
-                    "BaseThemeSample2",
-                    "DerivedThemeSample",
-                    "DerivedThemeSample2",
-                    "ModuleSample"
-                ];
+                _moduleNames = ["BaseThemeSample", "BaseThemeSample2", "DerivedThemeSample", "DerivedThemeSample2", "ModuleSample"];
             }
 
             public IEnumerable<string> GetModuleNames()
@@ -80,8 +69,7 @@ namespace OrchardCore.Tests.Extensions
         [Fact]
         public void ShouldReturnExtension()
         {
-            var extensions = _moduleThemeScopedExtensionManager.GetExtensions()
-                .Where(e => e.Manifest.ModuleInfo.Category == "Test");
+            var extensions = _moduleThemeScopedExtensionManager.GetExtensions().Where(e => e.Manifest.ModuleInfo.Category == "Test");
 
             Assert.Equal(5, extensions.Count());
         }
@@ -122,8 +110,7 @@ namespace OrchardCore.Tests.Extensions
         [Fact]
         public void GetFeaturesShouldReturnAllFeaturesOrderedByDependency()
         {
-            var features = _moduleScopedExtensionManager.GetFeatures()
-                .Where(f => f.Category == "Test" && !f.IsTheme());
+            var features = _moduleScopedExtensionManager.GetFeatures().Where(f => f.Category == "Test" && !f.IsTheme());
 
             Assert.Equal(4, features.Count());
             Assert.Equal("Sample1", features.ElementAt(0).Id);
@@ -181,8 +168,7 @@ namespace OrchardCore.Tests.Extensions
         [Fact]
         public void GetFeaturesShouldReturnBothThemesAndModules()
         {
-            var features = _moduleThemeScopedExtensionManager.GetFeatures()
-                .Where(f => f.Category == "Test");
+            var features = _moduleThemeScopedExtensionManager.GetFeatures().Where(f => f.Category == "Test");
 
             Assert.Equal(8, features.Count());
         }
@@ -190,8 +176,7 @@ namespace OrchardCore.Tests.Extensions
         [Fact]
         public void GetFeaturesShouldReturnThemesAfterModules()
         {
-            var features = _moduleThemeScopedExtensionManager.GetFeatures()
-                .Where(f => f.Category == "Test");
+            var features = _moduleThemeScopedExtensionManager.GetFeatures().Where(f => f.Category == "Test");
 
             Assert.Equal("Sample1", features.ElementAt(0).Id);
             Assert.Equal("Sample2", features.ElementAt(1).Id);

@@ -25,7 +25,7 @@ namespace OrchardCore.Contents.Sitemaps
             IContentManager contentManager,
             IContentItemsQueryProvider contentItemsQueryProvider,
             IEnumerable<ISitemapContentItemExtendedMetadataProvider> sitemapContentItemExtendedMetadataProviders
-            )
+        )
         {
             _routeableContentTypeCoordinator = routeableContentTypeCoordinator;
             _contentManager = contentManager;
@@ -54,7 +54,13 @@ namespace OrchardCore.Contents.Sitemaps
             }
         }
 
-        private async Task<bool> BuildUrlsetMetadataAsync(ContentTypesSitemapSource source, SitemapBuilderContext context, ContentItemsQueryContext queryContext, ContentItem contentItem, XElement url)
+        private async Task<bool> BuildUrlsetMetadataAsync(
+            ContentTypesSitemapSource source,
+            SitemapBuilderContext context,
+            ContentItemsQueryContext queryContext,
+            ContentItem contentItem,
+            XElement url
+        )
         {
             if (await BuildUrlAsync(context, contentItem, url))
             {
@@ -66,7 +72,8 @@ namespace OrchardCore.Contents.Sitemaps
                 }
 
                 return false;
-            };
+            }
+            ;
 
             return false;
         }
@@ -117,8 +124,7 @@ namespace OrchardCore.Contents.Sitemaps
                 }
                 else
                 {
-                    var sitemapEntry = source.ContentTypes
-                        .FirstOrDefault(ct => string.Equals(ct.ContentTypeName, contentItem.ContentType));
+                    var sitemapEntry = source.ContentTypes.FirstOrDefault(ct => string.Equals(ct.ContentTypeName, contentItem.ContentType));
 
                     changeFrequencyValue = sitemapEntry.ChangeFrequency.ToString();
                 }
@@ -137,8 +143,7 @@ namespace OrchardCore.Contents.Sitemaps
                 }
                 else
                 {
-                    var sitemapEntry = source.ContentTypes
-                        .FirstOrDefault(ct => string.Equals(ct.ContentTypeName, contentItem.ContentType));
+                    var sitemapEntry = source.ContentTypes.FirstOrDefault(ct => string.Equals(ct.ContentTypeName, contentItem.ContentType));
 
                     priorityIntValue = sitemapEntry.Priority;
                 }

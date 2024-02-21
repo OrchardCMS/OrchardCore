@@ -37,8 +37,7 @@ namespace OrchardCore.AdminDashboard
             services.AddScoped<IAdminDashboardService, AdminDashboardService>();
             services.AddIndexProvider<DashboardPartIndexProvider>();
 
-            services.AddContentPart<DashboardPart>()
-                .UseDisplayDriver<DashboardPartDisplayDriver>();
+            services.AddContentPart<DashboardPart>().UseDisplayDriver<DashboardPartDisplayDriver>();
 
             services.AddScoped<IContentDisplayDriver, DashboardContentDisplayDriver>();
 

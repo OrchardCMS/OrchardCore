@@ -16,11 +16,14 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
             await context.InitializeAsync();
 
             // Act
-            var recipe = BlogPostDeploymentContext.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
-            {
-                jItem[nameof(ContentItem.ContentItemVersionId)] = "newversion";
-                jItem[nameof(ContentItem.DisplayText)] = "new version";
-            });
+            var recipe = BlogPostDeploymentContext.GetContentStepRecipe(
+                context.OriginalBlogPost,
+                jItem =>
+                {
+                    jItem[nameof(ContentItem.ContentItemVersionId)] = "newversion";
+                    jItem[nameof(ContentItem.DisplayText)] = "new version";
+                }
+            );
 
             for (var i = 0; i < 2; i++)
             {
@@ -30,8 +33,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 await context.UsingTenantScopeAsync(async scope =>
                 {
                     var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                    var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                        x.ContentType == "BlogPost").ListAsync();
+                    var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == "BlogPost").ListAsync();
 
                     Assert.Equal(2, blogPosts.Count());
 
@@ -56,10 +58,13 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
             await context.InitializeAsync();
 
             // Act
-            var recipe = BlogPostDeploymentContext.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
-            {
-                jItem[nameof(ContentItem.DisplayText)] = "existing version mutated";
-            });
+            var recipe = BlogPostDeploymentContext.GetContentStepRecipe(
+                context.OriginalBlogPost,
+                jItem =>
+                {
+                    jItem[nameof(ContentItem.DisplayText)] = "existing version mutated";
+                }
+            );
 
             for (var i = 0; i < 2; i++)
             {
@@ -69,8 +74,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 await context.UsingTenantScopeAsync(async scope =>
                 {
                     var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                    var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                        x.ContentType == "BlogPost").ListAsync();
+                    var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == "BlogPost").ListAsync();
 
                     Assert.Single(blogPosts);
                     var mutatedVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
@@ -78,6 +82,5 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 });
             }
         }
-
     }
 }

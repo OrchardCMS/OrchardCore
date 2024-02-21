@@ -18,11 +18,7 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
 
-        public AzureADSettingsDisplayDriver(
-            IAuthorizationService authorizationService,
-            IHttpContextAccessor httpContextAccessor,
-            IShellHost shellHost,
-            ShellSettings shellSettings)
+        public AzureADSettingsDisplayDriver(IAuthorizationService authorizationService, IHttpContextAccessor httpContextAccessor, IShellHost shellHost, ShellSettings shellSettings)
         {
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
@@ -37,17 +33,22 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
             {
                 return null;
             }
-            return Initialize<AzureADSettingsViewModel>("MicrosoftEntraIDSettings_Edit", model =>
-            {
-                model.DisplayName = settings.DisplayName;
-                model.AppId = settings.AppId;
-                model.TenantId = settings.TenantId;
-                model.SaveTokens = settings.SaveTokens;
-                if (settings.CallbackPath.HasValue)
-                {
-                    model.CallbackPath = settings.CallbackPath.Value;
-                }
-            }).Location("Content:0").OnGroup(MicrosoftAuthenticationConstants.Features.AAD);
+            return Initialize<AzureADSettingsViewModel>(
+                    "MicrosoftEntraIDSettings_Edit",
+                    model =>
+                    {
+                        model.DisplayName = settings.DisplayName;
+                        model.AppId = settings.AppId;
+                        model.TenantId = settings.TenantId;
+                        model.SaveTokens = settings.SaveTokens;
+                        if (settings.CallbackPath.HasValue)
+                        {
+                            model.CallbackPath = settings.CallbackPath.Value;
+                        }
+                    }
+                )
+                .Location("Content:0")
+                .OnGroup(MicrosoftAuthenticationConstants.Features.AAD);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(AzureADSettings settings, BuildEditorContext context)

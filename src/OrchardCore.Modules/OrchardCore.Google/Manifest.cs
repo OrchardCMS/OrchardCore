@@ -16,16 +16,6 @@ using OrchardCore.Modules.Manifest;
     Description = "Authenticates users with their Google Account."
 )]
 
-[assembly: Feature(
-    Id = GoogleConstants.Features.GoogleAnalytics,
-    Name = "Google Analytics",
-    Category = "Google",
-    Description = "Integrate Google Analytics (gtag.js)"
-)]
+[assembly: Feature(Id = GoogleConstants.Features.GoogleAnalytics, Name = "Google Analytics", Category = "Google", Description = "Integrate Google Analytics (gtag.js)")]
 
-[assembly: Feature(
-    Id = GoogleConstants.Features.GoogleTagManager,
-    Name = "Google Tag Manager",
-    Category = "Google",
-    Description = "Integrate Google Tag Manager"
-)]
+[assembly: Feature(Id = GoogleConstants.Features.GoogleTagManager, Name = "Google Tag Manager", Category = "Google", Description = "Integrate Google Tag Manager")]

@@ -23,7 +23,8 @@ namespace OrchardCore.Themes.Services
             IShellFeaturesManager shellFeaturesManager,
             ISiteThemeService siteThemeService,
             IHtmlLocalizer<ThemeService> htmlLocalizer,
-            INotifier notifier)
+            INotifier notifier
+        )
         {
             _extensionManager = extensionManager;
             _shellFeaturesManager = shellFeaturesManager;
@@ -45,9 +46,7 @@ namespace OrchardCore.Themes.Services
                     break;
                 themes.Enqueue(themeName);
 
-                themeName = !string.IsNullOrWhiteSpace(theme.Manifest.Name)
-                    ? theme.Manifest.Name
-                    : null;
+                themeName = !string.IsNullOrWhiteSpace(theme.Manifest.Name) ? theme.Manifest.Name : null;
             }
 
             var currentTheme = await _siteThemeService.GetSiteThemeNameAsync();
@@ -104,9 +103,7 @@ namespace OrchardCore.Themes.Services
         /// <param name="force">Boolean parameter indicating if the feature should enable it's dependencies if required or fail otherwise.</param>
         public async Task EnableFeaturesAsync(IEnumerable<string> featureIds, bool force)
         {
-            var featuresToEnable = _extensionManager
-                .GetFeatures()
-                .Where(x => featureIds.Contains(x.Id));
+            var featuresToEnable = _extensionManager.GetFeatures().Where(x => featureIds.Contains(x.Id));
 
             var enabledFeatures = await _shellFeaturesManager.EnableFeaturesAsync(featuresToEnable, force);
             foreach (var enabledFeature in enabledFeatures)
@@ -131,9 +128,7 @@ namespace OrchardCore.Themes.Services
         /// <param name="force">Boolean parameter indicating if the feature should disable the features which depend on it if required or fail otherwise.</param>
         public async Task DisableFeaturesAsync(IEnumerable<string> featureIds, bool force)
         {
-            var featuresToDisable = _extensionManager
-                .GetFeatures()
-                .Where(x => featureIds.Contains(x.Id));
+            var featuresToDisable = _extensionManager.GetFeatures().Where(x => featureIds.Contains(x.Id));
 
             var features = await _shellFeaturesManager.DisableFeaturesAsync(featuresToDisable, force);
             foreach (var feature in features)

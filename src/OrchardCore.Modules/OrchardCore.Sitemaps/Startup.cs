@@ -1,3 +1,5 @@
+using System;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,8 +25,6 @@ using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Recipes;
 using OrchardCore.Sitemaps.Routing;
 using OrchardCore.Sitemaps.Services;
-using System;
-using System.Text.Json.Serialization;
 
 namespace OrchardCore.Sitemaps
 {
@@ -42,9 +42,9 @@ namespace OrchardCore.Sitemaps
                 {
                     options.GlobalRouteValues = new RouteValueDictionary
                     {
-                        {"Area", "OrchardCore.Sitemaps"},
-                        {"Controller", "Sitemap"},
-                        {"Action", "Index"}
+                        { "Area", "OrchardCore.Sitemaps" },
+                        { "Controller", "Sitemap" },
+                        { "Action", "Index" }
                     };
 
                     options.SitemapIdKey = "sitemapId";
@@ -69,9 +69,7 @@ namespace OrchardCore.Sitemaps
             services.AddScoped<IRouteableContentTypeCoordinator, DefaultRouteableContentTypeCoordinator>();
 
             // Sitemap Part.
-            services.AddContentPart<SitemapPart>()
-                .UseDisplayDriver<SitemapPartDisplayDriver>()
-                .AddHandler<SitemapPartHandler>();
+            services.AddContentPart<SitemapPart>().UseDisplayDriver<SitemapPartDisplayDriver>().AddHandler<SitemapPartHandler>();
 
             // Custom sitemap path.
             services.AddScoped<ISitemapSourceBuilder, CustomPathSitemapSourceBuilder>();

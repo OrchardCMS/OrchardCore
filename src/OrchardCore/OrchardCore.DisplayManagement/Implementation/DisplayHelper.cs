@@ -13,10 +13,7 @@ namespace OrchardCore.DisplayManagement.Implementation
         private readonly IShapeFactory _shapeFactory;
         private readonly IServiceProvider _serviceProvider;
 
-        public DisplayHelper(
-            IHtmlDisplay htmlDisplay,
-            IShapeFactory shapeFactory,
-            IServiceProvider serviceProvider)
+        public DisplayHelper(IHtmlDisplay htmlDisplay, IShapeFactory shapeFactory, IServiceProvider serviceProvider)
         {
             _htmlDisplay = htmlDisplay;
             _shapeFactory = shapeFactory;

@@ -18,7 +18,8 @@ public class MicrosoftAccountSettingsConfiguration : IConfigureOptions<Microsoft
     public MicrosoftAccountSettingsConfiguration(
         IMicrosoftAccountService microsoftAccountService,
         ShellSettings shellSettings,
-        ILogger<MicrosoftAccountSettingsConfiguration> logger)
+        ILogger<MicrosoftAccountSettingsConfiguration> logger
+    )
     {
         _microsoftAccountService = microsoftAccountService;
         _shellSettings = shellSettings;
@@ -27,9 +28,7 @@ public class MicrosoftAccountSettingsConfiguration : IConfigureOptions<Microsoft
 
     public void Configure(MicrosoftAccountSettings options)
     {
-        var settings = GetMicrosoftAccountSettingsAsync()
-            .GetAwaiter()
-            .GetResult();
+        var settings = GetMicrosoftAccountSettingsAsync().GetAwaiter().GetResult();
 
         if (settings != null)
         {

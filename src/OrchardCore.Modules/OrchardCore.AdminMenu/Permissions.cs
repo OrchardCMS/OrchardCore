@@ -12,10 +12,7 @@ public class Permissions : IPermissionProvider
 
     private static readonly Permission _viewAdminMenu = new("ViewAdminMenu_{0}", "View Admin Menu - {0}", new[] { ManageAdminMenu, ViewAdminMenuAll });
 
-    private readonly IEnumerable<Permission> _generalPermissions =
-    [
-        ManageAdminMenu,
-    ];
+    private readonly IEnumerable<Permission> _generalPermissions = [ManageAdminMenu,];
 
     private readonly IAdminMenuService _adminMenuService;
 
@@ -28,11 +25,7 @@ public class Permissions : IPermissionProvider
     {
         var adminMenuItems = (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu;
 
-        var permissions = new List<Permission>(adminMenuItems.Count + 2)
-        {
-            ViewAdminMenuAll,
-            ManageAdminMenu,
-        };
+        var permissions = new List<Permission>(adminMenuItems.Count + 2) { ViewAdminMenuAll, ManageAdminMenu, };
 
         foreach (var adminMenu in adminMenuItems)
         {
@@ -43,23 +36,11 @@ public class Permissions : IPermissionProvider
     }
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
-    [
-        new PermissionStereotype
-        {
-            Name = "Administrator",
-            Permissions = _generalPermissions,
-        },
-        new PermissionStereotype
-        {
-            Name = "Editor",
-            Permissions = _generalPermissions,
-        },
-    ];
+        [
+            new PermissionStereotype { Name = "Administrator", Permissions = _generalPermissions, },
+            new PermissionStereotype { Name = "Editor", Permissions = _generalPermissions, },
+        ];
 
-    public static Permission CreatePermissionForAdminMenu(string name)
-        => new(
-            string.Format(_viewAdminMenu.Name, name),
-            string.Format(_viewAdminMenu.Description, name),
-            _viewAdminMenu.ImpliedBy
-        );
+    public static Permission CreatePermissionForAdminMenu(string name) =>
+        new(string.Format(_viewAdminMenu.Name, name), string.Format(_viewAdminMenu.Description, name), _viewAdminMenu.ImpliedBy);
 }

@@ -50,11 +50,7 @@ namespace OrchardCore.Media.Deployment
             }
 
             // Adding media files
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "media",
-                ["Files"] = JArray.FromObject(output),
-            });
+            result.Steps.Add(new JsonObject { ["name"] = "media", ["Files"] = JArray.FromObject(output), });
         }
 
         private class MediaDeploymentStepModel

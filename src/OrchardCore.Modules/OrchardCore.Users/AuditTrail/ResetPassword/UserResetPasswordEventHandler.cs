@@ -15,19 +15,16 @@ namespace OrchardCore.Users.AuditTrail.ResetPassword
         private readonly IServiceProvider _serviceProvider;
         private UserManager<IUser> _userManager;
 
-        public UserResetPasswordEventHandler(
-            IAuditTrailManager auditTrailManager,
-            IServiceProvider serviceProvider)
+        public UserResetPasswordEventHandler(IAuditTrailManager auditTrailManager, IServiceProvider serviceProvider)
         {
             _auditTrailManager = auditTrailManager;
             _serviceProvider = serviceProvider;
         }
 
-        public Task PasswordRecoveredAsync(PasswordRecoveryContext context)
-            => RecordAuditTrailEventAsync(UserResetPasswordAuditTrailEventConfiguration.PasswordRecovered, context.User);
+        public Task PasswordRecoveredAsync(PasswordRecoveryContext context) =>
+            RecordAuditTrailEventAsync(UserResetPasswordAuditTrailEventConfiguration.PasswordRecovered, context.User);
 
-        public Task PasswordResetAsync(PasswordRecoveryContext context)
-            => RecordAuditTrailEventAsync(UserResetPasswordAuditTrailEventConfiguration.PasswordReset, context.User);
+        public Task PasswordResetAsync(PasswordRecoveryContext context) => RecordAuditTrailEventAsync(UserResetPasswordAuditTrailEventConfiguration.PasswordReset, context.User);
 
         #region Unused events
 
@@ -44,19 +41,15 @@ namespace OrchardCore.Users.AuditTrail.ResetPassword
             var userId = await _userManager.GetUserIdAsync(user);
 
             await _auditTrailManager.RecordEventAsync(
-                new AuditTrailContext<AuditTrailUserEvent>
-                (
+                new AuditTrailContext<AuditTrailUserEvent>(
                     name,
                     UserResetPasswordAuditTrailEventConfiguration.User,
                     userId,
                     userId,
                     userName,
-                    new AuditTrailUserEvent
-                    {
-                        UserId = userId,
-                        UserName = userName
-                    }
-                ));
+                    new AuditTrailUserEvent { UserId = userId, UserName = userName }
+                )
+            );
         }
     }
 }

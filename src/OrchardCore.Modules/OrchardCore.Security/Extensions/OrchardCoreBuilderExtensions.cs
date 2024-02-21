@@ -8,20 +8,22 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static OrchardCoreBuilder ConfigureSecuritySettings(this OrchardCoreBuilder builder)
         {
-            builder.ConfigureServices((tenantServices, serviceProvider) =>
-            {
-                var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_Security");
-
-                tenantServices.PostConfigure<SecuritySettings>(settings =>
+            builder.ConfigureServices(
+                (tenantServices, serviceProvider) =>
                 {
-                    settings.ContentSecurityPolicy.Clear();
-                    settings.PermissionsPolicy.Clear();
+                    var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_Security");
 
-                    configurationSection.Bind(settings);
+                    tenantServices.PostConfigure<SecuritySettings>(settings =>
+                    {
+                        settings.ContentSecurityPolicy.Clear();
+                        settings.PermissionsPolicy.Clear();
 
-                    settings.FromConfiguration = true;
-                });
-            });
+                        configurationSection.Bind(settings);
+
+                        settings.FromConfiguration = true;
+                    });
+                }
+            );
 
             return builder;
         }

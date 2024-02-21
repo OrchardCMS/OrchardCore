@@ -22,10 +22,7 @@ namespace OrchardCore.Deployment.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
 
-        public ExportFileController(
-            IAuthorizationService authorizationService,
-            ISession session,
-            IDeploymentManager deploymentManager)
+        public ExportFileController(IAuthorizationService authorizationService, ISession session, IDeploymentManager deploymentManager)
         {
             _authorizationService = authorizationService;
             _deploymentManager = deploymentManager;

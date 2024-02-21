@@ -18,9 +18,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static IServiceCollection AddTagHelpers<T>(this IServiceCollection services)
         {
-            return services
-                .AddTransient<ITagHelpersProvider>(sp => new TagHelpersProvider<T>())
-                .AddTransient(typeof(T));
+            return services.AddTransient<ITagHelpersProvider>(sp => new TagHelpersProvider<T>()).AddTransient(typeof(T));
         }
     }
 }

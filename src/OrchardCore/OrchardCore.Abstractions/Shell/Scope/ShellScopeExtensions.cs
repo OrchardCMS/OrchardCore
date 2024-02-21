@@ -74,11 +74,13 @@ namespace OrchardCore.Environment.Shell.Scope
         /// </summary>
         public static ShellScope AddExceptionHandler(this ShellScope scope, Action<ShellScope, Exception> handler)
         {
-            scope?.ExceptionHandler((scope, e) =>
-            {
-                handler(scope, e);
-                return Task.CompletedTask;
-            });
+            scope?.ExceptionHandler(
+                (scope, e) =>
+                {
+                    handler(scope, e);
+                    return Task.CompletedTask;
+                }
+            );
 
             return scope;
         }

@@ -18,10 +18,7 @@ public class CustomUserSettingsService
     private readonly Lazy<Task<IDictionary<string, ContentTypeDefinition>>> _settingsTypes;
     private readonly ISession _session;
 
-    public CustomUserSettingsService(
-        IContentManager contentManager,
-        IContentDefinitionManager contentDefinitionManager,
-        ISession session)
+    public CustomUserSettingsService(IContentManager contentManager, IContentDefinitionManager contentDefinitionManager, ISession session)
     {
         _contentManager = contentManager;
         _contentDefinitionManager = contentDefinitionManager;
@@ -30,26 +27,20 @@ public class CustomUserSettingsService
     }
 
     [Obsolete($"Instead, utilize the {nameof(GetAllSettingsTypeNamesAsync)} method. This current method is slated for removal in upcoming releases.")]
-    public IEnumerable<string> GetAllSettingsTypeNames()
-        => _settingsTypes.Value.GetAwaiter().GetResult().Keys;
+    public IEnumerable<string> GetAllSettingsTypeNames() => _settingsTypes.Value.GetAwaiter().GetResult().Keys;
 
     [Obsolete($"Instead, utilize the {nameof(GetAllSettingsTypesAsync)} method. This current method is slated for removal in upcoming releases.")]
-    public IEnumerable<ContentTypeDefinition> GetAllSettingsTypes()
-        => _settingsTypes.Value.GetAwaiter().GetResult().Values;
+    public IEnumerable<ContentTypeDefinition> GetAllSettingsTypes() => _settingsTypes.Value.GetAwaiter().GetResult().Values;
 
     [Obsolete($"Instead, utilize the {nameof(GetSettingsTypesAsync)} method. This current method is slated for removal in upcoming releases.")]
-    public IEnumerable<ContentTypeDefinition> GetSettingsTypes(params string[] settingsTypeNames)
-        => GetSettingsTypesAsync(settingsTypeNames).GetAwaiter().GetResult();
+    public IEnumerable<ContentTypeDefinition> GetSettingsTypes(params string[] settingsTypeNames) => GetSettingsTypesAsync(settingsTypeNames).GetAwaiter().GetResult();
 
     [Obsolete($"Instead, utilize the {nameof(GetSettingsTypeAsync)} method. This current method is slated for removal in upcoming releases.")]
-    public ContentTypeDefinition GetSettingsType(string settingsTypeName)
-        => GetSettingsTypeAsync(settingsTypeName).GetAwaiter().GetResult();
+    public ContentTypeDefinition GetSettingsType(string settingsTypeName) => GetSettingsTypeAsync(settingsTypeName).GetAwaiter().GetResult();
 
-    public async Task<IEnumerable<string>> GetAllSettingsTypeNamesAsync()
-        => (await _settingsTypes.Value).Keys;
+    public async Task<IEnumerable<string>> GetAllSettingsTypeNamesAsync() => (await _settingsTypes.Value).Keys;
 
-    public async Task<IEnumerable<ContentTypeDefinition>> GetAllSettingsTypesAsync()
-        => (await _settingsTypes.Value).Values;
+    public async Task<IEnumerable<ContentTypeDefinition>> GetAllSettingsTypesAsync() => (await _settingsTypes.Value).Values;
 
     public async Task<IEnumerable<ContentTypeDefinition>> GetSettingsTypesAsync(params string[] settingsTypeNames)
     {
@@ -127,8 +118,7 @@ public class CustomUserSettingsService
     {
         var contentTypes = await _contentDefinitionManager.ListTypeDefinitionsAsync();
 
-        var result = contentTypes.Where(x => x.StereotypeEquals("CustomUserSettings"))
-        .ToDictionary(x => x.Name);
+        var result = contentTypes.Where(x => x.StereotypeEquals("CustomUserSettings")).ToDictionary(x => x.Name);
 
         return result;
     }

@@ -10,8 +10,7 @@ public class ChunkFileUploadBackgroundTask : IBackgroundTask
 {
     private readonly IChunkFileUploadService _chunkFileUploadService;
 
-    public ChunkFileUploadBackgroundTask(IChunkFileUploadService chunkFileUploadService) =>
-        _chunkFileUploadService = chunkFileUploadService;
+    public ChunkFileUploadBackgroundTask(IChunkFileUploadService chunkFileUploadService) => _chunkFileUploadService = chunkFileUploadService;
 
     public Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {

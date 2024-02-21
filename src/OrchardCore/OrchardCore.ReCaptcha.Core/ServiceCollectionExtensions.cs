@@ -20,18 +20,22 @@ namespace OrchardCore.ReCaptcha.Core
 
             services
                 .AddHttpClient(nameof(ReCaptchaService))
-                .AddResilienceHandler("oc-handler", builder => builder
-                    .AddRetry(new HttpRetryStrategyOptions
-                    {
-                        Name = "oc-retry",
-                        MaxRetryAttempts = 3,
-                        OnRetry = attempt =>
-                        {
-                            attempt.RetryDelay.Add(TimeSpan.FromSeconds(0.5 * attempt.AttemptNumber));
+                .AddResilienceHandler(
+                    "oc-handler",
+                    builder =>
+                        builder.AddRetry(
+                            new HttpRetryStrategyOptions
+                            {
+                                Name = "oc-retry",
+                                MaxRetryAttempts = 3,
+                                OnRetry = attempt =>
+                                {
+                                    attempt.RetryDelay.Add(TimeSpan.FromSeconds(0.5 * attempt.AttemptNumber));
 
-                            return ValueTask.CompletedTask;
-                        }
-                    })
+                                    return ValueTask.CompletedTask;
+                                }
+                            }
+                        )
                 );
 
             services.AddSingleton<IDetectRobots, IPAddressRobotDetector>();

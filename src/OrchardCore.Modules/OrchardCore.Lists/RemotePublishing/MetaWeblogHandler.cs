@@ -47,7 +47,8 @@ namespace OrchardCore.Lists.RemotePublishing
             IContentDefinitionManager contentDefinitionManager,
             IMediaFileStore mediaFileStore,
             IEnumerable<IMetaWeblogDriver> metaWeblogDrivers,
-            IStringLocalizer<MetaWeblogHandler> localizer)
+            IStringLocalizer<MetaWeblogHandler> localizer
+        )
         {
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
@@ -65,7 +66,12 @@ namespace OrchardCore.Lists.RemotePublishing
 
             foreach (var driver in _metaWeblogDrivers)
             {
-                driver.SetCapabilities((name, value) => { options.SetElementValue(XName.Get(name, manifestUri), value); });
+                driver.SetCapabilities(
+                    (name, value) =>
+                    {
+                        options.SetElementValue(XName.Get(name, manifestUri), value);
+                    }
+                );
             }
         }
 
@@ -73,9 +79,11 @@ namespace OrchardCore.Lists.RemotePublishing
         {
             if (context.RpcMethodCall.MethodName == "blogger.getUsersBlogs")
             {
-                var result = await MetaWeblogGetUserBlogsAsync(context,
+                var result = await MetaWeblogGetUserBlogsAsync(
+                    context,
                     Convert.ToString(context.RpcMethodCall.Params[1].Value),
-                    Convert.ToString(context.RpcMethodCall.Params[2].Value));
+                    Convert.ToString(context.RpcMethodCall.Params[2].Value)
+                );
 
                 context.RpcMethodResponse = new XRpcMethodResponse().Add(result);
             }
@@ -88,7 +96,8 @@ namespace OrchardCore.Lists.RemotePublishing
                     Convert.ToString(context.RpcMethodCall.Params[1].Value),
                     Convert.ToString(context.RpcMethodCall.Params[2].Value),
                     Convert.ToInt32(context.RpcMethodCall.Params[3].Value),
-                    context.Drivers);
+                    context.Drivers
+                );
 
                 context.RpcMethodResponse = new XRpcMethodResponse().Add(result);
             }
@@ -101,7 +110,8 @@ namespace OrchardCore.Lists.RemotePublishing
                     Convert.ToString(context.RpcMethodCall.Params[2].Value),
                     (XRpcStruct)context.RpcMethodCall.Params[3].Value,
                     Convert.ToBoolean(context.RpcMethodCall.Params[4].Value),
-                    context.Drivers);
+                    context.Drivers
+                );
 
                 context.RpcMethodResponse = new XRpcMethodResponse().Add(result);
             }
@@ -113,7 +123,8 @@ namespace OrchardCore.Lists.RemotePublishing
                     Convert.ToString(context.RpcMethodCall.Params[0].Value),
                     Convert.ToString(context.RpcMethodCall.Params[1].Value),
                     Convert.ToString(context.RpcMethodCall.Params[2].Value),
-                    context.Drivers);
+                    context.Drivers
+                );
                 context.RpcMethodResponse = new XRpcMethodResponse().Add(result);
             }
 
@@ -125,7 +136,8 @@ namespace OrchardCore.Lists.RemotePublishing
                     Convert.ToString(context.RpcMethodCall.Params[2].Value),
                     (XRpcStruct)context.RpcMethodCall.Params[3].Value,
                     Convert.ToBoolean(context.RpcMethodCall.Params[4].Value),
-                    context.Drivers);
+                    context.Drivers
+                );
                 context.RpcMethodResponse = new XRpcMethodResponse().Add(result);
             }
 
@@ -135,7 +147,8 @@ namespace OrchardCore.Lists.RemotePublishing
                     Convert.ToString(context.RpcMethodCall.Params[1].Value),
                     Convert.ToString(context.RpcMethodCall.Params[2].Value),
                     Convert.ToString(context.RpcMethodCall.Params[3].Value),
-                    context.Drivers);
+                    context.Drivers
+                );
                 context.RpcMethodResponse = new XRpcMethodResponse().Add(result);
             }
 
@@ -144,7 +157,8 @@ namespace OrchardCore.Lists.RemotePublishing
                 var result = await MetaWeblogNewMediaObjectAsync(
                     Convert.ToString(context.RpcMethodCall.Params[1].Value),
                     Convert.ToString(context.RpcMethodCall.Params[2].Value),
-                    (XRpcStruct)context.RpcMethodCall.Params[3].Value);
+                    (XRpcStruct)context.RpcMethodCall.Params[3].Value
+                );
                 context.RpcMethodResponse = new XRpcMethodResponse().Add(result);
             }
         }
@@ -172,10 +186,7 @@ namespace OrchardCore.Lists.RemotePublishing
             var publicUrl = _mediaFileStore.MapPathToPublicUrl(filePath);
 
             // Some clients require all optional attributes to be declared Wordpress responds in this way as well.
-            return new XRpcStruct()
-                .Set("file", publicUrl)
-                .Set("url", publicUrl)
-                .Set("type", file.Optional<string>("type"));
+            return new XRpcStruct().Set("file", publicUrl).Set("url", publicUrl).Set("type", file.Optional<string>("type"));
         }
 
         private async Task<XRpcArray> MetaWeblogGetUserBlogsAsync(XmlRpcContext context, string userName, string password)
@@ -200,10 +211,20 @@ namespace OrchardCore.Lists.RemotePublishing
                         var metadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(list);
                         var displayRouteValues = metadata.DisplayRouteValues;
 
-                        array.Add(new XRpcStruct()
-                                      .Set("url", context.Url.Action(displayRouteValues["action"].ToString(), displayRouteValues["controller"].ToString(), displayRouteValues, context.HttpContext.Request.Scheme))
-                                      .Set("blogid", list.ContentItemId)
-                                      .Set("blogName", list.DisplayText));
+                        array.Add(
+                            new XRpcStruct()
+                                .Set(
+                                    "url",
+                                    context.Url.Action(
+                                        displayRouteValues["action"].ToString(),
+                                        displayRouteValues["controller"].ToString(),
+                                        displayRouteValues,
+                                        context.HttpContext.Request.Scheme
+                                    )
+                                )
+                                .Set("blogid", list.ContentItemId)
+                                .Set("blogName", list.DisplayText)
+                        );
                     }
                 }
             }
@@ -217,19 +238,20 @@ namespace OrchardCore.Lists.RemotePublishing
             string userName,
             string password,
             int numberOfPosts,
-            IEnumerable<IXmlRpcDriver> drivers)
+            IEnumerable<IXmlRpcDriver> drivers
+        )
         {
             var user = await ValidateUserAsync(userName, password);
 
             // User needs to at least have permission to edit its own blog posts to access the service.
             await CheckAccessAsync(CommonPermissions.EditContent, user, null);
 
-            var list = (await _contentManager.GetAsync(contentItemId))
-                ?? throw new InvalidOperationException("Could not find content item " + contentItemId);
+            var list = (await _contentManager.GetAsync(contentItemId)) ?? throw new InvalidOperationException("Could not find content item " + contentItemId);
 
             var array = new XRpcArray();
 
-            var contentItems = await _session.Query<ContentItem>()
+            var contentItems = await _session
+                .Query<ContentItem>()
                 .With<ContainedPartIndex>(x => x.ListContentItemId == contentItemId)
                 .With<ContentItemIndex>(x => x.Latest)
                 .OrderByDescending(x => x.CreatedUtc)
@@ -257,15 +279,15 @@ namespace OrchardCore.Lists.RemotePublishing
             string password,
             XRpcStruct content,
             bool publish,
-            IEnumerable<IXmlRpcDriver> drivers)
+            IEnumerable<IXmlRpcDriver> drivers
+        )
         {
             var user = await ValidateUserAsync(userName, password);
 
             // User needs permission to edit or publish its own blog posts.
             await CheckAccessAsync(publish ? CommonPermissions.PublishContent : CommonPermissions.EditContent, user, null);
 
-            var list = (await _contentManager.GetAsync(contentItemId))
-                ?? throw new InvalidOperationException("Could not find content item " + contentItemId);
+            var list = (await _contentManager.GetAsync(contentItemId)) ?? throw new InvalidOperationException("Could not find content item " + contentItemId);
 
             var postType = (await GetContainedContentTypesAsync(list)).FirstOrDefault();
             var contentItem = await _contentManager.NewAsync(postType.Name);
@@ -315,17 +337,12 @@ namespace OrchardCore.Lists.RemotePublishing
             return contentItem.ContentItemId;
         }
 
-        private async Task<XRpcStruct> MetaWeblogGetPostAsync(
-            XmlRpcContext context,
-            string contentItemId,
-            string userName,
-            string password,
-            IEnumerable<IXmlRpcDriver> drivers)
+        private async Task<XRpcStruct> MetaWeblogGetPostAsync(XmlRpcContext context, string contentItemId, string userName, string password, IEnumerable<IXmlRpcDriver> drivers)
         {
             var user = await ValidateUserAsync(userName, password);
 
-            var contentItem = (await _contentManager.GetAsync(contentItemId, VersionOptions.Latest))
-                ?? throw new InvalidOperationException("Could not find content item " + contentItemId);
+            var contentItem =
+                (await _contentManager.GetAsync(contentItemId, VersionOptions.Latest)) ?? throw new InvalidOperationException("Could not find content item " + contentItemId);
 
             await CheckAccessAsync(CommonPermissions.EditContent, user, contentItem);
 
@@ -350,11 +367,13 @@ namespace OrchardCore.Lists.RemotePublishing
             string password,
             XRpcStruct content,
             bool publish,
-            IEnumerable<IXmlRpcDriver> drivers)
+            IEnumerable<IXmlRpcDriver> drivers
+        )
         {
             var user = await ValidateUserAsync(userName, password);
 
-            var contentItem = (await _contentManager.GetAsync(contentItemId, VersionOptions.DraftRequired))
+            var contentItem =
+                (await _contentManager.GetAsync(contentItemId, VersionOptions.DraftRequired))
                 ?? throw new Exception(S["The specified Blog Post doesn't exist anymore. Please create a new Blog Post."]);
 
             await CheckAccessAsync(publish ? CommonPermissions.PublishContent : CommonPermissions.EditContent, user, contentItem);
@@ -399,16 +418,12 @@ namespace OrchardCore.Lists.RemotePublishing
             return true;
         }
 
-        private async Task<bool> MetaWeblogDeletePostAsync(
-            string contentItemId,
-            string userName,
-            string password,
-            IEnumerable<IXmlRpcDriver> drivers)
+        private async Task<bool> MetaWeblogDeletePostAsync(string contentItemId, string userName, string password, IEnumerable<IXmlRpcDriver> drivers)
         {
             var user = await ValidateUserAsync(userName, password);
 
-            var contentItem = (await _contentManager.GetAsync(contentItemId, VersionOptions.Latest))
-                ?? throw new InvalidOperationException("Could not find content item " + contentItemId);
+            var contentItem =
+                (await _contentManager.GetAsync(contentItemId, VersionOptions.Latest)) ?? throw new InvalidOperationException("Could not find content item " + contentItemId);
 
             if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.DeleteContent, contentItem))
             {
@@ -449,17 +464,15 @@ namespace OrchardCore.Lists.RemotePublishing
                 metadata.DisplayRouteValues["action"].ToString(),
                 metadata.DisplayRouteValues["controller"].ToString(),
                 metadata.DisplayRouteValues,
-                context.HttpContext.Request.Scheme);
+                context.HttpContext.Request.Scheme
+            );
 
             if (contentItem.HasDraft())
             {
                 url = context.Url.Action("Preview", "Item", new { area = "OrchardCore.Contents", contentItemId = contentItem.ContentItemId });
             }
 
-            var blogStruct = new XRpcStruct()
-                .Set("postid", contentItem.ContentItemId)
-                .Set("link", url)
-                .Set("permaLink", url);
+            var blogStruct = new XRpcStruct().Set("postid", contentItem.ContentItemId).Set("link", url).Set("permaLink", url);
 
             if (contentItem.PublishedUtc != null)
             {

@@ -25,7 +25,8 @@ namespace OrchardCore.ReverseProxy.Drivers
             IShellHost shellHost,
             ShellSettings shellSettings,
             IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+            IAuthorizationService authorizationService
+        )
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
@@ -42,12 +43,17 @@ namespace OrchardCore.ReverseProxy.Drivers
                 return null;
             }
 
-            return Initialize<ReverseProxySettingsViewModel>("ReverseProxySettings_Edit", model =>
-            {
-                model.EnableXForwardedFor = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedFor);
-                model.EnableXForwardedHost = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedHost);
-                model.EnableXForwardedProto = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedProto);
-            }).Location("Content:2").OnGroup(GroupId);
+            return Initialize<ReverseProxySettingsViewModel>(
+                    "ReverseProxySettings_Edit",
+                    model =>
+                    {
+                        model.EnableXForwardedFor = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedFor);
+                        model.EnableXForwardedHost = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedHost);
+                        model.EnableXForwardedProto = settings.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedProto);
+                    }
+                )
+                .Location("Content:2")
+                .OnGroup(GroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ReverseProxySettings section, BuildEditorContext context)

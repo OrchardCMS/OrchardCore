@@ -21,9 +21,7 @@ namespace OrchardCore.Shells.Azure.Configuration
 
         private readonly string _tenantsFileSystemName;
 
-        public BlobShellsSettingsSources(IShellsFileStore shellsFileStore,
-            BlobShellStorageOptions blobOptions,
-            IOptions<ShellOptions> shellOptions)
+        public BlobShellsSettingsSources(IShellsFileStore shellsFileStore, BlobShellStorageOptions blobOptions, IOptions<ShellOptions> shellOptions)
         {
             _shellsFileStore = shellsFileStore;
             _blobOptions = blobOptions;

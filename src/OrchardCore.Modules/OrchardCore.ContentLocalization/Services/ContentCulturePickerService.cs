@@ -23,7 +23,8 @@ namespace OrchardCore.ContentLocalization.Services
             ILocalizationEntries localizationEntries,
             ISiteService siteService,
             IHttpContextAccessor httpContextAccessor,
-            IOptions<CulturePickerOptions> culturePickerOptions)
+            IOptions<CulturePickerOptions> culturePickerOptions
+        )
         {
             _autorouteEntries = autorouteEntries;
             _localizationEntries = localizationEntries;

@@ -29,7 +29,8 @@ namespace OrchardCore.GitHub.Drivers
             IHttpContextAccessor httpContextAccessor,
             IShellHost shellHost,
             ShellSettings shellSettings,
-            ILogger<GitHubAuthenticationSettingsDisplayDriver> logger)
+            ILogger<GitHubAuthenticationSettingsDisplayDriver> logger
+        )
         {
             _authorizationService = authorizationService;
             _dataProtectionProvider = dataProtectionProvider;
@@ -47,33 +48,38 @@ namespace OrchardCore.GitHub.Drivers
                 return null;
             }
 
-            return Initialize<GitHubAuthenticationSettingsViewModel>("GitHubAuthenticationSettings_Edit", model =>
-            {
-                model.ClientID = settings.ClientID;
-                if (!string.IsNullOrWhiteSpace(settings.ClientSecret))
-                {
-                    try
+            return Initialize<GitHubAuthenticationSettingsViewModel>(
+                    "GitHubAuthenticationSettings_Edit",
+                    model =>
                     {
-                        var protector = _dataProtectionProvider.CreateProtector(GitHubConstants.Features.GitHubAuthentication);
-                        model.ClientSecret = protector.Unprotect(settings.ClientSecret);
+                        model.ClientID = settings.ClientID;
+                        if (!string.IsNullOrWhiteSpace(settings.ClientSecret))
+                        {
+                            try
+                            {
+                                var protector = _dataProtectionProvider.CreateProtector(GitHubConstants.Features.GitHubAuthentication);
+                                model.ClientSecret = protector.Unprotect(settings.ClientSecret);
+                            }
+                            catch (CryptographicException)
+                            {
+                                _logger.LogError("The client secret could not be decrypted. It may have been encrypted using a different key.");
+                                model.ClientSecret = string.Empty;
+                                model.HasDecryptionError = true;
+                            }
+                        }
+                        else
+                        {
+                            model.ClientSecret = string.Empty;
+                        }
+                        if (settings.CallbackPath.HasValue)
+                        {
+                            model.CallbackUrl = settings.CallbackPath.Value;
+                        }
+                        model.SaveTokens = settings.SaveTokens;
                     }
-                    catch (CryptographicException)
-                    {
-                        _logger.LogError("The client secret could not be decrypted. It may have been encrypted using a different key.");
-                        model.ClientSecret = string.Empty;
-                        model.HasDecryptionError = true;
-                    }
-                }
-                else
-                {
-                    model.ClientSecret = string.Empty;
-                }
-                if (settings.CallbackPath.HasValue)
-                {
-                    model.CallbackUrl = settings.CallbackPath.Value;
-                }
-                model.SaveTokens = settings.SaveTokens;
-            }).Location("Content:5").OnGroup(GitHubConstants.Features.GitHubAuthentication);
+                )
+                .Location("Content:5")
+                .OnGroup(GitHubConstants.Features.GitHubAuthentication);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(GitHubAuthenticationSettings settings, BuildEditorContext context)

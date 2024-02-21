@@ -8,12 +8,14 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static OrchardCoreBuilder ConfigureGoogleSettings(this OrchardCoreBuilder builder)
         {
-            builder.ConfigureServices((tenantServices, serviceProvider) =>
-            {
-                var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_Google");
+            builder.ConfigureServices(
+                (tenantServices, serviceProvider) =>
+                {
+                    var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_Google");
 
-                tenantServices.PostConfigure<GoogleAuthenticationSettings>(settings => configurationSection.Bind(settings));
-            });
+                    tenantServices.PostConfigure<GoogleAuthenticationSettings>(settings => configurationSection.Bind(settings));
+                }
+            );
 
             return builder;
         }

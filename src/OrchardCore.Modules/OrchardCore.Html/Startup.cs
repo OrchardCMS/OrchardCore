@@ -22,9 +22,7 @@ namespace OrchardCore.Html
             services.Configure<TemplateOptions>(o => o.MemberAccessStrategy.Register<HtmlBodyPartViewModel>());
 
             // Body Part
-            services.AddContentPart<HtmlBodyPart>()
-                .UseDisplayDriver<HtmlBodyPartDisplayDriver>()
-                .AddHandler<HtmlBodyPartHandler>();
+            services.AddContentPart<HtmlBodyPart>().UseDisplayDriver<HtmlBodyPartDisplayDriver>().AddHandler<HtmlBodyPartHandler>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlBodyPartSettingsDisplayDriver>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlBodyPartTrumbowygEditorSettingsDriver>();

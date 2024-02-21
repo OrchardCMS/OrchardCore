@@ -37,7 +37,8 @@ namespace OrchardCore.DisplayManagement.Descriptors
             IExtensionManager extensionManager,
             ITypeFeatureProvider typeFeatureProvider,
             IMemoryCache memoryCache,
-            ILogger<DefaultShapeTableManager> logger)
+            ILogger<DefaultShapeTableManager> logger
+        )
         {
             _hostingEnvironment = hostingEnvironment;
             _bindingStrategies = bindingStrategies;
@@ -48,8 +49,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
             _logger = logger;
         }
 
-        public ShapeTable GetShapeTable(string themeId)
-            => GetShapeTableAsync(themeId).GetAwaiter().GetResult();
+        public ShapeTable GetShapeTable(string themeId) => GetShapeTableAsync(themeId).GetAwaiter().GetResult();
 
         public async Task<ShapeTable> GetShapeTableAsync(string themeId)
         {
@@ -89,9 +89,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
                     }
                 }
 
-                var enabledAndOrderedFeatureIds = (await _shellFeaturesManager.GetEnabledFeaturesAsync())
-                    .Select(f => f.Id)
-                    .ToList();
+                var enabledAndOrderedFeatureIds = (await _shellFeaturesManager.GetEnabledFeaturesAsync()).Select(f => f.Id).ToList();
 
                 // let the application acting as a super theme for shapes rendering.
                 if (enabledAndOrderedFeatureIds.Remove(_hostingEnvironment.ApplicationName))
@@ -104,16 +102,10 @@ namespace OrchardCore.DisplayManagement.Descriptors
                     .Where(sd => IsModuleOrRequestedTheme(sd.Value.Feature, themeId))
                     .OrderBy(sd => enabledAndOrderedFeatureIds.IndexOf(sd.Value.Feature.Id))
                     .GroupBy(sd => sd.Value.ShapeType, StringComparer.OrdinalIgnoreCase)
-                    .Select(group => new ShapeDescriptorIndex
-                    (
-                        shapeType: group.Key,
-                        alterationKeys: group.Select(kv => kv.Key),
-                        descriptors: _shapeDescriptors
-                    ))
+                    .Select(group => new ShapeDescriptorIndex(shapeType: group.Key, alterationKeys: group.Select(kv => kv.Key), descriptors: _shapeDescriptors))
                     .ToList();
 
-                shapeTable = new ShapeTable
-                (
+                shapeTable = new ShapeTable(
                     descriptors: descriptors.ToDictionary(sd => sd.ShapeType, x => (ShapeDescriptor)x, StringComparer.OrdinalIgnoreCase),
                     bindings: descriptors.SelectMany(sd => sd.Bindings).ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase)
                 );
@@ -129,7 +121,8 @@ namespace OrchardCore.DisplayManagement.Descriptors
         private static void BuildDescriptors(
             IShapeTableProvider bindingStrategy,
             IEnumerable<ShapeAlteration> builtAlterations,
-            Dictionary<string, FeatureShapeDescriptor> shapeDescriptors)
+            Dictionary<string, FeatureShapeDescriptor> shapeDescriptors
+        )
         {
             var alterationSets = builtAlterations.GroupBy(a => a.Feature.Id + a.ShapeType);
 
@@ -137,17 +130,11 @@ namespace OrchardCore.DisplayManagement.Descriptors
             {
                 var firstAlteration = alterations.First();
 
-                var key = bindingStrategy.GetType().Name
-                    + firstAlteration.Feature.Id
-                    + firstAlteration.ShapeType.ToLower();
+                var key = bindingStrategy.GetType().Name + firstAlteration.Feature.Id + firstAlteration.ShapeType.ToLower();
 
                 if (!_shapeDescriptors.ContainsKey(key))
                 {
-                    var descriptor = new FeatureShapeDescriptor
-                    (
-                        firstAlteration.Feature,
-                        firstAlteration.ShapeType
-                    );
+                    var descriptor = new FeatureShapeDescriptor(firstAlteration.Feature, firstAlteration.ShapeType);
 
                     foreach (var alteration in alterations)
                     {
@@ -176,9 +163,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
         private bool IsBaseTheme(string themeFeatureId, string themeId)
         {
-            return _extensionManager
-                .GetFeatureDependencies(themeId)
-                .Any(f => f.Id == themeFeatureId);
+            return _extensionManager.GetFeatureDependencies(themeId).Any(f => f.Id == themeFeatureId);
         }
     }
 }

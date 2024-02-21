@@ -8,11 +8,7 @@ namespace OrchardCore.AuditTrail.Navigation
 {
     public class AuditTrailAdminMenu : INavigationProvider
     {
-        private static readonly RouteValueDictionary _routeValues = new()
-        {
-            { "area", "OrchardCore.AuditTrail" },
-            { "correlationId", string.Empty },
-        };
+        private static readonly RouteValueDictionary _routeValues = new() { { "area", "OrchardCore.AuditTrail" }, { "correlationId", string.Empty }, };
 
         protected readonly IStringLocalizer S;
 
@@ -28,14 +24,17 @@ namespace OrchardCore.AuditTrail.Navigation
                 return Task.CompletedTask;
             }
 
-            builder
-                .Add(S["Audit Trail"], NavigationConstants.AdminMenuAuditTrailPosition, configuration => configuration
-                    .AddClass("audittrail")
-                    .Id("audittrail")
-                    .Action(nameof(AdminController.Index), "Admin", _routeValues)
-                    .Permission(AuditTrailPermissions.ViewAuditTrail)
-                    .LocalNav()
-                );
+            builder.Add(
+                S["Audit Trail"],
+                NavigationConstants.AdminMenuAuditTrailPosition,
+                configuration =>
+                    configuration
+                        .AddClass("audittrail")
+                        .Id("audittrail")
+                        .Action(nameof(AdminController.Index), "Admin", _routeValues)
+                        .Permission(AuditTrailPermissions.ViewAuditTrail)
+                        .LocalNav()
+            );
 
             return Task.CompletedTask;
         }

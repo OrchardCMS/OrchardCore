@@ -16,9 +16,7 @@ public class ContentCulturePickerNavbarDisplayDriver : DisplayDriver<Navbar>
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILocalizationService _localizationService;
 
-    public ContentCulturePickerNavbarDisplayDriver(
-        IHttpContextAccessor httpContextAccessor,
-        ILocalizationService localizationService)
+    public ContentCulturePickerNavbarDisplayDriver(IHttpContextAccessor httpContextAccessor, ILocalizationService localizationService)
     {
         _httpContextAccessor = httpContextAccessor;
         _localizationService = localizationService;
@@ -28,15 +26,15 @@ public class ContentCulturePickerNavbarDisplayDriver : DisplayDriver<Navbar>
     {
         var supportedCultures = (await _localizationService.GetSupportedCulturesAsync()).Select(c => CultureInfo.GetCultureInfo(c));
 
-        return Initialize<CulturePickerViewModel>("ContentCulturePicker", model =>
-        {
-            model.SupportedCultures = supportedCultures;
-            model.CurrentCulture = _httpContextAccessor
-            .HttpContext
-            .Features
-            .Get<IRequestCultureFeature>()?.RequestCulture?.Culture ?? CultureInfo.CurrentUICulture;
-
-        }).RenderWhen(() => Task.FromResult(supportedCultures.Count() > 1))
-        .Location("Detail", "Content:5");
+        return Initialize<CulturePickerViewModel>(
+                "ContentCulturePicker",
+                model =>
+                {
+                    model.SupportedCultures = supportedCultures;
+                    model.CurrentCulture = _httpContextAccessor.HttpContext.Features.Get<IRequestCultureFeature>()?.RequestCulture?.Culture ?? CultureInfo.CurrentUICulture;
+                }
+            )
+            .RenderWhen(() => Task.FromResult(supportedCultures.Count() > 1))
+            .Location("Detail", "Content:5");
     }
 }

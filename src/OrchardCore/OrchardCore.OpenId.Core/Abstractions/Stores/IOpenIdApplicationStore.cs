@@ -6,7 +6,8 @@ using OpenIddict.Abstractions;
 
 namespace OrchardCore.OpenId.Abstractions.Stores
 {
-    public interface IOpenIdApplicationStore<TApplication> : IOpenIddictApplicationStore<TApplication> where TApplication : class
+    public interface IOpenIdApplicationStore<TApplication> : IOpenIddictApplicationStore<TApplication>
+        where TApplication : class
     {
         ValueTask<TApplication> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken);
         ValueTask<string> GetPhysicalIdAsync(TApplication application, CancellationToken cancellationToken);

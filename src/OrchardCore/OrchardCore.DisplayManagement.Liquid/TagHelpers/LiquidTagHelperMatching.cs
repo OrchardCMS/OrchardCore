@@ -8,12 +8,10 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
     public class LiquidTagHelperMatching
     {
         private const string AspPrefix = "asp-";
-        public readonly static LiquidTagHelperMatching None = new();
+        public static readonly LiquidTagHelperMatching None = new();
         public readonly TagMatchingRuleDescriptor[] _rules = [];
 
-        public LiquidTagHelperMatching()
-        {
-        }
+        public LiquidTagHelperMatching() { }
 
         public LiquidTagHelperMatching(string name, string assemblyName, IEnumerable<TagMatchingRuleDescriptor> tagMatchingRules)
         {
@@ -40,32 +38,34 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             }
 
             // Are all required attributes present?
-            var allRequired = rule.Attributes.All(attr => arguments.Any(name =>
-            {
-                // Exact match
-                if (string.Equals(name, attr.Name, StringComparison.OrdinalIgnoreCase))
+            var allRequired = rule.Attributes.All(attr =>
+                arguments.Any(name =>
                 {
-                    return true;
-                }
-
-                // Check by replacing all '_' with '-', e.g. asp_src will map to asp-src
-                name = name.Replace('_', '-');
-
-                if (string.Equals(name, attr.Name, StringComparison.OrdinalIgnoreCase))
-                {
-                    return true;
-                }
-
-                if (attr.Name.StartsWith(AspPrefix, StringComparison.Ordinal))
-                {
-                    if (name.AsSpan().Equals(attr.Name.AsSpan(AspPrefix.Length), StringComparison.OrdinalIgnoreCase))
+                    // Exact match
+                    if (string.Equals(name, attr.Name, StringComparison.OrdinalIgnoreCase))
                     {
                         return true;
                     }
-                }
 
-                return false;
-            }));
+                    // Check by replacing all '_' with '-', e.g. asp_src will map to asp-src
+                    name = name.Replace('_', '-');
+
+                    if (string.Equals(name, attr.Name, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return true;
+                    }
+
+                    if (attr.Name.StartsWith(AspPrefix, StringComparison.Ordinal))
+                    {
+                        if (name.AsSpan().Equals(attr.Name.AsSpan(AspPrefix.Length), StringComparison.OrdinalIgnoreCase))
+                        {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                })
+            );
 
             if (allRequired)
             {

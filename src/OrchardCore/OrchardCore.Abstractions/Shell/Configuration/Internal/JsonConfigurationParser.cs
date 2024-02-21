@@ -17,19 +17,13 @@ public sealed class JsonConfigurationParser
     private readonly Dictionary<string, string?> _data = new(StringComparer.OrdinalIgnoreCase);
     private readonly Stack<string> _paths = new();
 
-    public static IDictionary<string, string?> Parse(Stream input)
-        => new JsonConfigurationParser().ParseStream(input);
+    public static IDictionary<string, string?> Parse(Stream input) => new JsonConfigurationParser().ParseStream(input);
 
-    public static Task<IDictionary<string, string?>> ParseAsync(Stream input)
-        => new JsonConfigurationParser().ParseStreamAsync(input);
+    public static Task<IDictionary<string, string?>> ParseAsync(Stream input) => new JsonConfigurationParser().ParseStreamAsync(input);
 
     private Dictionary<string, string?> ParseStream(Stream input)
     {
-        var jsonDocumentOptions = new JsonDocumentOptions
-        {
-            CommentHandling = JsonCommentHandling.Skip,
-            AllowTrailingCommas = true,
-        };
+        var jsonDocumentOptions = new JsonDocumentOptions { CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true, };
 
         try
         {
@@ -54,11 +48,7 @@ public sealed class JsonConfigurationParser
 
     private async Task<IDictionary<string, string?>> ParseStreamAsync(Stream input)
     {
-        var jsonDocumentOptions = new JsonDocumentOptions
-        {
-            CommentHandling = JsonCommentHandling.Skip,
-            AllowTrailingCommas = true,
-        };
+        var jsonDocumentOptions = new JsonDocumentOptions { CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true, };
 
         try
         {
@@ -158,10 +148,7 @@ public sealed class JsonConfigurationParser
         }
     }
 
-    private void EnterContext(string context) =>
-        _paths.Push(_paths.Count > 0 ?
-            _paths.Peek() + ConfigurationPath.KeyDelimiter + context :
-            context);
+    private void EnterContext(string context) => _paths.Push(_paths.Count > 0 ? _paths.Peek() + ConfigurationPath.KeyDelimiter + context : context);
 
     private void ExitContext() => _paths.Pop();
 }

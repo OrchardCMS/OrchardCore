@@ -28,10 +28,14 @@ namespace OrchardCore.Search.Elasticsearch.Drivers
                 return null;
             }
 
-            return Initialize<ElasticContentIndexSettingsViewModel>("ElasticContentIndexSettings_Edit", model =>
-            {
-                model.ElasticContentIndexSettings = contentPartFieldDefinition.GetSettings<ElasticContentIndexSettings>();
-            }).Location("Content:10");
+            return Initialize<ElasticContentIndexSettingsViewModel>(
+                    "ElasticContentIndexSettings_Edit",
+                    model =>
+                    {
+                        model.ElasticContentIndexSettings = contentPartFieldDefinition.GetSettings<ElasticContentIndexSettings>();
+                    }
+                )
+                .Location("Content:10");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition contentPartFieldDefinition, UpdatePartFieldEditorContext context)

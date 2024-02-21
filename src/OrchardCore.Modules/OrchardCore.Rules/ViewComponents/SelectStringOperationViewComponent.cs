@@ -24,18 +24,14 @@ namespace OrchardCore.Rules.ViewComponents
             var stringOperators = _options.Operators.Where(x => typeof(StringOperator).IsAssignableFrom(x.Operator));
 
             var items = stringOperators
-                .Select(x =>
-                    new SelectListItem(
-                        x.DisplayText(_serviceProvider),
-                        x.Operator.Name,
-                        string.Equals(x.Factory.Name, selectedOperation, StringComparison.OrdinalIgnoreCase))
-                ).ToList();
+                .Select(x => new SelectListItem(
+                    x.DisplayText(_serviceProvider),
+                    x.Operator.Name,
+                    string.Equals(x.Factory.Name, selectedOperation, StringComparison.OrdinalIgnoreCase)
+                ))
+                .ToList();
 
-            var model = new SelectStringOperationViewModel
-            {
-                HtmlName = htmlName,
-                Items = items
-            };
+            var model = new SelectStringOperationViewModel { HtmlName = htmlName, Items = items };
 
             return View(model);
         }

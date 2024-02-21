@@ -9,8 +9,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.Client
         [InlineData("SomeContentType")]
         public void ShouldReturnContentTypeNameAsPascalCase(string contentType)
         {
-            var result = new ContentTypeQueryResourceBuilder(contentType)
-                            .Build();
+            var result = new ContentTypeQueryResourceBuilder(contentType).Build();
 
             Assert.Equal("someContentType {}", result);
         }

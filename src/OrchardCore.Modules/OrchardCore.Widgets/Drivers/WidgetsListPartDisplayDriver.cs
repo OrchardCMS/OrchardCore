@@ -22,11 +22,7 @@ namespace OrchardCore.Widgets.Drivers
         private readonly IContentManager _contentManager;
         private readonly IServiceProvider _serviceProvider;
 
-        public WidgetsListPartDisplayDriver(
-            IContentManager contentManager,
-            IContentDefinitionManager contentDefinitionManager,
-            IServiceProvider serviceProvider
-            )
+        public WidgetsListPartDisplayDriver(IContentManager contentManager, IContentDefinitionManager contentDefinitionManager, IServiceProvider serviceProvider)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _contentManager = contentManager;
@@ -69,17 +65,20 @@ namespace OrchardCore.Widgets.Drivers
 
         public override IDisplayResult Edit(WidgetsListPart widgetPart, BuildPartEditorContext context)
         {
-            return Initialize<WidgetsListPartEditViewModel>(GetEditorShapeType(context), async m =>
-            {
-                var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(widgetPart.ContentItem.ContentType);
-                var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(p => p.PartDefinition.Name == nameof(WidgetsListPart));
-                var settings = contentTypePartDefinition.GetSettings<WidgetsListPartSettings>();
+            return Initialize<WidgetsListPartEditViewModel>(
+                GetEditorShapeType(context),
+                async m =>
+                {
+                    var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(widgetPart.ContentItem.ContentType);
+                    var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(p => p.PartDefinition.Name == nameof(WidgetsListPart));
+                    var settings = contentTypePartDefinition.GetSettings<WidgetsListPartSettings>();
 
-                m.AvailableZones = settings.Zones;
+                    m.AvailableZones = settings.Zones;
 
-                m.WidgetsListPart = widgetPart;
-                m.Updater = context.Updater;
-            });
+                    m.WidgetsListPart = widgetPart;
+                    m.Updater = context.Updater;
+                }
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(WidgetsListPart part, UpdatePartEditorContext context)

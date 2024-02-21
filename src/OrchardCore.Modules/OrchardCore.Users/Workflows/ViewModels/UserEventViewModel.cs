@@ -3,11 +3,10 @@ using OrchardCore.Workflows.ViewModels;
 
 namespace OrchardCore.Users.Workflows.ViewModels
 {
-    public class UserEventViewModel<T> : ActivityViewModel<T> where T : UserEvent
+    public class UserEventViewModel<T> : ActivityViewModel<T>
+        where T : UserEvent
     {
-        public UserEventViewModel()
-        {
-        }
+        public UserEventViewModel() { }
 
         public UserEventViewModel(T activity)
         {

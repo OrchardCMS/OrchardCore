@@ -11,10 +11,7 @@ public class Permissions(AzureAISearchIndexSettingsService indexSettingsService)
 
     public async Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        var permissions = new List<Permission>()
-        {
-            AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes,
-        };
+        var permissions = new List<Permission>() { AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes, };
 
         var indexSettings = await _indexSettingsService.GetSettingsAsync();
 
@@ -27,14 +24,5 @@ public class Permissions(AzureAISearchIndexSettingsService indexSettingsService)
     }
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
-    [
-        new PermissionStereotype
-        {
-            Name = "Administrator",
-            Permissions =
-            [
-                AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes,
-            ],
-        },
-    ];
+        [new PermissionStereotype { Name = "Administrator", Permissions = [AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes,], },];
 }

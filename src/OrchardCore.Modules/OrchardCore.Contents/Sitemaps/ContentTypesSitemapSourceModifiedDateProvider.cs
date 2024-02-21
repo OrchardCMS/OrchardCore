@@ -16,10 +16,7 @@ namespace OrchardCore.Contents.Sitemaps
         private readonly IRouteableContentTypeCoordinator _routeableContentTypeCoordinator;
         private readonly ISession _session;
 
-        public ContentTypesSitemapSourceModifiedDateProvider(
-            IRouteableContentTypeCoordinator routeableContentTypeCoordinator,
-            ISession session
-            )
+        public ContentTypesSitemapSourceModifiedDateProvider(IRouteableContentTypeCoordinator routeableContentTypeCoordinator, ISession session)
         {
             _routeableContentTypeCoordinator = routeableContentTypeCoordinator;
             _session = session;
@@ -31,18 +28,16 @@ namespace OrchardCore.Contents.Sitemaps
 
             if (source.IndexAll)
             {
-                var typesToIndex = (await _routeableContentTypeCoordinator.ListRoutableTypeDefinitionsAsync())
-                    .Select(ctd => ctd.Name);
+                var typesToIndex = (await _routeableContentTypeCoordinator.ListRoutableTypeDefinitionsAsync()).Select(ctd => ctd.Name);
 
-                var query = _session.Query<ContentItem>()
-                    .With<ContentItemIndex>(x => x.Published && x.ContentType.IsIn(typesToIndex))
-                    .OrderByDescending(x => x.ModifiedUtc);
+                var query = _session.Query<ContentItem>().With<ContentItemIndex>(x => x.Published && x.ContentType.IsIn(typesToIndex)).OrderByDescending(x => x.ModifiedUtc);
 
                 lastModifiedContentItem = await query.FirstOrDefaultAsync();
             }
             else if (source.LimitItems)
             {
-                var query = _session.Query<ContentItem>()
+                var query = _session
+                    .Query<ContentItem>()
                     .With<ContentItemIndex>(x => x.Published && x.ContentType == source.LimitedContentType.ContentTypeName)
                     .OrderByDescending(x => x.ModifiedUtc);
 
@@ -55,9 +50,7 @@ namespace OrchardCore.Contents.Sitemaps
                     .Select(ctd => ctd.Name);
 
                 // This is an estimate, so doesn't take into account Take/Skip values.
-                var query = _session.Query<ContentItem>()
-                    .With<ContentItemIndex>(x => x.Published && x.ContentType.IsIn(typesToIndex))
-                    .OrderByDescending(x => x.ModifiedUtc);
+                var query = _session.Query<ContentItem>().With<ContentItemIndex>(x => x.Published && x.ContentType.IsIn(typesToIndex)).OrderByDescending(x => x.ModifiedUtc);
 
                 lastModifiedContentItem = await query.FirstOrDefaultAsync();
             }

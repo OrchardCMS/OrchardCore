@@ -7,7 +7,8 @@ namespace OrchardCore.Documents
     /// <summary>
     /// An <see cref="IDocumentManager{TDocument}"/> using a shared cache but without any persistent storage.
     /// </summary>
-    public interface IVolatileDocumentManager<TDocument> : IDocumentManager<TDocument> where TDocument : class, IDocument, new()
+    public interface IVolatileDocumentManager<TDocument> : IDocumentManager<TDocument>
+        where TDocument : class, IDocument, new()
     {
         /// <summary>
         /// Executes the provided delegate and updates the cache, the whole being done atomically and after the session is committed,

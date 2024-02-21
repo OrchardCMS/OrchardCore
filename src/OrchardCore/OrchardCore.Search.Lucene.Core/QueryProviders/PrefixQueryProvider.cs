@@ -49,7 +49,8 @@ namespace OrchardCore.Search.Lucene.QueryProviders
 
                     return prefixQuery;
 
-                default: throw new ArgumentException("Invalid prefix query");
+                default:
+                    throw new ArgumentException("Invalid prefix query");
             }
         }
     }

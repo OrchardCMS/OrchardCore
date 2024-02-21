@@ -9,10 +9,7 @@ namespace OrchardCore.Environment.Shell
         private readonly IExtensionManager _extensionManager;
         private readonly ShellSettings _shellSettings;
 
-        public DefaultTenantOnlyFeatureValidationProvider(
-            IExtensionManager extensionManager,
-            ShellSettings shellSettings
-            )
+        public DefaultTenantOnlyFeatureValidationProvider(IExtensionManager extensionManager, ShellSettings shellSettings)
         {
             _extensionManager = extensionManager;
             _shellSettings = shellSettings;

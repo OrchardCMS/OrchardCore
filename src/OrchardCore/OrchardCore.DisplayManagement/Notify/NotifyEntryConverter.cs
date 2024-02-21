@@ -27,10 +27,7 @@ namespace OrchardCore.DisplayManagement.Notify
         {
             var jo = JObject.Load(ref reader);
 
-            var notifyEntry = new NotifyEntry
-            {
-                Message = new HtmlString(jo.Value<string>("Message")),
-            };
+            var notifyEntry = new NotifyEntry { Message = new HtmlString(jo.Value<string>("Message")), };
 
             if (Enum.TryParse<NotifyType>(jo.Value<string>("Type"), out var type))
             {

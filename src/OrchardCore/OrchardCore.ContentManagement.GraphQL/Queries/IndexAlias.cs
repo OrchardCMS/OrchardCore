@@ -11,4 +11,3 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
         public Type IndexType { get; set; }
     }
 }
-

@@ -10,37 +10,24 @@ namespace OrchardCore.Rules
         private FrozenDictionary<string, IConditionOperatorFactory> _factories;
         private FrozenDictionary<Type, ConditionOperatorOption> _conditionOperatorOptionByType;
 
-        public IReadOnlyDictionary<string, IConditionOperatorFactory> Factories
-            => _factories ??= Operators.ToFrozenDictionary(x => x.Factory.Name, x => x.Factory);
+        public IReadOnlyDictionary<string, IConditionOperatorFactory> Factories => _factories ??= Operators.ToFrozenDictionary(x => x.Factory.Name, x => x.Factory);
 
-        public IReadOnlyDictionary<Type, ConditionOperatorOption> ConditionOperatorOptionByType
-            => _conditionOperatorOptionByType ??= Operators.ToFrozenDictionary(x => x.Operator, x => x);
+        public IReadOnlyDictionary<Type, ConditionOperatorOption> ConditionOperatorOptionByType =>
+            _conditionOperatorOptionByType ??= Operators.ToFrozenDictionary(x => x.Operator, x => x);
 
         public List<ConditionOperatorOption> Operators { get; set; } = [];
     }
 
-    public class ConditionOperatorOption<TLocalizer> : ConditionOperatorOption where TLocalizer : class
+    public class ConditionOperatorOption<TLocalizer> : ConditionOperatorOption
+        where TLocalizer : class
     {
-        public ConditionOperatorOption(
-            Func<IStringLocalizer, LocalizedString> displayText,
-            IOperatorComparer comparer,
-            Type operatorType,
-            IConditionOperatorFactory factory) : base(
-                (sp) => displayText((IStringLocalizer)sp.GetService(typeof(IStringLocalizer<>).MakeGenericType(typeof(TLocalizer)))),
-                comparer,
-                operatorType,
-                factory)
-        {
-        }
+        public ConditionOperatorOption(Func<IStringLocalizer, LocalizedString> displayText, IOperatorComparer comparer, Type operatorType, IConditionOperatorFactory factory)
+            : base((sp) => displayText((IStringLocalizer)sp.GetService(typeof(IStringLocalizer<>).MakeGenericType(typeof(TLocalizer)))), comparer, operatorType, factory) { }
     }
 
     public class ConditionOperatorOption
     {
-        public ConditionOperatorOption(
-            Func<IServiceProvider, LocalizedString> displayText,
-            IOperatorComparer comparer,
-            Type operatorType,
-            IConditionOperatorFactory factory)
+        public ConditionOperatorOption(Func<IServiceProvider, LocalizedString> displayText, IOperatorComparer comparer, Type operatorType, IConditionOperatorFactory factory)
         {
             DisplayText = displayText;
             Comparer = comparer;

@@ -31,19 +31,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Rules
         [InlineData("/notthehomepage", false, true)]
         public async Task ShouldEvaluateHomepage(string path, bool isHomepage, bool expected)
         {
-            var rule = new Rule
-            {
-                Conditions =
-                [
-                    new HomepageCondition
-                    {
-                        Value = isHomepage
-                    }
-                ]
-            };
+            var rule = new Rule { Conditions = [new HomepageCondition { Value = isHomepage }] };
 
-            var services = CreateRuleServiceCollection()
-                .AddCondition<HomepageCondition, HomepageConditionEvaluator, ConditionFactory<HomepageCondition>>();
+            var services = CreateRuleServiceCollection().AddCondition<HomepageCondition, HomepageConditionEvaluator, ConditionFactory<HomepageCondition>>();
 
             var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
             var context = new DefaultHttpContext();
@@ -64,16 +54,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Rules
         [InlineData(false, false)]
         public async Task ShouldEvaluateBoolean(bool boolean, bool expected)
         {
-            var rule = new Rule
-            {
-                Conditions =
-                [
-                    new BooleanCondition { Value = boolean }
-                ]
-            };
+            var rule = new Rule { Conditions = [new BooleanCondition { Value = boolean }] };
 
-            var services = CreateRuleServiceCollection()
-                .AddCondition<BooleanCondition, BooleanConditionEvaluator, ConditionFactory<BooleanCondition>>();
+            var services = CreateRuleServiceCollection().AddCondition<BooleanCondition, BooleanConditionEvaluator, ConditionFactory<BooleanCondition>>();
 
             var serviceProvider = services.BuildServiceProvider();
 
@@ -88,20 +71,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Rules
         [InlineData(false, false, false)]
         public async Task ShouldEvaluateAny(bool first, bool second, bool expected)
         {
-            var rule = new Rule
-            {
-                Conditions =
-                [
-                    new AnyConditionGroup
-                    {
-                        Conditions =
-                        [
-                            new BooleanCondition { Value = first },
-                            new BooleanCondition { Value = second }
-                        ]
-                    }
-                ]
-            };
+            var rule = new Rule { Conditions = [new AnyConditionGroup { Conditions = [new BooleanCondition { Value = first }, new BooleanCondition { Value = second }] }] };
 
             var services = CreateRuleServiceCollection()
                 .AddCondition<AnyConditionGroup, AnyConditionEvaluator, ConditionFactory<AnyConditionGroup>>()
@@ -119,20 +89,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Rules
         [InlineData("/bar", "/foo", false)]
         public async Task ShouldEvaluateUrlEquals(string path, string requestPath, bool expected)
         {
-            var rule = new Rule
-            {
-                Conditions =
-                [
-                    new UrlCondition
-                    {
-                        Value = path,
-                        Operation = new StringEqualsOperator()
-                    }
-                ]
-            };
+            var rule = new Rule { Conditions = [new UrlCondition { Value = path, Operation = new StringEqualsOperator() }] };
 
-            var services = CreateRuleServiceCollection()
-                .AddCondition<UrlCondition, UrlConditionEvaluator, ConditionFactory<UrlCondition>>();
+            var services = CreateRuleServiceCollection().AddCondition<UrlCondition, UrlConditionEvaluator, ConditionFactory<UrlCondition>>();
 
             var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
             var context = new DefaultHttpContext();
@@ -153,16 +112,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Rules
         [InlineData("isHomepage()", "/foo", false)]
         public async Task ShouldEvaluateJavascriptCondition(string script, string requestPath, bool expected)
         {
-            var rule = new Rule
-            {
-                Conditions =
-                [
-                    new JavascriptCondition
-                    {
-                        Script = script
-                    }
-                ]
-            };
+            var rule = new Rule { Conditions = [new JavascriptCondition { Script = script }] };
 
             var services = CreateRuleServiceCollection()
                 .AddCondition<JavascriptCondition, JavascriptConditionEvaluator, ConditionFactory<JavascriptCondition>>()

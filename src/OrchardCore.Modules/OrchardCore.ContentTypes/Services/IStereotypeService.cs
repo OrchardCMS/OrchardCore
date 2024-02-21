@@ -9,6 +9,5 @@ public interface IStereotypeService
     Task<IEnumerable<StereotypeDescription>> GetStereotypesAsync();
 
     [Obsolete($"Instead, utilize the {nameof(GetStereotypesAsync)} method. This current method is slated for removal in upcoming releases.")]
-    IEnumerable<StereotypeDescription> GetStereotypes()
-    => GetStereotypesAsync().GetAwaiter().GetResult();
+    IEnumerable<StereotypeDescription> GetStereotypes() => GetStereotypesAsync().GetAwaiter().GetResult();
 }

@@ -13,7 +13,5 @@ namespace OrchardCore.DisplayManagement.Handlers
         Task<IDisplayResult> UpdateEditorAsync(TModel model, TUpdateContext context);
     }
 
-    public interface IDisplayDriver<in TModel> : IDisplayDriver<TModel, BuildDisplayContext, BuildEditorContext, UpdateEditorContext>
-    {
-    }
+    public interface IDisplayDriver<in TModel> : IDisplayDriver<TModel, BuildDisplayContext, BuildEditorContext, UpdateEditorContext> { }
 }

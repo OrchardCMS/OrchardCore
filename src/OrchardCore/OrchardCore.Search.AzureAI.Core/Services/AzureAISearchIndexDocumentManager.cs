@@ -20,7 +20,8 @@ public class AzureAIIndexDocumentManager(
     IContentManager contentManager,
     IEnumerable<IAzureAISearchDocumentEvents> documentEvents,
     IEnumerable<IContentItemIndexHandler> contentItemIndexHandlers,
-    ILogger<AzureAIIndexDocumentManager> logger)
+    ILogger<AzureAIIndexDocumentManager> logger
+)
 {
     private readonly AzureAIClientFactory _clientFactory = clientFactory;
     private readonly AzureAISearchIndexManager _indexManager = indexManager;
@@ -96,13 +97,18 @@ public class AzureAIIndexDocumentManager(
             searchOptions.Select.Add(IndexingConstants.ContentItemIdKey);
 
             // Match-all documents.
-            var totalRecords = SearchAsync(indexName, "*", (doc) =>
-            {
-                if (doc.TryGetValue(IndexingConstants.ContentItemIdKey, out var contentItemId))
+            var totalRecords = SearchAsync(
+                indexName,
+                "*",
+                (doc) =>
                 {
-                    contentItemIds.Add(contentItemId.ToString());
-                }
-            }, searchOptions);
+                    if (doc.TryGetValue(IndexingConstants.ContentItemIdKey, out var contentItemId))
+                    {
+                        contentItemIds.Add(contentItemId.ToString());
+                    }
+                },
+                searchOptions
+            );
         }
         catch (Exception ex)
         {
@@ -205,10 +211,7 @@ public class AzureAIIndexDocumentManager(
                     continue;
                 }
 
-                mapping.Add(new AzureAISearchIndexMap(fieldKey, entry.Type, entry.Options)
-                {
-                    IndexingKey = entry.Name,
-                });
+                mapping.Add(new AzureAISearchIndexMap(fieldKey, entry.Type, entry.Options) { IndexingKey = entry.Name, });
             }
         }
 

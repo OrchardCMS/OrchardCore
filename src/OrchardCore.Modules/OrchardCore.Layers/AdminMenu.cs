@@ -8,11 +8,7 @@ namespace OrchardCore.Layers
 {
     public class AdminMenu : INavigationProvider
     {
-        private static readonly RouteValueDictionary _routeValues = new()
-        {
-            { "area", "OrchardCore.Settings" },
-            { "groupId", LayerSiteSettingsDisplayDriver.GroupId },
-        };
+        private static readonly RouteValueDictionary _routeValues = new() { { "area", "OrchardCore.Settings" }, { "groupId", LayerSiteSettingsDisplayDriver.GroupId }, };
 
         protected readonly IStringLocalizer S;
 
@@ -28,21 +24,25 @@ namespace OrchardCore.Layers
                 return Task.CompletedTask;
             }
 
-            builder
-                .Add(S["Design"], design => design
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["Zones"], S["Zones"].PrefixPosition(), zones => zones
-                            .Action("Index", "Admin", _routeValues)
-                            .Permission(Permissions.ManageLayers)
-                            .LocalNav()
+            builder.Add(
+                S["Design"],
+                design =>
+                    design
+                        .Add(
+                            S["Settings"],
+                            settings =>
+                                settings.Add(
+                                    S["Zones"],
+                                    S["Zones"].PrefixPosition(),
+                                    zones => zones.Action("Index", "Admin", _routeValues).Permission(Permissions.ManageLayers).LocalNav()
+                                )
                         )
-                    )
-                    .Add(S["Widgets"], S["Widgets"].PrefixPosition(), widgets => widgets
-                        .Permission(Permissions.ManageLayers)
-                        .Action("Index", "Admin", "OrchardCore.Layers")
-                        .LocalNav()
-                    )
-                );
+                        .Add(
+                            S["Widgets"],
+                            S["Widgets"].PrefixPosition(),
+                            widgets => widgets.Permission(Permissions.ManageLayers).Action("Index", "Admin", "OrchardCore.Layers").LocalNav()
+                        )
+            );
 
             return Task.CompletedTask;
         }

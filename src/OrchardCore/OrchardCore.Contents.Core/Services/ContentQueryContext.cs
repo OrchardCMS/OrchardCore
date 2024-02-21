@@ -7,7 +7,8 @@ namespace OrchardCore.Contents.Services
 {
     public class ContentQueryContext : QueryExecutionContext<ContentItem>
     {
-        public ContentQueryContext(IServiceProvider serviceProvider, IQuery<ContentItem> query) : base(query)
+        public ContentQueryContext(IServiceProvider serviceProvider, IQuery<ContentItem> query)
+            : base(query)
         {
             ServiceProvider = serviceProvider;
         }

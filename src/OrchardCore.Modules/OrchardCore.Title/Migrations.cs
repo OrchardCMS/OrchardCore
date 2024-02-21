@@ -18,10 +18,7 @@ namespace OrchardCore.Title
         private readonly ISession _session;
         private readonly ILogger _logger;
 
-        public Migrations(
-            IContentDefinitionManager contentDefinitionManager,
-            ISession session,
-            ILogger<Migrations> logger)
+        public Migrations(IContentDefinitionManager contentDefinitionManager, ISession session, ILogger<Migrations> logger)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _session = session;
@@ -30,11 +27,10 @@ namespace OrchardCore.Title
 
         public async Task<int> CreateAsync()
         {
-            await _contentDefinitionManager.AlterPartDefinitionAsync("TitlePart", builder => builder
-                .Attachable()
-                .WithDescription("Provides a Title for your content item.")
-                .WithDefaultPosition("0")
-                );
+            await _contentDefinitionManager.AlterPartDefinitionAsync(
+                "TitlePart",
+                builder => builder.Attachable().WithDescription("Provides a Title for your content item.").WithDefaultPosition("0")
+            );
 
             // Shortcut other migration steps on new content definition schemas.
             return 2;
@@ -60,8 +56,7 @@ namespace OrchardCore.Title
 
                 foreach (var contentItemVersion in contentItemVersions)
                 {
-                    if (string.IsNullOrEmpty(contentItemVersion.DisplayText)
-                        && UpdateTitle((JsonObject)contentItemVersion.Content))
+                    if (string.IsNullOrEmpty(contentItemVersion.DisplayText) && UpdateTitle((JsonObject)contentItemVersion.Content))
                     {
                         await _session.SaveAsync(contentItemVersion);
                         _logger.LogInformation("A content item version's Title was upgraded: {ContentItemVersionId}", contentItemVersion.ContentItemVersionId);
@@ -94,7 +89,6 @@ namespace OrchardCore.Title
                 }
                 else if (content.GetValueKind() == JsonValueKind.Array)
                 {
-
                     foreach (var node in content.AsArray())
                     {
                         changed = UpdateTitle(node) || changed;

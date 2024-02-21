@@ -7,11 +7,7 @@ namespace OrchardCore.Search
 {
     public class AdminMenu : INavigationProvider
     {
-        private static readonly RouteValueDictionary _routeValues = new()
-        {
-            { "area", "OrchardCore.Settings" },
-            { "groupId", SearchConstants.SearchSettingsGroupId },
-        };
+        private static readonly RouteValueDictionary _routeValues = new() { { "area", "OrchardCore.Settings" }, { "groupId", SearchConstants.SearchSettingsGroupId }, };
 
         protected readonly IStringLocalizer S;
 
@@ -27,16 +23,19 @@ namespace OrchardCore.Search
                 return Task.CompletedTask;
             }
 
-            builder
-                .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
-                    .AddClass("search")
-                    .Id("search")
-                    .Add(S["Settings"], S["Settings"].PrefixPosition(), settings => settings
-                        .Action("Index", "Admin", _routeValues)
-                        .Permission(Permissions.ManageSearchSettings)
-                        .LocalNav()
-                    )
-                );
+            builder.Add(
+                S["Search"],
+                NavigationConstants.AdminMenuSearchPosition,
+                search =>
+                    search
+                        .AddClass("search")
+                        .Id("search")
+                        .Add(
+                            S["Settings"],
+                            S["Settings"].PrefixPosition(),
+                            settings => settings.Action("Index", "Admin", _routeValues).Permission(Permissions.ManageSearchSettings).LocalNav()
+                        )
+            );
 
             return Task.CompletedTask;
         }

@@ -17,12 +17,14 @@ public class AzureAISearchIndexResetDeploymentSource : IDeploymentSource
 
         var indicesToReset = resetStep.IncludeAll ? [] : resetStep.Indices;
 
-        result.Steps.Add(new JsonObject
-        {
-            ["name"] = Name,
-            ["includeAll"] = resetStep.IncludeAll,
-            ["Indices"] = JArray.FromObject(indicesToReset),
-        });
+        result.Steps.Add(
+            new JsonObject
+            {
+                ["name"] = Name,
+                ["includeAll"] = resetStep.IncludeAll,
+                ["Indices"] = JArray.FromObject(indicesToReset),
+            }
+        );
 
         return Task.CompletedTask;
     }

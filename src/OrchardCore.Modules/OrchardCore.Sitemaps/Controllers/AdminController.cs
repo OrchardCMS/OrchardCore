@@ -52,7 +52,8 @@ namespace OrchardCore.Sitemaps.Controllers
             INotifier notifier,
             IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
-            IHtmlLocalizer<AdminController> htmlLocalizer)
+            IHtmlLocalizer<AdminController> htmlLocalizer
+        )
         {
             _sitemapService = sitemapService;
             _displayManager = displayManager;
@@ -77,8 +78,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
-            var sitemaps = (await _sitemapManager.GetSitemapsAsync())
-                .OfType<Sitemap>();
+            var sitemaps = (await _sitemapManager.GetSitemapsAsync()).OfType<Sitemap>();
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
@@ -87,10 +87,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             var count = sitemaps.Count();
 
-            var results = sitemaps
-                .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize)
-                .ToList();
+            var results = sitemaps.Skip(pager.GetStartIndex()).Take(pager.PageSize).ToList();
 
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();
@@ -102,26 +99,26 @@ namespace OrchardCore.Sitemaps.Controllers
 
             var model = new ListSitemapViewModel
             {
-                Sitemaps = results.Select(sm => new SitemapListEntry { SitemapId = sm.SitemapId, Name = sm.Name, Enabled = sm.Enabled }).ToList(),
+                Sitemaps = results
+                    .Select(sm => new SitemapListEntry
+                    {
+                        SitemapId = sm.SitemapId,
+                        Name = sm.Name,
+                        Enabled = sm.Enabled
+                    })
+                    .ToList(),
                 Options = options,
                 Pager = await _shapeFactory.PagerAsync(pager, count, routeData)
             };
 
-            model.Options.ContentsBulkAction =
-            [
-                new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
-            ];
+            model.Options.ContentsBulkAction = [new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),];
 
             return View(model);
         }
 
         [HttpPost, ActionName(nameof(List))]
         [FormValueRequired("submit.Filter")]
-        public ActionResult ListFilterPOST(ListSitemapViewModel model)
-            => RedirectToAction(nameof(List), new RouteValueDictionary
-            {
-                { _optionsSearch, model.Options.Search }
-            });
+        public ActionResult ListFilterPOST(ListSitemapViewModel model) => RedirectToAction(nameof(List), new RouteValueDictionary { { _optionsSearch, model.Options.Search } });
 
         public async Task<IActionResult> Display(string sitemapId)
         {

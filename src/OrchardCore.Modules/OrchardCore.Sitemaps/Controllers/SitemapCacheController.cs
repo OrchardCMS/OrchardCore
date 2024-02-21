@@ -23,7 +23,7 @@ namespace OrchardCore.Sitemaps.Controllers
             ISitemapCacheProvider sitemapCacheProvider,
             INotifier notifier,
             IHtmlLocalizer<SitemapCacheController> htmlLocalizer
-            )
+        )
         {
             _authorizationService = authorizationService;
             _sitemapCacheProvider = sitemapCacheProvider;
@@ -38,10 +38,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 return Forbid();
             }
 
-            var model = new ListSitemapCacheViewModel
-            {
-                CachedFileNames = (await _sitemapCacheProvider.ListAsync()).ToArray()
-            };
+            var model = new ListSitemapCacheViewModel { CachedFileNames = (await _sitemapCacheProvider.ListAsync()).ToArray() };
 
             return View(model);
         }

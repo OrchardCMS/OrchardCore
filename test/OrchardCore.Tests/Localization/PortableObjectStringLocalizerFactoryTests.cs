@@ -5,8 +5,7 @@ namespace OrchardCore.Tests.Localization
     public class PortableObjectStringLocalizerFactoryTests
     {
         [Fact]
-        public async Task LocalizerReturnsTranslationFromInnerClass()
-            => await StartupRunner.Run(typeof(PortableObjectStringLocalizerFactory), "ar", "مرحبا");
+        public async Task LocalizerReturnsTranslationFromInnerClass() => await StartupRunner.Run(typeof(PortableObjectStringLocalizerFactory), "ar", "مرحبا");
 
         public class PortableObjectStringLocalizerFactory
         {
@@ -23,21 +22,17 @@ namespace OrchardCore.Tests.Localization
 #pragma warning disable CA1822 // Mark members as static
             public void Configure(
 #pragma warning restore CA1822 // Mark members as static
-                IApplicationBuilder app,
-                IStringLocalizer<Model> localizer)
+                IApplicationBuilder app, IStringLocalizer<Model> localizer)
             {
                 var supportedCultures = new[] { "ar", "en" };
-                app.UseRequestLocalization(options =>
-                    options
-                        .AddSupportedCultures(supportedCultures)
-                        .AddSupportedUICultures(supportedCultures)
-                        .SetDefaultCulture("ar")
-                );
+                app.UseRequestLocalization(options => options.AddSupportedCultures(supportedCultures).AddSupportedUICultures(supportedCultures).SetDefaultCulture("ar"));
 
-                app.Run(async (context) =>
-                {
-                    await context.Response.WriteAsync(localizer["Hello"]);
-                });
+                app.Run(
+                    async (context) =>
+                    {
+                        await context.Response.WriteAsync(localizer["Hello"]);
+                    }
+                );
             }
         }
 

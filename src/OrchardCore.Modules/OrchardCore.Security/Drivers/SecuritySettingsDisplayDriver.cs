@@ -28,7 +28,8 @@ namespace OrchardCore.Security.Drivers
             ShellSettings shellSettings,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
-            IOptionsSnapshot<SecuritySettings> securitySettings)
+            IOptionsSnapshot<SecuritySettings> securitySettings
+        )
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
@@ -46,26 +47,31 @@ namespace OrchardCore.Security.Drivers
                 return null;
             }
 
-            return Initialize<SecuritySettingsViewModel>("SecurityHeadersSettings_Edit", model =>
-            {
-                // Set the settings from configuration when AdminSettings are overriden via ConfigureSecuritySettings()
-                var currentSettings = settings;
-                if (_securitySettings.FromConfiguration)
-                {
-                    currentSettings = _securitySettings;
-                }
+            return Initialize<SecuritySettingsViewModel>(
+                    "SecurityHeadersSettings_Edit",
+                    model =>
+                    {
+                        // Set the settings from configuration when AdminSettings are overriden via ConfigureSecuritySettings()
+                        var currentSettings = settings;
+                        if (_securitySettings.FromConfiguration)
+                        {
+                            currentSettings = _securitySettings;
+                        }
 
-                model.FromConfiguration = currentSettings.FromConfiguration;
-                model.ContentSecurityPolicy = currentSettings.ContentSecurityPolicy;
-                model.PermissionsPolicy = currentSettings.PermissionsPolicy;
-                model.ReferrerPolicy = currentSettings.ReferrerPolicy;
+                        model.FromConfiguration = currentSettings.FromConfiguration;
+                        model.ContentSecurityPolicy = currentSettings.ContentSecurityPolicy;
+                        model.PermissionsPolicy = currentSettings.PermissionsPolicy;
+                        model.ReferrerPolicy = currentSettings.ReferrerPolicy;
 
-                model.EnableSandbox = currentSettings.ContentSecurityPolicy != null &&
-                    currentSettings.ContentSecurityPolicy.ContainsKey(ContentSecurityPolicyValue.Sandbox);
+                        model.EnableSandbox =
+                            currentSettings.ContentSecurityPolicy != null && currentSettings.ContentSecurityPolicy.ContainsKey(ContentSecurityPolicyValue.Sandbox);
 
-                model.UpgradeInsecureRequests = currentSettings.ContentSecurityPolicy != null &&
-                    currentSettings.ContentSecurityPolicy.ContainsKey(ContentSecurityPolicyValue.UpgradeInsecureRequests);
-            }).Location("Content:2").OnGroup(SettingsGroupId);
+                        model.UpgradeInsecureRequests =
+                            currentSettings.ContentSecurityPolicy != null && currentSettings.ContentSecurityPolicy.ContainsKey(ContentSecurityPolicyValue.UpgradeInsecureRequests);
+                    }
+                )
+                .Location("Content:2")
+                .OnGroup(SettingsGroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(SecuritySettings section, BuildEditorContext context)

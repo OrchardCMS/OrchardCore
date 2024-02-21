@@ -35,7 +35,8 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
                     var nodeKind = JsonValueKind.Null;
                     float? boost = null;
 
-                    bool includeLower = false, includeUpper = false;
+                    bool includeLower = false,
+                        includeUpper = false;
 
                     foreach (var element in range.Value.AsObject())
                     {
@@ -73,13 +74,11 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
                     switch (nodeKind)
                     {
                         case JsonValueKind.Number:
-                            if (gt.AsValue().TryGetValue<long>(out var minInt) &&
-                                lt.AsValue().TryGetValue<long>(out var maxInt))
+                            if (gt.AsValue().TryGetValue<long>(out var minInt) && lt.AsValue().TryGetValue<long>(out var maxInt))
                             {
                                 rangeQuery = NumericRangeQuery.NewInt64Range(field, minInt, maxInt, includeLower, includeUpper);
                             }
-                            else if (gt.AsValue().TryGetValue<double>(out var minFloat) &&
-                                lt.AsValue().TryGetValue<double>(out var maxFloat))
+                            else if (gt.AsValue().TryGetValue<double>(out var minFloat) && lt.AsValue().TryGetValue<double>(out var maxFloat))
                             {
                                 rangeQuery = NumericRangeQuery.NewDoubleRange(field, minFloat, maxFloat, includeLower, includeUpper);
                             }
@@ -96,7 +95,8 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
                             rangeQuery = TermRangeQuery.NewStringRange(field, minString, maxString, includeLower, includeUpper);
                             break;
 
-                        default: throw new ArgumentException($"Unsupported range value type: {type}");
+                        default:
+                            throw new ArgumentException($"Unsupported range value type: {type}");
                     }
 
                     if (boost != null)
@@ -105,7 +105,8 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
                     }
 
                     break;
-                default: throw new ArgumentException("Invalid range query");
+                default:
+                    throw new ArgumentException("Invalid range query");
             }
 
             booleanQuery.Add(rangeQuery, Occur.MUST);

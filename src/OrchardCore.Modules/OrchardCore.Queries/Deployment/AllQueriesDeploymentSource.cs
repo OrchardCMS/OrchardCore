@@ -24,11 +24,7 @@ namespace OrchardCore.Queries.Deployment
 
             var queries = await _queryManager.ListQueriesAsync();
 
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "Queries",
-                ["Queries"] = JArray.FromObject(queries),
-            });
+            result.Steps.Add(new JsonObject { ["name"] = "Queries", ["Queries"] = JArray.FromObject(queries), });
         }
     }
 }

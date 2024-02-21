@@ -75,7 +75,12 @@ public class FeatureService
         return moduleFeatures;
     }
 
-    public async Task EnableOrDisableFeaturesAsync(IEnumerable<IFeatureInfo> features, FeaturesBulkAction action, bool? force, Func<IEnumerable<IFeatureInfo>, bool, Task> notifyAsync)
+    public async Task EnableOrDisableFeaturesAsync(
+        IEnumerable<IFeatureInfo> features,
+        FeaturesBulkAction action,
+        bool? force,
+        Func<IEnumerable<IFeatureInfo>, bool, Task> notifyAsync
+    )
     {
         switch (action)
         {

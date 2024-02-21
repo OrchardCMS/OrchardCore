@@ -14,9 +14,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         private readonly Dictionary<string, string> _aliases = [];
         private readonly Dictionary<string, string> _tableAliases = [];
 
-        public PredicateQuery(
-            IConfiguration configuration,
-            IEnumerable<IIndexPropertyProvider> propertyProviders)
+        public PredicateQuery(IConfiguration configuration, IEnumerable<IIndexPropertyProvider> propertyProviders)
         {
             Dialect = configuration.SqlDialect;
             _configuration = configuration;
@@ -26,7 +24,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         public ISqlDialect Dialect { get; set; }
 
         public IDictionary<string, object> Parameters { get; } = new Dictionary<string, object>();
-
 
         public string NewQueryParameter(object value)
         {
@@ -46,6 +43,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
 
             _aliases[path] = alias;
         }
+
         public void CreateTableAlias(string path, string tableAlias)
         {
             ArgumentNullException.ThrowIfNull(path);
@@ -54,7 +52,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
 
             _tableAliases[path] = tableAlias;
         }
-
 
         public void SearchUsedAlias(string propertyPath)
         {

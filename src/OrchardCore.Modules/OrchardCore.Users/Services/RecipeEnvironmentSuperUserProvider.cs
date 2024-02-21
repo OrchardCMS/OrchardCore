@@ -15,10 +15,7 @@ namespace OrchardCore.Users.Services
         private IUserService _userService;
         private readonly ILogger _logger;
 
-        public RecipeEnvironmentSuperUserProvider(
-            ISiteService siteService,
-            IServiceProvider serviceProvider,
-            ILogger<RecipeEnvironmentSuperUserProvider> logger)
+        public RecipeEnvironmentSuperUserProvider(ISiteService siteService, IServiceProvider serviceProvider, ILogger<RecipeEnvironmentSuperUserProvider> logger)
         {
             _siteService = siteService;
             _serviceProvider = serviceProvider;

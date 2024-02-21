@@ -22,8 +22,7 @@ public class JsonDynamicObject : DynamicObject
 
     public int Count => _jsonObject.Count;
 
-    public void Merge(JsonNode? content, JsonMergeSettings? settings = null) =>
-        _jsonObject.Merge(content, settings);
+    public void Merge(JsonNode? content, JsonMergeSettings? settings = null) => _jsonObject.Merge(content, settings);
 
     public object? this[string key]
     {
@@ -37,10 +36,7 @@ public class JsonDynamicObject : DynamicObject
 
             return value;
         }
-        set
-        {
-            SetValue(key, value);
-        }
+        set { SetValue(key, value); }
     }
 
     public override bool TryGetMember(GetMemberBinder binder, out object? result)

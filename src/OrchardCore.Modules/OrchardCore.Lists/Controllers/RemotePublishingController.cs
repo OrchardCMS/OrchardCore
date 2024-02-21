@@ -14,9 +14,7 @@ namespace OrchardCore.Lists.Controllers
         private readonly IContentManager _contentManager;
         private readonly ILogger _logger;
 
-        public RemotePublishingController(
-            IContentManager contentManager,
-            ILogger<RemotePublishingController> logger)
+        public RemotePublishingController(IContentManager contentManager, ILogger<RemotePublishingController> logger)
         {
             _contentManager = contentManager;
             _logger = logger;
@@ -52,17 +50,19 @@ namespace OrchardCore.Lists.Controllers
                 new XElement(XName.Get("engineName", manifestUri), "Orchard CMS"),
                 new XElement(XName.Get("engineLink", manifestUri), "https://orchardcore.net"),
                 new XElement(XName.Get("homePageLink", manifestUri), "https://orchardcore.net"),
-                new XElement(XName.Get("apis", manifestUri),
-                    new XElement(XName.Get("api", manifestUri),
+                new XElement(
+                    XName.Get("apis", manifestUri),
+                    new XElement(
+                        XName.Get("api", manifestUri),
                         new XAttribute("name", "MetaWeblog"),
                         new XAttribute("preferred", true),
                         new XAttribute("apiLink", url),
-                        new XAttribute("blogID", contentItem.ContentItemId))));
+                        new XAttribute("blogID", contentItem.ContentItemId)
+                    )
+                )
+            );
 
-            var doc = new XDocument(new XElement(
-                                        XName.Get("rsd", manifestUri),
-                                        new XAttribute("version", "1.0"),
-                                        options));
+            var doc = new XDocument(new XElement(XName.Get("rsd", manifestUri), new XAttribute("version", "1.0"), options));
 
             return Content(doc.ToString(), "text/xml");
         }

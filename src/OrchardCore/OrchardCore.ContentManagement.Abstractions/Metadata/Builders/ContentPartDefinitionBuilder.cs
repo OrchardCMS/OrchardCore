@@ -18,9 +18,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         public ContentPartDefinition Current { get; private set; }
 
         public ContentPartDefinitionBuilder()
-            : this(new ContentPartDefinition(null))
-        {
-        }
+            : this(new ContentPartDefinition(null)) { }
 
         public ContentPartDefinitionBuilder(ContentPartDefinition existing)
         {
@@ -84,7 +82,8 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
-        public ContentPartDefinitionBuilder MergeSettings<T>(Action<T> setting) where T : class, new()
+        public ContentPartDefinitionBuilder MergeSettings<T>(Action<T> setting)
+            where T : class, new()
         {
             var existingJObject = _settings[typeof(T).Name] as JsonObject;
             // If existing settings do not exist, create.
@@ -111,8 +110,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
-        public ContentPartDefinitionBuilder WithField(string fieldName)
-            => WithField(fieldName, configuration => { });
+        public ContentPartDefinitionBuilder WithField(string fieldName) => WithField(fieldName, configuration => { });
 
         public ContentPartDefinitionBuilder WithField(string fieldName, Action<ContentPartFieldDefinitionBuilder> configuration)
         {
@@ -153,24 +151,29 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
-        public ContentPartDefinitionBuilder WithField<TField>(string fieldName)
-            => WithField(fieldName, configuration => configuration.OfType(typeof(TField).Name));
+        public ContentPartDefinitionBuilder WithField<TField>(string fieldName) => WithField(fieldName, configuration => configuration.OfType(typeof(TField).Name));
 
-        public ContentPartDefinitionBuilder WithField<TField>(string fieldName, Action<ContentPartFieldDefinitionBuilder> configuration)
-            => WithField(fieldName, field =>
-            {
-                configuration(field);
+        public ContentPartDefinitionBuilder WithField<TField>(string fieldName, Action<ContentPartFieldDefinitionBuilder> configuration) =>
+            WithField(
+                fieldName,
+                field =>
+                {
+                    configuration(field);
 
-                field.OfType(typeof(TField).Name);
-            });
+                    field.OfType(typeof(TField).Name);
+                }
+            );
 
-        public Task<ContentPartDefinitionBuilder> WithFieldAsync<TField>(string fieldName, Func<ContentPartFieldDefinitionBuilder, Task> configuration)
-            => WithFieldAsync(fieldName, async field =>
-            {
-                await configuration(field);
+        public Task<ContentPartDefinitionBuilder> WithFieldAsync<TField>(string fieldName, Func<ContentPartFieldDefinitionBuilder, Task> configuration) =>
+            WithFieldAsync(
+                fieldName,
+                async field =>
+                {
+                    await configuration(field);
 
-                field.OfType(typeof(TField).Name);
-            });
+                    field.OfType(typeof(TField).Name);
+                }
+            );
 
         public async Task<ContentPartDefinitionBuilder> WithFieldAsync(string fieldName, Func<ContentPartFieldDefinitionBuilder, Task> configurationAsync)
         {
@@ -240,15 +243,11 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
                 return new ContentPartFieldDefinition(_fieldDefinition, _fieldName, _settings);
             }
 
-            public override string Name
-                => _fieldName;
+            public override string Name => _fieldName;
 
-            public override string FieldType
-                => _fieldDefinition.Name;
+            public override string FieldType => _fieldDefinition.Name;
 
-
-            public override string PartName
-                => _partDefinition.Name;
+            public override string PartName => _partDefinition.Name;
 
             public override ContentPartFieldDefinitionBuilder OfType(ContentFieldDefinition fieldDefinition)
             {

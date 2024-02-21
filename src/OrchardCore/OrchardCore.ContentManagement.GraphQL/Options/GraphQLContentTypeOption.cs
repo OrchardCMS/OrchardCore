@@ -19,8 +19,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
 
         public bool Hidden { get; set; }
 
-        public IEnumerable<GraphQLContentPartOption> PartOptions { get; set; }
-            = [];
+        public IEnumerable<GraphQLContentPartOption> PartOptions { get; set; } = [];
 
         public GraphQLContentTypeOption ConfigurePart<TContentPart>(Action<GraphQLContentPartOption> action)
             where TContentPart : ContentPart

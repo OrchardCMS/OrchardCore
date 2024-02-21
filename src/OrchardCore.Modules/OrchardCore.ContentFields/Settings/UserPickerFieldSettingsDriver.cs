@@ -20,25 +20,24 @@ namespace OrchardCore.ContentFields.Settings
 
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<UserPickerFieldSettingsViewModel>("UserPickerFieldSettings_Edit", async model =>
-            {
-                var settings = partFieldDefinition.GetSettings<UserPickerFieldSettings>();
-                model.Hint = settings.Hint;
-                model.Required = settings.Required;
-                model.Multiple = settings.Multiple;
-                var roles = (await _roleService.GetRoleNamesAsync())
-                    .Except(RoleHelper.SystemRoleNames, StringComparer.OrdinalIgnoreCase)
-                    .Select(roleName => new RoleEntry
+            return Initialize<UserPickerFieldSettingsViewModel>(
+                    "UserPickerFieldSettings_Edit",
+                    async model =>
                     {
-                        Role = roleName,
-                        IsSelected = settings.DisplayedRoles.Contains(roleName, StringComparer.OrdinalIgnoreCase)
-                    })
-                    .ToArray();
+                        var settings = partFieldDefinition.GetSettings<UserPickerFieldSettings>();
+                        model.Hint = settings.Hint;
+                        model.Required = settings.Required;
+                        model.Multiple = settings.Multiple;
+                        var roles = (await _roleService.GetRoleNamesAsync())
+                            .Except(RoleHelper.SystemRoleNames, StringComparer.OrdinalIgnoreCase)
+                            .Select(roleName => new RoleEntry { Role = roleName, IsSelected = settings.DisplayedRoles.Contains(roleName, StringComparer.OrdinalIgnoreCase) })
+                            .ToArray();
 
-                model.Roles = roles;
-                model.DisplayAllUsers = settings.DisplayAllUsers || !roles.Where(x => x.IsSelected).Any();
-
-            }).Location("Content");
+                        model.Roles = roles;
+                        model.DisplayAllUsers = settings.DisplayAllUsers || !roles.Where(x => x.IsSelected).Any();
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

@@ -32,9 +32,7 @@ namespace OrchardCore.DynamicCache.Models
 
         internal CacheContext ToCacheContext()
         {
-            var cacheContext = new CacheContext(CacheId)
-                .AddContext(Contexts.ToArray())
-                .AddTag(Tags.ToArray());
+            var cacheContext = new CacheContext(CacheId).AddContext(Contexts.ToArray()).AddTag(Tags.ToArray());
 
             if (ExpiresOn.HasValue)
             {

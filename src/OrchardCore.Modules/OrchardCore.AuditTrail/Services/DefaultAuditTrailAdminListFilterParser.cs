@@ -12,7 +12,6 @@ namespace OrchardCore.AuditTrail.Services
             _parser = parser;
         }
 
-        public QueryFilterResult<AuditTrailEvent> Parse(string text)
-            => _parser.Parse(text);
+        public QueryFilterResult<AuditTrailEvent> Parse(string text) => _parser.Parse(text);
     }
 }

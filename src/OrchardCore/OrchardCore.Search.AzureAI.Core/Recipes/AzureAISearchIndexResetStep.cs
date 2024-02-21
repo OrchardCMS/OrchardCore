@@ -32,33 +32,36 @@ public class AzureAISearchIndexResetStep : IRecipeStepHandler
             return;
         }
 
-        await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync(AzureAISearchIndexRebuildDeploymentSource.Name, async scope =>
-        {
-            var searchIndexingService = scope.ServiceProvider.GetService<AzureAISearchIndexingService>();
-            var indexSettingsService = scope.ServiceProvider.GetService<AzureAISearchIndexSettingsService>();
-            var indexManager = scope.ServiceProvider.GetRequiredService<AzureAISearchIndexManager>();
-            var indexDocumentManager = scope.ServiceProvider.GetRequiredService<AzureAIIndexDocumentManager>();
-
-            var indexSettings = model.IncludeAll
-            ? await indexSettingsService.GetSettingsAsync()
-            : (await indexSettingsService.GetSettingsAsync()).Where(x => model.Indices.Contains(x.IndexName, StringComparer.OrdinalIgnoreCase));
-
-            foreach (var settings in indexSettings)
+        await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync(
+            AzureAISearchIndexRebuildDeploymentSource.Name,
+            async scope =>
             {
-                settings.SetLastTaskId(0);
-                settings.IndexMappings = await indexDocumentManager.GetMappingsAsync(settings.IndexedContentTypes);
+                var searchIndexingService = scope.ServiceProvider.GetService<AzureAISearchIndexingService>();
+                var indexSettingsService = scope.ServiceProvider.GetService<AzureAISearchIndexSettingsService>();
+                var indexManager = scope.ServiceProvider.GetRequiredService<AzureAISearchIndexManager>();
+                var indexDocumentManager = scope.ServiceProvider.GetRequiredService<AzureAIIndexDocumentManager>();
 
-                if (!await indexManager.ExistsAsync(settings.IndexName))
+                var indexSettings = model.IncludeAll
+                    ? await indexSettingsService.GetSettingsAsync()
+                    : (await indexSettingsService.GetSettingsAsync()).Where(x => model.Indices.Contains(x.IndexName, StringComparer.OrdinalIgnoreCase));
+
+                foreach (var settings in indexSettings)
                 {
-                    settings.IndexFullName = indexManager.GetFullIndexName(settings.IndexName);
+                    settings.SetLastTaskId(0);
+                    settings.IndexMappings = await indexDocumentManager.GetMappingsAsync(settings.IndexedContentTypes);
 
-                    await indexManager.CreateAsync(settings);
+                    if (!await indexManager.ExistsAsync(settings.IndexName))
+                    {
+                        settings.IndexFullName = indexManager.GetFullIndexName(settings.IndexName);
+
+                        await indexManager.CreateAsync(settings);
+                    }
+
+                    await indexSettingsService.UpdateAsync(settings);
                 }
 
-                await indexSettingsService.UpdateAsync(settings);
+                await searchIndexingService.ProcessContentItemsAsync(indexSettings.Select(settings => settings.IndexName).ToArray());
             }
-
-            await searchIndexingService.ProcessContentItemsAsync(indexSettings.Select(settings => settings.IndexName).ToArray());
-        });
+        );
     }
 }

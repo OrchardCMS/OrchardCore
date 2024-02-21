@@ -8,11 +8,10 @@ namespace OrchardCore.Queries.Deployment
     {
         public override IDisplayResult Display(AllQueriesDeploymentStep step)
         {
-            return
-                Combine(
-                    View("AllQueriesDeploymentStep_Summary", step).Location("Summary", "Content"),
-                    View("AllQueriesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
-                );
+            return Combine(
+                View("AllQueriesDeploymentStep_Summary", step).Location("Summary", "Content"),
+                View("AllQueriesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(AllQueriesDeploymentStep step)

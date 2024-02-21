@@ -18,6 +18,5 @@ public class UserNotificationMessageViewModel
 
     public string Url { get; set; }
 
-    public bool HasBody()
-        => !string.IsNullOrWhiteSpace(Body);
+    public bool HasBody() => !string.IsNullOrWhiteSpace(Body);
 }

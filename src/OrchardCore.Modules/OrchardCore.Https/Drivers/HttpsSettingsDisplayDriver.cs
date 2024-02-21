@@ -24,12 +24,14 @@ namespace OrchardCore.Https.Drivers
         private readonly ShellSettings _shellSettings;
         protected readonly IHtmlLocalizer H;
 
-        public HttpsSettingsDisplayDriver(IHttpContextAccessor httpContextAccessor,
+        public HttpsSettingsDisplayDriver(
+            IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
             INotifier notifier,
             IShellHost shellHost,
             ShellSettings shellSettings,
-            IHtmlLocalizer<HttpsSettingsDisplayDriver> htmlLocalizer)
+            IHtmlLocalizer<HttpsSettingsDisplayDriver> htmlLocalizer
+        )
         {
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
@@ -47,22 +49,24 @@ namespace OrchardCore.Https.Drivers
                 return null;
             }
 
-            return Initialize<HttpsSettingsViewModel>("HttpsSettings_Edit", async model =>
-            {
-                var isHttpsRequest = _httpContextAccessor.HttpContext.Request.IsHttps;
+            return Initialize<HttpsSettingsViewModel>(
+                    "HttpsSettings_Edit",
+                    async model =>
+                    {
+                        var isHttpsRequest = _httpContextAccessor.HttpContext.Request.IsHttps;
 
-                if (!isHttpsRequest)
-                    await _notifier.WarningAsync(H["For safety, Enabling require HTTPS over HTTP has been prevented."]);
+                        if (!isHttpsRequest)
+                            await _notifier.WarningAsync(H["For safety, Enabling require HTTPS over HTTP has been prevented."]);
 
-                model.EnableStrictTransportSecurity = settings.EnableStrictTransportSecurity;
-                model.IsHttpsRequest = isHttpsRequest;
-                model.RequireHttps = settings.RequireHttps;
-                model.RequireHttpsPermanent = settings.RequireHttpsPermanent;
-                model.SslPort = settings.SslPort ??
-                                (isHttpsRequest && !settings.RequireHttps
-                                    ? _httpContextAccessor.HttpContext.Request.Host.Port
-                                    : null);
-            }).Location("Content:2").OnGroup(GroupId);
+                        model.EnableStrictTransportSecurity = settings.EnableStrictTransportSecurity;
+                        model.IsHttpsRequest = isHttpsRequest;
+                        model.RequireHttps = settings.RequireHttps;
+                        model.RequireHttpsPermanent = settings.RequireHttpsPermanent;
+                        model.SslPort = settings.SslPort ?? (isHttpsRequest && !settings.RequireHttps ? _httpContextAccessor.HttpContext.Request.Host.Port : null);
+                    }
+                )
+                .Location("Content:2")
+                .OnGroup(GroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(HttpsSettings settings, BuildEditorContext context)

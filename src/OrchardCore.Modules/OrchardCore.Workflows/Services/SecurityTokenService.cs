@@ -10,9 +10,7 @@ namespace OrchardCore.Workflows.Services
         private readonly ITimeLimitedDataProtector _dataProtector;
         private readonly IClock _clock;
 
-        public SecurityTokenService(
-            IDataProtectionProvider dataProtectionProvider,
-            IClock clock)
+        public SecurityTokenService(IDataProtectionProvider dataProtectionProvider, IClock clock)
         {
             _dataProtector = dataProtectionProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
             _clock = clock;
@@ -39,9 +37,7 @@ namespace OrchardCore.Workflows.Services
                     return true;
                 }
             }
-            catch
-            {
-            }
+            catch { }
 
             return false;
         }

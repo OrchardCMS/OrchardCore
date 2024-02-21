@@ -8,9 +8,7 @@ namespace OrchardCore.Navigation
         /// <param name="pagerParameters">The pager parameters.</param>
         /// <param name="pageSize">The page size parameter.</param>
         public PagerSlim(PagerSlimParameters pagerParameters, int pageSize)
-            : this(pagerParameters.Before, pagerParameters.After, pageSize)
-        {
-        }
+            : this(pagerParameters.Before, pagerParameters.After, pageSize) { }
 
         /// <summary>
         /// Constructs a new pager.

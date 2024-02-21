@@ -40,7 +40,8 @@ namespace OrchardCore.Search.Lucene.QueryProviders
 
                     return wildCardQuery;
 
-                default: throw new ArgumentException("Invalid wildcard query");
+                default:
+                    throw new ArgumentException("Invalid wildcard query");
             }
         }
     }

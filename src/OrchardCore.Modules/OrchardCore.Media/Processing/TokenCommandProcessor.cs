@@ -19,13 +19,10 @@ namespace OrchardCore.Media.Processing
 
         private static readonly IEnumerable<string> _tokenCommands = new[] { TokenCommand };
 
-        public IEnumerable<string> Commands
-            => _tokenCommands;
+        public IEnumerable<string> Commands => _tokenCommands;
 
-        public FormattedImage Process(FormattedImage image, ILogger logger, CommandCollection commands, CommandParser parser, CultureInfo culture)
-            => image;
+        public FormattedImage Process(FormattedImage image, ILogger logger, CommandCollection commands, CommandParser parser, CultureInfo culture) => image;
 
-        public bool RequiresTrueColorPixelFormat(CommandCollection commands, CommandParser parser, CultureInfo culture)
-            => false;
+        public bool RequiresTrueColorPixelFormat(CommandCollection commands, CommandParser parser, CultureInfo culture) => false;
     }
 }

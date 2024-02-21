@@ -15,7 +15,8 @@ namespace Microsoft.Extensions.Configuration.Json
         /// Constructor.
         /// </summary>
         /// <param name="source">The <see cref="TenantJsonStreamConfigurationSource"/>.</param>
-        public TenantJsonStreamConfigurationProvider(TenantJsonStreamConfigurationSource source) : base(source) { }
+        public TenantJsonStreamConfigurationProvider(TenantJsonStreamConfigurationSource source)
+            : base(source) { }
 
         /// <summary>
         /// Loads json configuration key/values from a stream into a provider.

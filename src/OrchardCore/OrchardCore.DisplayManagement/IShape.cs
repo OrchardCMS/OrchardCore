@@ -120,6 +120,5 @@ namespace OrchardCore.DisplayManagement
         }
 
         public static JsonObject ShapeToJson(this IShape shape) => new ShapeSerializer(shape).Serialize();
-
     }
 }

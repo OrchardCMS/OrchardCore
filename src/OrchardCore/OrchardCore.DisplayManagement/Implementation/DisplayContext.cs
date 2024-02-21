@@ -4,9 +4,7 @@ namespace OrchardCore.DisplayManagement.Implementation
 {
     public class DisplayContext
     {
-        public DisplayContext()
-        {
-        }
+        public DisplayContext() { }
 
         public DisplayContext(DisplayContext context)
         {

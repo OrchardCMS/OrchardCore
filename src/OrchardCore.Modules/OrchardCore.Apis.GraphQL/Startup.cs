@@ -1,3 +1,4 @@
+using System;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Execution;
@@ -14,7 +15,6 @@ using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
-using System;
 
 namespace OrchardCore.Apis.GraphQL
 {
@@ -48,32 +48,34 @@ namespace OrchardCore.Apis.GraphQL
             services.AddSingleton<GraphQLMiddleware>();
             services.AddGraphQL(builder => builder.AddSystemTextJson());
 
-            services.AddOptions<GraphQLSettings>().Configure<IShellConfiguration>((c, configuration) =>
-            {
-                var exposeExceptions = configuration.GetValue(
-                    $"OrchardCore_Apis_GraphQL:{nameof(GraphQLSettings.ExposeExceptions)}",
-                    _hostingEnvironment.IsDevelopment());
+            services
+                .AddOptions<GraphQLSettings>()
+                .Configure<IShellConfiguration>(
+                    (c, configuration) =>
+                    {
+                        var exposeExceptions = configuration.GetValue($"OrchardCore_Apis_GraphQL:{nameof(GraphQLSettings.ExposeExceptions)}", _hostingEnvironment.IsDevelopment());
 
-                var maxNumberOfResultsValidationMode = configuration.GetValue<MaxNumberOfResultsValidationMode?>($"OrchardCore_Apis_GraphQL:{nameof(GraphQLSettings.MaxNumberOfResultsValidationMode)}")
-                                                        ?? MaxNumberOfResultsValidationMode.Default;
+                        var maxNumberOfResultsValidationMode =
+                            configuration.GetValue<MaxNumberOfResultsValidationMode?>($"OrchardCore_Apis_GraphQL:{nameof(GraphQLSettings.MaxNumberOfResultsValidationMode)}")
+                            ?? MaxNumberOfResultsValidationMode.Default;
 
-                if (maxNumberOfResultsValidationMode == MaxNumberOfResultsValidationMode.Default)
-                {
-                    maxNumberOfResultsValidationMode = _hostingEnvironment.IsDevelopment() ? MaxNumberOfResultsValidationMode.Enabled : MaxNumberOfResultsValidationMode.Disabled;
-                }
+                        if (maxNumberOfResultsValidationMode == MaxNumberOfResultsValidationMode.Default)
+                        {
+                            maxNumberOfResultsValidationMode = _hostingEnvironment.IsDevelopment()
+                                ? MaxNumberOfResultsValidationMode.Enabled
+                                : MaxNumberOfResultsValidationMode.Disabled;
+                        }
 
-                c.BuildUserContext = ctx => new GraphQLUserContext
-                {
-                    User = ctx.User,
-                };
-                c.ExposeExceptions = exposeExceptions;
-                c.MaxDepth = configuration.GetValue<int?>($"OrchardCore_Apis_GraphQL:{nameof(GraphQLSettings.MaxDepth)}") ?? 100;
-                c.MaxComplexity = configuration.GetValue<int?>($"OrchardCore_Apis_GraphQL:{nameof(GraphQLSettings.MaxComplexity)}");
-                c.FieldImpact = configuration.GetValue<double?>($"OrchardCore_Apis_GraphQL:{nameof(GraphQLSettings.FieldImpact)}");
-                c.MaxNumberOfResults = configuration.GetValue<int?>($"OrchardCore_Apis_GraphQL:{nameof(GraphQLSettings.MaxNumberOfResults)}") ?? 1000;
-                c.MaxNumberOfResultsValidationMode = maxNumberOfResultsValidationMode;
-                c.DefaultNumberOfResults = configuration.GetValue<int?>($"OrchardCore_Apis_GraphQL:{nameof(GraphQLSettings.DefaultNumberOfResults)}") ?? 100;
-            });
+                        c.BuildUserContext = ctx => new GraphQLUserContext { User = ctx.User, };
+                        c.ExposeExceptions = exposeExceptions;
+                        c.MaxDepth = configuration.GetValue<int?>($"OrchardCore_Apis_GraphQL:{nameof(GraphQLSettings.MaxDepth)}") ?? 100;
+                        c.MaxComplexity = configuration.GetValue<int?>($"OrchardCore_Apis_GraphQL:{nameof(GraphQLSettings.MaxComplexity)}");
+                        c.FieldImpact = configuration.GetValue<double?>($"OrchardCore_Apis_GraphQL:{nameof(GraphQLSettings.FieldImpact)}");
+                        c.MaxNumberOfResults = configuration.GetValue<int?>($"OrchardCore_Apis_GraphQL:{nameof(GraphQLSettings.MaxNumberOfResults)}") ?? 1000;
+                        c.MaxNumberOfResultsValidationMode = maxNumberOfResultsValidationMode;
+                        c.DefaultNumberOfResults = configuration.GetValue<int?>($"OrchardCore_Apis_GraphQL:{nameof(GraphQLSettings.DefaultNumberOfResults)}") ?? 100;
+                    }
+                );
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

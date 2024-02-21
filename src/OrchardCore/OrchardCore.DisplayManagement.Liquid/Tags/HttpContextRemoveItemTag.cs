@@ -25,7 +25,6 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 {
                     httpContext.Items.Remove(itemKey);
                 }
-
             }
             return Completion.Normal;
         }

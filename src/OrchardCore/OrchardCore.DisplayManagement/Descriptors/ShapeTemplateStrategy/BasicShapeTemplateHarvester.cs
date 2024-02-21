@@ -16,19 +16,12 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
             var lastDot = info.FileName.LastIndexOf('.');
             if (lastDot <= 0 || lastDot < lastDash)
             {
-                yield return new HarvestShapeHit
-                {
-                    ShapeType = Adjust(info.SubPath, info.FileName, null),
-                };
+                yield return new HarvestShapeHit { ShapeType = Adjust(info.SubPath, info.FileName, null), };
             }
             else
             {
                 var displayType = info.FileName[(lastDot + 1)..];
-                yield return new HarvestShapeHit
-                {
-                    ShapeType = Adjust(info.SubPath, info.FileName[..lastDot], displayType),
-                    DisplayType = displayType,
-                };
+                yield return new HarvestShapeHit { ShapeType = Adjust(info.SubPath, info.FileName[..lastDot], displayType), DisplayType = displayType, };
             }
         }
 
@@ -55,9 +48,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 return (shapeType + "_" + displayType).ToLowerInvariant();
             }
 
-            return string.Concat(
-                shapeType.AsSpan(0, firstBreakingSeparator), "_", displayType, shapeType.AsSpan(firstBreakingSeparator))
-                .ToLowerInvariant();
+            return string.Concat(shapeType.AsSpan(0, firstBreakingSeparator), "_", displayType, shapeType.AsSpan(firstBreakingSeparator)).ToLowerInvariant();
         }
     }
 }

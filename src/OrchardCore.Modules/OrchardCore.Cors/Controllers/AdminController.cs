@@ -31,7 +31,7 @@ namespace OrchardCore.Cors.Controllers
             CorsService corsService,
             INotifier notifier,
             IHtmlLocalizer<AdminController> htmlLocalizer
-            )
+        )
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
@@ -75,10 +75,7 @@ namespace OrchardCore.Cors.Controllers
                 }
             }
 
-            var viewModel = new CorsSettingsViewModel
-            {
-                Policies = list.ToArray()
-            };
+            var viewModel = new CorsSettingsViewModel { Policies = list.ToArray() };
 
             return View(viewModel);
         }
@@ -103,28 +100,27 @@ namespace OrchardCore.Cors.Controllers
 
             foreach (var settingViewModel in model.Policies)
             {
-                corsPolicies.Add(new CorsPolicySetting
-                {
-                    Name = settingViewModel.Name,
-                    AllowAnyHeader = settingViewModel.AllowAnyHeader,
-                    AllowAnyMethod = settingViewModel.AllowAnyMethod,
-                    AllowAnyOrigin = settingViewModel.AllowAnyOrigin,
-                    AllowCredentials = settingViewModel.AllowCredentials,
-                    AllowedHeaders = settingViewModel.AllowedHeaders,
-                    AllowedMethods = settingViewModel.AllowedMethods,
-                    AllowedOrigins = settingViewModel.AllowedOrigins,
-                    IsDefaultPolicy = settingViewModel.IsDefaultPolicy
-                });
-                
+                corsPolicies.Add(
+                    new CorsPolicySetting
+                    {
+                        Name = settingViewModel.Name,
+                        AllowAnyHeader = settingViewModel.AllowAnyHeader,
+                        AllowAnyMethod = settingViewModel.AllowAnyMethod,
+                        AllowAnyOrigin = settingViewModel.AllowAnyOrigin,
+                        AllowCredentials = settingViewModel.AllowCredentials,
+                        AllowedHeaders = settingViewModel.AllowedHeaders,
+                        AllowedMethods = settingViewModel.AllowedMethods,
+                        AllowedOrigins = settingViewModel.AllowedOrigins,
+                        IsDefaultPolicy = settingViewModel.IsDefaultPolicy
+                    }
+                );
+
                 if (settingViewModel.AllowAnyOrigin && settingViewModel.AllowCredentials)
                 {
                     policyWarnings.Add(settingViewModel.Name);
                 }
             }
-            var corsSettings = new CorsSettings()
-            {
-                Policies = corsPolicies
-            };
+            var corsSettings = new CorsSettings() { Policies = corsPolicies };
 
             await _corsService.UpdateSettingsAsync(corsSettings);
 
@@ -134,7 +130,14 @@ namespace OrchardCore.Cors.Controllers
 
             if (policyWarnings.Count > 0)
             {
-                await _notifier.WarningAsync(H["Specifying {0} and {1} is an insecure configuration and can result in cross-site request forgery. The CORS service returns an invalid CORS response when an app is configured with both methods.<br /><strong>Affected policies: {2} </strong><br />Refer to docs:<a href='https://learn.microsoft.com/en-us/aspnet/core/security/cors' target='_blank'>https://learn.microsoft.com/en-us/aspnet/core/security/cors</a>",  "AllowAnyOrigin", "AllowCredentias", string.Join(", ", policyWarnings) ]);
+                await _notifier.WarningAsync(
+                    H[
+                        "Specifying {0} and {1} is an insecure configuration and can result in cross-site request forgery. The CORS service returns an invalid CORS response when an app is configured with both methods.<br /><strong>Affected policies: {2} </strong><br />Refer to docs:<a href='https://learn.microsoft.com/en-us/aspnet/core/security/cors' target='_blank'>https://learn.microsoft.com/en-us/aspnet/core/security/cors</a>",
+                        "AllowAnyOrigin",
+                        "AllowCredentias",
+                        string.Join(", ", policyWarnings)
+                    ]
+                );
             }
 
             return View(model);

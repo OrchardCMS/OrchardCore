@@ -21,11 +21,7 @@ namespace OrchardCore.Sitemaps.Services
         private readonly ISitemapManager _sitemapManager;
         protected readonly IStringLocalizer S;
 
-        public SitemapHelperService(
-            ISlugService slugService,
-            ISitemapManager sitemapManager,
-            IStringLocalizer<SitemapHelperService> stringLocalizer
-            )
+        public SitemapHelperService(ISlugService slugService, ISitemapManager sitemapManager, IStringLocalizer<SitemapHelperService> stringLocalizer)
         {
             _slugService = slugService;
             _sitemapManager = sitemapManager;
@@ -43,7 +39,14 @@ namespace OrchardCore.Sitemaps.Services
             if (path.IndexOfAny(InvalidCharactersForPath) > -1 || path.IndexOf(' ') > -1)
             {
                 var invalidCharactersForMessage = string.Join(", ", InvalidCharactersForPath.Select(c => $"\"{c}\""));
-                updater.ModelState.AddModelError(Prefix, Path, S["Please do not use any of the following characters in your permalink: {0}. No spaces are allowed (please use dashes or underscores instead).", invalidCharactersForMessage]);
+                updater.ModelState.AddModelError(
+                    Prefix,
+                    Path,
+                    S[
+                        "Please do not use any of the following characters in your permalink: {0}. No spaces are allowed (please use dashes or underscores instead).",
+                        invalidCharactersForMessage
+                    ]
+                );
             }
 
             // Precludes possibility of collision with Autoroute as Autoroute excludes . as a valid path character.
@@ -60,13 +63,13 @@ namespace OrchardCore.Sitemaps.Services
             var routeExists = false;
             if (string.IsNullOrEmpty(sitemapId))
             {
-                routeExists = (await _sitemapManager.GetSitemapsAsync())
-                    .Any(p => string.Equals(p.Path, path.TrimStart('/'), StringComparison.OrdinalIgnoreCase));
+                routeExists = (await _sitemapManager.GetSitemapsAsync()).Any(p => string.Equals(p.Path, path.TrimStart('/'), StringComparison.OrdinalIgnoreCase));
             }
             else
             {
-                routeExists = (await _sitemapManager.GetSitemapsAsync())
-                    .Any(p => p.SitemapId != sitemapId && string.Equals(p.Path, path.TrimStart('/'), StringComparison.OrdinalIgnoreCase));
+                routeExists = (await _sitemapManager.GetSitemapsAsync()).Any(p =>
+                    p.SitemapId != sitemapId && string.Equals(p.Path, path.TrimStart('/'), StringComparison.OrdinalIgnoreCase)
+                );
             }
 
             if (routeExists)
@@ -79,6 +82,5 @@ namespace OrchardCore.Sitemaps.Services
         {
             return _slugService.Slugify(name) + Sitemap.PathExtension;
         }
-
     }
 }

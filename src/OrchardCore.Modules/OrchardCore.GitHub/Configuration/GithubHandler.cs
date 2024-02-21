@@ -17,9 +17,7 @@ namespace OrchardCore.GitHub.Configuration
     public class GitHubHandler : OAuthHandler<GitHubOptions>
     {
         public GitHubHandler(IOptionsMonitor<GitHubOptions> options, ILoggerFactory logger, UrlEncoder encoder)
-            : base(options, logger, encoder)
-        {
-        }
+            : base(options, logger, encoder) { }
 
         protected override async Task<AuthenticationTicket> CreateTicketAsync(ClaimsIdentity identity, AuthenticationProperties properties, OAuthTokenResponse tokens)
         {
@@ -29,7 +27,9 @@ namespace OrchardCore.GitHub.Configuration
             var response = await Backchannel.SendAsync(request, Context.RequestAborted);
             if (!response.IsSuccessStatusCode)
             {
-                throw new HttpRequestException($"An error occurred when retrieving GitHub user information ({response.StatusCode}). Please check if the authentication information is correct in the corresponding GitHub Application.");
+                throw new HttpRequestException(
+                    $"An error occurred when retrieving GitHub user information ({response.StatusCode}). Please check if the authentication information is correct in the corresponding GitHub Application."
+                );
             }
 
             var payload = (await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync())).RootElement;
@@ -97,6 +97,7 @@ namespace OrchardCore.GitHub.Configuration
                 return OAuthTokenResponse.Failed(new Exception(error));
             }
         }
+
         private static async Task<string> Display(HttpResponseMessage response)
         {
             var output = new StringBuilder();

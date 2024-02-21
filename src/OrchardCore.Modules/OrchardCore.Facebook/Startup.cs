@@ -38,10 +38,12 @@ namespace OrchardCore.Facebook
             services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
             services.AddTransient<IConfigureOptions<FacebookSettings>, FacebookSettingsConfiguration>();
 
-            services.Configure<MvcOptions>((options) =>
-            {
-                options.Filters.Add(typeof(FBInitFilter));
-            });
+            services.Configure<MvcOptions>(
+                (options) =>
+                {
+                    options.Filters.Add(typeof(FBInitFilter));
+                }
+            );
         }
     }
 }

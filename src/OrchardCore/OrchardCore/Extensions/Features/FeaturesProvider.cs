@@ -32,8 +32,7 @@ namespace OrchardCore.Environment.Extensions.Features
                 {
                     if (string.IsNullOrWhiteSpace(feature.Id))
                     {
-                        throw new ArgumentException(
-                            $"A {nameof(feature)} is missing a mandatory '{nameof(feature.Id)}' property in the Module '{extensionInfo.Id}'");
+                        throw new ArgumentException($"A {nameof(feature)} is missing a mandatory '{nameof(feature.Id)}' property in the Module '{extensionInfo.Id}'");
                     }
 
                     // Attribute properties are transparently resolved by the instances themselves for convenience
@@ -80,7 +79,8 @@ namespace OrchardCore.Environment.Extensions.Features
                         context.FeatureDependencyIds,
                         context.DefaultTenantOnly,
                         context.IsAlwaysEnabled,
-                        context.EnabledByDependencyOnly);
+                        context.EnabledByDependencyOnly
+                    );
 
                     foreach (var builder in _featureBuilderEvents)
                     {
@@ -136,7 +136,8 @@ namespace OrchardCore.Environment.Extensions.Features
                     context.FeatureDependencyIds,
                     context.DefaultTenantOnly,
                     context.IsAlwaysEnabled,
-                    context.EnabledByDependencyOnly);
+                    context.EnabledByDependencyOnly
+                );
 
                 foreach (var builder in _featureBuilderEvents)
                 {

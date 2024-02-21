@@ -9,9 +9,7 @@ namespace OrchardCore.Routing
 {
     public class FormValueRequiredMatcherPolicy : MatcherPolicy, IEndpointSelectorPolicy, IEndpointComparerPolicy
     {
-        public FormValueRequiredMatcherPolicy()
-        {
-        }
+        public FormValueRequiredMatcherPolicy() { }
 
         public override int Order => int.MinValue + 100;
 

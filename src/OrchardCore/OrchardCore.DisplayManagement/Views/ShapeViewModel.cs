@@ -10,9 +10,7 @@ namespace OrchardCore.DisplayManagement.Views
 {
     public class ShapeViewModel : IShape, IPositioned
     {
-        public ShapeViewModel()
-        {
-        }
+        public ShapeViewModel() { }
 
         public ShapeViewModel(string shapeType)
         {
@@ -28,10 +26,7 @@ namespace OrchardCore.DisplayManagement.Views
         public string Position
         {
             get => Metadata.Position;
-            set
-            {
-                Metadata.Position = value;
-            }
+            set { Metadata.Position = value; }
         }
 
         public string Id { get; set; }

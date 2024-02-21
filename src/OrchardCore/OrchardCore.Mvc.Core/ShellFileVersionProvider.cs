@@ -25,14 +25,9 @@ namespace OrchardCore.Mvc
         private readonly IFileProvider[] _fileProviders;
         private readonly IMemoryCache _cache;
 
-        public ShellFileVersionProvider(
-            IEnumerable<IStaticFileProvider> staticFileProviders,
-            IWebHostEnvironment environment,
-            IMemoryCache cache)
+        public ShellFileVersionProvider(IEnumerable<IStaticFileProvider> staticFileProviders, IWebHostEnvironment environment, IMemoryCache cache)
         {
-            _fileProviders = staticFileProviders
-                .Concat(new[] { environment.WebRootFileProvider })
-                .ToArray();
+            _fileProviders = staticFileProviders.Concat(new[] { environment.WebRootFileProvider }).ToArray();
 
             _cache = cache;
         }
@@ -84,9 +79,7 @@ namespace OrchardCore.Mvc
                 var fileInfo = fileProvider.GetFileInfo(resolvedPath);
 
                 // Perform check against requestPathBase.
-                if (!fileInfo.Exists &&
-                    requestPathBase.HasValue &&
-                    resolvedPath.StartsWith(requestPathBase.Value, StringComparison.OrdinalIgnoreCase))
+                if (!fileInfo.Exists && requestPathBase.HasValue && resolvedPath.StartsWith(requestPathBase.Value, StringComparison.OrdinalIgnoreCase))
                 {
                     resolvedPath = resolvedPath[requestPathBase.Value.Length..];
                     cacheEntryOptions.AddExpirationToken(fileProvider.Watch(resolvedPath));
@@ -94,10 +87,12 @@ namespace OrchardCore.Mvc
                 }
 
                 // Perform check against VirtualPathBase.
-                if (!fileInfo.Exists &&
-                    fileProvider is IVirtualPathBaseProvider virtualPathBaseProvider &&
-                    virtualPathBaseProvider.VirtualPathBase.HasValue &&
-                    resolvedPath.StartsWith(virtualPathBaseProvider.VirtualPathBase.Value, StringComparison.OrdinalIgnoreCase))
+                if (
+                    !fileInfo.Exists
+                    && fileProvider is IVirtualPathBaseProvider virtualPathBaseProvider
+                    && virtualPathBaseProvider.VirtualPathBase.HasValue
+                    && resolvedPath.StartsWith(virtualPathBaseProvider.VirtualPathBase.Value, StringComparison.OrdinalIgnoreCase)
+                )
                 {
                     resolvedPath = resolvedPath[virtualPathBaseProvider.VirtualPathBase.Value.Length..];
                     cacheEntryOptions.AddExpirationToken(fileProvider.Watch(resolvedPath));

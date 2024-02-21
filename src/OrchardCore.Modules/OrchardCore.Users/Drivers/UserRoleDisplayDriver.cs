@@ -36,7 +36,8 @@ namespace OrchardCore.Users.Drivers
             IHttpContextAccessor httpContextAccessor,
             INotifier notifier,
             IAuthorizationService authorizationService,
-            IHtmlLocalizer<UserRoleDisplayDriver> htmlLocalizer)
+            IHtmlLocalizer<UserRoleDisplayDriver> htmlLocalizer
+        )
         {
             _userManager = userManager;
             _roleService = roleService;
@@ -50,55 +51,55 @@ namespace OrchardCore.Users.Drivers
         public override IDisplayResult Display(User user)
         {
             return Combine(
-                Initialize<SummaryAdminUserViewModel>("UserRolesMeta", model => model.User = user)
-                    .Location("SummaryAdmin", "Description"),
-
-                Initialize<SummaryAdminUserViewModel>("UserRoles", model => model.User = user)
-                    .Location("DetailAdmin", "Content:10")
+                Initialize<SummaryAdminUserViewModel>("UserRolesMeta", model => model.User = user).Location("SummaryAdmin", "Description"),
+                Initialize<SummaryAdminUserViewModel>("UserRoles", model => model.User = user).Location("DetailAdmin", "Content:10")
             );
         }
 
         public override IDisplayResult Edit(User user)
         {
             // This view is always rendered, however there will be no editable roles if the user does not have permission to edit them.
-            return Initialize<EditUserRoleViewModel>("UserRoleFields_Edit", async model =>
-            {
-                // The current user can only view their roles if they have assign role, to prevent listing roles when managing their own profile.
-                if (_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) == user.UserId
-                    && !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.AssignRoleToUsers))
-                {
-                    return;
-                }
-
-                var roles = await GetRoleAsync();
-
-                // When a user is in a role that the current user cannot manage the role is shown but selection is disabled.
-                var authorizedRoleNames = await GetAccessibleRoleNamesAsync(roles);
-                var userRoleNames = await _userRoleStore.GetRolesAsync(user, default);
-
-                var roleEntries = new List<RoleEntry>();
-                foreach (var roleName in authorizedRoleNames)
-                {
-                    var roleEntry = new RoleEntry
+            return Initialize<EditUserRoleViewModel>(
+                    "UserRoleFields_Edit",
+                    async model =>
                     {
-                        Role = roleName,
-                        IsSelected = userRoleNames.Contains(roleName, StringComparer.OrdinalIgnoreCase),
-                    };
+                        // The current user can only view their roles if they have assign role, to prevent listing roles when managing their own profile.
+                        if (
+                            _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) == user.UserId
+                            && !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.AssignRoleToUsers)
+                        )
+                        {
+                            return;
+                        }
 
-                    roleEntries.Add(roleEntry);
-                }
+                        var roles = await GetRoleAsync();
 
-                model.Roles = roleEntries.ToArray();
-            })
-            .Location("Content:1.10")
-            .RenderWhen(async () => await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.EditUsers, user));
+                        // When a user is in a role that the current user cannot manage the role is shown but selection is disabled.
+                        var authorizedRoleNames = await GetAccessibleRoleNamesAsync(roles);
+                        var userRoleNames = await _userRoleStore.GetRolesAsync(user, default);
+
+                        var roleEntries = new List<RoleEntry>();
+                        foreach (var roleName in authorizedRoleNames)
+                        {
+                            var roleEntry = new RoleEntry { Role = roleName, IsSelected = userRoleNames.Contains(roleName, StringComparer.OrdinalIgnoreCase), };
+
+                            roleEntries.Add(roleEntry);
+                        }
+
+                        model.Roles = roleEntries.ToArray();
+                    }
+                )
+                .Location("Content:1.10")
+                .RenderWhen(async () => await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.EditUsers, user));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
         {
             // The current user cannot alter their own roles. This prevents them removing access to the site for themselves.
-            if (_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) == user.UserId
-                && !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, StandardPermissions.SiteOwner))
+            if (
+                _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) == user.UserId
+                && !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, StandardPermissions.SiteOwner)
+            )
             {
                 return null;
             }
@@ -131,8 +132,9 @@ namespace OrchardCore.Users.Drivers
                     foreach (var role in currentUserRoleNames)
                     {
                         // When the user has permission to manage the role and it is no longer selected the role can be removed.
-                        if (accessibleRoleNames.Contains(role, StringComparer.OrdinalIgnoreCase)
-                            && !accessibleAndSelectedRoleNames.Contains(role, StringComparer.OrdinalIgnoreCase))
+                        if (
+                            accessibleRoleNames.Contains(role, StringComparer.OrdinalIgnoreCase) && !accessibleAndSelectedRoleNames.Contains(role, StringComparer.OrdinalIgnoreCase)
+                        )
                         {
                             rolesToRemove.Add(role);
                         }
@@ -142,10 +144,7 @@ namespace OrchardCore.Users.Drivers
                     {
                         if (string.Equals(role, AdministratorRole, StringComparison.OrdinalIgnoreCase))
                         {
-                            var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole))
-                                .Cast<User>()
-                                .Where(user => user.IsEnabled)
-                                .ToList();
+                            var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole)).Cast<User>().Where(user => user.IsEnabled).ToList();
 
                             // Make sure we always have at least one enabled administrator account.
                             if (enabledUsersOfAdminRole.Count == 1 && user.UserId == enabledUsersOfAdminRole.First().UserId)

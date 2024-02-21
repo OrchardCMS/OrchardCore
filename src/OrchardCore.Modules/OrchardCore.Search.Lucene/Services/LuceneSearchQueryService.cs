@@ -19,24 +19,27 @@ namespace OrchardCore.Search.Lucene.Services
         {
             var contentItemIds = new List<string>();
 
-            await _luceneIndexManager.SearchAsync(indexName, searcher =>
-            {
-                if (end > 0)
+            await _luceneIndexManager.SearchAsync(
+                indexName,
+                searcher =>
                 {
-                    var collector = TopScoreDocCollector.Create(end, true);
-
-                    searcher.Search(query, collector);
-                    var hits = collector.GetTopDocs(start, end);
-
-                    foreach (var hit in hits.ScoreDocs)
+                    if (end > 0)
                     {
-                        var d = searcher.Doc(hit.Doc, _idSet);
-                        contentItemIds.Add(d.GetField("ContentItemId").GetStringValue());
-                    }
-                }
+                        var collector = TopScoreDocCollector.Create(end, true);
 
-                return Task.CompletedTask;
-            });
+                        searcher.Search(query, collector);
+                        var hits = collector.GetTopDocs(start, end);
+
+                        foreach (var hit in hits.ScoreDocs)
+                        {
+                            var d = searcher.Doc(hit.Doc, _idSet);
+                            contentItemIds.Add(d.GetField("ContentItemId").GetStringValue());
+                        }
+                    }
+
+                    return Task.CompletedTask;
+                }
+            );
 
             return contentItemIds;
         }

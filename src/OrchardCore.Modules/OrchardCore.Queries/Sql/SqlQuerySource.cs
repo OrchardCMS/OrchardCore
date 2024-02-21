@@ -21,11 +21,7 @@ namespace OrchardCore.Queries.Sql
         private readonly ISession _session;
         private readonly TemplateOptions _templateOptions;
 
-        public SqlQuerySource(
-            ILiquidTemplateManager liquidTemplateManager,
-            IDbConnectionAccessor dbConnectionAccessor,
-            ISession session,
-            IOptions<TemplateOptions> templateOptions)
+        public SqlQuerySource(ILiquidTemplateManager liquidTemplateManager, IDbConnectionAccessor dbConnectionAccessor, ISession session, IOptions<TemplateOptions> templateOptions)
         {
             _liquidTemplateManager = liquidTemplateManager;
             _dbConnectionAccessor = dbConnectionAccessor;
@@ -45,12 +41,25 @@ namespace OrchardCore.Queries.Sql
             var sqlQuery = query as SqlQuery;
             var sqlQueryResults = new SQLQueryResults();
 
-            var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(sqlQuery.Template, NullEncoder.Default,
-                parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
+            var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(
+                sqlQuery.Template,
+                NullEncoder.Default,
+                parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions)))
+            );
 
             var dialect = _session.Store.Configuration.SqlDialect;
 
-            if (!SqlParser.TryParse(tokenizedQuery, _session.Store.Configuration.Schema, dialect, _session.Store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
+            if (
+                !SqlParser.TryParse(
+                    tokenizedQuery,
+                    _session.Store.Configuration.Schema,
+                    dialect,
+                    _session.Store.Configuration.TablePrefix,
+                    parameters,
+                    out var rawQuery,
+                    out var messages
+                )
+            )
             {
                 sqlQueryResults.Items = Array.Empty<object>();
 

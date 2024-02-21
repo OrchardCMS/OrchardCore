@@ -125,8 +125,18 @@ namespace OrchardCore.Tests.Shell
         {
             var table = new RunningShellTable();
             var settings = new ShellSettings { RequestUrlHost = "www.example.com" }.AsDefaultShell();
-            var settingsA = new ShellSettings { Name = "Alpha", RequestUrlHost = "wiki.example.com", RequestUrlPrefix = "foo" };
-            var settingsB = new ShellSettings { Name = "Beta", RequestUrlHost = "wiki.example.com", RequestUrlPrefix = "bar" };
+            var settingsA = new ShellSettings
+            {
+                Name = "Alpha",
+                RequestUrlHost = "wiki.example.com",
+                RequestUrlPrefix = "foo"
+            };
+            var settingsB = new ShellSettings
+            {
+                Name = "Beta",
+                RequestUrlHost = "wiki.example.com",
+                RequestUrlPrefix = "bar"
+            };
             var settingsG = new ShellSettings { Name = "Gamma", RequestUrlHost = "wiki.example.com" };
             var settingsD = new ShellSettings { Name = "Delta", RequestUrlPrefix = "Quux" };
             table.Add(settings);
@@ -157,7 +167,12 @@ namespace OrchardCore.Tests.Shell
         {
             var table = new RunningShellTable();
             var settings = new ShellSettings { RequestUrlHost = "www.example.com" }.AsDefaultShell();
-            var settingsB = new ShellSettings { Name = "Beta", RequestUrlHost = "wiki.example.com", RequestUrlPrefix = "bar" };
+            var settingsB = new ShellSettings
+            {
+                Name = "Beta",
+                RequestUrlHost = "wiki.example.com",
+                RequestUrlPrefix = "bar"
+            };
             var settingsG = new ShellSettings { Name = "Gamma", RequestUrlHost = "wiki.example.com" };
             table.Add(settings);
             table.Add(settingsB);
@@ -168,6 +183,7 @@ namespace OrchardCore.Tests.Shell
             Assert.Equal(settingsG, table.Match(new HostString("wiki.example.com"), "/baaz"));
             Assert.Equal(settingsG, table.Match(new HostString("wiki.example.com"), "/barbaz"));
         }
+
         [Fact]
         public void PathAloneWillMatch()
         {

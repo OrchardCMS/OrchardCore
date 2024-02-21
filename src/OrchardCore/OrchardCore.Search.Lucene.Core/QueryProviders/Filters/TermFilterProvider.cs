@@ -42,7 +42,8 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
                         termQuery.Boost = boost.Value<float>();
                     }
                     break;
-                default: throw new ArgumentException("Invalid term query");
+                default:
+                    throw new ArgumentException("Invalid term query");
             }
 
             booleanQuery.Add(termQuery, Occur.MUST);

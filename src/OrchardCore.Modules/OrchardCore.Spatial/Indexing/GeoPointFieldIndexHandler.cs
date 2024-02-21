@@ -13,11 +13,7 @@ namespace OrchardCore.Spatial.Indexing
 
             if (field.Longitude != null && field.Latitude != null)
             {
-                value = new DocumentIndex.GeoPoint
-                {
-                    Longitude = (decimal)field.Longitude,
-                    Latitude = (decimal)field.Latitude
-                };
+                value = new DocumentIndex.GeoPoint { Longitude = (decimal)field.Longitude, Latitude = (decimal)field.Latitude };
             }
 
             foreach (var key in context.Keys)

@@ -40,7 +40,8 @@ namespace OrchardCore.OpenId.Drivers
             IHttpContextAccessor httpContextAccessor,
             IShellHost shellHost,
             ShellSettings shellSettings,
-            IStringLocalizer<OpenIdClientSettingsDisplayDriver> stringLocalizer)
+            IStringLocalizer<OpenIdClientSettingsDisplayDriver> stringLocalizer
+        )
         {
             _authorizationService = authorizationService;
             _dataProtectionProvider = dataProtectionProvider;
@@ -59,46 +60,51 @@ namespace OrchardCore.OpenId.Drivers
                 return null;
             }
 
-            return Initialize<OpenIdClientSettingsViewModel>("OpenIdClientSettings_Edit", model =>
-            {
-                model.DisplayName = settings.DisplayName;
-                model.Scopes = settings.Scopes != null ? string.Join(" ", settings.Scopes) : null;
-                model.Authority = settings.Authority?.AbsoluteUri;
-                model.CallbackPath = settings.CallbackPath;
-                model.ClientId = settings.ClientId;
-                model.ClientSecret = settings.ClientSecret;
-                model.SignedOutCallbackPath = settings.SignedOutCallbackPath;
-                model.SignedOutRedirectUri = settings.SignedOutRedirectUri;
-                model.ResponseMode = settings.ResponseMode;
-                model.StoreExternalTokens = settings.StoreExternalTokens;
+            return Initialize<OpenIdClientSettingsViewModel>(
+                    "OpenIdClientSettings_Edit",
+                    model =>
+                    {
+                        model.DisplayName = settings.DisplayName;
+                        model.Scopes = settings.Scopes != null ? string.Join(" ", settings.Scopes) : null;
+                        model.Authority = settings.Authority?.AbsoluteUri;
+                        model.CallbackPath = settings.CallbackPath;
+                        model.ClientId = settings.ClientId;
+                        model.ClientSecret = settings.ClientSecret;
+                        model.SignedOutCallbackPath = settings.SignedOutCallbackPath;
+                        model.SignedOutRedirectUri = settings.SignedOutRedirectUri;
+                        model.ResponseMode = settings.ResponseMode;
+                        model.StoreExternalTokens = settings.StoreExternalTokens;
 
-                if (settings.ResponseType == OpenIdConnectResponseType.Code)
-                {
-                    model.UseCodeFlow = true;
-                }
-                else if (settings.ResponseType == OpenIdConnectResponseType.CodeIdToken)
-                {
-                    model.UseCodeIdTokenFlow = true;
-                }
-                else if (settings.ResponseType == OpenIdConnectResponseType.CodeIdTokenToken)
-                {
-                    model.UseCodeIdTokenTokenFlow = true;
-                }
-                else if (settings.ResponseType == OpenIdConnectResponseType.CodeToken)
-                {
-                    model.UseCodeTokenFlow = true;
-                }
-                else if (settings.ResponseType == OpenIdConnectResponseType.IdToken)
-                {
-                    model.UseIdTokenFlow = true;
-                }
-                else if (settings.ResponseType == OpenIdConnectResponseType.IdTokenToken)
-                {
-                    model.UseIdTokenTokenFlow = true;
-                }
+                        if (settings.ResponseType == OpenIdConnectResponseType.Code)
+                        {
+                            model.UseCodeFlow = true;
+                        }
+                        else if (settings.ResponseType == OpenIdConnectResponseType.CodeIdToken)
+                        {
+                            model.UseCodeIdTokenFlow = true;
+                        }
+                        else if (settings.ResponseType == OpenIdConnectResponseType.CodeIdTokenToken)
+                        {
+                            model.UseCodeIdTokenTokenFlow = true;
+                        }
+                        else if (settings.ResponseType == OpenIdConnectResponseType.CodeToken)
+                        {
+                            model.UseCodeTokenFlow = true;
+                        }
+                        else if (settings.ResponseType == OpenIdConnectResponseType.IdToken)
+                        {
+                            model.UseIdTokenFlow = true;
+                        }
+                        else if (settings.ResponseType == OpenIdConnectResponseType.IdTokenToken)
+                        {
+                            model.UseIdTokenTokenFlow = true;
+                        }
 
-                model.Parameters = JConvert.SerializeObject(settings.Parameters, JOptions.CamelCase);
-            }).Location("Content:2").OnGroup(SettingsGroupId);
+                        model.Parameters = JConvert.SerializeObject(settings.Parameters, JOptions.CamelCase);
+                    }
+                )
+                .Location("Content:2")
+                .OnGroup(SettingsGroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(OpenIdClientSettings settings, BuildEditorContext context)
@@ -163,9 +169,7 @@ namespace OrchardCore.OpenId.Drivers
 
                 try
                 {
-                    settings.Parameters = string.IsNullOrWhiteSpace(model.Parameters)
-                        ? []
-                        : JConvert.DeserializeObject<ParameterSetting[]>(model.Parameters);
+                    settings.Parameters = string.IsNullOrWhiteSpace(model.Parameters) ? [] : JConvert.DeserializeObject<ParameterSetting[]>(model.Parameters);
                 }
                 catch
                 {

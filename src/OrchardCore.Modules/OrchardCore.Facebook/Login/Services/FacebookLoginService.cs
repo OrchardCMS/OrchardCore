@@ -13,8 +13,7 @@ namespace OrchardCore.Facebook.Login.Services
     {
         private readonly ISiteService _siteService;
 
-        public FacebookLoginService(
-            ISiteService siteService)
+        public FacebookLoginService(ISiteService siteService)
         {
             _siteService = siteService;
         }

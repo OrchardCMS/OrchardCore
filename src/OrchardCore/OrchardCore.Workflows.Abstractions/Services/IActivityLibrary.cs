@@ -37,12 +37,14 @@ namespace OrchardCore.Workflows.Services
 
     public static class ActivityLibraryExtensions
     {
-        public static T InstantiateActivity<T>(this IActivityLibrary library, string name) where T : IActivity
+        public static T InstantiateActivity<T>(this IActivityLibrary library, string name)
+            where T : IActivity
         {
             return (T)library.InstantiateActivity(name);
         }
 
-        public static T InstantiateActivity<T>(this IActivityLibrary library, string name, JsonObject properties) where T : IActivity
+        public static T InstantiateActivity<T>(this IActivityLibrary library, string name, JsonObject properties)
+            where T : IActivity
         {
             var activity = InstantiateActivity<T>(library, name);
 
@@ -54,7 +56,8 @@ namespace OrchardCore.Workflows.Services
             return activity;
         }
 
-        public static T InstantiateActivity<T>(this IActivityLibrary library, ActivityRecord record) where T : IActivity
+        public static T InstantiateActivity<T>(this IActivityLibrary library, ActivityRecord record)
+            where T : IActivity
         {
             return InstantiateActivity<T>(library, record.Name, record.Properties);
         }

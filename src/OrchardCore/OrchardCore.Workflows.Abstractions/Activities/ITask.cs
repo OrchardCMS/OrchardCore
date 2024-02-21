@@ -1,6 +1,4 @@
 namespace OrchardCore.Workflows.Activities
 {
-    public interface ITask : IActivity
-    {
-    }
+    public interface ITask : IActivity { }
 }

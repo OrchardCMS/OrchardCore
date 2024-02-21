@@ -7,8 +7,6 @@ namespace OrchardCore.DisplayManagement.TagHelpers
     public class ShapeTagHelper : BaseShapeTagHelper
     {
         public ShapeTagHelper(IShapeFactory shapeFactory, IDisplayHelper displayHelper)
-            : base(shapeFactory, displayHelper)
-        {
-        }
+            : base(shapeFactory, displayHelper) { }
     }
 }

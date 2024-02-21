@@ -8,11 +8,7 @@ namespace OrchardCore.AuditTrail.Navigation
 {
     public class AuditTrailSettingsAdminMenu : INavigationProvider
     {
-        private static readonly RouteValueDictionary _routeValues = new()
-        {
-            { "area", "OrchardCore.Settings" },
-            { "groupId", AuditTrailSettingsGroup.Id },
-        };
+        private static readonly RouteValueDictionary _routeValues = new() { { "area", "OrchardCore.Settings" }, { "groupId", AuditTrailSettingsGroup.Id }, };
 
         protected readonly IStringLocalizer S;
 
@@ -28,18 +24,25 @@ namespace OrchardCore.AuditTrail.Navigation
                 return Task.CompletedTask;
             }
 
-            builder
-                 .Add(S["Configuration"], configuration => configuration
-                     .Add(S["Settings"], settings => settings
-                        .Add(S["Audit Trail"], S["Audit Trail"].PrefixPosition(), auditTrail => auditTrail
-                            .AddClass("audittrail")
-                            .Id("audittrailSettings")
-                            .Action("Index", "Admin", _routeValues)
-                            .Permission(AuditTrailPermissions.ManageAuditTrailSettings)
-                            .LocalNav()
-                        )
+            builder.Add(
+                S["Configuration"],
+                configuration =>
+                    configuration.Add(
+                        S["Settings"],
+                        settings =>
+                            settings.Add(
+                                S["Audit Trail"],
+                                S["Audit Trail"].PrefixPosition(),
+                                auditTrail =>
+                                    auditTrail
+                                        .AddClass("audittrail")
+                                        .Id("audittrailSettings")
+                                        .Action("Index", "Admin", _routeValues)
+                                        .Permission(AuditTrailPermissions.ManageAuditTrailSettings)
+                                        .LocalNav()
+                            )
                     )
-                );
+            );
 
             return Task.CompletedTask;
         }

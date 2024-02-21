@@ -40,9 +40,7 @@ namespace OrchardCore.ContentManagement.Metadata.Models
         /// <returns></returns>
         public override string ToString()
         {
-            return string.IsNullOrEmpty(DisplayName)
-                ? Name
-                : DisplayName;
+            return string.IsNullOrEmpty(DisplayName) ? Name : DisplayName;
         }
     }
 }

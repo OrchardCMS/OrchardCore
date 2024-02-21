@@ -19,21 +19,11 @@ namespace OrchardCore.Tests.Modules.Contents.Feeds
             var commonFeedItemBuilder = new CommonFeedItemBuilder(contentManagerMock.Object);
             var feedContext = CreateFeedContext(format);
 
-            contentManagerMock.SetReturnsDefault(Task.FromResult(new ContentItemMetadata
-            {
-                DisplayRouteValues = []
-            }));
+            contentManagerMock.SetReturnsDefault(Task.FromResult(new ContentItemMetadata { DisplayRouteValues = [] }));
 
-            contentManagerMock.SetReturnsDefault(Task.FromResult(new BodyAspect
-            {
-                Body = new HtmlString("<p>The news description goes here ...</p>")
-            }));
+            contentManagerMock.SetReturnsDefault(Task.FromResult(new BodyAspect { Body = new HtmlString("<p>The news description goes here ...</p>") }));
 
-            feedContext.Builder.AddItem(feedContext, new ContentItem
-            {
-                DisplayText = "News",
-                PublishedUtc = DateTime.UtcNow
-            });
+            feedContext.Builder.AddItem(feedContext, new ContentItem { DisplayText = "News", PublishedUtc = DateTime.UtcNow });
 
             // Act
             await commonFeedItemBuilder.PopulateAsync(feedContext);
@@ -55,21 +45,11 @@ namespace OrchardCore.Tests.Modules.Contents.Feeds
             var commonFeedItemBuilder = new CommonFeedItemBuilder(contentManagerMock.Object);
             var feedContext = CreateFeedContext(format);
 
-            contentManagerMock.SetReturnsDefault(Task.FromResult(new ContentItemMetadata
-            {
-                DisplayRouteValues = []
-            }));
+            contentManagerMock.SetReturnsDefault(Task.FromResult(new ContentItemMetadata { DisplayRouteValues = [] }));
 
-            contentManagerMock.SetReturnsDefault(Task.FromResult(new BodyAspect
-            {
-                Body = new HtmlString("<p>The news description goes here ...</p>")
-            }));
+            contentManagerMock.SetReturnsDefault(Task.FromResult(new BodyAspect { Body = new HtmlString("<p>The news description goes here ...</p>") }));
 
-            feedContext.Builder.AddItem(feedContext, new ContentItem
-            {
-                DisplayText = "It's a great title & so much > than anybody's!",
-                PublishedUtc = DateTime.UtcNow
-            });
+            feedContext.Builder.AddItem(feedContext, new ContentItem { DisplayText = "It's a great title & so much > than anybody's!", PublishedUtc = DateTime.UtcNow });
 
             // Act
             await commonFeedItemBuilder.PopulateAsync(feedContext);

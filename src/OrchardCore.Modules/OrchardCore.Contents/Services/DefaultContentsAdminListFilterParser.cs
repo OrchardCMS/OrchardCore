@@ -12,7 +12,6 @@ namespace OrchardCore.Contents.Services
             _parser = parser;
         }
 
-        public QueryFilterResult<ContentItem> Parse(string text)
-            => _parser.Parse(text);
+        public QueryFilterResult<ContentItem> Parse(string text) => _parser.Parse(text);
     }
 }

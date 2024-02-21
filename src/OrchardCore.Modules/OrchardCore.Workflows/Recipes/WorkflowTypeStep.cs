@@ -21,10 +21,12 @@ namespace OrchardCore.Workflows.Recipes
         private readonly ISecurityTokenService _securityTokenService;
         private readonly IUrlHelper _urlHelper;
 
-        public WorkflowTypeStep(IWorkflowTypeStore workflowTypeStore,
+        public WorkflowTypeStep(
+            IWorkflowTypeStore workflowTypeStore,
             ISecurityTokenService securityTokenService,
             IActionContextAccessor actionContextAccessor,
-            IUrlHelperFactory urlHelperFactory)
+            IUrlHelperFactory urlHelperFactory
+        )
         {
             _workflowTypeStore = workflowTypeStore;
             _securityTokenService = securityTokenService;
@@ -70,8 +72,10 @@ namespace OrchardCore.Workflows.Recipes
 
         private string ReGenerateHttpRequestEventUrl(WorkflowType workflow, ActivityRecord activity, int tokenLifeSpan)
         {
-            var token = _securityTokenService.CreateToken(new WorkflowPayload(workflow.WorkflowTypeId, activity.ActivityId),
-                TimeSpan.FromDays(tokenLifeSpan == 0 ? HttpWorkflowController.NoExpiryTokenLifespan : tokenLifeSpan));
+            var token = _securityTokenService.CreateToken(
+                new WorkflowPayload(workflow.WorkflowTypeId, activity.ActivityId),
+                TimeSpan.FromDays(tokenLifeSpan == 0 ? HttpWorkflowController.NoExpiryTokenLifespan : tokenLifeSpan)
+            );
 
             return _urlHelper.Action("Invoke", "HttpWorkflow", new { token });
         }

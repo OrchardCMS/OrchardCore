@@ -28,7 +28,8 @@ namespace OrchardCore.Contents.AdminNodes
             LinkGenerator linkGenerator,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
-            ILogger<ContentTypesAdminNodeNavigationBuilder> logger)
+            ILogger<ContentTypesAdminNodeNavigationBuilder> logger
+        )
         {
             _contentDefinitionManager = contentDefinitionManager;
             _linkGenerator = linkGenerator;
@@ -52,23 +53,33 @@ namespace OrchardCore.Contents.AdminNodes
             var typesToShow = await GetListableContentTypeDefinitionsAsync(node);
             foreach (var ctd in typesToShow)
             {
-                builder.Add(new LocalizedString(ctd.DisplayName, ctd.DisplayName), cTypeMenu =>
-                {
-                    cTypeMenu.Url(_linkGenerator.GetPathByRouteValues(_httpContextAccessor.HttpContext, string.Empty, new
+                builder.Add(
+                    new LocalizedString(ctd.DisplayName, ctd.DisplayName),
+                    cTypeMenu =>
                     {
-                        area = "OrchardCore.Contents",
-                        controller = "Admin",
-                        action = "List",
-                        contentTypeId = ctd.Name
-                    }));
+                        cTypeMenu.Url(
+                            _linkGenerator.GetPathByRouteValues(
+                                _httpContextAccessor.HttpContext,
+                                string.Empty,
+                                new
+                                {
+                                    area = "OrchardCore.Contents",
+                                    controller = "Admin",
+                                    action = "List",
+                                    contentTypeId = ctd.Name
+                                }
+                            )
+                        );
 
-                    cTypeMenu.Priority(node.Priority);
-                    cTypeMenu.Position(node.Position);
-                    cTypeMenu.Permission(
-                        ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.ViewContent.Name], ctd));
+                        cTypeMenu.Priority(node.Priority);
+                        cTypeMenu.Position(node.Position);
+                        cTypeMenu.Permission(
+                            ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.ViewContent.Name], ctd)
+                        );
 
-                    GetIconClasses(ctd, node).ToList().ForEach(c => cTypeMenu.AddClass(c));
-                });
+                        GetIconClasses(ctd, node).ToList().ForEach(c => cTypeMenu.AddClass(c));
+                    }
+                );
             }
 
             // Add external children
@@ -118,8 +129,7 @@ namespace OrchardCore.Contents.AdminNodes
             }
             else
             {
-                var typeEntry = node.ContentTypes
-                    .FirstOrDefault(x => string.Equals(x.ContentTypeId, contentType.Name, StringComparison.OrdinalIgnoreCase));
+                var typeEntry = node.ContentTypes.FirstOrDefault(x => string.Equals(x.ContentTypeId, contentType.Name, StringComparison.OrdinalIgnoreCase));
 
                 return AddPrefixToClasses(typeEntry.IconClass);
             }
@@ -127,11 +137,7 @@ namespace OrchardCore.Contents.AdminNodes
 
         private static List<string> AddPrefixToClasses(string unprefixed)
         {
-            return unprefixed?.Split(' ')
-                .ToList()
-                .Select(c => "icon-class-" + c)
-                .ToList()
-                ?? [];
+            return unprefixed?.Split(' ').ToList().Select(c => "icon-class-" + c).ToList() ?? [];
         }
     }
 }

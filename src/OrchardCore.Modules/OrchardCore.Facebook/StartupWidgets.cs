@@ -22,9 +22,7 @@ namespace OrchardCore.Facebook
             services.AddDataMigration<WidgetMigrations>();
             services.AddScoped<IShapeTableProvider, LiquidShapes>();
 
-            services.AddContentPart<FacebookPluginPart>()
-                .UseDisplayDriver<FacebookPluginPartDisplayDriver>()
-                .AddHandler<FacebookPluginPartHandler>();
+            services.AddContentPart<FacebookPluginPart>().UseDisplayDriver<FacebookPluginPartDisplayDriver>().AddHandler<FacebookPluginPartHandler>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, FacebookPluginPartSettingsDisplayDriver>();
         }

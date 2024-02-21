@@ -34,15 +34,13 @@ namespace OrchardCore.Apis.GraphQL
         private static readonly MediaType _jsonMediaType = new("application/json");
         private static readonly MediaType _graphQlMediaType = new("application/graphql");
 
-        public GraphQLMiddleware(
-            IOptions<GraphQLSettings> settingsOption,
-            IDocumentExecuter executer,
-            IGraphQLSerializer serializer)
+        public GraphQLMiddleware(IOptions<GraphQLSettings> settingsOption, IDocumentExecuter executer, IGraphQLSerializer serializer)
         {
             _settings = settingsOption.Value;
             _executer = executer;
             _serializer = serializer;
         }
+
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             if (!IsGraphQLRequest(context))
@@ -70,6 +68,7 @@ namespace OrchardCore.Apis.GraphQL
                 }
             }
         }
+
         private bool IsGraphQLRequest(HttpContext context)
         {
             return context.Request.Path.StartsWithNormalizedSegments(_settings.Path, StringComparison.OrdinalIgnoreCase);
@@ -89,15 +88,11 @@ namespace OrchardCore.Apis.GraphQL
 
                     if (mediaType.IsSubsetOf(_jsonMediaType) || mediaType.IsSubsetOf(_graphQlMediaType))
                     {
-
                         if (mediaType.IsSubsetOf(_graphQlMediaType))
                         {
                             using var sr = new StreamReader(context.Request.Body);
 
-                            request = new GraphQLNamedQueryRequest
-                            {
-                                Query = await sr.ReadToEndAsync()
-                            };
+                            request = new GraphQLNamedQueryRequest { Query = await sr.ReadToEndAsync() };
                         }
                         else
                         {
@@ -131,9 +126,7 @@ namespace OrchardCore.Apis.GraphQL
             {
                 var namedQueries = context.RequestServices.GetServices<INamedQueryProvider>();
 
-                var queries = namedQueries
-                    .SelectMany(dict => dict.Resolve())
-                    .ToDictionary(pair => pair.Key, pair => pair.Value);
+                var queries = namedQueries.SelectMany(dict => dict.Resolve()).ToDictionary(pair => pair.Key, pair => pair.Value);
 
                 queryToExecute = queries[request.NamedQuery];
             }
@@ -148,23 +141,29 @@ namespace OrchardCore.Apis.GraphQL
                 options.OperationName = request.OperationName;
                 options.Variables = request.Variables;
                 options.UserContext = _settings.BuildUserContext?.Invoke(context);
-                options.ValidationRules = DocumentValidator.CoreRules
-                    .Concat(context.RequestServices.GetServices<IValidationRule>())
-                    .Append(new ComplexityValidationRule(new ComplexityConfiguration
-                    {
-                        MaxDepth = _settings.MaxDepth,
-                        MaxComplexity = _settings.MaxComplexity,
-                        FieldImpact = _settings.FieldImpact
-                    }));
+                options.ValidationRules = DocumentValidator
+                    .CoreRules.Concat(context.RequestServices.GetServices<IValidationRule>())
+                    .Append(
+                        new ComplexityValidationRule(
+                            new ComplexityConfiguration
+                            {
+                                MaxDepth = _settings.MaxDepth,
+                                MaxComplexity = _settings.MaxComplexity,
+                                FieldImpact = _settings.FieldImpact
+                            }
+                        )
+                    );
                 options.Listeners.Add(dataLoaderDocumentListener);
                 options.RequestServices = context.RequestServices;
             });
 
-            context.Response.StatusCode = (int)(result.Errors == null || result.Errors.Count == 0
-                ? HttpStatusCode.OK
-                : result.Errors.Any(x => x is ValidationError ve && ve.Number == RequiresPermissionValidationRule.ErrorCode)
-                    ? HttpStatusCode.Unauthorized
-                    : HttpStatusCode.BadRequest);
+            context.Response.StatusCode = (int)(
+                result.Errors == null || result.Errors.Count == 0
+                    ? HttpStatusCode.OK
+                    : result.Errors.Any(x => x is ValidationError ve && ve.Number == RequiresPermissionValidationRule.ErrorCode)
+                        ? HttpStatusCode.Unauthorized
+                        : HttpStatusCode.BadRequest
+            );
 
             context.Response.ContentType = MediaTypeNames.Application.Json;
 
@@ -183,10 +182,7 @@ namespace OrchardCore.Apis.GraphQL
                 return null;
             }
 
-            var request = new GraphQLNamedQueryRequest
-            {
-                Query = context.Request.Query["query"]
-            };
+            var request = new GraphQLNamedQueryRequest { Query = context.Request.Query["query"] };
 
             if (context.Request.Query.ContainsKey("variables"))
             {

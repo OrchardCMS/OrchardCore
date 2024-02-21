@@ -26,20 +26,20 @@ namespace OrchardCore.ContentTypes.Deployment
 
             var contentTypes = contentDefinitionStep.IncludeAll
                 ? contentTypeDefinitionRecord.ContentTypeDefinitionRecords
-                : contentTypeDefinitionRecord.ContentTypeDefinitionRecords
-                    .Where(x => contentDefinitionStep.ContentTypes.Contains(x.Name));
+                : contentTypeDefinitionRecord.ContentTypeDefinitionRecords.Where(x => contentDefinitionStep.ContentTypes.Contains(x.Name));
 
             var contentParts = contentDefinitionStep.IncludeAll
                 ? contentTypeDefinitionRecord.ContentPartDefinitionRecords
-                : contentTypeDefinitionRecord.ContentPartDefinitionRecords
-                        .Where(x => contentDefinitionStep.ContentParts.Contains(x.Name));
+                : contentTypeDefinitionRecord.ContentPartDefinitionRecords.Where(x => contentDefinitionStep.ContentParts.Contains(x.Name));
 
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "ContentDefinition",
-                ["ContentTypes"] = JArray.FromObject(contentTypes),
-                ["ContentParts"] = JArray.FromObject(contentParts),
-            });
+            result.Steps.Add(
+                new JsonObject
+                {
+                    ["name"] = "ContentDefinition",
+                    ["ContentTypes"] = JArray.FromObject(contentTypes),
+                    ["ContentParts"] = JArray.FromObject(contentParts),
+                }
+            );
         }
     }
 }

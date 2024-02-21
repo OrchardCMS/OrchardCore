@@ -34,7 +34,8 @@ namespace OrchardCore.Taxonomies.Drivers
             ISiteService siteService,
             IContentManager contentManager,
             IContentDefinitionManager contentDefinitionManager,
-            IStringLocalizer<TaxonomyContentsAdminListDisplayDriver> stringLocalizer)
+            IStringLocalizer<TaxonomyContentsAdminListDisplayDriver> stringLocalizer
+        )
         {
             _siteService = siteService;
             _contentManager = contentManager;
@@ -55,8 +56,7 @@ namespace OrchardCore.Taxonomies.Drivers
             if (!string.IsNullOrEmpty(model.SelectedContentType))
             {
                 var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(model.SelectedContentType);
-                var fieldDefinitions = contentTypeDefinition
-                    .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(TaxonomyField)));
+                var fieldDefinitions = contentTypeDefinition.Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(TaxonomyField)));
                 var fieldTaxonomyContentItemIds = fieldDefinitions.Select(x => x.GetSettings<TaxonomyFieldSettings>().TaxonomyContentItemId);
                 taxonomyContentItemIds = taxonomyContentItemIds.Intersect(fieldTaxonomyContentItemIds).ToArray();
 
@@ -73,34 +73,37 @@ namespace OrchardCore.Taxonomies.Drivers
             foreach (var taxonomy in taxonomies)
             {
                 results.Add(
-                    Initialize<TaxonomyContentsAdminFilterViewModel>("ContentsAdminListTaxonomyFilter", m =>
-                    {
-                        using var sb = ZString.CreateStringBuilder();
-                        var termEntries = new List<FilterTermEntry>();
-                        PopulateTermEntries(termEntries, taxonomy.As<TaxonomyPart>().Terms, 0);
-                        var terms = new List<SelectListItem>
+                    Initialize<TaxonomyContentsAdminFilterViewModel>(
+                            "ContentsAdminListTaxonomyFilter",
+                            m =>
                             {
-                                new() { Text = S["Clear filter"], Value = ""  },
-                                new() { Text = S["Show all"], Value = "Taxonomy:" + taxonomy.ContentItemId }
-                            };
+                                using var sb = ZString.CreateStringBuilder();
+                                var termEntries = new List<FilterTermEntry>();
+                                PopulateTermEntries(termEntries, taxonomy.As<TaxonomyPart>().Terms, 0);
+                                var terms = new List<SelectListItem>
+                                {
+                                    new() { Text = S["Clear filter"], Value = "" },
+                                    new() { Text = S["Show all"], Value = "Taxonomy:" + taxonomy.ContentItemId }
+                                };
 
-                        foreach (var term in termEntries)
-                        {
-                            sb.Clear();
-                            for (var l = 0; l < term.Level; l++)
-                            {
-                                sb.Append(LevelPadding);
+                                foreach (var term in termEntries)
+                                {
+                                    sb.Clear();
+                                    for (var l = 0; l < term.Level; l++)
+                                    {
+                                        sb.Append(LevelPadding);
+                                    }
+                                    sb.Append(term.DisplayText);
+                                    var item = new SelectListItem { Text = sb.ToString(), Value = "Term:" + term.ContentItemId };
+                                    terms.Add(item);
+                                }
+
+                                m.DisplayText = taxonomy.DisplayText;
+                                m.Taxonomies = terms;
                             }
-                            sb.Append(term.DisplayText);
-                            var item = new SelectListItem { Text = sb.ToString(), Value = "Term:" + term.ContentItemId };
-                            terms.Add(item);
-                        }
-
-                        m.DisplayText = taxonomy.DisplayText;
-                        m.Taxonomies = terms;
-                    })
-                    .Location("Actions:40." + position)
-                    .Prefix("Taxonomy" + taxonomy.ContentItemId)
+                        )
+                        .Location("Actions:40." + position)
+                        .Prefix("Taxonomy" + taxonomy.ContentItemId)
                 );
 
                 position += 5;

@@ -8,12 +8,14 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static OrchardCoreBuilder ConfigureReverseProxySettings(this OrchardCoreBuilder builder)
         {
-            builder.ConfigureServices((tenantServices, serviceProvider) =>
-            {
-                var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_ReverseProxy");
+            builder.ConfigureServices(
+                (tenantServices, serviceProvider) =>
+                {
+                    var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_ReverseProxy");
 
-                tenantServices.PostConfigure<ReverseProxySettings>(settings => configurationSection.Bind(settings));
-            });
+                    tenantServices.PostConfigure<ReverseProxySettings>(settings => configurationSection.Bind(settings));
+                }
+            );
 
             return builder;
         }

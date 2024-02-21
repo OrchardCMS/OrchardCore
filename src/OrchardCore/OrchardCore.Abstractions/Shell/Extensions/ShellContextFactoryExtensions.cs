@@ -11,10 +11,9 @@ public static class ShellContextFactoryExtensions
 {
     /// <summary>
     /// Creates a maximum shell context composed of all installed features, and
-    /// marked by default as using shared settings that should not be disposed. 
+    /// marked by default as using shared settings that should not be disposed.
     /// </summary>
-    public static async Task<ShellContext> CreateMaximumContextAsync(
-        this IShellContextFactory shellContextFactory, ShellSettings shellSettings, bool sharedSettings = true)
+    public static async Task<ShellContext> CreateMaximumContextAsync(this IShellContextFactory shellContextFactory, ShellSettings shellSettings, bool sharedSettings = true)
     {
         var shellDescriptor = await shellContextFactory.GetShellDescriptorAsync(shellSettings);
         if (shellDescriptor is null)
@@ -35,10 +34,9 @@ public static class ShellContextFactoryExtensions
 
     /// <summary>
     /// Creates a minimum shell context without any feature, and marked
-    /// by default as using shared settings that should not be disposed. 
+    /// by default as using shared settings that should not be disposed.
     /// </summary>
-    public static async Task<ShellContext> CreateMinimumContextAsync(
-        this IShellContextFactory shellContextFactory, ShellSettings shellSettings, bool sharedSettings = true)
+    public static async Task<ShellContext> CreateMinimumContextAsync(this IShellContextFactory shellContextFactory, ShellSettings shellSettings, bool sharedSettings = true)
     {
         var context = await shellContextFactory.CreateDescribedContextAsync(shellSettings, new ShellDescriptor());
         if (sharedSettings)

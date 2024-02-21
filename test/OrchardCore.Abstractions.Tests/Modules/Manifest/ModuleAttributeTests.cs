@@ -19,9 +19,8 @@ namespace OrchardCore.Modules.Manifest
         /// Constructor.
         /// </summary>
         /// <param name="outputHelper"></param>
-        public ModuleAttributeTests(ITestOutputHelper outputHelper) : base(outputHelper)
-        {
-        }
+        public ModuleAttributeTests(ITestOutputHelper outputHelper)
+            : base(outputHelper) { }
 
         /// <summary>
         /// &quot;Module&quot;
@@ -45,12 +44,7 @@ namespace OrchardCore.Modules.Manifest
         /// </summary>
         /// <param name="attributeType"></param>
         /// <param name="expected"></param>
-        [
-            Theory,
-            InlineData(typeof(ModuleAttribute), "Module"),
-            InlineData(typeof(ThemeAttribute), "Theme"),
-            InlineData(typeof(TestAttributePrefix), nameof(TestAttributePrefix))
-        ]
+        [Theory, InlineData(typeof(ModuleAttribute), "Module"), InlineData(typeof(ThemeAttribute), "Theme"), InlineData(typeof(TestAttributePrefix), nameof(TestAttributePrefix))]
         public virtual void AttributePrefix(Type attributeType, string expected)
         {
             Assert.Equal(expected, ModuleAttribute.GetAttributePrefix(attributeType));
@@ -92,7 +86,19 @@ namespace OrchardCore.Modules.Manifest
                 new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
-            var module = CreateFromArgs(ModuleString7Object3CtorClassifier, id, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, enabledByDependencyOnly);
+            var module = CreateFromArgs(
+                ModuleString7Object3CtorClassifier,
+                id,
+                description,
+                author,
+                semVer,
+                website,
+                depString,
+                tagString,
+                defaultTenant,
+                alwaysEnabled,
+                enabledByDependencyOnly
+            );
 
             Assert.Equal(id, module.Id);
             Assert.Equal(id, module.Name);
@@ -161,7 +167,20 @@ namespace OrchardCore.Modules.Manifest
                 new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
-            var module = CreateFromArgs(ModuleString8Object3CtorClassifier, id, name, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, enabledByDependencyOnly);
+            var module = CreateFromArgs(
+                ModuleString8Object3CtorClassifier,
+                id,
+                name,
+                description,
+                author,
+                semVer,
+                website,
+                depString,
+                tagString,
+                defaultTenant,
+                alwaysEnabled,
+                enabledByDependencyOnly
+            );
 
             Assert.Equal(id, module.Id);
             Assert.Equal(name, module.Name);
@@ -233,7 +252,22 @@ namespace OrchardCore.Modules.Manifest
                 new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
-            var module = CreateFromArgs(ModuleString10Object3CtorClassifier, id, name, category, priString, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, enabledByDependencyOnly);
+            var module = CreateFromArgs(
+                ModuleString10Object3CtorClassifier,
+                id,
+                name,
+                category,
+                priString,
+                description,
+                author,
+                semVer,
+                website,
+                depString,
+                tagString,
+                defaultTenant,
+                alwaysEnabled,
+                enabledByDependencyOnly
+            );
 
             Assert.Equal(id, module.Id);
             Assert.Equal(name, module.Name);
@@ -305,7 +339,23 @@ namespace OrchardCore.Modules.Manifest
                 new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
-            var module = CreateFromArgs(ModuleString11Object3CtorClassifier, id, name, type, category, priString, description, author, semVer, website, depString, tagString, defaultTenant, alwaysEnabled, enabledByDependencyOnly);
+            var module = CreateFromArgs(
+                ModuleString11Object3CtorClassifier,
+                id,
+                name,
+                type,
+                category,
+                priString,
+                description,
+                author,
+                semVer,
+                website,
+                depString,
+                tagString,
+                defaultTenant,
+                alwaysEnabled,
+                enabledByDependencyOnly
+            );
 
             Assert.Equal(id, module.Id);
             Assert.Equal(name, module.Name);
@@ -603,7 +653,8 @@ namespace OrchardCore.Modules.Manifest
             var module = GetAssemblyAttribute<ModuleAttribute>(rootType, _ => _.GetType() == typeof(ModuleAttribute));
             var features = GetAssemblyAttributes<FeatureAttribute>(rootType, _ => _.GetType() == typeof(FeatureAttribute))
                 // We shall assume the test case includes a valid sortable Priority
-                .OrderBy(_ => _.InternalPriority).ToArray();
+                .OrderBy(_ => _.InternalPriority)
+                .ToArray();
 
             // TODO: MWP: note that targets are mining for project properties and are also injecting a ModuleMarkerAttribute...
             // TODO: MWP: ...which is also a 'Module', which is a possible source of confusion, spoofing, counterfeit, fraud, etc
@@ -641,26 +692,30 @@ namespace OrchardCore.Modules.Manifest
             /* Features should contain the following composites as well, which, by definition,
              * should contain 'two' in the following shapes:
              */
-            Assert.Contains(features, _ =>
-                _.Id == string.Join(".", baseId, One) &&
-                _.Name == _.Id &&
-                _.Category.Equals(Two, StringComparison.CurrentCultureIgnoreCase) &&
-                _.InternalPriority == _3 &&
-                _.Description == four &&
-                _.Dependencies.SequenceEqual(GetValues(five, six, seven)) &&
-                _.DefaultTenantOnly == tenant &&
-                _.IsAlwaysEnabled == enabled
+            Assert.Contains(
+                features,
+                _ =>
+                    _.Id == string.Join(".", baseId, One)
+                    && _.Name == _.Id
+                    && _.Category.Equals(Two, StringComparison.CurrentCultureIgnoreCase)
+                    && _.InternalPriority == _3
+                    && _.Description == four
+                    && _.Dependencies.SequenceEqual(GetValues(five, six, seven))
+                    && _.DefaultTenantOnly == tenant
+                    && _.IsAlwaysEnabled == enabled
             );
 
-            Assert.Contains(features, _ =>
-                _.Id == string.Join(".", baseId, Two) &&
-                _.Name == _.Id &&
-                _.Category == three &&
-                _.InternalPriority == _4 &&
-                _.Description == five &&
-                _.Dependencies.SequenceEqual(GetValues(six, seven, eight)) &&
-                _.DefaultTenantOnly == tenant &&
-                _.IsAlwaysEnabled == enabled
+            Assert.Contains(
+                features,
+                _ =>
+                    _.Id == string.Join(".", baseId, Two)
+                    && _.Name == _.Id
+                    && _.Category == three
+                    && _.InternalPriority == _4
+                    && _.Description == five
+                    && _.Dependencies.SequenceEqual(GetValues(six, seven, eight))
+                    && _.DefaultTenantOnly == tenant
+                    && _.IsAlwaysEnabled == enabled
             );
         }
 

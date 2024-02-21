@@ -107,20 +107,14 @@ namespace OrchardCore.Tests.Apis.Context
                 var recipeHarvesters = scope.ServiceProvider.GetRequiredService<IEnumerable<IRecipeHarvester>>();
                 var recipeExecutor = scope.ServiceProvider.GetRequiredService<IRecipeExecutor>();
 
-                var recipeCollections = await Task.WhenAll(
-                    recipeHarvesters.Select(recipe => recipe.HarvestRecipesAsync()));
+                var recipeCollections = await Task.WhenAll(recipeHarvesters.Select(recipe => recipe.HarvestRecipesAsync()));
 
                 var recipes = recipeCollections.SelectMany(recipeCollection => recipeCollection);
-                var recipe = recipes
-                    .FirstOrDefault(recipe => recipe.RecipeFileInfo.Name == recipeName && recipe.BasePath == recipePath);
+                var recipe = recipes.FirstOrDefault(recipe => recipe.RecipeFileInfo.Name == recipeName && recipe.BasePath == recipePath);
 
                 var executionId = Guid.NewGuid().ToString("n");
 
-                await recipeExecutor.ExecuteAsync(
-                    executionId,
-                    recipe,
-                    new Dictionary<string, object>(),
-                    CancellationToken.None);
+                await recipeExecutor.ExecuteAsync(executionId, recipe, new Dictionary<string, object>(), CancellationToken.None);
             });
         }
 
@@ -143,10 +137,7 @@ namespace OrchardCore.Tests.Apis.Context
             // Never generate a fake ContentItemId here as it should be created by the ContentManager.NewAsync() method.
             // Controllers should use the proper sequence so that they call their event handlers.
             // In that case it would skip calling ActivatingAsync, ActivatedAsync, InitializingAsync, InitializedAsync events
-            var contentItem = new ContentItem
-            {
-                ContentType = contentType
-            };
+            var contentItem = new ContentItem { ContentType = contentType };
 
             func(contentItem);
 
@@ -169,25 +160,29 @@ namespace OrchardCore.Tests.Apis.Context
 
     public static class SiteContextExtensions
     {
-        public static T WithDatabaseProvider<T>(this T siteContext, string databaseProvider) where T : SiteContext
+        public static T WithDatabaseProvider<T>(this T siteContext, string databaseProvider)
+            where T : SiteContext
         {
             siteContext.DatabaseProvider = databaseProvider;
             return siteContext;
         }
 
-        public static T WithConnectionString<T>(this T siteContext, string connectionString) where T : SiteContext
+        public static T WithConnectionString<T>(this T siteContext, string connectionString)
+            where T : SiteContext
         {
             siteContext.ConnectionString = connectionString;
             return siteContext;
         }
 
-        public static T WithPermissionsContext<T>(this T siteContext, PermissionsContext permissionsContext) where T : SiteContext
+        public static T WithPermissionsContext<T>(this T siteContext, PermissionsContext permissionsContext)
+            where T : SiteContext
         {
             siteContext.PermissionsContext = permissionsContext;
             return siteContext;
         }
 
-        public static T WithRecipe<T>(this T siteContext, string recipeName) where T : SiteContext
+        public static T WithRecipe<T>(this T siteContext, string recipeName)
+            where T : SiteContext
         {
             siteContext.RecipeName = recipeName;
             return siteContext;

@@ -13,11 +13,11 @@ namespace OrchardCore.Search.Lucene.Services
             Name = name;
         }
 
-        public LuceneAnalyzer(string name, Analyzer instance) : this(name, () => instance)
-        {
-        }
+        public LuceneAnalyzer(string name, Analyzer instance)
+            : this(name, () => instance) { }
 
         public string Name { get; }
+
         public Analyzer CreateAnalyzer()
         {
             return _factory();

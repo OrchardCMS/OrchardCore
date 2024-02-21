@@ -14,12 +14,9 @@ namespace OrchardCore.Users.Indexes
     {
         public override void Describe(DescribeContext<User> context)
         {
-            context.For<UserByLoginInfoIndex>()
-                .Map(user => user.LoginInfos.Select(x => new UserByLoginInfoIndex
-                {
-                    LoginProvider = x.LoginProvider,
-                    ProviderKey = x.ProviderKey,
-                }));
+            context
+                .For<UserByLoginInfoIndex>()
+                .Map(user => user.LoginInfos.Select(x => new UserByLoginInfoIndex { LoginProvider = x.LoginProvider, ProviderKey = x.ProviderKey, }));
         }
     }
 }

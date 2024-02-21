@@ -132,7 +132,6 @@ namespace OrchardCore.DisplayManagement.Razor
 
                 return string.Empty;
             }
-
             set
             {
                 if (ThemeLayout is IShape layout)
@@ -327,7 +326,5 @@ namespace OrchardCore.DisplayManagement.Razor
         public ISite Site => _site ??= Context.Features.Get<RazorViewFeature>()?.Site;
     }
 
-    public abstract class RazorPage : RazorPage<dynamic>
-    {
-    }
+    public abstract class RazorPage : RazorPage<dynamic> { }
 }

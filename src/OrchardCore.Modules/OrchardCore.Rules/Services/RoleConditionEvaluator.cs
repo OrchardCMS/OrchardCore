@@ -13,10 +13,7 @@ namespace OrchardCore.Rules.Services
         private readonly IdentityOptions _options;
         private readonly IConditionOperatorResolver _operatorResolver;
 
-        public RoleConditionEvaluator(
-            IHttpContextAccessor httpContextAccessor,
-            IOptions<IdentityOptions> options,
-            IConditionOperatorResolver operatorResolver)
+        public RoleConditionEvaluator(IHttpContextAccessor httpContextAccessor, IOptions<IdentityOptions> options, IConditionOperatorResolver operatorResolver)
         {
             _httpContextAccessor = httpContextAccessor;
             _options = options.Value;
@@ -33,15 +30,22 @@ namespace OrchardCore.Rules.Services
             // Claim all if the operator is negative
             if (condition.Operation is INegateOperator)
             {
-                return (_httpContextAccessor.HttpContext.User?.Claims.Where(c => c.Type == roleClaimType).All(claim =>
-                    operatorComparer.Compare(condition.Operation, claim.Value, condition.Value))
-                ).GetValueOrDefault() ? True : False;
+                return (
+                    _httpContextAccessor
+                        .HttpContext.User?.Claims.Where(c => c.Type == roleClaimType)
+                        .All(claim => operatorComparer.Compare(condition.Operation, claim.Value, condition.Value))
+                ).GetValueOrDefault()
+                    ? True
+                    : False;
             }
 
-            return (_httpContextAccessor.HttpContext.User?.Claims.Any(claim =>
-                claim.Type == roleClaimType &&
-                operatorComparer.Compare(condition.Operation, claim.Value, condition.Value))
-            ).GetValueOrDefault() ? True : False;
+            return (
+                _httpContextAccessor.HttpContext.User?.Claims.Any(claim =>
+                    claim.Type == roleClaimType && operatorComparer.Compare(condition.Operation, claim.Value, condition.Value)
+                )
+            ).GetValueOrDefault()
+                ? True
+                : False;
         }
     }
 }

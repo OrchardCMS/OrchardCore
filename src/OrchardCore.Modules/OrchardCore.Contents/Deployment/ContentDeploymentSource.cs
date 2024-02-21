@@ -53,11 +53,7 @@ namespace OrchardCore.Contents.Deployment
 
             if (data.HasValues())
             {
-                var jobj = new JsonObject
-                {
-                    ["name"] = "content",
-                    ["data"] = data,
-                };
+                var jobj = new JsonObject { ["name"] = "content", ["data"] = data, };
 
                 result.Steps.Add(jobj);
             }

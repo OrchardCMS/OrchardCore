@@ -29,18 +29,12 @@ public class Permissions : IPermissionProvider
         return list;
     }
 
-    public static string CreatePermissionName(string name)
-        => string.Format(_manageCustomSettings.Name, name);
+    public static string CreatePermissionName(string name) => string.Format(_manageCustomSettings.Name, name);
 
     public static Permission CreatePermissionForType(ContentTypeDefinition type)
     {
-        return new Permission(
-                CreatePermissionName(type.Name),
-                string.Format(_manageCustomSettings.Description, type.DisplayName),
-                _manageCustomSettings.ImpliedBy
-            );
+        return new Permission(CreatePermissionName(type.Name), string.Format(_manageCustomSettings.Description, type.DisplayName), _manageCustomSettings.ImpliedBy);
     }
 
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        => [];
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() => [];
 }

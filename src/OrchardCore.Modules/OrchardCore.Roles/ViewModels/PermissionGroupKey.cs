@@ -20,7 +20,8 @@ public class PermissionGroupKey
         Key = key;
     }
 
-    public PermissionGroupKey(string key, string title) : this(key)
+    public PermissionGroupKey(string key, string title)
+        : this(key)
     {
         Title = title;
     }

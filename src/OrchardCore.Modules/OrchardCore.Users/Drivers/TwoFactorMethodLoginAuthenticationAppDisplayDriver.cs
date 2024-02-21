@@ -9,8 +9,6 @@ public class TwoFactorMethodLoginAuthenticationAppDisplayDriver : DisplayDriver<
 {
     public override IDisplayResult Edit(TwoFactorMethod model)
     {
-        return View("AuthenticatorAppValidation", model)
-        .Location("Content")
-        .OnGroup(TokenOptions.DefaultAuthenticatorProvider);
+        return View("AuthenticatorAppValidation", model).Location("Content").OnGroup(TokenOptions.DefaultAuthenticatorProvider);
     }
 }

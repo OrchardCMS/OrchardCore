@@ -18,17 +18,9 @@ namespace OrchardCore.Workflows.Scripting
 
         public WorkflowMethodsProvider(WorkflowExecutionContext workflowContext)
         {
-            _workflowMethod = new GlobalMethod
-            {
-                Name = "workflow",
-                Method = serviceProvider => (Func<object>)(() => workflowContext),
-            };
+            _workflowMethod = new GlobalMethod { Name = "workflow", Method = serviceProvider => (Func<object>)(() => workflowContext), };
 
-            _workflowIdMethod = new GlobalMethod
-            {
-                Name = "workflowId",
-                Method = serviceProvider => (Func<string>)(() => workflowContext.Workflow.WorkflowId),
-            };
+            _workflowIdMethod = new GlobalMethod { Name = "workflowId", Method = serviceProvider => (Func<string>)(() => workflowContext.Workflow.WorkflowId), };
 
             _inputMethod = new GlobalMethod
             {
@@ -36,11 +28,7 @@ namespace OrchardCore.Workflows.Scripting
                 Method = serviceProvider => (Func<string, object>)((name) => workflowContext.Input.TryGetValue(name, out var value) ? value : null),
             };
 
-            _outputMethod = new GlobalMethod
-            {
-                Name = "output",
-                Method = serviceProvider => (Action<string, object>)((name, value) => workflowContext.Output[name] = value),
-            };
+            _outputMethod = new GlobalMethod { Name = "output", Method = serviceProvider => (Action<string, object>)((name, value) => workflowContext.Output[name] = value), };
 
             _propertyMethod = new GlobalMethod
             {
@@ -54,17 +42,9 @@ namespace OrchardCore.Workflows.Scripting
                 Method = serviceProvider => (Action<string, object>)((name, value) => workflowContext.Properties[name] = value),
             };
 
-            _resultMethod = new GlobalMethod
-            {
-                Name = "lastResult",
-                Method = serviceProvider => (Func<object>)(() => workflowContext.LastResult),
-            };
+            _resultMethod = new GlobalMethod { Name = "lastResult", Method = serviceProvider => (Func<object>)(() => workflowContext.LastResult), };
 
-            _correlationIdMethod = new GlobalMethod
-            {
-                Name = "correlationId",
-                Method = serviceProvider => (Func<string>)(() => workflowContext.Workflow.CorrelationId),
-            };
+            _correlationIdMethod = new GlobalMethod { Name = "correlationId", Method = serviceProvider => (Func<string>)(() => workflowContext.Workflow.CorrelationId), };
         }
 
         public IEnumerable<GlobalMethod> GetMethods()

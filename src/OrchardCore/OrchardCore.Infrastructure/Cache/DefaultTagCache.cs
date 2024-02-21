@@ -17,10 +17,7 @@ namespace OrchardCore.Environment.Cache
         private readonly IEnumerable<ITagRemovedEventHandler> _tagRemovedEventHandlers;
         private readonly ILogger _logger;
 
-        public DefaultTagCache(
-            IEnumerable<ITagRemovedEventHandler> tagRemovedEventHandlers,
-            IMemoryCache memoryCache,
-            ILogger<DefaultTagCache> logger)
+        public DefaultTagCache(IEnumerable<ITagRemovedEventHandler> tagRemovedEventHandlers, IMemoryCache memoryCache, ILogger<DefaultTagCache> logger)
         {
             // We use the memory cache as the state holder and keep this class transient as it has
             // dependencies on non-singletons

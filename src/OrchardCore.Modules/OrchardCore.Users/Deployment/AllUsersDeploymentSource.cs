@@ -27,33 +27,32 @@ public class AllUsersDeploymentSource : IDeploymentSource
 
         foreach (var user in allUsers)
         {
-            users.Add(JObject.FromObject(
-                new UsersStepUserModel
-                {
-                    UserName = user.UserName,
-                    UserId = user.UserId,
-                    Id = user.Id,
-                    Email = user.Email,
-                    EmailConfirmed = user.EmailConfirmed,
-                    PasswordHash = user.PasswordHash,
-                    IsEnabled = user.IsEnabled,
-                    NormalizedEmail = user.NormalizedEmail,
-                    NormalizedUserName = user.NormalizedUserName,
-                    SecurityStamp = user.SecurityStamp,
-                    ResetToken = user.ResetToken,
-                    PhoneNumber = user.PhoneNumber,
-                    PhoneNumberConfirmed = user.PhoneNumberConfirmed,
-                    TwoFactorEnabled = user.TwoFactorEnabled,
-                    IsLockoutEnabled = user.IsLockoutEnabled,
-                    AccessFailedCount = user.AccessFailedCount,
-                    RoleNames = user.RoleNames,
-                }));
+            users.Add(
+                JObject.FromObject(
+                    new UsersStepUserModel
+                    {
+                        UserName = user.UserName,
+                        UserId = user.UserId,
+                        Id = user.Id,
+                        Email = user.Email,
+                        EmailConfirmed = user.EmailConfirmed,
+                        PasswordHash = user.PasswordHash,
+                        IsEnabled = user.IsEnabled,
+                        NormalizedEmail = user.NormalizedEmail,
+                        NormalizedUserName = user.NormalizedUserName,
+                        SecurityStamp = user.SecurityStamp,
+                        ResetToken = user.ResetToken,
+                        PhoneNumber = user.PhoneNumber,
+                        PhoneNumberConfirmed = user.PhoneNumberConfirmed,
+                        TwoFactorEnabled = user.TwoFactorEnabled,
+                        IsLockoutEnabled = user.IsLockoutEnabled,
+                        AccessFailedCount = user.AccessFailedCount,
+                        RoleNames = user.RoleNames,
+                    }
+                )
+            );
         }
 
-        result.Steps.Add(new JsonObject
-        {
-            ["name"] = "Users",
-            ["Users"] = users,
-        });
+        result.Steps.Add(new JsonObject { ["name"] = "Users", ["Users"] = users, });
     }
 }

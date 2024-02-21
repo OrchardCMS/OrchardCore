@@ -42,11 +42,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
             }
             else
             {
-                result.Steps.Add(new JsonObject
-                {
-                    ["name"] = "Content",
-                    ["data"] = new JsonArray(jContentItem),
-                });
+                result.Steps.Add(new JsonObject { ["name"] = "Content", ["data"] = new JsonArray(jContentItem), });
             }
         }
     }

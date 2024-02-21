@@ -7,7 +7,10 @@ namespace OrchardCore.Tests.Html
         private static readonly HtmlSanitizerService _sanitizer = new(Options.Create(new HtmlSanitizerOptions()));
 
         [Theory]
-        [InlineData("<script>alert('xss')</script><div onload=\"alert('xss')\">Test<img src=\"test.gif\" style=\"background-image: url(javascript:alert('xss')); margin: 10px\"></div>", "<div>Test<img src=\"test.gif\" style=\"margin: 10px\"></div>")]
+        [InlineData(
+            "<script>alert('xss')</script><div onload=\"alert('xss')\">Test<img src=\"test.gif\" style=\"background-image: url(javascript:alert('xss')); margin: 10px\"></div>",
+            "<div>Test<img src=\"test.gif\" style=\"margin: 10px\"></div>"
+        )]
         [InlineData("<IMG SRC=javascript:alert(\"XSS\")>", @"<img>")]
         [InlineData("<a href=\"javascript: alert('xss')\">Click me</a>", @"<a>Click me</a>")]
         [InlineData("<a href=\"[locale 'en']javascript: alert('xss')[/locale]\">Click me</a>", @"<a>Click me</a>")]
@@ -25,10 +28,12 @@ namespace OrchardCore.Tests.Html
         {
             var services = new ServiceCollection();
             services.AddOptions<HtmlSanitizerOptions>();
-            services.ConfigureHtmlSanitizer((sanitizer) =>
-            {
-                sanitizer.AllowedAttributes.Add("class");
-            });
+            services.ConfigureHtmlSanitizer(
+                (sanitizer) =>
+                {
+                    sanitizer.AllowedAttributes.Add("class");
+                }
+            );
 
             services.AddScoped<IHtmlSanitizerService, HtmlSanitizerService>();
 
@@ -45,10 +50,12 @@ namespace OrchardCore.Tests.Html
             // Setup. With defaults.
             var services = new ServiceCollection();
             services.AddOptions<HtmlSanitizerOptions>();
-            services.ConfigureHtmlSanitizer((sanitizer) =>
-            {
-                sanitizer.AllowedAttributes.Add("class");
-            });
+            services.ConfigureHtmlSanitizer(
+                (sanitizer) =>
+                {
+                    sanitizer.AllowedAttributes.Add("class");
+                }
+            );
 
             // Act. Reconfigure to remove defaults.
             services.Configure<HtmlSanitizerOptions>(o =>

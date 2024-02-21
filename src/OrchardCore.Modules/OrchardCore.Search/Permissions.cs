@@ -10,21 +10,9 @@ public class Permissions : IPermissionProvider
 
     public static readonly Permission ManageSearchSettings = new("ManageSearchSettings", "Manage Search Settings");
 
-    private readonly IEnumerable<Permission> _allPermissions =
-    [
-        QuerySearchIndex,
-        ManageSearchSettings,
-    ];
+    private readonly IEnumerable<Permission> _allPermissions = [QuerySearchIndex, ManageSearchSettings,];
 
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
+    public Task<IEnumerable<Permission>> GetPermissionsAsync() => Task.FromResult(_allPermissions);
 
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
-    [
-        new PermissionStereotype
-        {
-            Name = "Administrator",
-            Permissions = _allPermissions,
-        },
-    ];
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() => [new PermissionStereotype { Name = "Administrator", Permissions = _allPermissions, },];
 }

@@ -6,7 +6,15 @@ namespace OrchardCore.AuditTrail.Services.Models
 {
     public class AuditTrailEventDescriptor
     {
-        public AuditTrailEventDescriptor(string name, string category, Func<IServiceProvider, LocalizedString> localizedName, Func<IServiceProvider, LocalizedString> localizedCategory, Func<IServiceProvider, LocalizedString> description, bool isEnabledByDefault = false, bool isMandatory = false)
+        public AuditTrailEventDescriptor(
+            string name,
+            string category,
+            Func<IServiceProvider, LocalizedString> localizedName,
+            Func<IServiceProvider, LocalizedString> localizedCategory,
+            Func<IServiceProvider, LocalizedString> description,
+            bool isEnabledByDefault = false,
+            bool isMandatory = false
+        )
         {
             Name = name;
             Category = category;

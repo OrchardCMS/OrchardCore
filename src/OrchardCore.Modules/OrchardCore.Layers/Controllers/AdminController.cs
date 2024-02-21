@@ -65,7 +65,8 @@ namespace OrchardCore.Layers.Controllers
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             INotifier notifier,
-            ILogger<AdminController> logger)
+            ILogger<AdminController> logger
+        )
         {
             _contentDefinitionManager = contentDefinitionManager;
             _contentManager = contentManager;
@@ -120,8 +121,14 @@ namespace OrchardCore.Layers.Controllers
                 }
                 else
                 {
-                    _logger.LogWarning("The Widget content item with id {ContentItemId} has no matching {ContentType} content type definition.", widget.ContentItem.ContentItemId, widget.ContentItem.ContentType);
-                    await _notifier.WarningAsync(H["The Widget content item with id {0} has no matching {1} content type definition.", widget.ContentItem.ContentItemId, widget.ContentItem.ContentType]);
+                    _logger.LogWarning(
+                        "The Widget content item with id {ContentItemId} has no matching {ContentType} content type definition.",
+                        widget.ContentItem.ContentItemId,
+                        widget.ContentItem.ContentType
+                    );
+                    await _notifier.WarningAsync(
+                        H["The Widget content item with id {0} has no matching {1} content type definition.", widget.ContentItem.ContentItemId, widget.ContentItem.ContentType]
+                    );
                 }
             }
 

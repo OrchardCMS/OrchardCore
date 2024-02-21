@@ -22,26 +22,22 @@ namespace OrchardCore.ContentLocalization.Records
 
         public async Task<int> CreateAsync()
         {
-            await _contentDefinitionManager.AlterPartDefinitionAsync(nameof(LocalizationPart), builder => builder
-                .Attachable()
-                .WithDescription("Provides a way to create localized version of content."));
-
-            await SchemaBuilder.CreateMapIndexTableAsync<LocalizedContentItemIndex>(table => table
-                .Column<string>("LocalizationSet", col => col.WithLength(26))
-                .Column<string>("Culture", col => col.WithLength(16))
-                .Column<string>("ContentItemId", c => c.WithLength(26))
-                .Column<bool>("Published")
-                .Column<bool>("Latest")
+            await _contentDefinitionManager.AlterPartDefinitionAsync(
+                nameof(LocalizationPart),
+                builder => builder.Attachable().WithDescription("Provides a way to create localized version of content.")
             );
 
-            await SchemaBuilder.AlterIndexTableAsync<LocalizedContentItemIndex>(table => table
-                .CreateIndex("IDX_LocalizationPartIndex_DocumentId",
-                "DocumentId",
-                "LocalizationSet",
-                "Culture",
-                "ContentItemId",
-                "Published",
-                "Latest")
+            await SchemaBuilder.CreateMapIndexTableAsync<LocalizedContentItemIndex>(table =>
+                table
+                    .Column<string>("LocalizationSet", col => col.WithLength(26))
+                    .Column<string>("Culture", col => col.WithLength(16))
+                    .Column<string>("ContentItemId", c => c.WithLength(26))
+                    .Column<bool>("Published")
+                    .Column<bool>("Latest")
+            );
+
+            await SchemaBuilder.AlterIndexTableAsync<LocalizedContentItemIndex>(table =>
+                table.CreateIndex("IDX_LocalizationPartIndex_DocumentId", "DocumentId", "LocalizationSet", "Culture", "ContentItemId", "Published", "Latest")
             );
 
             // Shortcut other migration steps on new content definition schemas.
@@ -51,8 +47,7 @@ namespace OrchardCore.ContentLocalization.Records
         // This code can be removed in a later version.
         public async Task<int> UpdateFrom1Async()
         {
-            await SchemaBuilder.AlterIndexTableAsync<LocalizedContentItemIndex>(table => table
-                .AddColumn<bool>(nameof(LocalizedContentItemIndex.Published)));
+            await SchemaBuilder.AlterIndexTableAsync<LocalizedContentItemIndex>(table => table.AddColumn<bool>(nameof(LocalizedContentItemIndex.Published)));
 
             return 2;
         }
@@ -60,18 +55,10 @@ namespace OrchardCore.ContentLocalization.Records
         // This code can be removed in a later version.
         public async Task<int> UpdateFrom2Async()
         {
-            await SchemaBuilder.AlterIndexTableAsync<LocalizedContentItemIndex>(table => table
-                .AddColumn<bool>(nameof(LocalizedContentItemIndex.Latest))
-            );
+            await SchemaBuilder.AlterIndexTableAsync<LocalizedContentItemIndex>(table => table.AddColumn<bool>(nameof(LocalizedContentItemIndex.Latest)));
 
-            await SchemaBuilder.AlterIndexTableAsync<LocalizedContentItemIndex>(table => table
-                .CreateIndex("IDX_LocalizationPartIndex_DocumentId",
-                "DocumentId",
-                "LocalizationSet",
-                "Culture",
-                "ContentItemId",
-                "Published",
-                "Latest")
+            await SchemaBuilder.AlterIndexTableAsync<LocalizedContentItemIndex>(table =>
+                table.CreateIndex("IDX_LocalizationPartIndex_DocumentId", "DocumentId", "LocalizationSet", "Culture", "ContentItemId", "Published", "Latest")
             );
 
             return 3;

@@ -8,11 +8,10 @@ namespace OrchardCore.Media.Deployment
     {
         public override IDisplayResult Display(AllMediaProfilesDeploymentStep step)
         {
-            return
-                Combine(
-                    View("AllMediaProfilesDeploymentStep_Summary", step).Location("Summary", "Content"),
-                    View("AllMediaProfilesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
-                );
+            return Combine(
+                View("AllMediaProfilesDeploymentStep_Summary", step).Location("Summary", "Content"),
+                View("AllMediaProfilesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(AllMediaProfilesDeploymentStep step)

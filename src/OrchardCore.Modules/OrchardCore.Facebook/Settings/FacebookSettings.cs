@@ -6,7 +6,8 @@ namespace OrchardCore.Facebook.Settings
         public string AppSecret { get; set; }
         public bool FBInit { get; set; } = false;
 
-        public string FBInitParams { get; set; } = @"status:true,
+        public string FBInitParams { get; set; } =
+            @"status:true,
 xfbml:true,
 autoLogAppEvents:true";
 

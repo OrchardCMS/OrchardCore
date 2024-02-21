@@ -13,7 +13,8 @@ namespace OrchardCore.Layers.Indexes
     {
         public override void Describe(DescribeContext<ContentItem> context)
         {
-            context.For<LayerMetadataIndex>()
+            context
+                .For<LayerMetadataIndex>()
                 .When(contentItem => contentItem.Has<LayerMetadata>())
                 .Map(contentItem =>
                 {
@@ -23,10 +24,7 @@ namespace OrchardCore.Layers.Indexes
                         return null;
                     }
 
-                    return new LayerMetadataIndex
-                    {
-                        Zone = layerMetadata.Zone,
-                    };
+                    return new LayerMetadataIndex { Zone = layerMetadata.Zone, };
                 });
         }
     }

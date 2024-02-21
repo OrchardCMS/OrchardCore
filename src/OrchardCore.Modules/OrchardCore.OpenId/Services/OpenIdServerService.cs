@@ -38,7 +38,8 @@ namespace OrchardCore.OpenId.Services
             IOptionsMonitor<ShellOptions> shellOptions,
             ShellSettings shellSettings,
             ISiteService siteService,
-            IStringLocalizer<OpenIdServerService> stringLocalizer)
+            IStringLocalizer<OpenIdServerService> stringLocalizer
+        )
         {
             _dataProtector = dataProtectionProvider.CreateProtector(nameof(OpenIdServerService));
             _logger = logger;
@@ -99,9 +100,14 @@ namespace OrchardCore.OpenId.Services
 
             var results = ImmutableArray.CreateBuilder<ValidationResult>();
 
-            if (!settings.AllowAuthorizationCodeFlow && !settings.AllowClientCredentialsFlow &&
-                !settings.AllowHybridFlow && !settings.AllowImplicitFlow &&
-                !settings.AllowPasswordFlow && !settings.AllowRefreshTokenFlow)
+            if (
+                !settings.AllowAuthorizationCodeFlow
+                && !settings.AllowClientCredentialsFlow
+                && !settings.AllowHybridFlow
+                && !settings.AllowImplicitFlow
+                && !settings.AllowPasswordFlow
+                && !settings.AllowRefreshTokenFlow
+            )
             {
                 results.Add(new ValidationResult(S["At least one OpenID Connect flow must be enabled."]));
             }
@@ -110,124 +116,104 @@ namespace OrchardCore.OpenId.Services
             {
                 if (!settings.Authority.IsAbsoluteUri || !settings.Authority.IsWellFormedOriginalString())
                 {
-                    results.Add(new ValidationResult(S["The authority must be a valid absolute URL."], new[]
-                    {
-                        nameof(settings.Authority)
-                    }));
+                    results.Add(new ValidationResult(S["The authority must be a valid absolute URL."], new[] { nameof(settings.Authority) }));
                 }
 
                 if (!string.IsNullOrEmpty(settings.Authority.Query) || !string.IsNullOrEmpty(settings.Authority.Fragment))
                 {
-                    results.Add(new ValidationResult(S["The authority cannot contain a query string or a fragment."], new[]
-                    {
-                        nameof(settings.Authority)
-                    }));
+                    results.Add(new ValidationResult(S["The authority cannot contain a query string or a fragment."], new[] { nameof(settings.Authority) }));
                 }
             }
 
-            if (settings.SigningCertificateStoreLocation != null &&
-                settings.SigningCertificateStoreName != null &&
-                !string.IsNullOrEmpty(settings.SigningCertificateThumbprint))
+            if (settings.SigningCertificateStoreLocation != null && settings.SigningCertificateStoreName != null && !string.IsNullOrEmpty(settings.SigningCertificateThumbprint))
             {
-                var certificate = GetCertificate(
-                    settings.SigningCertificateStoreLocation.Value,
-                    settings.SigningCertificateStoreName.Value, settings.SigningCertificateThumbprint);
+                var certificate = GetCertificate(settings.SigningCertificateStoreLocation.Value, settings.SigningCertificateStoreName.Value, settings.SigningCertificateThumbprint);
 
                 if (certificate == null)
                 {
-                    results.Add(new ValidationResult(S["The certificate cannot be found."], new[]
-                    {
-                        nameof(settings.SigningCertificateThumbprint)
-                    }));
+                    results.Add(new ValidationResult(S["The certificate cannot be found."], new[] { nameof(settings.SigningCertificateThumbprint) }));
                 }
                 else if (!certificate.HasPrivateKey)
                 {
-                    results.Add(new ValidationResult(S["The certificate doesn't contain the required private key."], new[]
-                    {
-                        nameof(settings.SigningCertificateThumbprint)
-                    }));
+                    results.Add(new ValidationResult(S["The certificate doesn't contain the required private key."], new[] { nameof(settings.SigningCertificateThumbprint) }));
                 }
                 else if (certificate.Archived)
                 {
-                    results.Add(new ValidationResult(S["The certificate is not valid because it is marked as archived."], new[]
-                    {
-                        nameof(settings.SigningCertificateThumbprint)
-                    }));
+                    results.Add(new ValidationResult(S["The certificate is not valid because it is marked as archived."], new[] { nameof(settings.SigningCertificateThumbprint) }));
                 }
                 else if (certificate.NotBefore > DateTime.Now || certificate.NotAfter < DateTime.Now)
                 {
-                    results.Add(new ValidationResult(S["The certificate is not valid for current date."], new[]
-                    {
-                        nameof(settings.SigningCertificateThumbprint)
-                    }));
+                    results.Add(new ValidationResult(S["The certificate is not valid for current date."], new[] { nameof(settings.SigningCertificateThumbprint) }));
                 }
             }
 
             if (settings.AllowPasswordFlow && !settings.TokenEndpointPath.HasValue)
             {
-                results.Add(new ValidationResult(S["The password flow cannot be enabled when the token endpoint is disabled."], new[]
-                {
-                    nameof(settings.AllowPasswordFlow)
-                }));
+                results.Add(new ValidationResult(S["The password flow cannot be enabled when the token endpoint is disabled."], new[] { nameof(settings.AllowPasswordFlow) }));
             }
 
             if (settings.AllowClientCredentialsFlow && !settings.TokenEndpointPath.HasValue)
             {
-                results.Add(new ValidationResult(S["The client credentials flow cannot be enabled when the token endpoint is disabled."], new[]
-                {
-                    nameof(settings.AllowClientCredentialsFlow)
-                }));
+                results.Add(
+                    new ValidationResult(
+                        S["The client credentials flow cannot be enabled when the token endpoint is disabled."],
+                        new[] { nameof(settings.AllowClientCredentialsFlow) }
+                    )
+                );
             }
 
             if (settings.AllowAuthorizationCodeFlow && (!settings.AuthorizationEndpointPath.HasValue || !settings.TokenEndpointPath.HasValue))
             {
-                results.Add(new ValidationResult(S["The authorization code flow cannot be enabled when the authorization and token endpoints are disabled."], new[]
-                {
-                    nameof(settings.AllowAuthorizationCodeFlow)
-                }));
+                results.Add(
+                    new ValidationResult(
+                        S["The authorization code flow cannot be enabled when the authorization and token endpoints are disabled."],
+                        new[] { nameof(settings.AllowAuthorizationCodeFlow) }
+                    )
+                );
             }
 
             if (settings.AllowRefreshTokenFlow)
             {
                 if (!settings.TokenEndpointPath.HasValue)
                 {
-                    results.Add(new ValidationResult(S["The refresh token flow cannot be enabled when the token endpoint is disabled."], new[]
-                    {
-                        nameof(settings.AllowRefreshTokenFlow)
-                    }));
+                    results.Add(
+                        new ValidationResult(S["The refresh token flow cannot be enabled when the token endpoint is disabled."], new[] { nameof(settings.AllowRefreshTokenFlow) })
+                    );
                 }
 
                 if (!settings.AllowPasswordFlow && !settings.AllowAuthorizationCodeFlow && !settings.AllowHybridFlow)
                 {
-                    results.Add(new ValidationResult(S["The refresh token flow can only be enabled if the password, authorization code or hybrid flows are enabled."], new[]
-                    {
-                        nameof(settings.AllowRefreshTokenFlow)
-                    }));
+                    results.Add(
+                        new ValidationResult(
+                            S["The refresh token flow can only be enabled if the password, authorization code or hybrid flows are enabled."],
+                            new[] { nameof(settings.AllowRefreshTokenFlow) }
+                        )
+                    );
                 }
             }
 
             if (settings.AllowImplicitFlow && !settings.AuthorizationEndpointPath.HasValue)
             {
-                results.Add(new ValidationResult(S["The implicit flow cannot be enabled when the authorization endpoint is disabled."], new[]
-                {
-                    nameof(settings.AllowImplicitFlow)
-                }));
+                results.Add(
+                    new ValidationResult(S["The implicit flow cannot be enabled when the authorization endpoint is disabled."], new[] { nameof(settings.AllowImplicitFlow) })
+                );
             }
 
             if (settings.AllowHybridFlow && (!settings.AuthorizationEndpointPath.HasValue || !settings.TokenEndpointPath.HasValue))
             {
-                results.Add(new ValidationResult(S["The hybrid flow cannot be enabled when the authorization and token endpoints are disabled."], new[]
-                {
-                    nameof(settings.AllowHybridFlow)
-                }));
+                results.Add(
+                    new ValidationResult(
+                        S["The hybrid flow cannot be enabled when the authorization and token endpoints are disabled."],
+                        new[] { nameof(settings.AllowHybridFlow) }
+                    )
+                );
             }
 
             if (settings.DisableAccessTokenEncryption && settings.AccessTokenFormat != OpenIdServerSettings.TokenFormat.JsonWebToken)
             {
-                results.Add(new ValidationResult(S["Access token encryption can only be disabled when using JWT tokens."], new[]
-                {
-                    nameof(settings.DisableAccessTokenEncryption)
-                }));
+                results.Add(
+                    new ValidationResult(S["Access token encryption can only be disabled when using JWT tokens."], new[] { nameof(settings.DisableAccessTokenEncryption) })
+                );
             }
 
             return Task.FromResult(results.ToImmutable());
@@ -272,23 +258,29 @@ namespace OrchardCore.OpenId.Services
 
             // If a certificate was explicitly provided, return it immediately
             // instead of using the fallback managed certificates logic.
-            if (settings.EncryptionCertificateStoreLocation != null &&
-                settings.EncryptionCertificateStoreName != null &&
-                !string.IsNullOrEmpty(settings.EncryptionCertificateThumbprint))
+            if (
+                settings.EncryptionCertificateStoreLocation != null
+                && settings.EncryptionCertificateStoreName != null
+                && !string.IsNullOrEmpty(settings.EncryptionCertificateThumbprint)
+            )
             {
                 var certificate = GetCertificate(
                     settings.EncryptionCertificateStoreLocation.Value,
-                    settings.EncryptionCertificateStoreName.Value, settings.EncryptionCertificateThumbprint);
+                    settings.EncryptionCertificateStoreName.Value,
+                    settings.EncryptionCertificateThumbprint
+                );
 
                 if (certificate != null)
                 {
                     return [new X509SecurityKey(certificate)];
                 }
 
-                _logger.LogWarning("The encryption certificate '{Thumbprint}' could not be found in the " +
-                                   "{StoreLocation}/{StoreName} store.", settings.EncryptionCertificateThumbprint,
-                                   settings.EncryptionCertificateStoreLocation.Value.ToString(),
-                                   settings.EncryptionCertificateStoreName.Value.ToString());
+                _logger.LogWarning(
+                    "The encryption certificate '{Thumbprint}' could not be found in the " + "{StoreLocation}/{StoreName} store.",
+                    settings.EncryptionCertificateThumbprint,
+                    settings.EncryptionCertificateStoreLocation.Value.ToString(),
+                    settings.EncryptionCertificateStoreName.Value.ToString()
+                );
             }
 
             try
@@ -298,9 +290,7 @@ namespace OrchardCore.OpenId.Services
                 var certificates = (await GetCertificatesAsync(directory)).Select(tuple => tuple.certificate).ToList();
                 if (certificates.Any(certificate => certificate.NotAfter.AddDays(-7) > DateTime.Now))
                 {
-                    return ImmutableArray.CreateRange<SecurityKey>(
-                        from certificate in certificates
-                        select new X509SecurityKey(certificate));
+                    return ImmutableArray.CreateRange<SecurityKey>(from certificate in certificates select new X509SecurityKey(certificate));
                 }
 
                 try
@@ -329,12 +319,15 @@ namespace OrchardCore.OpenId.Services
             // and add it in the tenant memory cache so that future calls to this method return it.
             return
             [
-                _memoryCache.GetOrCreate("05A24221-8C15-4E58-A0A7-56EC3E42E783", entry =>
-                {
-                    entry.SetPriority(CacheItemPriority.NeverRemove);
+                _memoryCache.GetOrCreate(
+                    "05A24221-8C15-4E58-A0A7-56EC3E42E783",
+                    entry =>
+                    {
+                        entry.SetPriority(CacheItemPriority.NeverRemove);
 
-                    return new RsaSecurityKey(GenerateRsaSecurityKey(size: 2048));
-                }),
+                        return new RsaSecurityKey(GenerateRsaSecurityKey(size: 2048));
+                    }
+                ),
             ];
         }
 
@@ -344,23 +337,21 @@ namespace OrchardCore.OpenId.Services
 
             // If a certificate was explicitly provided, return it immediately
             // instead of using the fallback managed certificates logic.
-            if (settings.SigningCertificateStoreLocation != null &&
-                settings.SigningCertificateStoreName != null &&
-                !string.IsNullOrEmpty(settings.SigningCertificateThumbprint))
+            if (settings.SigningCertificateStoreLocation != null && settings.SigningCertificateStoreName != null && !string.IsNullOrEmpty(settings.SigningCertificateThumbprint))
             {
-                var certificate = GetCertificate(
-                    settings.SigningCertificateStoreLocation.Value,
-                    settings.SigningCertificateStoreName.Value, settings.SigningCertificateThumbprint);
+                var certificate = GetCertificate(settings.SigningCertificateStoreLocation.Value, settings.SigningCertificateStoreName.Value, settings.SigningCertificateThumbprint);
 
                 if (certificate != null)
                 {
                     return [new X509SecurityKey(certificate)];
                 }
 
-                _logger.LogWarning("The signing certificate '{Thumbprint}' could not be found in the " +
-                                   "{StoreLocation}/{StoreName} store.", settings.SigningCertificateThumbprint,
-                                   settings.SigningCertificateStoreLocation.Value.ToString(),
-                                   settings.SigningCertificateStoreName.Value.ToString());
+                _logger.LogWarning(
+                    "The signing certificate '{Thumbprint}' could not be found in the " + "{StoreLocation}/{StoreName} store.",
+                    settings.SigningCertificateThumbprint,
+                    settings.SigningCertificateStoreLocation.Value.ToString(),
+                    settings.SigningCertificateStoreName.Value.ToString()
+                );
             }
 
             try
@@ -370,9 +361,7 @@ namespace OrchardCore.OpenId.Services
                 var certificates = (await GetCertificatesAsync(directory)).Select(tuple => tuple.certificate).ToList();
                 if (certificates.Any(certificate => certificate.NotAfter.AddDays(-7) > DateTime.Now))
                 {
-                    return ImmutableArray.CreateRange<SecurityKey>(
-                        from certificate in certificates
-                        select new X509SecurityKey(certificate));
+                    return ImmutableArray.CreateRange<SecurityKey>(from certificate in certificates select new X509SecurityKey(certificate));
                 }
 
                 try
@@ -401,12 +390,15 @@ namespace OrchardCore.OpenId.Services
             // and add it in the tenant memory cache so that future calls to this method return it.
             return
             [
-                _memoryCache.GetOrCreate("44788774-20E3-4499-86F0-AB7CE2DF97F6", entry =>
-                {
-                    entry.SetPriority(CacheItemPriority.NeverRemove);
+                _memoryCache.GetOrCreate(
+                    "44788774-20E3-4499-86F0-AB7CE2DF97F6",
+                    entry =>
+                    {
+                        entry.SetPriority(CacheItemPriority.NeverRemove);
 
-                    return new RsaSecurityKey(GenerateRsaSecurityKey(size: 2048));
-                }),
+                        return new RsaSecurityKey(GenerateRsaSecurityKey(size: 2048));
+                    }
+                ),
             ];
         }
 
@@ -459,17 +451,11 @@ namespace OrchardCore.OpenId.Services
             };
         }
 
-        private static DirectoryInfo GetEncryptionCertificateDirectory(ShellOptions options, ShellSettings settings)
-            => Directory.CreateDirectory(Path.Combine(
-                options.ShellsApplicationDataPath,
-                options.ShellsContainerName,
-                settings.Name, "IdentityModel-Encryption-Certificates"));
+        private static DirectoryInfo GetEncryptionCertificateDirectory(ShellOptions options, ShellSettings settings) =>
+            Directory.CreateDirectory(Path.Combine(options.ShellsApplicationDataPath, options.ShellsContainerName, settings.Name, "IdentityModel-Encryption-Certificates"));
 
-        private static DirectoryInfo GetSigningCertificateDirectory(ShellOptions options, ShellSettings settings)
-            => Directory.CreateDirectory(Path.Combine(
-                options.ShellsApplicationDataPath,
-                options.ShellsContainerName,
-                settings.Name, "IdentityModel-Signing-Certificates"));
+        private static DirectoryInfo GetSigningCertificateDirectory(ShellOptions options, ShellSettings settings) =>
+            Directory.CreateDirectory(Path.Combine(options.ShellsApplicationDataPath, options.ShellsContainerName, settings.Name, "IdentityModel-Signing-Certificates"));
 
         private async Task<ImmutableArray<(string path, X509Certificate2 certificate)>> GetCertificatesAsync(DirectoryInfo directory)
         {
@@ -517,9 +503,7 @@ namespace OrchardCore.OpenId.Services
                 try
                 {
                     // Note: ephemeral key sets are not supported on non-Windows platforms.
-                    var flags = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ?
-                        X509KeyStorageFlags.EphemeralKeySet :
-                        X509KeyStorageFlags.MachineKeySet;
+                    var flags = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? X509KeyStorageFlags.EphemeralKeySet : X509KeyStorageFlags.MachineKeySet;
 
                     return new X509Certificate2(path, password, flags);
                 }
@@ -529,13 +513,9 @@ namespace OrchardCore.OpenId.Services
                 // For more information, visit https://github.com/OrchardCMS/OrchardCore/issues/3222.
                 catch (CryptographicException exception)
                 {
-                    _logger.LogDebug(exception, "A first-chance exception occurred while trying to extract " +
-                                                "a X.509 certificate with the default key storage options.");
+                    _logger.LogDebug(exception, "A first-chance exception occurred while trying to extract " + "a X.509 certificate with the default key storage options.");
 
-                    return new X509Certificate2(path, password,
-                        X509KeyStorageFlags.MachineKeySet |
-                        X509KeyStorageFlags.PersistKeySet |
-                        X509KeyStorageFlags.Exportable);
+                    return new X509Certificate2(path, password, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.Exportable);
                 }
                 // Don't swallow exceptions thrown from the catch handler to ensure unrecoverable exceptions
                 // (e.g caused by malformed X.509 certificates or invalid password) are correctly logged.
@@ -608,12 +588,16 @@ namespace OrchardCore.OpenId.Services
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 // Warning: ensure a null key name is specified to ensure the RSA key is not persisted by CNG.
-                var key = CngKey.Create(CngAlgorithm.Rsa, keyName: null, new CngKeyCreationParameters
-                {
-                    ExportPolicy = CngExportPolicies.AllowPlaintextExport,
-                    KeyCreationOptions = CngKeyCreationOptions.MachineKey,
-                    Parameters = { new CngProperty("Length", BitConverter.GetBytes(size), CngPropertyOptions.None) }
-                });
+                var key = CngKey.Create(
+                    CngAlgorithm.Rsa,
+                    keyName: null,
+                    new CngKeyCreationParameters
+                    {
+                        ExportPolicy = CngExportPolicies.AllowPlaintextExport,
+                        KeyCreationOptions = CngKeyCreationOptions.MachineKey,
+                        Parameters = { new CngProperty("Length", BitConverter.GetBytes(size), CngPropertyOptions.None) }
+                    }
+                );
 
                 return new RSACng(key);
             }

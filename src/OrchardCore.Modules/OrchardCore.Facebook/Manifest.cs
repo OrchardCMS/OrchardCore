@@ -22,10 +22,7 @@ using OrchardCore.Modules.Manifest;
     Name = "Meta Login",
     Category = "Meta",
     Description = "Authenticates users from Meta.",
-    Dependencies =
-    [
-        FacebookConstants.Features.Core
-    ]
+    Dependencies = [FacebookConstants.Features.Core]
 )]
 
 [assembly: Feature(
@@ -33,17 +30,7 @@ using OrchardCore.Modules.Manifest;
     Name = "Meta Social Plugins Widgets",
     Category = "Meta",
     Description = "Integrates Meta social plugins as predefined widgets",
-    Dependencies =
-    [
-        FacebookConstants.Features.Core,
-        "OrchardCore.Widgets",
-        "OrchardCore.Recipes.Core",
-    ]
+    Dependencies = [FacebookConstants.Features.Core, "OrchardCore.Widgets", "OrchardCore.Recipes.Core",]
 )]
 
-[assembly: Feature(
-    Id = FacebookConstants.Features.Pixel,
-    Name = "Meta Pixel",
-    Category = "Meta",
-    Description = "Provides a way to enable Meta Pixel tracking for your site."
-)]
+[assembly: Feature(Id = FacebookConstants.Features.Pixel, Name = "Meta Pixel", Category = "Meta", Description = "Provides a way to enable Meta Pixel tracking for your site.")]

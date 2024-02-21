@@ -87,9 +87,7 @@ namespace OrchardCore.Autoroute.Core.Services
             ILookup<string, AutorouteEntry> entriesByContainer = null;
             foreach (var entry in entries.Where(x => string.IsNullOrEmpty(x.ContainedContentItemId)))
             {
-                entriesByContainer ??= _paths.Values
-                    .Where(x => !string.IsNullOrEmpty(x.ContainedContentItemId))
-                    .ToLookup(x => x.ContentItemId);
+                entriesByContainer ??= _paths.Values.Where(x => !string.IsNullOrEmpty(x.ContainedContentItemId)).ToLookup(x => x.ContentItemId);
 
                 if (!entriesByContainer.Contains(entry.ContentItemId))
                 {
@@ -104,14 +102,12 @@ namespace OrchardCore.Autoroute.Core.Services
 
             foreach (var entry in entries)
             {
-                if (_paths.TryGetValue(entry.ContentItemId, out var previousContainerEntry) &&
-                    string.IsNullOrEmpty(entry.ContainedContentItemId))
+                if (_paths.TryGetValue(entry.ContentItemId, out var previousContainerEntry) && string.IsNullOrEmpty(entry.ContainedContentItemId))
                 {
                     _contentItemIds = _contentItemIds.Remove(previousContainerEntry.Path);
                 }
 
-                if (!string.IsNullOrEmpty(entry.ContainedContentItemId) &&
-                    _paths.TryGetValue(entry.ContainedContentItemId, out var previousContainedEntry))
+                if (!string.IsNullOrEmpty(entry.ContainedContentItemId) && _paths.TryGetValue(entry.ContainedContentItemId, out var previousContainedEntry))
                 {
                     _contentItemIds = _contentItemIds.Remove(previousContainedEntry.Path);
                 }
@@ -134,8 +130,7 @@ namespace OrchardCore.Autoroute.Core.Services
             foreach (var entry in entries)
             {
                 // Evict all entries related to a container item from autoroute entries.
-                var entriesToRemove = _paths.Values.Where(x => x.ContentItemId == entry.ContentItemId &&
-                    !string.IsNullOrEmpty(x.ContainedContentItemId));
+                var entriesToRemove = _paths.Values.Where(x => x.ContentItemId == entry.ContentItemId && !string.IsNullOrEmpty(x.ContainedContentItemId));
 
                 _paths = _paths.RemoveRange(entriesToRemove.Select(x => x.ContainedContentItemId));
                 _contentItemIds = _contentItemIds.RemoveRange(entriesToRemove.Select(x => x.Path));
@@ -157,10 +152,7 @@ namespace OrchardCore.Autoroute.Core.Services
             {
                 if (_stateIdentifier != state.Identifier)
                 {
-                    var indexes = await Session
-                        .QueryIndex<AutoroutePartIndex>(i => i.Id > _lastIndexId)
-                        .OrderBy(i => i.Id)
-                        .ListAsync();
+                    var indexes = await Session.QueryIndex<AutoroutePartIndex>(i => i.Id > _lastIndexId).OrderBy(i => i.Id).ListAsync();
 
                     // A draft is indexed to check for conflicts, and to remove an entry, but only if an item is unpublished,
                     // so only if the entry 'DocumentId' matches, this because when a draft is saved more than once, the index
@@ -168,22 +160,24 @@ namespace OrchardCore.Autoroute.Core.Services
 
                     var entriesToRemove = indexes
                         .Where(i => !i.Published || i.Path == null)
-                        .SelectMany(i => _paths.Values.Where(e =>
-                            // The item was removed.
-                            ((!i.Published && !i.Latest) ||
-                            // The part was disabled or removed.
-                            (i.Path == null && i.Published) ||
-                            // The item was unpublished.
-                            (!i.Published && e.DocumentId == i.DocumentId)) &&
-                            (e.ContentItemId == i.ContentItemId ||
-                            e.ContainedContentItemId == i.ContentItemId)));
+                        .SelectMany(i =>
+                            _paths.Values.Where(e =>
+                                // The item was removed.
+                                (
+                                    (!i.Published && !i.Latest)
+                                    ||
+                                    // The part was disabled or removed.
+                                    (i.Path == null && i.Published)
+                                    ||
+                                    // The item was unpublished.
+                                    (!i.Published && e.DocumentId == i.DocumentId)
+                                ) && (e.ContentItemId == i.ContentItemId || e.ContainedContentItemId == i.ContentItemId)
+                            )
+                        );
 
                     var entriesToAdd = indexes
                         .Where(i => i.Published && i.Path != null)
-                        .Select(i => new AutorouteEntry(i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath)
-                        {
-                            DocumentId = i.DocumentId
-                        });
+                        .Select(i => new AutorouteEntry(i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath) { DocumentId = i.DocumentId });
 
                     RemoveEntries(entriesToRemove);
                     AddEntries(entriesToAdd);
@@ -212,15 +206,9 @@ namespace OrchardCore.Autoroute.Core.Services
                 {
                     var state = await _autorouteStateManager.GetOrCreateImmutableAsync();
 
-                    var indexes = await Session
-                        .QueryIndex<AutoroutePartIndex>(i => i.Published && i.Path != null)
-                        .OrderBy(i => i.Id)
-                        .ListAsync();
+                    var indexes = await Session.QueryIndex<AutoroutePartIndex>(i => i.Published && i.Path != null).OrderBy(i => i.Id).ListAsync();
 
-                    var entries = indexes.Select(i => new AutorouteEntry(i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath)
-                    {
-                        DocumentId = i.DocumentId
-                    });
+                    var entries = indexes.Select(i => new AutorouteEntry(i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath) { DocumentId = i.DocumentId });
 
                     AddEntries(entries);
 

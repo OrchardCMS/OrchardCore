@@ -9,10 +9,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
         private readonly IShapeTableManager _shapeTableManager;
         private readonly IThemeManager _themeManager;
 
-        public ShapeTablePlacementProvider(
-            IShapeTableManager shapeTableManager,
-            IThemeManager themeManager
-            )
+        public ShapeTablePlacementProvider(IShapeTableManager shapeTableManager, IThemeManager themeManager)
         {
             _shapeTableManager = shapeTableManager;
             _themeManager = themeManager;

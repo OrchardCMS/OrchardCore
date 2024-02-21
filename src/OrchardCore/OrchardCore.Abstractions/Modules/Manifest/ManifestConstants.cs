@@ -1,4 +1,3 @@
-
 namespace OrchardCore.Modules.Manifest;
 
 public static class ManifestConstants

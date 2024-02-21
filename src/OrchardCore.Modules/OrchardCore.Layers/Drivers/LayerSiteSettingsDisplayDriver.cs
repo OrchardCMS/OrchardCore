@@ -18,9 +18,7 @@ namespace OrchardCore.Layers.Drivers
         private readonly IAuthorizationService _authorizationService;
         private static readonly char[] _separator = [' ', ','];
 
-        public LayerSiteSettingsDisplayDriver(
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+        public LayerSiteSettingsDisplayDriver(IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService)
         {
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
@@ -35,10 +33,15 @@ namespace OrchardCore.Layers.Drivers
                 return null;
             }
 
-            return Initialize<LayerSettingsViewModel>("LayerSettings_Edit", model =>
-                {
-                    model.Zones = string.Join(", ", settings.Zones);
-                }).Location("Content:3").OnGroup(GroupId);
+            return Initialize<LayerSettingsViewModel>(
+                    "LayerSettings_Edit",
+                    model =>
+                    {
+                        model.Zones = string.Join(", ", settings.Zones);
+                    }
+                )
+                .Location("Content:3")
+                .OnGroup(GroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(LayerSettings settings, BuildEditorContext context)

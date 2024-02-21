@@ -9,7 +9,8 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentManagement.Display.ContentDisplay
 {
-    public abstract class ContentFieldDisplayDriver<TField> : DisplayDriverBase, IContentFieldDisplayDriver where TField : ContentField, new()
+    public abstract class ContentFieldDisplayDriver<TField> : DisplayDriverBase, IContentFieldDisplayDriver
+        where TField : ContentField, new()
     {
         private const string DisplayToken = "_Display";
         private const string DisplaySeparator = "_Display__";
@@ -129,10 +130,14 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return result;
         }
 
-        Task<IDisplayResult> IContentFieldDisplayDriver.BuildDisplayAsync(ContentPart contentPart, ContentPartFieldDefinition partFieldDefinition, ContentTypePartDefinition typePartDefinition, BuildDisplayContext context)
+        Task<IDisplayResult> IContentFieldDisplayDriver.BuildDisplayAsync(
+            ContentPart contentPart,
+            ContentPartFieldDefinition partFieldDefinition,
+            ContentTypePartDefinition typePartDefinition,
+            BuildDisplayContext context
+        )
         {
-            if (!string.Equals(typeof(TField).Name, partFieldDefinition.FieldDefinition.Name) &&
-               !string.Equals(nameof(ContentField), partFieldDefinition.FieldDefinition.Name))
+            if (!string.Equals(typeof(TField).Name, partFieldDefinition.FieldDefinition.Name) && !string.Equals(nameof(ContentField), partFieldDefinition.FieldDefinition.Name))
             {
                 return Task.FromResult(default(IDisplayResult));
             }
@@ -158,10 +163,14 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return Task.FromResult(default(IDisplayResult));
         }
 
-        Task<IDisplayResult> IContentFieldDisplayDriver.BuildEditorAsync(ContentPart contentPart, ContentPartFieldDefinition partFieldDefinition, ContentTypePartDefinition typePartDefinition, BuildEditorContext context)
+        Task<IDisplayResult> IContentFieldDisplayDriver.BuildEditorAsync(
+            ContentPart contentPart,
+            ContentPartFieldDefinition partFieldDefinition,
+            ContentTypePartDefinition typePartDefinition,
+            BuildEditorContext context
+        )
         {
-            if (!string.Equals(typeof(TField).Name, partFieldDefinition.FieldDefinition.Name) &&
-                !string.Equals(nameof(ContentField), partFieldDefinition.FieldDefinition.Name))
+            if (!string.Equals(typeof(TField).Name, partFieldDefinition.FieldDefinition.Name) && !string.Equals(nameof(ContentField), partFieldDefinition.FieldDefinition.Name))
             {
                 return Task.FromResult(default(IDisplayResult));
             }
@@ -188,10 +197,14 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             return Task.FromResult(default(IDisplayResult));
         }
 
-        async Task<IDisplayResult> IContentFieldDisplayDriver.UpdateEditorAsync(ContentPart contentPart, ContentPartFieldDefinition partFieldDefinition, ContentTypePartDefinition typePartDefinition, UpdateEditorContext context)
+        async Task<IDisplayResult> IContentFieldDisplayDriver.UpdateEditorAsync(
+            ContentPart contentPart,
+            ContentPartFieldDefinition partFieldDefinition,
+            ContentTypePartDefinition typePartDefinition,
+            UpdateEditorContext context
+        )
         {
-            if (!string.Equals(typeof(TField).Name, partFieldDefinition.FieldDefinition.Name) &&
-                !string.Equals(nameof(ContentField), partFieldDefinition.FieldDefinition.Name))
+            if (!string.Equals(typeof(TField).Name, partFieldDefinition.FieldDefinition.Name) && !string.Equals(nameof(ContentField), partFieldDefinition.FieldDefinition.Name))
             {
                 return null;
             }
@@ -253,9 +266,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         protected string GetEditorShapeType(string shapeType, ContentPartFieldDefinition partFieldDefinition)
         {
             var editor = partFieldDefinition.Editor();
-            return !string.IsNullOrEmpty(editor)
-                ? shapeType + "__" + editor
-                : shapeType;
+            return !string.IsNullOrEmpty(editor) ? shapeType + "__" + editor : shapeType;
         }
 
         protected string GetEditorShapeType(string shapeType, BuildFieldEditorContext context)
@@ -276,9 +287,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         protected string GetDisplayShapeType(string shapeType, BuildFieldDisplayContext context)
         {
             var displayMode = context.PartFieldDefinition.DisplayMode();
-            return !string.IsNullOrEmpty(displayMode)
-                ? shapeType + DisplaySeparator + displayMode
-                : shapeType;
+            return !string.IsNullOrEmpty(displayMode) ? shapeType + DisplaySeparator + displayMode : shapeType;
         }
 
         protected string GetDisplayShapeType(BuildFieldDisplayContext context)

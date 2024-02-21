@@ -15,11 +15,12 @@ namespace OrchardCore.Media.Shortcodes
     {
         private static ValueTask<string> Null => new((string)null);
         private static ValueTask<string> ImageShortcode => new("[image]");
-        private static readonly HashSet<string> _shortcodes = new(StringComparer.OrdinalIgnoreCase)
-        {
-            "image",
-            "media" // [media] is a deprecated shortcode, and can be removed in a future release.
-        };
+        private static readonly HashSet<string> _shortcodes =
+            new(StringComparer.OrdinalIgnoreCase)
+            {
+                "image",
+                "media" // [media] is a deprecated shortcode, and can be removed in a future release.
+            };
 
         private readonly IMediaFileStore _mediaFileStore;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
@@ -32,7 +33,8 @@ namespace OrchardCore.Media.Shortcodes
             IHtmlSanitizerService htmlSanitizerService,
             IHttpContextAccessor httpContextAccessor,
             IOptions<ResourceManagementOptions> options,
-            IFileVersionProvider fileVersionProvider)
+            IFileVersionProvider fileVersionProvider
+        )
         {
             _mediaFileStore = mediaFileStore;
             _htmlSanitizerService = htmlSanitizerService;

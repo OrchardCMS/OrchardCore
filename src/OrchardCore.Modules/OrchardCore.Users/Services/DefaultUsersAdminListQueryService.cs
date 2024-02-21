@@ -15,7 +15,7 @@ namespace OrchardCore.Users.Services;
 
 public class DefaultUsersAdminListQueryService : IUsersAdminListQueryService
 {
-    private readonly static string[] _operators = ["OR", "AND", "||", "&&"];
+    private static readonly string[] _operators = ["OR", "AND", "||", "&&"];
 
     private readonly ISession _session;
     private readonly IServiceProvider _serviceProvider;
@@ -28,7 +28,8 @@ public class DefaultUsersAdminListQueryService : IUsersAdminListQueryService
         IServiceProvider serviceProvider,
         ILogger<DefaultUsersAdminListQueryService> logger,
         IOptions<UsersAdminListFilterOptions> userAdminListFilterOptions,
-        IEnumerable<IUsersAdminListFilter> usersAdminListFilters)
+        IEnumerable<IUsersAdminListFilter> usersAdminListFilters
+    )
     {
         _session = session;
         _serviceProvider = serviceProvider;
@@ -41,15 +42,12 @@ public class DefaultUsersAdminListQueryService : IUsersAdminListQueryService
     {
         var defaultTermNode = options.FilterResult.OfType<DefaultTermNode>().FirstOrDefault();
         var defaultOperator = defaultTermNode?.Operation;
-        var defaultTermName = string.IsNullOrEmpty(_userAdminListFilterOptions.TermName)
-            ? UsersAdminListFilterOptions.DefaultTermName
-            : _userAdminListFilterOptions.TermName;
+        var defaultTermName = string.IsNullOrEmpty(_userAdminListFilterOptions.TermName) ? UsersAdminListFilterOptions.DefaultTermName : _userAdminListFilterOptions.TermName;
 
         if (defaultTermNode is not null)
         {
             var value = defaultTermNode.ToString();
-            if (_userAdminListFilterOptions.UseExactMatch
-                && !_operators.Any(op => value.Contains(op, StringComparison.Ordinal)))
+            if (_userAdminListFilterOptions.UseExactMatch && !_operators.Any(op => value.Contains(op, StringComparison.Ordinal)))
             {
                 // Use an unary operator based on a full quoted string.
                 defaultOperator = new UnaryNode(value.Trim('"'), OperateNodeQuotes.Double);

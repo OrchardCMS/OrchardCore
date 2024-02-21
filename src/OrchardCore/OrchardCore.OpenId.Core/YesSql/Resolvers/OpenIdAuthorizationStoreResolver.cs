@@ -21,7 +21,8 @@ namespace OrchardCore.OpenId.YesSql.Resolvers
         }
 
         /// <inheritdoc/>
-        public IOpenIddictAuthorizationStore<TAuthorization> Get<TAuthorization>() where TAuthorization : class
+        public IOpenIddictAuthorizationStore<TAuthorization> Get<TAuthorization>()
+            where TAuthorization : class
         {
             var store = _provider.GetService<IOpenIddictAuthorizationStore<TAuthorization>>();
             if (store != null)
@@ -29,20 +30,25 @@ namespace OrchardCore.OpenId.YesSql.Resolvers
                 return store;
             }
 
-            var type = _cache.GetOrAdd(typeof(TAuthorization), key =>
-            {
-                if (!typeof(OpenIdAuthorization).IsAssignableFrom(key))
+            var type = _cache.GetOrAdd(
+                typeof(TAuthorization),
+                key =>
                 {
-                    throw new InvalidOperationException(new StringBuilder()
-                        .AppendLine("The specified authorization type is not compatible with the YesSql stores.")
-                        .Append("When enabling the YesSql stores, make sure you use the built-in 'OpenIdAuthorization' ")
-                        .Append("entity (from the 'OrchardCore.OpenId.Core' package) or a custom entity ")
-                        .Append("that inherits from the 'OpenIdAuthorization' entity.")
-                        .ToString());
-                }
+                    if (!typeof(OpenIdAuthorization).IsAssignableFrom(key))
+                    {
+                        throw new InvalidOperationException(
+                            new StringBuilder()
+                                .AppendLine("The specified authorization type is not compatible with the YesSql stores.")
+                                .Append("When enabling the YesSql stores, make sure you use the built-in 'OpenIdAuthorization' ")
+                                .Append("entity (from the 'OrchardCore.OpenId.Core' package) or a custom entity ")
+                                .Append("that inherits from the 'OpenIdAuthorization' entity.")
+                                .ToString()
+                        );
+                    }
 
-                return typeof(OpenIdAuthorizationStore<>).MakeGenericType(key);
-            });
+                    return typeof(OpenIdAuthorizationStore<>).MakeGenericType(key);
+                }
+            );
 
             return (IOpenIddictAuthorizationStore<TAuthorization>)_provider.GetRequiredService(type);
         }

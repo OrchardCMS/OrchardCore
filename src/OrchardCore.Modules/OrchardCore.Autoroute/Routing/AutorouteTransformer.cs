@@ -24,10 +24,7 @@ namespace OrchardCore.Autoroute.Routing
 
             if (found)
             {
-                var routeValues = new RouteValueDictionary(_options.GlobalRouteValues)
-                {
-                    [_options.ContentItemIdKey] = entry.ContentItemId
-                };
+                var routeValues = new RouteValueDictionary(_options.GlobalRouteValues) { [_options.ContentItemIdKey] = entry.ContentItemId };
 
                 if (!string.IsNullOrEmpty(entry.JsonPath))
                 {
@@ -38,7 +35,6 @@ namespace OrchardCore.Autoroute.Routing
                 values.Clear();
 
                 return routeValues;
-
             }
 
             return null;

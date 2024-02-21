@@ -21,10 +21,7 @@ namespace OrchardCore.Users.Services
         private readonly IAdminThemeService _adminThemeService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UsersThemeSelector(
-            ISiteService siteService,
-            IAdminThemeService adminThemeService,
-            IHttpContextAccessor httpContextAccessor)
+        public UsersThemeSelector(ISiteService siteService, IAdminThemeService adminThemeService, IHttpContextAccessor httpContextAccessor)
         {
             _siteService = siteService;
             _adminThemeService = adminThemeService;
@@ -45,7 +42,8 @@ namespace OrchardCore.Users.Services
                         useSiteTheme = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().UseSiteTheme;
                         break;
                     case "TwoFactorAuthentication":
-                        useSiteTheme = routeValues["action"] != null
+                        useSiteTheme =
+                            routeValues["action"] != null
                             && routeValues["action"].ToString().StartsWith("LoginWith", StringComparison.OrdinalIgnoreCase)
                             && (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().UseSiteTheme;
                         break;
@@ -66,11 +64,7 @@ namespace OrchardCore.Users.Services
                     return null;
                 }
 
-                return new ThemeSelectorResult
-                {
-                    Priority = useSiteTheme ? -100 : 100,
-                    ThemeName = adminThemeName
-                };
+                return new ThemeSelectorResult { Priority = useSiteTheme ? -100 : 100, ThemeName = adminThemeName };
             }
 
             return null;

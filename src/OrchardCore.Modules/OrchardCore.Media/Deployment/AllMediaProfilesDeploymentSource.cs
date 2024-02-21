@@ -25,11 +25,7 @@ namespace OrchardCore.Media.Deployment
 
             var mediaProfiles = await _mediaProfilesManager.GetMediaProfilesDocumentAsync();
 
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "MediaProfiles",
-                ["MediaProfiles"] = JObject.FromObject(mediaProfiles.MediaProfiles),
-            });
+            result.Steps.Add(new JsonObject { ["name"] = "MediaProfiles", ["MediaProfiles"] = JObject.FromObject(mediaProfiles.MediaProfiles), });
         }
     }
 }

@@ -7,7 +7,7 @@ namespace OrchardCore.Modules.Manifest
     using Xunit.Abstractions;
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public class FeatureAttributeTests : FeatureAttributeTests<FeatureAttribute>
     {
@@ -16,9 +16,7 @@ namespace OrchardCore.Modules.Manifest
         /// </summary>
         /// <param name="outputHelper"></param>
         public FeatureAttributeTests(ITestOutputHelper outputHelper)
-            : base(outputHelper)
-        {
-        }
+            : base(outputHelper) { }
 
         /// <summary>
         /// Verifies default Static and Constant assets, as exposed by fixture properties.
@@ -161,7 +159,18 @@ namespace OrchardCore.Modules.Manifest
                 new RenderKeyValuePair(nameof(enabledByDependencyOnly), enabledByDependencyOnly)
             );
 
-            var feature = CreateFromArgs(FeatureString6Object3CtorClassifier, id, name, category, priString, description, depString, defaultTenant, alwaysEnabled, enabledByDependencyOnly);
+            var feature = CreateFromArgs(
+                FeatureString6Object3CtorClassifier,
+                id,
+                name,
+                category,
+                priString,
+                description,
+                depString,
+                defaultTenant,
+                alwaysEnabled,
+                enabledByDependencyOnly
+            );
 
             Assert.True(feature.Exists);
             Assert.Equal(id, feature.Id);
@@ -279,18 +288,19 @@ namespace OrchardCore.Modules.Manifest
             var expected = priority + 1;
 
             // TODO: TBD: also for attributes created using property initializers
-            FeatureAttribute CreateForPriority(string priString = null) => CreateFromArgs(
-                FeatureString6Object3CtorClassifier,
-                LoremWords(1),
-                name,
-                category,
-                priString ?? string.Empty,
-                description,
-                depString,
-                defaultTenant,
-                alwaysEnabled,
-                enabledByDependencyOnly
-            );
+            FeatureAttribute CreateForPriority(string priString = null) =>
+                CreateFromArgs(
+                    FeatureString6Object3CtorClassifier,
+                    LoremWords(1),
+                    name,
+                    category,
+                    priString ?? string.Empty,
+                    description,
+                    depString,
+                    defaultTenant,
+                    alwaysEnabled,
+                    enabledByDependencyOnly
+                );
 
             var alpha = CreateForPriority();
             var bravo = CreateForPriority($"{expected}");
@@ -320,18 +330,19 @@ namespace OrchardCore.Modules.Manifest
             var expected = LoremWords(7);
 
             // TODO: TBD: also for attributes created using property initializers
-            FeatureAttribute CreateForDescription(string description = null) => CreateFromArgs(
-                FeatureString6Object3CtorClassifier,
-                LoremWords(1),
-                name,
-                category,
-                priority,
-                description,
-                depString,
-                defaultTenant,
-                alwaysEnabled,
-                enabledByDependencyOnly
-            );
+            FeatureAttribute CreateForDescription(string description = null) =>
+                CreateFromArgs(
+                    FeatureString6Object3CtorClassifier,
+                    LoremWords(1),
+                    name,
+                    category,
+                    priority,
+                    description,
+                    depString,
+                    defaultTenant,
+                    alwaysEnabled,
+                    enabledByDependencyOnly
+                );
 
             var alpha = CreateForDescription();
             var bravo = CreateForDescription(expected);
@@ -361,18 +372,19 @@ namespace OrchardCore.Modules.Manifest
             var expected = LoremWords(1);
 
             // TODO: TBD: also for attributes created using property initializers
-            FeatureAttribute CreateForCategory(string category = null) => CreateFromArgs(
-                FeatureString6Object3CtorClassifier,
-                LoremWords(1),
-                name,
-                category,
-                priority,
-                description,
-                depString,
-                defaultTenant,
-                alwaysEnabled,
-                enabledByDependencyOnly
-            );
+            FeatureAttribute CreateForCategory(string category = null) =>
+                CreateFromArgs(
+                    FeatureString6Object3CtorClassifier,
+                    LoremWords(1),
+                    name,
+                    category,
+                    priority,
+                    description,
+                    depString,
+                    defaultTenant,
+                    alwaysEnabled,
+                    enabledByDependencyOnly
+                );
 
             var alpha = CreateForCategory();
             var bravo = CreateForCategory(expected);
@@ -389,13 +401,7 @@ namespace OrchardCore.Modules.Manifest
         /// a handful of delimiter scenarios.
         /// </summary>
         /// <param name="delim"></param>
-        [
-            Theory,
-            InlineData(';'),
-            InlineData(','),
-            InlineData(' '),
-            InlineData(':')
-        ]
+        [Theory, InlineData(';'), InlineData(','), InlineData(' '), InlineData(':')]
         public virtual void Dependencies(char delim)
         {
             var deps = LoremWords(5).Split(' ');
@@ -403,18 +409,8 @@ namespace OrchardCore.Modules.Manifest
 
             var listDelims = FeatureAttribute.ListDelims;
 
-            FeatureAttribute CreateForDeps(params string[] deps) => CreateFromArgs(
-                FeatureString6Object3CtorClassifier,
-                LoremWords(1),
-                null,
-                null,
-                null,
-                null,
-                depString,
-                default(bool),
-                default(bool),
-                default(bool)
-            );
+            FeatureAttribute CreateForDeps(params string[] deps) =>
+                CreateFromArgs(FeatureString6Object3CtorClassifier, LoremWords(1), null, null, null, null, depString, default(bool), default(bool), default(bool));
 
             var feature = CreateForDeps(deps);
 

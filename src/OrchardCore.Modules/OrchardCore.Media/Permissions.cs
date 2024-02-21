@@ -25,44 +25,15 @@ public class Permissions : IPermissionProvider
         ViewMediaOptions,
     ];
 
-    private readonly IEnumerable<Permission> _generalPermissions =
-    [
-        ManageOwnMedia,
-    ];
+    private readonly IEnumerable<Permission> _generalPermissions = [ManageOwnMedia,];
 
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
+    public Task<IEnumerable<Permission>> GetPermissionsAsync() => Task.FromResult(_allPermissions);
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
-    [
-        new PermissionStereotype
-        {
-            Name = "Administrator",
-            Permissions =
-            [
-                ManageMediaFolder,
-                ManageMediaProfiles,
-                ViewMediaOptions,
-            ],
-        },
-        new PermissionStereotype
-        {
-            Name = "Editor",
-            Permissions =
-            [
-                ManageMedia,
-                ManageOwnMedia,
-            ],
-        },
-        new PermissionStereotype
-        {
-            Name = "Author",
-            Permissions = _generalPermissions,
-        },
-        new PermissionStereotype
-        {
-            Name = "Contributor",
-            Permissions = _generalPermissions,
-        },
-    ];
+        [
+            new PermissionStereotype { Name = "Administrator", Permissions = [ManageMediaFolder, ManageMediaProfiles, ViewMediaOptions,], },
+            new PermissionStereotype { Name = "Editor", Permissions = [ManageMedia, ManageOwnMedia,], },
+            new PermissionStereotype { Name = "Author", Permissions = _generalPermissions, },
+            new PermissionStereotype { Name = "Contributor", Permissions = _generalPermissions, },
+        ];
 }

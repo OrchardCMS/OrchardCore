@@ -16,8 +16,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.AzureAI;
 
-public class Startup(ILogger<Startup> logger, IShellConfiguration shellConfiguration)
-    : StartupBase
+public class Startup(ILogger<Startup> logger, IShellConfiguration shellConfiguration) : StartupBase
 {
     private readonly ILogger _logger = logger;
     private readonly IShellConfiguration _shellConfiguration = shellConfiguration;

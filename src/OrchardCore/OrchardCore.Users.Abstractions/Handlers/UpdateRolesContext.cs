@@ -15,7 +15,8 @@ namespace OrchardCore.Users.Handlers
         /// <param name="loginProvider">The login provider.</param>
         /// <param name="externalClaims">The user claims.</param>
         /// <param name="userRoles">The user roles.</param>
-        public UpdateRolesContext(IUser user, string loginProvider, IEnumerable<SerializableClaim> externalClaims, IEnumerable<string> userRoles) : base(user)
+        public UpdateRolesContext(IUser user, string loginProvider, IEnumerable<SerializableClaim> externalClaims, IEnumerable<string> userRoles)
+            : base(user)
         {
             ExternalClaims = externalClaims.AsEnumerable();
             UserRoles = userRoles;

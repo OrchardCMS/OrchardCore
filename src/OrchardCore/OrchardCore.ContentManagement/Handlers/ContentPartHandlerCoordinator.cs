@@ -24,7 +24,8 @@ namespace OrchardCore.ContentManagement.Handlers
             ITypeActivatorFactory<ContentPart> contentPartFactory,
             ITypeActivatorFactory<ContentField> contentFieldFactory,
             IContentDefinitionManager contentDefinitionManager,
-            ILogger<ContentPartHandlerCoordinator> logger)
+            ILogger<ContentPartHandlerCoordinator> logger
+        )
         {
             _contentPartHandlerResolver = contentPartHandlerResolver;
             _contentFieldHandlerResolver = contentFieldHandlerResolver;
@@ -41,74 +42,98 @@ namespace OrchardCore.ContentManagement.Handlers
             // When a part/field does not exists, we create the part from it's known type or from a generic one
             var fieldContext = new ActivatingContentFieldContext(context.ContentItem);
 
-            return InvokeHandlers(context, fieldContext,
+            return InvokeHandlers(
+                context,
+                fieldContext,
                 (handler, context, part) => handler.ActivatingAsync(context, part),
                 (handler, context, field) => handler.ActivatingAsync(fieldContext, field),
                 createPartIfNotExists: true,
-                createFieldIfNotExists: true);
+                createFieldIfNotExists: true
+            );
         }
 
         public override Task ActivatedAsync(ActivatedContentContext context)
         {
             var fieldContext = new ActivatedContentFieldContext(context.ContentItem);
 
-            return InvokeHandlers(context, fieldContext,
+            return InvokeHandlers(
+                context,
+                fieldContext,
                 (handler, context, part) => handler.ActivatedAsync(context, part),
-                (handler, context, field) => handler.ActivatedAsync(fieldContext, field));
+                (handler, context, field) => handler.ActivatedAsync(fieldContext, field)
+            );
         }
 
         public override Task CreatingAsync(CreateContentContext context)
         {
             var fieldContext = new CreateContentFieldContext(context.ContentItem);
 
-            return InvokeHandlers(context, fieldContext,
+            return InvokeHandlers(
+                context,
+                fieldContext,
                 (handler, context, part) => handler.CreatingAsync(context, part),
-                (handler, context, field) => handler.CreatingAsync(fieldContext, field));
+                (handler, context, field) => handler.CreatingAsync(fieldContext, field)
+            );
         }
 
         public override Task CreatedAsync(CreateContentContext context)
         {
             var fieldContext = new CreateContentFieldContext(context.ContentItem);
 
-            return InvokeHandlers(context, fieldContext,
+            return InvokeHandlers(
+                context,
+                fieldContext,
                 (handler, context, part) => handler.CreatedAsync(context, part),
-                (handler, context, field) => handler.CreatedAsync(fieldContext, field));
+                (handler, context, field) => handler.CreatedAsync(fieldContext, field)
+            );
         }
 
         public override Task ImportingAsync(ImportContentContext context)
         {
             var fieldContext = new ImportContentFieldContext(context.ContentItem, context.OriginalContentItem);
 
-            return InvokeHandlers(context, fieldContext,
+            return InvokeHandlers(
+                context,
+                fieldContext,
                 (handler, context, part) => handler.ImportingAsync(context, part),
-                (handler, context, field) => handler.ImportingAsync(fieldContext, field));
+                (handler, context, field) => handler.ImportingAsync(fieldContext, field)
+            );
         }
 
         public override Task ImportedAsync(ImportContentContext context)
         {
             var fieldContext = new ImportContentFieldContext(context.ContentItem, context.OriginalContentItem);
 
-            return InvokeHandlers(context, fieldContext,
+            return InvokeHandlers(
+                context,
+                fieldContext,
                 (handler, context, part) => handler.ImportedAsync(context, part),
-                (handler, context, field) => handler.ImportedAsync(fieldContext, field));
+                (handler, context, field) => handler.ImportedAsync(fieldContext, field)
+            );
         }
 
         public override Task InitializingAsync(InitializingContentContext context)
         {
             var fieldContext = new InitializingContentFieldContext(context.ContentItem);
 
-            return InvokeHandlers(context, fieldContext,
+            return InvokeHandlers(
+                context,
+                fieldContext,
                 (handler, context, part) => handler.InitializingAsync(context, part),
-                (handler, context, field) => handler.InitializingAsync(fieldContext, field));
+                (handler, context, field) => handler.InitializingAsync(fieldContext, field)
+            );
         }
 
         public override Task InitializedAsync(InitializingContentContext context)
         {
             var fieldContext = new InitializingContentFieldContext(context.ContentItem);
 
-            return InvokeHandlers(context, fieldContext,
+            return InvokeHandlers(
+                context,
+                fieldContext,
                 (handler, context, part) => handler.InitializedAsync(context, part),
-                (handler, context, field) => handler.InitializedAsync(fieldContext, field));
+                (handler, context, field) => handler.InitializedAsync(fieldContext, field)
+            );
         }
 
         public override Task LoadingAsync(LoadContentContext context)
@@ -119,142 +144,188 @@ namespace OrchardCore.ContentManagement.Handlers
             // like edited.
             var fieldContext = new LoadContentFieldContext(context.ContentItem);
 
-            return InvokeHandlers(context, fieldContext,
+            return InvokeHandlers(
+                context,
+                fieldContext,
                 (handler, context, part) => handler.LoadingAsync(context, part),
                 (handler, context, field) => handler.LoadingAsync(fieldContext, field),
                 createPartIfNotExists: true,
-                createFieldIfNotExists: true);
+                createFieldIfNotExists: true
+            );
         }
 
         public override Task LoadedAsync(LoadContentContext context)
         {
             var fieldContext = new LoadContentFieldContext(context.ContentItem);
 
-            return InvokeHandlers(context, fieldContext,
+            return InvokeHandlers(
+                context,
+                fieldContext,
                 (handler, context, part) => handler.LoadedAsync(context, part),
-                (handler, context, field) => handler.LoadedAsync(fieldContext, field));
+                (handler, context, field) => handler.LoadedAsync(fieldContext, field)
+            );
         }
 
         public override Task ValidatingAsync(ValidateContentContext context)
         {
-            return InvokeHandlers(context,
+            return InvokeHandlers(
+                context,
                 (handler, context, part) => handler.ValidatingAsync(context, part),
-                (handler, context, field) => handler.ValidatingAsync(context, field));
+                (handler, context, field) => handler.ValidatingAsync(context, field)
+            );
         }
 
         public override Task ValidatedAsync(ValidateContentContext context)
         {
-            return InvokeHandlers(context,
+            return InvokeHandlers(
+                context,
                 (handler, context, part) => handler.ValidatedAsync(context, part),
-                (handler, context, field) => handler.ValidatedAsync(new ValidateContentFieldContext(context.ContentItem), field));
+                (handler, context, field) => handler.ValidatedAsync(new ValidateContentFieldContext(context.ContentItem), field)
+            );
         }
 
         public override Task DraftSavingAsync(SaveDraftContentContext context)
         {
             var fieldContext = new SaveDraftContentFieldContext(context.ContentItem);
 
-            return InvokeHandlers(context, fieldContext,
+            return InvokeHandlers(
+                context,
+                fieldContext,
                 (handler, context, part) => handler.DraftSavingAsync(context, part),
-                (handler, context, field) => handler.DraftSavingAsync(fieldContext, field));
+                (handler, context, field) => handler.DraftSavingAsync(fieldContext, field)
+            );
         }
 
         public override Task DraftSavedAsync(SaveDraftContentContext context)
         {
             var fieldContext = new SaveDraftContentFieldContext(context.ContentItem);
 
-            return InvokeHandlers(context, fieldContext,
+            return InvokeHandlers(
+                context,
+                fieldContext,
                 (handler, context, part) => handler.DraftSavedAsync(context, part),
-                (handler, context, field) => handler.DraftSavedAsync(fieldContext, field));
+                (handler, context, field) => handler.DraftSavedAsync(fieldContext, field)
+            );
         }
 
         public override Task PublishingAsync(PublishContentContext context)
         {
             var fieldContext = new PublishContentFieldContext(context.ContentItem, context.PreviousItem);
 
-            return InvokeHandlers(context, fieldContext,
+            return InvokeHandlers(
+                context,
+                fieldContext,
                 (handler, context, part) => handler.PublishingAsync(context, part),
-                (handler, context, field) => handler.PublishingAsync(fieldContext, field));
+                (handler, context, field) => handler.PublishingAsync(fieldContext, field)
+            );
         }
 
         public override Task PublishedAsync(PublishContentContext context)
         {
             var fieldContext = new PublishContentFieldContext(context.ContentItem, context.PreviousItem);
 
-            return InvokeHandlers(context, fieldContext,
+            return InvokeHandlers(
+                context,
+                fieldContext,
                 (handler, context, part) => handler.PublishedAsync(context, part),
-                (handler, context, field) => handler.PublishedAsync(fieldContext, field));
+                (handler, context, field) => handler.PublishedAsync(fieldContext, field)
+            );
         }
 
         public override Task RemovingAsync(RemoveContentContext context)
         {
             var fieldContext = new RemoveContentFieldContext(context.ContentItem, context.NoActiveVersionLeft);
 
-            return InvokeHandlers(context, fieldContext,
+            return InvokeHandlers(
+                context,
+                fieldContext,
                 (handler, context, part) => handler.RemovingAsync(context, part),
-                (handler, context, field) => handler.RemovingAsync(fieldContext, field));
+                (handler, context, field) => handler.RemovingAsync(fieldContext, field)
+            );
         }
 
         public override Task RemovedAsync(RemoveContentContext context)
         {
             var fieldContext = new RemoveContentFieldContext(context.ContentItem, context.NoActiveVersionLeft);
 
-            return InvokeHandlers(context, fieldContext,
+            return InvokeHandlers(
+                context,
+                fieldContext,
                 (handler, context, part) => handler.RemovedAsync(context, part),
-                (handler, context, field) => handler.RemovedAsync(fieldContext, field));
+                (handler, context, field) => handler.RemovedAsync(fieldContext, field)
+            );
         }
 
         public override Task UnpublishingAsync(PublishContentContext context)
         {
             var fieldContext = new PublishContentFieldContext(context.ContentItem, context.PreviousItem);
 
-            return InvokeHandlers(context, fieldContext,
+            return InvokeHandlers(
+                context,
+                fieldContext,
                 (handler, context, part) => handler.UnpublishingAsync(context, part),
-                (handler, context, field) => handler.UnpublishingAsync(fieldContext, field));
+                (handler, context, field) => handler.UnpublishingAsync(fieldContext, field)
+            );
         }
 
         public override Task UnpublishedAsync(PublishContentContext context)
         {
             var fieldContext = new PublishContentFieldContext(context.ContentItem, context.PreviousItem);
 
-            return InvokeHandlers(context, fieldContext,
+            return InvokeHandlers(
+                context,
+                fieldContext,
                 (handler, context, part) => handler.UnpublishedAsync(context, part),
-                (handler, context, field) => handler.UnpublishedAsync(fieldContext, field));
+                (handler, context, field) => handler.UnpublishedAsync(fieldContext, field)
+            );
         }
 
         public override Task UpdatingAsync(UpdateContentContext context)
         {
             var fieldContext = new UpdateContentFieldContext(context.ContentItem);
 
-            return InvokeHandlers(context, fieldContext,
+            return InvokeHandlers(
+                context,
+                fieldContext,
                 (handler, context, part) => handler.UpdatingAsync(context, part),
-                (handler, context, field) => handler.UpdatingAsync(fieldContext, field));
+                (handler, context, field) => handler.UpdatingAsync(fieldContext, field)
+            );
         }
 
         public override Task UpdatedAsync(UpdateContentContext context)
         {
             var fieldContext = new UpdateContentFieldContext(context.ContentItem);
 
-            return InvokeHandlers(context, fieldContext,
+            return InvokeHandlers(
+                context,
+                fieldContext,
                 (handler, context, part) => handler.UpdatedAsync(context, part),
-                (handler, context, field) => handler.UpdatedAsync(fieldContext, field));
+                (handler, context, field) => handler.UpdatedAsync(fieldContext, field)
+            );
         }
 
         public override Task VersioningAsync(VersionContentContext context)
         {
             var fieldContext = new VersionContentFieldContext(context.ContentItem, context.BuildingContentItem);
 
-            return InvokeHandlers(context, fieldContext,
-                 (handler, context, existingPart, buildingPart) => handler.VersioningAsync(context, existingPart, buildingPart),
-                 (handler, context, existingField, buildingField) => handler.VersioningAsync(fieldContext, existingField, buildingField));
+            return InvokeHandlers(
+                context,
+                fieldContext,
+                (handler, context, existingPart, buildingPart) => handler.VersioningAsync(context, existingPart, buildingPart),
+                (handler, context, existingField, buildingField) => handler.VersioningAsync(fieldContext, existingField, buildingField)
+            );
         }
 
         public override Task VersionedAsync(VersionContentContext context)
         {
             var fieldContext = new VersionContentFieldContext(context.ContentItem, context.BuildingContentItem);
 
-            return InvokeHandlers(context, fieldContext,
-                 (handler, context, existingPart, buildingPart) => handler.VersionedAsync(context, existingPart, buildingPart),
-                 (handler, context, existingField, buildingField) => handler.VersionedAsync(fieldContext, existingField, buildingField));
+            return InvokeHandlers(
+                context,
+                fieldContext,
+                (handler, context, existingPart, buildingPart) => handler.VersionedAsync(context, existingPart, buildingPart),
+                (handler, context, existingField, buildingField) => handler.VersionedAsync(fieldContext, existingField, buildingField)
+            );
         }
 
         public override async Task GetContentItemAspectAsync(ContentItemAspectContext context)
@@ -305,17 +376,24 @@ namespace OrchardCore.ContentManagement.Handlers
         {
             var fieldContext = new CloneContentFieldContext(context.ContentItem, context.CloneContentItem);
 
-            return InvokeHandlers(context, fieldContext,
+            return InvokeHandlers(
+                context,
+                fieldContext,
                 (handler, context, part) => handler.ClonedAsync(context, part),
-                (handler, context, field) => handler.ClonedAsync(fieldContext, field));
+                (handler, context, field) => handler.ClonedAsync(fieldContext, field)
+            );
         }
+
         public override Task CloningAsync(CloneContentContext context)
         {
             var fieldContext = new CloneContentFieldContext(context.ContentItem, context.CloneContentItem);
 
-            return InvokeHandlers(context, fieldContext,
+            return InvokeHandlers(
+                context,
+                fieldContext,
                 (handler, context, part) => handler.CloningAsync(context, part),
-                (handler, context, field) => handler.CloningAsync(fieldContext, field));
+                (handler, context, field) => handler.CloningAsync(fieldContext, field)
+            );
         }
 
         private async Task InvokeHandlers<TContext, TFieldContext>(
@@ -324,7 +402,8 @@ namespace OrchardCore.ContentManagement.Handlers
             Func<IContentPartHandler, TContext, ContentPart, Task> partHandlerAction,
             Func<IContentFieldHandler, TFieldContext, ContentField, Task> fieldHandlerAction,
             bool createPartIfNotExists = false,
-            bool createFieldIfNotExists = false)
+            bool createFieldIfNotExists = false
+        )
             where TContext : ContentContextBase
             where TFieldContext : ContentFieldContextBase
         {
@@ -392,10 +471,10 @@ namespace OrchardCore.ContentManagement.Handlers
             TContext context,
             TFieldContext fieldContext,
             Func<IContentPartHandler, TContext, ContentPart, ContentPart, Task> partHandlerAction,
-            Func<IContentFieldHandler, TFieldContext, ContentField, ContentField, Task> fieldHandlerAction)
+            Func<IContentFieldHandler, TFieldContext, ContentField, ContentField, Task> fieldHandlerAction
+        )
             where TContext : VersionContentContext
             where TFieldContext : VersionContentFieldContext
-
         {
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
             if (contentTypeDefinition == null)
@@ -450,7 +529,8 @@ namespace OrchardCore.ContentManagement.Handlers
         private async Task InvokeHandlers<TContext>(
             TContext context,
             Func<IContentPartHandler, ValidateContentContext, ContentPart, Task> partHandlerAction,
-            Func<IContentFieldHandler, ValidateContentFieldContext, ContentField, Task> fieldHandlerAction)
+            Func<IContentFieldHandler, ValidateContentFieldContext, ContentField, Task> fieldHandlerAction
+        )
             where TContext : ValidateContentContext
         {
             var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
@@ -472,10 +552,7 @@ namespace OrchardCore.ContentManagement.Handlers
 
                 var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
 
-                var partValidationContext = new ValidateContentPartContext(context.ContentItem)
-                {
-                    ContentTypePartDefinition = typePartDefinition,
-                };
+                var partValidationContext = new ValidateContentPartContext(context.ContentItem) { ContentTypePartDefinition = typePartDefinition, };
 
                 await partHandlers.InvokeAsync(partHandlerAction, partValidationContext, part, _logger);
 

@@ -11,18 +11,21 @@ namespace OrchardCore.Forms.Drivers
     {
         public override IDisplayResult Edit(FormPart part)
         {
-            return Initialize<FormPartEditViewModel>("FormPart_Fields_Edit", m =>
-            {
-                m.Action = part.Action;
-                m.Method = part.Method;
-                m.WorkflowTypeId = part.WorkflowTypeId;
-                m.EncType = part.EncType;
-                m.EnableAntiForgeryToken = part.EnableAntiForgeryToken;
-                m.SaveFormLocation = part.SaveFormLocation;
-            });
+            return Initialize<FormPartEditViewModel>(
+                "FormPart_Fields_Edit",
+                m =>
+                {
+                    m.Action = part.Action;
+                    m.Method = part.Method;
+                    m.WorkflowTypeId = part.WorkflowTypeId;
+                    m.EncType = part.EncType;
+                    m.EnableAntiForgeryToken = part.EnableAntiForgeryToken;
+                    m.SaveFormLocation = part.SaveFormLocation;
+                }
+            );
         }
 
-        public async override Task<IDisplayResult> UpdateAsync(FormPart part, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(FormPart part, IUpdateModel updater)
         {
             var viewModel = new FormPartEditViewModel();
 

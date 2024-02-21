@@ -8,12 +8,7 @@ namespace OrchardCore.Security
 {
     public class AdminMenu : INavigationProvider
     {
-        private static readonly RouteValueDictionary _routeValues = new()
-        {
-            { "area", "OrchardCore.Settings" },
-            { "groupId", SecuritySettingsDisplayDriver.SettingsGroupId },
-
-        };
+        private static readonly RouteValueDictionary _routeValues = new() { { "area", "OrchardCore.Settings" }, { "groupId", SecuritySettingsDisplayDriver.SettingsGroupId }, };
 
         protected readonly IStringLocalizer S;
 
@@ -29,18 +24,23 @@ namespace OrchardCore.Security
                 return Task.CompletedTask;
             }
 
-            builder
-                .Add(S["Security"], NavigationConstants.AdminMenuSecurityPosition, security => security
-                    .AddClass("security")
-                    .Id("security")
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["Security Headers"], S["Security Headers"].PrefixPosition(), headers => headers
-                            .Permission(SecurityPermissions.ManageSecurityHeadersSettings)
-                            .Action("Index", "Admin", _routeValues)
-                            .LocalNav()
+            builder.Add(
+                S["Security"],
+                NavigationConstants.AdminMenuSecurityPosition,
+                security =>
+                    security
+                        .AddClass("security")
+                        .Id("security")
+                        .Add(
+                            S["Settings"],
+                            settings =>
+                                settings.Add(
+                                    S["Security Headers"],
+                                    S["Security Headers"].PrefixPosition(),
+                                    headers => headers.Permission(SecurityPermissions.ManageSecurityHeadersSettings).Action("Index", "Admin", _routeValues).LocalNav()
+                                )
                         )
-                    )
-                );
+            );
 
             return Task.CompletedTask;
         }

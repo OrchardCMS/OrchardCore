@@ -8,9 +8,4 @@ using OrchardCore.Modules.Manifest;
     Category = "Security"
 )]
 
-[assembly: Feature(
-    Id = "OrchardCore.AuditTrail",
-    Name = "Audit Trail",
-    Description = "Provides a log for recording and viewing back-end changes.",
-    Category = "Security"
-)]
+[assembly: Feature(Id = "OrchardCore.AuditTrail", Name = "Audit Trail", Description = "Provides a log for recording and viewing back-end changes.", Category = "Security")]

@@ -41,10 +41,7 @@ namespace OrchardCore.Tests.Localization
             var uiCulture = CultureInfo.CurrentUICulture;
 
             // Act
-            using (var cultureScope = CultureScope.Create("FR"))
-            {
-
-            }
+            using (var cultureScope = CultureScope.Create("FR")) { }
 
             // Assert
             Assert.Equal(culture, CultureInfo.CurrentCulture);

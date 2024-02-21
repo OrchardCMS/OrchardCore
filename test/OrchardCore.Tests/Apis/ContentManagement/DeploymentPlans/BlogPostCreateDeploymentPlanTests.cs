@@ -18,11 +18,14 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
             await context.InitializeAsync();
 
             // Act
-            var recipe = BlogPostDeploymentContext.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
-            {
-                jItem[nameof(ContentItem.ContentItemVersionId)] = "newversion";
-                jItem[nameof(ContentItem.DisplayText)] = "new version";
-            });
+            var recipe = BlogPostDeploymentContext.GetContentStepRecipe(
+                context.OriginalBlogPost,
+                jItem =>
+                {
+                    jItem[nameof(ContentItem.ContentItemVersionId)] = "newversion";
+                    jItem[nameof(ContentItem.DisplayText)] = "new version";
+                }
+            );
 
             await context.PostRecipeAsync(recipe);
 
@@ -30,8 +33,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
             await context.UsingTenantScopeAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                    x.ContentType == "BlogPost").ListAsync();
+                var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == "BlogPost").ListAsync();
 
                 Assert.Equal(2, blogPosts.Count());
 
@@ -58,11 +60,14 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
             var draftContentItemVersionId = (await content.Content.ReadAsAsync<ContentItem>()).ContentItemVersionId;
 
             // Act
-            var recipe = BlogPostDeploymentContext.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
+            var recipe = BlogPostDeploymentContext.GetContentStepRecipe(
+                context.OriginalBlogPost,
+                jItem =>
                 {
                     jItem[nameof(ContentItem.ContentItemVersionId)] = "newversion";
                     jItem[nameof(ContentItem.DisplayText)] = "new version";
-                });
+                }
+            );
 
             await context.PostRecipeAsync(recipe);
 
@@ -70,8 +75,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
             await context.UsingTenantScopeAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                    x.ContentType == "BlogPost").ListAsync();
+                var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == "BlogPost").ListAsync();
 
                 Assert.Equal(3, blogPosts.Count());
                 var originalVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
@@ -101,12 +105,15 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
             var draftContentItemVersionId = (await content.Content.ReadAsAsync<ContentItem>()).ContentItemVersionId;
 
             // Act
-            var recipe = BlogPostDeploymentContext.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
-            {
-                jItem[nameof(ContentItem.ContentItemVersionId)] = "newdraftversion";
-                jItem[nameof(ContentItem.DisplayText)] = "new draft version";
-                jItem[nameof(ContentItem.Published)] = false;
-            });
+            var recipe = BlogPostDeploymentContext.GetContentStepRecipe(
+                context.OriginalBlogPost,
+                jItem =>
+                {
+                    jItem[nameof(ContentItem.ContentItemVersionId)] = "newdraftversion";
+                    jItem[nameof(ContentItem.DisplayText)] = "new draft version";
+                    jItem[nameof(ContentItem.Published)] = false;
+                }
+            );
 
             await context.PostRecipeAsync(recipe);
 
@@ -114,8 +121,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
             await context.UsingTenantScopeAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                    x.ContentType == "BlogPost").ListAsync();
+                var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == "BlogPost").ListAsync();
 
                 Assert.Equal(3, blogPosts.Count());
 
@@ -143,13 +149,16 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
             await context.InitializeAsync();
 
             // Act
-            var recipe = BlogPostDeploymentContext.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
-            {
-                jItem[nameof(ContentItem.ContentItemId)] = "newcontentitemid";
-                jItem[nameof(ContentItem.ContentItemVersionId)] = "newversion";
-                jItem[nameof(ContentItem.DisplayText)] = "new version";
-                jItem[nameof(AutoroutePart)][nameof(AutoroutePart.Path)] = "blog/another";
-            });
+            var recipe = BlogPostDeploymentContext.GetContentStepRecipe(
+                context.OriginalBlogPost,
+                jItem =>
+                {
+                    jItem[nameof(ContentItem.ContentItemId)] = "newcontentitemid";
+                    jItem[nameof(ContentItem.ContentItemVersionId)] = "newversion";
+                    jItem[nameof(ContentItem.DisplayText)] = "new version";
+                    jItem[nameof(AutoroutePart)][nameof(AutoroutePart.Path)] = "blog/another";
+                }
+            );
 
             await context.PostRecipeAsync(recipe);
 
@@ -157,8 +166,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
             await context.UsingTenantScopeAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                var blogPostsCount = await session.Query<ContentItem, ContentItemIndex>(x =>
-                    x.ContentType == "BlogPost").CountAsync();
+                var blogPostsCount = await session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == "BlogPost").CountAsync();
 
                 Assert.Equal(2, blogPostsCount);
             });
@@ -173,21 +181,27 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
             await context.InitializeAsync();
 
             // Create a recipe with two content items and the same version id.
-            var firstRecipe = BlogPostDeploymentContext.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
-            {
-                jItem[nameof(ContentItem.ContentItemId)] = "newcontentitemid";
-                jItem[nameof(ContentItem.ContentItemVersionId)] = "dupversion";
-                jItem[nameof(ContentItem.DisplayText)] = "duplicate version";
-                jItem[nameof(AutoroutePart)][nameof(AutoroutePart.Path)] = "blog/another";
-            });
+            var firstRecipe = BlogPostDeploymentContext.GetContentStepRecipe(
+                context.OriginalBlogPost,
+                jItem =>
+                {
+                    jItem[nameof(ContentItem.ContentItemId)] = "newcontentitemid";
+                    jItem[nameof(ContentItem.ContentItemVersionId)] = "dupversion";
+                    jItem[nameof(ContentItem.DisplayText)] = "duplicate version";
+                    jItem[nameof(AutoroutePart)][nameof(AutoroutePart.Path)] = "blog/another";
+                }
+            );
 
-            var secondRecipe = BlogPostDeploymentContext.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
-            {
-                jItem[nameof(ContentItem.ContentItemId)] = "newcontentitemid";
-                jItem[nameof(ContentItem.ContentItemVersionId)] = "dupversion";
-                jItem[nameof(ContentItem.DisplayText)] = "duplicate version";
-                jItem[nameof(AutoroutePart)][nameof(AutoroutePart.Path)] = "blog/another";
-            });
+            var secondRecipe = BlogPostDeploymentContext.GetContentStepRecipe(
+                context.OriginalBlogPost,
+                jItem =>
+                {
+                    jItem[nameof(ContentItem.ContentItemId)] = "newcontentitemid";
+                    jItem[nameof(ContentItem.ContentItemVersionId)] = "dupversion";
+                    jItem[nameof(ContentItem.DisplayText)] = "duplicate version";
+                    jItem[nameof(AutoroutePart)][nameof(AutoroutePart.Path)] = "blog/another";
+                }
+            );
 
             var firstRecipeData = firstRecipe.SelectNode("steps[0].Data").AsArray();
 
@@ -201,8 +215,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
             await context.UsingTenantScopeAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                var blogPostsCount = await session.Query<ContentItem, ContentItemIndex>(x =>
-                    x.ContentType == "BlogPost" && x.ContentItemVersionId == "dupversion").CountAsync();
+                var blogPostsCount = await session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == "BlogPost" && x.ContentItemVersionId == "dupversion").CountAsync();
 
                 Assert.Equal(1, blogPostsCount);
             });

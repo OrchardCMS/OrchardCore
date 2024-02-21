@@ -17,13 +17,15 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 services.AddAuthorization();
 
-                services.Configure<AuthenticationOptions>((options) =>
-                {
-                    if (!options.Schemes.Any(x => x.Name == "Api"))
+                services.Configure<AuthenticationOptions>(
+                    (options) =>
                     {
-                        options.AddScheme<ApiAuthenticationHandler>("Api", null);
+                        if (!options.Schemes.Any(x => x.Name == "Api"))
+                        {
+                            options.AddScheme<ApiAuthenticationHandler>("Api", null);
+                        }
                     }
-                });
+                );
 
                 services.AddScoped<IPermissionGrantingService, DefaultPermissionGrantingService>();
                 services.AddScoped<IAuthorizationHandler, PermissionHandler>();

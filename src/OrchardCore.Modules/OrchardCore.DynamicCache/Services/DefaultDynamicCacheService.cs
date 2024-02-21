@@ -38,7 +38,8 @@ namespace OrchardCore.DynamicCache.Services
             IServiceProvider serviceProvider,
             IOptions<DynamicCacheOptions> dynamicCacheOptions,
             IOptions<CacheOptions> options,
-            ILogger<DefaultDynamicCacheService> logger)
+            ILogger<DefaultDynamicCacheService> logger
+        )
         {
             _cacheContextManager = cacheContextManager;
             _dynamicCache = dynamicCache;
@@ -83,10 +84,7 @@ namespace OrchardCore.DynamicCache.Services
             _localCache[cacheKey] = value;
             var esi = JConvert.SerializeObject(CacheContextModel.FromCacheContext(context));
 
-            await Task.WhenAll(
-                SetCachedValueAsync(cacheKey, value, context),
-                SetCachedValueAsync(GetCacheContextCacheKey(cacheKey), esi, context)
-            );
+            await Task.WhenAll(SetCachedValueAsync(cacheKey, value, context), SetCachedValueAsync(GetCacheContextCacheKey(cacheKey), esi, context));
         }
 
         public Task TagRemovedAsync(string tag, IEnumerable<string> keys)
@@ -125,10 +123,7 @@ namespace OrchardCore.DynamicCache.Services
             {
                 _logger.LogError(e, "Failed to write the '{CacheKey}' to the dynamic cache", cacheKey);
 
-                _memoryCache.Set(FailoverKey, true, new MemoryCacheEntryOptions()
-                {
-                    AbsoluteExpirationRelativeToNow = _dynamicCacheOptions.FailoverRetryLatency
-                });
+                _memoryCache.Set(FailoverKey, true, new MemoryCacheEntryOptions() { AbsoluteExpirationRelativeToNow = _dynamicCacheOptions.FailoverRetryLatency });
 
                 return;
             }
@@ -140,9 +135,7 @@ namespace OrchardCore.DynamicCache.Services
 
         private async Task<string> GetCacheKey(CacheContext context)
         {
-            var cacheEntries = context.Contexts.Count > 0
-                ? await _cacheContextManager.GetDiscriminatorsAsync(context.Contexts)
-                : [];
+            var cacheEntries = context.Contexts.Count > 0 ? await _cacheContextManager.GetDiscriminatorsAsync(context.Contexts) : [];
 
             if (!cacheEntries.Any())
             {
@@ -185,10 +178,7 @@ namespace OrchardCore.DynamicCache.Services
             {
                 _logger.LogError(e, "Failed to read the '{CacheKey}' from the dynamic cache", cacheKey);
 
-                _memoryCache.Set(FailoverKey, true, new MemoryCacheEntryOptions()
-                {
-                    AbsoluteExpirationRelativeToNow = _dynamicCacheOptions.FailoverRetryLatency
-                });
+                _memoryCache.Set(FailoverKey, true, new MemoryCacheEntryOptions() { AbsoluteExpirationRelativeToNow = _dynamicCacheOptions.FailoverRetryLatency });
             }
 
             return null;

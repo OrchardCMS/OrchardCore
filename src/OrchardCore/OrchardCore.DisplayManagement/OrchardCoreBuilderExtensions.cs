@@ -34,15 +34,18 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddTheming(this OrchardCoreBuilder builder)
         {
-            builder.AddThemingHost()
+            builder
+                .AddThemingHost()
                 .ConfigureServices(services =>
                 {
-                    services.Configure<MvcOptions>((options) =>
-                    {
-                        options.Filters.Add(typeof(ModelBinderAccessorFilter));
-                        options.Filters.Add(typeof(NotifyFilter));
-                        options.Filters.Add(typeof(RazorViewActionFilter));
-                    });
+                    services.Configure<MvcOptions>(
+                        (options) =>
+                        {
+                            options.Filters.Add(typeof(ModelBinderAccessorFilter));
+                            options.Filters.Add(typeof(NotifyFilter));
+                            options.Filters.Add(typeof(RazorViewActionFilter));
+                        }
+                    );
 
                     // Used as a service when we create a fake 'ActionContext'.
                     services.AddScoped<IAsyncViewActionFilter, RazorViewActionFilter>();
@@ -65,8 +68,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     services.AddScoped<IShapePlacementProvider, ShapeTablePlacementProvider>();
 
-                    services.TryAddEnumerable(
-                        ServiceDescriptor.Transient<IConfigureOptions<ShapeTemplateOptions>, ShapeTemplateOptionsSetup>());
+                    services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<ShapeTemplateOptions>, ShapeTemplateOptionsSetup>());
                     services.TryAddSingleton<IShapeTemplateFileProviderAccessor, ShapeTemplateFileProviderAccessor>();
 
                     services.AddShapeAttributes<CoreShapes>();

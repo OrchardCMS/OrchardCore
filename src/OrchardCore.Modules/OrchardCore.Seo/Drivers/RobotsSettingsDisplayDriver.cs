@@ -25,7 +25,8 @@ public class RobotsSettingsDisplayDriver : SectionDisplayDriver<ISite, RobotsSet
         IAuthorizationService authorizationService,
         IStaticFileProvider staticFileProvider,
         INotifier notifier,
-        IHtmlLocalizer<RobotsSettingsDisplayDriver> htmlLocalizer)
+        IHtmlLocalizer<RobotsSettingsDisplayDriver> htmlLocalizer
+    )
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
@@ -44,28 +45,36 @@ public class RobotsSettingsDisplayDriver : SectionDisplayDriver<ISite, RobotsSet
             return null;
         }
 
-        return Initialize<RobotsSettings>("RobotsSettings_Edit", async model =>
-        {
-            var fileInfo = _staticFileProvider.GetFileInfo(SeoConstants.RobotsFileName);
+        return Initialize<RobotsSettings>(
+                "RobotsSettings_Edit",
+                async model =>
+                {
+                    var fileInfo = _staticFileProvider.GetFileInfo(SeoConstants.RobotsFileName);
 
-            if (fileInfo.Exists)
-            {
-                await _notifier.WarningAsync(H["A physical {0} file is found for the current site. Until removed, the settings below will have no effect.", SeoConstants.RobotsFileName]);
-            }
+                    if (fileInfo.Exists)
+                    {
+                        await _notifier.WarningAsync(
+                            H["A physical {0} file is found for the current site. Until removed, the settings below will have no effect.", SeoConstants.RobotsFileName]
+                        );
+                    }
 
-            model.AllowAllAgents = settings.AllowAllAgents;
-            model.DisallowAdmin = settings.DisallowAdmin;
-            model.AdditionalRules = settings.AdditionalRules;
-        }).Location("Content:5")
-        .OnGroup(SeoConstants.RobotsSettingsGroupId);
+                    model.AllowAllAgents = settings.AllowAllAgents;
+                    model.DisallowAdmin = settings.DisallowAdmin;
+                    model.AdditionalRules = settings.AdditionalRules;
+                }
+            )
+            .Location("Content:5")
+            .OnGroup(SeoConstants.RobotsSettingsGroupId);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(RobotsSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!context.GroupId.Equals(SeoConstants.RobotsSettingsGroupId, StringComparison.OrdinalIgnoreCase)
-            || !await _authorizationService.AuthorizeAsync(user, SeoConstants.ManageSeoSettings))
+        if (
+            !context.GroupId.Equals(SeoConstants.RobotsSettingsGroupId, StringComparison.OrdinalIgnoreCase)
+            || !await _authorizationService.AuthorizeAsync(user, SeoConstants.ManageSeoSettings)
+        )
         {
             return null;
         }

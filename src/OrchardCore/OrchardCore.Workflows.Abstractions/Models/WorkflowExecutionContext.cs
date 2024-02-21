@@ -6,8 +6,7 @@ namespace OrchardCore.Workflows.Models
 {
     public class WorkflowExecutionContext
     {
-        public WorkflowExecutionContext
-        (
+        public WorkflowExecutionContext(
             WorkflowType workflowType,
             Workflow workflow,
             IDictionary<string, object> input,

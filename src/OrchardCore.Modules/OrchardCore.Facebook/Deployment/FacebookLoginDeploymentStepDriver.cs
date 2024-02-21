@@ -8,11 +8,10 @@ namespace OrchardCore.Facebook.Deployment
     {
         public override IDisplayResult Display(FacebookLoginDeploymentStep step)
         {
-            return
-                Combine(
-                    View("FacebookLoginDeploymentStep_Summary", step).Location("Summary", "Content"),
-                    View("FacebookLoginDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
-                );
+            return Combine(
+                View("FacebookLoginDeploymentStep_Summary", step).Location("Summary", "Content"),
+                View("FacebookLoginDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(FacebookLoginDeploymentStep step)

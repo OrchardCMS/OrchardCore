@@ -15,19 +15,23 @@ public class AzureAISearchIndexRebuildDeploymentStepDriver(AzureAISearchIndexSet
 {
     private readonly AzureAISearchIndexSettingsService _indexSettingsService = indexSettingsService;
 
-    public override IDisplayResult Display(AzureAISearchIndexRebuildDeploymentStep step)
-        => Combine(
+    public override IDisplayResult Display(AzureAISearchIndexRebuildDeploymentStep step) =>
+        Combine(
             View("AzureAISearchIndexRebuildDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
             View("AzureAISearchIndexRebuildDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
         );
 
-    public override IDisplayResult Edit(AzureAISearchIndexRebuildDeploymentStep step)
-        => Initialize<AzureAISearchIndexRebuildDeploymentStepViewModel>("AzureAISearchIndexRebuildDeploymentStep_Fields_Edit", async model =>
-        {
-            model.IncludeAll = step.IncludeAll;
-            model.IndexNames = step.Indices;
-            model.AllIndexNames = (await _indexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
-        }).Location("Content");
+    public override IDisplayResult Edit(AzureAISearchIndexRebuildDeploymentStep step) =>
+        Initialize<AzureAISearchIndexRebuildDeploymentStepViewModel>(
+                "AzureAISearchIndexRebuildDeploymentStep_Fields_Edit",
+                async model =>
+                {
+                    model.IncludeAll = step.IncludeAll;
+                    model.IndexNames = step.Indices;
+                    model.AllIndexNames = (await _indexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
+                }
+            )
+            .Location("Content");
 
     public override async Task<IDisplayResult> UpdateAsync(AzureAISearchIndexRebuildDeploymentStep step, IUpdateModel updater)
     {

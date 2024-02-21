@@ -19,11 +19,7 @@ namespace OrchardCore.Settings.Services
 
         public Task<TimeZoneSelectorResult> GetTimeZoneAsync()
         {
-            return Task.FromResult(new TimeZoneSelectorResult
-            {
-                Priority = 0,
-                TimeZoneId = async () => (await _siteService.GetSiteSettingsAsync())?.TimeZoneId
-            });
+            return Task.FromResult(new TimeZoneSelectorResult { Priority = 0, TimeZoneId = async () => (await _siteService.GetSiteSettingsAsync())?.TimeZoneId });
         }
     }
 }

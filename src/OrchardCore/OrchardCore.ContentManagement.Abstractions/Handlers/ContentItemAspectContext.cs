@@ -11,7 +11,8 @@ namespace OrchardCore.ContentManagement.Handlers
         /// <summary>
         /// Provides a value for a specific aspect type.
         /// </summary>
-        public async Task<ContentItemAspectContext> ForAsync<TAspect>(Func<TAspect, Task> action) where TAspect : class
+        public async Task<ContentItemAspectContext> ForAsync<TAspect>(Func<TAspect, Task> action)
+            where TAspect : class
         {
             var aspect = Aspect as TAspect;
 

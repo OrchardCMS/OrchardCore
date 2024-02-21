@@ -37,11 +37,7 @@ namespace OrchardCore.Mvc.LocationExpander
 
         private static IEnumerable<IViewLocationExpanderProvider> DiscoverProviders(ViewLocationExpanderContext context)
         {
-            return context
-                .ActionContext
-                .HttpContext
-                .RequestServices
-                .GetServices<IViewLocationExpanderProvider>();
+            return context.ActionContext.HttpContext.RequestServices.GetServices<IViewLocationExpanderProvider>();
         }
     }
 }

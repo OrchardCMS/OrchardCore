@@ -22,10 +22,7 @@ namespace OrchardCore.Data.Migration
         /// <param name="serviceProvider">The <see cref="IServiceProvider"/>.</param>
         /// <param name="shellSettings">The <see cref="ShellSettings"/>.</param>
         /// <param name="logger">The <see cref="ILogger"/>.</param>
-        public AutomaticDataMigrations(
-            IServiceProvider serviceProvider,
-            ShellSettings shellSettings,
-            ILogger<AutomaticDataMigrations> logger)
+        public AutomaticDataMigrations(IServiceProvider serviceProvider, ShellSettings shellSettings, ILogger<AutomaticDataMigrations> logger)
         {
             _serviceProvider = serviceProvider;
             _shellSettings = shellSettings;

@@ -29,7 +29,8 @@ namespace OrchardCore.Users.Drivers
             IContentDefinitionManager contentDefinitionManager,
             IContentManager contentManager,
             IAuthorizationService authorizationService,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor
+        )
         {
             _contentItemDisplayManager = contentItemDisplayManager;
             _contentDefinitionManager = contentDefinitionManager;
@@ -51,15 +52,20 @@ namespace OrchardCore.Users.Drivers
 
             foreach (var contentTypeDefinition in contentTypeDefinitions)
             {
-                results.Add(Initialize<CustomUserSettingsEditViewModel>("CustomUserSettings", async model =>
-                    {
-                        var isNew = false;
-                        var contentItem = await GetUserSettingsAsync(user, contentTypeDefinition, () => isNew = true);
-                        model.Editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, context.Updater, isNew, context.GroupId, Prefix);
-                    })
-                    .Location($"Content:10#{contentTypeDefinition.DisplayName}")
-                    .Differentiator($"CustomUserSettings-{contentTypeDefinition.Name}")
-                    .RenderWhen(() => _authorizationService.AuthorizeAsync(userClaim, CustomUserSettingsPermissions.CreatePermissionForType(contentTypeDefinition))));
+                results.Add(
+                    Initialize<CustomUserSettingsEditViewModel>(
+                            "CustomUserSettings",
+                            async model =>
+                            {
+                                var isNew = false;
+                                var contentItem = await GetUserSettingsAsync(user, contentTypeDefinition, () => isNew = true);
+                                model.Editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, context.Updater, isNew, context.GroupId, Prefix);
+                            }
+                        )
+                        .Location($"Content:10#{contentTypeDefinition.DisplayName}")
+                        .Differentiator($"CustomUserSettings-{contentTypeDefinition.Name}")
+                        .RenderWhen(() => _authorizationService.AuthorizeAsync(userClaim, CustomUserSettingsPermissions.CreatePermissionForType(contentTypeDefinition)))
+                );
             }
 
             return Combine(results);
@@ -86,9 +92,8 @@ namespace OrchardCore.Users.Drivers
             return await EditAsync(user, context);
         }
 
-        private async Task<IEnumerable<ContentTypeDefinition>> GetContentTypeDefinitionsAsync()
-            => (await _contentDefinitionManager.ListTypeDefinitionsAsync())
-                .Where(x => x.GetStereotype() == "CustomUserSettings");
+        private async Task<IEnumerable<ContentTypeDefinition>> GetContentTypeDefinitionsAsync() =>
+            (await _contentDefinitionManager.ListTypeDefinitionsAsync()).Where(x => x.GetStereotype() == "CustomUserSettings");
 
         private async Task<ContentItem> GetUserSettingsAsync(User user, ContentTypeDefinition settingsType, Action isNew = null)
         {

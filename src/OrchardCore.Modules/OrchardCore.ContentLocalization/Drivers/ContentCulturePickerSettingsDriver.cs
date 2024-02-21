@@ -16,9 +16,7 @@ namespace OrchardCore.ContentLocalization.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
-        public ContentCulturePickerSettingsDriver(
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+        public ContentCulturePickerSettingsDriver(IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService)
         {
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
@@ -33,11 +31,16 @@ namespace OrchardCore.ContentLocalization.Drivers
                 return null;
             }
 
-            return Initialize<ContentCulturePickerSettings>("ContentCulturePickerSettings_Edit", model =>
-            {
-                model.SetCookie = settings.SetCookie;
-                model.RedirectToHomepage = settings.RedirectToHomepage;
-            }).Location("Content:5").OnGroup(GroupId);
+            return Initialize<ContentCulturePickerSettings>(
+                    "ContentCulturePickerSettings_Edit",
+                    model =>
+                    {
+                        model.SetCookie = settings.SetCookie;
+                        model.RedirectToHomepage = settings.RedirectToHomepage;
+                    }
+                )
+                .Location("Content:5")
+                .OnGroup(GroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentCulturePickerSettings section, BuildEditorContext context)

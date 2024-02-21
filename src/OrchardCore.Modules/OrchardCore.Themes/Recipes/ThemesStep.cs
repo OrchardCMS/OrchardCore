@@ -16,9 +16,7 @@ namespace OrchardCore.Themes.Recipes
         private readonly ISiteThemeService _siteThemeService;
         private readonly IAdminThemeService _adminThemeService;
 
-        public ThemesStep(
-            ISiteThemeService siteThemeService,
-            IAdminThemeService adminThemeService)
+        public ThemesStep(ISiteThemeService siteThemeService, IAdminThemeService adminThemeService)
         {
             _adminThemeService = adminThemeService;
             _siteThemeService = siteThemeService;

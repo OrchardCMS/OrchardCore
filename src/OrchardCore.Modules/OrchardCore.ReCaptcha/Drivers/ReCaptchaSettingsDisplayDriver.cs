@@ -24,7 +24,8 @@ namespace OrchardCore.ReCaptcha.Drivers
             IShellHost shellHost,
             ShellSettings shellSettings,
             IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+            IAuthorizationService authorizationService
+        )
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
@@ -41,11 +42,14 @@ namespace OrchardCore.ReCaptcha.Drivers
                 return null;
             }
 
-            return Initialize<ReCaptchaSettingsViewModel>("ReCaptchaSettings_Edit", model =>
-                {
-                    model.SiteKey = settings.SiteKey;
-                    model.SecretKey = settings.SecretKey;
-                })
+            return Initialize<ReCaptchaSettingsViewModel>(
+                    "ReCaptchaSettings_Edit",
+                    model =>
+                    {
+                        model.SiteKey = settings.SiteKey;
+                        model.SecretKey = settings.SecretKey;
+                    }
+                )
                 .Location("Content")
                 .OnGroup(GroupId);
         }

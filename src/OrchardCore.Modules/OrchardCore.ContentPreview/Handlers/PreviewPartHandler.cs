@@ -17,9 +17,7 @@ namespace OrchardCore.ContentPreview.Handlers
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
-        public PreviewPartHandler(
-            ILiquidTemplateManager liquidTemplateManager,
-            IContentDefinitionManager contentDefinitionManager)
+        public PreviewPartHandler(ILiquidTemplateManager liquidTemplateManager, IContentDefinitionManager contentDefinitionManager)
         {
             _liquidTemplateManager = liquidTemplateManager;
             _contentDefinitionManager = contentDefinitionManager;
@@ -45,14 +43,14 @@ namespace OrchardCore.ContentPreview.Handlers
             {
                 await context.ForAsync<PreviewAspect>(async previewAspect =>
                 {
-                    var model = new PreviewPartViewModel()
-                    {
-                        PreviewPart = part,
-                        ContentItem = part.ContentItem,
-                    };
+                    var model = new PreviewPartViewModel() { PreviewPart = part, ContentItem = part.ContentItem, };
 
-                    previewAspect.PreviewUrl = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,
-                        new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
+                    previewAspect.PreviewUrl = await _liquidTemplateManager.RenderStringAsync(
+                        pattern,
+                        NullEncoder.Default,
+                        model,
+                        new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) }
+                    );
 
                     previewAspect.PreviewUrl = previewAspect.PreviewUrl.Replace("\r", string.Empty).Replace("\n", string.Empty);
                 });

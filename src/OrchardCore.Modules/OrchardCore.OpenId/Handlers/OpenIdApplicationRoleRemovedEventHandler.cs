@@ -9,8 +9,7 @@ namespace OrchardCore.OpenId.Services.Handlers
     {
         private readonly IOpenIdApplicationManager _manager;
 
-        public OpenIdApplicationRoleRemovedEventHandler(IOpenIdApplicationManager manager)
-            => _manager = manager;
+        public OpenIdApplicationRoleRemovedEventHandler(IOpenIdApplicationManager manager) => _manager = manager;
 
         public async Task RoleRemovedAsync(string roleName)
         {

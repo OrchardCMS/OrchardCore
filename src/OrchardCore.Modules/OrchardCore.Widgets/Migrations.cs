@@ -16,10 +16,10 @@ namespace OrchardCore.Widgets
 
         public async Task<int> CreateAsync()
         {
-            await _contentDefinitionManager.AlterPartDefinitionAsync("WidgetsListPart", builder => builder
-                .Attachable()
-                .WithDescription("Provides a way to add widgets to Layout zones for your content item.")
-                );
+            await _contentDefinitionManager.AlterPartDefinitionAsync(
+                "WidgetsListPart",
+                builder => builder.Attachable().WithDescription("Provides a way to add widgets to Layout zones for your content item.")
+            );
 
             return 1;
         }

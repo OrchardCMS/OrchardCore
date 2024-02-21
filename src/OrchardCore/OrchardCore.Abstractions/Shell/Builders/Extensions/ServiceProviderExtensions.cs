@@ -10,7 +10,8 @@ namespace OrchardCore.Environment.Shell.Builders
         /// <summary>
         /// Instantiates a new object of the specified type, but with support for constructor injection.
         /// </summary>
-        public static TResult CreateInstance<TResult>(this IServiceProvider provider) where TResult : class
+        public static TResult CreateInstance<TResult>(this IServiceProvider provider)
+            where TResult : class
         {
             return CreateInstance<TResult>(provider, typeof(TResult));
         }
@@ -18,7 +19,8 @@ namespace OrchardCore.Environment.Shell.Builders
         /// <summary>
         /// Instantiates a new object of the specified type, but with support for constructor injection.
         /// </summary>
-        public static TResult CreateInstance<TResult>(this IServiceProvider provider, Type type) where TResult : class
+        public static TResult CreateInstance<TResult>(this IServiceProvider provider, Type type)
+            where TResult : class
         {
             return (TResult)ActivatorUtilities.CreateInstance(provider, type);
         }

@@ -12,4 +12,3 @@ public class EditUserEmailViewModel
     [BindNever]
     public bool AllowEditing { get; set; }
 }
-

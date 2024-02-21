@@ -49,21 +49,19 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 
                     foreach (var tagHelper in feature.TagHelpers)
                     {
-                        var matching = _allMatchings.GetOrAdd(tagHelper.AsType(), type =>
-                        {
-                            var descriptorBuilder = TagHelperDescriptorBuilder.Create(
-                                type.FullName, type.Assembly.GetName().Name);
+                        var matching = _allMatchings.GetOrAdd(
+                            tagHelper.AsType(),
+                            type =>
+                            {
+                                var descriptorBuilder = TagHelperDescriptorBuilder.Create(type.FullName, type.Assembly.GetName().Name);
 
-                            descriptorBuilder.SetTypeName(type.FullName);
-                            AddTagMatchingRules(type, descriptorBuilder);
-                            var descriptor = descriptorBuilder.Build();
+                                descriptorBuilder.SetTypeName(type.FullName);
+                                AddTagMatchingRules(type, descriptorBuilder);
+                                var descriptor = descriptorBuilder.Build();
 
-                            return new LiquidTagHelperMatching(
-                                descriptor.Name,
-                                descriptor.AssemblyName,
-                                descriptor.TagMatchingRules
-                            );
-                        });
+                                return new LiquidTagHelperMatching(descriptor.Name, descriptor.AssemblyName, descriptor.TagMatchingRules);
+                            }
+                        );
 
                         matchings.Add(matching);
                     }
@@ -87,8 +85,13 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             return LiquidTagHelperActivator.None;
         }
 
-        public ITagHelper CreateTagHelper(LiquidTagHelperActivator activator, ViewContext context, FilterArguments arguments,
-            out TagHelperAttributeList contextAttributes, out TagHelperAttributeList outputAttributes)
+        public ITagHelper CreateTagHelper(
+            LiquidTagHelperActivator activator,
+            ViewContext context,
+            FilterArguments arguments,
+            out TagHelperAttributeList contextAttributes,
+            out TagHelperAttributeList outputAttributes
+        )
         {
             return activator.Create(_factory, context, arguments, out contextAttributes, out outputAttributes);
         }

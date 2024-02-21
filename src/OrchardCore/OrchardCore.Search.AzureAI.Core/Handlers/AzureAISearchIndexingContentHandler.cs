@@ -23,9 +23,13 @@ public class AzureAISearchIndexingContentHandler(IHttpContextAccessor httpContex
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
     public override Task PublishedAsync(PublishContentContext context) => AddContextAsync(context);
+
     public override Task CreatedAsync(CreateContentContext context) => AddContextAsync(context);
+
     public override Task UpdatedAsync(UpdateContentContext context) => AddContextAsync(context);
+
     public override Task RemovedAsync(RemoveContentContext context) => AddContextAsync(context);
+
     public override Task UnpublishedAsync(PublishContentContext context) => AddContextAsync(context);
 
     private Task AddContextAsync(ContentContextBase context)
@@ -74,8 +78,10 @@ public class AzureAISearchIndexingContentHandler(IHttpContextAccessor httpContex
             // Only process the last context.
             var context = ContextsById.Last();
 
-            ContentItem published = null, latest = null;
-            bool publishedLoaded = false, latestLoaded = false;
+            ContentItem published = null,
+                latest = null;
+            bool publishedLoaded = false,
+                latestLoaded = false;
 
             foreach (var indexSettings in await indexSettingsService.GetSettingsAsync())
             {

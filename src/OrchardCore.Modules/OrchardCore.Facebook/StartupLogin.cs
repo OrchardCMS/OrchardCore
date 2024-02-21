@@ -29,17 +29,18 @@ namespace OrchardCore.Facebook
             services.AddRecipeExecutionStep<FacebookLoginSettingsStep>();
 
             // Register the options initializers required by the Facebook handler.
-            services.TryAddEnumerable(new[]
-            {
-                // Orchard-specific initializers:
-                ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, FacebookLoginConfiguration>(),
-                ServiceDescriptor.Transient<IConfigureOptions<FacebookOptions>, FacebookLoginConfiguration>(),
+            services.TryAddEnumerable(
+                new[]
+                {
+                    // Orchard-specific initializers:
+                    ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, FacebookLoginConfiguration>(),
+                    ServiceDescriptor.Transient<IConfigureOptions<FacebookOptions>, FacebookLoginConfiguration>(),
+                    // Deployment
 
-                // Deployment
-
-                // Built-in initializers:
-                ServiceDescriptor.Transient<IPostConfigureOptions<FacebookOptions>, OAuthPostConfigureOptions<FacebookOptions, FacebookHandler>>()
-            });
+                    // Built-in initializers:
+                    ServiceDescriptor.Transient<IPostConfigureOptions<FacebookOptions>, OAuthPostConfigureOptions<FacebookOptions, FacebookHandler>>()
+                }
+            );
         }
     }
 

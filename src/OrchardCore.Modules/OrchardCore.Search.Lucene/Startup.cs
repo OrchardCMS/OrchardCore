@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Lucene.Net.Analysis.Standard;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,7 +25,6 @@ using OrchardCore.Search.Lucene.Services;
 using OrchardCore.Search.Lucene.Settings;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
-using System.Text.Json.Serialization;
 
 namespace OrchardCore.Search.Lucene
 {
@@ -43,9 +43,7 @@ namespace OrchardCore.Search.Lucene
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
 
-            services.Configure<LuceneOptions>(o =>
-                o.Analyzers.Add(new LuceneAnalyzer(LuceneSettings.StandardAnalyzer,
-                    new StandardAnalyzer(LuceneSettings.DefaultVersion))));
+            services.Configure<LuceneOptions>(o => o.Analyzers.Add(new LuceneAnalyzer(LuceneSettings.StandardAnalyzer, new StandardAnalyzer(LuceneSettings.DefaultVersion))));
 
             services.AddScoped<IDisplayDriver<Query>, LuceneQueryDisplayDriver>();
 

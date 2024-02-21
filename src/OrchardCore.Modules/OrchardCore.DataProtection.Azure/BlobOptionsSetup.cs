@@ -20,11 +20,7 @@ public class BlobOptionsSetup : IAsyncConfigureOptions<BlobOptions>
     private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
 
-    public BlobOptionsSetup(
-        IShellConfiguration configuration,
-        IOptions<ShellOptions> shellOptions,
-        ShellSettings shellSettings,
-        ILogger<BlobOptionsSetup> logger)
+    public BlobOptionsSetup(IShellConfiguration configuration, IOptions<ShellOptions> shellOptions, ShellSettings shellSettings, ILogger<BlobOptionsSetup> logger)
     {
         _configuration = configuration;
         _shellOptions = shellOptions.Value;
@@ -72,7 +68,10 @@ public class BlobOptionsSetup : IAsyncConfigureOptions<BlobOptions>
             }
             catch (Exception e)
             {
-                _logger.LogCritical(e, "Unable to connect to Azure Storage to configure data protection storage. Ensure that an application setting containing a valid Azure Storage connection string is available at `Modules:OrchardCore.DataProtection.Azure:ConnectionString`.");
+                _logger.LogCritical(
+                    e,
+                    "Unable to connect to Azure Storage to configure data protection storage. Ensure that an application setting containing a valid Azure Storage connection string is available at `Modules:OrchardCore.DataProtection.Azure:ConnectionString`."
+                );
                 throw;
             }
         }

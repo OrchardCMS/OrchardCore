@@ -81,9 +81,7 @@ public static class ConfigurationExtensions
 
     public static JsonObject ToJsonObject(this IDictionary<string, string> configurationData)
     {
-        var configuration = new ConfigurationBuilder()
-            .Add(new UpdatableDataProvider(configurationData))
-            .Build();
+        var configuration = new ConfigurationBuilder().Add(new UpdatableDataProvider(configurationData)).Build();
 
         using var disposable = configuration as IDisposable;
 

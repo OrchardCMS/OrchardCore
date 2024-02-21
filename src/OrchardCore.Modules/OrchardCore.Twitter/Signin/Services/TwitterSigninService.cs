@@ -10,8 +10,7 @@ namespace OrchardCore.Twitter.Signin.Services
     {
         private readonly ISiteService _siteService;
 
-        public TwitterSigninService(
-            ISiteService siteService)
+        public TwitterSigninService(ISiteService siteService)
         {
             _siteService = siteService;
         }
@@ -33,10 +32,13 @@ namespace OrchardCore.Twitter.Signin.Services
             ArgumentNullException.ThrowIfNull(settings);
 
             var container = await _siteService.LoadSiteSettingsAsync();
-            container.Alter<TwitterSigninSettings>(nameof(TwitterSigninSettings), aspect =>
-            {
-                aspect.CallbackPath = settings.CallbackPath;
-            });
+            container.Alter<TwitterSigninSettings>(
+                nameof(TwitterSigninSettings),
+                aspect =>
+                {
+                    aspect.CallbackPath = settings.CallbackPath;
+                }
+            );
 
             await _siteService.UpdateSiteSettingsAsync(container);
         }

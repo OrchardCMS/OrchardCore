@@ -33,7 +33,8 @@ namespace OrchardCore.Users.Services
             IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents,
             IStringLocalizer<UserService> stringLocalizer,
             ISiteService siteService,
-            ILogger<UserService> logger)
+            ILogger<UserService> logger
+        )
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -114,9 +115,7 @@ namespace OrchardCore.Users.Services
             }
 
             // Accounts can be created with no password.
-            var identityResult = string.IsNullOrWhiteSpace(password)
-                ? await _userManager.CreateAsync(user)
-                : await _userManager.CreateAsync(user, password);
+            var identityResult = string.IsNullOrWhiteSpace(password) ? await _userManager.CreateAsync(user) : await _userManager.CreateAsync(user, password);
             if (!identityResult.Succeeded)
             {
                 ProcessValidationErrors(identityResult.Errors, newUser, reportError);
@@ -240,8 +239,7 @@ namespace OrchardCore.Users.Services
             return _signInManager.CreateUserPrincipalAsync(user);
         }
 
-        public async Task<IUser> GetUserAsync(string userName) =>
-            (await _userManager.FindByNameAsync(userName)) ?? await _userManager.FindByEmailAsync(userName);
+        public async Task<IUser> GetUserAsync(string userName) => (await _userManager.FindByNameAsync(userName)) ?? await _userManager.FindByEmailAsync(userName);
 
         public Task<IUser> GetUserByUniqueIdAsync(string userIdentifier) => _userManager.FindByIdAsync(userIdentifier);
 

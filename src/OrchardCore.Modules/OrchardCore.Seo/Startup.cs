@@ -27,9 +27,7 @@ namespace OrchardCore.Seo
         {
             services.AddDataMigration<Migrations>();
 
-            services.AddContentPart<SeoMetaPart>()
-                .UseDisplayDriver<SeoMetaPartDisplayDriver>()
-                .AddHandler<SeoMetaPartHandler>();
+            services.AddContentPart<SeoMetaPart>().UseDisplayDriver<SeoMetaPartDisplayDriver>().AddHandler<SeoMetaPartHandler>();
 
             services.AddScoped<IContentDisplayDriver, SeoContentDriver>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, SeoMetaPartSettingsDisplayDriver>();

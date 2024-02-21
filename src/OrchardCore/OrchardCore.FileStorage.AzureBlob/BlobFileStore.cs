@@ -182,10 +182,7 @@ namespace OrchardCore.FileStorage.AzureBlob
                 }
 
                 // Do not include root folder, or current path, or multiple folders in folder listing.
-                if (!string.IsNullOrEmpty(directory) &&
-                    !directories.Contains(directory) &&
-                    (string.IsNullOrEmpty(path) ||
-                    !directory.EndsWith(path)))
+                if (!string.IsNullOrEmpty(directory) && !directories.Contains(directory) && (string.IsNullOrEmpty(path) || !directory.EndsWith(path)))
                 {
                     directories.Add(directory);
                     yield return new BlobDirectory(directory, _clock.UtcNow);
@@ -332,7 +329,9 @@ namespace OrchardCore.FileStorage.AzureBlob
 
                 if (properties.Value.CopyStatus != CopyStatus.Success)
                 {
-                    throw new FileStoreException($"Error while copying file '{srcPath}'; copy operation failed with status {properties.Value.CopyStatus} and description {properties.Value.CopyStatusDescription}.");
+                    throw new FileStoreException(
+                        $"Error while copying file '{srcPath}'; copy operation failed with status {properties.Value.CopyStatus} and description {properties.Value.CopyStatusDescription}."
+                    );
                 }
             }
             catch (FileStoreException)
@@ -388,10 +387,7 @@ namespace OrchardCore.FileStorage.AzureBlob
 
                 _contentTypeProvider.TryGetContentType(path, out var contentType);
 
-                var headers = new BlobHttpHeaders
-                {
-                    ContentType = contentType ?? "application/octet-stream"
-                };
+                var headers = new BlobHttpHeaders { ContentType = contentType ?? "application/octet-stream" };
 
                 await blob.UploadAsync(inputStream, headers);
 

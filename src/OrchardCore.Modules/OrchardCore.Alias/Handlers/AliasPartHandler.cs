@@ -29,7 +29,8 @@ namespace OrchardCore.Alias.Handlers
             ITagCache tagCache,
             ILiquidTemplateManager liquidTemplateManager,
             ISession session,
-            IStringLocalizer<AliasPartHandler> stringLocalizer)
+            IStringLocalizer<AliasPartHandler> stringLocalizer
+        )
         {
             _contentDefinitionManager = contentDefinitionManager;
             _tagCache = tagCache;
@@ -52,7 +53,7 @@ namespace OrchardCore.Alias.Handlers
             }
         }
 
-        public async override Task UpdatedAsync(UpdateContentContext context, AliasPart part)
+        public override async Task UpdatedAsync(UpdateContentContext context, AliasPart part)
         {
             // Compute the Alias only if it's empty.
             if (!string.IsNullOrEmpty(part.Alias))
@@ -71,8 +72,12 @@ namespace OrchardCore.Alias.Handlers
                     ContentItem = part.ContentItem
                 };
 
-                part.Alias = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,
-                    new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) });
+                part.Alias = await _liquidTemplateManager.RenderStringAsync(
+                    pattern,
+                    NullEncoder.Default,
+                    model,
+                    new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) }
+                );
 
                 part.Alias = part.Alias.Replace("\r", string.Empty).Replace("\n", string.Empty);
 

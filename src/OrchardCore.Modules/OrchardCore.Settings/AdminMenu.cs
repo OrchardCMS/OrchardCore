@@ -8,11 +8,7 @@ namespace OrchardCore.Settings
 {
     public class AdminMenu : INavigationProvider
     {
-        private static readonly RouteValueDictionary _routeValues = new()
-        {
-            { "area", "OrchardCore.Settings" },
-            { "groupId", DefaultSiteSettingsDisplayDriver.GroupId },
-        };
+        private static readonly RouteValueDictionary _routeValues = new() { { "area", "OrchardCore.Settings" }, { "groupId", DefaultSiteSettingsDisplayDriver.GroupId }, };
 
         protected readonly IStringLocalizer S;
 
@@ -28,20 +24,25 @@ namespace OrchardCore.Settings
                 return Task.CompletedTask;
             }
 
-            builder
-                .Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, configuration => configuration
-                    .AddClass("menu-configuration")
-                    .Id("configuration")
-                    .Add(S["Settings"], "1", settings => settings
-                        .Add(S["General"], "1", entry => entry
-                            .AddClass("general")
-                            .Id("general")
-                            .Action("Index", "Admin", _routeValues)
-                            .Permission(Permissions.ManageGroupSettings)
-                            .LocalNav()
-                        ),
-                    priority: 1)
-                );
+            builder.Add(
+                S["Configuration"],
+                NavigationConstants.AdminMenuConfigurationPosition,
+                configuration =>
+                    configuration
+                        .AddClass("menu-configuration")
+                        .Id("configuration")
+                        .Add(
+                            S["Settings"],
+                            "1",
+                            settings =>
+                                settings.Add(
+                                    S["General"],
+                                    "1",
+                                    entry => entry.AddClass("general").Id("general").Action("Index", "Admin", _routeValues).Permission(Permissions.ManageGroupSettings).LocalNav()
+                                ),
+                            priority: 1
+                        )
+            );
 
             return Task.CompletedTask;
         }

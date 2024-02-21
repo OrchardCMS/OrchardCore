@@ -35,7 +35,7 @@ namespace OrchardCore.Sitemaps.Controllers
             ISitemapCacheProvider sitemapCacheProvider,
             ShellSettings shellSettings,
             ILogger<SitemapController> logger
-            )
+        )
         {
             _sitemapManager = sitemapManager;
             _siteService = siteService;
@@ -56,7 +56,7 @@ namespace OrchardCore.Sitemaps.Controllers
             var fileResolver = await _sitemapCacheProvider.GetCachedSitemapAsync(sitemap.CacheFileName);
             if (fileResolver != null)
             {
-                // When multiple requests occur for the same sitemap it 
+                // When multiple requests occur for the same sitemap it
                 // may still be building, so we wait for it to complete.
                 if (_workers.TryGetValue(_tenantName + sitemap.Path, out var writeTask))
                 {
@@ -69,48 +69,52 @@ namespace OrchardCore.Sitemaps.Controllers
             }
             else
             {
-                var work = await _workers.GetOrAdd(_tenantName + sitemap.Path, x => new Lazy<Task<Stream>>(async () =>
-                {
-                    try
-                    {
-                        var siteSettings = await _siteService.GetSiteSettingsAsync();
+                var work = await _workers
+                    .GetOrAdd(
+                        _tenantName + sitemap.Path,
+                        x => new Lazy<Task<Stream>>(
+                            async () =>
+                            {
+                                try
+                                {
+                                    var siteSettings = await _siteService.GetSiteSettingsAsync();
 
-                        var context = new SitemapBuilderContext()
-                        {
-                            HostPrefix = siteSettings.BaseUrl,
-                            UrlHelper = Url
-                        };
+                                    var context = new SitemapBuilderContext() { HostPrefix = siteSettings.BaseUrl, UrlHelper = Url };
 
-                        var document = await _sitemapBuilder.BuildAsync(sitemap, context);
+                                    var document = await _sitemapBuilder.BuildAsync(sitemap, context);
 
-                        if (document == null)
-                        {
-                            return null;
-                        }
+                                    if (document == null)
+                                    {
+                                        return null;
+                                    }
 
-                        document.Declaration = new XDeclaration("1.0", "utf-8", null);
+                                    document.Declaration = new XDeclaration("1.0", "utf-8", null);
 
-                        var stream = new MemoryStream();
-                        await document.SaveAsync(stream, SaveOptions.None, cancellationToken);
+                                    var stream = new MemoryStream();
+                                    await document.SaveAsync(stream, SaveOptions.None, cancellationToken);
 
-                        if (stream.Length >= ErrorLength)
-                        {
-                            _logger.LogError("Sitemap 50MB maximum length limit exceeded");
-                        }
-                        else if (stream.Length >= WarningLength)
-                        {
-                            _logger.LogWarning("Sitemap nearing 50MB length limit");
-                        }
+                                    if (stream.Length >= ErrorLength)
+                                    {
+                                        _logger.LogError("Sitemap 50MB maximum length limit exceeded");
+                                    }
+                                    else if (stream.Length >= WarningLength)
+                                    {
+                                        _logger.LogWarning("Sitemap nearing 50MB length limit");
+                                    }
 
-                        await _sitemapCacheProvider.SetSitemapCacheAsync(stream, sitemap.CacheFileName, cancellationToken);
+                                    await _sitemapCacheProvider.SetSitemapCacheAsync(stream, sitemap.CacheFileName, cancellationToken);
 
-                        return stream;
-                    }
-                    finally
-                    {
-                        _workers.TryRemove(_tenantName + sitemap.Path, out var writeCacheTask);
-                    }
-                }, LazyThreadSafetyMode.ExecutionAndPublication)).Value;
+                                    return stream;
+                                }
+                                finally
+                                {
+                                    _workers.TryRemove(_tenantName + sitemap.Path, out var writeCacheTask);
+                                }
+                            },
+                            LazyThreadSafetyMode.ExecutionAndPublication
+                        )
+                    )
+                    .Value;
 
                 if (work == null)
                 {

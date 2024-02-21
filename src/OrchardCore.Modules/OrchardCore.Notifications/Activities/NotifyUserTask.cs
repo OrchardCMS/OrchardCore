@@ -14,18 +14,13 @@ namespace OrchardCore.Notifications.Activities;
 public class NotifyUserTask : NotifyUserTaskActivity<NotifyUserTask>
 {
     public NotifyUserTask(
-       INotificationService notificationCoordinator,
-       IWorkflowExpressionEvaluator expressionEvaluator,
-       HtmlEncoder htmlEncoder,
-       ILogger<NotifyUserTask> logger,
-       IStringLocalizer<NotifyUserTask> localizer
-   ) : base(notificationCoordinator,
-       expressionEvaluator,
-       htmlEncoder,
-       logger,
-       localizer)
-    {
-    }
+        INotificationService notificationCoordinator,
+        IWorkflowExpressionEvaluator expressionEvaluator,
+        HtmlEncoder htmlEncoder,
+        ILogger<NotifyUserTask> logger,
+        IStringLocalizer<NotifyUserTask> localizer
+    )
+        : base(notificationCoordinator, expressionEvaluator, htmlEncoder, logger, localizer) { }
 
     public override LocalizedString DisplayText => S["Notify User Task"];
 

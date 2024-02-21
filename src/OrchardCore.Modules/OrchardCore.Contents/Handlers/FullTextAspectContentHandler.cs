@@ -24,11 +24,7 @@ namespace OrchardCore.Contents.Handlers
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IServiceProvider _serviceProvider;
 
-        public FullTextAspectContentHandler(
-            IContentDefinitionManager contentDefinitionManager,
-            ILiquidTemplateManager liquidTemplateManager,
-            IServiceProvider serviceProvider
-            )
+        public FullTextAspectContentHandler(IContentDefinitionManager contentDefinitionManager, ILiquidTemplateManager liquidTemplateManager, IServiceProvider serviceProvider)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _liquidTemplateManager = liquidTemplateManager;
@@ -71,8 +67,12 @@ namespace OrchardCore.Contents.Handlers
 
                 if (settings.IncludeFullTextTemplate && !string.IsNullOrEmpty(settings.FullTextTemplate))
                 {
-                    var result = await _liquidTemplateManager.RenderStringAsync(settings.FullTextTemplate, NullEncoder.Default, context.ContentItem,
-                        new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(context.ContentItem) });
+                    var result = await _liquidTemplateManager.RenderStringAsync(
+                        settings.FullTextTemplate,
+                        NullEncoder.Default,
+                        context.ContentItem,
+                        new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(context.ContentItem) }
+                    );
 
                     fullTextAspect.Segments.Add(result);
                 }

@@ -23,10 +23,6 @@ public class AzureAISearchSettingsDeploymentSource(ISiteService siteService) : I
 
         var settings = site.As<AzureAISearchSettings>();
 
-        result.Steps.Add(new JsonObject
-        {
-            ["name"] = "Settings",
-            [nameof(AzureAISearchSettings)] = JObject.FromObject(settings),
-        });
+        result.Steps.Add(new JsonObject { ["name"] = "Settings", [nameof(AzureAISearchSettings)] = JObject.FromObject(settings), });
     }
 }

@@ -8,8 +8,7 @@ namespace OrchardCore.Google.Analytics.Services
     {
         private readonly ISiteService _siteService;
 
-        public GoogleAnalyticsService(
-            ISiteService siteService)
+        public GoogleAnalyticsService(ISiteService siteService)
         {
             _siteService = siteService;
         }

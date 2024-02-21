@@ -35,11 +35,7 @@ namespace OrchardCore.Media.TagHelpers
         [HtmlAttributeName(AppendVersionAttributeName)]
         public bool AppendVersion { get; set; }
 
-        public ImageTagHelper(
-            IMediaFileStore mediaFileStore,
-            IHttpContextAccessor httpContextAccessor,
-            IFileVersionProvider fileVersionProvider
-            )
+        public ImageTagHelper(IMediaFileStore mediaFileStore, IHttpContextAccessor httpContextAccessor, IFileVersionProvider fileVersionProvider)
         {
             _mediaFileStore = mediaFileStore;
             _httpContextAccessor = httpContextAccessor;

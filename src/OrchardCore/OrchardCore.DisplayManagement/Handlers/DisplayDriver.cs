@@ -4,9 +4,9 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.DisplayManagement.Handlers
 {
-    public abstract class DisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext> :
-        DisplayDriverBase,
-        IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>
+    public abstract class DisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>
+        : DisplayDriverBase,
+            IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>
         where TModel : class
         where TDisplayContext : BuildDisplayContext
         where TEditorContext : BuildEditorContext
@@ -125,16 +125,12 @@ namespace OrchardCore.DisplayManagement.Handlers
         }
     }
 
-    public abstract class DisplayDriver<TModel> :
-        DisplayDriver<TModel, BuildDisplayContext, BuildEditorContext, UpdateEditorContext>,
-        IDisplayDriver<TModel>
-        where TModel : class
-    {
-    }
+    public abstract class DisplayDriver<TModel> : DisplayDriver<TModel, BuildDisplayContext, BuildEditorContext, UpdateEditorContext>, IDisplayDriver<TModel>
+        where TModel : class { }
 
-    public abstract class DisplayDriver<TModel, TConcrete, TDisplayContext, TEditorContext, TUpdateContext> :
-        DisplayDriver<TConcrete, TDisplayContext, TEditorContext, TUpdateContext>,
-        IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>
+    public abstract class DisplayDriver<TModel, TConcrete, TDisplayContext, TEditorContext, TUpdateContext>
+        : DisplayDriver<TConcrete, TDisplayContext, TEditorContext, TUpdateContext>,
+            IDisplayDriver<TModel, TDisplayContext, TEditorContext, TUpdateContext>
         where TConcrete : class, TModel
         where TModel : class
         where TDisplayContext : BuildDisplayContext
@@ -193,11 +189,7 @@ namespace OrchardCore.DisplayManagement.Handlers
         }
     }
 
-    public abstract class DisplayDriver<TModel, TConcrete> :
-        DisplayDriver<TModel, TConcrete, BuildDisplayContext, BuildEditorContext, UpdateEditorContext>,
-        IDisplayDriver<TModel>
+    public abstract class DisplayDriver<TModel, TConcrete> : DisplayDriver<TModel, TConcrete, BuildDisplayContext, BuildEditorContext, UpdateEditorContext>, IDisplayDriver<TModel>
         where TConcrete : class, TModel
-        where TModel : class
-    {
-    }
+        where TModel : class { }
 }

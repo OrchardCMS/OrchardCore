@@ -15,10 +15,7 @@ public class ApiControllerTests
 {
     private readonly Dictionary<string, ShellSettings> _shellSettings = [];
     private readonly Mock<IClock> _clockMock = new();
-    private readonly Dictionary<string, FeatureProfile> _featureProfiles = new()
-    {
-        { "Feature Profile", new FeatureProfile() }
-    };
+    private readonly Dictionary<string, FeatureProfile> _featureProfiles = new() { { "Feature Profile", new FeatureProfile() } };
 
     private delegate void TryGetSettingsCallback(string name, out ShellSettings settings);
 
@@ -42,9 +39,7 @@ public class ApiControllerTests
         Assert.True(controller.ModelState.IsValid);
         Assert.IsType<OkObjectResult>(result);
 
-        var token1 = (result as OkObjectResult).Value
-            .ToString()
-            .Split("token=")?[1];
+        var token1 = (result as OkObjectResult).Value.ToString().Split("token=")?[1];
 
         Assert.NotNull(token1);
 
@@ -55,9 +50,7 @@ public class ApiControllerTests
         Assert.True(controller.ModelState.IsValid);
         Assert.IsType<CreatedResult>(result);
 
-        var token2 = (result as CreatedResult).Location
-            .ToString()
-            .Split("token=")?[1];
+        var token2 = (result as CreatedResult).Location.ToString().Split("token=")?[1];
 
         Assert.NotNull(token2);
         Assert.Equal(token1, token2);
@@ -83,9 +76,7 @@ public class ApiControllerTests
         Assert.True(controller.ModelState.IsValid);
         Assert.IsType<OkObjectResult>(result);
 
-        var token1 = (result as OkObjectResult).Value
-            .ToString()
-            .Split("token=")?[1];
+        var token1 = (result as OkObjectResult).Value.ToString().Split("token=")?[1];
 
         Assert.NotNull(token1);
 
@@ -99,9 +90,7 @@ public class ApiControllerTests
         Assert.True(controller.ModelState.IsValid);
         Assert.IsType<CreatedResult>(result);
 
-        var token2 = (result as CreatedResult).Location
-            .ToString()
-            .Split("token=")?[1];
+        var token2 = (result as CreatedResult).Location.ToString().Split("token=")?[1];
 
         Assert.NotNull(token2);
         Assert.NotEqual(token1, token2);
@@ -109,14 +98,10 @@ public class ApiControllerTests
 
     private ApiController CreateController()
     {
-        var defaultShellSettings = new ShellSettings()
-            .AsDefaultShell()
-            .AsRunning();
+        var defaultShellSettings = new ShellSettings().AsDefaultShell().AsRunning();
 
         var shellHostMock = new Mock<IShellHost>();
-        shellHostMock
-            .Setup(host => host.UpdateShellSettingsAsync(It.IsAny<ShellSettings>()))
-            .Callback<ShellSettings>(settings => _shellSettings.Add(settings.Name, settings));
+        shellHostMock.Setup(host => host.UpdateShellSettingsAsync(It.IsAny<ShellSettings>())).Callback<ShellSettings>(settings => _shellSettings.Add(settings.Name, settings));
 
         var _ = It.IsAny<ShellSettings>();
         shellHostMock
@@ -125,39 +110,29 @@ public class ApiControllerTests
             .Returns<string, ShellSettings>((name, _) => _shellSettings.ContainsKey(name));
 
         var shellSettingsManagerMock = new Mock<IShellSettingsManager>();
-        shellSettingsManagerMock
-            .Setup(shellSettingsManager => shellSettingsManager.CreateDefaultSettings())
-            .Returns(defaultShellSettings);
+        shellSettingsManagerMock.Setup(shellSettingsManager => shellSettingsManager.CreateDefaultSettings()).Returns(defaultShellSettings);
 
         var dataProtectionProviderMock = new Mock<IDataProtectionProvider>();
-        dataProtectionProviderMock
-            .Setup(dataProtectionProvider => dataProtectionProvider.CreateProtector(It.IsAny<string>()))
-            .Returns(new FakeDataProtector());
+        dataProtectionProviderMock.Setup(dataProtectionProvider => dataProtectionProvider.CreateProtector(It.IsAny<string>())).Returns(new FakeDataProtector());
 
         var authorizeServiceMock = new Mock<IAuthorizationService>();
         authorizeServiceMock
-            .Setup(authorizeService => authorizeService.AuthorizeAsync(
-                It.IsAny<ClaimsPrincipal>(),
-                It.IsAny<object>(),
-                It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+            .Setup(authorizeService => authorizeService.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
             .ReturnsAsync(AuthorizationResult.Success);
 
         var featureProfilesService = new Mock<IFeatureProfilesService>();
-        featureProfilesService
-            .Setup(featureProfiles => featureProfiles.GetFeatureProfilesAsync())
-            .ReturnsAsync(_featureProfiles);
+        featureProfilesService.Setup(featureProfiles => featureProfiles.GetFeatureProfilesAsync()).ReturnsAsync(_featureProfiles);
 
         var stringLocalizerMock = new Mock<IStringLocalizer<TenantValidator>>();
-        stringLocalizerMock
-            .Setup(localizer => localizer[It.IsAny<string>()])
-            .Returns((string name) => new LocalizedString(name, name));
+        stringLocalizerMock.Setup(localizer => localizer[It.IsAny<string>()]).Returns((string name) => new LocalizedString(name, name));
 
         var tenantValidator = new TenantValidator(
             shellHostMock.Object,
             shellSettingsManagerMock.Object,
             featureProfilesService.Object,
             Mock.Of<IDbConnectionValidator>(),
-            stringLocalizerMock.Object);
+            stringLocalizerMock.Object
+        );
 
         return new ApiController(
             shellHostMock.Object,
@@ -174,7 +149,8 @@ public class ApiControllerTests
             [],
             tenantValidator,
             Mock.Of<IStringLocalizer<ApiController>>(),
-            Mock.Of<ILogger<ApiController>>())
+            Mock.Of<ILogger<ApiController>>()
+        )
         {
             ControllerContext = new ControllerContext { HttpContext = CreateHttpContext() }
         };
@@ -182,15 +158,9 @@ public class ApiControllerTests
 
     private static HttpContext CreateHttpContext()
     {
-        var httpContext = new DefaultHttpContext
-        {
-            User = new ClaimsPrincipal()
-        };
+        var httpContext = new DefaultHttpContext { User = new ClaimsPrincipal() };
 
-        httpContext.Features.Set(new ShellContextFeature
-        {
-            OriginalPathBase = PathString.Empty
-        });
+        httpContext.Features.Set(new ShellContextFeature { OriginalPathBase = PathString.Empty });
 
         httpContext.User.AddIdentity(new ClaimsIdentity());
 

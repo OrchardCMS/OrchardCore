@@ -38,19 +38,35 @@ namespace OrchardCore.Tests.Workflows
                         ActivityId = "1",
                         IsStart = true,
                         Name = addTask.Name,
-                        Properties = JObject.FromObject(new
-                        {
-                            A = new WorkflowExpression<double>("input(\"A\")"),
-                            B = new WorkflowExpression<double>("input(\"B\")"),
-                        })
+                        Properties = JObject.FromObject(new { A = new WorkflowExpression<double>("input(\"A\")"), B = new WorkflowExpression<double>("input(\"B\")"), })
                     },
-                    new() { ActivityId = "2", Name = writeLineTask.Name, Properties = JObject.FromObject(new { Text = new WorkflowExpression<string>("lastResult().toString()") }) },
-                    new() { ActivityId = "3", Name = setOutputTask.Name, Properties = JObject.FromObject(new { Value = new WorkflowExpression<string>("lastResult()"), OutputName = "Sum" }) }
+                    new()
+                    {
+                        ActivityId = "2",
+                        Name = writeLineTask.Name,
+                        Properties = JObject.FromObject(new { Text = new WorkflowExpression<string>("lastResult().toString()") })
+                    },
+                    new()
+                    {
+                        ActivityId = "3",
+                        Name = setOutputTask.Name,
+                        Properties = JObject.FromObject(new { Value = new WorkflowExpression<string>("lastResult()"), OutputName = "Sum" })
+                    }
                 ],
                 Transitions =
                 [
-                    new() { SourceActivityId = "1", SourceOutcomeName = "Done", DestinationActivityId = "2" },
-                    new() { SourceActivityId = "2", SourceOutcomeName = "Done", DestinationActivityId = "3" }
+                    new()
+                    {
+                        SourceActivityId = "1",
+                        SourceOutcomeName = "Done",
+                        DestinationActivityId = "2"
+                    },
+                    new()
+                    {
+                        SourceActivityId = "2",
+                        SourceOutcomeName = "Done",
+                        DestinationActivityId = "3"
+                    }
                 ]
             };
 
@@ -87,18 +103,10 @@ namespace OrchardCore.Tests.Workflows
             var globalMethodProviders = Array.Empty<IGlobalMethodProvider>();
             var scriptingManager = new DefaultScriptingManager(new[] { javaScriptEngine }, globalMethodProviders);
 
-            return new JavaScriptWorkflowScriptEvaluator(
-                scriptingManager,
-                workflowContextHandlers.Resolve(),
-                new Mock<ILogger<JavaScriptWorkflowScriptEvaluator>>().Object
-            );
+            return new JavaScriptWorkflowScriptEvaluator(scriptingManager, workflowContextHandlers.Resolve(), new Mock<ILogger<JavaScriptWorkflowScriptEvaluator>>().Object);
         }
 
-        private static WorkflowManager CreateWorkflowManager(
-            IServiceProvider serviceProvider,
-            IEnumerable<IActivity> activities,
-            WorkflowType workflowType
-        )
+        private static WorkflowManager CreateWorkflowManager(IServiceProvider serviceProvider, IEnumerable<IActivity> activities, WorkflowType workflowType)
         {
             var workflowValueSerializers = new Resolver<IEnumerable<IWorkflowValueSerializer>>(serviceProvider);
             var activityLibrary = new Mock<IActivityLibrary>();
@@ -125,7 +133,7 @@ namespace OrchardCore.Tests.Workflows
                 missingActivityLogger.Object,
                 missingActivityLocalizer.Object,
                 clock.Object
-                );
+            );
 
             foreach (var activity in activities)
             {

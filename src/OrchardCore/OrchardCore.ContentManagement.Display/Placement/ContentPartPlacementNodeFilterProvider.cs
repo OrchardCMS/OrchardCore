@@ -11,7 +11,10 @@ namespace OrchardCore.ContentManagement.Display.Placement
 {
     public class ContentPartPlacementNodeFilterProvider : ContentPlacementParseFilterProviderBase, IPlacementNodeFilterProvider
     {
-        public string Key { get { return "contentPart"; } }
+        public string Key
+        {
+            get { return "contentPart"; }
+        }
 
         public bool IsMatch(ShapePlacementContext context, object expression)
         {
@@ -35,7 +38,10 @@ namespace OrchardCore.ContentManagement.Display.Placement
 
     public class ContentTypePlacementNodeFilterProvider : ContentPlacementParseFilterProviderBase, IPlacementNodeFilterProvider
     {
-        public string Key { get { return "contentType"; } }
+        public string Key
+        {
+            get { return "contentType"; }
+        }
 
         public bool IsMatch(ShapePlacementContext context, object expression)
         {
@@ -63,7 +69,8 @@ namespace OrchardCore.ContentManagement.Display.Placement
                 {
                     var prefix = ct[..^1];
 
-                    return (contentItem.ContentType ?? "").StartsWith(prefix, StringComparison.OrdinalIgnoreCase) || (GetStereotype(context) ?? "").StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
+                    return (contentItem.ContentType ?? "").StartsWith(prefix, StringComparison.OrdinalIgnoreCase)
+                        || (GetStereotype(context) ?? "").StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
                 }
 
                 return contentItem.ContentType == ct || GetStereotype(context) == ct;

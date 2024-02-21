@@ -22,20 +22,14 @@ namespace OrchardCore.AdminDashboard
 
         public async Task<int> CreateAsync()
         {
-            await SchemaBuilder.CreateMapIndexTableAsync<DashboardPartIndex>(table => table
-               .Column<double>("Position")
-            );
+            await SchemaBuilder.CreateMapIndexTableAsync<DashboardPartIndex>(table => table.Column<double>("Position"));
 
-            await SchemaBuilder.AlterIndexTableAsync<DashboardPartIndex>(table => table
-                .CreateIndex("IDX_DashboardPart_DocumentId",
-                    "DocumentId",
-                    "Position")
-            );
+            await SchemaBuilder.AlterIndexTableAsync<DashboardPartIndex>(table => table.CreateIndex("IDX_DashboardPart_DocumentId", "DocumentId", "Position"));
 
-            await _contentDefinitionManager.AlterPartDefinitionAsync("DashboardPart", builder => builder
-                .Attachable()
-                .WithDescription("Provides a way to add widgets to a dashboard.")
-                );
+            await _contentDefinitionManager.AlterPartDefinitionAsync(
+                "DashboardPart",
+                builder => builder.Attachable().WithDescription("Provides a way to add widgets to a dashboard.")
+            );
 
             await _recipeMigrator.ExecuteAsync($"dashboard-widgets{RecipesConstants.RecipeExtension}", this);
 
@@ -53,11 +47,7 @@ namespace OrchardCore.AdminDashboard
         // This code can be removed in a later version.
         public async Task<int> UpdateFrom2Async()
         {
-            await SchemaBuilder.AlterIndexTableAsync<DashboardPartIndex>(table => table
-                .CreateIndex("IDX_DashboardPart_DocumentId",
-                    "DocumentId",
-                    "Position")
-            );
+            await SchemaBuilder.AlterIndexTableAsync<DashboardPartIndex>(table => table.CreateIndex("IDX_DashboardPart_DocumentId", "DocumentId", "Position"));
 
             return 3;
         }

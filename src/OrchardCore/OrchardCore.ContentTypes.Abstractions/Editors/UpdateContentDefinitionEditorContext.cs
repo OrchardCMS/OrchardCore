@@ -14,7 +14,8 @@ namespace OrchardCore.ContentTypes.Editors
             bool isNew,
             IShapeFactory shapeFactory,
             IZoneHolding layout,
-            IUpdateModel updater)
+            IUpdateModel updater
+        )
             : base(model, groupId, isNew, "", shapeFactory, layout, updater)
         {
             Builder = builder;

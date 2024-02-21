@@ -13,9 +13,7 @@ public class SitemapsRobotsProvider : IRobotsProvider
     private readonly ISitemapManager _sitemapManager;
     private readonly ISiteService _siteService;
 
-    public SitemapsRobotsProvider(
-        ISitemapManager sitemapManager,
-        ISiteService siteService)
+    public SitemapsRobotsProvider(ISitemapManager sitemapManager, ISiteService siteService)
     {
         _sitemapManager = sitemapManager;
         _siteService = siteService;

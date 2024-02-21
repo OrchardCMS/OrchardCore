@@ -16,9 +16,7 @@ namespace OrchardCore.ContentManagement.CompiledQueries
 
         public Expression<Func<IQuery<ContentItem>, IQuery<ContentItem>>> Query()
         {
-            return query => query
-                .With<ContentItemIndex>()
-                .Where(x => x.ContentItemId == ContentItemId && x.Published == true);
+            return query => query.With<ContentItemIndex>().Where(x => x.ContentItemId == ContentItemId && x.Published == true);
         }
     }
 }

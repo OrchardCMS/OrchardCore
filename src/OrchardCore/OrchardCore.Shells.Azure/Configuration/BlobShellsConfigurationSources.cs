@@ -22,7 +22,7 @@ namespace OrchardCore.Shells.Azure.Configuration
             IHostEnvironment hostingEnvironment,
             BlobShellStorageOptions blobOptions,
             IOptions<ShellOptions> shellOptions
-            )
+        )
         {
             _shellsFileStore = shellsFileStore;
             _environment = hostingEnvironment.EnvironmentName;

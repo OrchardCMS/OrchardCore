@@ -68,8 +68,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
             await context.UsingTenantScopeAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                    x.ContentType == "BlogPost").ListAsync();
+                var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == "BlogPost").ListAsync();
 
                 Assert.Equal(2, blogPosts.Count());
             });
@@ -92,33 +91,16 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
                 Published = true, // Deliberately set these values incorrectly.
             };
 
-            contentItem
-                .Weld(new AutoroutePart
-                {
-                    Path = "Path2",
-                });
+            contentItem.Weld(new AutoroutePart { Path = "Path2", });
 
-            contentItem
-                .Weld(new ContainedPart
-                {
-                    ListContentItemId = context.BlogContentItemId
-                });
+            contentItem.Weld(new ContainedPart { ListContentItemId = context.BlogContentItemId });
 
             var blogFields = new ContentPart();
-            blogFields
-                .Weld("Categories", new TaxonomyField
-                {
-                    TaxonomyContentItemId = context.CategoriesTaxonomyContentItemId,
-                });
+            blogFields.Weld("Categories", new TaxonomyField { TaxonomyContentItemId = context.CategoriesTaxonomyContentItemId, });
 
-            blogFields
-                .Weld("Tags", new TaxonomyField
-                {
-                    TaxonomyContentItemId = context.TagsTaxonomyContentItemId,
-                });
+            blogFields.Weld("Tags", new TaxonomyField { TaxonomyContentItemId = context.TagsTaxonomyContentItemId, });
 
-            contentItem
-                .Weld("BlogPost", blogFields);
+            contentItem.Weld("BlogPost", blogFields);
 
             // Act
             var content = await context.Client.PostAsJsonAsync("api/content?draft=true", contentItem);
@@ -149,33 +131,16 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
                 Published = false, // Deliberately set these values incorrectly.
             };
 
-            contentItem
-                .Weld(new AutoroutePart
-                {
-                    Path = path,
-                });
+            contentItem.Weld(new AutoroutePart { Path = path, });
 
-            contentItem
-                .Weld(new ContainedPart
-                {
-                    ListContentItemId = context.BlogContentItemId,
-                });
+            contentItem.Weld(new ContainedPart { ListContentItemId = context.BlogContentItemId, });
 
             var blogFields = new ContentPart();
-            blogFields
-                .Weld("Categories", new TaxonomyField
-                {
-                    TaxonomyContentItemId = context.CategoriesTaxonomyContentItemId,
-                });
+            blogFields.Weld("Categories", new TaxonomyField { TaxonomyContentItemId = context.CategoriesTaxonomyContentItemId, });
 
-            blogFields
-                .Weld("Tags", new TaxonomyField
-                {
-                    TaxonomyContentItemId = context.TagsTaxonomyContentItemId,
-                });
+            blogFields.Weld("Tags", new TaxonomyField { TaxonomyContentItemId = context.TagsTaxonomyContentItemId, });
 
-            contentItem
-                .Weld("BlogPost", blogFields);
+            contentItem.Weld("BlogPost", blogFields);
 
             // Act
             var content = await context.Client.PostAsJsonAsync("api/content", contentItem);
@@ -204,33 +169,21 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
                 Published = false, // Deliberately set these values incorrectly.
             };
 
-            contentItem
-                .Weld(new AutoroutePart
+            contentItem.Weld(
+                new AutoroutePart
                 {
                     Path = "blog/post-1", // Deliberately set to an existing path.
-                });
+                }
+            );
 
-            contentItem
-                .Weld(new ContainedPart
-                {
-                    ListContentItemId = context.BlogContentItemId,
-                });
+            contentItem.Weld(new ContainedPart { ListContentItemId = context.BlogContentItemId, });
 
             var blogFields = new ContentPart();
-            blogFields
-                .Weld("Categories", new TaxonomyField
-                {
-                    TaxonomyContentItemId = context.CategoriesTaxonomyContentItemId,
-                });
+            blogFields.Weld("Categories", new TaxonomyField { TaxonomyContentItemId = context.CategoriesTaxonomyContentItemId, });
 
-            blogFields
-                .Weld("Tags", new TaxonomyField
-                {
-                    TaxonomyContentItemId = context.TagsTaxonomyContentItemId,
-                });
+            blogFields.Weld("Tags", new TaxonomyField { TaxonomyContentItemId = context.TagsTaxonomyContentItemId, });
 
-            contentItem
-                .Weld("BlogPost", blogFields);
+            contentItem.Weld("BlogPost", blogFields);
 
             // Act
             var result = await context.Client.PostAsJsonAsync("api/content", contentItem);
@@ -243,8 +196,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
             await context.UsingTenantScopeAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                    x.ContentType == "BlogPost").ListAsync();
+                var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == "BlogPost").ListAsync();
 
                 Assert.Single(blogPosts);
             });
@@ -266,38 +218,21 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
                 Published = false, // Deliberately set these values incorrectly.
             };
 
-            contentItem
-                .Weld(new ContainedPart
-                {
-                    ListContentItemId = context.BlogContentItemId,
-                });
+            contentItem.Weld(new ContainedPart { ListContentItemId = context.BlogContentItemId, });
 
             var blogFields = new ContentPart();
-            blogFields
-                .Weld("Categories", new TaxonomyField
-                {
-                    TaxonomyContentItemId = context.CategoriesTaxonomyContentItemId,
-                });
+            blogFields.Weld("Categories", new TaxonomyField { TaxonomyContentItemId = context.CategoriesTaxonomyContentItemId, });
 
-            blogFields
-                .Weld("Tags", new TaxonomyField
-                {
-                    TaxonomyContentItemId = context.TagsTaxonomyContentItemId,
-                });
+            blogFields.Weld("Tags", new TaxonomyField { TaxonomyContentItemId = context.TagsTaxonomyContentItemId, });
 
-            contentItem
-                .Weld("BlogPost", blogFields);
+            contentItem.Weld("BlogPost", blogFields);
 
             // Act
             var content = await context.Client.PostAsJsonAsync("api/content", contentItem);
             var publishedContentItem = await content.Content.ReadAsAsync<ContentItem>();
 
             // Test
-            var blogPostContentItemIds = new List<string>
-            {
-                context.BlogPost.ContentItemId,
-                publishedContentItem.ContentItemId,
-            };
+            var blogPostContentItemIds = new List<string> { context.BlogPost.ContentItemId, publishedContentItem.ContentItemId, };
 
             await context.UsingTenantScopeAsync(async scope =>
             {

@@ -14,8 +14,7 @@ namespace OrchardCore.Navigation
         /// </summary>
         /// <param name="name"></param>
         /// <returns>boolean.</returns>
-        public static bool IsAdminMenu(string name)
-            => NavigationConstants.AdminId == name;
+        public static bool IsAdminMenu(string name) => NavigationConstants.AdminId == name;
 
         /// <summary>
         /// Populates the menu shapes.

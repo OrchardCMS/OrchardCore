@@ -1,5 +1,5 @@
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
 
 namespace OrchardCore.Templates.Cms.Module
@@ -15,9 +15,7 @@ namespace OrchardCore.Templates.Cms.Module
 
         public int Create()
         {
-            _contentDefinitionManager.AlterPartDefinition("MyTestPart", builder => builder
-                .Attachable()
-                .WithDescription("Provides a MyTest part for your content item."));
+            _contentDefinitionManager.AlterPartDefinition("MyTestPart", builder => builder.Attachable().WithDescription("Provides a MyTest part for your content item."));
 
             return 1;
         }

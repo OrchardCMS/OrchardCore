@@ -16,10 +16,7 @@ public class AzureAISearchDefaultOptionsConfigurations : IConfigureOptions<Azure
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ISiteService _siteService;
 
-    public AzureAISearchDefaultOptionsConfigurations(
-        IShellConfiguration shellConfiguration,
-        IDataProtectionProvider dataProtectionProvider,
-        ISiteService siteService)
+    public AzureAISearchDefaultOptionsConfigurations(IShellConfiguration shellConfiguration, IDataProtectionProvider dataProtectionProvider, ISiteService siteService)
     {
         _shellConfiguration = shellConfiguration;
         _dataProtectionProvider = dataProtectionProvider;
@@ -28,8 +25,7 @@ public class AzureAISearchDefaultOptionsConfigurations : IConfigureOptions<Azure
 
     public async void Configure(AzureAISearchDefaultOptions options)
     {
-        var fileOptions = _shellConfiguration.GetSection("OrchardCore_AzureAISearch").Get<AzureAISearchDefaultOptions>()
-            ?? new AzureAISearchDefaultOptions();
+        var fileOptions = _shellConfiguration.GetSection("OrchardCore_AzureAISearch").Get<AzureAISearchDefaultOptions>() ?? new AzureAISearchDefaultOptions();
 
         // This should be called first to set whether or not the file configs are set or not.
         options.SetFileConfigurationExists(HasConnectionInfo(fileOptions));
@@ -37,9 +33,7 @@ public class AzureAISearchDefaultOptionsConfigurations : IConfigureOptions<Azure
         // The DisableUIConfiguration should always be set using the file options only.
         options.DisableUIConfiguration = fileOptions.DisableUIConfiguration;
 
-        options.Analyzers = fileOptions.Analyzers == null || fileOptions.Analyzers.Length == 0
-            ? AzureAISearchDefaultOptions.DefaultAnalyzers
-            : fileOptions.Analyzers;
+        options.Analyzers = fileOptions.Analyzers == null || fileOptions.Analyzers.Length == 0 ? AzureAISearchDefaultOptions.DefaultAnalyzers : fileOptions.Analyzers;
 
         if (fileOptions.DisableUIConfiguration)
         {

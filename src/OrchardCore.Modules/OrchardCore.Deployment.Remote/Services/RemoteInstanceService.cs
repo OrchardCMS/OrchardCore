@@ -50,14 +50,16 @@ namespace OrchardCore.Deployment.Remote.Services
         {
             var remoteInstanceList = await LoadRemoteInstanceListAsync();
 
-            remoteInstanceList.RemoteInstances.Add(new RemoteInstance
-            {
-                Id = Guid.NewGuid().ToString("n"),
-                Name = name,
-                Url = url,
-                ClientName = clientName,
-                ApiKey = apiKey,
-            });
+            remoteInstanceList.RemoteInstances.Add(
+                new RemoteInstance
+                {
+                    Id = Guid.NewGuid().ToString("n"),
+                    Name = name,
+                    Url = url,
+                    ClientName = clientName,
+                    ApiKey = apiKey,
+                }
+            );
 
             await _documentManager.UpdateAsync(remoteInstanceList);
         }

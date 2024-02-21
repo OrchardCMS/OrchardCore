@@ -35,7 +35,8 @@ namespace OrchardCore.OpenId.Controllers
             IDisplayManager<OpenIdServerSettings> serverSettingsDisplayManager,
             IShellHost shellHost,
             ShellSettings shellSettings,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor
+        )
         {
             _authorizationService = authorizationService;
             H = htmlLocalizer;

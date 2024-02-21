@@ -25,8 +25,7 @@ namespace OrchardCore.OpenId.Deployment
                 return;
             }
 
-            var settings = await _openIdServerService
-                .GetSettingsAsync();
+            var settings = await _openIdServerService.GetSettingsAsync();
 
             var settingsModel = new OpenIdServerSettingsStepModel
             {
@@ -65,10 +64,7 @@ namespace OrchardCore.OpenId.Deployment
 
             // Use nameof(OpenIdServerSettings) as name,
             // to match the recipe step.
-            var obj = new JsonObject
-            {
-                ["name"] = nameof(OpenIdServerSettings),
-            };
+            var obj = new JsonObject { ["name"] = nameof(OpenIdServerSettings), };
 
             obj.Merge(JObject.FromObject(settingsModel));
 

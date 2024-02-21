@@ -28,23 +28,26 @@ namespace OrchardCore.Demo.ContentElementDisplays
                 // New shape, no initialization, custom location
                 Dynamic("LowerDoll").Location("Detail", "Footer"),
                 // New shape
-                Factory("TestContentPartA",
-                    async ctx => (await ctx.New.TestContentPartA()).Creating(_creating++),
-                    shape =>
-                    {
-                        ((dynamic)shape).Processing = _processing++;
-                        return Task.CompletedTask;
-                    })
+                Factory(
+                        "TestContentPartA",
+                        async ctx => (await ctx.New.TestContentPartA()).Creating(_creating++),
+                        shape =>
+                        {
+                            ((dynamic)shape).Processing = _processing++;
+                            return Task.CompletedTask;
+                        }
+                    )
                     .Location("Detail", "Content")
                     .Cache("lowerdoll2", cache => cache.WithExpiryAfter(TimeSpan.FromSeconds(5))),
                 // A strongly typed shape model is used and initialized when rendered
-                Initialize<TestContentPartAShape>(shape => { shape.Line = "Strongly typed shape"; })
+                Initialize<TestContentPartAShape>(shape =>
+                    {
+                        shape.Line = "Strongly typed shape";
+                    })
                     .Location("Detail", "Content:2"),
                 // Cached shape
-                Dynamic("LowerDoll")
-                    .Location("Detail", "/Footer")
-                    .Cache("lowerdoll", cache => cache.WithExpiryAfter(TimeSpan.FromSeconds(5)))
-                );
+                Dynamic("LowerDoll").Location("Detail", "/Footer").Cache("lowerdoll", cache => cache.WithExpiryAfter(TimeSpan.FromSeconds(5)))
+            );
         }
 
         public override IDisplayResult Edit(ContentItem contentItem, IUpdateModel updater)

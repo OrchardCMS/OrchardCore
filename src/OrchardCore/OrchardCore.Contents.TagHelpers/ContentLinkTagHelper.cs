@@ -29,10 +29,7 @@ namespace OrchardCore.Contents.TagHelpers
         private readonly IUrlHelperFactory _urlHelperFactory;
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
-        public ContentLinkTagHelper(
-            IContentManager contentManager,
-            IUrlHelperFactory urlHelperFactory,
-            IContentDefinitionManager contentDefinitionManager)
+        public ContentLinkTagHelper(IContentManager contentManager, IUrlHelperFactory urlHelperFactory, IContentDefinitionManager contentDefinitionManager)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _urlHelperFactory = urlHelperFactory;

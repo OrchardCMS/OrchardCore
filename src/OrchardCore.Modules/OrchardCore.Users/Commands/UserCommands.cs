@@ -12,9 +12,8 @@ namespace OrchardCore.Users.Commands
     {
         private readonly IUserService _userService;
 
-        public UserCommands(
-            IUserService userService,
-            IStringLocalizer<UserCommands> localizer) : base(localizer)
+        public UserCommands(IUserService userService, IStringLocalizer<UserCommands> localizer)
+            : base(localizer)
         {
             _userService = userService;
         }
@@ -43,11 +42,22 @@ namespace OrchardCore.Users.Commands
 
             var valid = true;
 
-            await _userService.CreateUserAsync(new User { UserName = UserName, Email = Email, PhoneNumber = PhoneNumber, RoleNames = roleNames, EmailConfirmed = true }, Password, (key, message) =>
-            {
-                valid = false;
-                Context.Output.WriteLine(message);
-            });
+            await _userService.CreateUserAsync(
+                new User
+                {
+                    UserName = UserName,
+                    Email = Email,
+                    PhoneNumber = PhoneNumber,
+                    RoleNames = roleNames,
+                    EmailConfirmed = true
+                },
+                Password,
+                (key, message) =>
+                {
+                    valid = false;
+                    Context.Output.WriteLine(message);
+                }
+            );
 
             if (valid)
             {

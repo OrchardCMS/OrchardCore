@@ -5,8 +5,7 @@ namespace OrchardCore.Recipes
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddRecipeExecutionStep<TImplementation>(
-            this IServiceCollection serviceCollection)
+        public static IServiceCollection AddRecipeExecutionStep<TImplementation>(this IServiceCollection serviceCollection)
             where TImplementation : class, IRecipeStepHandler
         {
             serviceCollection.AddScoped<IRecipeStepHandler, TImplementation>();

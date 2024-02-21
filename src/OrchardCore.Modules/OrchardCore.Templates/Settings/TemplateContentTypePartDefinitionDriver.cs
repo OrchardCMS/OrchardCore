@@ -17,25 +17,31 @@ namespace OrchardCore.Templates.Settings
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition)
         {
-            return Initialize<ContentSettingsViewModel>("TemplateSettings", model =>
-            {
-                var contentType = contentTypePartDefinition.ContentTypeDefinition.Name;
-                var partName = contentTypePartDefinition.Name;
-
-                model.ContentSettingsEntries.Add(
-                    new ContentSettingsEntry
+            return Initialize<ContentSettingsViewModel>(
+                    "TemplateSettings",
+                    model =>
                     {
-                        Key = $"{contentType}__{partName}",
-                        Description = S["Template for the {0} part in a {1} type in detail views", partName, contentTypePartDefinition.ContentTypeDefinition.DisplayName]
-                    });
+                        var contentType = contentTypePartDefinition.ContentTypeDefinition.Name;
+                        var partName = contentTypePartDefinition.Name;
 
-                model.ContentSettingsEntries.Add(
-                    new ContentSettingsEntry
-                    {
-                        Key = $"{contentType}_Summary__{partName}",
-                        Description = S["Template for the {0} part in a {1} type in summary views", partName, contentTypePartDefinition.ContentTypeDefinition.DisplayName]
-                    });
-            }).Location("Shortcuts");
+                        model.ContentSettingsEntries.Add(
+                            new ContentSettingsEntry
+                            {
+                                Key = $"{contentType}__{partName}",
+                                Description = S["Template for the {0} part in a {1} type in detail views", partName, contentTypePartDefinition.ContentTypeDefinition.DisplayName]
+                            }
+                        );
+
+                        model.ContentSettingsEntries.Add(
+                            new ContentSettingsEntry
+                            {
+                                Key = $"{contentType}_Summary__{partName}",
+                                Description = S["Template for the {0} part in a {1} type in summary views", partName, contentTypePartDefinition.ContentTypeDefinition.DisplayName]
+                            }
+                        );
+                    }
+                )
+                .Location("Shortcuts");
         }
     }
 }

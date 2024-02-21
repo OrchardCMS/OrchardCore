@@ -15,9 +15,7 @@ namespace OrchardCore.Media.Azure
         private readonly IAuthorizationService _authorizationService;
         private readonly MediaBlobStorageOptions _options;
 
-        public AdminController(
-            IAuthorizationService authorizationService,
-            IOptions<MediaBlobStorageOptions> options)
+        public AdminController(IAuthorizationService authorizationService, IOptions<MediaBlobStorageOptions> options)
         {
             _authorizationService = authorizationService;
             _options = options.Value;

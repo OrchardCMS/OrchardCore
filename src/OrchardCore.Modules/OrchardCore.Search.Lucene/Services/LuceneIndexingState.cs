@@ -15,16 +15,14 @@ namespace OrchardCore.Search.Lucene
         private readonly string _indexSettingsFilename;
         private readonly JsonObject _content;
 
-        public LuceneIndexingState(
-            IOptions<ShellOptions> shellOptions,
-            ShellSettings shellSettings
-            )
+        public LuceneIndexingState(IOptions<ShellOptions> shellOptions, ShellSettings shellSettings)
         {
             _indexSettingsFilename = PathExtensions.Combine(
                 shellOptions.Value.ShellsApplicationDataPath,
                 shellOptions.Value.ShellsContainerName,
                 shellSettings.Name,
-                "lucene.status.json");
+                "lucene.status.json"
+            );
 
             if (!File.Exists(_indexSettingsFilename))
             {

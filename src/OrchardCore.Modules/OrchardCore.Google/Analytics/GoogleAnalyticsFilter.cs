@@ -16,9 +16,7 @@ namespace OrchardCore.Google.Analytics
 
         private HtmlString _scriptsCache;
 
-        public GoogleAnalyticsFilter(
-            IResourceManager resourceManager,
-            ISiteService siteService)
+        public GoogleAnalyticsFilter(IResourceManager resourceManager, ISiteService siteService)
         {
             _resourceManager = resourceManager;
             _siteService = siteService;
@@ -37,7 +35,9 @@ namespace OrchardCore.Google.Analytics
 
                     if (!string.IsNullOrWhiteSpace(settings?.TrackingID))
                     {
-                        _scriptsCache = new HtmlString($"<!-- Global site tag (gtag.js) - Google Analytics -->\n<script async src=\"https://www.googletagmanager.com/gtag/js?id={settings.TrackingID}\"></script>\n<script>window.dataLayer = window.dataLayer || [];function gtag() {{ dataLayer.push(arguments); }}gtag('js', new Date());gtag('config', '{settings.TrackingID}')</script>\n<!-- End Global site tag (gtag.js) - Google Analytics -->");
+                        _scriptsCache = new HtmlString(
+                            $"<!-- Global site tag (gtag.js) - Google Analytics -->\n<script async src=\"https://www.googletagmanager.com/gtag/js?id={settings.TrackingID}\"></script>\n<script>window.dataLayer = window.dataLayer || [];function gtag() {{ dataLayer.push(arguments); }}gtag('js', new Date());gtag('config', '{settings.TrackingID}')</script>\n<!-- End Global site tag (gtag.js) - Google Analytics -->"
+                        );
                     }
                 }
 

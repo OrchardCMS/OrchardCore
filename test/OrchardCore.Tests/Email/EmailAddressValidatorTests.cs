@@ -33,8 +33,7 @@ namespace OrchardCore.Tests.Email
 
         private class OrchardCoreEmailValidator : IEmailAddressValidator
         {
-            public bool Validate(string emailAddress)
-                => emailAddress.EndsWith("@orchardcore.net");
+            public bool Validate(string emailAddress) => emailAddress.EndsWith("@orchardcore.net");
         }
     }
 }

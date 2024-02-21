@@ -25,12 +25,16 @@ namespace OrchardCore.ContentTypes.GraphQL.Drivers
                 return null;
             }
 
-            return Initialize<GraphQLContentTypePartSettingsViewModel>("GraphQLContentTypePartSettings_Edit", model =>
-            {
-                model.Definition = contentTypePartDefinition;
-                model.Options = _contentOptions;
-                model.Settings = contentTypePartDefinition.GetSettings<GraphQLContentTypePartSettings>();
-            }).Location("Content");
+            return Initialize<GraphQLContentTypePartSettingsViewModel>(
+                    "GraphQLContentTypePartSettings_Edit",
+                    model =>
+                    {
+                        model.Definition = contentTypePartDefinition;
+                        model.Options = _contentOptions;
+                        model.Settings = contentTypePartDefinition.GetSettings<GraphQLContentTypePartSettings>();
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

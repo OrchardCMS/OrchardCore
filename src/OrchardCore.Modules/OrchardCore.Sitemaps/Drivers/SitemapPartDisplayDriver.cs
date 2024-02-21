@@ -11,21 +11,14 @@ namespace OrchardCore.Sitemaps.Drivers
     {
         public override IDisplayResult Edit(SitemapPart part)
         {
-            return Initialize<SitemapPartViewModel>("SitemapPart_Edit", m => BuildViewModel(m, part))
-                .Location("Parts#SEO:5");
+            return Initialize<SitemapPartViewModel>("SitemapPart_Edit", m => BuildViewModel(m, part)).Location("Parts#SEO:5");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(SitemapPart model, IUpdateModel updater)
         {
             var viewModel = new SitemapPartViewModel();
 
-            if (await updater.TryUpdateModelAsync(viewModel,
-                Prefix,
-                t => t.OverrideSitemapConfig,
-                t => t.ChangeFrequency,
-                t => t.Exclude,
-                t => t.Priority
-                ))
+            if (await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.OverrideSitemapConfig, t => t.ChangeFrequency, t => t.Exclude, t => t.Priority))
             {
                 model.OverrideSitemapConfig = viewModel.OverrideSitemapConfig;
                 model.ChangeFrequency = viewModel.ChangeFrequency;
@@ -35,7 +28,6 @@ namespace OrchardCore.Sitemaps.Drivers
 
             return Edit(model);
         }
-
 
         private static void BuildViewModel(SitemapPartViewModel model, SitemapPart part)
         {

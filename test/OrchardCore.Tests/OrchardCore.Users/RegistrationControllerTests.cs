@@ -18,10 +18,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
         public async Task UsersShouldNotBeAbleToRegisterIfNotAllowed()
         {
             // Arrange
-            var controller = SetupRegistrationController(new RegistrationSettings
-            {
-                UsersCanRegister = UserRegistrationType.NoRegistration
-            });
+            var controller = SetupRegistrationController(new RegistrationSettings { UsersCanRegister = UserRegistrationType.NoRegistration });
 
             // Act & Assert
             var result = await controller.Register();
@@ -67,11 +64,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
         public async Task UsersCanRequireModeration()
         {
             // Arrange
-            var controller = SetupRegistrationController(new RegistrationSettings
-            {
-                UsersCanRegister = UserRegistrationType.AllowRegistration,
-                UsersAreModerated = true,
-            });
+            var controller = SetupRegistrationController(new RegistrationSettings { UsersCanRegister = UserRegistrationType.AllowRegistration, UsersAreModerated = true, });
 
             // Act
             var result = await controller.Register(new RegisterViewModel { UserName = "ModerateMe", Email = "requiresmoderation@orchardcore.net" });
@@ -85,11 +78,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
         public async Task UsersCanRequireEmailConfirmation()
         {
             // Arrange
-            var controller = SetupRegistrationController(new RegistrationSettings
-            {
-                UsersCanRegister = UserRegistrationType.AllowRegistration,
-                UsersMustValidateEmail = true
-            });
+            var controller = SetupRegistrationController(new RegistrationSettings { UsersCanRegister = UserRegistrationType.AllowRegistration, UsersMustValidateEmail = true });
 
             // Act & Assert
             var result = await controller.Register(new RegisterViewModel { UserName = "ConfirmMe", Email = "requiresemailconfirmation@orchardcore.net" });
@@ -99,7 +88,8 @@ namespace OrchardCore.Tests.OrchardCore.Users
             Assert.Equal("ConfirmEmailSent", ((RedirectToActionResult)result).ActionName);
         }
 
-        private static Mock<SignInManager<TUser>> MockSignInManager<TUser>(UserManager<TUser> userManager = null) where TUser : class, IUser
+        private static Mock<SignInManager<TUser>> MockSignInManager<TUser>(UserManager<TUser> userManager = null)
+            where TUser : class, IUser
         {
             var context = new Mock<HttpContext>();
             var manager = userManager ?? UsersMockHelper.MockUserManager<TUser>().Object;
@@ -111,26 +101,26 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 null,
                 null,
                 null,
-                null)
-            { CallBase = true };
+                null
+            )
+            {
+                CallBase = true
+            };
 
-            signInManager.Setup(x => x.SignInAsync(It.IsAny<TUser>(), It.IsAny<bool>(), It.IsAny<string>()))
-                .Returns(Task.CompletedTask);
+            signInManager.Setup(x => x.SignInAsync(It.IsAny<TUser>(), It.IsAny<bool>(), It.IsAny<string>())).Returns(Task.CompletedTask);
 
             return signInManager;
         }
 
-        private static RegistrationController SetupRegistrationController()
-            => SetupRegistrationController(new RegistrationSettings
-            {
-                UsersCanRegister = UserRegistrationType.AllowRegistration
-            });
+        private static RegistrationController SetupRegistrationController() =>
+            SetupRegistrationController(new RegistrationSettings { UsersCanRegister = UserRegistrationType.AllowRegistration });
 
         private static RegistrationController SetupRegistrationController(RegistrationSettings registrationSettings)
         {
             var users = new List<IUser>();
             var mockUserManager = UsersMockHelper.MockUserManager<IUser>();
-            mockUserManager.Setup(um => um.FindByEmailAsync(It.IsAny<string>()))
+            mockUserManager
+                .Setup(um => um.FindByEmailAsync(It.IsAny<string>()))
                 .Returns<string>(e =>
                 {
                     var user = users.SingleOrDefault(u => (u as User).Email == e);
@@ -142,11 +132,11 @@ namespace OrchardCore.Tests.OrchardCore.Users
             var mockSiteService = Mock.Of<ISiteService>(ss => ss.GetSiteSettingsAsync() == Task.FromResult(mockSite.Object));
             var mockSmtpService = Mock.Of<ISmtpService>(x => x.SendAsync(It.IsAny<MailMessage>()) == Task.FromResult(SmtpResult.Success));
             var mockStringLocalizer = new Mock<IStringLocalizer<RegistrationController>>();
-            mockStringLocalizer.Setup(l => l[It.IsAny<string>()])
-                .Returns<string>(s => new LocalizedString(s, s));
+            mockStringLocalizer.Setup(l => l[It.IsAny<string>()]).Returns<string>(s => new LocalizedString(s, s));
 
             var userService = new Mock<IUserService>();
-            userService.Setup(u => u.CreateUserAsync(It.IsAny<IUser>(), It.IsAny<string>(), It.IsAny<Action<string, string>>()))
+            userService
+                .Setup(u => u.CreateUserAsync(It.IsAny<IUser>(), It.IsAny<string>(), It.IsAny<Action<string, string>>()))
                 .Callback<IUser, string, Action<string, string>>((u, p, e) => users.Add(u))
                 .ReturnsAsync<IUser, string, Action<string, string>, IUserService, IUser>((u, p, e) => u);
 
@@ -154,12 +144,10 @@ namespace OrchardCore.Tests.OrchardCore.Users
             urlHelperMock.Setup(urlHelper => urlHelper.Action(It.IsAny<UrlActionContext>()));
 
             var mockUrlHelperFactory = new Mock<IUrlHelperFactory>();
-            mockUrlHelperFactory.Setup(f => f.GetUrlHelper(It.IsAny<ActionContext>()))
-                .Returns(urlHelperMock.Object);
+            mockUrlHelperFactory.Setup(f => f.GetUrlHelper(It.IsAny<ActionContext>())).Returns(urlHelperMock.Object);
 
             var mockDisplayHelper = new Mock<IDisplayHelper>();
-            mockDisplayHelper.Setup(x => x.ShapeExecuteAsync(It.IsAny<IShape>()))
-                .ReturnsAsync(HtmlString.Empty);
+            mockDisplayHelper.Setup(x => x.ShapeExecuteAsync(It.IsAny<IShape>())).ReturnsAsync(HtmlString.Empty);
 
             var controller = new RegistrationController(
                 mockUserManager.Object,
@@ -168,58 +156,33 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 Mock.Of<INotifier>(),
                 Mock.Of<ILogger<RegistrationController>>(),
                 Mock.Of<IHtmlLocalizer<RegistrationController>>(),
-                mockStringLocalizer.Object)
+                mockStringLocalizer.Object
+            )
             {
                 Url = urlHelperMock.Object
             };
 
             var mockServiceProvider = new Mock<IServiceProvider>();
 
-            mockServiceProvider
-                .Setup(x => x.GetService(typeof(ISmtpService)))
-                .Returns(mockSmtpService);
-            mockServiceProvider
-                .Setup(x => x.GetService(typeof(UserManager<IUser>)))
-                .Returns(mockUserManager.Object);
-            mockServiceProvider
-                .Setup(x => x.GetService(typeof(ISiteService)))
-                .Returns(mockSiteService);
-            mockServiceProvider
-                .Setup(x => x.GetService(typeof(IEnumerable<IRegistrationFormEvents>)))
-                .Returns(Array.Empty<IRegistrationFormEvents>());
-            mockServiceProvider
-                .Setup(x => x.GetService(typeof(IUserService)))
-                .Returns(userService.Object);
-            mockServiceProvider
-                .Setup(x => x.GetService(typeof(SignInManager<IUser>)))
-                .Returns(MockSignInManager(mockUserManager.Object).Object);
-            mockServiceProvider
-                .Setup(x => x.GetService(typeof(ITempDataDictionaryFactory)))
-                .Returns(Mock.Of<ITempDataDictionaryFactory>());
-            mockServiceProvider
-                .Setup(x => x.GetService(typeof(IObjectModelValidator)))
-                .Returns(Mock.Of<IObjectModelValidator>());
-            mockServiceProvider
-                .Setup(x => x.GetService(typeof(IDisplayHelper)))
-                .Returns(mockDisplayHelper.Object);
-            mockServiceProvider
-                .Setup(x => x.GetService(typeof(IUrlHelperFactory)))
-                .Returns(mockUrlHelperFactory.Object);
-            mockServiceProvider
-                .Setup(x => x.GetService(typeof(HtmlEncoder)))
-                .Returns(HtmlEncoder.Default);
+            mockServiceProvider.Setup(x => x.GetService(typeof(ISmtpService))).Returns(mockSmtpService);
+            mockServiceProvider.Setup(x => x.GetService(typeof(UserManager<IUser>))).Returns(mockUserManager.Object);
+            mockServiceProvider.Setup(x => x.GetService(typeof(ISiteService))).Returns(mockSiteService);
+            mockServiceProvider.Setup(x => x.GetService(typeof(IEnumerable<IRegistrationFormEvents>))).Returns(Array.Empty<IRegistrationFormEvents>());
+            mockServiceProvider.Setup(x => x.GetService(typeof(IUserService))).Returns(userService.Object);
+            mockServiceProvider.Setup(x => x.GetService(typeof(SignInManager<IUser>))).Returns(MockSignInManager(mockUserManager.Object).Object);
+            mockServiceProvider.Setup(x => x.GetService(typeof(ITempDataDictionaryFactory))).Returns(Mock.Of<ITempDataDictionaryFactory>());
+            mockServiceProvider.Setup(x => x.GetService(typeof(IObjectModelValidator))).Returns(Mock.Of<IObjectModelValidator>());
+            mockServiceProvider.Setup(x => x.GetService(typeof(IDisplayHelper))).Returns(mockDisplayHelper.Object);
+            mockServiceProvider.Setup(x => x.GetService(typeof(IUrlHelperFactory))).Returns(mockUrlHelperFactory.Object);
+            mockServiceProvider.Setup(x => x.GetService(typeof(HtmlEncoder))).Returns(HtmlEncoder.Default);
 
             // var mockRequest = new Mock<HttpRequest>();
             // mockRequest.Setup(x => x.Scheme)
             //     .Returns("http");
 
             var mockHttpContext = new Mock<HttpContext>();
-            mockHttpContext
-                .Setup(x => x.RequestServices)
-                .Returns(mockServiceProvider.Object);
-            mockHttpContext
-                .Setup(x => x.Request)
-                .Returns(Mock.Of<HttpRequest>(x => x.Scheme == "http"));
+            mockHttpContext.Setup(x => x.RequestServices).Returns(mockServiceProvider.Object);
+            mockHttpContext.Setup(x => x.Request).Returns(Mock.Of<HttpRequest>(x => x.Scheme == "http"));
 
             controller.ControllerContext.HttpContext = mockHttpContext.Object;
 

@@ -10,16 +10,16 @@ using OrchardCore.OpenId.Abstractions.Stores;
 
 namespace OrchardCore.OpenId.Services.Managers
 {
-    public class OpenIdScopeManager<TScope> : OpenIddictScopeManager<TScope>, IOpenIdScopeManager where TScope : class
+    public class OpenIdScopeManager<TScope> : OpenIddictScopeManager<TScope>, IOpenIdScopeManager
+        where TScope : class
     {
         public OpenIdScopeManager(
             IOpenIddictScopeCache<TScope> cache,
             ILogger<OpenIddictScopeManager<TScope>> logger,
             IOptionsMonitor<OpenIddictCoreOptions> options,
-            IOpenIddictScopeStoreResolver resolver)
-            : base(cache, logger, options, resolver)
-        {
-        }
+            IOpenIddictScopeStoreResolver resolver
+        )
+            : base(cache, logger, options, resolver) { }
 
         /// <summary>
         /// Retrieves a scope using its physical identifier.
@@ -37,9 +37,7 @@ namespace OrchardCore.OpenId.Services.Managers
                 throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
             }
 
-            return Store is IOpenIdScopeStore<TScope> store ?
-                store.FindByPhysicalIdAsync(identifier, cancellationToken) :
-                Store.FindByIdAsync(identifier, cancellationToken);
+            return Store is IOpenIdScopeStore<TScope> store ? store.FindByPhysicalIdAsync(identifier, cancellationToken) : Store.FindByIdAsync(identifier, cancellationToken);
         }
 
         /// <summary>
@@ -55,15 +53,12 @@ namespace OrchardCore.OpenId.Services.Managers
         {
             ArgumentNullException.ThrowIfNull(scope);
 
-            return Store is IOpenIdScopeStore<TScope> store ?
-                store.GetPhysicalIdAsync(scope, cancellationToken) :
-                Store.GetIdAsync(scope, cancellationToken);
+            return Store is IOpenIdScopeStore<TScope> store ? store.GetPhysicalIdAsync(scope, cancellationToken) : Store.GetIdAsync(scope, cancellationToken);
         }
 
-        async ValueTask<object> IOpenIdScopeManager.FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
-            => await FindByPhysicalIdAsync(identifier, cancellationToken);
+        async ValueTask<object> IOpenIdScopeManager.FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken) =>
+            await FindByPhysicalIdAsync(identifier, cancellationToken);
 
-        ValueTask<string> IOpenIdScopeManager.GetPhysicalIdAsync(object scope, CancellationToken cancellationToken)
-            => GetPhysicalIdAsync((TScope)scope, cancellationToken);
+        ValueTask<string> IOpenIdScopeManager.GetPhysicalIdAsync(object scope, CancellationToken cancellationToken) => GetPhysicalIdAsync((TScope)scope, cancellationToken);
     }
 }

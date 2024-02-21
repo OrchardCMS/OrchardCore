@@ -24,8 +24,10 @@ public class CacheTicketStore : ITicketStore
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public IDataProtector DataProtector => _dataProtector ??= _httpContextAccessor.HttpContext.RequestServices.GetService<IDataProtectionProvider>()
-        .CreateProtector($"{nameof(CacheTicketStore)}_{IdentityConstants.ApplicationScheme}");
+    public IDataProtector DataProtector =>
+        _dataProtector ??= _httpContextAccessor
+            .HttpContext.RequestServices.GetService<IDataProtectionProvider>()
+            .CreateProtector($"{nameof(CacheTicketStore)}_{IdentityConstants.ApplicationScheme}");
 
     public ILogger Logger => _logger ??= _httpContextAccessor.HttpContext.RequestServices.GetService<ILogger<CacheTicketStore>>();
 
@@ -95,9 +97,7 @@ public class CacheTicketStore : ITicketStore
         }
     }
 
-    private static byte[] SerializeTicket(AuthenticationTicket source)
-        => TicketSerializer.Default.Serialize(source);
+    private static byte[] SerializeTicket(AuthenticationTicket source) => TicketSerializer.Default.Serialize(source);
 
-    private static AuthenticationTicket DeserializeTicket(byte[] source)
-        => source == null ? null : TicketSerializer.Default.Deserialize(source);
+    private static AuthenticationTicket DeserializeTicket(byte[] source) => source == null ? null : TicketSerializer.Default.Deserialize(source);
 }

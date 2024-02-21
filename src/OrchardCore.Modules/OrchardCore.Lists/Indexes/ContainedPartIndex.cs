@@ -25,7 +25,8 @@ namespace OrchardCore.Lists.Indexes
     {
         public override void Describe(DescribeContext<ContentItem> context)
         {
-            context.For<ContainedPartIndex>()
+            context
+                .For<ContainedPartIndex>()
                 .Map(contentItem =>
                 {
                     if (!contentItem.Latest && !contentItem.Published)

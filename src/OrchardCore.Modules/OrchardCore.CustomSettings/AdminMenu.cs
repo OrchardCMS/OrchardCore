@@ -14,9 +14,7 @@ namespace OrchardCore.CustomSettings
         protected readonly IStringLocalizer S;
         private static readonly ConcurrentDictionary<string, RouteValueDictionary> _routeValues = [];
 
-        public AdminMenu(
-            IStringLocalizer<AdminMenu> localizer,
-            CustomSettingsService customSettingsService)
+        public AdminMenu(IStringLocalizer<AdminMenu> localizer, CustomSettingsService customSettingsService)
         {
             S = localizer;
             _customSettingsService = customSettingsService;
@@ -33,30 +31,33 @@ namespace OrchardCore.CustomSettings
             {
                 if (!_routeValues.TryGetValue(type.Name, out var routeValues))
                 {
-                    routeValues = new RouteValueDictionary()
-                    {
-                         { "area", "OrchardCore.Settings" },
-                         { "groupId", type.Name },
-                    };
+                    routeValues = new RouteValueDictionary() { { "area", "OrchardCore.Settings" }, { "groupId", type.Name }, };
 
                     _routeValues[type.Name] = routeValues;
                 }
 
                 var htmlName = type.Name.HtmlClassify();
 
-                builder
-                    .Add(S["Configuration"], configuration => configuration
-                        .Add(S["Settings"], settings => settings
-                            .Add(new LocalizedString(type.DisplayName, type.DisplayName), type.DisplayName.PrefixPosition(), layers => layers
-                                .Action("Index", "Admin", routeValues)
-                                .AddClass(htmlName)
-                                .Id(htmlName)
-                                .Permission(Permissions.CreatePermissionForType(type))
-                                .Resource(type.Name)
-                                .LocalNav()
-                            )
+                builder.Add(
+                    S["Configuration"],
+                    configuration =>
+                        configuration.Add(
+                            S["Settings"],
+                            settings =>
+                                settings.Add(
+                                    new LocalizedString(type.DisplayName, type.DisplayName),
+                                    type.DisplayName.PrefixPosition(),
+                                    layers =>
+                                        layers
+                                            .Action("Index", "Admin", routeValues)
+                                            .AddClass(htmlName)
+                                            .Id(htmlName)
+                                            .Permission(Permissions.CreatePermissionForType(type))
+                                            .Resource(type.Name)
+                                            .LocalNav()
+                                )
                         )
-                    );
+                );
             }
         }
     }

@@ -6,9 +6,7 @@ namespace OrchardCore.Users.ViewModels
     public class LostPasswordViewModel : ShapeViewModel
     {
         public LostPasswordViewModel()
-            : base("TemplateUserLostPassword")
-        {
-        }
+            : base("TemplateUserLostPassword") { }
 
         public User User { get; set; }
         public string LostPasswordUrl { get; set; }

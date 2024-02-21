@@ -10,7 +10,6 @@ namespace OrchardCore.Tests.Apis.Context
             return await data.ReadAsAsync<T>();
         }
 
-        public static ValueTask<T> ReadAsAsync<T>(this Stream stream) =>
-            JsonSerializer.DeserializeAsync<T>(stream, JOptions.Default);
+        public static ValueTask<T> ReadAsAsync<T>(this Stream stream) => JsonSerializer.DeserializeAsync<T>(stream, JOptions.Default);
     }
 }

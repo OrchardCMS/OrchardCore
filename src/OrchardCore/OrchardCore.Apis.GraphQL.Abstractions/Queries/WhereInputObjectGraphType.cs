@@ -4,9 +4,7 @@ using GraphQL.Types;
 
 namespace OrchardCore.Apis.GraphQL.Queries
 {
-    public class WhereInputObjectGraphType : WhereInputObjectGraphType<object>
-    {
-    }
+    public class WhereInputObjectGraphType : WhereInputObjectGraphType<object> { }
 
     public class WhereInputObjectGraphType<TSourceType> : InputObjectGraphType<TSourceType>
     {
@@ -18,38 +16,32 @@ namespace OrchardCore.Apis.GraphQL.Queries
         }
 
         // Applies to all types.
-        public static readonly Dictionary<string, string> EqualityOperators = new()
-        {
-            { "", "is equal to" },
-            { "_not", "is not equal to" },
-        };
+        public static readonly Dictionary<string, string> EqualityOperators = new() { { "", "is equal to" }, { "_not", "is not equal to" }, };
 
         // Applies to all types.
-        public static readonly Dictionary<string, string> MultiValueComparisonOperators = new()
-        {
-            { "_in", "is in collection" },
-            { "_not_in", "is not in collection" },
-        };
+        public static readonly Dictionary<string, string> MultiValueComparisonOperators = new() { { "_in", "is in collection" }, { "_not_in", "is not in collection" }, };
 
         // Applies to non strings.
-        public static readonly Dictionary<string, string> NonStringValueComparisonOperators = new()
-        {
-            { "_gt", "is greater than" },
-            { "_gte", "is greater than or equal" },
-            { "_lt", "is less than" },
-            { "_lte", "is less than or equal" },
-        };
+        public static readonly Dictionary<string, string> NonStringValueComparisonOperators =
+            new()
+            {
+                { "_gt", "is greater than" },
+                { "_gte", "is greater than or equal" },
+                { "_lt", "is less than" },
+                { "_lte", "is less than or equal" },
+            };
 
         // Applies to strings.
-        public static readonly Dictionary<string, string> StringComparisonOperators = new()
-        {
-            {"_contains", "contains the string"},
-            {"_not_contains", "does not contain the string"},
-            {"_starts_with", "starts with the string"},
-            {"_not_starts_with", "does not start with the string"},
-            {"_ends_with", "ends with the string"},
-            {"_not_ends_with", "does not end with the string"},
-        };
+        public static readonly Dictionary<string, string> StringComparisonOperators =
+            new()
+            {
+                { "_contains", "contains the string" },
+                { "_not_contains", "does not contain the string" },
+                { "_starts_with", "starts with the string" },
+                { "_not_starts_with", "does not start with the string" },
+                { "_ends_with", "ends with the string" },
+                { "_not_ends_with", "does not end with the string" },
+            };
 
         public void AddScalarFilterFields<TGraphType>(string fieldName, string description)
         {
@@ -96,12 +88,14 @@ namespace OrchardCore.Apis.GraphQL.Queries
         {
             foreach (var filter in filters)
             {
-                AddField(new FieldType
-                {
-                    Name = fieldName + filter.Key,
-                    Description = $"{description} {filter.Value}",
-                    Type = graphType
-                });
+                AddField(
+                    new FieldType
+                    {
+                        Name = fieldName + filter.Key,
+                        Description = $"{description} {filter.Value}",
+                        Type = graphType
+                    }
+                );
             }
         }
     }

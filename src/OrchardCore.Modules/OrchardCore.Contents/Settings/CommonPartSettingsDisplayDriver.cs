@@ -12,12 +12,16 @@ namespace OrchardCore.Lists.Settings
     {
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            return Initialize<CommonPartSettingsViewModel>("CommonPartSettings_Edit", model =>
-            {
-                var settings = contentTypePartDefinition.GetSettings<CommonPartSettings>();
-                model.DisplayDateEditor = settings.DisplayDateEditor;
-                model.DisplayOwnerEditor = settings.DisplayOwnerEditor;
-            }).Location("Content");
+            return Initialize<CommonPartSettingsViewModel>(
+                    "CommonPartSettings_Edit",
+                    model =>
+                    {
+                        var settings = contentTypePartDefinition.GetSettings<CommonPartSettings>();
+                        model.DisplayDateEditor = settings.DisplayDateEditor;
+                        model.DisplayOwnerEditor = settings.DisplayOwnerEditor;
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

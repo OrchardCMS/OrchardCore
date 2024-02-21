@@ -10,18 +10,13 @@ using OrchardCore.OpenId.Services;
 
 namespace OrchardCore.OpenId.Tasks
 {
-    [BackgroundTask(
-        Title = "OpenID Cleaner",
-        Schedule = "*/30 * * * *",
-        Description = "Performs various cleanup operations for OpenID features.")]
+    [BackgroundTask(Title = "OpenID Cleaner", Schedule = "*/30 * * * *", Description = "Performs various cleanup operations for OpenID features.")]
     public class OpenIdBackgroundTask : IBackgroundTask
     {
         private readonly ILogger _logger;
         private readonly IOpenIdServerService _serverService;
 
-        public OpenIdBackgroundTask(
-            ILogger<OpenIdBackgroundTask> logger,
-            IOpenIdServerService serverService)
+        public OpenIdBackgroundTask(ILogger<OpenIdBackgroundTask> logger, IOpenIdServerService serverService)
         {
             _logger = logger;
             _serverService = serverService;

@@ -6,7 +6,8 @@ namespace OrchardCore.Sitemaps.Builders
     /// <summary>
     /// Inherit to provide a sitemap type builder.
     /// </summary>
-    public abstract class SitemapTypeBuilderBase<TSitemapType> : ISitemapTypeBuilder where TSitemapType : SitemapType
+    public abstract class SitemapTypeBuilderBase<TSitemapType> : ISitemapTypeBuilder
+        where TSitemapType : SitemapType
     {
         public async Task BuildAsync(SitemapType sitemap, SitemapBuilderContext context)
         {

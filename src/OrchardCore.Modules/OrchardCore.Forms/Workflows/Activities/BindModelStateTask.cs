@@ -15,11 +15,7 @@ namespace OrchardCore.Forms.Workflows.Activities
         private readonly IHttpContextAccessor _httpContextAccessor;
         protected readonly IStringLocalizer S;
 
-        public BindModelStateTask(
-            IHttpContextAccessor httpContextAccessor,
-            IUpdateModelAccessor updateModelAccessor,
-            IStringLocalizer<BindModelStateTask> localizer
-        )
+        public BindModelStateTask(IHttpContextAccessor httpContextAccessor, IUpdateModelAccessor updateModelAccessor, IStringLocalizer<BindModelStateTask> localizer)
         {
             _updateModelAccessor = updateModelAccessor;
             _httpContextAccessor = httpContextAccessor;
@@ -37,8 +33,7 @@ namespace OrchardCore.Forms.Workflows.Activities
 
         public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var updater = _updateModelAccessor.ModelUpdater
-                ?? throw new InvalidOperationException("Cannot add model validation errors when there's no Updater present.");
+            var updater = _updateModelAccessor.ModelUpdater ?? throw new InvalidOperationException("Cannot add model validation errors when there's no Updater present.");
 
             var httpContext = _httpContextAccessor.HttpContext;
 

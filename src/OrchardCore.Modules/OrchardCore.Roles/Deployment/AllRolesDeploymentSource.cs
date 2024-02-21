@@ -42,21 +42,20 @@ namespace OrchardCore.Roles.Deployment
 
                 if (currentRole != null)
                 {
-                    permissions.Add(JObject.FromObject(
-                        new RolesStepRoleModel
-                        {
-                            Name = currentRole.RoleName,
-                            Description = currentRole.RoleDescription,
-                            Permissions = currentRole.RoleClaims.Where(x => x.ClaimType == Permission.ClaimType).Select(x => x.ClaimValue).ToArray()
-                        }));
+                    permissions.Add(
+                        JObject.FromObject(
+                            new RolesStepRoleModel
+                            {
+                                Name = currentRole.RoleName,
+                                Description = currentRole.RoleDescription,
+                                Permissions = currentRole.RoleClaims.Where(x => x.ClaimType == Permission.ClaimType).Select(x => x.ClaimValue).ToArray()
+                            }
+                        )
+                    );
                 }
             }
 
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "Roles",
-                ["Roles"] = permissions,
-            });
+            result.Steps.Add(new JsonObject { ["name"] = "Roles", ["Roles"] = permissions, });
         }
     }
 }

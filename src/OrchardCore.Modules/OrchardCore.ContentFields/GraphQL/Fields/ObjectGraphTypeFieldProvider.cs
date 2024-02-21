@@ -24,10 +24,10 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
         public FieldType GetField(ContentPartFieldDefinition field)
         {
             var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
-            var queryGraphType = _partObjectGraphTypes.GetOrAdd(field.FieldDefinition.Name,
-                                                       partName => serviceProvider.GetService<IEnumerable<IObjectGraphType>>()?
-                                                            .FirstOrDefault(x => x.GetType().BaseType.GetGenericArguments().First().Name == partName)
-                                                   );
+            var queryGraphType = _partObjectGraphTypes.GetOrAdd(
+                field.FieldDefinition.Name,
+                partName => serviceProvider.GetService<IEnumerable<IObjectGraphType>>()?.FirstOrDefault(x => x.GetType().BaseType.GetGenericArguments().First().Name == partName)
+            );
 
             if (queryGraphType != null)
             {

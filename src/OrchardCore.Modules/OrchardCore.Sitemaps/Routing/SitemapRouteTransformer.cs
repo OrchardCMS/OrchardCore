@@ -28,10 +28,7 @@ namespace OrchardCore.Sitemaps.Routing
 
                 if (found)
                 {
-                    var routeValues = new RouteValueDictionary(_options.GlobalRouteValues)
-                    {
-                        [_options.SitemapIdKey] = sitemapId
-                    };
+                    var routeValues = new RouteValueDictionary(_options.GlobalRouteValues) { [_options.SitemapIdKey] = sitemapId };
 
                     return routeValues;
                 }

@@ -37,7 +37,8 @@ namespace OrchardCore.Taxonomies.Controllers
             IContentDefinitionManager contentDefinitionManager,
             INotifier notifier,
             IHtmlLocalizer<AdminController> localizer,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor
+        )
         {
             _contentManager = contentManager;
             _authorizationService = authorizationService;
@@ -263,11 +264,10 @@ namespace OrchardCore.Taxonomies.Controllers
                 return View(model);
             }
 
-            taxonomyItem.Merge((JsonObject)contentItem.Content, new JsonMergeSettings
-            {
-                MergeArrayHandling = MergeArrayHandling.Replace,
-                MergeNullValueHandling = MergeNullValueHandling.Merge
-            });
+            taxonomyItem.Merge(
+                (JsonObject)contentItem.Content,
+                new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace, MergeNullValueHandling = MergeNullValueHandling.Merge }
+            );
 
             // Merge doesn't copy the properties.
             taxonomyItem[nameof(ContentItem.DisplayText)] = contentItem.DisplayText;

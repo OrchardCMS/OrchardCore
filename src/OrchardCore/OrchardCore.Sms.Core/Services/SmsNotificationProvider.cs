@@ -10,9 +10,7 @@ public class SmsNotificationProvider : INotificationMethodProvider
     private readonly ISmsService _smsService;
     protected readonly IStringLocalizer S;
 
-    public SmsNotificationProvider(
-        ISmsService smsService,
-        IStringLocalizer<SmsNotificationProvider> stringLocalizer)
+    public SmsNotificationProvider(ISmsService smsService, IStringLocalizer<SmsNotificationProvider> stringLocalizer)
     {
         _smsService = smsService;
         S = stringLocalizer;
@@ -31,11 +29,7 @@ public class SmsNotificationProvider : INotificationMethodProvider
             return false;
         }
 
-        var mailMessage = new SmsMessage()
-        {
-            To = user.Email,
-            Body = message.TextBody,
-        };
+        var mailMessage = new SmsMessage() { To = user.Email, Body = message.TextBody, };
 
         var result = await _smsService.SendAsync(mailMessage);
 

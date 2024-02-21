@@ -8,11 +8,10 @@ namespace OrchardCore.Rules.Drivers
     {
         public override IDisplayResult Display(IsAuthenticatedCondition condition)
         {
-            return
-                Combine(
-                    View("IsAuthenticatedCondition_Fields_Summary", condition).Location("Summary", "Content"),
-                    View("IsAuthenticatedCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
-                );
+            return Combine(
+                View("IsAuthenticatedCondition_Fields_Summary", condition).Location("Summary", "Content"),
+                View("IsAuthenticatedCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(IsAuthenticatedCondition condition)

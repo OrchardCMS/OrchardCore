@@ -170,6 +170,7 @@ namespace OrchardCore.ResourceManagement
 
             return this;
         }
+
         /// <summary>
         /// Position a resource first, last or by dependency.
         /// </summary>
@@ -181,24 +182,19 @@ namespace OrchardCore.ResourceManagement
             return this;
         }
 
-        public TagBuilder GetTagBuilder(RequireSettings settings,
-            string applicationPath,
-            IFileVersionProvider fileVersionProvider)
+        public TagBuilder GetTagBuilder(RequireSettings settings, string applicationPath, IFileVersionProvider fileVersionProvider)
         {
-            string url, filePathAttributeName = null;
+            string url,
+                filePathAttributeName = null;
 
             // Url priority.
             if (settings.DebugMode)
             {
-                url = settings.CdnMode
-                    ? Coalesce(UrlCdnDebug, UrlDebug, UrlCdn, Url)
-                    : Coalesce(UrlDebug, Url, UrlCdnDebug, UrlCdn);
+                url = settings.CdnMode ? Coalesce(UrlCdnDebug, UrlDebug, UrlCdn, Url) : Coalesce(UrlDebug, Url, UrlCdnDebug, UrlCdn);
             }
             else
             {
-                url = settings.CdnMode
-                    ? Coalesce(UrlCdn, Url, UrlCdnDebug, UrlDebug)
-                    : Coalesce(Url, UrlDebug, UrlCdn, UrlCdnDebug);
+                url = settings.CdnMode ? Coalesce(UrlCdn, Url, UrlCdnDebug, UrlDebug) : Coalesce(Url, UrlDebug, UrlCdn, UrlCdnDebug);
             }
 
             if (string.IsNullOrEmpty(url))
@@ -227,20 +223,23 @@ namespace OrchardCore.ResourceManagement
             }
 
             // If settings has value, it can override resource definition, otherwise use resource definition.
-            if (url != null && ((settings.AppendVersion.HasValue && settings.AppendVersion == true) ||
-                (!settings.AppendVersion.HasValue && AppendVersion == true)))
+            if (url != null && ((settings.AppendVersion.HasValue && settings.AppendVersion == true) || (!settings.AppendVersion.HasValue && AppendVersion == true)))
             {
                 url = fileVersionProvider.AddFileVersionToPath(applicationPath, url);
             }
 
             // Don't prefix cdn if the path includes a protocol, i.e. is an external url, or is in debug mode.
-            if (url != null && !settings.DebugMode && !string.IsNullOrEmpty(settings.CdnBaseUrl) &&
-
+            if (
+                url != null
+                && !settings.DebugMode
+                && !string.IsNullOrEmpty(settings.CdnBaseUrl)
+                &&
                 // Don't evaluate with Uri.TryCreate as it produces incorrect results on Linux.
-                !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase) &&
-                !url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
-                !url.StartsWith("//", StringComparison.OrdinalIgnoreCase) &&
-                !url.StartsWith("file://", StringComparison.OrdinalIgnoreCase))
+                !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
+                && !url.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+                && !url.StartsWith("//", StringComparison.OrdinalIgnoreCase)
+                && !url.StartsWith("file://", StringComparison.OrdinalIgnoreCase)
+            )
             {
                 url = settings.CdnBaseUrl + url;
             }
@@ -263,24 +262,12 @@ namespace OrchardCore.ResourceManagement
                     if (url == null && InnerContent != null)
                     {
                         // Inline style declaration.
-                        tagBuilder = new TagBuilder("style")
-                        {
-                            Attributes = {
-                                { "type", "text/css" }
-                            }
-                        };
+                        tagBuilder = new TagBuilder("style") { Attributes = { { "type", "text/css" } } };
                     }
                     else
                     {
                         // Stylesheet resource.
-                        tagBuilder = new TagBuilder("link")
-                        {
-                            TagRenderMode = TagRenderMode.SelfClosing,
-                            Attributes = {
-                                { "type", "text/css" },
-                                { "rel", "stylesheet" }
-                            }
-                        };
+                        tagBuilder = new TagBuilder("link") { TagRenderMode = TagRenderMode.SelfClosing, Attributes = { { "type", "text/css" }, { "rel", "stylesheet" } } };
                         filePathAttributeName = "href";
                     }
                     break;
@@ -359,9 +346,7 @@ namespace OrchardCore.ResourceManagement
             }
 
             var that = (ResourceDefinition)obj;
-            return string.Equals(that.Name, Name) &&
-                string.Equals(that.Type, Type) &&
-                string.Equals(that.Version, Version);
+            return string.Equals(that.Name, Name) && string.Equals(that.Type, Type) && string.Equals(that.Version, Version);
         }
 
         public override int GetHashCode()

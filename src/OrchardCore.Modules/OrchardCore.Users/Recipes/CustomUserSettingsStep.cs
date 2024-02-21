@@ -31,11 +31,7 @@ public class CustomUserSettingsStep : IRecipeStepHandler
 
         var model = context.Step;
 
-        var customUserSettingsList = (JsonArray)model
-            .AsEnumerable()
-            .Where(p => p.Key != "name")
-            .Select(p => p.Value)
-            .FirstOrDefault();
+        var customUserSettingsList = (JsonArray)model.AsEnumerable().Where(p => p.Key != "name").Select(p => p.Value).FirstOrDefault();
 
         var allUsers = await _session.Query<User>().ListAsync();
 
@@ -54,8 +50,7 @@ public class CustomUserSettingsStep : IRecipeStepHandler
                 continue;
             }
 
-            if (!userCustomUserSettings.TryGetPropertyValue("user-custom-user-settings", out jsonNode) ||
-                jsonNode is not JsonArray userSettings)
+            if (!userCustomUserSettings.TryGetPropertyValue("user-custom-user-settings", out jsonNode) || jsonNode is not JsonArray userSettings)
             {
                 continue;
             }

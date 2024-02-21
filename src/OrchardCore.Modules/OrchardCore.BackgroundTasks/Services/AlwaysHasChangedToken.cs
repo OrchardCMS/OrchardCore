@@ -10,9 +10,7 @@ namespace OrchardCore.BackgroundTasks.Services
     {
         public static AlwaysHasChangedToken Singleton { get; } = new AlwaysHasChangedToken();
 
-        private AlwaysHasChangedToken()
-        {
-        }
+        private AlwaysHasChangedToken() { }
 
         public bool HasChanged => true;
 
@@ -28,12 +26,8 @@ namespace OrchardCore.BackgroundTasks.Services
     {
         public static EmptyDisposable Instance { get; } = new EmptyDisposable();
 
-        private EmptyDisposable()
-        {
-        }
+        private EmptyDisposable() { }
 
-        public void Dispose()
-        {
-        }
+        public void Dispose() { }
     }
 }

@@ -22,10 +22,7 @@ namespace OrchardCore.Taxonomies.Settings
         private readonly IAuthorizationService _authorizationService;
         private readonly YesSql.ISession _session;
 
-        public TaxonomyContentsAdminListSettingsDisplayDriver(
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService,
-            YesSql.ISession session)
+        public TaxonomyContentsAdminListSettingsDisplayDriver(IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService, YesSql.ISession session)
         {
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
@@ -42,17 +39,24 @@ namespace OrchardCore.Taxonomies.Settings
 
             var taxonomies = await _session.Query<ContentItem, ContentItemIndex>(q => q.ContentType == "Taxonomy" && q.Published).ListAsync();
 
-            var entries = taxonomies.Select(x => new TaxonomyEntry
-            {
-                DisplayText = x.DisplayText,
-                ContentItemId = x.ContentItemId,
-                IsChecked = settings.TaxonomyContentItemIds.Any(id => string.Equals(x.ContentItemId, id, StringComparison.OrdinalIgnoreCase))
-            }).ToArray();
+            var entries = taxonomies
+                .Select(x => new TaxonomyEntry
+                {
+                    DisplayText = x.DisplayText,
+                    ContentItemId = x.ContentItemId,
+                    IsChecked = settings.TaxonomyContentItemIds.Any(id => string.Equals(x.ContentItemId, id, StringComparison.OrdinalIgnoreCase))
+                })
+                .ToArray();
 
-            return Initialize<TaxonomyContentsAdminListSettingsViewModel>("TaxonomyContentsAdminListSettings_Edit", model =>
-            {
-                model.TaxonomyEntries = entries;
-            }).Location("Content:2").OnGroup(GroupId);
+            return Initialize<TaxonomyContentsAdminListSettingsViewModel>(
+                    "TaxonomyContentsAdminListSettings_Edit",
+                    model =>
+                    {
+                        model.TaxonomyEntries = entries;
+                    }
+                )
+                .Location("Content:2")
+                .OnGroup(GroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(TaxonomyContentsAdminListSettings settings, BuildEditorContext context)

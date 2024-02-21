@@ -15,10 +15,7 @@ public class AzureADSettingsConfiguration : IConfigureOptions<AzureADSettings>
     private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
 
-    public AzureADSettingsConfiguration(
-        IAzureADService azureADService,
-        ShellSettings shellSettings,
-        ILogger<AzureADSettingsConfiguration> logger)
+    public AzureADSettingsConfiguration(IAzureADService azureADService, ShellSettings shellSettings, ILogger<AzureADSettingsConfiguration> logger)
     {
         _azureADService = azureADService;
         _shellSettings = shellSettings;
@@ -27,9 +24,7 @@ public class AzureADSettingsConfiguration : IConfigureOptions<AzureADSettings>
 
     public void Configure(AzureADSettings options)
     {
-        var settings = GetAzureADSettingsAsync()
-            .GetAwaiter()
-            .GetResult();
+        var settings = GetAzureADSettingsAsync().GetAwaiter().GetResult();
 
         if (settings != null)
         {

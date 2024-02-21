@@ -8,12 +8,14 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static OrchardCoreBuilder ConfigureFacebookSettings(this OrchardCoreBuilder builder)
         {
-            builder.ConfigureServices((tenantServices, serviceProvider) =>
-            {
-                var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_Facebook");
+            builder.ConfigureServices(
+                (tenantServices, serviceProvider) =>
+                {
+                    var configurationSection = serviceProvider.GetRequiredService<IShellConfiguration>().GetSection("OrchardCore_Facebook");
 
-                tenantServices.PostConfigure<FacebookSettings>(settings => configurationSection.Bind(settings));
-            });
+                    tenantServices.PostConfigure<FacebookSettings>(settings => configurationSection.Bind(settings));
+                }
+            );
 
             return builder;
         }

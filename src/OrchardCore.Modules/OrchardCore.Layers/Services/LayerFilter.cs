@@ -43,7 +43,8 @@ namespace OrchardCore.Layers.Services
             IMemoryCache memoryCache,
             IThemeManager themeManager,
             IAdminThemeService adminThemeService,
-            IVolatileDocumentManager<LayerState> layerStateManager)
+            IVolatileDocumentManager<LayerState> layerStateManager
+        )
         {
             _contentDefinitionManager = contentDefinitionManager;
             _layerService = layerService;
@@ -76,11 +77,7 @@ namespace OrchardCore.Layers.Services
 
                 if (!_memoryCache.TryGetValue<CacheEntry>(WidgetsKey, out var cacheEntry) || cacheEntry.Identifier != layerState.Identifier)
                 {
-                    cacheEntry = new CacheEntry()
-                    {
-                        Identifier = layerState.Identifier,
-                        Widgets = await _layerService.GetLayerWidgetsMetadataAsync(x => x.Published)
-                    };
+                    cacheEntry = new CacheEntry() { Identifier = layerState.Identifier, Widgets = await _layerService.GetLayerWidgetsMetadataAsync(x => x.Published) };
 
                     _memoryCache.Set(WidgetsKey, cacheEntry);
                 }
@@ -124,11 +121,7 @@ namespace OrchardCore.Layers.Services
                         widgetContent.Classes.Add("widget");
                         widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
 
-                        var wrapper = new WidgetWrapper
-                        {
-                            Widget = widget.ContentItem,
-                            Content = widgetContent
-                        };
+                        var wrapper = new WidgetWrapper { Widget = widget.ContentItem, Content = widgetContent };
 
                         wrapper.Metadata.Alternates.Add("Widget_Wrapper__" + widget.ContentItem.ContentType);
                         wrapper.Metadata.Alternates.Add("Widget_Wrapper__Zone__" + widget.Zone);

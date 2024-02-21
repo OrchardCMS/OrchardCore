@@ -7,9 +7,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
     public class Expression
     {
         /// <summary>Constructs a new instance of <see cref="Expression"></see>.</summary>
-        protected Expression()
-        {
-        }
+        protected Expression() { }
 
         /// <summary>
         /// Apply an "equal" constraint to the named property.

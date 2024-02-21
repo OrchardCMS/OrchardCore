@@ -41,8 +41,7 @@ namespace OrchardCore.Localization
         /// </summary>
         /// <param name="culture">The culture that will be used within the scope.</param>
         /// <param name="ignoreSystemSettings">Whether to ignore the system culture settings or not. Defaults to <c>false</c>.</param>
-        public static CultureScope Create(string culture, bool ignoreSystemSettings = false)
-            => Create(culture, culture, ignoreSystemSettings);
+        public static CultureScope Create(string culture, bool ignoreSystemSettings = false) => Create(culture, culture, ignoreSystemSettings);
 
         /// <summary>
         /// Creates a scope with a given culture.
@@ -50,16 +49,14 @@ namespace OrchardCore.Localization
         /// <param name="culture">The culture that will be used within the scope.</param>
         /// <param name="uiCulture">The UI culture that will be used within the scope.</param>
         /// <param name="ignoreSystemSettings">Whether to ignore the system culture settings or not. Defaults to <c>false</c>.</param>
-        public static CultureScope Create(string culture, string uiCulture, bool ignoreSystemSettings = false)
-            => new(culture, uiCulture, ignoreSystemSettings);
+        public static CultureScope Create(string culture, string uiCulture, bool ignoreSystemSettings = false) => new(culture, uiCulture, ignoreSystemSettings);
 
         /// <summary>
         /// Creates a scope with a given culture.
         /// </summary>
         /// <param name="culture">The culture that will be used within the scope.</param>
         /// <param name="ignoreSystemSettings">Whether to ignore the system culture settings or not. Defaults to <c>false</c>.</param>
-        public static CultureScope Create(CultureInfo culture, bool ignoreSystemSettings = false)
-            => Create(culture, culture, ignoreSystemSettings);
+        public static CultureScope Create(CultureInfo culture, bool ignoreSystemSettings = false) => Create(culture, culture, ignoreSystemSettings);
 
         /// <summary>
         /// Creates a scope with a given culture.
@@ -67,8 +64,7 @@ namespace OrchardCore.Localization
         /// <param name="culture">The culture that will be used within the scope.</param>
         /// <param name="uiCulture">The UI culture that will be used within the scope.</param>
         /// <param name="ignoreSystemSettings">Whether to ignore the system culture settings or not. Defaults to <c>false</c>.</param>
-        public static CultureScope Create(CultureInfo culture, CultureInfo uiCulture, bool ignoreSystemSettings = false)
-            => new(culture.Name, uiCulture.Name, ignoreSystemSettings);
+        public static CultureScope Create(CultureInfo culture, CultureInfo uiCulture, bool ignoreSystemSettings = false) => new(culture.Name, uiCulture.Name, ignoreSystemSettings);
 
         /// <inheritdoc/>
         public void Dispose()

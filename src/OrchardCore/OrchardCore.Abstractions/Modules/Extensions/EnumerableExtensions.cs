@@ -14,16 +14,19 @@ namespace OrchardCore.Modules
 
             return Task.WhenAll(
                 from partition in Partitioner.Create(source).GetPartitions(partitionCount)
-                select Task.Run(async delegate
-                {
-                    using (partition)
+                select Task.Run(
+                    async delegate
                     {
-                        while (partition.MoveNext())
+                        using (partition)
                         {
-                            await body(partition.Current);
+                            while (partition.MoveNext())
+                            {
+                                await body(partition.Current);
+                            }
                         }
                     }
-                }));
+                )
+            );
         }
     }
 }

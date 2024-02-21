@@ -47,9 +47,7 @@ namespace OrchardCore.Rules
                 .AddCondition<HomepageCondition, HomepageConditionEvaluator, ConditionFactory<HomepageCondition>>();
 
             // Url condition.
-            services
-                .AddScoped<IDisplayDriver<Condition>, UrlConditionDisplayDriver>()
-                .AddCondition<UrlCondition, UrlConditionEvaluator, ConditionFactory<UrlCondition>>();
+            services.AddScoped<IDisplayDriver<Condition>, UrlConditionDisplayDriver>().AddCondition<UrlCondition, UrlConditionEvaluator, ConditionFactory<UrlCondition>>();
 
             // Culture condition.
             services
@@ -57,9 +55,7 @@ namespace OrchardCore.Rules
                 .AddCondition<CultureCondition, CultureConditionEvaluator, ConditionFactory<CultureCondition>>();
 
             // Role condition.
-            services
-                .AddScoped<IDisplayDriver<Condition>, RoleConditionDisplayDriver>()
-                .AddCondition<RoleCondition, RoleConditionEvaluator, ConditionFactory<RoleCondition>>();
+            services.AddScoped<IDisplayDriver<Condition>, RoleConditionDisplayDriver>().AddCondition<RoleCondition, RoleConditionEvaluator, ConditionFactory<RoleCondition>>();
 
             // Javascript condition.
             services

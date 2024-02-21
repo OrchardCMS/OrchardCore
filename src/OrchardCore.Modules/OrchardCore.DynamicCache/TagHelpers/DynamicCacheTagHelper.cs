@@ -92,7 +92,8 @@ namespace OrchardCore.DynamicCache.TagHelpers
             ICacheScopeManager cacheScopeManager,
             HtmlEncoder htmlEncoder,
             DynamicCacheTagHelperService dynamicCacheTagHelperService,
-            IOptions<CacheOptions> cacheOptions)
+            IOptions<CacheOptions> cacheOptions
+        )
         {
             _dynamicCacheService = dynamicCacheService;
             _cacheScopeManager = cacheScopeManager;
@@ -227,10 +228,7 @@ namespace OrchardCore.DynamicCache.TagHelpers
 
                             var html = writer.ToString();
 
-                            var formattingContext = new DistributedCacheTagHelperFormattingContext
-                            {
-                                Html = new HtmlString(html)
-                            };
+                            var formattingContext = new DistributedCacheTagHelperFormattingContext { Html = new HtmlString(html) };
 
                             await _dynamicCacheService.SetCachedValueAsync(cacheContext, html);
 

@@ -37,8 +37,7 @@ namespace OrchardCore.Shortcodes.Providers
                     }
 
                     currentCulture = currentCulture.Parent;
-                }
-                while (currentCulture != CultureInfo.InvariantCulture);
+                } while (currentCulture != CultureInfo.InvariantCulture);
             }
             else
             {

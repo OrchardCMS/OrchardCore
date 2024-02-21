@@ -10,9 +10,7 @@ public class SmsService : ISmsService
 
     protected readonly IStringLocalizer S;
 
-    public SmsService(
-        ISmsProviderResolver smsProviderResolver,
-        IStringLocalizer<SmsService> stringLocalizer)
+    public SmsService(ISmsProviderResolver smsProviderResolver, IStringLocalizer<SmsService> stringLocalizer)
     {
         _smsProviderResolver = smsProviderResolver;
         S = stringLocalizer;

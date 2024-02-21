@@ -15,10 +15,7 @@ namespace OrchardCore.Deployment.Remote.Services
 
         private RemoteClientList _remoteClientList;
 
-        public RemoteClientService(
-            ISession session,
-            IDataProtectionProvider dataProtectionProvider
-            )
+        public RemoteClientService(ISession session, IDataProtectionProvider dataProtectionProvider)
         {
             _dataProtector = dataProtectionProvider.CreateProtector("OrchardCore.Deployment").ToTimeLimitedDataProtector();
             _session = session;

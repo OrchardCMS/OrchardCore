@@ -50,7 +50,8 @@ namespace OrchardCore.Autoroute.Handlers
             ITagCache tagCache,
             ISession session,
             IServiceProvider serviceProvider,
-            IStringLocalizer<AutoroutePartHandler> stringLocalizer)
+            IStringLocalizer<AutoroutePartHandler> stringLocalizer
+        )
         {
             _entries = entries;
             _options = options.Value;
@@ -80,11 +81,14 @@ namespace OrchardCore.Autoroute.Handlers
 
             if (!string.IsNullOrWhiteSpace(part.Path) && !part.Disabled && part.SetHomepage)
             {
-                await SetHomeRouteAsync(part, homeRoute =>
-                {
-                    homeRoute[_options.ContentItemIdKey] = context.ContentItem.ContentItemId;
-                    homeRoute.Remove(_options.JsonPathKey);
-                });
+                await SetHomeRouteAsync(
+                    part,
+                    homeRoute =>
+                    {
+                        homeRoute[_options.ContentItemIdKey] = context.ContentItem.ContentItemId;
+                        homeRoute.Remove(_options.JsonPathKey);
+                    }
+                );
             }
 
             // Evict any dependent item from cache.
@@ -132,7 +136,6 @@ namespace OrchardCore.Autoroute.Handlers
             {
                 context.Fail(S["Your permalink is already in use."], nameof(part.Path));
             }
-
         }
 
         public override async Task UpdatedAsync(UpdateContentContext context, AutoroutePart part)
@@ -141,7 +144,7 @@ namespace OrchardCore.Autoroute.Handlers
             await GenerateContainedPathsFromPatternAsync(context.UpdatingItem, part);
         }
 
-        public async override Task CloningAsync(CloneContentContext context, AutoroutePart part)
+        public override async Task CloningAsync(CloneContentContext context, AutoroutePart part)
         {
             var clonedPart = context.CloneContentItem.As<AutoroutePart>();
             clonedPart.Path = await GenerateUniqueAbsolutePathAsync(part.Path, context.CloneContentItem.ContentItemId);
@@ -211,11 +214,14 @@ namespace OrchardCore.Autoroute.Handlers
                         var autoroutePart = contentItem.As<AutoroutePart>();
                         if (autoroutePart != null && autoroutePart.SetHomepage)
                         {
-                            await SetHomeRouteAsync(autoroutePart, homeRoute =>
-                            {
-                                homeRoute[_options.ContentItemIdKey] = containerContentItemId;
-                                homeRoute[_options.JsonPathKey] = jItem.GetNormalizedPath();
-                            });
+                            await SetHomeRouteAsync(
+                                autoroutePart,
+                                homeRoute =>
+                                {
+                                    homeRoute[_options.ContentItemIdKey] = containerContentItemId;
+                                    homeRoute[_options.JsonPathKey] = jItem.GetNormalizedPath();
+                                }
+                            );
 
                             break;
                         }
@@ -242,7 +248,13 @@ namespace OrchardCore.Autoroute.Handlers
             await ValidateContainedContentItemRoutesAsync(entries, part.ContentItem.ContentItemId, containedAspect, (JsonObject)contentItem.Content, part.Path);
         }
 
-        private async Task PopulateContainedContentItemRoutesAsync(List<AutorouteEntry> entries, string containerContentItemId, ContainedContentItemsAspect containedContentItemsAspect, JsonObject content, string basePath)
+        private async Task PopulateContainedContentItemRoutesAsync(
+            List<AutorouteEntry> entries,
+            string containerContentItemId,
+            ContainedContentItemsAspect containedContentItemsAspect,
+            JsonObject content,
+            string basePath
+        )
         {
             foreach (var accessor in containedContentItemsAspect.Accessors)
             {
@@ -261,10 +273,7 @@ namespace OrchardCore.Autoroute.Handlers
                             path = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path.TrimStart('/');
                         }
 
-                        entries.Add(new AutorouteEntry(containerContentItemId, path, contentItem.ContentItemId, jItem.GetNormalizedPath())
-                        {
-                            DocumentId = contentItem.Id
-                        });
+                        entries.Add(new AutorouteEntry(containerContentItemId, path, contentItem.ContentItemId, jItem.GetNormalizedPath()) { DocumentId = contentItem.Id });
                     }
 
                     var itemBasePath = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path.TrimStart('/');
@@ -274,7 +283,13 @@ namespace OrchardCore.Autoroute.Handlers
             }
         }
 
-        private async Task ValidateContainedContentItemRoutesAsync(List<AutorouteEntry> entries, string containerContentItemId, ContainedContentItemsAspect containedContentItemsAspect, JsonObject content, string basePath)
+        private async Task ValidateContainedContentItemRoutesAsync(
+            List<AutorouteEntry> entries,
+            string containerContentItemId,
+            ContainedContentItemsAspect containedContentItemsAspect,
+            JsonObject content,
+            string basePath
+        )
         {
             foreach (var accessor in containedContentItemsAspect.Accessors)
             {
@@ -298,11 +313,10 @@ namespace OrchardCore.Autoroute.Handlers
                             containedAutoroutePart.Apply();
 
                             // Merge because we have disconnected the content item from it's json owner.
-                            jItem.Merge((JsonObject)contentItem.Content, new JsonMergeSettings
-                            {
-                                MergeArrayHandling = MergeArrayHandling.Replace,
-                                MergeNullValueHandling = MergeNullValueHandling.Merge
-                            });
+                            jItem.Merge(
+                                (JsonObject)contentItem.Content,
+                                new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace, MergeNullValueHandling = MergeNullValueHandling.Merge }
+                            );
                         }
                         else
                         {
@@ -316,11 +330,10 @@ namespace OrchardCore.Autoroute.Handlers
                                 containedAutoroutePart.Apply();
 
                                 // Merge because we have disconnected the content item from it's json owner.
-                                jItem.Merge((JsonObject)contentItem.Content, new JsonMergeSettings
-                                {
-                                    MergeArrayHandling = MergeArrayHandling.Replace,
-                                    MergeNullValueHandling = MergeNullValueHandling.Merge
-                                });
+                                jItem.Merge(
+                                    (JsonObject)contentItem.Content,
+                                    new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace, MergeNullValueHandling = MergeNullValueHandling.Merge }
+                                );
                             }
 
                             path = path[currentItemBasePath.Length..];
@@ -336,7 +349,9 @@ namespace OrchardCore.Autoroute.Handlers
 
         private static bool IsRelativePathUnique(List<AutorouteEntry> entries, string path, AutoroutePart context)
         {
-            var result = !entries.Any(e => context.ContentItem.ContentItemId != e.ContainedContentItemId && string.Equals(e.Path.Trim('/'), path.Trim('/'), StringComparison.OrdinalIgnoreCase));
+            var result = !entries.Any(e =>
+                context.ContentItem.ContentItemId != e.ContainedContentItemId && string.Equals(e.Path.Trim('/'), path.Trim('/'), StringComparison.OrdinalIgnoreCase)
+            );
             return result;
         }
 
@@ -398,8 +413,12 @@ namespace OrchardCore.Autoroute.Handlers
 
                 using (CultureScope.Create(cultureAspect.Culture, ignoreSystemSettings: cultureOptions.IgnoreSystemSettings))
                 {
-                    part.Path = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,
-                        new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) });
+                    part.Path = await _liquidTemplateManager.RenderStringAsync(
+                        pattern,
+                        NullEncoder.Default,
+                        model,
+                        new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) }
+                    );
                 }
 
                 part.Path = part.Path.Replace("\r", string.Empty).Replace("\n", string.Empty);

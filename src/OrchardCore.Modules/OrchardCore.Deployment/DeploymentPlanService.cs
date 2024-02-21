@@ -17,10 +17,7 @@ namespace OrchardCore.Deployment
         private readonly IAuthorizationService _authorizationService;
         private Dictionary<string, DeploymentPlan> _deploymentPlans;
 
-        public DeploymentPlanService(
-            YesSql.ISession session,
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+        public DeploymentPlanService(YesSql.ISession session, IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService)
         {
             _session = session;
             _httpContextAccessor = httpContextAccessor;
@@ -43,8 +40,7 @@ namespace OrchardCore.Deployment
         {
             var user = _httpContextAccessor.HttpContext.User;
 
-            var result = await _authorizationService.AuthorizeAsync(user, Permissions.ManageDeploymentPlan) &&
-                         await _authorizationService.AuthorizeAsync(user, Permissions.Export);
+            var result = await _authorizationService.AuthorizeAsync(user, Permissions.ManageDeploymentPlan) && await _authorizationService.AuthorizeAsync(user, Permissions.Export);
 
             return result;
         }
@@ -94,9 +90,10 @@ namespace OrchardCore.Deployment
         {
             var names = deploymentPlans.Select(x => x.Name);
 
-            var existingDeploymentPlans = (await _session.Query<DeploymentPlan, DeploymentPlanIndex>(x => x.Name.IsIn(names))
-                .ListAsync())
-                .ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
+            var existingDeploymentPlans = (await _session.Query<DeploymentPlan, DeploymentPlanIndex>(x => x.Name.IsIn(names)).ListAsync()).ToDictionary(
+                x => x.Name,
+                StringComparer.OrdinalIgnoreCase
+            );
 
             foreach (var deploymentPlan in deploymentPlans)
             {

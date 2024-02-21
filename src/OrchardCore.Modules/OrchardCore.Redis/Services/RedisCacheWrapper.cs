@@ -30,6 +30,5 @@ public class RedisCacheWrapper : IDistributedCache
 
     public void Set(string key, byte[] value, DistributedCacheEntryOptions options) => _cache.Set(key, value, options);
 
-    public Task SetAsync(string key, byte[] value, DistributedCacheEntryOptions options, CancellationToken token = default)
-        => _cache.SetAsync(key, value, options, token);
+    public Task SetAsync(string key, byte[] value, DistributedCacheEntryOptions options, CancellationToken token = default) => _cache.SetAsync(key, value, options, token);
 }

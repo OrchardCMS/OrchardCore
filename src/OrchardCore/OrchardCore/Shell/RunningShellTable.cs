@@ -9,7 +9,9 @@ namespace OrchardCore.Environment.Shell
 {
     public class RunningShellTable : IRunningShellTable
     {
-        private ImmutableDictionary<string, ShellSettings> _shellsByHostAndPrefix = ImmutableDictionary<string, ShellSettings>.Empty.WithComparers(StringComparer.OrdinalIgnoreCase);
+        private ImmutableDictionary<string, ShellSettings> _shellsByHostAndPrefix = ImmutableDictionary<string, ShellSettings>.Empty.WithComparers(
+            StringComparer.OrdinalIgnoreCase
+        );
         private ShellSettings _default;
         private bool _hasStarMapping = false;
 
@@ -38,10 +40,7 @@ namespace OrchardCore.Environment.Shell
 
         public void Remove(ShellSettings settings)
         {
-            var allHostsAndPrefix = _shellsByHostAndPrefix
-                .Where(kv => kv.Value.Name == settings.Name)
-                .Select(kv => kv.Key)
-                .ToArray();
+            var allHostsAndPrefix = _shellsByHostAndPrefix.Where(kv => kv.Value.Name == settings.Name).Select(kv => kv.Key).ToArray();
 
             lock (this)
             {
@@ -166,10 +165,7 @@ namespace OrchardCore.Environment.Shell
                 return ["/" + shellSettings.RequestUrlPrefix];
             }
 
-            return shellSettings
-                .RequestUrlHosts
-                .Select(ruh => ruh + "/" + shellSettings.RequestUrlPrefix)
-                .ToArray();
+            return shellSettings.RequestUrlHosts.Select(ruh => ruh + "/" + shellSettings.RequestUrlPrefix).ToArray();
         }
 
         private bool DefaultIsCatchAll()

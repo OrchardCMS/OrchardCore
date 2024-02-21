@@ -33,7 +33,8 @@ namespace OrchardCore.Deployment.Controllers
             ISession session,
             IHtmlLocalizer<StepController> htmlLocalizer,
             INotifier notifier,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor
+        )
         {
             _displayManager = displayManager;
             _factories = factories;

@@ -35,8 +35,7 @@ namespace OrchardCore.Localization
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<ILocalizationService, LocalizationService>();
 
-            services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization").
-                AddDataAnnotationsPortableObjectLocalization();
+            services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization").AddDataAnnotationsPortableObjectLocalization();
 
             services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
         }
@@ -53,10 +52,7 @@ namespace OrchardCore.Localization
             var localizationOptions = serviceProvider.GetService<IOptions<RequestLocalizationOptions>>().Value;
 
             localizationOptions.CultureInfoUseUserOverride = !cultureOptions.IgnoreSystemSettings;
-            localizationOptions
-                .SetDefaultCulture(defaultCulture)
-                .AddSupportedCultures(supportedCultures)
-                .AddSupportedUICultures(supportedCultures);
+            localizationOptions.SetDefaultCulture(defaultCulture).AddSupportedCultures(supportedCultures).AddSupportedUICultures(supportedCultures);
 
             app.UseRequestLocalization(localizationOptions);
         }
@@ -67,7 +63,10 @@ namespace OrchardCore.Localization
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSiteSettingsPropertyDeploymentStep<LocalizationSettings, LocalizationDeploymentStartup>(S => S["Culture settings"], S => S["Exports the culture settings."]);
+            services.AddSiteSettingsPropertyDeploymentStep<LocalizationSettings, LocalizationDeploymentStartup>(
+                S => S["Culture settings"],
+                S => S["Exports the culture settings."]
+            );
         }
     }
 
@@ -96,8 +95,7 @@ namespace OrchardCore.Localization
         {
             services.AddScoped<IDisplayDriver<Navbar>, AdminCulturePickerNavbarDisplayDriver>();
 
-            services.Configure<RequestLocalizationOptions>(options =>
-                options.AddInitialRequestCultureProvider(new AdminCookieCultureProvider(_shellSettings, _adminOptions)));
+            services.Configure<RequestLocalizationOptions>(options => options.AddInitialRequestCultureProvider(new AdminCookieCultureProvider(_shellSettings, _adminOptions)));
         }
     }
 }

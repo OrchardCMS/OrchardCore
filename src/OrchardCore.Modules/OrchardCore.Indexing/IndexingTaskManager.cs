@@ -37,7 +37,8 @@ namespace OrchardCore.Indexing.Services
             IStore store,
             IDbConnectionAccessor dbConnectionAccessor,
             IHttpContextAccessor httpContextAccessor,
-            ILogger<IndexingTaskManager> logger)
+            ILogger<IndexingTaskManager> logger
+        )
         {
             _clock = clock;
             _store = store;
@@ -130,7 +131,8 @@ namespace OrchardCore.Indexing.Services
                 // Page delete statements to prevent the limits from IN sql statements.
                 var pageSize = 100;
 
-                var deleteCmd = $"delete from {dialect.QuoteForTableName(table, _store.Configuration.Schema)} where {dialect.QuoteForColumnName("ContentItemId")} {dialect.InOperator("@Ids")};";
+                var deleteCmd =
+                    $"delete from {dialect.QuoteForTableName(table, _store.Configuration.Schema)} where {dialect.QuoteForColumnName("ContentItemId")} {dialect.InOperator("@Ids")};";
 
                 do
                 {
@@ -143,7 +145,8 @@ namespace OrchardCore.Indexing.Services
                     }
                 } while (ids.Length > 0);
 
-                var insertCmd = $"insert into {dialect.QuoteForTableName(table, _store.Configuration.Schema)} ({dialect.QuoteForColumnName("CreatedUtc")}, {dialect.QuoteForColumnName("ContentItemId")}, {dialect.QuoteForColumnName("Type")}) values (@CreatedUtc, @ContentItemId, @Type);";
+                var insertCmd =
+                    $"insert into {dialect.QuoteForTableName(table, _store.Configuration.Schema)} ({dialect.QuoteForColumnName("CreatedUtc")}, {dialect.QuoteForColumnName("ContentItemId")}, {dialect.QuoteForColumnName("Type")}) values (@CreatedUtc, @ContentItemId, @Type);";
                 await transaction.Connection.ExecuteAsync(insertCmd, localQueue, transaction);
 
                 await transaction.CommitAsync();

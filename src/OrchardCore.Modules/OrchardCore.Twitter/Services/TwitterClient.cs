@@ -25,10 +25,7 @@ namespace OrchardCore.Twitter.Services
         {
             try
             {
-                var parameters = new Dictionary<string, string>
-                {
-                    { "status", status }
-                };
+                var parameters = new Dictionary<string, string> { { "status", status } };
 
                 if (optionalParameters is not null)
                 {

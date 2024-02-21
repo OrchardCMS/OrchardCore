@@ -30,11 +30,7 @@ public class Zones : Composite
             TryGetMemberImpl(name, out var result);
             return result as IShape;
         }
-
-        set
-        {
-            TrySetMemberImpl(name, value);
-        }
+        set { TrySetMemberImpl(name, value); }
     }
 
     public override bool TryGetMember(System.Dynamic.GetMemberBinder binder, out object result)

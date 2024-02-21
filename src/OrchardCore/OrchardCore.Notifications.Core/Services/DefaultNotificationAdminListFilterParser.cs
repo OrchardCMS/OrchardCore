@@ -11,6 +11,5 @@ public class DefaultNotificationAdminListFilterParser : INotificationAdminListFi
         _parser = parser;
     }
 
-    public QueryFilterResult<Notification> Parse(string text)
-        => _parser.Parse(text);
+    public QueryFilterResult<Notification> Parse(string text) => _parser.Parse(text);
 }

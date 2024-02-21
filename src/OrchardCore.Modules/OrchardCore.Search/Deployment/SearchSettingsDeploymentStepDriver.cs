@@ -8,11 +8,10 @@ namespace OrchardCore.Search.Deployment
     {
         public override IDisplayResult Display(SearchSettingsDeploymentStep step)
         {
-            return
-                Combine(
-                    View("SearchSettingsDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                    View("SearchSettingsDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-                );
+            return Combine(
+                View("SearchSettingsDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("SearchSettingsDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(SearchSettingsDeploymentStep step)

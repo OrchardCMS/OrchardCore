@@ -27,7 +27,8 @@ namespace OrchardCore.DisplayManagement.Implementation
             IShapeTableManager shapeTableManager,
             IServiceProvider serviceProvider,
             ILogger<DefaultHtmlDisplay> logger,
-            IThemeManager themeManager)
+            IThemeManager themeManager
+        )
         {
             _shapeTableManager = shapeTableManager;
             _shapeDisplayEvents = shapeDisplayEvents;
@@ -63,10 +64,7 @@ namespace OrchardCore.DisplayManagement.Implementation
 
             // Copy the current context such that the rendering can customize it if necessary,
             // for instance to change the HtmlFieldPrefix.
-            var localContext = new DisplayContext(context)
-            {
-                HtmlFieldPrefix = shapeMetadata.Prefix ?? "",
-            };
+            var localContext = new DisplayContext(context) { HtmlFieldPrefix = shapeMetadata.Prefix ?? "", };
 
             var displayContext = new ShapeDisplayContext
             {
@@ -145,33 +143,41 @@ namespace OrchardCore.DisplayManagement.Implementation
                     shape.Metadata.Wrappers.Clear();
                 }
 
-                await _shapeDisplayEvents.InvokeAsync(async (e, displayContext) =>
-                {
-                    var prior = displayContext.ChildContent = displayContext.Shape.Metadata.ChildContent;
-
-                    await e.DisplayedAsync(displayContext);
-
-                    // Update the child content if the context variable has been reassigned.
-                    if (prior != displayContext.ChildContent)
-                    {
-                        displayContext.Shape.Metadata.ChildContent = displayContext.ChildContent;
-                    }
-                }, displayContext, _logger);
-
-                if (shapeDescriptor != null)
-                {
-                    await shapeDescriptor.DisplayedAsync.InvokeAsync(async (action, displayContext) =>
+                await _shapeDisplayEvents.InvokeAsync(
+                    async (e, displayContext) =>
                     {
                         var prior = displayContext.ChildContent = displayContext.Shape.Metadata.ChildContent;
 
-                        await action(displayContext);
+                        await e.DisplayedAsync(displayContext);
 
                         // Update the child content if the context variable has been reassigned.
                         if (prior != displayContext.ChildContent)
                         {
                             displayContext.Shape.Metadata.ChildContent = displayContext.ChildContent;
                         }
-                    }, displayContext, _logger);
+                    },
+                    displayContext,
+                    _logger
+                );
+
+                if (shapeDescriptor != null)
+                {
+                    await shapeDescriptor.DisplayedAsync.InvokeAsync(
+                        async (action, displayContext) =>
+                        {
+                            var prior = displayContext.ChildContent = displayContext.Shape.Metadata.ChildContent;
+
+                            await action(displayContext);
+
+                            // Update the child content if the context variable has been reassigned.
+                            if (prior != displayContext.ChildContent)
+                            {
+                                displayContext.Shape.Metadata.ChildContent = displayContext.ChildContent;
+                            }
+                        },
+                        displayContext,
+                        _logger
+                    );
                 }
 
                 // Invoking ShapeMetadata displayed events.
@@ -254,8 +260,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                 {
                     return shapeBinding;
                 }
-            }
-            while (TryGetParentShapeTypeName(ref shapeTypeScan));
+            } while (TryGetParentShapeTypeName(ref shapeTypeScan));
 
             return null;
         }

@@ -6,9 +6,7 @@ namespace OrchardCore.Mvc
 {
     public class ModularRazorViewEngineOptionsSetup : IConfigureOptions<RazorViewEngineOptions>
     {
-        public ModularRazorViewEngineOptionsSetup()
-        {
-        }
+        public ModularRazorViewEngineOptionsSetup() { }
 
         public void Configure(RazorViewEngineOptions options)
         {

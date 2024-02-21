@@ -7,10 +7,7 @@ namespace OrchardCore.Environment.Shell.Builders
 {
     internal static class ServiceCollectionExtensions
     {
-        public static IServiceCollection CloneSingleton(
-            this IServiceCollection services,
-            ServiceDescriptor parent,
-            object implementationInstance)
+        public static IServiceCollection CloneSingleton(this IServiceCollection services, ServiceDescriptor parent, object implementationInstance)
         {
             var cloned = parent.ServiceKey is not null
                 ? new ClonedSingletonDescriptor(parent, parent.ServiceKey, implementationInstance)
@@ -21,10 +18,7 @@ namespace OrchardCore.Environment.Shell.Builders
             return services;
         }
 
-        public static IServiceCollection CloneSingleton(
-            this IServiceCollection collection,
-            ServiceDescriptor parent,
-            Func<IServiceProvider, object> implementationFactory)
+        public static IServiceCollection CloneSingleton(this IServiceCollection collection, ServiceDescriptor parent, Func<IServiceProvider, object> implementationFactory)
         {
             var cloned = new ClonedSingletonDescriptor(parent, implementationFactory);
             collection.Add(cloned);
@@ -32,10 +26,7 @@ namespace OrchardCore.Environment.Shell.Builders
             return collection;
         }
 
-        public static IServiceCollection CloneSingleton(
-            this IServiceCollection collection,
-            ServiceDescriptor parent,
-            Func<IServiceProvider, object?, object> implementationFactory)
+        public static IServiceCollection CloneSingleton(this IServiceCollection collection, ServiceDescriptor parent, Func<IServiceProvider, object?, object> implementationFactory)
         {
             var cloned = new ClonedSingletonDescriptor(parent, parent.ServiceKey, implementationFactory);
             collection.Add(cloned);

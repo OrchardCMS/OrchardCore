@@ -18,10 +18,7 @@ namespace OrchardCore.Queries.Recipes
         private readonly IEnumerable<IQuerySource> _querySources;
         private readonly ILogger _logger;
 
-        public QueryStep(
-            IQueryManager queryManager,
-            IEnumerable<IQuerySource> querySources,
-            ILogger<QueryStep> logger)
+        public QueryStep(IQueryManager queryManager, IEnumerable<IQuerySource> querySources, ILogger<QueryStep> logger)
         {
             _queryManager = queryManager;
             _querySources = querySources;
@@ -44,7 +41,11 @@ namespace OrchardCore.Queries.Recipes
 
                 if (sample == null)
                 {
-                    _logger.LogError("Could not find query source: '{QuerySource}'. The query '{QueryName}' will not be imported.", sourceName, token[nameof(Query.Name)].ToString());
+                    _logger.LogError(
+                        "Could not find query source: '{QuerySource}'. The query '{QueryName}' will not be imported.",
+                        sourceName,
+                        token[nameof(Query.Name)].ToString()
+                    );
 
                     continue;
                 }

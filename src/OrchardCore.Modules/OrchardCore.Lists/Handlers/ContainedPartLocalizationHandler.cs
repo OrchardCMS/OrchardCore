@@ -27,8 +27,12 @@ namespace OrchardCore.Lists.Drivers
             // todo: remove this check and change the handler to target ContainedPart when issue 3890 is fixed
             if (containedPart != null)
             {
-                var list = await _session.QueryIndex<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.ContentItemId == containedPart.ListContentItemId).FirstOrDefaultAsync();
-                var localizedList = await _session.QueryIndex<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.LocalizationSet == list.LocalizationSet && i.Culture == context.Culture).FirstOrDefaultAsync();
+                var list = await _session
+                    .QueryIndex<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.ContentItemId == containedPart.ListContentItemId)
+                    .FirstOrDefaultAsync();
+                var localizedList = await _session
+                    .QueryIndex<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.LocalizationSet == list.LocalizationSet && i.Culture == context.Culture)
+                    .FirstOrDefaultAsync();
 
                 if (localizedList != null)
                 {
@@ -42,6 +46,7 @@ namespace OrchardCore.Lists.Drivers
     public class LocalizationContainedPartHandler : ContentPartHandler<LocalizationPart>
     {
         private readonly ISession _session;
+
         public LocalizationContainedPartHandler(ISession session)
         {
             _session = session;
@@ -56,8 +61,12 @@ namespace OrchardCore.Lists.Drivers
             var containedPart = context.ContentItem.As<ContainedPart>();
             if (containedPart != null)
             {
-                var list = await _session.QueryIndex<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.ContentItemId == containedPart.ListContentItemId).FirstOrDefaultAsync();
-                var localizedList = await _session.QueryIndex<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.LocalizationSet == list.LocalizationSet && i.Culture == instance.Culture).FirstOrDefaultAsync();
+                var list = await _session
+                    .QueryIndex<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.ContentItemId == containedPart.ListContentItemId)
+                    .FirstOrDefaultAsync();
+                var localizedList = await _session
+                    .QueryIndex<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.LocalizationSet == list.LocalizationSet && i.Culture == instance.Culture)
+                    .FirstOrDefaultAsync();
 
                 if (localizedList != null)
                 {

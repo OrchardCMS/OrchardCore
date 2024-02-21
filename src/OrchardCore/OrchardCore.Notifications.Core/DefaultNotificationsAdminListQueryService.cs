@@ -12,9 +12,7 @@ public class DefaultNotificationsAdminListQueryService : INotificationsAdminList
     private readonly ISession _session;
     private readonly IServiceProvider _serviceProvider;
 
-    public DefaultNotificationsAdminListQueryService(
-        ISession session,
-        IServiceProvider serviceProvider)
+    public DefaultNotificationsAdminListQueryService(ISession session, IServiceProvider serviceProvider)
     {
         _session = session;
         _serviceProvider = serviceProvider;
@@ -39,10 +37,6 @@ public class DefaultNotificationsAdminListQueryService : INotificationsAdminList
             query = query.Take(pageSize);
         }
 
-        return new NotificationQueryResult()
-        {
-            Notifications = await query.ListAsync(),
-            TotalCount = totalCount,
-        };
+        return new NotificationQueryResult() { Notifications = await query.ListAsync(), TotalCount = totalCount, };
     }
 }

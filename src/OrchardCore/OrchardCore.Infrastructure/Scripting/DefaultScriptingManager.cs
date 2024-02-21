@@ -9,9 +9,7 @@ namespace OrchardCore.Scripting
     {
         private readonly IEnumerable<IScriptingEngine> _engines;
 
-        public DefaultScriptingManager(
-            IEnumerable<IScriptingEngine> engines,
-            IEnumerable<IGlobalMethodProvider> globalMethodProviders)
+        public DefaultScriptingManager(IEnumerable<IScriptingEngine> engines, IEnumerable<IGlobalMethodProvider> globalMethodProviders)
         {
             _engines = engines;
             GlobalMethodProviders = new List<IGlobalMethodProvider>(globalMethodProviders).AsReadOnly();
@@ -19,10 +17,7 @@ namespace OrchardCore.Scripting
 
         public IReadOnlyList<IGlobalMethodProvider> GlobalMethodProviders { get; }
 
-        public object Evaluate(string directive,
-            IFileProvider fileProvider,
-            string basePath,
-            IEnumerable<IGlobalMethodProvider> scopedMethodProviders)
+        public object Evaluate(string directive, IFileProvider fileProvider, string basePath, IEnumerable<IGlobalMethodProvider> scopedMethodProviders)
         {
             var directiveIndex = directive.IndexOf(':');
             if (directiveIndex == -1 || directiveIndex >= directive.Length - 2)

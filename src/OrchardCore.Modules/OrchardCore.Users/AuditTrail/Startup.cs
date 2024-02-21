@@ -19,7 +19,8 @@ namespace OrchardCore.Users.AuditTrail
         {
             services.AddTransient<IConfigureOptions<AuditTrailOptions>, UserAuditTrailEventConfiguration>();
 
-            services.AddScoped<UserEventHandler, UserEventHandler>()
+            services
+                .AddScoped<UserEventHandler, UserEventHandler>()
                 .AddScoped<IUserEventHandler>(sp => sp.GetRequiredService<UserEventHandler>())
                 .AddScoped<ILoginFormEvent>(sp => sp.GetRequiredService<UserEventHandler>());
 

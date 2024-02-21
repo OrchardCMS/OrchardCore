@@ -2,11 +2,11 @@ using System;
 
 namespace OrchardCore.ContentManagement.GraphQL.Options
 {
-    public class GraphQLContentPartOption<TContentPart> : GraphQLContentPartOption where TContentPart : ContentPart
+    public class GraphQLContentPartOption<TContentPart> : GraphQLContentPartOption
+        where TContentPart : ContentPart
     {
-        public GraphQLContentPartOption() : base(typeof(TContentPart).Name)
-        {
-        }
+        public GraphQLContentPartOption()
+            : base(typeof(TContentPart).Name) { }
     }
 
     public class GraphQLContentPartOption

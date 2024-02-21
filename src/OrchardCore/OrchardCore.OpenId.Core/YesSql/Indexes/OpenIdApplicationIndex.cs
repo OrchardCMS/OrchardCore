@@ -32,71 +32,50 @@ namespace OrchardCore.OpenId.YesSql.Indexes
     {
         private const string OpenIdCollection = OpenIdApplication.OpenIdCollection;
 
-        public OpenIdApplicationIndexProvider()
-            => CollectionName = OpenIdCollection;
+        public OpenIdApplicationIndexProvider() => CollectionName = OpenIdCollection;
 
         public override void Describe(DescribeContext<OpenIdApplication> context)
         {
-            context.For<OpenIdApplicationIndex>()
-                .Map(application => new OpenIdApplicationIndex
-                {
-                    ApplicationId = application.ApplicationId,
-                    ClientId = application.ClientId
-                });
+            context.For<OpenIdApplicationIndex>().Map(application => new OpenIdApplicationIndex { ApplicationId = application.ApplicationId, ClientId = application.ClientId });
 
-            context.For<OpenIdAppByLogoutUriIndex, string>()
-                .Map(application => application.PostLogoutRedirectUris.Select(uri => new OpenIdAppByLogoutUriIndex
-                {
-                    LogoutRedirectUri = uri,
-                    Count = 1
-                }))
+            context
+                .For<OpenIdAppByLogoutUriIndex, string>()
+                .Map(application => application.PostLogoutRedirectUris.Select(uri => new OpenIdAppByLogoutUriIndex { LogoutRedirectUri = uri, Count = 1 }))
                 .Group(index => index.LogoutRedirectUri)
-                .Reduce(group => new OpenIdAppByLogoutUriIndex
-                {
-                    LogoutRedirectUri = group.Key,
-                    Count = group.Sum(x => x.Count)
-                })
-                .Delete((index, map) =>
-                {
-                    index.Count -= map.Sum(x => x.Count);
-                    return index.Count > 0 ? index : null;
-                });
+                .Reduce(group => new OpenIdAppByLogoutUriIndex { LogoutRedirectUri = group.Key, Count = group.Sum(x => x.Count) })
+                .Delete(
+                    (index, map) =>
+                    {
+                        index.Count -= map.Sum(x => x.Count);
+                        return index.Count > 0 ? index : null;
+                    }
+                );
 
-            context.For<OpenIdAppByRedirectUriIndex, string>()
-                .Map(application => application.RedirectUris.Select(uri => new OpenIdAppByRedirectUriIndex
-                {
-                    RedirectUri = uri,
-                    Count = 1
-                }))
+            context
+                .For<OpenIdAppByRedirectUriIndex, string>()
+                .Map(application => application.RedirectUris.Select(uri => new OpenIdAppByRedirectUriIndex { RedirectUri = uri, Count = 1 }))
                 .Group(index => index.RedirectUri)
-                .Reduce(group => new OpenIdAppByRedirectUriIndex
-                {
-                    RedirectUri = group.Key,
-                    Count = group.Sum(x => x.Count)
-                })
-                .Delete((index, map) =>
-                {
-                    index.Count -= map.Sum(x => x.Count);
-                    return index.Count > 0 ? index : null;
-                });
+                .Reduce(group => new OpenIdAppByRedirectUriIndex { RedirectUri = group.Key, Count = group.Sum(x => x.Count) })
+                .Delete(
+                    (index, map) =>
+                    {
+                        index.Count -= map.Sum(x => x.Count);
+                        return index.Count > 0 ? index : null;
+                    }
+                );
 
-            context.For<OpenIdAppByRoleNameIndex, string>()
-                .Map(application => application.Roles.Select(role => new OpenIdAppByRoleNameIndex
-                {
-                    RoleName = role,
-                    Count = 1
-                }))
+            context
+                .For<OpenIdAppByRoleNameIndex, string>()
+                .Map(application => application.Roles.Select(role => new OpenIdAppByRoleNameIndex { RoleName = role, Count = 1 }))
                 .Group(index => index.RoleName)
-                .Reduce(group => new OpenIdAppByRoleNameIndex
-                {
-                    RoleName = group.Key,
-                    Count = group.Sum(x => x.Count)
-                })
-                .Delete((index, map) =>
-                {
-                    index.Count -= map.Sum(x => x.Count);
-                    return index.Count > 0 ? index : null;
-                });
+                .Reduce(group => new OpenIdAppByRoleNameIndex { RoleName = group.Key, Count = group.Sum(x => x.Count) })
+                .Delete(
+                    (index, map) =>
+                    {
+                        index.Count -= map.Sum(x => x.Count);
+                        return index.Count > 0 ? index : null;
+                    }
+                );
         }
     }
 }

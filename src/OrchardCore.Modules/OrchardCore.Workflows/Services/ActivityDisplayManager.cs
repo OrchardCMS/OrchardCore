@@ -18,13 +18,15 @@ namespace OrchardCore.Workflows.Services
     public class ActivityDisplayManager : IActivityDisplayManager
     {
         private readonly DisplayManager<IActivity> _displayManager;
+
         public ActivityDisplayManager(
             IOptions<WorkflowOptions> workflowOptions,
             IServiceProvider serviceProvider,
             IShapeFactory shapeFactory,
             IEnumerable<IShapePlacementProvider> placementProviders,
             ILogger<DisplayManager<IActivity>> displayManagerLogger,
-            ILayoutAccessor layoutAccessor)
+            ILayoutAccessor layoutAccessor
+        )
         {
             var drivers = workflowOptions.Value.ActivityDisplayDriverTypes.Select(x => serviceProvider.CreateInstance<IDisplayDriver<IActivity>>(x));
             _displayManager = new DisplayManager<IActivity>(drivers, shapeFactory, placementProviders, displayManagerLogger, layoutAccessor);

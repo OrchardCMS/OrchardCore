@@ -47,26 +47,29 @@ namespace OrchardCore.Twitter
             services.AddTransient<TwitterClientMessageHandler>();
             services.AddTransient<IConfigureOptions<TwitterSettings>, TwitterSettingsConfiguration>();
 
-            services.AddHttpClient<TwitterClient>()
+            services
+                .AddHttpClient<TwitterClient>()
                 .AddHttpMessageHandler<TwitterClientMessageHandler>()
-                .AddResilienceHandler("oc-handler", builder => builder
-                    .AddRetry(new HttpRetryStrategyOptions
-                    {
-                        Name = "oc-retry",
-                        MaxRetryAttempts = 3,
-                        OnRetry = attempt =>
-                        {
-                            attempt.RetryDelay.Add(TimeSpan.FromSeconds(0.5 * attempt.AttemptNumber));
+                .AddResilienceHandler(
+                    "oc-handler",
+                    builder =>
+                        builder.AddRetry(
+                            new HttpRetryStrategyOptions
+                            {
+                                Name = "oc-retry",
+                                MaxRetryAttempts = 3,
+                                OnRetry = attempt =>
+                                {
+                                    attempt.RetryDelay.Add(TimeSpan.FromSeconds(0.5 * attempt.AttemptNumber));
 
-                            return ValueTask.CompletedTask;
-                        }
-                    })
+                                    return ValueTask.CompletedTask;
+                                }
+                            }
+                        )
                 );
         }
 
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-        }
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider) { }
     }
 
     [Feature(TwitterConstants.Features.Signin)]
@@ -78,14 +81,16 @@ namespace OrchardCore.Twitter
             services.AddSingleton<ITwitterSigninService, TwitterSigninService>();
             services.AddScoped<IDisplayDriver<ISite>, TwitterSigninSettingsDisplayDriver>();
             // Register the options initializers required by the Twitter Handler.
-            services.TryAddEnumerable(new[]
-            {
-                // Orchard-specific initializers:
-                ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, TwitterOptionsConfiguration>(),
-                ServiceDescriptor.Transient<IConfigureOptions<TwitterOptions>, TwitterOptionsConfiguration>(),
-                // Built-in initializers:
-                ServiceDescriptor.Transient<IPostConfigureOptions<TwitterOptions>, TwitterPostConfigureOptions>()
-            });
+            services.TryAddEnumerable(
+                new[]
+                {
+                    // Orchard-specific initializers:
+                    ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, TwitterOptionsConfiguration>(),
+                    ServiceDescriptor.Transient<IConfigureOptions<TwitterOptions>, TwitterOptionsConfiguration>(),
+                    // Built-in initializers:
+                    ServiceDescriptor.Transient<IPostConfigureOptions<TwitterOptions>, TwitterPostConfigureOptions>()
+                }
+            );
         }
     }
 }

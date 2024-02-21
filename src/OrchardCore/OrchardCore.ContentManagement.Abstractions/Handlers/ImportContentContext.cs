@@ -7,7 +7,8 @@ namespace OrchardCore.ContentManagement.Handlers
         /// </summary>
         public ContentItem OriginalContentItem { get; set; }
 
-        public ImportContentContext(ContentItem contentItem, ContentItem originalContentItem = null) : base(contentItem)
+        public ImportContentContext(ContentItem contentItem, ContentItem originalContentItem = null)
+            : base(contentItem)
         {
             OriginalContentItem = originalContentItem;
         }

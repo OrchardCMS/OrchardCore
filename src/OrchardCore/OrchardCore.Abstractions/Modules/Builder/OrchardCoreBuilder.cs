@@ -20,7 +20,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public IServiceCollection ApplicationServices { get; }
 
-        public OrchardCoreBuilder RegisterStartup<T>() where T : class, IStartup
+        public OrchardCoreBuilder RegisterStartup<T>()
+            where T : class, IStartup
         {
             ApplicationServices.AddTransient<IStartup, T>();
             return this;
@@ -38,8 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 actions = _actions[order] = new StartupActions(order);
 
-                ApplicationServices.AddTransient<IStartup>(sp => new StartupActionsStartup(
-                    sp.GetRequiredService<IServiceProvider>(), actions, order));
+                ApplicationServices.AddTransient<IStartup>(sp => new StartupActionsStartup(sp.GetRequiredService<IServiceProvider>(), actions, order));
             }
 
             actions.ConfigureServicesActions.Add(configure);
@@ -69,8 +69,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 actions = _actions[order] = new StartupActions(order);
 
-                ApplicationServices.AddTransient<IStartup>(sp => new StartupActionsStartup(
-                    sp.GetRequiredService<IServiceProvider>(), actions, order));
+                ApplicationServices.AddTransient<IStartup>(sp => new StartupActionsStartup(sp.GetRequiredService<IServiceProvider>(), actions, order));
             }
 
             actions.ConfigureActions.Add(configure);
@@ -109,8 +108,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 actions = _actions[order] = new StartupActions(order);
 
-                ApplicationServices.AddTransient<IStartup>(sp => new StartupActionsStartup(
-                    sp.GetRequiredService<IServiceProvider>(), actions, order));
+                ApplicationServices.AddTransient<IStartup>(sp => new StartupActionsStartup(sp.GetRequiredService<IServiceProvider>(), actions, order));
             }
 
             actions.AsyncConfigureActions.Add(configureAsync);
@@ -145,8 +143,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 for (var index = 0; index < services.Count; index++)
                 {
                     var service = services[index];
-                    if (service.GetImplementationInstance() is ShellFeature feature &&
-                        string.Equals(feature.Id, id, StringComparison.OrdinalIgnoreCase))
+                    if (service.GetImplementationInstance() is ShellFeature feature && string.Equals(feature.Id, id, StringComparison.OrdinalIgnoreCase))
                     {
                         return;
                     }

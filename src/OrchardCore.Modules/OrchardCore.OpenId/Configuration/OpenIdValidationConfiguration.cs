@@ -25,10 +25,11 @@ using static OpenIddict.Abstractions.OpenIddictConstants;
 namespace OrchardCore.OpenId.Configuration
 {
     [Feature(OpenIdConstants.Features.Validation)]
-    public class OpenIdValidationConfiguration : IConfigureOptions<AuthenticationOptions>,
-        IConfigureOptions<OpenIddictValidationOptions>,
-        IConfigureOptions<OpenIddictValidationDataProtectionOptions>,
-        IConfigureNamedOptions<ApiAuthorizationOptions>
+    public class OpenIdValidationConfiguration
+        : IConfigureOptions<AuthenticationOptions>,
+            IConfigureOptions<OpenIddictValidationOptions>,
+            IConfigureOptions<OpenIddictValidationDataProtectionOptions>,
+            IConfigureNamedOptions<ApiAuthorizationOptions>
     {
         private readonly ILogger _logger;
         private readonly IOpenIdValidationService _validationService;
@@ -41,7 +42,8 @@ namespace OrchardCore.OpenId.Configuration
             IOpenIdValidationService validationService,
             IRunningShellTable runningShellTable,
             IShellHost shellHost,
-            ShellSettings shellSettings)
+            ShellSettings shellSettings
+        )
         {
             _logger = logger;
             _validationService = validationService;
@@ -60,31 +62,32 @@ namespace OrchardCore.OpenId.Configuration
 
             if (settings.Authority != null)
             {
-                options.AddScheme<OpenIddictValidationAspNetCoreHandler>(
-                    OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme, displayName: null);
+                options.AddScheme<OpenIddictValidationAspNetCoreHandler>(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme, displayName: null);
 
                 return;
             }
 
             // Note: the shell host guarantees that the OpenID server service resolved inside
             // this using block won't be disposed until the service scope itself is released.
-            CreateTenantScope(settings.Tenant).UsingAsync(async scope =>
-            {
-                var service = scope.ServiceProvider.GetService<IOpenIdServerService>();
-                if (service == null)
+            CreateTenantScope(settings.Tenant)
+                .UsingAsync(async scope =>
                 {
-                    return;
-                }
+                    var service = scope.ServiceProvider.GetService<IOpenIdServerService>();
+                    if (service == null)
+                    {
+                        return;
+                    }
 
-                var configuration = await GetServerSettingsAsync(service);
-                if (configuration == null)
-                {
-                    return;
-                }
+                    var configuration = await GetServerSettingsAsync(service);
+                    if (configuration == null)
+                    {
+                        return;
+                    }
 
-                options.AddScheme<OpenIddictValidationAspNetCoreHandler>(
-                    OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme, displayName: null);
-            }).GetAwaiter().GetResult();
+                    options.AddScheme<OpenIddictValidationAspNetCoreHandler>(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme, displayName: null);
+                })
+                .GetAwaiter()
+                .GetResult();
         }
 
         public void Configure(OpenIddictValidationOptions options)
@@ -118,77 +121,78 @@ namespace OrchardCore.OpenId.Configuration
                 // currently used in the API validation feature), no matter what their actual "typ" header is.
                 if (settings.DisableTokenTypeValidation)
                 {
-                    options.TokenValidationParameters.TypeValidator = (type, token, parameters)
-                        => JsonWebTokenTypes.AccessToken;
+                    options.TokenValidationParameters.TypeValidator = (type, token, parameters) => JsonWebTokenTypes.AccessToken;
                 }
             }
 
             // Note: the shell host guarantees that the OpenID server service resolved inside
             // this using block won't be disposed until the service scope itself is released.
-            CreateTenantScope(settings.Tenant).UsingAsync(async scope =>
-            {
-                var service = scope.ServiceProvider.GetService<IOpenIdServerService>();
-                if (service == null)
+            CreateTenantScope(settings.Tenant)
+                .UsingAsync(async scope =>
                 {
-                    return;
-                }
-
-                var configuration = await GetServerSettingsAsync(service);
-                if (configuration == null)
-                {
-                    return;
-                }
-
-                options.Configuration = new OpenIddictConfiguration();
-
-                options.Issuer = configuration.Authority;
-
-                // Import the signing keys from the OpenID server configuration.
-                foreach (var key in await service.GetSigningKeysAsync())
-                {
-                    options.Configuration.SigningKeys.Add(key);
-                }
-
-                // Register the encryption keys used by the OpenID Connect server.
-                foreach (var key in await service.GetEncryptionKeysAsync())
-                {
-                    options.EncryptionCredentials.Add(new EncryptingCredentials(key,
-                        SecurityAlgorithms.RsaOAEP, SecurityAlgorithms.Aes256CbcHmacSha512));
-                }
-
-                // When the server is another tenant, don't allow the current tenant
-                // to choose the valid audiences, as this would otherwise allow it
-                // to validate/introspect tokens meant to be used with another tenant.
-                options.Audiences.Add(OpenIdConstants.Prefixes.Tenant + _shellSettings.Name);
-
-                // Note: token entry validation must be enabled to be able to validate reference tokens.
-                options.EnableTokenEntryValidation = configuration.UseReferenceAccessTokens;
-
-                // If an authority was explicitly set in the OpenID server options,
-                // prefer it to the dynamic tenant comparison as it's more efficient.
-                if (configuration.Authority != null)
-                {
-                    options.TokenValidationParameters.ValidIssuer = configuration.Authority.AbsoluteUri;
-                }
-                else
-                {
-                    options.TokenValidationParameters.IssuerValidator = (issuer, token, parameters) =>
+                    var service = scope.ServiceProvider.GetService<IOpenIdServerService>();
+                    if (service == null)
                     {
-                        if (!Uri.TryCreate(issuer, UriKind.Absolute, out var uri))
-                        {
-                            throw new SecurityTokenInvalidIssuerException("The token issuer is not valid.");
-                        }
+                        return;
+                    }
 
-                        var tenant = _runningShellTable.Match(HostString.FromUriComponent(uri), uri.AbsolutePath);
-                        if (tenant == null || !string.Equals(tenant.Name, settings.Tenant))
-                        {
-                            throw new SecurityTokenInvalidIssuerException("The token issuer is not valid.");
-                        }
+                    var configuration = await GetServerSettingsAsync(service);
+                    if (configuration == null)
+                    {
+                        return;
+                    }
 
-                        return issuer;
-                    };
-                }
-            }).GetAwaiter().GetResult();
+                    options.Configuration = new OpenIddictConfiguration();
+
+                    options.Issuer = configuration.Authority;
+
+                    // Import the signing keys from the OpenID server configuration.
+                    foreach (var key in await service.GetSigningKeysAsync())
+                    {
+                        options.Configuration.SigningKeys.Add(key);
+                    }
+
+                    // Register the encryption keys used by the OpenID Connect server.
+                    foreach (var key in await service.GetEncryptionKeysAsync())
+                    {
+                        options.EncryptionCredentials.Add(new EncryptingCredentials(key, SecurityAlgorithms.RsaOAEP, SecurityAlgorithms.Aes256CbcHmacSha512));
+                    }
+
+                    // When the server is another tenant, don't allow the current tenant
+                    // to choose the valid audiences, as this would otherwise allow it
+                    // to validate/introspect tokens meant to be used with another tenant.
+                    options.Audiences.Add(OpenIdConstants.Prefixes.Tenant + _shellSettings.Name);
+
+                    // Note: token entry validation must be enabled to be able to validate reference tokens.
+                    options.EnableTokenEntryValidation = configuration.UseReferenceAccessTokens;
+
+                    // If an authority was explicitly set in the OpenID server options,
+                    // prefer it to the dynamic tenant comparison as it's more efficient.
+                    if (configuration.Authority != null)
+                    {
+                        options.TokenValidationParameters.ValidIssuer = configuration.Authority.AbsoluteUri;
+                    }
+                    else
+                    {
+                        options.TokenValidationParameters.IssuerValidator = (issuer, token, parameters) =>
+                        {
+                            if (!Uri.TryCreate(issuer, UriKind.Absolute, out var uri))
+                            {
+                                throw new SecurityTokenInvalidIssuerException("The token issuer is not valid.");
+                            }
+
+                            var tenant = _runningShellTable.Match(HostString.FromUriComponent(uri), uri.AbsolutePath);
+                            if (tenant == null || !string.Equals(tenant.Name, settings.Tenant))
+                            {
+                                throw new SecurityTokenInvalidIssuerException("The token issuer is not valid.");
+                            }
+
+                            return issuer;
+                        };
+                    }
+                })
+                .GetAwaiter()
+                .GetResult();
         }
 
         public void Configure(OpenIddictValidationDataProtectionOptions options)
@@ -201,22 +205,24 @@ namespace OrchardCore.OpenId.Configuration
 
             // If the tokens are issued by an authorization server located in a separate tenant,
             // resolve the isolated data protection provider associated with the specified tenant.
-            if (!string.IsNullOrEmpty(settings.Tenant) &&
-                !string.Equals(settings.Tenant, _shellSettings.Name))
+            if (!string.IsNullOrEmpty(settings.Tenant) && !string.Equals(settings.Tenant, _shellSettings.Name))
             {
-                CreateTenantScope(settings.Tenant).UsingAsync(async scope =>
-                {
-                    // If the other tenant is released, ensure the current tenant is also restarted as it
-                    // relies on a data protection provider whose lifetime is managed by the other tenant.
-                    // To make sure the other tenant is not disposed before all the pending requests are
-                    // processed by the current tenant, a tenant dependency is manually added.
-                    await scope.ShellContext.AddDependentShellAsync(await _shellHost.GetOrCreateShellContextAsync(_shellSettings));
+                CreateTenantScope(settings.Tenant)
+                    .UsingAsync(async scope =>
+                    {
+                        // If the other tenant is released, ensure the current tenant is also restarted as it
+                        // relies on a data protection provider whose lifetime is managed by the other tenant.
+                        // To make sure the other tenant is not disposed before all the pending requests are
+                        // processed by the current tenant, a tenant dependency is manually added.
+                        await scope.ShellContext.AddDependentShellAsync(await _shellHost.GetOrCreateShellContextAsync(_shellSettings));
 
-                    // Note: the data protection provider is always registered as a singleton and thus will
-                    // survive the current scope, which is mainly used to prevent the other tenant from being
-                    // released before we have a chance to declare the current tenant as a dependent tenant.
-                    options.DataProtectionProvider = scope.ServiceProvider.GetDataProtectionProvider();
-                }).GetAwaiter().GetResult();
+                        // Note: the data protection provider is always registered as a singleton and thus will
+                        // survive the current scope, which is mainly used to prevent the other tenant from being
+                        // released before we have a chance to declare the current tenant as a dependent tenant.
+                        options.DataProtectionProvider = scope.ServiceProvider.GetDataProtectionProvider();
+                    })
+                    .GetAwaiter()
+                    .GetResult();
             }
         }
 
@@ -229,8 +235,7 @@ namespace OrchardCore.OpenId.Configuration
             options.ApiAuthenticationScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
         }
 
-        public void Configure(ApiAuthorizationOptions options)
-            => Debug.Fail("This infrastructure method shouldn't be called.");
+        public void Configure(ApiAuthorizationOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
 
         private ShellScope CreateTenantScope(string tenant)
         {

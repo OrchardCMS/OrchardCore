@@ -36,15 +36,13 @@ namespace OrchardCore.DisplayManagement.Liquid
                     {
                         // If the module and the application assemblies are not at the same location,
                         // this means that the module is referenced as a package, not as a project in dev.
-                        if (module.Assembly == null || Path.GetDirectoryName(module.Assembly.Location)
-                            != Path.GetDirectoryName(application.Assembly.Location))
+                        if (module.Assembly == null || Path.GetDirectoryName(module.Assembly.Location) != Path.GetDirectoryName(application.Assembly.Location))
                         {
                             continue;
                         }
 
                         // Get module assets which are liquid template files.
-                        assets.AddRange(module.Assets.Where(a => a.ModuleAssetPath
-                            .EndsWith(".liquid", StringComparison.Ordinal)));
+                        assets.AddRange(module.Assets.Where(a => a.ModuleAssetPath.EndsWith(".liquid", StringComparison.Ordinal)));
                     }
 
                     // Init the mapping between module and project asset paths.

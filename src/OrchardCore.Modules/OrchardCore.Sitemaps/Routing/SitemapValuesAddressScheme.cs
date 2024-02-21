@@ -60,14 +60,7 @@ namespace OrchardCore.Sitemaps.Routing
                     }
                 }
 
-                var endpoint = new RouteEndpoint
-                (
-                    c => null,
-                    RoutePatternFactory.Parse(path, routeValues, null),
-                    0,
-                    null,
-                    null
-                );
+                var endpoint = new RouteEndpoint(c => null, RoutePatternFactory.Parse(path, routeValues, null), 0, null, null);
 
                 return [endpoint];
             }

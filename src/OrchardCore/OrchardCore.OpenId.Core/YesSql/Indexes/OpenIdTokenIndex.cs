@@ -21,12 +21,12 @@ namespace OrchardCore.OpenId.YesSql.Indexes
     {
         private const string OpenIdCollection = OpenIdToken.OpenIdCollection;
 
-        public OpenIdTokenIndexProvider()
-            => CollectionName = OpenIdCollection;
+        public OpenIdTokenIndexProvider() => CollectionName = OpenIdCollection;
 
         public override void Describe(DescribeContext<OpenIdToken> context)
         {
-            context.For<OpenIdTokenIndex>()
+            context
+                .For<OpenIdTokenIndex>()
                 .Map(token => new OpenIdTokenIndex
                 {
                     TokenId = token.TokenId,

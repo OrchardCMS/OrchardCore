@@ -25,10 +25,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
         /// <inheritdoc />
         public override int Order
         {
-            get
-            {
-                return -1000;
-            }
+            get { return -1000; }
         }
 
         [HtmlAttributeNotBound]

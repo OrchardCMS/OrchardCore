@@ -26,16 +26,10 @@ namespace OrchardCore.Contents.ViewComponents
 
             if (!string.IsNullOrEmpty(stereotype))
             {
-                contentTypes = contentTypes
-                    .Where(x => x.ContentTypeDefinition.GetStereotype() == stereotype)
-                    .ToArray();
+                contentTypes = contentTypes.Where(x => x.ContentTypeDefinition.GetStereotype() == stereotype).ToArray();
             }
 
-            var model = new SelectContentTypesViewModel
-            {
-                HtmlName = htmlName,
-                ContentTypeSelections = contentTypes
-            };
+            var model = new SelectContentTypesViewModel { HtmlName = htmlName, ContentTypeSelections = contentTypes };
 
             return View(model);
         }

@@ -19,10 +19,7 @@ namespace OrchardCore.Environment.Shell.Descriptor.Settings
 
         private ShellDescriptor _shellDescriptor;
 
-        public ConfiguredFeaturesShellDescriptorManager(
-            IShellConfiguration shellConfiguration,
-            IEnumerable<ShellFeature> shellFeatures,
-            IExtensionManager extensionManager)
+        public ConfiguredFeaturesShellDescriptorManager(IShellConfiguration shellConfiguration, IEnumerable<ShellFeature> shellFeatures, IExtensionManager extensionManager)
         {
             _shellConfiguration = shellConfiguration;
             _alwaysEnabledFeatures = shellFeatures.Where(f => f.AlwaysEnabled).ToArray();
@@ -36,9 +33,7 @@ namespace OrchardCore.Environment.Shell.Descriptor.Settings
                 var configuredFeatures = new ConfiguredFeatures();
                 _shellConfiguration.Bind(configuredFeatures);
 
-                var features = _alwaysEnabledFeatures
-                    .Concat(configuredFeatures.Features.Select(id => new ShellFeature(id) { AlwaysEnabled = true }))
-                    .Distinct();
+                var features = _alwaysEnabledFeatures.Concat(configuredFeatures.Features.Select(id => new ShellFeature(id) { AlwaysEnabled = true })).Distinct();
 
                 var featureIds = features.Select(sf => sf.Id).ToArray();
 
@@ -47,12 +42,7 @@ namespace OrchardCore.Environment.Shell.Descriptor.Settings
                     .Except(featureIds)
                     .Select(id => new ShellFeature(id));
 
-                _shellDescriptor = new ShellDescriptor
-                {
-                    Features = features
-                        .Concat(missingDependencies)
-                        .ToList()
-                };
+                _shellDescriptor = new ShellDescriptor { Features = features.Concat(missingDependencies).ToList() };
             }
 
             return _shellDescriptor;

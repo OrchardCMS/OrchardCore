@@ -27,7 +27,8 @@ namespace OrchardCore.Email.Drivers
             IShellHost shellHost,
             ShellSettings shellSettings,
             IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+            IAuthorizationService authorizationService
+        )
         {
             _dataProtectionProvider = dataProtectionProvider;
             _shellHost = shellHost;
@@ -47,23 +48,28 @@ namespace OrchardCore.Email.Drivers
 
             var shapes = new List<IDisplayResult>
             {
-                Initialize<SmtpSettings>("SmtpSettings_Edit", model =>
-                {
-                    model.DefaultSender = settings.DefaultSender;
-                    model.DeliveryMethod = settings.DeliveryMethod;
-                    model.PickupDirectoryLocation = settings.PickupDirectoryLocation;
-                    model.Host = settings.Host;
-                    model.Port = settings.Port;
-                    model.ProxyHost = settings.ProxyHost;
-                    model.ProxyPort = settings.ProxyPort;
-                    model.EncryptionMethod = settings.EncryptionMethod;
-                    model.AutoSelectEncryption = settings.AutoSelectEncryption;
-                    model.RequireCredentials = settings.RequireCredentials;
-                    model.UseDefaultCredentials = settings.UseDefaultCredentials;
-                    model.UserName = settings.UserName;
-                    model.Password = settings.Password;
-                    model.IgnoreInvalidSslCertificate = settings.IgnoreInvalidSslCertificate;
-                }).Location("Content:5").OnGroup(GroupId),
+                Initialize<SmtpSettings>(
+                        "SmtpSettings_Edit",
+                        model =>
+                        {
+                            model.DefaultSender = settings.DefaultSender;
+                            model.DeliveryMethod = settings.DeliveryMethod;
+                            model.PickupDirectoryLocation = settings.PickupDirectoryLocation;
+                            model.Host = settings.Host;
+                            model.Port = settings.Port;
+                            model.ProxyHost = settings.ProxyHost;
+                            model.ProxyPort = settings.ProxyPort;
+                            model.EncryptionMethod = settings.EncryptionMethod;
+                            model.AutoSelectEncryption = settings.AutoSelectEncryption;
+                            model.RequireCredentials = settings.RequireCredentials;
+                            model.UseDefaultCredentials = settings.UseDefaultCredentials;
+                            model.UserName = settings.UserName;
+                            model.Password = settings.Password;
+                            model.IgnoreInvalidSslCertificate = settings.IgnoreInvalidSslCertificate;
+                        }
+                    )
+                    .Location("Content:5")
+                    .OnGroup(GroupId),
             };
 
             if (settings?.DefaultSender != null)

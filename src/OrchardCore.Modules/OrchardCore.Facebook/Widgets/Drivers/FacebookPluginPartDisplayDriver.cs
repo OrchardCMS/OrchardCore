@@ -22,7 +22,8 @@ namespace OrchardCore.Facebook.Widgets.Drivers
         public FacebookPluginPartDisplayDriver(
             IContentDefinitionManager contentDefinitionManager,
             ILiquidTemplateManager liquidTemplateManager,
-            IStringLocalizer<FacebookPluginPartDisplayDriver> localizer)
+            IStringLocalizer<FacebookPluginPartDisplayDriver> localizer
+        )
         {
             _contentDefinitionManager = contentDefinitionManager;
             _liquidTemplateManager = liquidTemplateManager;
@@ -32,10 +33,8 @@ namespace OrchardCore.Facebook.Widgets.Drivers
         public override IDisplayResult Display(FacebookPluginPart part)
         {
             return Combine(
-                Initialize<FacebookPluginPartViewModel>("FacebookPluginPart", async m => await BuildViewModelAsync(m, part))
-                    .Location("Detail", "Content"),
-                Initialize<FacebookPluginPartViewModel>("FacebookPluginPart_Summary", async m => await BuildViewModelAsync(m, part))
-                    .Location("Summary", "Content")
+                Initialize<FacebookPluginPartViewModel>("FacebookPluginPart", async m => await BuildViewModelAsync(m, part)).Location("Detail", "Content"),
+                Initialize<FacebookPluginPartViewModel>("FacebookPluginPart_Summary", async m => await BuildViewModelAsync(m, part)).Location("Summary", "Content")
             );
         }
 
@@ -52,12 +51,15 @@ namespace OrchardCore.Facebook.Widgets.Drivers
 
         public override IDisplayResult Edit(FacebookPluginPart part)
         {
-            return Initialize<FacebookPluginPartViewModel>("FacebookPluginPart_Edit", async model =>
-            {
-                model.Settings = await GetFacebookPluginPartSettingsAsync(part);
-                model.FacebookPluginPart = part;
-                model.Liquid = string.IsNullOrWhiteSpace(part.Liquid) ? model.Settings.Liquid : part.Liquid;
-            });
+            return Initialize<FacebookPluginPartViewModel>(
+                "FacebookPluginPart_Edit",
+                async model =>
+                {
+                    model.Settings = await GetFacebookPluginPartSettingsAsync(part);
+                    model.FacebookPluginPart = part;
+                    model.Liquid = string.IsNullOrWhiteSpace(part.Liquid) ? model.Settings.Liquid : part.Liquid;
+                }
+            );
         }
 
         private async Task<FacebookPluginPartSettings> GetFacebookPluginPartSettingsAsync(FacebookPluginPart part)
@@ -77,7 +79,10 @@ namespace OrchardCore.Facebook.Widgets.Drivers
             {
                 if (!string.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplateManager.Validate(viewModel.Liquid, out var errors))
                 {
-                    updater.ModelState.AddModelError(nameof(model.Liquid), S["The FaceBook Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                    updater.ModelState.AddModelError(
+                        nameof(model.Liquid),
+                        S["The FaceBook Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]
+                    );
                 }
                 else
                 {

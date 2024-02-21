@@ -14,10 +14,12 @@ namespace OrchardCore.Tests.DisplayManagement
         {
             return FromDictionary(new RouteValueDictionary(args));
         }
+
         public static INamedEnumerable<T> Empty<T>()
         {
             return Arguments.FromT(Array.Empty<T>(), []);
         }
+
         public static INamedEnumerable<object> Empty()
         {
             return Empty<object>();

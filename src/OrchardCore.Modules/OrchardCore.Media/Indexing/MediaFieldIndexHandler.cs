@@ -20,17 +20,14 @@ namespace OrchardCore.Media.Indexing
         private readonly MediaFileIndexingOptions _mediaFileIndexingOptions;
         private readonly IServiceProvider _serviceProvider;
 
-        public MediaFieldIndexHandler(
-            IMediaFileStore mediaFileStore,
-            IOptions<MediaFileIndexingOptions> mediaFileIndexingOptions,
-            IServiceProvider serviceProvider)
+        public MediaFieldIndexHandler(IMediaFileStore mediaFileStore, IOptions<MediaFileIndexingOptions> mediaFileIndexingOptions, IServiceProvider serviceProvider)
         {
             _mediaFileStore = mediaFileStore;
             _mediaFileIndexingOptions = mediaFileIndexingOptions.Value;
             _serviceProvider = serviceProvider;
         }
 
-        public async override Task BuildIndexAsync(MediaField field, BuildFieldIndexContext context)
+        public override async Task BuildIndexAsync(MediaField field, BuildFieldIndexContext context)
         {
             var options = context.Settings.ToOptions();
             var settings = context.ContentPartFieldDefinition.GetSettings<MediaFieldSettings>();
@@ -89,8 +86,7 @@ namespace OrchardCore.Media.Indexing
                     continue;
                 }
 
-                var fileText = await _serviceProvider.CreateInstance<IMediaFileTextProvider>(providerType)
-                    .GetTextAsync(path, fileStream);
+                var fileText = await _serviceProvider.CreateInstance<IMediaFileTextProvider>(providerType).GetTextAsync(path, fileStream);
 
                 foreach (var key in context.Keys)
                 {

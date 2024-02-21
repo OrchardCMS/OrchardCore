@@ -11,6 +11,7 @@ namespace OrchardCore.Templates.Deployment
         {
             Name = "AllTemplates";
         }
+
         public bool ExportAsFiles { get; set; }
     }
 }

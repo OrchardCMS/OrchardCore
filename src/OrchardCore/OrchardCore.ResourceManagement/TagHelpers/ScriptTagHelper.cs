@@ -203,8 +203,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     if (!childContent.IsEmptyOrWhiteSpace)
                     {
                         // Inline content definition
-                        _resourceManager.InlineManifest.DefineScript(Name)
-                           .SetInnerContent(childContent.GetContent());
+                        _resourceManager.InlineManifest.DefineScript(Name).SetInnerContent(childContent.GetContent());
                     }
 
                     if (At == ResourceLocation.Inline)

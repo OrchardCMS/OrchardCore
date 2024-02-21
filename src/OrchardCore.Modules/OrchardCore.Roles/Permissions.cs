@@ -22,16 +22,9 @@ public class Permissions : IPermissionProvider
 
     public async Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        var roleNames = (await _roleService.GetRoleNamesAsync())
-            .Where(roleName => !RoleHelper.SystemRoleNames.Contains(roleName))
-            .ToList();
+        var roleNames = (await _roleService.GetRoleNamesAsync()).Where(roleName => !RoleHelper.SystemRoleNames.Contains(roleName)).ToList();
 
-        var list = new List<Permission>(roleNames.Count + 3)
-        {
-            ManageRoles,
-            AssignRoles,
-            SiteOwner,
-        };
+        var list = new List<Permission>(roleNames.Count + 3) { ManageRoles, AssignRoles, SiteOwner, };
 
         foreach (var roleName in roleNames)
         {
@@ -41,16 +34,5 @@ public class Permissions : IPermissionProvider
         return list;
     }
 
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
-    [
-        new PermissionStereotype
-        {
-            Name = "Administrator",
-            Permissions =
-            [
-                ManageRoles,
-                SiteOwner,
-            ],
-        },
-    ];
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() => [new PermissionStereotype { Name = "Administrator", Permissions = [ManageRoles, SiteOwner,], },];
 }

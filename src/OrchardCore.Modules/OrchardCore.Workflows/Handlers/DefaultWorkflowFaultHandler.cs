@@ -9,11 +9,7 @@ namespace OrchardCore.Workflows.Handlers
 {
     public class DefaultWorkflowFaultHandler : IWorkflowFaultHandler
     {
-        public async Task OnWorkflowFaultAsync(
-            IWorkflowManager workflowManager,
-            WorkflowExecutionContext workflowContext,
-            ActivityContext activityContext,
-            Exception exception)
+        public async Task OnWorkflowFaultAsync(IWorkflowManager workflowManager, WorkflowExecutionContext workflowContext, ActivityContext activityContext, Exception exception)
         {
             var name = nameof(WorkflowFaultEvent);
             var faultContext = new WorkflowFaultModel()
@@ -29,10 +25,7 @@ namespace OrchardCore.Workflows.Handlers
                 ErrorMessage = exception.Message,
             };
 
-            var input = new Dictionary<string, object>
-            {
-                { WorkflowFaultModel.WorkflowFaultInputKey, faultContext },
-            };
+            var input = new Dictionary<string, object> { { WorkflowFaultModel.WorkflowFaultInputKey, faultContext }, };
 
             await workflowManager.TriggerEventAsync(name, input);
         }

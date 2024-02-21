@@ -34,21 +34,14 @@ namespace OrchardCore.Search.Lucene.Deployment
             {
                 if (indicesToAdd.Contains(index.IndexName))
                 {
-                    var indexSettingsDict = new Dictionary<string, LuceneIndexSettings>
-                    {
-                        { index.IndexName, index },
-                    };
+                    var indexSettingsDict = new Dictionary<string, LuceneIndexSettings> { { index.IndexName, index }, };
 
                     data.Add(JObject.FromObject(indexSettingsDict));
                 }
             }
 
             // Adding Lucene settings
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "lucene-index",
-                ["Indices"] = data,
-            });
+            result.Steps.Add(new JsonObject { ["name"] = "lucene-index", ["Indices"] = data, });
         }
     }
 }

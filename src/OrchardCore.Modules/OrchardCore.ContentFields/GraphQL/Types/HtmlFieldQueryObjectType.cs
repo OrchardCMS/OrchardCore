@@ -27,9 +27,7 @@ namespace OrchardCore.ContentFields.GraphQL
             Name = nameof(HtmlField);
             Description = S["Content stored as HTML."];
 
-            Field<StringGraphType>("html")
-                .Description(S["the HTML content"])
-                .ResolveLockedAsync(RenderHtml);
+            Field<StringGraphType>("html").Description(S["the HTML content"]).ResolveLockedAsync(RenderHtml);
         }
 
         private static async ValueTask<object> RenderHtml(IResolveFieldContext<HtmlField> ctx)
@@ -63,16 +61,15 @@ namespace OrchardCore.ContentFields.GraphQL
                 var liquidTemplateManager = serviceProvider.GetRequiredService<ILiquidTemplateManager>();
                 var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
 
-                html = await liquidTemplateManager.RenderStringAsync(html, htmlEncoder, model,
-                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(ctx.Source.ContentItem) });
+                html = await liquidTemplateManager.RenderStringAsync(
+                    html,
+                    htmlEncoder,
+                    model,
+                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(ctx.Source.ContentItem) }
+                );
             }
 
-            return await shortcodeService.ProcessAsync(html,
-                new Context
-                {
-                    ["ContentItem"] = ctx.Source.ContentItem,
-                    ["PartFieldDefinition"] = contentPartFieldDefinition
-                });
+            return await shortcodeService.ProcessAsync(html, new Context { ["ContentItem"] = ctx.Source.ContentItem, ["PartFieldDefinition"] = contentPartFieldDefinition });
         }
     }
 }

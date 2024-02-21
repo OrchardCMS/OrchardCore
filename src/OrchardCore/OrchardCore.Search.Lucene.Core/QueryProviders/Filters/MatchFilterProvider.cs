@@ -71,7 +71,8 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
                     }
 
                     break;
-                default: throw new ArgumentException("Invalid query");
+                default:
+                    throw new ArgumentException("Invalid query");
             }
 
             booleanQuery.Add(boolQuery, Occur.MUST);

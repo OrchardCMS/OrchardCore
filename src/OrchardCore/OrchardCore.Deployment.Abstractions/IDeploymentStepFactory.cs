@@ -6,7 +6,8 @@ namespace OrchardCore.Deployment
         DeploymentStep Create();
     }
 
-    public class DeploymentStepFactory<TStep> : IDeploymentStepFactory where TStep : DeploymentStep, new()
+    public class DeploymentStepFactory<TStep> : IDeploymentStepFactory
+        where TStep : DeploymentStep, new()
     {
         private static readonly string _typeName = typeof(TStep).Name;
 

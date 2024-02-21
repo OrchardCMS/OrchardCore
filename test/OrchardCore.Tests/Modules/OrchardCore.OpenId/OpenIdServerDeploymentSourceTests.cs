@@ -13,11 +13,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
     {
         private static OpenIdServerSettings CreateSettings(string authority, OpenIdServerSettings.TokenFormat tokenFormat, bool initializeAllProperties)
         {
-            var result = new OpenIdServerSettings
-            {
-                Authority = new Uri(authority),
-                AccessTokenFormat = tokenFormat
-            };
+            var result = new OpenIdServerSettings { Authority = new Uri(authority), AccessTokenFormat = tokenFormat };
 
             if (initializeAllProperties)
             {
@@ -56,13 +52,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
         {
             var serverService = new Mock<IOpenIdServerService>();
 
-            serverService
-                .Setup(m => m.GetSettingsAsync())
-                .ReturnsAsync(settings);
+            serverService.Setup(m => m.GetSettingsAsync()).ReturnsAsync(settings);
 
-            serverService
-                .Setup(m => m.LoadSettingsAsync())
-                .ReturnsAsync(settings);
+            serverService.Setup(m => m.LoadSettingsAsync()).ReturnsAsync(settings);
 
             return serverService;
         }
@@ -79,14 +71,11 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             var actualSettings = CreateSettings("https://recipe.localhost", OpenIdServerSettings.TokenFormat.DataProtection, false);
             var recipeServerServiceMock = CreateServerServiceWithSettingsMock(actualSettings);
 
-            var settingsProperties = typeof(OpenIdServerSettings)
-                .GetProperties();
+            var settingsProperties = typeof(OpenIdServerSettings).GetProperties();
 
             foreach (var property in settingsProperties)
             {
-                Assert.NotEqual(
-                    property.GetValue(expectedSettings),
-                    property.GetValue(actualSettings));
+                Assert.NotEqual(property.GetValue(expectedSettings), property.GetValue(actualSettings));
             }
 
             var fileBuilder = new MemoryFileBuilder();
@@ -99,10 +88,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             await deploymentSource.ProcessDeploymentStepAsync(new OpenIdServerDeploymentStep(), result);
             await result.FinalizeAsync();
 
-            var deploy = JsonNode.Parse(
-                fileBuilder.GetFileContents(
-                    recipeFile,
-                    Encoding.UTF8));
+            var deploy = JsonNode.Parse(fileBuilder.GetFileContents(recipeFile, Encoding.UTF8));
 
             var recipeContext = new RecipeExecutionContext
             {
@@ -117,9 +103,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             // Assert
             foreach (var property in settingsProperties)
             {
-                Assert.Equal(
-                    property.GetValue(expectedSettings),
-                    property.GetValue(actualSettings));
+                Assert.Equal(property.GetValue(expectedSettings), property.GetValue(actualSettings));
             }
         }
     }

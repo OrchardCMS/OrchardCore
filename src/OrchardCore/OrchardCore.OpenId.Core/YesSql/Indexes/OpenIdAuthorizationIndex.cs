@@ -18,12 +18,12 @@ namespace OrchardCore.OpenId.YesSql.Indexes
     {
         private const string OpenIdCollection = OpenIdAuthorization.OpenIdCollection;
 
-        public OpenIdAuthorizationIndexProvider()
-            => CollectionName = OpenIdCollection;
+        public OpenIdAuthorizationIndexProvider() => CollectionName = OpenIdCollection;
 
         public override void Describe(DescribeContext<OpenIdAuthorization> context)
         {
-            context.For<OpenIdAuthorizationIndex>()
+            context
+                .For<OpenIdAuthorizationIndex>()
                 .Map(authorization => new OpenIdAuthorizationIndex
                 {
                     ApplicationId = authorization.ApplicationId,

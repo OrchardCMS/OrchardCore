@@ -27,7 +27,8 @@ namespace OrchardCore.DynamicCache.EventHandlers
             IDynamicCacheService dynamicCacheService,
             ICacheScopeManager cacheScopeManager,
             HtmlEncoder htmlEncoder,
-            IOptions<CacheOptions> options)
+            IOptions<CacheOptions> options
+        )
         {
             _dynamicCacheService = dynamicCacheService;
             _cacheScopeManager = cacheScopeManager;

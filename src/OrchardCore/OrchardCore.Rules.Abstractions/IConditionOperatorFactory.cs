@@ -6,12 +6,12 @@ namespace OrchardCore.Rules
         ConditionOperator Create();
     }
 
-    public class ConditionOperatorFactory<TConditionOperator> : IConditionOperatorFactory where TConditionOperator : ConditionOperator, new()
+    public class ConditionOperatorFactory<TConditionOperator> : IConditionOperatorFactory
+        where TConditionOperator : ConditionOperator, new()
     {
         private static readonly string _typeName = typeof(TConditionOperator).Name;
         public string Name => _typeName;
 
-        public ConditionOperator Create()
-            => new TConditionOperator();
+        public ConditionOperator Create() => new TConditionOperator();
     }
 }

@@ -24,14 +24,17 @@ namespace OrchardCore.Demo.Drivers
 
         public override IDisplayResult Edit(UserProfile profile, BuildEditorContext context)
         {
-            return Initialize<EditUserProfileViewModel>("UserProfile_Edit", model =>
-            {
-                model.Age = profile.Age;
-                model.FirstName = profile.FirstName;
-                model.LastName = profile.LastName;
-            })
-            .Location("Content:2")
-            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserProfile));
+            return Initialize<EditUserProfileViewModel>(
+                    "UserProfile_Edit",
+                    model =>
+                    {
+                        model.Age = profile.Age;
+                        model.FirstName = profile.FirstName;
+                        model.LastName = profile.LastName;
+                    }
+                )
+                .Location("Content:2")
+                .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserProfile));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(UserProfile profile, BuildEditorContext context)

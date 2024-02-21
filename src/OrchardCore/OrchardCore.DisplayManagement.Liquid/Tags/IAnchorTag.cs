@@ -11,7 +11,13 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
     {
         bool Match(List<FilterArgument> argumentsList);
 
-        ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, LiquidTemplateContext context);
+        ValueTask<Completion> WriteToAsync(
+            List<FilterArgument> argumentsList,
+            IReadOnlyList<Statement> statements,
+            TextWriter writer,
+            TextEncoder encoder,
+            LiquidTemplateContext context
+        );
 
         int Order { get; }
     }

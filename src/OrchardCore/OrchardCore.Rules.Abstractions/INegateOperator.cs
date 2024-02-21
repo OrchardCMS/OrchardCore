@@ -1,6 +1,4 @@
 namespace OrchardCore.Rules
 {
-    public interface INegateOperator
-    {
-    }
+    public interface INegateOperator { }
 }

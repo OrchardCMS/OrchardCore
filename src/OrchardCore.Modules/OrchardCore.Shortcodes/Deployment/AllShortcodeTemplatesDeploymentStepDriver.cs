@@ -8,11 +8,10 @@ namespace OrchardCore.Shortcodes.Deployment
     {
         public override IDisplayResult Display(AllShortcodeTemplatesDeploymentStep step)
         {
-            return
-                Combine(
-                    View("AllShortcodeTemplatesDeploymentStep_Summary", step).Location("Summary", "Content"),
-                    View("AllShortcodeTemplatesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
-                );
+            return Combine(
+                View("AllShortcodeTemplatesDeploymentStep_Summary", step).Location("Summary", "Content"),
+                View("AllShortcodeTemplatesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(AllShortcodeTemplatesDeploymentStep step)

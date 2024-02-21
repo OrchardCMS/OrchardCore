@@ -160,7 +160,14 @@ namespace OrchardCore.Modules
         /// <summary>
         /// Safely invoke methods by catching non fatal exceptions and logging them.
         /// </summary>
-        public static async Task InvokeAsync<TEvents, T1, T2, T3>(this IEnumerable<TEvents> events, Func<TEvents, T1, T2, T3, Task> dispatch, T1 arg1, T2 arg2, T3 arg3, ILogger logger)
+        public static async Task InvokeAsync<TEvents, T1, T2, T3>(
+            this IEnumerable<TEvents> events,
+            Func<TEvents, T1, T2, T3, Task> dispatch,
+            T1 arg1,
+            T2 arg2,
+            T3 arg3,
+            ILogger logger
+        )
         {
             foreach (var sink in events)
             {
@@ -178,7 +185,15 @@ namespace OrchardCore.Modules
         /// <summary>
         /// Safely invoke methods by catching non fatal exceptions and logging them.
         /// </summary>
-        public static async Task InvokeAsync<TEvents, T1, T2, T3, T4>(this IEnumerable<TEvents> events, Func<TEvents, T1, T2, T3, T4, Task> dispatch, T1 arg1, T2 arg2, T3 arg3, T4 arg4, ILogger logger)
+        public static async Task InvokeAsync<TEvents, T1, T2, T3, T4>(
+            this IEnumerable<TEvents> events,
+            Func<TEvents, T1, T2, T3, T4, Task> dispatch,
+            T1 arg1,
+            T2 arg2,
+            T3 arg3,
+            T4 arg4,
+            ILogger logger
+        )
         {
             foreach (var sink in events)
             {
@@ -196,7 +211,16 @@ namespace OrchardCore.Modules
         /// <summary>
         /// Safely invoke methods by catching non fatal exceptions and logging them.
         /// </summary>
-        public static async Task InvokeAsync<TEvents, T1, T2, T3, T4, T5>(this IEnumerable<TEvents> events, Func<TEvents, T1, T2, T3, T4, T5, Task> dispatch, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, ILogger logger)
+        public static async Task InvokeAsync<TEvents, T1, T2, T3, T4, T5>(
+            this IEnumerable<TEvents> events,
+            Func<TEvents, T1, T2, T3, T4, T5, Task> dispatch,
+            T1 arg1,
+            T2 arg2,
+            T3 arg3,
+            T4 arg4,
+            T5 arg5,
+            ILogger logger
+        )
         {
             foreach (var sink in events)
             {
@@ -231,7 +255,12 @@ namespace OrchardCore.Modules
             return results;
         }
 
-        public static async Task<IEnumerable<TResult>> InvokeAsync<TEvents, T1, TResult>(this IEnumerable<TEvents> events, Func<TEvents, T1, Task<TResult>> dispatch, T1 arg1, ILogger logger)
+        public static async Task<IEnumerable<TResult>> InvokeAsync<TEvents, T1, TResult>(
+            this IEnumerable<TEvents> events,
+            Func<TEvents, T1, Task<TResult>> dispatch,
+            T1 arg1,
+            ILogger logger
+        )
         {
             var results = new List<TResult>();
 
@@ -251,7 +280,11 @@ namespace OrchardCore.Modules
             return results;
         }
 
-        public static async Task<IEnumerable<TResult>> InvokeAsync<TEvents, TResult>(this IEnumerable<TEvents> events, Func<TEvents, Task<IEnumerable<TResult>>> dispatch, ILogger logger)
+        public static async Task<IEnumerable<TResult>> InvokeAsync<TEvents, TResult>(
+            this IEnumerable<TEvents> events,
+            Func<TEvents, Task<IEnumerable<TResult>>> dispatch,
+            ILogger logger
+        )
         {
             var results = new List<TResult>();
 
@@ -275,10 +308,7 @@ namespace OrchardCore.Modules
         {
             if (IsLogged(ex))
             {
-                logger.LogError(ex, "{Type} thrown from {Method} by {Exception}",
-                    sourceType,
-                    method,
-                    ex.GetType().Name);
+                logger.LogError(ex, "{Type} thrown from {Method} by {Exception}", sourceType, method, ex.GetType().Name);
             }
 
             if (ex.IsFatal())
@@ -286,6 +316,7 @@ namespace OrchardCore.Modules
                 throw ex;
             }
         }
+
         private static bool IsLogged(Exception ex)
         {
             return !ex.IsFatal();

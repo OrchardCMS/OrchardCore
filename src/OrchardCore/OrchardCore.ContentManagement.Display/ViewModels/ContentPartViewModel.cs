@@ -4,9 +4,7 @@ namespace OrchardCore.ContentManagement.Display.ViewModels
 {
     public class ContentPartViewModel : ShapeViewModel
     {
-        public ContentPartViewModel()
-        {
-        }
+        public ContentPartViewModel() { }
 
         public ContentPartViewModel(ContentPart contentPart)
         {

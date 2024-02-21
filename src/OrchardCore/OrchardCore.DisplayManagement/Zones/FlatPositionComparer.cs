@@ -12,9 +12,7 @@ namespace OrchardCore.DisplayManagement.Zones
             Instance = new FlatPositionComparer();
         }
 
-        private FlatPositionComparer()
-        {
-        }
+        private FlatPositionComparer() { }
 
         public int Compare(IPositioned a, IPositioned b)
         {
@@ -32,12 +30,18 @@ namespace OrchardCore.DisplayManagement.Zones
             }
 
             // null == "before"; "" == "0"
-            x = x == null
-                ? "before." // in order to have before < null when 'before' is explicitly defined
-                : x.Trim().Length == 0 ? "0" : x.Trim(':').TrimEnd('.'); // ':' is _sometimes_ used as a partition identifier
-            y = y == null
-                ? "before."
-                : y.Trim().Length == 0 ? "0" : y.Trim(':').TrimEnd('.');
+            x =
+                x == null
+                    ? "before." // in order to have before < null when 'before' is explicitly defined
+                    : x.Trim().Length == 0
+                        ? "0"
+                        : x.Trim(':').TrimEnd('.'); // ':' is _sometimes_ used as a partition identifier
+            y =
+                y == null
+                    ? "before."
+                    : y.Trim().Length == 0
+                        ? "0"
+                        : y.Trim(':').TrimEnd('.');
 
             var xParts = x.Split(['.', ':']);
             var yParts = y.Split(['.', ':']);
@@ -49,7 +53,8 @@ namespace OrchardCore.DisplayManagement.Zones
                     return 1;
                 }
 
-                int xPos, yPos;
+                int xPos,
+                    yPos;
                 var xPart = string.IsNullOrEmpty(xParts[i]) ? "before" : NormalizeKnownPartitions(xParts[i]);
                 var yPart = string.IsNullOrEmpty(yParts[i]) ? "before" : NormalizeKnownPartitions(yParts[i]);
 

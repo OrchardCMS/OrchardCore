@@ -6,9 +6,8 @@ namespace OrchardCore.Contents.Workflows.Activities
 {
     public class ContentDraftSavedEvent : ContentEvent
     {
-        public ContentDraftSavedEvent(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<ContentDraftSavedEvent> localizer) : base(contentManager, scriptEvaluator, localizer)
-        {
-        }
+        public ContentDraftSavedEvent(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<ContentDraftSavedEvent> localizer)
+            : base(contentManager, scriptEvaluator, localizer) { }
 
         public override string Name => nameof(ContentDraftSavedEvent);
 

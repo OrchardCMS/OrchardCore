@@ -14,12 +14,7 @@ namespace OrchardCore.Environment.Shell.Builders
         private readonly MethodInfo _configureService;
         private readonly MethodInfo _configure;
 
-        public StartupBaseMock(
-            object startup,
-            MethodInfo configureService,
-            MethodInfo configure,
-            PropertyInfo order,
-            PropertyInfo configureOrder)
+        public StartupBaseMock(object startup, MethodInfo configureService, MethodInfo configure, PropertyInfo order, PropertyInfo configureOrder)
         {
             _startup = startup;
             _configureService = configureService;
@@ -57,23 +52,25 @@ namespace OrchardCore.Environment.Shell.Builders
 
             // Resolve all services
 
-            var parameters = _configure.GetParameters().Select(x =>
-            {
-                if (x.ParameterType == typeof(IServiceProvider))
+            var parameters = _configure
+                .GetParameters()
+                .Select(x =>
                 {
-                    return serviceProvider;
-                }
-                else if (x.ParameterType == typeof(IApplicationBuilder))
-                {
-                    return app;
-                }
-                else if (x.ParameterType == typeof(IEndpointRouteBuilder))
-                {
-                    return routes;
-                }
+                    if (x.ParameterType == typeof(IServiceProvider))
+                    {
+                        return serviceProvider;
+                    }
+                    else if (x.ParameterType == typeof(IApplicationBuilder))
+                    {
+                        return app;
+                    }
+                    else if (x.ParameterType == typeof(IEndpointRouteBuilder))
+                    {
+                        return routes;
+                    }
 
-                return serviceProvider.GetService(x.ParameterType);
-            });
+                    return serviceProvider.GetService(x.ParameterType);
+                });
 
             _configure.Invoke(_startup, parameters.ToArray());
         }

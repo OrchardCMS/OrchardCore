@@ -31,38 +31,41 @@ namespace OrchardCore.AdminMenu.AdminNodes
                 return Task.CompletedTask;
             }
 
-            return builder.AddAsync(new LocalizedString(node.LinkText, node.LinkText), async itemBuilder =>
-            {
-                itemBuilder.Priority(node.Priority);
-                itemBuilder.Position(node.Position);
-
-                if (node.PermissionNames.Length > 0)
+            return builder.AddAsync(
+                new LocalizedString(node.LinkText, node.LinkText),
+                async itemBuilder =>
                 {
-                    var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
-                    // Find the actual permissions and apply them to the menu.
-                    var selectedPermissions = permissions.Where(p => node.PermissionNames.Contains(p.Name));
-                    itemBuilder.Permissions(selectedPermissions);
-                }
+                    itemBuilder.Priority(node.Priority);
+                    itemBuilder.Position(node.Position);
 
-                // Add adminNode's IconClass property values to menuItem.Classes.
-                // Add them with a prefix so that later the shape template can extract them to use them on a <i> tag.
-                node.IconClass?.Split(' ').ToList().ForEach(c => itemBuilder.AddClass("icon-class-" + c));
-
-                // Let children build themselves inside this MenuItem
-                // todo: this logic can be shared by all TreeNodeNavigationBuilders
-                foreach (var childTreeNode in menuItem.Items)
-                {
-                    try
+                    if (node.PermissionNames.Length > 0)
                     {
-                        var treeBuilder = treeNodeBuilders.FirstOrDefault(x => x.Name == childTreeNode.GetType().Name);
-                        await treeBuilder.BuildNavigationAsync(childTreeNode, itemBuilder, treeNodeBuilders);
+                        var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
+                        // Find the actual permissions and apply them to the menu.
+                        var selectedPermissions = permissions.Where(p => node.PermissionNames.Contains(p.Name));
+                        itemBuilder.Permissions(selectedPermissions);
                     }
-                    catch (Exception e)
+
+                    // Add adminNode's IconClass property values to menuItem.Classes.
+                    // Add them with a prefix so that later the shape template can extract them to use them on a <i> tag.
+                    node.IconClass?.Split(' ').ToList().ForEach(c => itemBuilder.AddClass("icon-class-" + c));
+
+                    // Let children build themselves inside this MenuItem
+                    // todo: this logic can be shared by all TreeNodeNavigationBuilders
+                    foreach (var childTreeNode in menuItem.Items)
                     {
-                        _logger.LogError(e, "An exception occurred while building the '{MenuItem}' child Menu Item.", childTreeNode.GetType().Name);
+                        try
+                        {
+                            var treeBuilder = treeNodeBuilders.FirstOrDefault(x => x.Name == childTreeNode.GetType().Name);
+                            await treeBuilder.BuildNavigationAsync(childTreeNode, itemBuilder, treeNodeBuilders);
+                        }
+                        catch (Exception e)
+                        {
+                            _logger.LogError(e, "An exception occurred while building the '{MenuItem}' child Menu Item.", childTreeNode.GetType().Name);
+                        }
                     }
                 }
-            });
+            );
         }
     }
 }

@@ -46,11 +46,7 @@ namespace OrchardCore.Templates.Deployment
                 }
             }
 
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "AdminTemplates",
-                ["AdminTemplates"] = templateObjects,
-            });
+            result.Steps.Add(new JsonObject { ["name"] = "AdminTemplates", ["AdminTemplates"] = templateObjects, });
         }
     }
 }

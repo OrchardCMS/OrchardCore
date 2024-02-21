@@ -5,12 +5,7 @@ namespace OrchardCore.Indexing
 {
     public class BuildIndexContext
     {
-        public BuildIndexContext(
-            DocumentIndex documentIndex,
-            ContentItem contentItem,
-            IList<string> keys,
-            IContentIndexSettings settings
-        )
+        public BuildIndexContext(DocumentIndex documentIndex, ContentItem contentItem, IList<string> keys, IContentIndexSettings settings)
         {
             ContentItem = contentItem;
             DocumentIndex = documentIndex;

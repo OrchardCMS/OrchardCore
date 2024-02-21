@@ -16,14 +16,17 @@ namespace OrchardCore.Forms.Drivers
 
         public override IDisplayResult Edit(ButtonPart part)
         {
-            return Initialize<ButtonPartEditViewModel>("ButtonPart_Fields_Edit", m =>
-            {
-                m.Text = part.Text;
-                m.Type = part.Type;
-            });
+            return Initialize<ButtonPartEditViewModel>(
+                "ButtonPart_Fields_Edit",
+                m =>
+                {
+                    m.Text = part.Text;
+                    m.Type = part.Type;
+                }
+            );
         }
 
-        public async override Task<IDisplayResult> UpdateAsync(ButtonPart part, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(ButtonPart part, IUpdateModel updater)
         {
             var viewModel = new ButtonPartEditViewModel();
 

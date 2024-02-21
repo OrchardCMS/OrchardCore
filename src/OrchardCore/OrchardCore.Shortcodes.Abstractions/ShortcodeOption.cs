@@ -25,10 +25,7 @@ namespace OrchardCore.Shortcodes
                     return _defaultValue;
                 }
             }
-            set
-            {
-                _defaultValue = value;
-            }
+            set { _defaultValue = value; }
         }
 
         /// <summary>

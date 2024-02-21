@@ -26,26 +26,32 @@ namespace OrchardCore.Spatial.Drivers
 
         public override IDisplayResult Display(GeoPointField field, BuildFieldDisplayContext context)
         {
-            return Initialize<DisplayGeoPointFieldViewModel>(GetDisplayShapeType(context), model =>
-                {
-                    model.Field = field;
-                    model.Part = context.ContentPart;
-                    model.PartFieldDefinition = context.PartFieldDefinition;
-                })
+            return Initialize<DisplayGeoPointFieldViewModel>(
+                    GetDisplayShapeType(context),
+                    model =>
+                    {
+                        model.Field = field;
+                        model.Part = context.ContentPart;
+                        model.PartFieldDefinition = context.PartFieldDefinition;
+                    }
+                )
                 .Location("Detail", "Content")
                 .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(GeoPointField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditGeoPointFieldViewModel>(GetEditorShapeType(context), model =>
-            {
-                model.Latitude = Convert.ToString(field.Latitude, CultureInfo.InvariantCulture);
-                model.Longitude = Convert.ToString(field.Longitude, CultureInfo.InvariantCulture);
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-            });
+            return Initialize<EditGeoPointFieldViewModel>(
+                GetEditorShapeType(context),
+                model =>
+                {
+                    model.Latitude = Convert.ToString(field.Latitude, CultureInfo.InvariantCulture);
+                    model.Longitude = Convert.ToString(field.Longitude, CultureInfo.InvariantCulture);
+                    model.Field = field;
+                    model.Part = context.ContentPart;
+                    model.PartFieldDefinition = context.PartFieldDefinition;
+                }
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(GeoPointField field, IUpdateModel updater, UpdateFieldEditorContext context)

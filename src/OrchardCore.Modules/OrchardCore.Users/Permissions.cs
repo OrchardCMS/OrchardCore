@@ -14,50 +14,18 @@ public class Permissions : IPermissionProvider
     public static readonly Permission EditUsers = CommonPermissions.EditUsers;
     public static readonly Permission DeleteUsers = CommonPermissions.DeleteUsers;
 
-    private readonly IEnumerable<Permission> _allPermissions =
-    [
-        ManageUsers,
-        ViewUsers,
-        EditOwnUser,
-        ListUsers,
-        EditUsers,
-        DeleteUsers,
-    ];
+    private readonly IEnumerable<Permission> _allPermissions = [ManageUsers, ViewUsers, EditOwnUser, ListUsers, EditUsers, DeleteUsers,];
 
-    private readonly IEnumerable<Permission> _generalPermissions =
-    [
-        EditOwnUser,
-    ];
+    private readonly IEnumerable<Permission> _generalPermissions = [EditOwnUser,];
 
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
+    public Task<IEnumerable<Permission>> GetPermissionsAsync() => Task.FromResult(_allPermissions);
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
-    [
-         new PermissionStereotype
-         {
-             Name = "Administrator",
-             Permissions = _allPermissions,
-         },
-        new PermissionStereotype
-        {
-            Name = "Editor",
-            Permissions = _generalPermissions,
-        },
-        new PermissionStereotype
-        {
-            Name = "Moderator",
-            Permissions = _generalPermissions,
-        },
-        new PermissionStereotype
-        {
-            Name = "Contributor",
-            Permissions = _generalPermissions,
-        },
-        new PermissionStereotype
-        {
-            Name = "Author",
-            Permissions = _generalPermissions,
-        }
-    ];
+        [
+            new PermissionStereotype { Name = "Administrator", Permissions = _allPermissions, },
+            new PermissionStereotype { Name = "Editor", Permissions = _generalPermissions, },
+            new PermissionStereotype { Name = "Moderator", Permissions = _generalPermissions, },
+            new PermissionStereotype { Name = "Contributor", Permissions = _generalPermissions, },
+            new PermissionStereotype { Name = "Author", Permissions = _generalPermissions, }
+        ];
 }

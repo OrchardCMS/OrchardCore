@@ -12,9 +12,7 @@ namespace OrchardCore.DisplayManagement.Theming
 
         private IExtensionInfo _theme;
 
-        public ThemeManager(
-            IEnumerable<IThemeSelector> themeSelectors,
-            IExtensionManager extensionManager)
+        public ThemeManager(IEnumerable<IThemeSelector> themeSelectors, IExtensionManager extensionManager)
         {
             _themeSelectors = themeSelectors;
             _extensionManager = extensionManager;

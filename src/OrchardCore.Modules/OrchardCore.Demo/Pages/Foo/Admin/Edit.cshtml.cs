@@ -18,11 +18,7 @@ namespace OrchardCore.Demo.Pages
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly ISession _session;
 
-        public EditModel(
-            IContentManager contentManager,
-            IContentItemDisplayManager contentDisplay,
-            IUpdateModelAccessor updateModelAccessor,
-            ISession session)
+        public EditModel(IContentManager contentManager, IContentItemDisplayManager contentDisplay, IUpdateModelAccessor updateModelAccessor, ISession session)
         {
             _contentManager = contentManager;
             _contentDisplay = contentDisplay;

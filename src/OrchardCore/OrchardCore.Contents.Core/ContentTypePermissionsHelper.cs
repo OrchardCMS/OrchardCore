@@ -4,7 +4,6 @@ using System.Linq;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Security.Permissions;
 
-
 namespace OrchardCore.Contents.Security
 {
     /// <summary>
@@ -27,23 +26,24 @@ namespace OrchardCore.Contents.Security
         private static readonly Permission _listContent = new("ListContent_{0}", "List {0} content items", new[] { CommonPermissions.ListContent });
         private static readonly Permission _editContentOwner = new("EditContentOwner_{0}", "Edit the owner of a {0} content item", new[] { CommonPermissions.EditContentOwner });
 
-        public static readonly Dictionary<string, Permission> PermissionTemplates = new()
-        {
-            { CommonPermissions.PublishContent.Name, _publishContent },
-            { CommonPermissions.PublishOwnContent.Name, _publishOwnContent },
-            { CommonPermissions.EditContent.Name, _editContent },
-            { CommonPermissions.EditOwnContent.Name, _editOwnContent },
-            { CommonPermissions.DeleteContent.Name, _deleteContent },
-            { CommonPermissions.DeleteOwnContent.Name, _deleteOwnContent },
-            { CommonPermissions.ViewContent.Name, _viewContent },
-            { CommonPermissions.ViewOwnContent.Name, _viewOwnContent },
-            { CommonPermissions.PreviewContent.Name, _previewContent },
-            { CommonPermissions.PreviewOwnContent.Name, _previewOwnContent },
-            { CommonPermissions.CloneContent.Name, _cloneContent },
-            { CommonPermissions.CloneOwnContent.Name, _cloneOwnContent },
-            { CommonPermissions.ListContent.Name, _listContent },
-            { CommonPermissions.EditContentOwner.Name, _editContentOwner },
-        };
+        public static readonly Dictionary<string, Permission> PermissionTemplates =
+            new()
+            {
+                { CommonPermissions.PublishContent.Name, _publishContent },
+                { CommonPermissions.PublishOwnContent.Name, _publishOwnContent },
+                { CommonPermissions.EditContent.Name, _editContent },
+                { CommonPermissions.EditOwnContent.Name, _editOwnContent },
+                { CommonPermissions.DeleteContent.Name, _deleteContent },
+                { CommonPermissions.DeleteOwnContent.Name, _deleteOwnContent },
+                { CommonPermissions.ViewContent.Name, _viewContent },
+                { CommonPermissions.ViewOwnContent.Name, _viewOwnContent },
+                { CommonPermissions.PreviewContent.Name, _previewContent },
+                { CommonPermissions.PreviewOwnContent.Name, _previewOwnContent },
+                { CommonPermissions.CloneContent.Name, _cloneContent },
+                { CommonPermissions.CloneOwnContent.Name, _cloneOwnContent },
+                { CommonPermissions.ListContent.Name, _listContent },
+                { CommonPermissions.EditContentOwner.Name, _editContentOwner },
+            };
 
         private static Dictionary<ValueTuple<string, string>, Permission> _permissionsByType = [];
 
@@ -97,10 +97,7 @@ namespace OrchardCore.Contents.Security
                 (template.ImpliedBy ?? Array.Empty<Permission>()).Select(t => CreateDynamicPermission(t, contentType))
             );
 
-            var localPermissions = new Dictionary<ValueTuple<string, string>, Permission>(_permissionsByType)
-            {
-                [key] = permission,
-            };
+            var localPermissions = new Dictionary<ValueTuple<string, string>, Permission>(_permissionsByType) { [key] = permission, };
 
             _permissionsByType = localPermissions;
 

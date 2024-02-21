@@ -39,26 +39,48 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             {
                 switch (argument.Name)
                 {
-                    case "cache_id": cacheId = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                    case "cache_id":
+                        cacheId = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        break;
 
 #pragma warning disable CA1806 // Do not ignore method results
-                    case "cache_fixed_duration": TimeSpan.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(), out var fd); cacheFixedDuration = fd; break;
-                    case "cache_sliding_duration": TimeSpan.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(), out var sd); cacheSlidingDuration = sd; break;
+                    case "cache_fixed_duration":
+                        TimeSpan.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(), out var fd);
+                        cacheFixedDuration = fd;
+                        break;
+                    case "cache_sliding_duration":
+                        TimeSpan.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(), out var sd);
+                        cacheSlidingDuration = sd;
+                        break;
 #pragma warning restore CA1806 // Do not ignore method results
 
                     // case "cache_dependency": cacheDependency = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                    case "cache_context": cacheContext = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                    case "cache_tag": cacheTag = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                    case "cache_context":
+                        cacheContext = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        break;
+                    case "cache_tag":
+                        cacheTag = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        break;
 
-                    case "id": id = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                    case "alternate": alternate = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                    case "wrapper": wrapper = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                    case "id":
+                        id = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        break;
+                    case "alternate":
+                        alternate = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        break;
+                    case "wrapper":
+                        wrapper = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        break;
 
                     case null:
                     case "type":
-                    case "": type = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                    case "":
+                        type = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        break;
 
-                    default: (customAttributes ??= [])[argument.Name.ToPascalCaseUnderscore()] = (await argument.Expression.EvaluateAsync(context)).ToObjectValue(); break;
+                    default:
+                        (customAttributes ??= [])[argument.Name.ToPascalCaseUnderscore()] = (await argument.Expression.EvaluateAsync(context)).ToObjectValue();
+                        break;
                 }
             }
 

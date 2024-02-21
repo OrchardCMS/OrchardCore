@@ -21,11 +21,7 @@ namespace OrchardCore.Sitemaps.Cache
         private readonly PhysicalFileProvider _fileProvider;
         private readonly ILogger _logger;
 
-        public DefaultSitemapCacheProvider(
-            IWebHostEnvironment webHostEnvironment,
-            ShellSettings shellSettings,
-            ILogger<DefaultSitemapCacheProvider> logger
-            )
+        public DefaultSitemapCacheProvider(IWebHostEnvironment webHostEnvironment, ShellSettings shellSettings, ILogger<DefaultSitemapCacheProvider> logger)
         {
             var path = GetSitemapCachePath(webHostEnvironment, shellSettings, SitemapCachePath);
 

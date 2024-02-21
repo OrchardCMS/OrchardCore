@@ -68,11 +68,7 @@ namespace OrchardCore.Queries.Deployment
 
             if (data.HasValues())
             {
-                var jObj = new JsonObject
-                {
-                    ["name"] = "content",
-                    ["data"] = data
-                };
+                var jObj = new JsonObject { ["name"] = "content", ["data"] = data };
 
                 result.Steps.Add(jObj);
             }

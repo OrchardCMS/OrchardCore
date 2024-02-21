@@ -84,7 +84,8 @@ public static class HttpBackgroundJob
                         ex,
                         "Error while executing the background job '{JobName}' after the end of the request on tenant '{TenantName}'.",
                         jobName,
-                        scope.ShellContext.Settings.Name);
+                        scope.ShellContext.Settings.Name
+                    );
                 }
             });
 

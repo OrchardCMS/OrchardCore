@@ -12,9 +12,7 @@ namespace OrchardCore.Deployment
         private readonly RemoteInstanceService _service;
         protected readonly IStringLocalizer S;
 
-        public RemoteInstanceDeploymentTargetProvider(
-            IStringLocalizer<RemoteInstanceDeploymentTargetProvider> stringLocalizer,
-            RemoteInstanceService service)
+        public RemoteInstanceDeploymentTargetProvider(IStringLocalizer<RemoteInstanceDeploymentTargetProvider> stringLocalizer, RemoteInstanceService service)
         {
             _service = service;
             S = stringLocalizer;
@@ -24,19 +22,21 @@ namespace OrchardCore.Deployment
         {
             var remoteInstanceList = await _service.GetRemoteInstanceListAsync();
 
-            return remoteInstanceList.RemoteInstances.Select(x =>
-                    new DeploymentTarget(
-                        name: new LocalizedString(x.Name, x.Name, false),
-                        description: S["Sends the deployment plan to a remote instance."],
-                        route: new RouteValueDictionary(new
+            return remoteInstanceList
+                .RemoteInstances.Select(x => new DeploymentTarget(
+                    name: new LocalizedString(x.Name, x.Name, false),
+                    description: S["Sends the deployment plan to a remote instance."],
+                    route: new RouteValueDictionary(
+                        new
                         {
                             area = "OrchardCore.Deployment.Remote",
                             controller = "ExportRemoteInstance",
                             action = "Execute",
                             remoteInstanceId = x.Id
-                        })
+                        }
                     )
-                ).ToArray();
+                ))
+                .ToArray();
         }
     }
 }

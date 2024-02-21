@@ -33,7 +33,8 @@ public class AzureAISearchIndexingService
         IStore store,
         IContentManager contentManager,
         IEnumerable<IContentItemIndexHandler> contentItemIndexHandlers,
-        ILogger<AzureAISearchIndexingService> logger)
+        ILogger<AzureAISearchIndexingService> logger
+    )
     {
         _indexingTaskManager = indexingTaskManager;
         _azureAISearchIndexSettingsService = azureAISearchIndexSettingsService;
@@ -56,9 +57,7 @@ public class AzureAISearchIndexingService
         }
         else
         {
-            indexSettings = indexesDocument.IndexSettings.Where(x => indexNames.Contains(x.Key, StringComparer.OrdinalIgnoreCase))
-                .Select(x => x.Value)
-                .ToList();
+            indexSettings = indexesDocument.IndexSettings.Where(x => indexNames.Contains(x.Key, StringComparer.OrdinalIgnoreCase)).Select(x => x.Value).ToList();
         }
 
         if (indexSettings.Count == 0)
@@ -93,10 +92,7 @@ public class AzureAISearchIndexingService
                 break;
             }
 
-            var updatedContentItemIds = tasks
-                .Where(x => x.Type == IndexingTaskTypes.Update)
-                .Select(x => x.ContentItemId)
-                .ToArray();
+            var updatedContentItemIds = tasks.Where(x => x.Type == IndexingTaskTypes.Update).Select(x => x.ContentItemId).ToArray();
 
             Dictionary<string, ContentItem> allPublished = null;
             Dictionary<string, ContentItem> allLatest = null;
@@ -108,14 +104,17 @@ public class AzureAISearchIndexingService
 
             if (indexSettings.Any(x => !x.IndexLatest))
             {
-                var publishedContentItems = await readOnlySession.Query<ContentItem, ContentItemIndex>(index => index.Published && index.ContentType.IsIn(allContentTypes) && index.ContentItemId.IsIn(updatedContentItemIds)).ListAsync();
-                allPublished = publishedContentItems.DistinctBy(x => x.ContentItemId)
-                .ToDictionary(k => k.ContentItemId);
+                var publishedContentItems = await readOnlySession
+                    .Query<ContentItem, ContentItemIndex>(index => index.Published && index.ContentType.IsIn(allContentTypes) && index.ContentItemId.IsIn(updatedContentItemIds))
+                    .ListAsync();
+                allPublished = publishedContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId);
             }
 
             if (indexSettings.Any(x => x.IndexLatest))
             {
-                var latestContentItems = await readOnlySession.Query<ContentItem, ContentItemIndex>(index => index.Latest && index.ContentType.IsIn(allContentTypes) && index.ContentItemId.IsIn(updatedContentItemIds)).ListAsync();
+                var latestContentItems = await readOnlySession
+                    .Query<ContentItem, ContentItemIndex>(index => index.Latest && index.ContentType.IsIn(allContentTypes) && index.ContentItemId.IsIn(updatedContentItemIds))
+                    .ListAsync();
                 allLatest = latestContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId);
             }
 
@@ -123,17 +122,28 @@ public class AzureAISearchIndexingService
             {
                 if (task.Type == IndexingTaskTypes.Update)
                 {
-                    BuildIndexContext publishedIndexContext = null, latestIndexContext = null;
+                    BuildIndexContext publishedIndexContext = null,
+                        latestIndexContext = null;
 
                     if (allPublished != null && allPublished.TryGetValue(task.ContentItemId, out var publishedContentItem))
                     {
-                        publishedIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId, publishedContentItem.ContentItemVersionId), publishedContentItem, [publishedContentItem.ContentType], new AzureAISearchContentIndexSettings());
+                        publishedIndexContext = new BuildIndexContext(
+                            new DocumentIndex(task.ContentItemId, publishedContentItem.ContentItemVersionId),
+                            publishedContentItem,
+                            [publishedContentItem.ContentType],
+                            new AzureAISearchContentIndexSettings()
+                        );
                         await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(publishedIndexContext), _logger);
                     }
 
                     if (allLatest != null && allLatest.TryGetValue(task.ContentItemId, out var latestContentItem))
                     {
-                        latestIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId, latestContentItem.ContentItemVersionId), latestContentItem, [latestContentItem.ContentType], new AzureAISearchContentIndexSettings());
+                        latestIndexContext = new BuildIndexContext(
+                            new DocumentIndex(task.ContentItemId, latestContentItem.ContentItemVersionId),
+                            latestContentItem,
+                            [latestContentItem.ContentType],
+                            new AzureAISearchContentIndexSettings()
+                        );
                         await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(latestIndexContext), _logger);
                     }
 

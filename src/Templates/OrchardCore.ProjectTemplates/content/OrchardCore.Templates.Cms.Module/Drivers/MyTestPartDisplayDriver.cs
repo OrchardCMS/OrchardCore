@@ -23,18 +23,20 @@ namespace OrchardCore.Templates.Cms.Module.Drivers
         {
             return Initialize<MyTestPartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, part, context))
                 .Location("Detail", "Content:10")
-                .Location("Summary", "Content:10")
-                ;
+                .Location("Summary", "Content:10");
         }
 
         public override IDisplayResult Edit(MyTestPart part, BuildPartEditorContext context)
         {
-            return Initialize<MyTestPartViewModel>(GetEditorShapeType(context), model =>
-            {
-                model.Show = part.Show;
-                model.ContentItem = part.ContentItem;
-                model.MyTestPart = part;
-            });
+            return Initialize<MyTestPartViewModel>(
+                GetEditorShapeType(context),
+                model =>
+                {
+                    model.Show = part.Show;
+                    model.ContentItem = part.ContentItem;
+                    model.MyTestPart = part;
+                }
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(MyTestPart model, IUpdateModel updater)

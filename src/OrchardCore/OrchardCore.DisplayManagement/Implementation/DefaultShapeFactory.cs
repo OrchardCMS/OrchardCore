@@ -15,11 +15,7 @@ namespace OrchardCore.DisplayManagement.Implementation
         private readonly IServiceProvider _serviceProvider;
         private ShapeTable _scopedShapeTable;
 
-        public DefaultShapeFactory(
-            IEnumerable<IShapeFactoryEvents> events,
-            IShapeTableManager shapeTableManager,
-            IThemeManager themeManager,
-            IServiceProvider serviceProvider)
+        public DefaultShapeFactory(IEnumerable<IShapeFactoryEvents> events, IShapeTableManager shapeTableManager, IThemeManager themeManager, IServiceProvider serviceProvider)
         {
             _events = events;
             _shapeTableManager = shapeTableManager;
@@ -41,9 +37,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                 binderName = binder.Name[..^"Async".Length];
             }
 
-            result = ShapeFactoryExtensions
-                .CreateAsync(this, binderName, Arguments.From(args, binder.CallInfo.ArgumentNames))
-                .AsTask();
+            result = ShapeFactoryExtensions.CreateAsync(this, binderName, Arguments.From(args, binder.CallInfo.ArgumentNames)).AsTask();
 
             return true;
         }
@@ -59,7 +53,12 @@ namespace OrchardCore.DisplayManagement.Implementation
             return _scopedShapeTable;
         }
 
-        public async ValueTask<IShape> CreateAsync(string shapeType, Func<ValueTask<IShape>> shapeFactory, Action<ShapeCreatingContext> creating, Action<ShapeCreatedContext> created)
+        public async ValueTask<IShape> CreateAsync(
+            string shapeType,
+            Func<ValueTask<IShape>> shapeFactory,
+            Action<ShapeCreatingContext> creating,
+            Action<ShapeCreatedContext> created
+        )
         {
             ShapeDescriptor shapeDescriptor;
             (await GetShapeTableAsync()).Descriptors.TryGetValue(shapeType, out shapeDescriptor);
@@ -100,8 +99,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                 Shape = await creatingContext.CreateAsync()
             };
 
-            var shape = createdContext.Shape
-                ?? throw new InvalidOperationException("Invalid base type for shape: " + createdContext.Shape.GetType().ToString());
+            var shape = createdContext.Shape ?? throw new InvalidOperationException("Invalid base type for shape: " + createdContext.Shape.GetType().ToString());
 
             var shapeMetadata = shape.Metadata;
             shapeMetadata.Type = shapeType;

@@ -10,16 +10,20 @@ namespace OrchardCore.ContentTypes.Editors
     {
         public override IDisplayResult Edit(ContentPartDefinition contentPartDefinition)
         {
-            return Initialize<ContentPartSettingsViewModel>("ContentPartSettings_Edit", model =>
-            {
-                var settings = contentPartDefinition.GetSettings<ContentPartSettings>();
+            return Initialize<ContentPartSettingsViewModel>(
+                    "ContentPartSettings_Edit",
+                    model =>
+                    {
+                        var settings = contentPartDefinition.GetSettings<ContentPartSettings>();
 
-                model.Attachable = settings.Attachable;
-                model.Reusable = settings.Reusable;
-                model.Description = settings.Description;
-                model.DisplayName = settings.DisplayName;
-                model.ContentPartDefinition = contentPartDefinition;
-            }).Location("Content");
+                        model.Attachable = settings.Attachable;
+                        model.Reusable = settings.Reusable;
+                        model.Description = settings.Description;
+                        model.DisplayName = settings.DisplayName;
+                        model.ContentPartDefinition = contentPartDefinition;
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartDefinition contentPartDefinition, UpdatePartEditorContext context)

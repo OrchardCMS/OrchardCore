@@ -13,7 +13,8 @@ namespace OrchardCore.AdminDashboard.Indexes
     {
         public override void Describe(DescribeContext<ContentItem> context)
         {
-            context.For<DashboardPartIndex>()
+            context
+                .For<DashboardPartIndex>()
                 .Map(contentItem =>
                 {
                     var dashboardPart = contentItem.As<DashboardPart>();
@@ -26,10 +27,7 @@ namespace OrchardCore.AdminDashboard.Indexes
 
                     if (dashboardPart != null)
                     {
-                        return new DashboardPartIndex
-                        {
-                            Position = dashboardPart.Position,
-                        };
+                        return new DashboardPartIndex { Position = dashboardPart.Position, };
                     }
 
                     return null;

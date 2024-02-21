@@ -35,31 +35,44 @@ namespace OrchardCore.Liquid
 
     public static class LiquidTemplateManagerExtensions
     {
-        public static Task<string> RenderStringAsync(this ILiquidTemplateManager manager, string template, TextEncoder encoder)
-            => manager.RenderStringAsync(template, encoder, model: null, properties: null);
+        public static Task<string> RenderStringAsync(this ILiquidTemplateManager manager, string template, TextEncoder encoder) =>
+            manager.RenderStringAsync(template, encoder, model: null, properties: null);
 
-        public static Task RenderStringAsync(this ILiquidTemplateManager manager, string template, TextWriter writer, TextEncoder encoder)
-            => manager.RenderAsync(template, writer, encoder, model: null, properties: null);
+        public static Task RenderStringAsync(this ILiquidTemplateManager manager, string template, TextWriter writer, TextEncoder encoder) =>
+            manager.RenderAsync(template, writer, encoder, model: null, properties: null);
 
-        public static Task<string> RenderStringAsync(this ILiquidTemplateManager manager, string template, TextEncoder encoder, object model)
-            => manager.RenderStringAsync(template, encoder, model, properties: null);
+        public static Task<string> RenderStringAsync(this ILiquidTemplateManager manager, string template, TextEncoder encoder, object model) =>
+            manager.RenderStringAsync(template, encoder, model, properties: null);
 
-        public static Task RenderStringAsync(this ILiquidTemplateManager manager, string template, TextWriter writer, TextEncoder encoder, object model)
-            => manager.RenderAsync(template, writer, encoder, model, properties: null);
+        public static Task RenderStringAsync(this ILiquidTemplateManager manager, string template, TextWriter writer, TextEncoder encoder, object model) =>
+            manager.RenderAsync(template, writer, encoder, model, properties: null);
 
-        public static Task<string> RenderStringAsync(this ILiquidTemplateManager manager, string template, TextEncoder encoder, IEnumerable<KeyValuePair<string, FluidValue>> properties)
-            => manager.RenderStringAsync(template, encoder, model: null, properties);
+        public static Task<string> RenderStringAsync(
+            this ILiquidTemplateManager manager,
+            string template,
+            TextEncoder encoder,
+            IEnumerable<KeyValuePair<string, FluidValue>> properties
+        ) => manager.RenderStringAsync(template, encoder, model: null, properties);
 
-        public static Task RenderStringAsync(this ILiquidTemplateManager manager, string template, TextWriter writer, TextEncoder encoder, IEnumerable<KeyValuePair<string, FluidValue>> properties)
-            => manager.RenderAsync(template, writer, encoder, model: null, properties);
+        public static Task RenderStringAsync(
+            this ILiquidTemplateManager manager,
+            string template,
+            TextWriter writer,
+            TextEncoder encoder,
+            IEnumerable<KeyValuePair<string, FluidValue>> properties
+        ) => manager.RenderAsync(template, writer, encoder, model: null, properties);
 
-        public static Task<IHtmlContent> RenderHtmlContentAsync(this ILiquidTemplateManager manager, string template, TextEncoder encoder)
-            => manager.RenderHtmlContentAsync(template, encoder, model: null, properties: null);
+        public static Task<IHtmlContent> RenderHtmlContentAsync(this ILiquidTemplateManager manager, string template, TextEncoder encoder) =>
+            manager.RenderHtmlContentAsync(template, encoder, model: null, properties: null);
 
-        public static Task<IHtmlContent> RenderHtmlContentAsync(this ILiquidTemplateManager manager, string template, TextEncoder encoder, object model)
-            => manager.RenderHtmlContentAsync(template, encoder, model, properties: null);
+        public static Task<IHtmlContent> RenderHtmlContentAsync(this ILiquidTemplateManager manager, string template, TextEncoder encoder, object model) =>
+            manager.RenderHtmlContentAsync(template, encoder, model, properties: null);
 
-        public static Task<IHtmlContent> RenderHtmlContentAsync(this ILiquidTemplateManager manager, string template, TextEncoder encoder, IEnumerable<KeyValuePair<string, FluidValue>> properties)
-            => manager.RenderHtmlContentAsync(template, encoder, model: null, properties);
+        public static Task<IHtmlContent> RenderHtmlContentAsync(
+            this ILiquidTemplateManager manager,
+            string template,
+            TextEncoder encoder,
+            IEnumerable<KeyValuePair<string, FluidValue>> properties
+        ) => manager.RenderHtmlContentAsync(template, encoder, model: null, properties);
     }
 }

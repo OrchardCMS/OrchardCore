@@ -26,11 +26,7 @@ namespace OrchardCore.Recipes.Services
 
         private readonly Dictionary<string, List<IGlobalMethodProvider>> _methodProviders = [];
 
-        public RecipeExecutor(
-            IShellHost shellHost,
-            ShellSettings shellSettings,
-            IEnumerable<IRecipeEventHandler> recipeEventHandlers,
-            ILogger<RecipeExecutor> logger)
+        public RecipeExecutor(IShellHost shellHost, ShellSettings shellSettings, IEnumerable<IRecipeEventHandler> recipeEventHandlers, ILogger<RecipeExecutor> logger)
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
@@ -40,7 +36,12 @@ namespace OrchardCore.Recipes.Services
 
         public async Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor, IDictionary<string, object> environment, CancellationToken cancellationToken)
         {
-            await _recipeEventHandlers.InvokeAsync((handler, executionId, recipeDescriptor) => handler.RecipeExecutingAsync(executionId, recipeDescriptor), executionId, recipeDescriptor, _logger);
+            await _recipeEventHandlers.InvokeAsync(
+                (handler, executionId, recipeDescriptor) => handler.RecipeExecutingAsync(executionId, recipeDescriptor),
+                executionId,
+                recipeDescriptor,
+                _logger
+            );
 
             try
             {
@@ -131,13 +132,23 @@ namespace OrchardCore.Recipes.Services
                     }
                 }
 
-                await _recipeEventHandlers.InvokeAsync((handler, executionId, recipeDescriptor) => handler.RecipeExecutedAsync(executionId, recipeDescriptor), executionId, recipeDescriptor, _logger);
+                await _recipeEventHandlers.InvokeAsync(
+                    (handler, executionId, recipeDescriptor) => handler.RecipeExecutedAsync(executionId, recipeDescriptor),
+                    executionId,
+                    recipeDescriptor,
+                    _logger
+                );
 
                 return executionId;
             }
             catch (Exception)
             {
-                await _recipeEventHandlers.InvokeAsync((handler, executionId, recipeDescriptor) => handler.ExecutionFailedAsync(executionId, recipeDescriptor), executionId, recipeDescriptor, _logger);
+                await _recipeEventHandlers.InvokeAsync(
+                    (handler, executionId, recipeDescriptor) => handler.ExecutionFailedAsync(executionId, recipeDescriptor),
+                    executionId,
+                    recipeDescriptor,
+                    _logger
+                );
 
                 throw;
             }
@@ -149,9 +160,7 @@ namespace OrchardCore.Recipes.Services
 
         private async Task ExecuteStepAsync(RecipeExecutionContext recipeStep)
         {
-            var shellScope = recipeStep.RecipeDescriptor.RequireNewScope
-                ? await _shellHost.GetScopeAsync(_shellSettings)
-                : ShellScope.Current;
+            var shellScope = recipeStep.RecipeDescriptor.RequireNewScope ? await _shellHost.GetScopeAsync(_shellSettings) : ShellScope.Current;
 
             await shellScope.UsingAsync(async scope =>
             {
@@ -237,12 +246,9 @@ namespace OrchardCore.Recipes.Services
 
                         value = value.Trim('[', ']');
 
-                        value = (scriptingManager.Evaluate(
-                            value,
-                            context.RecipeDescriptor.FileProvider,
-                            context.RecipeDescriptor.BasePath,
-                            _methodProviders[context.ExecutionId])
-                            ?? "").ToString();
+                        value = (
+                            scriptingManager.Evaluate(value, context.RecipeDescriptor.FileProvider, context.RecipeDescriptor.BasePath, _methodProviders[context.ExecutionId]) ?? ""
+                        ).ToString();
                     }
 
                     node = JsonValue.Create<string>(value);

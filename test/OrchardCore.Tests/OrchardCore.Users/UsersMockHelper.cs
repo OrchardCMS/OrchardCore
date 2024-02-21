@@ -2,7 +2,8 @@ namespace OrchardCore.Tests.OrchardCore.Users
 {
     public static class UsersMockHelper
     {
-        public static Mock<UserManager<TUser>> MockUserManager<TUser>() where TUser : class
+        public static Mock<UserManager<TUser>> MockUserManager<TUser>()
+            where TUser : class
         {
             var store = new Mock<IUserStore<TUser>>();
             var identityOptions = new IdentityOptions();
@@ -16,14 +17,12 @@ namespace OrchardCore.Tests.OrchardCore.Users
             return mgr;
         }
 
-        public static Mock<RoleManager<TRole>> MockRoleManager<TRole>() where TRole : class
+        public static Mock<RoleManager<TRole>> MockRoleManager<TRole>()
+            where TRole : class
         {
             var store = new Mock<IRoleStore<TRole>>().Object;
 
-            var roles = new List<IRoleValidator<TRole>>
-            {
-                new RoleValidator<TRole>(),
-            };
+            var roles = new List<IRoleValidator<TRole>> { new RoleValidator<TRole>(), };
 
             return new Mock<RoleManager<TRole>>(store, roles, new UpperInvariantLookupNormalizer(), new IdentityErrorDescriber(), null);
         }

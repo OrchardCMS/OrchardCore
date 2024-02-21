@@ -26,14 +26,11 @@ public class AzureAISearchIndexSettings
 
     private long _lastTaskId = 0;
 
-    public long GetLastTaskId()
-        => _lastTaskId;
+    public long GetLastTaskId() => _lastTaskId;
 
-    public void SetLastTaskId(long lastTaskId)
-        => _lastTaskId = lastTaskId;
+    public void SetLastTaskId(long lastTaskId) => _lastTaskId = lastTaskId;
 
     // The dictionary key should be indexingKey Not AzureFieldKey.
-    public Dictionary<string, IEnumerable<AzureAISearchIndexMap>> GetMaps()
-        => IndexMappings.GroupBy(group => group.IndexingKey)
-        .ToDictionary(group => group.Key, group => group.Select(map => map));
+    public Dictionary<string, IEnumerable<AzureAISearchIndexMap>> GetMaps() =>
+        IndexMappings.GroupBy(group => group.IndexingKey).ToDictionary(group => group.Key, group => group.Select(map => map));
 }

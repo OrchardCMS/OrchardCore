@@ -8,11 +8,7 @@ namespace OrchardCore.Admin
 {
     public class AdminMenu : INavigationProvider
     {
-        private static readonly RouteValueDictionary _routeValues = new()
-        {
-            { "area", "OrchardCore.Settings" },
-            { "groupId", AdminSiteSettingsDisplayDriver.GroupId },
-        };
+        private static readonly RouteValueDictionary _routeValues = new() { { "area", "OrchardCore.Settings" }, { "groupId", AdminSiteSettingsDisplayDriver.GroupId }, };
 
         protected readonly IStringLocalizer S;
 
@@ -28,17 +24,20 @@ namespace OrchardCore.Admin
                 return Task.CompletedTask;
             }
 
-            builder
-                .Add(S["Configuration"], configuration => configuration
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["Admin"], S["Admin"].PrefixPosition(), admin => admin
-                            .AddClass("admin").Id("admin")
-                            .Action("Index", "Admin", _routeValues)
-                            .Permission(PermissionsAdminSettings.ManageAdminSettings)
-                            .LocalNav()
-                        )
+            builder.Add(
+                S["Configuration"],
+                configuration =>
+                    configuration.Add(
+                        S["Settings"],
+                        settings =>
+                            settings.Add(
+                                S["Admin"],
+                                S["Admin"].PrefixPosition(),
+                                admin =>
+                                    admin.AddClass("admin").Id("admin").Action("Index", "Admin", _routeValues).Permission(PermissionsAdminSettings.ManageAdminSettings).LocalNav()
+                            )
                     )
-                );
+            );
 
             return Task.CompletedTask;
         }

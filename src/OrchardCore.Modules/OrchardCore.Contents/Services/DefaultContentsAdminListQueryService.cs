@@ -15,7 +15,7 @@ namespace OrchardCore.Contents.Services;
 
 public class DefaultContentsAdminListQueryService : IContentsAdminListQueryService
 {
-    private readonly static string[] _operators = ["OR", "AND", "||", "&&"];
+    private static readonly string[] _operators = ["OR", "AND", "||", "&&"];
 
     private readonly ISession _session;
     private readonly IServiceProvider _serviceProvider;
@@ -28,7 +28,8 @@ public class DefaultContentsAdminListQueryService : IContentsAdminListQueryServi
         IServiceProvider serviceProvider,
         IEnumerable<IContentsAdminListFilter> contentsAdminListFilters,
         IOptions<ContentsAdminListFilterOptions> contentsAdminListFilterOptions,
-        ILogger<DefaultContentsAdminListQueryService> logger)
+        ILogger<DefaultContentsAdminListQueryService> logger
+    )
     {
         _session = session;
         _serviceProvider = serviceProvider;
@@ -46,8 +47,7 @@ public class DefaultContentsAdminListQueryService : IContentsAdminListQueryServi
         if (defaultTermNode is not null)
         {
             var value = defaultTermNode.ToString();
-            if (_contentsAdminListFilterOptions.UseExactMatch
-                && !_operators.Any(op => value.Contains(op, StringComparison.Ordinal)))
+            if (_contentsAdminListFilterOptions.UseExactMatch && !_operators.Any(op => value.Contains(op, StringComparison.Ordinal)))
             {
                 // Use an unary operator based on a full quoted string.
                 defaultOperator = new UnaryNode(value.Trim('"'), OperateNodeQuotes.Double);
@@ -72,8 +72,7 @@ public class DefaultContentsAdminListQueryService : IContentsAdminListQueryServi
         query = await model.FilterResult.ExecuteAsync(new ContentQueryContext(_serviceProvider, query));
 
         // After the 'q=xx' filters have been applied, allow the secondary filter providers to also parse other values for filtering.
-        await _contentsAdminListFilters
-            .InvokeAsync((filter, model, query, updater) => filter.FilterAsync(model, query, updater), model, query, updater, _logger);
+        await _contentsAdminListFilters.InvokeAsync((filter, model, query, updater) => filter.FilterAsync(model, query, updater), model, query, updater, _logger);
 
         if (defaultOperator != defaultTermNode?.Operation)
         {

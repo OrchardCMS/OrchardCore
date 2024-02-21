@@ -52,10 +52,7 @@ namespace OrchardCore.Contents.Security
             if (contentTypePermission != null)
             {
                 // The resource can be a content type name
-                var contentType = contentItem != null
-                    ? contentItem.ContentType
-                    : context.Resource.ToString()
-                    ;
+                var contentType = contentItem != null ? contentItem.ContentType : context.Resource.ToString();
 
                 if (!string.IsNullOrEmpty(contentType))
                 {

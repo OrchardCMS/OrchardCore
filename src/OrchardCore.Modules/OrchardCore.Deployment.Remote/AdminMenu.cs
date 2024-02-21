@@ -20,21 +20,25 @@ namespace OrchardCore.Deployment.Remote
                 return Task.CompletedTask;
             }
 
-            builder
-                .Add(S["Configuration"], configuration => configuration
-                    .Add(S["Import/Export"], import => import
-                        .Add(S["Remote Instances"], S["Remote Instances"].PrefixPosition(), remote => remote
-                            .Action("Index", "RemoteInstance", "OrchardCore.Deployment.Remote")
-                            .Permission(Permissions.ManageRemoteInstances)
-                            .LocalNav()
-                        )
-                        .Add(S["Remote Clients"], S["Remote Clients"].PrefixPosition(), remote => remote
-                            .Action("Index", "RemoteClient", "OrchardCore.Deployment.Remote")
-                            .Permission(Permissions.ManageRemoteClients)
-                            .LocalNav()
-                        )
+            builder.Add(
+                S["Configuration"],
+                configuration =>
+                    configuration.Add(
+                        S["Import/Export"],
+                        import =>
+                            import
+                                .Add(
+                                    S["Remote Instances"],
+                                    S["Remote Instances"].PrefixPosition(),
+                                    remote => remote.Action("Index", "RemoteInstance", "OrchardCore.Deployment.Remote").Permission(Permissions.ManageRemoteInstances).LocalNav()
+                                )
+                                .Add(
+                                    S["Remote Clients"],
+                                    S["Remote Clients"].PrefixPosition(),
+                                    remote => remote.Action("Index", "RemoteClient", "OrchardCore.Deployment.Remote").Permission(Permissions.ManageRemoteClients).LocalNav()
+                                )
                     )
-                );
+            );
 
             return Task.CompletedTask;
         }

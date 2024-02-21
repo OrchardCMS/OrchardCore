@@ -96,9 +96,6 @@ public class DynamicJsonConverter : JsonConverter<object>
         }
     }
 
-    public override void Write(
-        Utf8JsonWriter writer,
-        object objectToWrite,
-        JsonSerializerOptions options) =>
+    public override void Write(Utf8JsonWriter writer, object objectToWrite, JsonSerializerOptions options) =>
         JsonSerializer.Serialize(writer, objectToWrite, objectToWrite.GetType(), options);
 }

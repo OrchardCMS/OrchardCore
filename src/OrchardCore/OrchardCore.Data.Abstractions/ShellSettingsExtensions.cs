@@ -11,7 +11,7 @@ public static class ShellSettingsExtensions
     private const string DefaultTableNameSeparator = $"{DatabaseTableOptions}:DefaultTableNameSeparator";
     private const string DefaultIdentityColumnSize = $"{DatabaseTableOptions}:DefaultIdentityColumnSize";
 
-    private readonly static string[] _identityColumnSizes = [nameof(Int64), nameof(Int32)];
+    private static readonly string[] _identityColumnSizes = [nameof(Int64), nameof(Int32)];
 
     public static DatabaseTableOptions GetDatabaseTableOptions(this ShellSettings shellSettings) =>
         new()
@@ -35,10 +35,7 @@ public static class ShellSettingsExtensions
 
     public static string GetDocumentTable(this ShellSettings shellSettings)
     {
-        var documentTable = (!shellSettings.IsInitialized()
-            ? shellSettings[DefaultDocumentTable]
-            : shellSettings["DocumentTable"])
-            ?.Trim();
+        var documentTable = (!shellSettings.IsInitialized() ? shellSettings[DefaultDocumentTable] : shellSettings["DocumentTable"])?.Trim();
 
         if (string.IsNullOrEmpty(documentTable))
         {
@@ -50,10 +47,7 @@ public static class ShellSettingsExtensions
 
     public static string GetTableNameSeparator(this ShellSettings shellSettings)
     {
-        var tableNameSeparator = (!shellSettings.IsInitialized()
-            ? shellSettings[DefaultTableNameSeparator]
-            : shellSettings["TableNameSeparator"])
-            ?.Trim();
+        var tableNameSeparator = (!shellSettings.IsInitialized() ? shellSettings[DefaultTableNameSeparator] : shellSettings["TableNameSeparator"])?.Trim();
 
         if (string.IsNullOrEmpty(tableNameSeparator))
         {
@@ -73,10 +67,7 @@ public static class ShellSettingsExtensions
 
     public static string GetIdentityColumnSize(this ShellSettings shellSettings)
     {
-        var identityColumnSize = (!shellSettings.IsInitialized()
-            ? shellSettings[DefaultIdentityColumnSize]
-            : shellSettings["IdentityColumnSize"])
-            ?.Trim();
+        var identityColumnSize = (!shellSettings.IsInitialized() ? shellSettings[DefaultIdentityColumnSize] : shellSettings["IdentityColumnSize"])?.Trim();
 
         if (string.IsNullOrEmpty(identityColumnSize))
         {

@@ -12,16 +12,15 @@ namespace OrchardCore.Workflows.Helpers
         /// Tries to acquire a lock before resuming this workflow instance, but only
         /// if it is an atomic workflow, otherwise returns true with a null locker.
         /// </summary>
-        public static Task<(ILocker locker, bool locked)> TryAcquireWorkflowLockAsync(
-            this IDistributedLock distributedLock,
-            Workflow workflow)
+        public static Task<(ILocker locker, bool locked)> TryAcquireWorkflowLockAsync(this IDistributedLock distributedLock, Workflow workflow)
         {
             if (workflow.IsAtomic)
             {
                 return distributedLock.TryAcquireLockAsync(
                     "WFI_" + workflow.WorkflowId + "_LOCK",
                     TimeSpan.FromMilliseconds(workflow.LockTimeout),
-                    TimeSpan.FromMilliseconds(workflow.LockExpiration));
+                    TimeSpan.FromMilliseconds(workflow.LockExpiration)
+                );
             }
 
             return Task.FromResult<(ILocker, bool)>((null, true));
@@ -34,14 +33,12 @@ namespace OrchardCore.Workflows.Helpers
         public static Task<(ILocker locker, bool locked)> TryAcquireWorkflowTypeLockAsync(
             this IDistributedLock distributedLock,
             WorkflowType workflowType,
-            bool isExclusiveEvent = false)
+            bool isExclusiveEvent = false
+        )
         {
             if (workflowType.IsSingleton || isExclusiveEvent)
             {
-                return distributedLock.TryAcquireLockAsync(
-                    "WFT_" + workflowType.WorkflowTypeId + "_LOCK",
-                    TimeSpan.FromMilliseconds(20_000),
-                    TimeSpan.FromMilliseconds(20_000));
+                return distributedLock.TryAcquireLockAsync("WFT_" + workflowType.WorkflowTypeId + "_LOCK", TimeSpan.FromMilliseconds(20_000), TimeSpan.FromMilliseconds(20_000));
             }
 
             return Task.FromResult<(ILocker, bool)>((null, true));

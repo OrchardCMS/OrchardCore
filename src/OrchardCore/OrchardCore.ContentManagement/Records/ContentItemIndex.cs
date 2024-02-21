@@ -30,7 +30,8 @@ namespace OrchardCore.ContentManagement.Records
     {
         public override void Describe(DescribeContext<ContentItem> context)
         {
-            context.For<ContentItemIndex>()
+            context
+                .For<ContentItemIndex>()
                 .Map(contentItem =>
                 {
                     var contentItemIndex = new ContentItemIndex

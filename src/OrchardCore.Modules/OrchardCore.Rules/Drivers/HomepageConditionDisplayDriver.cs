@@ -11,20 +11,23 @@ namespace OrchardCore.Rules.Drivers
     {
         public override IDisplayResult Display(HomepageCondition condition)
         {
-            return
-                Combine(
-                    View("HomepageCondition_Fields_Summary", condition).Location("Summary", "Content"),
-                    View("HomepageCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
-                );
+            return Combine(
+                View("HomepageCondition_Fields_Summary", condition).Location("Summary", "Content"),
+                View("HomepageCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(HomepageCondition condition)
         {
-            return Initialize<HomepageConditionViewModel>("HomepageCondition_Fields_Edit", m =>
-            {
-                m.Value = condition.Value;
-                m.Condition = condition;
-            }).Location("Content");
+            return Initialize<HomepageConditionViewModel>(
+                    "HomepageCondition_Fields_Edit",
+                    m =>
+                    {
+                        m.Value = condition.Value;
+                        m.Condition = condition;
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(HomepageCondition condition, IUpdateModel updater)

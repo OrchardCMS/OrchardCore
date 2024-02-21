@@ -21,14 +21,17 @@ namespace OrchardCore.Html.Settings
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            return Initialize<TrumbowygSettingsViewModel>("HtmlBodyPartTrumbowygSettings_Edit", model =>
-            {
-                var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartTrumbowygEditorSettings>();
+            return Initialize<TrumbowygSettingsViewModel>(
+                    "HtmlBodyPartTrumbowygSettings_Edit",
+                    model =>
+                    {
+                        var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartTrumbowygEditorSettings>();
 
-                model.Options = settings.Options;
-                model.InsertMediaWithUrl = settings.InsertMediaWithUrl;
-            })
-            .Location("Editor");
+                        model.Options = settings.Options;
+                        model.InsertMediaWithUrl = settings.InsertMediaWithUrl;
+                    }
+                )
+                .Location("Editor");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

@@ -40,6 +40,5 @@ public static class OrchardRazorHelperExtensions
     }
 
     [Obsolete("Replaced by ShortcodesToHtmlAsync")]
-    public static Task<IHtmlContent> HtmlToShortcodesAsync(this IOrchardHelper orchardHelper, string html, object model = null)
-        => orchardHelper.ShortcodesToHtmlAsync(html, model);
+    public static Task<IHtmlContent> HtmlToShortcodesAsync(this IOrchardHelper orchardHelper, string html, object model = null) => orchardHelper.ShortcodesToHtmlAsync(html, model);
 }

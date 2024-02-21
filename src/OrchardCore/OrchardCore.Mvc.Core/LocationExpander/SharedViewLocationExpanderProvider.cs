@@ -29,7 +29,8 @@ namespace OrchardCore.Mvc.LocationExpander
             RazorCompilationFileProviderAccessor fileProviderAccessor,
             IExtensionManager extensionManager,
             ShellDescriptor shellDescriptor,
-            IMemoryCache memoryCache)
+            IMemoryCache memoryCache
+        )
         {
             _extensionManager = extensionManager;
             _shellDescriptor = shellDescriptor;
@@ -44,9 +45,7 @@ namespace OrchardCore.Mvc.LocationExpander
             {
                 if (_modulesWithSharedViews == null)
                 {
-                    var orderedModules = _extensionManager.GetExtensions()
-                        .Where(e => e.Manifest.Type.Equals("module", StringComparison.OrdinalIgnoreCase))
-                        .Reverse();
+                    var orderedModules = _extensionManager.GetExtensions().Where(e => e.Manifest.Type.Equals("module", StringComparison.OrdinalIgnoreCase)).Reverse();
 
                     var modulesWithPageSharedViews = new List<IExtensionInfo>();
                     var modulesWithSharedViews = new List<IExtensionInfo>();
@@ -54,8 +53,12 @@ namespace OrchardCore.Mvc.LocationExpander
                     foreach (var module in orderedModules)
                     {
                         var modulePageSharedViewFilePaths = fileProviderAccessor.FileProvider.GetViewFilePaths(
-                            module.SubPath + "/Pages/Shared", _razorExtensions,
-                            viewsFolder: null, inViewsFolder: true, inDepth: true);
+                            module.SubPath + "/Pages/Shared",
+                            _razorExtensions,
+                            viewsFolder: null,
+                            inViewsFolder: true,
+                            inDepth: true
+                        );
 
                         if (modulePageSharedViewFilePaths.Any())
                         {
@@ -63,8 +66,12 @@ namespace OrchardCore.Mvc.LocationExpander
                         }
 
                         var moduleSharedViewFilePaths = fileProviderAccessor.FileProvider.GetViewFilePaths(
-                            module.SubPath + "/Views/Shared", _razorExtensions,
-                            viewsFolder: null, inViewsFolder: true, inDepth: true);
+                            module.SubPath + "/Views/Shared",
+                            _razorExtensions,
+                            viewsFolder: null,
+                            inViewsFolder: true,
+                            inDepth: true
+                        );
 
                         if (moduleSharedViewFilePaths.Any())
                         {
@@ -81,13 +88,10 @@ namespace OrchardCore.Mvc.LocationExpander
         public int Priority => 5;
 
         /// <inheritdoc />
-        public void PopulateValues(ViewLocationExpanderContext context)
-        {
-        }
+        public void PopulateValues(ViewLocationExpanderContext context) { }
 
         /// <inheritdoc />
-        public virtual IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context,
-                                                               IEnumerable<string> viewLocations)
+        public virtual IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context, IEnumerable<string> viewLocations)
         {
             if (context.AreaName == null)
             {
@@ -114,9 +118,7 @@ namespace OrchardCore.Mvc.LocationExpander
 
             if (!_memoryCache.TryGetValue(CacheKey, out IEnumerable<string> moduleSharedViewLocations))
             {
-                moduleSharedViewLocations = _modulesWithSharedViews
-                    .Where(m => GetEnabledExtensionIds().Contains(m.Id))
-                    .Select(m => '/' + m.SubPath + _sharedViewsPath);
+                moduleSharedViewLocations = _modulesWithSharedViews.Where(m => GetEnabledExtensionIds().Contains(m.Id)).Select(m => '/' + m.SubPath + _sharedViewsPath);
 
                 _memoryCache.Set(CacheKey, moduleSharedViewLocations);
             }
@@ -133,11 +135,9 @@ namespace OrchardCore.Mvc.LocationExpander
                     return enabledExtensionIds;
                 }
 
-                var enabledIds = _extensionManager.GetFeatures().Where(f => _shellDescriptor
-                        .Features.Any(sf => sf.Id == f.Id)).Select(f => f.Extension.Id).ToHashSet();
+                var enabledIds = _extensionManager.GetFeatures().Where(f => _shellDescriptor.Features.Any(sf => sf.Id == f.Id)).Select(f => f.Extension.Id).ToHashSet();
 
-                return enabledExtensionIds = _extensionManager.GetExtensions()
-                    .Where(e => enabledIds.Contains(e.Id)).Select(x => x.Id).ToHashSet();
+                return enabledExtensionIds = _extensionManager.GetExtensions().Where(e => enabledIds.Contains(e.Id)).Select(x => x.Id).ToHashSet();
             }
         }
     }

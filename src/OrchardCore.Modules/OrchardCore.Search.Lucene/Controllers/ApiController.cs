@@ -15,9 +15,7 @@ namespace OrchardCore.Search.Lucene.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly LuceneQuerySource _luceneQuerySource;
 
-        public ApiController(
-            IAuthorizationService authorizationService,
-            LuceneQuerySource luceneQuerySource)
+        public ApiController(IAuthorizationService authorizationService, LuceneQuerySource luceneQuerySource)
         {
             _authorizationService = authorizationService;
             _luceneQuerySource = luceneQuerySource;
@@ -88,9 +86,7 @@ namespace OrchardCore.Search.Lucene.Controllers
                 ReturnContentItems = returnContentItems
             };
 
-            var queryParameters = queryModel.Parameters != null ?
-                JConvert.DeserializeObject<Dictionary<string, object>>(queryModel.Parameters)
-                : [];
+            var queryParameters = queryModel.Parameters != null ? JConvert.DeserializeObject<Dictionary<string, object>>(queryModel.Parameters) : [];
 
             return _luceneQuerySource.ExecuteQueryAsync(luceneQuery, queryParameters);
         }

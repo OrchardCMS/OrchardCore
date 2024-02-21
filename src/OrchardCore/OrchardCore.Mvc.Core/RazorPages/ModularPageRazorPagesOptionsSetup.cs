@@ -25,8 +25,7 @@ namespace OrchardCore.Mvc.RazorPages
             if (!_shellSettings.IsRunning())
             {
                 // Don't serve any page of the application'module which is enabled during a setup.
-                options.Conventions.AddAreaFolderRouteModelConvention(_applicationContext.Application.Name, "/",
-                    model => model.Selectors.Clear());
+                options.Conventions.AddAreaFolderRouteModelConvention(_applicationContext.Application.Name, "/", model => model.Selectors.Clear());
             }
             else
             {

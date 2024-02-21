@@ -2,7 +2,8 @@ namespace OrchardCore.ContentManagement.Handlers
 {
     public class PublishContentContext : ContentContextBase
     {
-        public PublishContentContext(ContentItem contentItem, ContentItem previousContentItem) : base(contentItem)
+        public PublishContentContext(ContentItem contentItem, ContentItem previousContentItem)
+            : base(contentItem)
         {
             PublishingItem = contentItem;
             PreviousItem = previousContentItem;

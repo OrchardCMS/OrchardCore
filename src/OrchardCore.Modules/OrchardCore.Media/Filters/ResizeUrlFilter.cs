@@ -70,7 +70,6 @@ namespace OrchardCore.Media.Filters
 
             var resizedUrl = QueryHelpers.AddQueryString(url, queryStringParams);
 
-
             if (_options.UseTokenizedQueryString)
             {
                 resizedUrl = _mediaTokenService.AddTokenToPath(resizedUrl);
@@ -79,7 +78,16 @@ namespace OrchardCore.Media.Filters
             return new StringValue(resizedUrl);
         }
 
-        private static void ApplyQueryStringParams(IDictionary<string, string> queryStringParams, FluidValue width, FluidValue height, FluidValue mode, FluidValue quality, FluidValue format, FluidValue anchorValue, FluidValue bgcolor)
+        private static void ApplyQueryStringParams(
+            IDictionary<string, string> queryStringParams,
+            FluidValue width,
+            FluidValue height,
+            FluidValue mode,
+            FluidValue quality,
+            FluidValue format,
+            FluidValue anchorValue,
+            FluidValue bgcolor
+        )
         {
             if (!width.IsNil())
             {

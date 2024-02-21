@@ -26,10 +26,7 @@ namespace OrchardCore.Localization
         /// <param name="pluralRuleProviders">A list of <see cref="IPluralRuleProvider"/>s.</param>
         /// <param name="translationProviders">The list of available <see cref="ITranslationProvider"/>.</param>
         /// <param name="cache">The <see cref="IMemoryCache"/>.</param>
-        public LocalizationManager(
-            IEnumerable<IPluralRuleProvider> pluralRuleProviders,
-            IEnumerable<ITranslationProvider> translationProviders,
-            IMemoryCache cache)
+        public LocalizationManager(IEnumerable<IPluralRuleProvider> pluralRuleProviders, IEnumerable<ITranslationProvider> translationProviders, IMemoryCache cache)
         {
             _pluralRuleProviders = pluralRuleProviders.OrderBy(o => o.Order).ToArray();
             _translationProviders = translationProviders;
@@ -39,26 +36,32 @@ namespace OrchardCore.Localization
         /// <inheritdoc />
         public CultureDictionary GetDictionary(CultureInfo culture)
         {
-            var cachedDictionary = _cache.GetOrCreate(CacheKeyPrefix + culture.Name, k => new Lazy<CultureDictionary>(() =>
-            {
-                var rule = _defaultPluralRule;
-
-                foreach (var provider in _pluralRuleProviders)
-                {
-                    if (provider.TryGetRule(culture, out rule))
+            var cachedDictionary = _cache.GetOrCreate(
+                CacheKeyPrefix + culture.Name,
+                k => new Lazy<CultureDictionary>(
+                    () =>
                     {
-                        break;
-                    }
-                }
+                        var rule = _defaultPluralRule;
 
-                var dictionary = new CultureDictionary(culture.Name, rule ?? _defaultPluralRule);
-                foreach (var translationProvider in _translationProviders)
-                {
-                    translationProvider.LoadTranslations(culture.Name, dictionary);
-                }
+                        foreach (var provider in _pluralRuleProviders)
+                        {
+                            if (provider.TryGetRule(culture, out rule))
+                            {
+                                break;
+                            }
+                        }
 
-                return dictionary;
-            }, LazyThreadSafetyMode.ExecutionAndPublication));
+                        var dictionary = new CultureDictionary(culture.Name, rule ?? _defaultPluralRule);
+                        foreach (var translationProvider in _translationProviders)
+                        {
+                            translationProvider.LoadTranslations(culture.Name, dictionary);
+                        }
+
+                        return dictionary;
+                    },
+                    LazyThreadSafetyMode.ExecutionAndPublication
+                )
+            );
 
             return cachedDictionary.Value;
         }

@@ -12,9 +12,8 @@ namespace OrchardCore.Contents.Workflows.Activities
 {
     public class UnpublishContentTask : ContentTask
     {
-        public UnpublishContentTask(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<UnpublishContentTask> localizer) : base(contentManager, scriptEvaluator, localizer)
-        {
-        }
+        public UnpublishContentTask(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<UnpublishContentTask> localizer)
+            : base(contentManager, scriptEvaluator, localizer) { }
 
         public override string Name => nameof(UnpublishContentTask);
 
@@ -29,8 +28,8 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var content = (await GetContentAsync(workflowContext))
-                ?? throw new InvalidOperationException($"The '{nameof(UnpublishContentTask)}' failed to retrieve the content item.");
+            var content =
+                (await GetContentAsync(workflowContext)) ?? throw new InvalidOperationException($"The '{nameof(UnpublishContentTask)}' failed to retrieve the content item.");
 
             if (string.Equals(InlineEvent.ContentItemId, content.ContentItem.ContentItemId, StringComparison.OrdinalIgnoreCase))
             {
@@ -51,7 +50,9 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             if (InlineEvent.IsStart && InlineEvent.ContentType == contentItem.ContentType && InlineEvent.Name == nameof(ContentUnpublishedEvent))
             {
-                throw new InvalidOperationException($"The '{nameof(UnpublishContentTask)}' can't unpublish the content item as it is executed inline from a starting '{nameof(ContentUnpublishedEvent)}' of the same content type, which would result in an infinitive loop.");
+                throw new InvalidOperationException(
+                    $"The '{nameof(UnpublishContentTask)}' can't unpublish the content item as it is executed inline from a starting '{nameof(ContentUnpublishedEvent)}' of the same content type, which would result in an infinitive loop."
+                );
             }
 
             await ContentManager.UnpublishAsync(contentItem);

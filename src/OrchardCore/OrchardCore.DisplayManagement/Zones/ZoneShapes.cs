@@ -41,10 +41,9 @@ namespace OrchardCore.DisplayManagement.Zones
             var shapes = ((IEnumerable<object>)Shape);
 
             // Evaluate shapes for grouping metadata, when it is not an IShape it cannot be grouped.
-            var isGrouped = shapes.Any(x => x is IShape s &&
-                (!string.IsNullOrEmpty(s.Metadata.Tab) ||
-                !string.IsNullOrEmpty(s.Metadata.Card) ||
-                !string.IsNullOrEmpty(s.Metadata.Column)));
+            var isGrouped = shapes.Any(x =>
+                x is IShape s && (!string.IsNullOrEmpty(s.Metadata.Tab) || !string.IsNullOrEmpty(s.Metadata.Card) || !string.IsNullOrEmpty(s.Metadata.Column))
+            );
 
             // When there is no grouping metadata on any shapes just render the Zone.
             if (!isGrouped)
@@ -85,44 +84,57 @@ namespace OrchardCore.DisplayManagement.Zones
             // Process Tabs first, then Cards, then Columns.
             if (groupings.Count > 1)
             {
-                var orderedGroupings = groupings.OrderBy(grouping =>
-                {
-                    var firstGroupWithModifier = grouping.FirstOrDefault(group =>
-                    {
-                        if (group is IShape s && !string.IsNullOrEmpty(s.Metadata.Tab) && s.Metadata.Tab.Contains(';'))
+                var orderedGroupings = groupings
+                    .OrderBy(
+                        grouping =>
                         {
-                            return true;
+                            var firstGroupWithModifier = grouping.FirstOrDefault(group =>
+                            {
+                                if (group is IShape s && !string.IsNullOrEmpty(s.Metadata.Tab) && s.Metadata.Tab.Contains(';'))
+                                {
+                                    return true;
+                                }
+
+                                return false;
+                            });
+
+                            if (firstGroupWithModifier is IShape shape)
+                            {
+                                var key = shape.Metadata.Tab;
+                                var modifierIndex = key.IndexOf(';');
+
+                                return new PositionalGrouping(key[modifierIndex..]);
+                            }
+
+                            return new PositionalGrouping(null);
+                        },
+                        FlatPositionComparer.Instance
+                    )
+                    .ToArray();
+
+                var container = (GroupingsViewModel)
+                    await ShapeFactory.CreateAsync<GroupingsViewModel>(
+                        "TabContainer",
+                        m =>
+                        {
+                            m.Identifier = identifier;
+                            m.Groupings = orderedGroupings;
                         }
-
-                        return false;
-                    });
-
-                    if (firstGroupWithModifier is IShape shape)
-                    {
-                        var key = shape.Metadata.Tab;
-                        var modifierIndex = key.IndexOf(';');
-
-                        return new PositionalGrouping(key[modifierIndex..]);
-                    }
-
-                    return new PositionalGrouping(null);
-                }, FlatPositionComparer.Instance).ToArray();
-
-                var container = (GroupingsViewModel)await ShapeFactory.CreateAsync<GroupingsViewModel>("TabContainer", m =>
-                {
-                    m.Identifier = identifier;
-                    m.Groupings = orderedGroupings;
-                });
+                    );
 
                 container.Classes.Add("accordion");
 
                 foreach (var orderedGrouping in orderedGroupings)
                 {
-                    var groupingShape = (GroupingViewModel)await ShapeFactory.CreateAsync<GroupingViewModel>("Tab", m =>
-                    {
-                        m.Identifier = identifier;
-                        m.Grouping = orderedGrouping;
-                    });
+                    var groupingShape = (GroupingViewModel)
+                        await ShapeFactory.CreateAsync<GroupingViewModel>(
+                            "Tab",
+                            m =>
+                            {
+                                m.Identifier = identifier;
+                                m.Grouping = orderedGrouping;
+                            }
+                        );
 
                     foreach (var item in orderedGrouping)
                     {
@@ -137,11 +149,15 @@ namespace OrchardCore.DisplayManagement.Zones
             else if (groupings.Count == 1)
             {
                 // Evaluate for cards.
-                var cardGrouping = (GroupingViewModel)await ShapeFactory.CreateAsync<GroupingViewModel>("CardGrouping", m =>
-                {
-                    m.Identifier = identifier;
-                    m.Grouping = groupings.ElementAt(0);
-                });
+                var cardGrouping = (GroupingViewModel)
+                    await ShapeFactory.CreateAsync<GroupingViewModel>(
+                        "CardGrouping",
+                        m =>
+                        {
+                            m.Identifier = identifier;
+                            m.Grouping = groupings.ElementAt(0);
+                        }
+                    );
 
                 htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(cardGrouping));
             }
@@ -177,47 +193,57 @@ namespace OrchardCore.DisplayManagement.Zones
                 }
 
                 return ContentKey;
-
             });
 
             if (groupings.Count > 1)
             {
-                var orderedGroupings = groupings.OrderBy(grouping =>
-                {
-                    var firstGroupWithModifier = grouping.FirstOrDefault(group =>
+                var orderedGroupings = groupings.OrderBy(
+                    grouping =>
                     {
-                        if (group is IShape s && !string.IsNullOrEmpty(s.Metadata.Card) && s.Metadata.Card.Contains(';'))
+                        var firstGroupWithModifier = grouping.FirstOrDefault(group =>
                         {
-                            return true;
+                            if (group is IShape s && !string.IsNullOrEmpty(s.Metadata.Card) && s.Metadata.Card.Contains(';'))
+                            {
+                                return true;
+                            }
+
+                            return false;
+                        });
+
+                        if (firstGroupWithModifier is IShape shape)
+                        {
+                            var key = shape.Metadata.Card;
+                            var modifierIndex = key.IndexOf(';');
+                            return new PositionalGrouping(key[modifierIndex..]);
                         }
 
-                        return false;
-                    });
+                        return new PositionalGrouping();
+                    },
+                    FlatPositionComparer.Instance
+                );
 
-                    if (firstGroupWithModifier is IShape shape)
-                    {
-                        var key = shape.Metadata.Card;
-                        var modifierIndex = key.IndexOf(';');
-                        return new PositionalGrouping(key[modifierIndex..]);
-                    }
-
-                    return new PositionalGrouping();
-                }, FlatPositionComparer.Instance);
-
-                var container = (GroupViewModel)await ShapeFactory.CreateAsync<GroupViewModel>("CardContainer", m =>
-                {
-                    m.Identifier = Shape.Identifier;
-                });
+                var container = (GroupViewModel)
+                    await ShapeFactory.CreateAsync<GroupViewModel>(
+                        "CardContainer",
+                        m =>
+                        {
+                            m.Identifier = Shape.Identifier;
+                        }
+                    );
 
                 container.Classes.Add("accordion");
 
                 foreach (var orderedGrouping in orderedGroupings)
                 {
-                    var groupingShape = (GroupingViewModel)await ShapeFactory.CreateAsync<GroupingViewModel>("Card", m =>
-                    {
-                        m.Identifier = Shape.Identifier;
-                        m.Grouping = orderedGrouping;
-                    });
+                    var groupingShape = (GroupingViewModel)
+                        await ShapeFactory.CreateAsync<GroupingViewModel>(
+                            "Card",
+                            m =>
+                            {
+                                m.Identifier = Shape.Identifier;
+                                m.Grouping = orderedGrouping;
+                            }
+                        );
 
                     foreach (var item in orderedGrouping)
                     {
@@ -232,11 +258,15 @@ namespace OrchardCore.DisplayManagement.Zones
             else
             {
                 // Evaluate for columns.
-                var groupingShape = (GroupingViewModel)await ShapeFactory.CreateAsync<GroupingViewModel>("ColumnGrouping", m =>
-                {
-                    m.Identifier = Shape.Identifier;
-                    m.Grouping = Shape.Grouping;
-                });
+                var groupingShape = (GroupingViewModel)
+                    await ShapeFactory.CreateAsync<GroupingViewModel>(
+                        "ColumnGrouping",
+                        m =>
+                        {
+                            m.Identifier = Shape.Identifier;
+                            m.Grouping = Shape.Grouping;
+                        }
+                    );
 
                 htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(groupingShape));
             }
@@ -285,32 +315,43 @@ namespace OrchardCore.DisplayManagement.Zones
             {
                 var positionModifiers = GetColumnPositions(groupings);
 
-                var orderedGroupings = groupings.OrderBy(grouping =>
-                {
-                    if (positionModifiers.TryGetValue(grouping.Key, out var position))
+                var orderedGroupings = groupings.OrderBy(
+                    grouping =>
                     {
-                        return new PositionalGrouping { Position = position };
-                    }
-                    else
-                    {
-                        return new PositionalGrouping();
-                    }
-                }, FlatPositionComparer.Instance);
+                        if (positionModifiers.TryGetValue(grouping.Key, out var position))
+                        {
+                            return new PositionalGrouping { Position = position };
+                        }
+                        else
+                        {
+                            return new PositionalGrouping();
+                        }
+                    },
+                    FlatPositionComparer.Instance
+                );
 
                 var columnModifiers = GetColumnModifiers(orderedGroupings);
 
-                var container = (GroupViewModel)await ShapeFactory.CreateAsync<GroupViewModel>("ColumnContainer", m =>
-                {
-                    m.Identifier = Shape.Identifier;
-                });
+                var container = (GroupViewModel)
+                    await ShapeFactory.CreateAsync<GroupViewModel>(
+                        "ColumnContainer",
+                        m =>
+                        {
+                            m.Identifier = Shape.Identifier;
+                        }
+                    );
 
                 foreach (var orderedGrouping in orderedGroupings)
                 {
-                    var groupingShape = (GroupingViewModel)await ShapeFactory.CreateAsync<GroupingViewModel>("Column", m =>
-                    {
-                        m.Identifier = Shape.Identifier;
-                        m.Grouping = orderedGrouping;
-                    });
+                    var groupingShape = (GroupingViewModel)
+                        await ShapeFactory.CreateAsync<GroupingViewModel>(
+                            "Column",
+                            m =>
+                            {
+                                m.Identifier = Shape.Identifier;
+                                m.Grouping = orderedGrouping;
+                            }
+                        );
 
                     groupingShape.Classes.Add("ta-col-grouping");
                     groupingShape.Classes.Add("column-" + orderedGrouping.Key.HtmlClassify());
@@ -352,6 +393,7 @@ namespace OrchardCore.DisplayManagement.Zones
 
             return htmlContentBuilder;
         }
+
         private static Dictionary<string, string> GetColumnPositions(ILookup<string, object> groupings)
         {
             var positionModifiers = new Dictionary<string, string>();
@@ -440,9 +482,7 @@ namespace OrchardCore.DisplayManagement.Zones
 
     internal class PositionalGrouping : IPositioned
     {
-        public PositionalGrouping()
-        {
-        }
+        public PositionalGrouping() { }
 
         public PositionalGrouping(string key)
         {
@@ -455,6 +495,7 @@ namespace OrchardCore.DisplayManagement.Zones
                 }
             }
         }
+
         public string Position { get; set; }
     }
 }

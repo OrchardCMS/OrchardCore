@@ -49,7 +49,8 @@ namespace OrchardCore.Deployment.Controllers
             IStringLocalizer<DeploymentPlanController> stringLocalizer,
             IHtmlLocalizer<DeploymentPlanController> htmlLocalizer,
             INotifier notifier,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor
+        )
         {
             _displayManager = displayManager;
             _factories = factories;
@@ -86,11 +87,7 @@ namespace OrchardCore.Deployment.Controllers
 
             var count = await deploymentPlans.CountAsync();
 
-            var results = await deploymentPlans
-                .OrderBy(p => p.Name)
-                .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize)
-                .ListAsync();
+            var results = await deploymentPlans.OrderBy(p => p.Name).Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
 
             // Maintain previous route data when generating page links.
             var routeData = new RouteData();
@@ -109,21 +106,15 @@ namespace OrchardCore.Deployment.Controllers
                 Pager = pagerShape
             };
 
-            model.Options.DeploymentPlansBulkAction =
-            [
-                new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Delete)),
-            ];
+            model.Options.DeploymentPlansBulkAction = [new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Delete)),];
 
             return View(model);
         }
 
         [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.Filter")]
-        public ActionResult IndexFilterPOST(DeploymentPlanIndexViewModel model)
-            => RedirectToAction(nameof(Index), new RouteValueDictionary
-            {
-                { _optionsSearch, model.Options.Search }
-            });
+        public ActionResult IndexFilterPOST(DeploymentPlanIndexViewModel model) =>
+            RedirectToAction(nameof(Index), new RouteValueDictionary { { _optionsSearch, model.Options.Search } });
 
         [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.BulkAction")]
@@ -258,11 +249,7 @@ namespace OrchardCore.Deployment.Controllers
                 return NotFound();
             }
 
-            var model = new EditDeploymentPlanViewModel
-            {
-                Id = deploymentPlan.Id,
-                Name = deploymentPlan.Name
-            };
+            var model = new EditDeploymentPlanViewModel { Id = deploymentPlan.Id, Name = deploymentPlan.Name };
 
             return View(model);
         }

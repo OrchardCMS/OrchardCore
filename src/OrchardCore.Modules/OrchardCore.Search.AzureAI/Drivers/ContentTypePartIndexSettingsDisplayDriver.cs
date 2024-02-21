@@ -22,7 +22,10 @@ public class ContentTypePartIndexSettingsDisplayDriver(IAuthorizationService aut
             return null;
         }
 
-        return Initialize<AzureAISearchContentIndexSettings>("AzureAISearchContentIndexSettings_Edit", model => contentTypePartDefinition.GetSettings<AzureAISearchContentIndexSettings>())
+        return Initialize<AzureAISearchContentIndexSettings>(
+                "AzureAISearchContentIndexSettings_Edit",
+                model => contentTypePartDefinition.GetSettings<AzureAISearchContentIndexSettings>()
+            )
             .Location("Content:10");
     }
 

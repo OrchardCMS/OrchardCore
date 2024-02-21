@@ -30,14 +30,21 @@ namespace OrchardCore.Contents.Liquid
                     case "display_for":
                     case "edit_for":
                     case "remove_for":
-                    case "create_for": return true;
+                    case "create_for":
+                        return true;
                 }
             }
 
             return false;
         }
 
-        public async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, LiquidTemplateContext context)
+        public async ValueTask<Completion> WriteToAsync(
+            List<FilterArgument> argumentsList,
+            IReadOnlyList<Statement> statements,
+            TextWriter writer,
+            TextEncoder encoder,
+            LiquidTemplateContext context
+        )
         {
             var services = context.Services;
             var viewContext = context.ViewContext;
@@ -57,11 +64,21 @@ namespace OrchardCore.Contents.Liquid
             {
                 switch (argument.Name)
                 {
-                    case "admin_for": adminFor = (await argument.Expression.EvaluateAsync(context)).ToObjectValue() as ContentItem; break;
-                    case "display_for": displayFor = (await argument.Expression.EvaluateAsync(context)).ToObjectValue() as ContentItem; break;
-                    case "edit_for": editFor = (await argument.Expression.EvaluateAsync(context)).ToObjectValue() as ContentItem; break;
-                    case "remove_for": removeFor = (await argument.Expression.EvaluateAsync(context)).ToObjectValue() as ContentItem; break;
-                    case "create_for": createFor = (await argument.Expression.EvaluateAsync(context)).ToObjectValue() as ContentItem; break;
+                    case "admin_for":
+                        adminFor = (await argument.Expression.EvaluateAsync(context)).ToObjectValue() as ContentItem;
+                        break;
+                    case "display_for":
+                        displayFor = (await argument.Expression.EvaluateAsync(context)).ToObjectValue() as ContentItem;
+                        break;
+                    case "edit_for":
+                        editFor = (await argument.Expression.EvaluateAsync(context)).ToObjectValue() as ContentItem;
+                        break;
+                    case "remove_for":
+                        removeFor = (await argument.Expression.EvaluateAsync(context)).ToObjectValue() as ContentItem;
+                        break;
+                    case "create_for":
+                        createFor = (await argument.Expression.EvaluateAsync(context)).ToObjectValue() as ContentItem;
+                        break;
 
                     default:
 

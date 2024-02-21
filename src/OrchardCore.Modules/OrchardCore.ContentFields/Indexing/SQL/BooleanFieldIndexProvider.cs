@@ -28,7 +28,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
 
         public override void Describe(DescribeContext<ContentItem> context)
         {
-            context.For<BooleanFieldIndex>()
+            context
+                .For<BooleanFieldIndex>()
                 .Map(async contentItem =>
                 {
                     // Remove index records of soft deleted items.
@@ -69,18 +70,17 @@ namespace OrchardCore.ContentFields.Indexing.SQL
 
                     return fieldDefinitions
                         .GetContentFields<BooleanField>(contentItem)
-                        .Select(pair =>
-                            new BooleanFieldIndex
-                            {
-                                Latest = contentItem.Latest,
-                                Published = contentItem.Published,
-                                ContentItemId = contentItem.ContentItemId,
-                                ContentItemVersionId = contentItem.ContentItemVersionId,
-                                ContentType = contentItem.ContentType,
-                                ContentPart = pair.Definition.PartDefinition.Name,
-                                ContentField = pair.Definition.Name,
-                                Boolean = pair.Field.Value,
-                            });
+                        .Select(pair => new BooleanFieldIndex
+                        {
+                            Latest = contentItem.Latest,
+                            Published = contentItem.Published,
+                            ContentItemId = contentItem.ContentItemId,
+                            ContentItemVersionId = contentItem.ContentItemVersionId,
+                            ContentType = contentItem.ContentType,
+                            ContentPart = pair.Definition.PartDefinition.Name,
+                            ContentField = pair.Definition.Name,
+                            Boolean = pair.Field.Value,
+                        });
                 });
         }
     }

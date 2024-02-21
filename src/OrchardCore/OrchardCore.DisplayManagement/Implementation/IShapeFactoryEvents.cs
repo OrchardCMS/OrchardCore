@@ -36,11 +36,8 @@ namespace OrchardCore.DisplayManagement.Implementation
 
     public abstract class ShapeFactoryEvents : IShapeFactoryEvents
     {
-        public virtual void Creating(ShapeCreatingContext context)
-        {
-        }
-        public virtual void Created(ShapeCreatedContext context)
-        {
-        }
+        public virtual void Creating(ShapeCreatingContext context) { }
+
+        public virtual void Created(ShapeCreatedContext context) { }
     }
 }

@@ -12,9 +12,7 @@ namespace OrchardCore.Flows.GraphQL
             Name = "FlowPart";
             Description = S["A FlowPart allows to add content items directly within another content item"];
 
-            Field<ListGraphType<ContentItemInterface>>("widgets")
-               .Description("The widgets.")
-               .Resolve(context => context.Source.Widgets);
+            Field<ListGraphType<ContentItemInterface>>("widgets").Description("The widgets.").Resolve(context => context.Source.Widgets);
         }
     }
 }

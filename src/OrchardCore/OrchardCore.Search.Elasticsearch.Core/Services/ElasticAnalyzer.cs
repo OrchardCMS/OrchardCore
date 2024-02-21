@@ -13,9 +13,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             Name = name;
         }
 
-        public ElasticAnalyzer(string name, IAnalyzer instance) : this(name, () => instance)
-        {
-        }
+        public ElasticAnalyzer(string name, IAnalyzer instance)
+            : this(name, () => instance) { }
 
         public string Name { get; }
 

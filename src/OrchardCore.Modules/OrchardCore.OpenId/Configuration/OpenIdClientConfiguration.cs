@@ -16,9 +16,7 @@ using OrchardCore.OpenId.Settings;
 namespace OrchardCore.OpenId.Configuration
 {
     [Feature(OpenIdConstants.Features.Client)]
-    public class OpenIdClientConfiguration :
-        IConfigureOptions<AuthenticationOptions>,
-        IConfigureNamedOptions<OpenIdConnectOptions>
+    public class OpenIdClientConfiguration : IConfigureOptions<AuthenticationOptions>, IConfigureNamedOptions<OpenIdConnectOptions>
     {
         private readonly IOpenIdClientService _clientService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -29,7 +27,8 @@ namespace OrchardCore.OpenId.Configuration
             IOpenIdClientService clientService,
             IDataProtectionProvider dataProtectionProvider,
             ShellSettings shellSettings,
-            ILogger<OpenIdClientConfiguration> logger)
+            ILogger<OpenIdClientConfiguration> logger
+        )
         {
             _clientService = clientService;
             _dataProtectionProvider = dataProtectionProvider;

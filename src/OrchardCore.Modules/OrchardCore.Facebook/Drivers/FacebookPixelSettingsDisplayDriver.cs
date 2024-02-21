@@ -15,10 +15,7 @@ public class FacebookPixelSettingsDisplayDriver : SectionDisplayDriver<ISite, Fa
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public FacebookPixelSettingsDisplayDriver(
-        IAuthorizationService authorizationService,
-        IHttpContextAccessor httpContextAccessor
-        )
+    public FacebookPixelSettingsDisplayDriver(IAuthorizationService authorizationService, IHttpContextAccessor httpContextAccessor)
     {
         _authorizationService = authorizationService;
         _httpContextAccessor = httpContextAccessor;
@@ -32,17 +29,23 @@ public class FacebookPixelSettingsDisplayDriver : SectionDisplayDriver<ISite, Fa
             return null;
         }
 
-        return Initialize<FacebookPixelSettings>("FacebookPixelSettings_Edit", model =>
-        {
-            model.PixelId = settings.PixelId;
-        }).Location("Content:0")
-        .OnGroup(FacebookConstants.PixelSettingsGroupId);
+        return Initialize<FacebookPixelSettings>(
+                "FacebookPixelSettings_Edit",
+                model =>
+                {
+                    model.PixelId = settings.PixelId;
+                }
+            )
+            .Location("Content:0")
+            .OnGroup(FacebookConstants.PixelSettingsGroupId);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(FacebookPixelSettings settings, BuildEditorContext context)
     {
-        if (!string.Equals(FacebookConstants.PixelSettingsGroupId, context.GroupId, StringComparison.OrdinalIgnoreCase)
-            || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageFacebookApp))
+        if (
+            !string.Equals(FacebookConstants.PixelSettingsGroupId, context.GroupId, StringComparison.OrdinalIgnoreCase)
+            || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageFacebookApp)
+        )
         {
             return null;
         }

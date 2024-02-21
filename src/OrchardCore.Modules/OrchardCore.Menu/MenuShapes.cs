@@ -15,7 +15,8 @@ namespace OrchardCore.Menu
     {
         public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
         {
-            builder.Describe("Menu")
+            builder
+                .Describe("Menu")
                 .OnProcessing(async context =>
                 {
                     var menu = context.Shape;
@@ -28,11 +29,12 @@ namespace OrchardCore.Menu
                     var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
                     var handleManager = context.ServiceProvider.GetRequiredService<IContentHandleManager>();
 
-                    var contentItemId = menu.TryGetProperty("Alias", out object alias) && alias != null
-                        ? await handleManager.GetContentItemIdAsync(alias.ToString())
-                        : menu.TryGetProperty("ContentItemId", out object id)
-                            ? id.ToString()
-                            : null;
+                    var contentItemId =
+                        menu.TryGetProperty("Alias", out object alias) && alias != null
+                            ? await handleManager.GetContentItemIdAsync(alias.ToString())
+                            : menu.TryGetProperty("ContentItemId", out object id)
+                                ? id.ToString()
+                                : null;
 
                     if (contentItemId == null)
                     {
@@ -74,12 +76,17 @@ namespace OrchardCore.Menu
 
                     foreach (var contentItem in menuItems)
                     {
-                        var shape = await shapeFactory.CreateAsync("MenuItem", Arguments.From(new
-                        {
-                            ContentItem = contentItem,
-                            Level = 0,
-                            Menu = menu
-                        }));
+                        var shape = await shapeFactory.CreateAsync(
+                            "MenuItem",
+                            Arguments.From(
+                                new
+                                {
+                                    ContentItem = contentItem,
+                                    Level = 0,
+                                    Menu = menu
+                                }
+                            )
+                        );
 
                         shape.Metadata.Differentiator = differentiator;
 
@@ -88,7 +95,8 @@ namespace OrchardCore.Menu
                     }
                 });
 
-            builder.Describe("MenuItem")
+            builder
+                .Describe("MenuItem")
                 .OnDisplaying(async context =>
                 {
                     var menuItem = context.Shape;
@@ -105,12 +113,17 @@ namespace OrchardCore.Menu
                     {
                         foreach (var contentItem in menuItems)
                         {
-                            var shape = await shapeFactory.CreateAsync("MenuItem", Arguments.From(new
-                            {
-                                ContentItem = contentItem,
-                                Level = level + 1,
-                                Menu = menu
-                            }));
+                            var shape = await shapeFactory.CreateAsync(
+                                "MenuItem",
+                                Arguments.From(
+                                    new
+                                    {
+                                        ContentItem = contentItem,
+                                        Level = level + 1,
+                                        Menu = menu
+                                    }
+                                )
+                            );
 
                             shape.Metadata.Differentiator = differentiator;
 
@@ -143,7 +156,8 @@ namespace OrchardCore.Menu
                     }
                 });
 
-            builder.Describe("MenuItemLink")
+            builder
+                .Describe("MenuItemLink")
                 .OnDisplaying(displaying =>
                 {
                     var menuItem = displaying.Shape;

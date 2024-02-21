@@ -27,16 +27,12 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
         private readonly Func<ViewContext, ITagHelper> _activatorByService;
         private readonly Action<object, object> _viewContextSetter;
 
-        public LiquidTagHelperActivator()
-        {
-        }
+        public LiquidTagHelperActivator() { }
 
         public LiquidTagHelperActivator(Type type)
         {
-            var accessibleProperties = type.GetProperties().Where(p =>
-                (p.GetCustomAttribute<HtmlAttributeNotBoundAttribute>() == null ||
-                p.GetCustomAttribute<ViewContextAttribute>() != null) &&
-                p.GetSetMethod() != null);
+            var accessibleProperties = type.GetProperties()
+                .Where(p => (p.GetCustomAttribute<HtmlAttributeNotBoundAttribute>() == null || p.GetCustomAttribute<ViewContextAttribute>() != null) && p.GetSetMethod() != null);
 
             foreach (var property in accessibleProperties)
             {
@@ -77,49 +73,52 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 
                 foreach (var propertyName in allNames)
                 {
-                    _setters.Add(propertyName, (h, mp, vd, k, v) =>
-                    {
-                        object value = null;
+                    _setters.Add(
+                        propertyName,
+                        (h, mp, vd, k, v) =>
+                        {
+                            object value = null;
 
-                        if (property.PropertyType.IsEnum)
-                        {
-                            value = Enum.Parse(property.PropertyType, v.ToStringValue());
-                        }
-                        else if (property.PropertyType == typeof(string))
-                        {
-                            value = v.ToStringValue();
-                        }
-                        else if (property.PropertyType == typeof(bool))
-                        {
-                            value = Convert.ToBoolean(v.ToStringValue());
-                        }
-                        else if (property.PropertyType == typeof(bool?))
-                        {
-                            value = v.IsNil() ? null : (bool?)Convert.ToBoolean(v.ToStringValue());
-                        }
-                        else if (property.PropertyType == typeof(IDictionary<string, string>))
-                        {
-                            var dictionary = (IDictionary<string, string>)getter(h);
-                            dictionary[k] = v.ToStringValue();
-                            value = dictionary;
-                        }
-                        else if (property.PropertyType == typeof(IDictionary<string, object>))
-                        {
-                            var dictionary = (IDictionary<string, object>)getter(h);
-                            dictionary[k] = v.ToObjectValue();
-                            value = dictionary;
-                        }
-                        else if (property.PropertyType == typeof(ModelExpression))
-                        {
-                            value = mp.CreateModelExpression(vd, v.ToStringValue());
-                        }
-                        else
-                        {
-                            value = v.ToObjectValue();
-                        }
+                            if (property.PropertyType.IsEnum)
+                            {
+                                value = Enum.Parse(property.PropertyType, v.ToStringValue());
+                            }
+                            else if (property.PropertyType == typeof(string))
+                            {
+                                value = v.ToStringValue();
+                            }
+                            else if (property.PropertyType == typeof(bool))
+                            {
+                                value = Convert.ToBoolean(v.ToStringValue());
+                            }
+                            else if (property.PropertyType == typeof(bool?))
+                            {
+                                value = v.IsNil() ? null : (bool?)Convert.ToBoolean(v.ToStringValue());
+                            }
+                            else if (property.PropertyType == typeof(IDictionary<string, string>))
+                            {
+                                var dictionary = (IDictionary<string, string>)getter(h);
+                                dictionary[k] = v.ToStringValue();
+                                value = dictionary;
+                            }
+                            else if (property.PropertyType == typeof(IDictionary<string, object>))
+                            {
+                                var dictionary = (IDictionary<string, object>)getter(h);
+                                dictionary[k] = v.ToObjectValue();
+                                value = dictionary;
+                            }
+                            else if (property.PropertyType == typeof(ModelExpression))
+                            {
+                                value = mp.CreateModelExpression(vd, v.ToStringValue());
+                            }
+                            else
+                            {
+                                value = v.ToObjectValue();
+                            }
 
-                        setter(h, value);
-                    });
+                            setter(h, value);
+                        }
+                    );
                 }
             }
 
@@ -137,13 +136,18 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                 var genericFactory = typeof(ReusableTagHelperFactory<>).MakeGenericType(type);
                 var factoryMethod = genericFactory.GetMethod("CreateTagHelper");
 
-                _activatorByFactory = Delegate.CreateDelegate(typeof(Func<ITagHelperFactory, ViewContext, ITagHelper>),
-                    factoryMethod) as Func<ITagHelperFactory, ViewContext, ITagHelper>;
+                _activatorByFactory =
+                    Delegate.CreateDelegate(typeof(Func<ITagHelperFactory, ViewContext, ITagHelper>), factoryMethod) as Func<ITagHelperFactory, ViewContext, ITagHelper>;
             }
         }
 
-        public ITagHelper Create(ITagHelperFactory factory, ViewContext context, FilterArguments arguments,
-            out TagHelperAttributeList contextAttributes, out TagHelperAttributeList outputAttributes)
+        public ITagHelper Create(
+            ITagHelperFactory factory,
+            ViewContext context,
+            FilterArguments arguments,
+            out TagHelperAttributeList contextAttributes,
+            out TagHelperAttributeList outputAttributes
+        )
         {
             contextAttributes = [];
             outputAttributes = [];
@@ -214,7 +218,8 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             return tagHelper;
         }
 
-        private class ReusableTagHelperFactory<T> where T : class, ITagHelper
+        private class ReusableTagHelperFactory<T>
+            where T : class, ITagHelper
         {
             public static ITagHelper CreateTagHelper(ITagHelperFactory tagHelperFactory, ViewContext viewContext)
             {
@@ -232,11 +237,10 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             return (Action<object, object>)setterDelegate;
         }
 
-        private static readonly MethodInfo _callPropertySetterOpenGenericMethod =
-            typeof(LiquidTagHelperActivator).GetTypeInfo().GetDeclaredMethod(nameof(CallPropertySetter));
+        private static readonly MethodInfo _callPropertySetterOpenGenericMethod = typeof(LiquidTagHelperActivator).GetTypeInfo().GetDeclaredMethod(nameof(CallPropertySetter));
 
-        private static void CallPropertySetter<TDeclaringType, TValue>(Action<TDeclaringType, TValue> setter, object target, object value)
-            => setter((TDeclaringType)target, (TValue)value);
+        private static void CallPropertySetter<TDeclaringType, TValue>(Action<TDeclaringType, TValue> setter, object target, object value) =>
+            setter((TDeclaringType)target, (TValue)value);
 
         private static Func<object, object> MakeFastPropertyGetter(Type type, PropertyInfo prop)
         {
@@ -248,10 +252,8 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             return (Func<object, object>)getterDelegate;
         }
 
-        private static readonly MethodInfo _callPropertyGetterOpenGenericMethod =
-            typeof(LiquidTagHelperActivator).GetTypeInfo().GetDeclaredMethod(nameof(CallPropertyGetter));
+        private static readonly MethodInfo _callPropertyGetterOpenGenericMethod = typeof(LiquidTagHelperActivator).GetTypeInfo().GetDeclaredMethod(nameof(CallPropertyGetter));
 
-        private static object CallPropertyGetter<TDeclaringType, TValue>(Func<TDeclaringType, TValue> getter, object target)
-            => getter((TDeclaringType)target);
+        private static object CallPropertyGetter<TDeclaringType, TValue>(Func<TDeclaringType, TValue> getter, object target) => getter((TDeclaringType)target);
     }
 }

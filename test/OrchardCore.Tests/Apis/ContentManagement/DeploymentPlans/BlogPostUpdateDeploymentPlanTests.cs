@@ -16,10 +16,13 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
             await context.InitializeAsync();
 
             // Act
-            var recipe = BlogPostDeploymentContext.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
-            {
-                jItem[nameof(ContentItem.DisplayText)] = "existing version mutated";
-            });
+            var recipe = BlogPostDeploymentContext.GetContentStepRecipe(
+                context.OriginalBlogPost,
+                jItem =>
+                {
+                    jItem[nameof(ContentItem.DisplayText)] = "existing version mutated";
+                }
+            );
 
             await context.PostRecipeAsync(recipe);
 
@@ -27,8 +30,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
             await context.UsingTenantScopeAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                    x.ContentType == "BlogPost").ListAsync();
+                var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == "BlogPost").ListAsync();
 
                 Assert.Single(blogPosts);
                 var mutatedVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == context.OriginalBlogPostVersionId);
@@ -48,10 +50,13 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
             var draftContentItemVersionId = (await content.Content.ReadAsAsync<ContentItem>()).ContentItemVersionId;
 
             // Act
-            var recipe = BlogPostDeploymentContext.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
-            {
-                jItem[nameof(ContentItem.DisplayText)] = "existing version mutated";
-            });
+            var recipe = BlogPostDeploymentContext.GetContentStepRecipe(
+                context.OriginalBlogPost,
+                jItem =>
+                {
+                    jItem[nameof(ContentItem.DisplayText)] = "existing version mutated";
+                }
+            );
 
             await context.PostRecipeAsync(recipe);
 
@@ -59,8 +64,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
             await context.UsingTenantScopeAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                    x.ContentType == "BlogPost").ListAsync();
+                var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == "BlogPost").ListAsync();
 
                 Assert.Equal(2, blogPosts.Count());
 
@@ -86,12 +90,15 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
             var draftContentItem = (await content.Content.ReadAsAsync<ContentItem>());
 
             // Act
-            var recipe = BlogPostDeploymentContext.GetContentStepRecipe(draftContentItem, jItem =>
-            {
-                jItem[nameof(ContentItem.DisplayText)] = "draft version mutated";
-                jItem[nameof(ContentItem.Published)] = true;
-                jItem[nameof(ContentItem.Latest)] = true;
-            });
+            var recipe = BlogPostDeploymentContext.GetContentStepRecipe(
+                draftContentItem,
+                jItem =>
+                {
+                    jItem[nameof(ContentItem.DisplayText)] = "draft version mutated";
+                    jItem[nameof(ContentItem.Published)] = true;
+                    jItem[nameof(ContentItem.Latest)] = true;
+                }
+            );
 
             await context.PostRecipeAsync(recipe);
 
@@ -99,8 +106,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
             await context.UsingTenantScopeAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                    x.ContentType == "BlogPost").ListAsync();
+                var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x => x.ContentType == "BlogPost").ListAsync();
 
                 Assert.Equal(2, blogPosts.Count());
 

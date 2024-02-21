@@ -41,14 +41,7 @@ namespace OrchardCore.HomeRoute.Routing
                     }
                 }
 
-                var endpoint = new RouteEndpoint
-                (
-                    c => null,
-                    RoutePatternFactory.Parse(string.Empty, routeValues, null),
-                    0,
-                    null,
-                    null
-                );
+                var endpoint = new RouteEndpoint(c => null, RoutePatternFactory.Parse(string.Empty, routeValues, null), 0, null, null);
 
                 return new[] { endpoint };
             }

@@ -10,10 +10,9 @@ namespace OrchardCore.Settings.Drivers
 
         public override Task<IDisplayResult> EditAsync(ISite site, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(Dynamic("SiteSettings_SaveButton")
-                .Location("Actions")
-                .OnGroup(context.GroupId) // Trick to render the shape for all groups
-                );
+            return Task.FromResult<IDisplayResult>(
+                Dynamic("SiteSettings_SaveButton").Location("Actions").OnGroup(context.GroupId) // Trick to render the shape for all groups
+            );
         }
 
         public override Task<IDisplayResult> UpdateAsync(ISite model, UpdateEditorContext context)

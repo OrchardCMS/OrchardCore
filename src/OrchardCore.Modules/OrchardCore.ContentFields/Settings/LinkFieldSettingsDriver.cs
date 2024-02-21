@@ -11,19 +11,22 @@ namespace OrchardCore.ContentFields.Settings
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<LinkFieldSettings>("LinkFieldSettings_Edit", model =>
-            {
-                var settings = partFieldDefinition.Settings.ToObject<LinkFieldSettings>();
+            return Initialize<LinkFieldSettings>(
+                    "LinkFieldSettings_Edit",
+                    model =>
+                    {
+                        var settings = partFieldDefinition.Settings.ToObject<LinkFieldSettings>();
 
-                model.Hint = settings.Hint;
-                model.HintLinkText = settings.HintLinkText;
-                model.Required = settings.Required;
-                model.LinkTextMode = settings.LinkTextMode;
-                model.UrlPlaceholder = settings.UrlPlaceholder;
-                model.TextPlaceholder = settings.TextPlaceholder;
-                model.DefaultUrl = settings.DefaultUrl;
-                model.DefaultText = settings.DefaultText;
-            })
+                        model.Hint = settings.Hint;
+                        model.HintLinkText = settings.HintLinkText;
+                        model.Required = settings.Required;
+                        model.LinkTextMode = settings.LinkTextMode;
+                        model.UrlPlaceholder = settings.UrlPlaceholder;
+                        model.TextPlaceholder = settings.TextPlaceholder;
+                        model.DefaultUrl = settings.DefaultUrl;
+                        model.DefaultText = settings.DefaultText;
+                    }
+                )
                 .Location("Content");
         }
 

@@ -18,10 +18,7 @@ namespace OrchardCore.Shortcodes.Services
         private ShortcodeTemplatesDocument _shortcodeTemplatesDocument;
         private readonly HashSet<string> _identifiers = [];
 
-        public TemplateShortcodeProvider(
-            ShortcodeTemplatesManager shortcodeTemplatesManager,
-            ILiquidTemplateManager liquidTemplateManager,
-            HtmlEncoder htmlEncoder)
+        public TemplateShortcodeProvider(ShortcodeTemplatesManager shortcodeTemplatesManager, ILiquidTemplateManager liquidTemplateManager, HtmlEncoder htmlEncoder)
         {
             _shortcodeTemplatesManager = shortcodeTemplatesManager;
             _liquidTemplateManager = liquidTemplateManager;
@@ -68,7 +65,9 @@ namespace OrchardCore.Shortcodes.Services
         internal class Content : LiquidContentAccessor
         {
             public readonly string _content;
+
             public Content(string content) => _content = content;
+
             public override string ToString() => _content;
         }
     }

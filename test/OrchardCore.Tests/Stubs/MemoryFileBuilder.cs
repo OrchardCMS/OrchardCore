@@ -6,8 +6,7 @@ namespace OrchardCore.Tests.Stubs
     /// In memory file builder that uses a dictionary as virtual file system.
     /// Intended for unit testing.
     /// </summary>
-    public class MemoryFileBuilder
-        : IFileBuilder
+    public class MemoryFileBuilder : IFileBuilder
     {
         public Dictionary<string, byte[]> VirtualFiles { get; private set; } = [];
 

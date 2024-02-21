@@ -25,11 +25,7 @@ namespace OrchardCore.Sitemaps.Deployment
 
             var jArray = JArray.FromObject(sitemaps);
 
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "Sitemaps",
-                ["data"] = jArray,
-            });
+            result.Steps.Add(new JsonObject { ["name"] = "Sitemaps", ["data"] = jArray, });
         }
     }
 }

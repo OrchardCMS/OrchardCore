@@ -112,8 +112,7 @@ namespace OrchardCore.AutoSetup
                 }
                 else
                 {
-                    app.MapWhen(ctx => ctx.Request.Path.StartsWithNormalizedSegments(options.AutoSetupPath),
-                        appBuilder => appBuilder.UseMiddleware<AutoSetupMiddleware>());
+                    app.MapWhen(ctx => ctx.Request.Path.StartsWithNormalizedSegments(options.AutoSetupPath), appBuilder => appBuilder.UseMiddleware<AutoSetupMiddleware>());
                 }
             }
         }

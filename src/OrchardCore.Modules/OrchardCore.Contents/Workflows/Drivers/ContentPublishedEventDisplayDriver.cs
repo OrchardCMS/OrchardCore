@@ -6,8 +6,7 @@ namespace OrchardCore.Contents.Workflows.Drivers
 {
     public class ContentPublishedEventDisplayDriver : ContentEventDisplayDriver<ContentPublishedEvent, ContentPublishedEventViewModel>
     {
-        public ContentPublishedEventDisplayDriver(IContentDefinitionManager contentDefinitionManager) : base(contentDefinitionManager)
-        {
-        }
+        public ContentPublishedEventDisplayDriver(IContentDefinitionManager contentDefinitionManager)
+            : base(contentDefinitionManager) { }
     }
 }

@@ -9,9 +9,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         private readonly string _value;
 
         public LikeExpression(string propertyName, string value, MatchOptions matchOptions)
-            : this(propertyName, matchOptions.ToMatchString(value))
-        {
-        }
+            : this(propertyName, matchOptions.ToMatchString(value)) { }
 
         public LikeExpression(string propertyName, string value)
         {

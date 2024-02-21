@@ -44,10 +44,7 @@ namespace OrchardCore.Users.Workflows.Handlers
 
         private Task<IEnumerable<WorkflowExecutionContext>> TriggerWorkflowEventAsync(string name, User user)
         {
-            return _workflowManager.TriggerEventAsync(name,
-                input: new { User = user },
-                correlationId: user.UserId
-            );
+            return _workflowManager.TriggerEventAsync(name, input: new { User = user }, correlationId: user.UserId);
         }
     }
 }

@@ -29,11 +29,7 @@ namespace OrchardCore.Tenants.Deployment
                 featureProfileObjects[featureProfile.Key] = JObject.FromObject(featureProfile.Value);
             }
 
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "FeatureProfiles",
-                ["FeatureProfiles"] = featureProfileObjects,
-            });
+            result.Steps.Add(new JsonObject { ["name"] = "FeatureProfiles", ["FeatureProfiles"] = featureProfileObjects, });
         }
     }
 }

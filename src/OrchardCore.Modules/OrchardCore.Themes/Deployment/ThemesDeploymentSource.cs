@@ -27,12 +27,14 @@ namespace OrchardCore.Themes.Deployment
                 return;
             }
 
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "Themes",
-                [nameof(ThemeStepModel.Site)] = await _siteThemeService.GetSiteThemeNameAsync(),
-                [nameof(ThemeStepModel.Admin)] = await _adminThemeService.GetAdminThemeNameAsync(),
-            });
+            result.Steps.Add(
+                new JsonObject
+                {
+                    ["name"] = "Themes",
+                    [nameof(ThemeStepModel.Site)] = await _siteThemeService.GetSiteThemeNameAsync(),
+                    [nameof(ThemeStepModel.Admin)] = await _adminThemeService.GetAdminThemeNameAsync(),
+                }
+            );
         }
     }
 }

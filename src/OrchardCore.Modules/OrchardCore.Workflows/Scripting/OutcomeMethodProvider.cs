@@ -10,11 +10,7 @@ namespace OrchardCore.Workflows.Scripting
 
         public OutcomeMethodProvider(IList<string> outcomes)
         {
-            _setOutcomeMethod = new GlobalMethod
-            {
-                Name = "setOutcome",
-                Method = serviceProvider => (Action<string>)(name => outcomes.Add(name)),
-            };
+            _setOutcomeMethod = new GlobalMethod { Name = "setOutcome", Method = serviceProvider => (Action<string>)(name => outcomes.Add(name)), };
         }
 
         public IEnumerable<GlobalMethod> GetMethods()

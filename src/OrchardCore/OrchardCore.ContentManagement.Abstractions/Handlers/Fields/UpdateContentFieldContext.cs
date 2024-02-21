@@ -2,7 +2,8 @@ namespace OrchardCore.ContentManagement.Handlers;
 
 public class UpdateContentFieldContext : ContentFieldContextBase
 {
-    public UpdateContentFieldContext(ContentItem contentItem) : base(contentItem)
+    public UpdateContentFieldContext(ContentItem contentItem)
+        : base(contentItem)
     {
         UpdatingItem = contentItem;
     }

@@ -17,9 +17,7 @@ public class ElasticConnectionOptionsConfigurations : IConfigureOptions<ElasticC
     private readonly IShellConfiguration _shellConfiguration;
     private readonly ILogger _logger;
 
-    public ElasticConnectionOptionsConfigurations(
-        IShellConfiguration shellConfiguration,
-        ILogger<ElasticConnectionOptionsConfigurations> logger)
+    public ElasticConnectionOptionsConfigurations(IShellConfiguration shellConfiguration, ILogger<ElasticConnectionOptionsConfigurations> logger)
     {
         _shellConfiguration = shellConfiguration;
         _logger = logger;
@@ -27,8 +25,7 @@ public class ElasticConnectionOptionsConfigurations : IConfigureOptions<ElasticC
 
     public void Configure(ElasticConnectionOptions options)
     {
-        var fileOptions = _shellConfiguration.GetSection(ConfigSectionName).Get<ElasticConnectionOptions>()
-             ?? new ElasticConnectionOptions();
+        var fileOptions = _shellConfiguration.GetSection(ConfigSectionName).Get<ElasticConnectionOptions>() ?? new ElasticConnectionOptions();
 
         options.Url = fileOptions.Url;
         options.Ports = fileOptions.Ports;
@@ -77,7 +74,11 @@ public class ElasticConnectionOptionsConfigurations : IConfigureOptions<ElasticC
 
         var settings = new ConnectionSettings(pool);
 
-        if (elasticConfiguration.ConnectionType != "CloudConnectionPool" && !string.IsNullOrWhiteSpace(elasticConfiguration.Username) && !string.IsNullOrWhiteSpace(elasticConfiguration.Password))
+        if (
+            elasticConfiguration.ConnectionType != "CloudConnectionPool"
+            && !string.IsNullOrWhiteSpace(elasticConfiguration.Username)
+            && !string.IsNullOrWhiteSpace(elasticConfiguration.Password)
+        )
         {
             settings.BasicAuthentication(elasticConfiguration.Username, elasticConfiguration.Password);
         }
@@ -106,7 +107,11 @@ public class ElasticConnectionOptionsConfigurations : IConfigureOptions<ElasticC
                 break;
 
             case "CloudConnectionPool":
-                if (!string.IsNullOrWhiteSpace(elasticConfiguration.Username) && !string.IsNullOrWhiteSpace(elasticConfiguration.Password) && !string.IsNullOrWhiteSpace(elasticConfiguration.CloudId))
+                if (
+                    !string.IsNullOrWhiteSpace(elasticConfiguration.Username)
+                    && !string.IsNullOrWhiteSpace(elasticConfiguration.Password)
+                    && !string.IsNullOrWhiteSpace(elasticConfiguration.CloudId)
+                )
                 {
                     var credentials = new BasicAuthenticationCredentials(elasticConfiguration.Username, elasticConfiguration.Password);
                     pool = new CloudConnectionPool(elasticConfiguration.CloudId, credentials);

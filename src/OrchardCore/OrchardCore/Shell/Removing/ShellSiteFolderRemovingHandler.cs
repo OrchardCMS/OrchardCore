@@ -20,7 +20,8 @@ public class ShellSiteFolderRemovingHandler : IShellRemovingHandler
     public ShellSiteFolderRemovingHandler(
         IOptions<ShellOptions> shellOptions,
         IStringLocalizer<ShellSiteFolderRemovingHandler> localizer,
-        ILogger<ShellSiteFolderRemovingHandler> logger)
+        ILogger<ShellSiteFolderRemovingHandler> logger
+    )
     {
         _shellOptions = shellOptions.Value;
         S = localizer;
@@ -32,18 +33,13 @@ public class ShellSiteFolderRemovingHandler : IShellRemovingHandler
     /// </summary>
     public Task RemovingAsync(ShellRemovingContext context)
     {
-        var shellAppDataFolder = Path.Combine(
-            _shellOptions.ShellsApplicationDataPath,
-            _shellOptions.ShellsContainerName,
-            context.ShellSettings.Name);
+        var shellAppDataFolder = Path.Combine(_shellOptions.ShellsApplicationDataPath, _shellOptions.ShellsContainerName, context.ShellSettings.Name);
 
         try
         {
             Directory.Delete(shellAppDataFolder, true);
         }
-        catch (Exception ex) when (ex is DirectoryNotFoundException)
-        {
-        }
+        catch (Exception ex) when (ex is DirectoryNotFoundException) { }
         catch (Exception ex) when (ex.IsFileSharingViolation())
         {
             // Sharing violation, may happen if multiple nodes share the same file system
@@ -52,20 +48,17 @@ public class ShellSiteFolderRemovingHandler : IShellRemovingHandler
             {
                 _logger.LogWarning(
                     ex,
-@"Sharing violation while removing the site folder '{TenantFolder}' of tenant '{TenantName}'.
+                    @"Sharing violation while removing the site folder '{TenantFolder}' of tenant '{TenantName}'.
 Sharing violation may happen if multiple nodes share the same file system without using a distributed lock.
 In that case let another node do the job.",
                     shellAppDataFolder,
-                    context.ShellSettings.Name);
+                    context.ShellSettings.Name
+                );
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(
-                ex,
-                "Failed to remove the site folder '{TenantFolder}' of tenant '{TenantName}'.",
-                shellAppDataFolder,
-                context.ShellSettings.Name);
+            _logger.LogError(ex, "Failed to remove the site folder '{TenantFolder}' of tenant '{TenantName}'.", shellAppDataFolder, context.ShellSettings.Name);
 
             context.ErrorMessage = S["Failed to remove the site folder '{0}'.", shellAppDataFolder];
             context.Error = ex;

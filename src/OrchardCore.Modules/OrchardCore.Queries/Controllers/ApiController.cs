@@ -17,10 +17,7 @@ namespace OrchardCore.Queries.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IQueryManager _queryManager;
 
-        public ApiController(
-            IAuthorizationService authorizationService,
-            IQueryManager queryManager
-            )
+        public ApiController(IAuthorizationService authorizationService, IQueryManager queryManager)
         {
             _authorizationService = authorizationService;
             _queryManager = queryManager;
@@ -28,9 +25,7 @@ namespace OrchardCore.Queries.Controllers
 
         [HttpPost, HttpGet]
         [Route("{name}")]
-        public async Task<IActionResult> Query(
-            string name,
-            string parameters)
+        public async Task<IActionResult> Query(string name, string parameters)
         {
             var query = await _queryManager.GetQueryAsync(name);
 
@@ -52,9 +47,7 @@ namespace OrchardCore.Queries.Controllers
                 parameters = await reader.ReadToEndAsync();
             }
 
-            var queryParameters = !string.IsNullOrEmpty(parameters) ?
-                JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                : [];
+            var queryParameters = !string.IsNullOrEmpty(parameters) ? JConvert.DeserializeObject<Dictionary<string, object>>(parameters) : [];
 
             var result = await _queryManager.ExecuteQueryAsync(query, queryParameters);
             return new ObjectResult(result);

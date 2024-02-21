@@ -28,48 +28,54 @@ namespace OrchardCore.Cors.Services
             {
                 if (corsPolicy.AllowCredentials && corsPolicy.AllowAnyOrigin)
                 {
-                    _logger.LogWarning("Using AllowCredentials and AllowAnyOrigin at the same time is considered a security risk, the {PolicyName} policy will not be loaded.", corsPolicy.Name);
+                    _logger.LogWarning(
+                        "Using AllowCredentials and AllowAnyOrigin at the same time is considered a security risk, the {PolicyName} policy will not be loaded.",
+                        corsPolicy.Name
+                    );
                     continue;
                 }
 
-                options.AddPolicy(corsPolicy.Name, configurePolicy =>
-                {
-                    if (corsPolicy.AllowAnyHeader)
+                options.AddPolicy(
+                    corsPolicy.Name,
+                    configurePolicy =>
                     {
-                        configurePolicy.AllowAnyHeader();
-                    }
-                    else
-                    {
-                        configurePolicy.WithHeaders(corsPolicy.AllowedHeaders);
-                    }
+                        if (corsPolicy.AllowAnyHeader)
+                        {
+                            configurePolicy.AllowAnyHeader();
+                        }
+                        else
+                        {
+                            configurePolicy.WithHeaders(corsPolicy.AllowedHeaders);
+                        }
 
-                    if (corsPolicy.AllowAnyMethod)
-                    {
-                        configurePolicy.AllowAnyMethod();
-                    }
-                    else
-                    {
-                        configurePolicy.WithMethods(corsPolicy.AllowedMethods);
-                    }
+                        if (corsPolicy.AllowAnyMethod)
+                        {
+                            configurePolicy.AllowAnyMethod();
+                        }
+                        else
+                        {
+                            configurePolicy.WithMethods(corsPolicy.AllowedMethods);
+                        }
 
-                    if (corsPolicy.AllowAnyOrigin)
-                    {
-                        configurePolicy.AllowAnyOrigin();
-                    }
-                    else
-                    {
-                        configurePolicy.WithOrigins(corsPolicy.AllowedOrigins);
-                    }
+                        if (corsPolicy.AllowAnyOrigin)
+                        {
+                            configurePolicy.AllowAnyOrigin();
+                        }
+                        else
+                        {
+                            configurePolicy.WithOrigins(corsPolicy.AllowedOrigins);
+                        }
 
-                    if (corsPolicy.AllowCredentials)
-                    {
-                        configurePolicy.AllowCredentials();
+                        if (corsPolicy.AllowCredentials)
+                        {
+                            configurePolicy.AllowCredentials();
+                        }
+                        else
+                        {
+                            configurePolicy.DisallowCredentials();
+                        }
                     }
-                    else
-                    {
-                        configurePolicy.DisallowCredentials();
-                    }
-                });
+                );
 
                 if (corsPolicy.IsDefaultPolicy)
                 {

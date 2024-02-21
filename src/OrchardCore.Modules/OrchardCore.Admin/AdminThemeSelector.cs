@@ -14,10 +14,7 @@ namespace OrchardCore.Admin
         private readonly IAdminThemeService _adminThemeService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AdminThemeSelector(
-            IAdminThemeService adminThemeService,
-            IHttpContextAccessor httpContextAccessor
-            )
+        public AdminThemeSelector(IAdminThemeService adminThemeService, IHttpContextAccessor httpContextAccessor)
         {
             _adminThemeService = adminThemeService;
             _httpContextAccessor = httpContextAccessor;
@@ -33,11 +30,7 @@ namespace OrchardCore.Admin
                     return null;
                 }
 
-                return new ThemeSelectorResult
-                {
-                    Priority = 100,
-                    ThemeName = adminThemeName
-                };
+                return new ThemeSelectorResult { Priority = 100, ThemeName = adminThemeName };
             }
 
             return null;

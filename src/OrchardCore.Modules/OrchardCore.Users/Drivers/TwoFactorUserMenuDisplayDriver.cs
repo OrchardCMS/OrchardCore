@@ -8,9 +8,6 @@ public class TwoFactorUserMenuDisplayDriver : DisplayDriver<UserMenu>
 {
     public override IDisplayResult Display(UserMenu model)
     {
-        return View("UserMenuItems__TwoFactor", model)
-            .Location("Detail", "Content:15")
-            .Location("DetailAdmin", "Content:15")
-            .Differentiator("TwoFactor");
+        return View("UserMenuItems__TwoFactor", model).Location("Detail", "Content:15").Location("DetailAdmin", "Content:15").Differentiator("TwoFactor");
     }
 }

@@ -22,10 +22,7 @@ namespace OrchardCore.Modules
 
         public Task<DateTimeOffset> LocalNowAsync
         {
-            get
-            {
-                return GetLocalNowAsync();
-            }
+            get { return GetLocalNowAsync(); }
         }
 
         private async Task<DateTimeOffset> GetLocalNowAsync()

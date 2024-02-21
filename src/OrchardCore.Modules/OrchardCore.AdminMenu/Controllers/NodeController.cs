@@ -25,7 +25,6 @@ namespace OrchardCore.AdminMenu.Controllers
         protected readonly IHtmlLocalizer H;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
-
         public NodeController(
             IAuthorizationService authorizationService,
             IDisplayManager<MenuItem> displayManager,
@@ -33,7 +32,8 @@ namespace OrchardCore.AdminMenu.Controllers
             IAdminMenuService adminMenuService,
             IHtmlLocalizer<NodeController> htmlLocalizer,
             INotifier notifier,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor
+        )
         {
             _displayManager = displayManager;
             _factories = factories;
@@ -73,11 +73,7 @@ namespace OrchardCore.AdminMenu.Controllers
                 thumbnails.Add(factory.Name, thumbnail);
             }
 
-            var model = new AdminNodeListViewModel
-            {
-                AdminMenu = tree,
-                Thumbnails = thumbnails,
-            };
+            var model = new AdminNodeListViewModel { AdminMenu = tree, Thumbnails = thumbnails, };
 
             return model;
         }
@@ -306,8 +302,7 @@ namespace OrchardCore.AdminMenu.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> MoveNode(string treeId, string nodeToMoveId,
-            string destinationNodeId, int position)
+        public async Task<IActionResult> MoveNode(string treeId, string nodeToMoveId, string destinationNodeId, int position)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
             {

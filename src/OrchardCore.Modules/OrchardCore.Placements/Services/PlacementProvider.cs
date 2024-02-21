@@ -14,9 +14,7 @@ namespace OrchardCore.Placements.Services
         private readonly PlacementsManager _placementsManager;
         private readonly IEnumerable<IPlacementNodeFilterProvider> _placementNodeFilterProviders;
 
-        public PlacementProvider(
-            PlacementsManager placementsManager,
-            IEnumerable<IPlacementNodeFilterProvider> placementNodeFilterProviders)
+        public PlacementProvider(PlacementsManager placementsManager, IEnumerable<IPlacementNodeFilterProvider> placementNodeFilterProviders)
         {
             _placementsManager = placementsManager;
             _placementNodeFilterProviders = placementNodeFilterProviders;
@@ -33,9 +31,7 @@ namespace OrchardCore.Placements.Services
             private readonly IReadOnlyDictionary<string, IEnumerable<PlacementNode>> _placements;
             private readonly IEnumerable<IPlacementNodeFilterProvider> _placementNodeFilterProviders;
 
-            public PlacementInfoResolver(
-                IReadOnlyDictionary<string, IEnumerable<PlacementNode>> placements,
-                IEnumerable<IPlacementNodeFilterProvider> placementNodeFilterProviders)
+            public PlacementInfoResolver(IReadOnlyDictionary<string, IEnumerable<PlacementNode>> placements, IEnumerable<IPlacementNodeFilterProvider> placementNodeFilterProviders)
             {
                 _placements = placements;
                 _placementNodeFilterProviders = placementNodeFilterProviders;
@@ -66,10 +62,7 @@ namespace OrchardCore.Placements.Services
                             continue;
                         }
 
-                        placement ??= new PlacementInfo
-                        {
-                            Source = "OrchardCore.Placements",
-                        };
+                        placement ??= new PlacementInfo { Source = "OrchardCore.Placements", };
 
                         if (!string.IsNullOrEmpty(placementRule.Location))
                         {
@@ -98,8 +91,7 @@ namespace OrchardCore.Placements.Services
 
             private static bool CheckFilter(ShapePlacementContext ctx, PlacementNode filter) => ShapePlacementParsingStrategy.CheckFilter(ctx, filter);
 
-            private Func<ShapePlacementContext, bool> BuildPredicate(Func<ShapePlacementContext, bool> predicate,
-                  KeyValuePair<string, object> term)
+            private Func<ShapePlacementContext, bool> BuildPredicate(Func<ShapePlacementContext, bool> predicate, KeyValuePair<string, object> term)
             {
                 return ShapePlacementParsingStrategy.BuildPredicate(predicate, term, _placementNodeFilterProviders);
             }

@@ -7,9 +7,7 @@ using OrchardCore.GitHub.Settings;
 
 namespace OrchardCore.GitHub.Configuration
 {
-    public class GitHubOptionsConfiguration :
-        IConfigureOptions<AuthenticationOptions>,
-        IConfigureNamedOptions<GitHubOptions>
+    public class GitHubOptionsConfiguration : IConfigureOptions<AuthenticationOptions>, IConfigureNamedOptions<GitHubOptions>
     {
         private readonly GitHubAuthenticationSettings _gitHubAuthenticationSettings;
         private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -18,7 +16,8 @@ namespace OrchardCore.GitHub.Configuration
         public GitHubOptionsConfiguration(
             IOptions<GitHubAuthenticationSettings> gitHubAuthenticationSettings,
             IDataProtectionProvider dataProtectionProvider,
-            ILogger<GitHubOptionsConfiguration> logger)
+            ILogger<GitHubOptionsConfiguration> logger
+        )
         {
             _gitHubAuthenticationSettings = gitHubAuthenticationSettings.Value;
             _dataProtectionProvider = dataProtectionProvider;
@@ -32,8 +31,7 @@ namespace OrchardCore.GitHub.Configuration
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(_gitHubAuthenticationSettings.ClientID) ||
-                string.IsNullOrWhiteSpace(_gitHubAuthenticationSettings.ClientSecret))
+            if (string.IsNullOrWhiteSpace(_gitHubAuthenticationSettings.ClientID) || string.IsNullOrWhiteSpace(_gitHubAuthenticationSettings.ClientSecret))
             {
                 _logger.LogWarning("The Github login provider is enabled but not configured.");
 
@@ -41,11 +39,14 @@ namespace OrchardCore.GitHub.Configuration
             }
 
             // Register the OpenID Connect client handler in the authentication handlers collection.
-            options.AddScheme(GitHubDefaults.AuthenticationScheme, builder =>
-            {
-                builder.DisplayName = "GitHub";
-                builder.HandlerType = typeof(GitHubHandler);
-            });
+            options.AddScheme(
+                GitHubDefaults.AuthenticationScheme,
+                builder =>
+                {
+                    builder.DisplayName = "GitHub";
+                    builder.HandlerType = typeof(GitHubHandler);
+                }
+            );
         }
 
         public void Configure(string name, GitHubOptions options)

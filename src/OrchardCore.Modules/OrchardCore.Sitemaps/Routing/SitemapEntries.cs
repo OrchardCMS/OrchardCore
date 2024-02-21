@@ -48,10 +48,7 @@ namespace OrchardCore.Sitemaps.Routing
 
         private async Task BuildEntriesAsync(string identifier)
         {
-            var document = new SitemapRouteDocument()
-            {
-                Identifier = identifier
-            };
+            var document = new SitemapRouteDocument() { Identifier = identifier };
 
             var sitemaps = await _sitemapManager.GetSitemapsAsync();
             foreach (var sitemap in sitemaps)

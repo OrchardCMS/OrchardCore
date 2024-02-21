@@ -14,10 +14,7 @@ public class TwitterSettingsConfiguration : IConfigureOptions<TwitterSettings>
     private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
 
-    public TwitterSettingsConfiguration(
-        ITwitterSettingsService twitterSettingsService,
-        ShellSettings shellSettings,
-        ILogger<TwitterSettingsConfiguration> logger)
+    public TwitterSettingsConfiguration(ITwitterSettingsService twitterSettingsService, ShellSettings shellSettings, ILogger<TwitterSettingsConfiguration> logger)
     {
         _twitterSettingsService = twitterSettingsService;
         _shellSettings = shellSettings;
@@ -26,9 +23,7 @@ public class TwitterSettingsConfiguration : IConfigureOptions<TwitterSettings>
 
     public void Configure(TwitterSettings options)
     {
-        var settings = GetTwitterSettingsAsync()
-            .GetAwaiter()
-            .GetResult();
+        var settings = GetTwitterSettingsAsync().GetAwaiter().GetResult();
 
         if (settings != null)
         {

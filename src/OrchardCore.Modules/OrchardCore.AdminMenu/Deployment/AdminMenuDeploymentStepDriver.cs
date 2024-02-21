@@ -8,11 +8,10 @@ namespace OrchardCore.AdminMenu.Deployment
     {
         public override IDisplayResult Display(AdminMenuDeploymentStep step)
         {
-            return
-                Combine(
-                    View("AdminMenuDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                    View("AdminMenuDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-                );
+            return Combine(
+                View("AdminMenuDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("AdminMenuDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(AdminMenuDeploymentStep step)

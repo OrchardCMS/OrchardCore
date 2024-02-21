@@ -41,7 +41,8 @@ namespace OrchardCore.Setup.Controllers
             IEmailAddressValidator emailAddressValidator,
             IEnumerable<DatabaseProvider> databaseProviders,
             IStringLocalizer<SetupController> localizer,
-            ILogger<SetupController> logger)
+            ILogger<SetupController> logger
+        )
         {
             _clock = clock;
             _setupService = setupService;

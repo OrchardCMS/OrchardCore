@@ -39,8 +39,8 @@ namespace OrchardCore.Environment.Commands
         private void SetSwitchValue(KeyValuePair<string, string> commandSwitch)
         {
             // Find the property.
-            var propertyInfo = GetType()
-                .GetProperty(commandSwitch.Key, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase)
+            var propertyInfo =
+                GetType().GetProperty(commandSwitch.Key, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase)
                 ?? throw new InvalidOperationException(S["Switch \"{0}\" was not found", commandSwitch.Key]);
 
             if (propertyInfo.GetCustomAttributes(typeof(OrchardSwitchAttribute), false).Length == 0)
@@ -52,15 +52,16 @@ namespace OrchardCore.Environment.Commands
             try
             {
                 var value = ConvertToType(propertyInfo.PropertyType, commandSwitch.Value);
-                propertyInfo.SetValue(this, value, null /*index*/);
+                propertyInfo.SetValue(
+                    this,
+                    value,
+                    null /*index*/
+                );
             }
             catch (Exception ex) when (!ex.IsFatal())
             {
                 // TODO: (ngm) fix this message.
-                var message = S["Error converting value \"{0}\" to \"{1}\" for switch \"{2}\"",
-                    commandSwitch.Value,
-                    propertyInfo.PropertyType.FullName,
-                    commandSwitch.Key];
+                var message = S["Error converting value \"{0}\" to \"{1}\" for switch \"{2}\"", commandSwitch.Value, propertyInfo.PropertyType.FullName, commandSwitch.Key];
 
                 throw new InvalidOperationException(message, ex);
             }
@@ -71,7 +72,8 @@ namespace OrchardCore.Environment.Commands
             CheckMethodForSwitches(context.CommandDescriptor.MethodInfo, context.Switches);
 
             var arguments = (context.Arguments ?? []).ToArray();
-            var invokeParameters = GetInvokeParametersForMethod(context.CommandDescriptor.MethodInfo, arguments)
+            var invokeParameters =
+                GetInvokeParametersForMethod(context.CommandDescriptor.MethodInfo, arguments)
                 ?? throw new InvalidOperationException(S["Command arguments \"{0}\" don't match command definition", string.Join(" ", arguments)]);
 
             Context = context;
@@ -119,8 +121,10 @@ namespace OrchardCore.Environment.Commands
 
             var requiredMethodParameters = methodParameters.Where(x => !x.HasDefaultValue).ToArray();
 
-            if (!methodHasParams && args.Count < requiredMethodParameters.Length) return null;
-            if (methodHasParams && (methodParameters.Length - args.Count >= 2)) return null;
+            if (!methodHasParams && args.Count < requiredMethodParameters.Length)
+                return null;
+            if (methodHasParams && (methodParameters.Length - args.Count >= 2))
+                return null;
 
             for (var i = 0; i < methodParameters.Length; i++)
             {
@@ -133,7 +137,8 @@ namespace OrchardCore.Environment.Commands
                 if (i < arguments.Count)
                 {
                     var val = ConvertToType(methodParameters[i].ParameterType, arguments[i]);
-                    if (val == null) return null;
+                    if (val == null)
+                        return null;
 
                     invokeParameters.Add(val);
                 }
@@ -143,10 +148,7 @@ namespace OrchardCore.Environment.Commands
                 }
             }
 
-            var lastParameterIsParams = methodParameters
-                .LastOrDefault()
-                ?.GetCustomAttributes(typeof(ParamArrayAttribute), false)
-                ?.Length > 0;
+            var lastParameterIsParams = methodParameters.LastOrDefault()?.GetCustomAttributes(typeof(ParamArrayAttribute), false)?.Length > 0;
 
             if (methodHasParams && (methodParameters.Length - args.Count == 1) && !lastParameterIsParams)
             {

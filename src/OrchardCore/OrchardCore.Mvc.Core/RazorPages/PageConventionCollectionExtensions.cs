@@ -12,8 +12,7 @@ namespace Microsoft.AspNetCore.Mvc.ApplicationModels
         /// Note: Applied to all pages whose razor view file path doesn't contain any '/Admin/' segment
         /// and whose route model properties doesn't contains an 'Admin' key.
         /// </summary>
-        public static PageConventionCollection AddAreaFolderRoute(this PageConventionCollection conventions,
-            string areaName, string folderPath, string folderRoute)
+        public static PageConventionCollection AddAreaFolderRoute(this PageConventionCollection conventions, string areaName, string folderPath, string folderRoute)
         {
             return conventions.AddAreaFolderRouteInternal(areaName, folderPath, folderRoute, isAdmin: false);
         }
@@ -25,54 +24,56 @@ namespace Microsoft.AspNetCore.Mvc.ApplicationModels
         /// Note: Applied to all pages whose razor view file path contains an '/Admin/' segment
         /// or whose route model properties contains an 'Admin' key.
         /// </summary>
-        public static PageConventionCollection AddAdminAreaFolderRoute(this PageConventionCollection conventions,
-            string areaName, string folderPath, string folderRoute)
+        public static PageConventionCollection AddAdminAreaFolderRoute(this PageConventionCollection conventions, string areaName, string folderPath, string folderRoute)
         {
             return conventions.AddAreaFolderRouteInternal(areaName, folderPath, folderRoute, isAdmin: true);
         }
 
-        internal static PageConventionCollection AddAreaFolderRouteInternal(this PageConventionCollection conventions,
-            string areaName, string folderPath, string folderRoute, bool isAdmin)
+        internal static PageConventionCollection AddAreaFolderRouteInternal(
+            this PageConventionCollection conventions,
+            string areaName,
+            string folderPath,
+            string folderRoute,
+            bool isAdmin
+        )
         {
-            conventions.AddAreaFolderRouteModelConvention(areaName, folderPath, model =>
-            {
-                if (isAdmin != (model.ViewEnginePath.Contains("/Admin/") || model.Properties.ContainsKey("Admin")))
+            conventions.AddAreaFolderRouteModelConvention(
+                areaName,
+                folderPath,
+                model =>
                 {
-                    return;
-                }
-
-                var areaFolder = areaName + folderPath;
-
-                foreach (var selector in model.Selectors.ToArray())
-                {
-                    var route = selector.AttributeRouteModel;
-
-                    if (route.Template.StartsWith(areaFolder, StringComparison.Ordinal) || (route.Template == areaName && folderPath == "/"))
+                    if (isAdmin != (model.ViewEnginePath.Contains("/Admin/") || model.Properties.ContainsKey("Admin")))
                     {
-                        route.SuppressLinkGeneration = true;
+                        return;
+                    }
 
-                        string template;
+                    var areaFolder = areaName + folderPath;
 
-                        if (route.Template == areaName && folderPath == "/")
-                        {
-                            template = folderRoute;
-                        }
-                        else
-                        {
-                            var cleanSubTemplate = route.Template[areaFolder.Length..].TrimStart('/');
-                            template = AttributeRouteModel.CombineTemplates(folderRoute, cleanSubTemplate);
-                        }
+                    foreach (var selector in model.Selectors.ToArray())
+                    {
+                        var route = selector.AttributeRouteModel;
 
-                        model.Selectors.Add(new SelectorModel
+                        if (route.Template.StartsWith(areaFolder, StringComparison.Ordinal) || (route.Template == areaName && folderPath == "/"))
                         {
-                            AttributeRouteModel = new AttributeRouteModel
+                            route.SuppressLinkGeneration = true;
+
+                            string template;
+
+                            if (route.Template == areaName && folderPath == "/")
                             {
-                                Template = template
+                                template = folderRoute;
                             }
-                        });
+                            else
+                            {
+                                var cleanSubTemplate = route.Template[areaFolder.Length..].TrimStart('/');
+                                template = AttributeRouteModel.CombineTemplates(folderRoute, cleanSubTemplate);
+                            }
+
+                            model.Selectors.Add(new SelectorModel { AttributeRouteModel = new AttributeRouteModel { Template = template } });
+                        }
                     }
                 }
-            });
+            );
 
             return conventions;
         }

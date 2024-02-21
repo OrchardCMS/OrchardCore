@@ -3,7 +3,8 @@ using OrchardCore.ContentManagement;
 
 namespace OrchardCore.ContentLocalization.Handlers
 {
-    public abstract class ContentLocalizationPartHandlerBase<TPart> : IContentLocalizationPartHandler where TPart : ContentPart, new()
+    public abstract class ContentLocalizationPartHandlerBase<TPart> : IContentLocalizationPartHandler
+        where TPart : ContentPart, new()
     {
         async Task IContentLocalizationPartHandler.LocalizingAsync(LocalizationContentContext context, ContentPart part)
         {
@@ -20,7 +21,9 @@ namespace OrchardCore.ContentLocalization.Handlers
                 await LocalizedAsync(context, tpart);
             }
         }
+
         public virtual Task LocalizingAsync(LocalizationContentContext context, TPart part) => Task.CompletedTask;
+
         public virtual Task LocalizedAsync(LocalizationContentContext context, TPart part) => Task.CompletedTask;
     }
 }

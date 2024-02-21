@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 
 namespace OrchardCore.Navigation
-
 {
     public interface INavigationProvider
     {

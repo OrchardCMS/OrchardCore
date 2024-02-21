@@ -13,9 +13,7 @@ namespace OrchardCore.Navigation
         /// <param name="pagerParameters">The pager parameters.</param>
         /// <param name="defaultPageSize">The default page size.</param>
         public Pager(PagerParameters pagerParameters, int defaultPageSize)
-            : this(pagerParameters.Page, pagerParameters.PageSize, defaultPageSize)
-        {
-        }
+            : this(pagerParameters.Page, pagerParameters.PageSize, defaultPageSize) { }
 
         /// <summary>
         /// Constructs a new pager.

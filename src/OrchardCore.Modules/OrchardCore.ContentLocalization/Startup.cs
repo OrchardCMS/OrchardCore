@@ -1,3 +1,5 @@
+using System;
+using System.Globalization;
 using Fluid;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -23,8 +25,6 @@ using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Sitemaps.Builders;
-using System;
-using System.Globalization;
 
 namespace OrchardCore.ContentLocalization
 {
@@ -32,12 +32,13 @@ namespace OrchardCore.ContentLocalization
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<TemplateOptions>(o =>
-            {
-                o.MemberAccessStrategy.Register<LocalizationPartViewModel>();
-                o.MemberAccessStrategy.Register<CultureInfo>();
-            })
-            .AddLiquidFilter<ContentLocalizationFilter>("localization_set");
+            services
+                .Configure<TemplateOptions>(o =>
+                {
+                    o.MemberAccessStrategy.Register<LocalizationPartViewModel>();
+                    o.MemberAccessStrategy.Register<CultureInfo>();
+                })
+                .AddLiquidFilter<ContentLocalizationFilter>("localization_set");
 
             services.AddScoped<IContentPartIndexHandler, LocalizationPartIndexHandler>();
             services.AddSingleton<ILocalizationEntries, LocalizationEntries>();
@@ -56,6 +57,7 @@ namespace OrchardCore.ContentLocalization
     public class ContentPickerStartup : StartupBase
     {
         private readonly IShellConfiguration _shellConfiguration;
+
         public ContentPickerStartup(IShellConfiguration shellConfiguration)
         {
             _shellConfiguration = shellConfiguration;
@@ -76,11 +78,11 @@ namespace OrchardCore.ContentLocalization
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             routes.MapAreaControllerRoute(
-               name: "RedirectToLocalizedContent",
-               areaName: "OrchardCore.ContentLocalization",
-               pattern: "RedirectToLocalizedContent",
-               defaults: new { controller = "ContentCulturePicker", action = "RedirectToLocalizedContent" }
-           );
+                name: "RedirectToLocalizedContent",
+                areaName: "OrchardCore.ContentLocalization",
+                pattern: "RedirectToLocalizedContent",
+                defaults: new { controller = "ContentCulturePicker", action = "RedirectToLocalizedContent" }
+            );
         }
     }
 

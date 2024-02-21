@@ -35,14 +35,16 @@ namespace OrchardCore.Google
             services.AddScoped<IDisplayDriver<ISite>, GoogleAuthenticationSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, GoogleAuthenticationAdminMenu>();
             // Register the options initializers required by the Google Handler.
-            services.TryAddEnumerable(new[]
-            {
-                // Orchard-specific initializers:
-                ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, GoogleOptionsConfiguration>(),
-                ServiceDescriptor.Transient<IConfigureOptions<GoogleOptions>, GoogleOptionsConfiguration>(),
-                // Built-in initializers:
-                ServiceDescriptor.Transient<IPostConfigureOptions<GoogleOptions>, OAuthPostConfigureOptions<GoogleOptions, GoogleHandler>>()
-            });
+            services.TryAddEnumerable(
+                new[]
+                {
+                    // Orchard-specific initializers:
+                    ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, GoogleOptionsConfiguration>(),
+                    ServiceDescriptor.Transient<IConfigureOptions<GoogleOptions>, GoogleOptionsConfiguration>(),
+                    // Built-in initializers:
+                    ServiceDescriptor.Transient<IPostConfigureOptions<GoogleOptions>, OAuthPostConfigureOptions<GoogleOptions, GoogleHandler>>()
+                }
+            );
 
             services.AddTransient<IConfigureOptions<GoogleAuthenticationSettings>, GoogleAuthenticationSettingsConfiguration>();
         }
@@ -58,10 +60,12 @@ namespace OrchardCore.Google
 
             services.AddScoped<IDisplayDriver<ISite>, GoogleAnalyticsSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, GoogleAnalyticsAdminMenu>();
-            services.Configure<MvcOptions>((options) =>
-            {
-                options.Filters.Add<GoogleAnalyticsFilter>();
-            });
+            services.Configure<MvcOptions>(
+                (options) =>
+                {
+                    options.Filters.Add<GoogleAnalyticsFilter>();
+                }
+            );
         }
     }
 
@@ -75,10 +79,12 @@ namespace OrchardCore.Google
 
             services.AddScoped<IDisplayDriver<ISite>, GoogleTagManagerSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, GoogleTagManagerAdminMenu>();
-            services.Configure<MvcOptions>((options) =>
-            {
-                options.Filters.Add<GoogleTagManagerFilter>();
-            });
+            services.Configure<MvcOptions>(
+                (options) =>
+                {
+                    options.Filters.Add<GoogleTagManagerFilter>();
+                }
+            );
         }
     }
 
@@ -88,7 +94,10 @@ namespace OrchardCore.Google
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSiteSettingsPropertyDeploymentStep<GoogleAuthenticationSettings, GoogleAuthenticationDeploymentStartup>(S => S["Google Authentication Settings"], S => S["Exports the Google Authentication settings."]);
+            services.AddSiteSettingsPropertyDeploymentStep<GoogleAuthenticationSettings, GoogleAuthenticationDeploymentStartup>(
+                S => S["Google Authentication Settings"],
+                S => S["Exports the Google Authentication settings."]
+            );
         }
     }
 
@@ -98,7 +107,10 @@ namespace OrchardCore.Google
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSiteSettingsPropertyDeploymentStep<GoogleAnalyticsSettings, GoogleAnalyticsDeploymentStartup>(S => S["Google Analytics Settings"], S => S["Exports the Google Analytics settings."]);
+            services.AddSiteSettingsPropertyDeploymentStep<GoogleAnalyticsSettings, GoogleAnalyticsDeploymentStartup>(
+                S => S["Google Analytics Settings"],
+                S => S["Exports the Google Analytics settings."]
+            );
         }
     }
 
@@ -108,7 +120,10 @@ namespace OrchardCore.Google
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSiteSettingsPropertyDeploymentStep<GoogleTagManagerSettings, GoogleTagManagerDeploymentStartup>(S => S["Google Tag Manager Settings"], S => S["Exports the Google Tag Manager settings."]);
+            services.AddSiteSettingsPropertyDeploymentStep<GoogleTagManagerSettings, GoogleTagManagerDeploymentStartup>(
+                S => S["Google Tag Manager Settings"],
+                S => S["Exports the Google Tag Manager settings."]
+            );
         }
     }
 }

@@ -45,7 +45,7 @@ public class SearchController : Controller
         IEnumerable<ISearchHandler> searchHandlers,
         IShapeFactory shapeFactory,
         ILogger<SearchController> logger
-        )
+    )
     {
         _authorizationService = authorizationService;
         _siteService = siteService;
@@ -88,17 +88,19 @@ public class SearchController : Controller
 
         if (string.IsNullOrWhiteSpace(viewModel.Terms))
         {
-            return View(new SearchIndexViewModel()
-            {
-                Index = viewModel.Index,
-                PageTitle = searchSettings.PageTitle,
-                SearchForm = new SearchFormViewModel()
+            return View(
+                new SearchIndexViewModel()
                 {
-                    Terms = viewModel.Terms,
-                    Placeholder = searchSettings.Placeholder,
                     Index = viewModel.Index,
+                    PageTitle = searchSettings.PageTitle,
+                    SearchForm = new SearchFormViewModel()
+                    {
+                        Terms = viewModel.Terms,
+                        Placeholder = searchSettings.Placeholder,
+                        Index = viewModel.Index,
+                    }
                 }
-            });
+            );
         }
 
         var pager = new PagerSlim(pagerParameters, siteSettings.PageSize);
@@ -133,22 +135,20 @@ public class SearchController : Controller
         {
             await _searchHandlers.InvokeAsync((handler, context) => handler.SearchedAsync(context), searchContext, _logger);
 
-            return View(new SearchIndexViewModel()
-            {
-                Index = viewModel.Index,
-                PageTitle = searchSettings.PageTitle,
-                SearchForm = new SearchFormViewModel()
-                {
-                    Terms = viewModel.Terms,
-                    Placeholder = searchSettings.Placeholder,
-                    Index = viewModel.Index,
-                },
-                SearchResults = new SearchResultsViewModel()
+            return View(
+                new SearchIndexViewModel()
                 {
                     Index = viewModel.Index,
-                    ContentItems = [],
-                },
-            });
+                    PageTitle = searchSettings.PageTitle,
+                    SearchForm = new SearchFormViewModel()
+                    {
+                        Terms = viewModel.Terms,
+                        Placeholder = searchSettings.Placeholder,
+                        Index = viewModel.Index,
+                    },
+                    SearchResults = new SearchResultsViewModel() { Index = viewModel.Index, ContentItems = [], },
+                }
+            );
         }
 
         // Query the database to retrieve content items.
@@ -156,13 +156,11 @@ public class SearchController : Controller
 
         if (searchResult.Latest)
         {
-            query = _session.Query<ContentItem, ContentItemIndex>()
-                .Where(x => x.ContentItemId.IsIn(searchResult.ContentItemIds) && x.Latest);
+            query = _session.Query<ContentItem, ContentItemIndex>().Where(x => x.ContentItemId.IsIn(searchResult.ContentItemIds) && x.Latest);
         }
         else
         {
-            query = _session.Query<ContentItem, ContentItemIndex>()
-                .Where(x => x.ContentItemId.IsIn(searchResult.ContentItemIds) && x.Published);
+            query = _session.Query<ContentItem, ContentItemIndex>().Where(x => x.ContentItemId.IsIn(searchResult.ContentItemIds) && x.Published);
         }
 
         await _searchHandlers.InvokeAsync((handler, context) => handler.SearchedAsync(context), searchContext, _logger);
@@ -202,15 +200,12 @@ public class SearchController : Controller
             SearchResults = new SearchResultsViewModel()
             {
                 Index = viewModel.Index,
-                ContentItems = containedItems.OrderBy(x => searchResult.ContentItemIds.IndexOf(x.ContentItemId))
-                .Take(pager.PageSize)
-                .ToList(),
+                ContentItems = containedItems.OrderBy(x => searchResult.ContentItemIds.IndexOf(x.ContentItemId)).Take(pager.PageSize).ToList(),
             },
-            Pager = await _shapeFactory.PagerSlimAsync(pager, new Dictionary<string, string>()
-            {
-                { nameof(viewModel.Terms), viewModel.Terms },
-                { nameof(viewModel.Index), viewModel.Index },
-            }),
+            Pager = await _shapeFactory.PagerSlimAsync(
+                pager,
+                new Dictionary<string, string>() { { nameof(viewModel.Terms), viewModel.Terms }, { nameof(viewModel.Index), viewModel.Index }, }
+            ),
         };
 
         return View(shape);

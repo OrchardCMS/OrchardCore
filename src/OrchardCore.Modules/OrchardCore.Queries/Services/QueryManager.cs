@@ -75,8 +75,7 @@ namespace OrchardCore.Queries.Services
 
         public Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {
-            var querySource = _querySources.FirstOrDefault(q => q.Name == query.Source)
-                ?? throw new ArgumentException("Query source not found: " + query.Source);
+            var querySource = _querySources.FirstOrDefault(q => q.Name == query.Source) ?? throw new ArgumentException("Query source not found: " + query.Source);
 
             return querySource.ExecuteQueryAsync(query, parameters);
         }

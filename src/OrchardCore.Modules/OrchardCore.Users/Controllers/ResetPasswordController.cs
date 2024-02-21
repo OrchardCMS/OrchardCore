@@ -32,7 +32,8 @@ namespace OrchardCore.Users.Controllers
             ISiteService siteService,
             IStringLocalizer<ResetPasswordController> stringLocalizer,
             ILogger<ResetPasswordController> logger,
-            IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents)
+            IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents
+        )
         {
             _userService = userService;
             _userManager = userManager;
@@ -64,15 +65,19 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            await _passwordRecoveryFormEvents.InvokeAsync((e, modelState) => e.RecoveringPasswordAsync((key, message) => modelState.AddModelError(key, message)), ModelState, _logger);
+            await _passwordRecoveryFormEvents.InvokeAsync(
+                (e, modelState) => e.RecoveringPasswordAsync((key, message) => modelState.AddModelError(key, message)),
+                ModelState,
+                _logger
+            );
 
             if (TryValidateModel(model) && ModelState.IsValid)
             {
                 var user = await _userService.GetForgotPasswordUserAsync(model.Email) as User;
-                if (user == null || (
-                        (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersMustValidateEmail
-                        && !await _userManager.IsEmailConfirmedAsync(user))
-                    )
+                if (
+                    user == null
+                    || ((await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersMustValidateEmail && !await _userManager.IsEmailConfirmedAsync(user))
+                )
                 {
                     // returns to confirmation page anyway: we don't want to let scrapers know if a username or an email exist
                     return RedirectToLocal(Url.Action("ForgotPasswordConfirmation", "ResetPassword"));
@@ -126,11 +131,22 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            await _passwordRecoveryFormEvents.InvokeAsync((e, modelState) => e.ResettingPasswordAsync((key, message) => modelState.AddModelError(key, message)), ModelState, _logger);
+            await _passwordRecoveryFormEvents.InvokeAsync(
+                (e, modelState) => e.ResettingPasswordAsync((key, message) => modelState.AddModelError(key, message)),
+                ModelState,
+                _logger
+            );
 
             if (TryValidateModel(model) && ModelState.IsValid)
             {
-                if (await _userService.ResetPasswordAsync(model.Email, Encoding.UTF8.GetString(Convert.FromBase64String(model.ResetToken)), model.NewPassword, (key, message) => ModelState.AddModelError(key == "Password" ? nameof(ResetPasswordViewModel.NewPassword) : key, message)))
+                if (
+                    await _userService.ResetPasswordAsync(
+                        model.Email,
+                        Encoding.UTF8.GetString(Convert.FromBase64String(model.ResetToken)),
+                        model.NewPassword,
+                        (key, message) => ModelState.AddModelError(key == "Password" ? nameof(ResetPasswordViewModel.NewPassword) : key, message)
+                    )
+                )
                 {
                     return RedirectToLocal(Url.Action("ResetPasswordConfirmation", "ResetPassword"));
                 }

@@ -23,25 +23,31 @@ namespace OrchardCore.ContentFields.Drivers
 
         public override IDisplayResult Display(DateField field, BuildFieldDisplayContext context)
         {
-            return Initialize<DisplayDateFieldViewModel>(GetDisplayShapeType(context), model =>
-            {
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-            })
-            .Location("Detail", "Content")
-            .Location("Summary", "Content");
+            return Initialize<DisplayDateFieldViewModel>(
+                    GetDisplayShapeType(context),
+                    model =>
+                    {
+                        model.Field = field;
+                        model.Part = context.ContentPart;
+                        model.PartFieldDefinition = context.PartFieldDefinition;
+                    }
+                )
+                .Location("Detail", "Content")
+                .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(DateField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditDateFieldViewModel>(GetEditorShapeType(context), model =>
-            {
-                model.Value = field.Value;
-                model.Field = field;
-                model.Part = context.ContentPart;
-                model.PartFieldDefinition = context.PartFieldDefinition;
-            });
+            return Initialize<EditDateFieldViewModel>(
+                GetEditorShapeType(context),
+                model =>
+                {
+                    model.Value = field.Value;
+                    model.Field = field;
+                    model.Part = context.ContentPart;
+                    model.PartFieldDefinition = context.PartFieldDefinition;
+                }
+            );
         }
 
         public override async Task<IDisplayResult> UpdateAsync(DateField field, IUpdateModel updater, UpdateFieldEditorContext context)

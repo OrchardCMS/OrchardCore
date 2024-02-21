@@ -37,8 +37,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask<long> CountAsync<TResult>(Func<IQueryable<TScope>, IQueryable<TResult>> query, CancellationToken cancellationToken)
-            => throw new NotSupportedException();
+        public virtual ValueTask<long> CountAsync<TResult>(Func<IQueryable<TScope>, IQueryable<TResult>> query, CancellationToken cancellationToken) =>
+            throw new NotSupportedException();
 
         /// <inheritdoc/>
         public virtual async ValueTask CreateAsync(TScope scope, CancellationToken cancellationToken)
@@ -83,8 +83,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual IAsyncEnumerable<TScope> FindByNamesAsync(
-            ImmutableArray<string> names, CancellationToken cancellationToken)
+        public virtual IAsyncEnumerable<TScope> FindByNamesAsync(ImmutableArray<string> names, CancellationToken cancellationToken)
         {
             if (names.Any(name => string.IsNullOrEmpty(name)))
             {
@@ -113,16 +112,15 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.Query<TScope, OpenIdScopeByResourceIndex>(
-                index => index.Resource == resource,
-                collection: OpenIdCollection).ToAsyncEnumerable();
+            return _session.Query<TScope, OpenIdScopeByResourceIndex>(index => index.Resource == resource, collection: OpenIdCollection).ToAsyncEnumerable();
         }
 
         /// <inheritdoc/>
         public virtual ValueTask<TResult> GetAsync<TState, TResult>(
             Func<IQueryable<TScope>, TState, IQueryable<TResult>> query,
-            TState state, CancellationToken cancellationToken)
-            => throw new NotSupportedException();
+            TState state,
+            CancellationToken cancellationToken
+        ) => throw new NotSupportedException();
 
         /// <inheritdoc/>
         public virtual ValueTask<string> GetDescriptionAsync(TScope scope, CancellationToken cancellationToken)
@@ -133,8 +131,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask<ImmutableDictionary<CultureInfo, string>> GetDescriptionsAsync(
-            TScope scope, CancellationToken cancellationToken)
+        public virtual ValueTask<ImmutableDictionary<CultureInfo, string>> GetDescriptionsAsync(TScope scope, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(scope);
 
@@ -155,8 +152,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask<ImmutableDictionary<CultureInfo, string>> GetDisplayNamesAsync(
-            TScope scope, CancellationToken cancellationToken)
+        public virtual ValueTask<ImmutableDictionary<CultureInfo, string>> GetDisplayNamesAsync(TScope scope, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(scope);
 
@@ -202,8 +198,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 return new ValueTask<ImmutableDictionary<string, JsonElement>>(ImmutableDictionary.Create<string, JsonElement>());
             }
 
-            return new ValueTask<ImmutableDictionary<string, JsonElement>>(
-                JConvert.DeserializeObject<ImmutableDictionary<string, JsonElement>>(scope.Properties.ToString()));
+            return new ValueTask<ImmutableDictionary<string, JsonElement>>(JConvert.DeserializeObject<ImmutableDictionary<string, JsonElement>>(scope.Properties.ToString()));
         }
 
         /// <inheritdoc/>
@@ -215,8 +210,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask<TScope> InstantiateAsync(CancellationToken cancellationToken)
-            => new(new TScope { ScopeId = Guid.NewGuid().ToString("n") });
+        public virtual ValueTask<TScope> InstantiateAsync(CancellationToken cancellationToken) => new(new TScope { ScopeId = Guid.NewGuid().ToString("n") });
 
         /// <inheritdoc/>
         public virtual IAsyncEnumerable<TScope> ListAsync(int? count, int? offset, CancellationToken cancellationToken)
@@ -239,8 +233,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <inheritdoc/>
         public virtual IAsyncEnumerable<TResult> ListAsync<TState, TResult>(
             Func<IQueryable<TScope>, TState, IQueryable<TResult>> query,
-            TState state, CancellationToken cancellationToken)
-            => throw new NotSupportedException();
+            TState state,
+            CancellationToken cancellationToken
+        ) => throw new NotSupportedException();
 
         /// <inheritdoc/>
         public virtual ValueTask SetDescriptionAsync(TScope scope, string description, CancellationToken cancellationToken)
@@ -253,8 +248,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask SetDescriptionsAsync(TScope scope,
-            ImmutableDictionary<CultureInfo, string> descriptions, CancellationToken cancellationToken)
+        public virtual ValueTask SetDescriptionsAsync(TScope scope, ImmutableDictionary<CultureInfo, string> descriptions, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(scope);
 
@@ -274,8 +268,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
-        public virtual ValueTask SetDisplayNamesAsync(TScope scope,
-            ImmutableDictionary<CultureInfo, string> names, CancellationToken cancellationToken)
+        public virtual ValueTask SetDisplayNamesAsync(TScope scope, ImmutableDictionary<CultureInfo, string> names, CancellationToken cancellationToken)
         {
             ArgumentNullException.ThrowIfNull(scope);
 
@@ -336,10 +329,13 @@ namespace OrchardCore.OpenId.YesSql.Stores
             }
             catch (ConcurrencyException exception)
             {
-                throw new OpenIddictExceptions.ConcurrencyException(new StringBuilder()
-                    .AppendLine("The scope was concurrently updated and cannot be persisted in its current state.")
-                    .Append("Reload the scope from the database and retry the operation.")
-                    .ToString(), exception);
+                throw new OpenIddictExceptions.ConcurrencyException(
+                    new StringBuilder()
+                        .AppendLine("The scope was concurrently updated and cannot be persisted in its current state.")
+                        .Append("Reload the scope from the database and retry the operation.")
+                        .ToString(),
+                    exception
+                );
             }
         }
     }

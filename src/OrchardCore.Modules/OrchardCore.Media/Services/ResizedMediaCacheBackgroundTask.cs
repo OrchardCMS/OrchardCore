@@ -30,7 +30,8 @@ public class ResizedMediaCacheBackgroundTask : IBackgroundTask
         IOptions<MediaOptions> mediaOptions,
         IOptions<ImageSharpMiddlewareOptions> middlewareOptions,
         IOptions<PhysicalFileSystemCacheOptions> cacheOptions,
-        ILogger<ResizedMediaCacheBackgroundTask> logger)
+        ILogger<ResizedMediaCacheBackgroundTask> logger
+    )
     {
         _cachePath = Path.Combine(webHostEnvironment.WebRootPath, cacheOptions.Value.CacheFolder);
         _cacheFolder = Path.GetFileName(cacheOptions.Value.CacheFolder);
@@ -79,25 +80,17 @@ public class ResizedMediaCacheBackgroundTask : IBackgroundTask
                 }
             }
         }
-        catch (Exception ex) when (ex is DirectoryNotFoundException)
-        {
-        }
+        catch (Exception ex) when (ex is DirectoryNotFoundException) { }
         catch (Exception ex) when (ex.IsFileSharingViolation())
         {
             if (_logger.IsEnabled(LogLevel.Warning))
             {
-                _logger.LogWarning(
-                    ex,
-                    "Sharing violation while cleaning the resized media cache at '{CachePath}'.",
-                    _cachePath);
+                _logger.LogWarning(ex, "Sharing violation while cleaning the resized media cache at '{CachePath}'.", _cachePath);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(
-                ex,
-                "Failed to clean the resized media cache at '{CachePath}'.",
-                _cachePath);
+            _logger.LogError(ex, "Failed to clean the resized media cache at '{CachePath}'.", _cachePath);
         }
 
         return Task.CompletedTask;

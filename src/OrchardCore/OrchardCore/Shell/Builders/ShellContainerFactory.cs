@@ -25,7 +25,8 @@ namespace OrchardCore.Environment.Shell.Builders
             IHostEnvironment hostingEnvironment,
             IExtensionManager extensionManager,
             IServiceProvider serviceProvider,
-            IServiceCollection applicationServices)
+            IServiceCollection applicationServices
+        )
         {
             _hostingEnvironment = hostingEnvironment;
             _extensionManager = extensionManager;
@@ -80,19 +81,14 @@ namespace OrchardCore.Environment.Shell.Builders
                     null,
                     CallingConventions.Any,
                     [typeof(IServiceCollection)],
-                    null);
+                    null
+                );
 
-                var configureMethod = rawStartup.GetMethod(
-                    nameof(IStartup.Configure),
-                    BindingFlags.Public | BindingFlags.Instance);
+                var configureMethod = rawStartup.GetMethod(nameof(IStartup.Configure), BindingFlags.Public | BindingFlags.Instance);
 
-                var orderProperty = rawStartup.GetProperty(
-                    nameof(IStartup.Order),
-                    BindingFlags.Public | BindingFlags.Instance);
+                var orderProperty = rawStartup.GetProperty(nameof(IStartup.Order), BindingFlags.Public | BindingFlags.Instance);
 
-                var configureOrderProperty = rawStartup.GetProperty(
-                    nameof(IStartup.ConfigureOrder),
-                    BindingFlags.Public | BindingFlags.Instance);
+                var configureOrderProperty = rawStartup.GetProperty(nameof(IStartup.ConfigureOrder), BindingFlags.Public | BindingFlags.Instance);
 
                 // Add the startup class to the DI so we can instantiate it with
                 // valid ctor arguments
@@ -151,9 +147,7 @@ namespace OrchardCore.Environment.Shell.Builders
 
                             if (attribute is not null)
                             {
-                                feature = featureServiceCollection.Key.Extension.Features
-                                    .FirstOrDefault(f => f.Id == attribute.FeatureName)
-                                    ?? feature;
+                                feature = featureServiceCollection.Key.Extension.Features.FirstOrDefault(f => f.Id == attribute.FeatureName) ?? feature;
                             }
                         }
 
@@ -171,8 +165,7 @@ namespace OrchardCore.Environment.Shell.Builders
             {
                 lock (this)
                 {
-                    _applicationFeature ??= _extensionManager.GetFeatures()
-                            .FirstOrDefault(f => f.Id == _hostingEnvironment.ApplicationName);
+                    _applicationFeature ??= _extensionManager.GetFeatures().FirstOrDefault(f => f.Id == _hostingEnvironment.ApplicationName);
                 }
             }
         }

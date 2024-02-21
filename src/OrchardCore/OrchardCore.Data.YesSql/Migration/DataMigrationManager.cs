@@ -42,7 +42,8 @@ namespace OrchardCore.Data.Migration
             ISession session,
             IStore store,
             IExtensionManager extensionManager,
-            ILogger<DataMigrationManager> logger)
+            ILogger<DataMigrationManager> logger
+        )
         {
             _typeFeatureProvider = typeFeatureProvider;
             _dataMigrations = dataMigrations;
@@ -72,8 +73,7 @@ namespace OrchardCore.Data.Migration
 
         public async Task<IEnumerable<string>> GetFeaturesThatNeedUpdateAsync()
         {
-            var currentVersions = (await GetDataMigrationRecordAsync()).DataMigrations
-                .ToDictionary(r => r.DataMigrationClass);
+            var currentVersions = (await GetDataMigrationRecordAsync()).DataMigrations.ToDictionary(r => r.DataMigrationClass);
 
             var outOfDateMigrations = _dataMigrations.Where(dataMigration =>
             {
@@ -150,11 +150,7 @@ namespace OrchardCore.Data.Migration
             }
 
             // proceed with dependent features first, whatever the module it's in
-            var dependencies = _extensionManager
-                .GetFeatureDependencies(
-                    featureId)
-                .Where(x => x.Id != featureId)
-                .Select(x => x.Id);
+            var dependencies = _extensionManager.GetFeatureDependencies(featureId).Where(x => x.Id != featureId).Select(x => x.Id);
 
             await UpdateAsync(dependencies);
 
@@ -251,9 +247,7 @@ namespace OrchardCore.Data.Migration
         private async Task<Records.DataMigration> GetDataMigrationRecordAsync(IDataMigration tempMigration)
         {
             var dataMigrationRecord = await GetDataMigrationRecordAsync();
-            return dataMigrationRecord
-                .DataMigrations
-                .FirstOrDefault(dm => dm.DataMigrationClass == tempMigration.GetType().FullName);
+            return dataMigrationRecord.DataMigrations.FirstOrDefault(dm => dm.DataMigrationClass == tempMigration.GetType().FullName);
         }
 
         /// <summary>
@@ -261,9 +255,7 @@ namespace OrchardCore.Data.Migration
         /// </summary>
         private List<IDataMigration> GetDataMigrations(string featureId)
         {
-            var migrations = _dataMigrations
-                    .Where(dm => _typeFeatureProvider.GetFeatureForDependency(dm.GetType()).Id == featureId)
-                    .ToList();
+            var migrations = _dataMigrations.Where(dm => _typeFeatureProvider.GetFeatureForDependency(dm.GetType()).Id == featureId).ToList();
 
             return migrations;
         }

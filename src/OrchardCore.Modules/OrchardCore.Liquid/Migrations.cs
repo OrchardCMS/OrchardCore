@@ -16,9 +16,10 @@ namespace OrchardCore.Liquid
 
         public async Task<int> CreateAsync()
         {
-            await _contentDefinitionManager.AlterPartDefinitionAsync("LiquidPart", builder => builder
-                .Attachable()
-                .WithDescription("Provides a Liquid formatted body for your content item."));
+            await _contentDefinitionManager.AlterPartDefinitionAsync(
+                "LiquidPart",
+                builder => builder.Attachable().WithDescription("Provides a Liquid formatted body for your content item.")
+            );
 
             return 1;
         }

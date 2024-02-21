@@ -10,20 +10,16 @@ namespace OrchardCore.Tests.Apis.Context
         public string CategoriesTaxonomyContentItemId { get; private set; }
         public string TagsTaxonomyContentItemId { get; private set; }
 
-        static BlogPostApiControllerContext()
-        {
-        }
+        static BlogPostApiControllerContext() { }
 
         public override async Task InitializeAsync()
         {
             await base.InitializeAsync();
 
-            var body = new ContentTypeQueryResourceBuilder("blogPost")
-                    .WithField("contentItemId").Build() +
-                 new ContentTypeQueryResourceBuilder("blog")
-                    .WithField("contentItemId").Build() +
-                 new ContentTypeQueryResourceBuilder("taxonomy")
-                    .WithField("contentItemId").Build();
+            var body =
+                new ContentTypeQueryResourceBuilder("blogPost").WithField("contentItemId").Build()
+                + new ContentTypeQueryResourceBuilder("blog").WithField("contentItemId").Build()
+                + new ContentTypeQueryResourceBuilder("taxonomy").WithField("contentItemId").Build();
 
             var result = await GraphQLClient.Content.Query(body);
 

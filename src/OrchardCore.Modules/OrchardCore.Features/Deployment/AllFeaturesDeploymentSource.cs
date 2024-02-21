@@ -25,11 +25,7 @@ namespace OrchardCore.Features.Deployment
             }
 
             var features = await _moduleService.GetAvailableFeaturesAsync();
-            var featureStep = new JsonObject
-            {
-                ["name"] = "Feature",
-                ["enable"] = JNode.FromObject(features.Where(f => f.IsEnabled).Select(f => f.Descriptor.Id).ToArray()),
-            };
+            var featureStep = new JsonObject { ["name"] = "Feature", ["enable"] = JNode.FromObject(features.Where(f => f.IsEnabled).Select(f => f.Descriptor.Id).ToArray()), };
 
             if (!allFeaturesStep.IgnoreDisabledFeatures)
             {

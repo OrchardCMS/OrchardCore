@@ -60,7 +60,8 @@ namespace OrchardCore.Setup.Services
             IStringLocalizer<SetupService> stringLocalizer,
             IHostApplicationLifetime applicationLifetime,
             IHttpContextAccessor httpContextAccessor,
-            IDbConnectionValidator dbConnectionValidator)
+            IDbConnectionValidator dbConnectionValidator
+        )
         {
             _shellHost = shellHost;
             _applicationName = hostingEnvironment.ApplicationName;
@@ -119,13 +120,7 @@ namespace OrchardCore.Setup.Services
             }
 
             // Features to enable for Setup.
-            string[] coreFeatures =
-            [
-                _applicationName,
-                "OrchardCore.Features",
-                "OrchardCore.Scripting",
-                "OrchardCore.Recipes"
-            ];
+            string[] coreFeatures = [_applicationName, "OrchardCore.Features", "OrchardCore.Scripting", "OrchardCore.Recipes"];
 
             context.EnabledFeatures = coreFeatures.Union(context.EnabledFeatures ?? []).Distinct().ToList();
 
@@ -155,9 +150,15 @@ namespace OrchardCore.Setup.Services
             var shellSettings = new ShellSettings(context.ShellSettings).ConfigureDatabaseTableOptions();
             if (string.IsNullOrWhiteSpace(shellSettings["DatabaseProvider"]))
             {
-                shellSettings["DatabaseProvider"] = context.Properties.TryGetValue(SetupConstants.DatabaseProvider, out var databaseProvider) ? databaseProvider?.ToString() : string.Empty;
-                shellSettings["ConnectionString"] = context.Properties.TryGetValue(SetupConstants.DatabaseConnectionString, out var databaseConnectionString) ? databaseConnectionString?.ToString() : string.Empty;
-                shellSettings["TablePrefix"] = context.Properties.TryGetValue(SetupConstants.DatabaseTablePrefix, out var databaseTablePrefix) ? databaseTablePrefix?.ToString() : string.Empty;
+                shellSettings["DatabaseProvider"] = context.Properties.TryGetValue(SetupConstants.DatabaseProvider, out var databaseProvider)
+                    ? databaseProvider?.ToString()
+                    : string.Empty;
+                shellSettings["ConnectionString"] = context.Properties.TryGetValue(SetupConstants.DatabaseConnectionString, out var databaseConnectionString)
+                    ? databaseConnectionString?.ToString()
+                    : string.Empty;
+                shellSettings["TablePrefix"] = context.Properties.TryGetValue(SetupConstants.DatabaseTablePrefix, out var databaseTablePrefix)
+                    ? databaseTablePrefix?.ToString()
+                    : string.Empty;
                 shellSettings["Schema"] = context.Properties.TryGetValue(SetupConstants.DatabaseSchema, out var schema) ? schema?.ToString() : null;
             }
 
@@ -179,7 +180,13 @@ namespace OrchardCore.Setup.Services
                     context.Errors.Add(string.Empty, S["The provided connection string is invalid or server is unreachable."]);
                     break;
                 case DbConnectionValidatorResult.InvalidCertificate:
-                    context.Errors.Add(string.Empty, S["The security certificate on the server is from a non-trusted source (the certificate issuing authority isn't listed as a trusted authority in Trusted Root Certification Authorities on the client machine). In a development environment, you have the option to use the '{0}' parameter in your connection string to bypass the validation performed by the certificate authority.", "TrustServerCertificate=True"]);
+                    context.Errors.Add(
+                        string.Empty,
+                        S[
+                            "The security certificate on the server is from a non-trusted source (the certificate issuing authority isn't listed as a trusted authority in Trusted Root Certification Authorities on the client machine). In a development environment, you have the option to use the '{0}' parameter in your connection string to bypass the validation performed by the certificate authority.",
+                            "TrustServerCertificate=True"
+                        ]
+                    );
                     break;
                 case DbConnectionValidatorResult.DocumentTableFound:
                     context.Errors.Add(string.Empty, S["The provided database, table prefix and schema are already in use."]);
@@ -195,10 +202,7 @@ namespace OrchardCore.Setup.Services
             // In theory this environment can be used to resolve any normal components by interface, and those
             // components will exist entirely in isolation - no crossover between the safemode container currently in effect
             // It is used to initialize the database before the recipe is run.
-            var shellDescriptor = new ShellDescriptor
-            {
-                Features = context.EnabledFeatures.Select(id => new ShellFeature(id)).ToList()
-            };
+            var shellDescriptor = new ShellDescriptor { Features = context.EnabledFeatures.Select(id => new ShellFeature(id)).ToList() };
 
             string executionId;
 
@@ -209,8 +213,7 @@ namespace OrchardCore.Setup.Services
                     try
                     {
                         // Create the "minimum" shell descriptor.
-                        await scope.ServiceProvider.GetService<IShellDescriptorManager>()
-                            .UpdateShellDescriptorAsync(0, shellContext.Blueprint.Descriptor.Features);
+                        await scope.ServiceProvider.GetService<IShellDescriptorManager>().UpdateShellDescriptorAsync(0, shellContext.Blueprint.Descriptor.Features);
                     }
                     catch (Exception e)
                     {

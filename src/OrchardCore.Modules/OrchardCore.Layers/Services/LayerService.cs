@@ -33,25 +33,16 @@ namespace OrchardCore.Layers.Services
         /// </summary>
         public Task<LayersDocument> GetLayersAsync() => _documentManager.GetOrCreateImmutableAsync();
 
-        public Task<IEnumerable<ContentItem>> GetLayerWidgetsAsync(
-            Expression<Func<ContentItemIndex, bool>> predicate)
+        public Task<IEnumerable<ContentItem>> GetLayerWidgetsAsync(Expression<Func<ContentItemIndex, bool>> predicate)
         {
-            return _session
-                .Query<ContentItem, LayerMetadataIndex>()
-                .With(predicate)
-                .ListAsync();
+            return _session.Query<ContentItem, LayerMetadataIndex>().With(predicate).ListAsync();
         }
 
-        public async Task<IEnumerable<LayerMetadata>> GetLayerWidgetsMetadataAsync(
-            Expression<Func<ContentItemIndex, bool>> predicate)
+        public async Task<IEnumerable<LayerMetadata>> GetLayerWidgetsMetadataAsync(Expression<Func<ContentItemIndex, bool>> predicate)
         {
             var allWidgets = await GetLayerWidgetsAsync(predicate);
 
-            return allWidgets
-                .Select(x => x.As<LayerMetadata>())
-                .Where(x => x != null)
-                .OrderBy(x => x.Position)
-                .ToList();
+            return allWidgets.Select(x => x.As<LayerMetadata>()).Where(x => x != null).OrderBy(x => x.Position).ToList();
         }
 
         /// <summary>

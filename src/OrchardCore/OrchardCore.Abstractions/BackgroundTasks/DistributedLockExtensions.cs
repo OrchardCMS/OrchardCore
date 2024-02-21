@@ -20,7 +20,8 @@ namespace OrchardCore.BackgroundTasks
             return distributedLock.TryAcquireLockAsync(
                 settings.Name + "_LOCK",
                 TimeSpan.FromMilliseconds(settings.LockTimeout),
-                TimeSpan.FromMilliseconds(settings.LockExpiration));
+                TimeSpan.FromMilliseconds(settings.LockExpiration)
+            );
         }
     }
 }

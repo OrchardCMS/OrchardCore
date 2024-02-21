@@ -15,10 +15,7 @@ namespace OrchardCore.Demo
 
         public async Task<int> CreateAsync()
         {
-            await _contentDefinitionManager.AlterTypeDefinitionAsync("Foo", builder => builder
-                .WithPart("TestContentPartA")
-                .WithPart("TestContentPartB")
-            );
+            await _contentDefinitionManager.AlterTypeDefinitionAsync("Foo", builder => builder.WithPart("TestContentPartA").WithPart("TestContentPartB"));
 
             return 1;
         }

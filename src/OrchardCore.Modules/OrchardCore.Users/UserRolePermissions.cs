@@ -19,14 +19,9 @@ public class UserRolePermissions : IPermissionProvider
 
     public async Task<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        var permissions = new List<Permission>()
-        {
-            AssignRoleToUsers,
-        };
+        var permissions = new List<Permission>() { AssignRoleToUsers, };
 
-        var roleNames = (await _roleService.GetRoleNamesAsync())
-        .Where(roleName => !RoleHelper.SystemRoleNames.Contains(roleName))
-        .OrderBy(roleName => roleName);
+        var roleNames = (await _roleService.GetRoleNamesAsync()).Where(roleName => !RoleHelper.SystemRoleNames.Contains(roleName)).OrderBy(roleName => roleName);
 
         foreach (var roleName in roleNames)
         {
@@ -40,15 +35,5 @@ public class UserRolePermissions : IPermissionProvider
         return permissions;
     }
 
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
-    [
-        new PermissionStereotype
-        {
-            Name = "Administrator",
-            Permissions =
-            [
-                AssignRoleToUsers,
-            ],
-        },
-    ];
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() => [new PermissionStereotype { Name = "Administrator", Permissions = [AssignRoleToUsers,], },];
 }

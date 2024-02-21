@@ -69,7 +69,8 @@ namespace Microsoft.Extensions.Http
             IServiceProvider services,
             IServiceScopeFactory scopeFactory,
             IOptionsMonitor<HttpClientFactoryOptions> optionsMonitor,
-            IEnumerable<IHttpMessageHandlerBuilderFilter> filters)
+            IEnumerable<IHttpMessageHandlerBuilderFilter> filters
+        )
         {
             // ThrowHelper.ThrowIfNull(services);
             // ThrowHelper.ThrowIfNull(scopeFactory);
@@ -90,10 +91,13 @@ namespace Microsoft.Extensions.Http
             _activeHandlers = new ConcurrentDictionary<string, Lazy<ActiveHandlerTrackingEntry>>(StringComparer.Ordinal);
             _entryFactory = (name) =>
             {
-                return new Lazy<ActiveHandlerTrackingEntry>(() =>
-                {
-                    return CreateHandlerEntry(name);
-                }, LazyThreadSafetyMode.ExecutionAndPublication);
+                return new Lazy<ActiveHandlerTrackingEntry>(
+                    () =>
+                    {
+                        return CreateHandlerEntry(name);
+                    },
+                    LazyThreadSafetyMode.ExecutionAndPublication
+                );
             };
 
             _expiredHandlers = new ConcurrentQueue<ExpiredHandlerTrackingEntry>();
@@ -108,11 +112,10 @@ namespace Microsoft.Extensions.Http
             // to prevent creation of unnecessary ILogger objects in case several handlers expired at the same time.
 
             // OC: Null check on '_services'.
-            _logger = new Lazy<ILogger>(() =>
-                _services is not null
-                    ? _services.GetRequiredService<ILoggerFactory>().CreateLogger<TenantHttpClientFactory>()
-                    : NullLogger.Instance,
-                LazyThreadSafetyMode.ExecutionAndPublication);
+            _logger = new Lazy<ILogger>(
+                () => _services is not null ? _services.GetRequiredService<ILoggerFactory>().CreateLogger<TenantHttpClientFactory>() : NullLogger.Instance,
+                LazyThreadSafetyMode.ExecutionAndPublication
+            );
         }
 
         public HttpClient CreateClient(string name)
@@ -386,23 +389,26 @@ namespace Microsoft.Extensions.Http
             private static readonly Action<ILogger, int, Exception?> _cleanupCycleStart = LoggerMessage.Define<int>(
                 LogLevel.Debug,
                 EventIds.CleanupCycleStart,
-                "Starting HttpMessageHandler cleanup cycle with {InitialCount} items");
+                "Starting HttpMessageHandler cleanup cycle with {InitialCount} items"
+            );
 
             private static readonly Action<ILogger, double, int, int, Exception?> _cleanupCycleEnd = LoggerMessage.Define<double, int, int>(
                 LogLevel.Debug,
                 EventIds.CleanupCycleEnd,
-                "Ending HttpMessageHandler cleanup cycle after {ElapsedMilliseconds}ms - processed: {DisposedCount} items - remaining: {RemainingItems} items");
+                "Ending HttpMessageHandler cleanup cycle after {ElapsedMilliseconds}ms - processed: {DisposedCount} items - remaining: {RemainingItems} items"
+            );
 
             private static readonly Action<ILogger, string, Exception?> _cleanupItemFailed = LoggerMessage.Define<string>(
                 LogLevel.Error,
                 EventIds.CleanupItemFailed,
-                "HttpMessageHandler.Dispose() threw an unhandled exception for client: '{ClientName}'");
+                "HttpMessageHandler.Dispose() threw an unhandled exception for client: '{ClientName}'"
+            );
 
             private static readonly Action<ILogger, double, string, Exception?> _handlerExpired = LoggerMessage.Define<double, string>(
                 LogLevel.Debug,
                 EventIds.HandlerExpired,
-                "HttpMessageHandler expired after {HandlerLifetime}ms for client '{ClientName}'");
-
+                "HttpMessageHandler expired after {HandlerLifetime}ms for client '{ClientName}'"
+            );
 
             public static void CleanupCycleStart(Lazy<ILogger> loggerLazy, int initialCount)
             {

@@ -23,16 +23,9 @@ namespace OrchardCore.Themes.TheAdmin
                 .SetDependencies("js-cookie")
                 .SetVersion("1.0.0");
 
-            _manifest
-                .DefineScript("admin-main")
-                .SetUrl("~/TheAdmin/js/TheAdmin-main.min.js", "~/TheAdmin/js/TheAdmin-main.js")
-                .SetDependencies("admin-head")
-                .SetVersion("1.0.0");
+            _manifest.DefineScript("admin-main").SetUrl("~/TheAdmin/js/TheAdmin-main.min.js", "~/TheAdmin/js/TheAdmin-main.js").SetDependencies("admin-head").SetVersion("1.0.0");
 
-            _manifest
-                .DefineStyle("admin")
-                .SetUrl("~/TheAdmin/css/TheAdmin.min.css", "~/TheAdmin/css/TheAdmin.css")
-                .SetVersion("1.0.0");
+            _manifest.DefineStyle("admin").SetUrl("~/TheAdmin/css/TheAdmin.min.css", "~/TheAdmin/css/TheAdmin.css").SetVersion("1.0.0");
         }
 
         public void Configure(ResourceManagementOptions options)

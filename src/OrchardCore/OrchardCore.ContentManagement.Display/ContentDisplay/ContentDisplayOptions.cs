@@ -13,11 +13,9 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         private FrozenDictionary<string, ContentPartDisplayOption> _contentPartOptions;
         private FrozenDictionary<string, ContentFieldDisplayOption> _contentFieldOptions;
 
-        public IReadOnlyDictionary<string, ContentPartDisplayOption> ContentPartOptions
-            => _contentPartOptions ??= _contentParts.ToFrozenDictionary(k => k.Type.Name);
+        public IReadOnlyDictionary<string, ContentPartDisplayOption> ContentPartOptions => _contentPartOptions ??= _contentParts.ToFrozenDictionary(k => k.Type.Name);
 
-        public IReadOnlyDictionary<string, ContentFieldDisplayOption> ContentFieldOptions
-            => _contentFieldOptions ??= _contentFields.ToFrozenDictionary(k => k.Type.Name);
+        public IReadOnlyDictionary<string, ContentFieldDisplayOption> ContentFieldOptions => _contentFieldOptions ??= _contentFields.ToFrozenDictionary(k => k.Type.Name);
 
         internal void ForContentPartDisplayMode(Type contentPartType, Type displayDriverType, Func<string, bool> predicate)
         {

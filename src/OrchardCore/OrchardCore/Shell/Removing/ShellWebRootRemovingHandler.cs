@@ -17,10 +17,7 @@ public class ShellWebRootRemovingHandler : IShellRemovingHandler
     protected readonly IStringLocalizer S;
     private readonly ILogger _logger;
 
-    public ShellWebRootRemovingHandler(
-        IWebHostEnvironment webHostEnvironment,
-        IStringLocalizer<ShellWebRootRemovingHandler> localizer,
-        ILogger<ShellWebRootRemovingHandler> logger)
+    public ShellWebRootRemovingHandler(IWebHostEnvironment webHostEnvironment, IStringLocalizer<ShellWebRootRemovingHandler> localizer, ILogger<ShellWebRootRemovingHandler> logger)
     {
         _webHostEnvironment = webHostEnvironment;
         S = localizer;
@@ -37,17 +34,13 @@ public class ShellWebRootRemovingHandler : IShellRemovingHandler
             return Task.CompletedTask;
         }
 
-        var shellWebRootFolder = Path.Combine(
-            _webHostEnvironment.WebRootPath,
-            context.ShellSettings.Name);
+        var shellWebRootFolder = Path.Combine(_webHostEnvironment.WebRootPath, context.ShellSettings.Name);
 
         try
         {
             Directory.Delete(shellWebRootFolder, true);
         }
-        catch (Exception ex) when (ex is DirectoryNotFoundException)
-        {
-        }
+        catch (Exception ex) when (ex is DirectoryNotFoundException) { }
         catch (Exception ex) when (ex.IsFileSharingViolation())
         {
             // Sharing violation, may happen if multiple nodes share the same file system
@@ -56,20 +49,17 @@ public class ShellWebRootRemovingHandler : IShellRemovingHandler
             {
                 _logger.LogWarning(
                     ex,
-@"Sharing violation while removing the web root folder '{TenantFolder}' of tenant '{TenantName}'.
+                    @"Sharing violation while removing the web root folder '{TenantFolder}' of tenant '{TenantName}'.
 Sharing violation may happen if multiple nodes share the same file system without using a distributed lock.
 In that case let another node do the job.",
                     shellWebRootFolder,
-                    context.ShellSettings.Name);
+                    context.ShellSettings.Name
+                );
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(
-                ex,
-                "Failed to remove the web root folder '{TenantFolder}' of tenant '{TenantName}'.",
-                shellWebRootFolder,
-                context.ShellSettings.Name);
+            _logger.LogError(ex, "Failed to remove the web root folder '{TenantFolder}' of tenant '{TenantName}'.", shellWebRootFolder, context.ShellSettings.Name);
 
             context.ErrorMessage = S["Failed to remove the web root folder '{0}'.", shellWebRootFolder];
             context.Error = ex;

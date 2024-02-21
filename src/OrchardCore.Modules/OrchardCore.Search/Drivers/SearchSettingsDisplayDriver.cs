@@ -25,11 +25,7 @@ namespace OrchardCore.Search.Drivers
         private readonly IAuthorizationService _authorizationService;
         private readonly IServiceProvider _serviceProvider;
 
-        public SearchSettingsDisplayDriver(
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService,
-            IServiceProvider serviceProvider
-            )
+        public SearchSettingsDisplayDriver(IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService, IServiceProvider serviceProvider)
         {
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
@@ -45,16 +41,20 @@ namespace OrchardCore.Search.Drivers
                 return null;
             }
 
-            return Initialize<SearchSettingsViewModel>("SearchSettings_Edit", model =>
-            {
-                var searchServices = _serviceProvider.GetServices<ISearchService>();
+            return Initialize<SearchSettingsViewModel>(
+                    "SearchSettings_Edit",
+                    model =>
+                    {
+                        var searchServices = _serviceProvider.GetServices<ISearchService>();
 
-                model.SearchServices = searchServices.Select(service => new SelectListItem(service.Name, service.Name)).ToList();
-                model.Placeholder = settings.Placeholder;
-                model.PageTitle = settings.PageTitle;
-                model.ProviderName = settings.ProviderName;
-            }).Location("Content:2")
-            .OnGroup(SearchConstants.SearchSettingsGroupId);
+                        model.SearchServices = searchServices.Select(service => new SelectListItem(service.Name, service.Name)).ToList();
+                        model.Placeholder = settings.Placeholder;
+                        model.PageTitle = settings.PageTitle;
+                        model.ProviderName = settings.ProviderName;
+                    }
+                )
+                .Location("Content:2")
+                .OnGroup(SearchConstants.SearchSettingsGroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(SearchSettings section, BuildEditorContext context)

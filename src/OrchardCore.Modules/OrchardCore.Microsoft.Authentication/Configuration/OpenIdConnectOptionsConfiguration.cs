@@ -13,9 +13,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
         private readonly IOptionsMonitor<MicrosoftIdentityOptions> _azureADOptions;
         private readonly AzureADSettings _azureADSettings;
 
-        public OpenIdConnectOptionsConfiguration(
-            IOptionsMonitor<MicrosoftIdentityOptions> azureADOptions,
-            IOptions<AzureADSettings> azureADSettings)
+        public OpenIdConnectOptionsConfiguration(IOptionsMonitor<MicrosoftIdentityOptions> azureADOptions, IOptions<AzureADSettings> azureADSettings)
         {
             _azureADOptions = azureADOptions;
             _azureADSettings = azureADSettings.Value;
@@ -38,7 +36,6 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             options.SignInScheme = "Identity.External";
             options.UseTokenLifetime = true;
             options.SaveTokens = _azureADSettings.SaveTokens;
-
         }
 
         public void Configure(OpenIdConnectOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");

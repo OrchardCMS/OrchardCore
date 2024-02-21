@@ -2,12 +2,7 @@ namespace OrchardCore.AuditTrail.Services.Models
 {
     public abstract class AuditTrailContext
     {
-        public AuditTrailContext(
-            string name,
-            string category,
-            string correlationId,
-            string userId,
-            string userName)
+        public AuditTrailContext(string name, string category, string correlationId, string userId, string userName)
         {
             Name = name;
             Category = category;
@@ -23,15 +18,10 @@ namespace OrchardCore.AuditTrail.Services.Models
         public string UserName { get; set; }
     }
 
-    public class AuditTrailContext<TEvent> : AuditTrailContext where TEvent : class, new()
+    public class AuditTrailContext<TEvent> : AuditTrailContext
+        where TEvent : class, new()
     {
-        public AuditTrailContext(
-            string name,
-            string category,
-            string correlationId,
-            string userId,
-            string userName,
-            TEvent auditTrailEventItem)
+        public AuditTrailContext(string name, string category, string correlationId, string userId, string userName, TEvent auditTrailEventItem)
             : base(name, category, correlationId, userId, userName)
         {
             AuditTrailEventItem = auditTrailEventItem;

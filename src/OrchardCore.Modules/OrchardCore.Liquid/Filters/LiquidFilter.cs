@@ -15,6 +15,7 @@ namespace OrchardCore.Liquid.Filters
             _liquidTemplateManager = liquidTemplateManager;
             _htmlEncoder = htmlEncoder;
         }
+
         public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
         {
             var content = await _liquidTemplateManager.RenderStringAsync(input.ToStringValue(), _htmlEncoder, arguments.At(0));

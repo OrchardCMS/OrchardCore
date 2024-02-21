@@ -17,13 +17,6 @@ public class UserTimeZoneSelector : ITimeZoneSelector
 
     public Task<TimeZoneSelectorResult> GetTimeZoneAsync()
     {
-        return Task.FromResult(
-            new TimeZoneSelectorResult
-            {
-                Priority = 100,
-                TimeZoneId = async () =>
-                    (await _userTimeZoneService.GetUserTimeZoneAsync())?.TimeZoneId
-            }
-        );
+        return Task.FromResult(new TimeZoneSelectorResult { Priority = 100, TimeZoneId = async () => (await _userTimeZoneService.GetUserTimeZoneAsync())?.TimeZoneId });
     }
 }

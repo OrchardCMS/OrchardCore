@@ -127,11 +127,7 @@ namespace OrchardCore.FileStorage
             if (paths.Length == 0)
                 return null;
 
-            var normalizedParts =
-                paths
-                    .Select(x => fileStore.NormalizePath(x))
-                    .Where(x => !string.IsNullOrEmpty(x))
-                    .ToArray();
+            var normalizedParts = paths.Select(x => fileStore.NormalizePath(x)).Where(x => !string.IsNullOrEmpty(x)).ToArray();
 
             var combined = string.Join("/", normalizedParts);
 

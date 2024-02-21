@@ -16,13 +16,16 @@ namespace OrchardCore.Contents.AuditTrail.Drivers
             var settings = context.TypePartDefinition.GetSettings<AuditTrailPartSettings>();
             if (settings.ShowCommentInput)
             {
-                return Initialize<AuditTrailPartViewModel>(GetEditorShapeType(context), model =>
-                {
-                    if (part.ShowComment)
+                return Initialize<AuditTrailPartViewModel>(
+                    GetEditorShapeType(context),
+                    model =>
                     {
-                        model.Comment = part.Comment;
+                        if (part.ShowComment)
+                        {
+                            model.Comment = part.Comment;
+                        }
                     }
-                });
+                );
             }
 
             return null;

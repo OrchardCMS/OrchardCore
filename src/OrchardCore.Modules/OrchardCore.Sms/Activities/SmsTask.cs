@@ -14,11 +14,7 @@ public class SmsTask : TaskActivity<SmsTask>
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
     protected readonly IStringLocalizer S;
 
-    public SmsTask(
-        ISmsService smsService,
-        IWorkflowExpressionEvaluator expressionEvaluator,
-        IStringLocalizer<SmsTask> stringLocalizer
-    )
+    public SmsTask(ISmsService smsService, IWorkflowExpressionEvaluator expressionEvaluator, IStringLocalizer<SmsTask> stringLocalizer)
     {
         _smsService = smsService;
         _expressionEvaluator = expressionEvaluator;

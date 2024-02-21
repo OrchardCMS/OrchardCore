@@ -22,10 +22,7 @@ namespace OrchardCore.Media.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
 
-        public AttachedMediaFieldFileService(
-            IMediaFileStore fileStore,
-            IHttpContextAccessor httpContextAccessor,
-            ILogger<AttachedMediaFieldFileService> logger)
+        public AttachedMediaFieldFileService(IMediaFileStore fileStore, IHttpContextAccessor httpContextAccessor, ILogger<AttachedMediaFieldFileService> logger)
         {
             _fileStore = fileStore;
             _httpContextAccessor = httpContextAccessor;

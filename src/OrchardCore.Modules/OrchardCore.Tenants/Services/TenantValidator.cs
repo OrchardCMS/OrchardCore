@@ -25,7 +25,8 @@ namespace OrchardCore.Tenants.Services
             IShellSettingsManager shellSettingsManager,
             IFeatureProfilesService featureProfilesService,
             IDbConnectionValidator dbConnectionValidator,
-            IStringLocalizer<TenantValidator> stringLocalizer)
+            IStringLocalizer<TenantValidator> stringLocalizer
+        )
         {
             _shellHost = shellHost;
             _shellSettingsManager = shellSettingsManager;
@@ -68,10 +69,11 @@ namespace OrchardCore.Tenants.Services
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["The url prefix can not contain more than one segment."]));
             }
 
-            if (_shellHost.GetAllSettings().Any(settings =>
-                settings != existingShellSettings &&
-                settings.HasUrlPrefix(model.RequestUrlPrefix) &&
-                settings.HasUrlHost(model.RequestUrlHost)))
+            if (
+                _shellHost
+                    .GetAllSettings()
+                    .Any(settings => settings != existingShellSettings && settings.HasUrlPrefix(model.RequestUrlPrefix) && settings.HasUrlHost(model.RequestUrlHost))
+            )
             {
                 errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["A tenant with the same host and prefix already exists."]));
             }
@@ -82,10 +84,7 @@ namespace OrchardCore.Tenants.Services
                 if (existingShellSettings is null)
                 {
                     // Set the settings to be validated.
-                    shellSettings = _shellSettingsManager
-                        .CreateDefaultSettings()
-                        .AsUninitialized()
-                        .AsDisposable();
+                    shellSettings = _shellSettingsManager.CreateDefaultSettings().AsUninitialized().AsDisposable();
 
                     shellSettings.Name = model.Name;
                 }
@@ -125,35 +124,33 @@ namespace OrchardCore.Tenants.Services
             switch (await _dbConnectionValidator.ValidateAsync(validationContext))
             {
                 case DbConnectionValidatorResult.UnsupportedProvider:
-                    errors.Add(new ModelError(nameof(
-                        TenantViewModel.DatabaseProvider),
-                        S["The provided database provider is not supported."]));
+                    errors.Add(new ModelError(nameof(TenantViewModel.DatabaseProvider), S["The provided database provider is not supported."]));
                     break;
 
                 case DbConnectionValidatorResult.InvalidConnection:
-                    errors.Add(new ModelError(
-                        nameof(TenantViewModel.ConnectionString),
-                        S["The provided connection string is invalid or server is unreachable."]));
+                    errors.Add(new ModelError(nameof(TenantViewModel.ConnectionString), S["The provided connection string is invalid or server is unreachable."]));
                     break;
 
                 case DbConnectionValidatorResult.InvalidCertificate:
-                    errors.Add(new ModelError(
-                        nameof(TenantViewModel.ConnectionString),
-                        S["The security certificate on the server is from a non-trusted source (the certificate issuing authority isn't listed as a trusted authority in Trusted Root Certification Authorities on the client machine). In a development environment, you have the option to use the '{0}' parameter in your connection string to bypass the validation performed by the certificate authority.", "TrustServerCertificate=True"]));
+                    errors.Add(
+                        new ModelError(
+                            nameof(TenantViewModel.ConnectionString),
+                            S[
+                                "The security certificate on the server is from a non-trusted source (the certificate issuing authority isn't listed as a trusted authority in Trusted Root Certification Authorities on the client machine). In a development environment, you have the option to use the '{0}' parameter in your connection string to bypass the validation performed by the certificate authority.",
+                                "TrustServerCertificate=True"
+                            ]
+                        )
+                    );
                     break;
 
                 case DbConnectionValidatorResult.DocumentTableFound:
                     if (validationContext.DatabaseProvider == DatabaseProviderValue.Sqlite)
                     {
-                        errors.Add(new ModelError(
-                            string.Empty,
-                            S["The related database file is already in use."]));
+                        errors.Add(new ModelError(string.Empty, S["The related database file is already in use."]));
                         break;
                     }
 
-                    errors.Add(new ModelError(
-                        nameof(TenantViewModel.TablePrefix),
-                        S["The provided database, table prefix and schema are already in use."]));
+                    errors.Add(new ModelError(nameof(TenantViewModel.TablePrefix), S["The provided database, table prefix and schema are already in use."]));
                     break;
             }
         }

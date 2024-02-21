@@ -18,7 +18,7 @@ public class AzureAISearchIndexSettingsStep(
     AzureAIIndexDocumentManager azureAIIndexDocumentManager,
     AzureAISearchIndexSettingsService azureAISearchIndexSettingsService,
     ILogger<AzureAISearchIndexSettingsStep> logger
-        ) : IRecipeStepHandler
+) : IRecipeStepHandler
 {
     public const string Name = "azureai-index-create";
 
@@ -68,7 +68,11 @@ public class AzureAISearchIndexSettingsStep(
 
                 if (indexSettings.IndexedContentTypes == null || indexSettings.IndexedContentTypes.Length == 0)
                 {
-                    _logger.LogError("No {fieldName} were provided in the recipe step. IndexName: {indexName}.", nameof(indexSettings.IndexedContentTypes), indexSettings.IndexName);
+                    _logger.LogError(
+                        "No {fieldName} were provided in the recipe step. IndexName: {indexName}.",
+                        nameof(indexSettings.IndexedContentTypes),
+                        indexSettings.IndexName
+                    );
 
                     continue;
                 }
@@ -86,11 +90,14 @@ public class AzureAISearchIndexSettingsStep(
             }
         }
 
-        await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync(AzureAISearchIndexRebuildDeploymentSource.Name, async scope =>
-        {
-            var searchIndexingService = scope.ServiceProvider.GetService<AzureAISearchIndexingService>();
+        await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync(
+            AzureAISearchIndexRebuildDeploymentSource.Name,
+            async scope =>
+            {
+                var searchIndexingService = scope.ServiceProvider.GetService<AzureAISearchIndexingService>();
 
-            await searchIndexingService.ProcessContentItemsAsync(indexNames.ToArray());
-        });
+                await searchIndexingService.ProcessContentItemsAsync(indexNames.ToArray());
+            }
+        );
     }
 }

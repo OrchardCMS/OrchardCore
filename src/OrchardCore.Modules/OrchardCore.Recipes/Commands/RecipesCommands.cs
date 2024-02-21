@@ -11,9 +11,8 @@ namespace OrchardCore.Recipes.Commands
     {
         private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
 
-        public RecipesCommands(
-            IEnumerable<IRecipeHarvester> recipeHarvesters,
-            IStringLocalizer<RecipesCommands> localizer) : base(localizer)
+        public RecipesCommands(IEnumerable<IRecipeHarvester> recipeHarvesters, IStringLocalizer<RecipesCommands> localizer)
+            : base(localizer)
         {
             _recipeHarvesters = recipeHarvesters;
         }

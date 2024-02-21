@@ -17,7 +17,6 @@ namespace OrchardCore.Workflows.Abstractions.Converters
             throw new NotImplementedException();
         }
 
-        public override void Write(Utf8JsonWriter writer, LocalizedString value, JsonSerializerOptions options)
-            => JsonValue.Create(value.Value).WriteTo(writer, options);
+        public override void Write(Utf8JsonWriter writer, LocalizedString value, JsonSerializerOptions options) => JsonValue.Create(value.Value).WriteTo(writer, options);
     }
 }

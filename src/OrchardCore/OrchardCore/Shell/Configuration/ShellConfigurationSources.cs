@@ -78,9 +78,7 @@ namespace OrchardCore.Environment.Shell.Configuration
                 }
                 catch (IOException ex)
                 {
-                    _logger.LogError(
-                        ex,
-                        "Error while deleting the '{AppSettings}' file of tenant '{TenantName}'", appsettings, tenant);
+                    _logger.LogError(ex, "Error while deleting the '{AppSettings}' file of tenant '{TenantName}'", appsettings, tenant);
                 }
             }
 

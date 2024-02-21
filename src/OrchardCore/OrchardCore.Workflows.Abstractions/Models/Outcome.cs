@@ -6,9 +6,8 @@ namespace OrchardCore.Workflows.Abstractions.Models
 {
     public class Outcome
     {
-        public Outcome(LocalizedString displayName) : this(displayName.Name, displayName)
-        {
-        }
+        public Outcome(LocalizedString displayName)
+            : this(displayName.Name, displayName) { }
 
         public Outcome(string name, LocalizedString displayName)
         {

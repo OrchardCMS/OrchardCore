@@ -18,10 +18,7 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
         private readonly ISession _session;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
-        public ExportContentToDeploymentTargetDeploymentSource(
-            IContentManager contentManager,
-            ISession session,
-            IUpdateModelAccessor updateModelAccessor)
+        public ExportContentToDeploymentTargetDeploymentSource(IContentManager contentManager, ISession session, IUpdateModelAccessor updateModelAccessor)
         {
             _contentManager = contentManager;
             _session = session;
@@ -38,11 +35,7 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
             }
 
             var data = new JsonArray();
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "Content",
-                ["data"] = data,
-            });
+            result.Steps.Add(new JsonObject { ["name"] = "Content", ["data"] = data, });
 
             var model = new ExportContentToDeploymentTargetModel();
             await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(model, "ExportContentToDeploymentTarget", m => m.ItemIds, m => m.Latest, m => m.ContentItemId);

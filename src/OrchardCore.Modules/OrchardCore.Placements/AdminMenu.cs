@@ -20,14 +20,15 @@ namespace OrchardCore.Placements
                 return Task.CompletedTask;
             }
 
-            builder
-                .Add(S["Design"], design => design
-                    .Add(S["Placements"], S["Placements"].PrefixPosition(), import => import
-                        .Action("Index", "Admin", "OrchardCore.Placements")
-                        .Permission(Permissions.ManagePlacements)
-                        .LocalNav()
+            builder.Add(
+                S["Design"],
+                design =>
+                    design.Add(
+                        S["Placements"],
+                        S["Placements"].PrefixPosition(),
+                        import => import.Action("Index", "Admin", "OrchardCore.Placements").Permission(Permissions.ManagePlacements).LocalNav()
                     )
-                );
+            );
 
             return Task.CompletedTask;
         }

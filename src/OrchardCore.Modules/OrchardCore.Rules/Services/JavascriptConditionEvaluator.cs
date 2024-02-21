@@ -15,7 +15,6 @@ namespace OrchardCore.Rules.Services
         private IScriptingScope _scope;
         private IScriptingEngine _engine;
 
-
         public JavascriptConditionEvaluator(IScriptingManager scriptingManager, IServiceProvider serviceProvider)
         {
             _scriptingManager = scriptingManager;

@@ -5,7 +5,8 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.Settings.Deployment
 {
-    public class SiteSettingsPropertyDeploymentSource<TModel> : IDeploymentSource where TModel : class, new()
+    public class SiteSettingsPropertyDeploymentSource<TModel> : IDeploymentSource
+        where TModel : class, new()
     {
         private readonly ISiteService _siteService;
 
@@ -34,11 +35,7 @@ namespace OrchardCore.Settings.Deployment
             }
             else
             {
-                result.Steps.Add(new JsonObject
-                {
-                    ["name"] = "Settings",
-                    [settingJPropertyName] = settingJPropertyValue,
-                });
+                result.Steps.Add(new JsonObject { ["name"] = "Settings", [settingJPropertyName] = settingJPropertyValue, });
             }
         }
     }

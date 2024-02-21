@@ -16,8 +16,7 @@ namespace OrchardCore.Admin
         private readonly ILayoutAccessor _layoutAccessor;
         private readonly IShapeFactory _shapeFactory;
 
-        public AdminMenuFilter(ILayoutAccessor layoutAccessor,
-            IShapeFactory shapeFactory)
+        public AdminMenuFilter(ILayoutAccessor layoutAccessor, IShapeFactory shapeFactory)
         {
             _layoutAccessor = layoutAccessor;
             _shapeFactory = shapeFactory;
@@ -55,12 +54,7 @@ namespace OrchardCore.Admin
             }
 
             // Populate main nav
-            var menuShape = await _shapeFactory.CreateAsync("Navigation",
-                Arguments.From(new
-                {
-                    MenuName = NavigationConstants.AdminId,
-                    filterContext.RouteData,
-                }));
+            var menuShape = await _shapeFactory.CreateAsync("Navigation", Arguments.From(new { MenuName = NavigationConstants.AdminId, filterContext.RouteData, }));
 
             var layout = await _layoutAccessor.GetLayoutAsync();
 

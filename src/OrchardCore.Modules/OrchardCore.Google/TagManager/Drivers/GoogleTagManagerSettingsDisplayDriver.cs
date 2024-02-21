@@ -15,9 +15,7 @@ namespace OrchardCore.Google.TagManager.Drivers
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public GoogleTagManagerSettingsDisplayDriver(
-            IAuthorizationService authorizationService,
-            IHttpContextAccessor httpContextAccessor)
+        public GoogleTagManagerSettingsDisplayDriver(IAuthorizationService authorizationService, IHttpContextAccessor httpContextAccessor)
         {
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
@@ -31,10 +29,15 @@ namespace OrchardCore.Google.TagManager.Drivers
                 return null;
             }
 
-            return Initialize<GoogleTagManagerSettingsViewModel>("GoogleTagManagerSettings_Edit", model =>
-            {
-                model.ContainerID = settings.ContainerID;
-            }).Location("Content:5").OnGroup(GoogleConstants.Features.GoogleTagManager);
+            return Initialize<GoogleTagManagerSettingsViewModel>(
+                    "GoogleTagManagerSettings_Edit",
+                    model =>
+                    {
+                        model.ContainerID = settings.ContainerID;
+                    }
+                )
+                .Location("Content:5")
+                .OnGroup(GoogleConstants.Features.GoogleTagManager);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(GoogleTagManagerSettings settings, BuildEditorContext context)

@@ -33,7 +33,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
             IEnumerable<IDeploymentStepFactory> factories,
             INotifier notifier,
             IHtmlLocalizer<AddToDeploymentPlanController> htmlLocalizer
-            )
+        )
         {
             _authorizationService = authorizationService;
             _contentManager = contentManager;
@@ -46,9 +46,12 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
         [HttpPost]
         public async Task<IActionResult> AddContentItem(long deploymentPlanId, string returnUrl, string contentItemId)
         {
-            if (!(await _authorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.ManageDeploymentPlan) &&
-                await _authorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.Export)
-                ))
+            if (
+                !(
+                    await _authorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.ManageDeploymentPlan)
+                    && await _authorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.Export)
+                )
+            )
             {
                 return Forbid();
             }
@@ -102,9 +105,12 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
                 return this.LocalRedirect(returnUrl, true);
             }
 
-            if (!(await _authorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.ManageDeploymentPlan) &&
-                await _authorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.Export)
-                ))
+            if (
+                !(
+                    await _authorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.ManageDeploymentPlan)
+                    && await _authorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.Export)
+                )
+            )
             {
                 return Forbid();
             }

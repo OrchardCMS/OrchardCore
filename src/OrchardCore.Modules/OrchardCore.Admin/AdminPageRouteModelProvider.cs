@@ -67,9 +67,7 @@ namespace OrchardCore.Admin
             }
         }
 
-        public void OnProvidersExecuted(PageRouteModelProviderContext context)
-        {
-        }
+        public void OnProvidersExecuted(PageRouteModelProviderContext context) { }
 
         private static IEnumerable<CompiledViewDescriptor> GetPageDescriptors<T>(ApplicationPartManager applicationManager)
             where T : ViewsFeature, new()
@@ -94,10 +92,10 @@ namespace OrchardCore.Admin
             }
         }
 
-        private static bool IsRazorPage(CompiledViewDescriptor viewDescriptor) =>
-            viewDescriptor.Item?.Kind == RazorPageDocumentClassifierPass.RazorPageDocumentKind;
+        private static bool IsRazorPage(CompiledViewDescriptor viewDescriptor) => viewDescriptor.Item?.Kind == RazorPageDocumentClassifierPass.RazorPageDocumentKind;
 
-        private static T GetViewFeature<T>(ApplicationPartManager applicationManager) where T : ViewsFeature, new()
+        private static T GetViewFeature<T>(ApplicationPartManager applicationManager)
+            where T : ViewsFeature, new()
         {
             var viewsFeature = new T();
             applicationManager.PopulateFeature(viewsFeature);

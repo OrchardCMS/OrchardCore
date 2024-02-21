@@ -11,20 +11,23 @@ namespace OrchardCore.Rules.Drivers
     {
         public override IDisplayResult Display(JavascriptCondition condition)
         {
-            return
-                Combine(
-                    View("JavascriptCondition_Fields_Summary", condition).Location("Summary", "Content"),
-                    View("JavascriptCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
-                );
+            return Combine(
+                View("JavascriptCondition_Fields_Summary", condition).Location("Summary", "Content"),
+                View("JavascriptCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(JavascriptCondition condition)
         {
-            return Initialize<JavascriptConditionViewModel>("JavascriptCondition_Fields_Edit", m =>
-            {
-                m.Script = condition.Script;
-                m.Condition = condition;
-            }).Location("Content");
+            return Initialize<JavascriptConditionViewModel>(
+                    "JavascriptCondition_Fields_Edit",
+                    m =>
+                    {
+                        m.Script = condition.Script;
+                        m.Condition = condition;
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(JavascriptCondition condition, IUpdateModel updater)

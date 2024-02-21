@@ -59,11 +59,7 @@ namespace OrchardCore.Tests.Localization
         {
             // Arrange
             var dictionary = new CultureDictionary("ar", PluralizationRule.Arabic);
-            dictionary.MergeTranslations(
-            [
-                new("Hello", "مرحبا"),
-                new("Bye", "مع السلامة")
-            ]);
+            dictionary.MergeTranslations([new("Hello", "مرحبا"), new("Bye", "مع السلامة")]);
 
             // Act & Assert
             Assert.NotEmpty(dictionary);

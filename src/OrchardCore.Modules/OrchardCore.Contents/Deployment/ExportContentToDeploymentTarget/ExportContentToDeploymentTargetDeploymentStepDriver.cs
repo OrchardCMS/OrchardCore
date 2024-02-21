@@ -8,11 +8,10 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
     {
         public override IDisplayResult Display(ExportContentToDeploymentTargetDeploymentStep step)
         {
-            return
-                Combine(
-                    View("ExportContentToDeploymentTargetDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                    View("ExportContentToDeploymentTargetDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-                );
+            return Combine(
+                View("ExportContentToDeploymentTargetDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("ExportContentToDeploymentTargetDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(ExportContentToDeploymentTargetDeploymentStep step)

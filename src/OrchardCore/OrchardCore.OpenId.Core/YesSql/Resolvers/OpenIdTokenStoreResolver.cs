@@ -21,7 +21,8 @@ namespace OrchardCore.OpenId.YesSql.Resolvers
         }
 
         /// <inheritdoc/>
-        public IOpenIddictTokenStore<TToken> Get<TToken>() where TToken : class
+        public IOpenIddictTokenStore<TToken> Get<TToken>()
+            where TToken : class
         {
             var store = _provider.GetService<IOpenIddictTokenStore<TToken>>();
             if (store != null)
@@ -29,20 +30,25 @@ namespace OrchardCore.OpenId.YesSql.Resolvers
                 return store;
             }
 
-            var type = _cache.GetOrAdd(typeof(TToken), key =>
-            {
-                if (!typeof(OpenIdToken).IsAssignableFrom(key))
+            var type = _cache.GetOrAdd(
+                typeof(TToken),
+                key =>
                 {
-                    throw new InvalidOperationException(new StringBuilder()
-                        .AppendLine("The specified token type is not compatible with the YesSql stores.")
-                        .Append("When enabling the YesSql stores, make sure you use the built-in 'OpenIdToken' ")
-                        .Append("entity (from the 'OrchardCore.OpenId.Core' package) or a custom entity ")
-                        .Append("that inherits from the 'OpenIdToken' entity.")
-                        .ToString());
-                }
+                    if (!typeof(OpenIdToken).IsAssignableFrom(key))
+                    {
+                        throw new InvalidOperationException(
+                            new StringBuilder()
+                                .AppendLine("The specified token type is not compatible with the YesSql stores.")
+                                .Append("When enabling the YesSql stores, make sure you use the built-in 'OpenIdToken' ")
+                                .Append("entity (from the 'OrchardCore.OpenId.Core' package) or a custom entity ")
+                                .Append("that inherits from the 'OpenIdToken' entity.")
+                                .ToString()
+                        );
+                    }
 
-                return typeof(OpenIdTokenStore<>).MakeGenericType(key);
-            });
+                    return typeof(OpenIdTokenStore<>).MakeGenericType(key);
+                }
+            );
 
             return (IOpenIddictTokenStore<TToken>)_provider.GetRequiredService(type);
         }

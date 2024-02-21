@@ -8,6 +8,7 @@ namespace OrchardCore.ContentLocalization.Handlers
         public ContentItem Original { get; set; }
         public string LocalizationSet { get; set; }
         public string Culture { get; set; }
+
         public LocalizationContentContext(ContentItem contentItem, ContentItem original, string localizationSet, string culture)
             : base(contentItem)
         {

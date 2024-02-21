@@ -30,7 +30,7 @@ namespace OrchardCore.Facebook.Drivers
             IShellHost shellHost,
             ShellSettings shellSettings,
             ILogger<FacebookSettingsDisplayDriver> logger
-            )
+        )
         {
             _authorizationService = authorizationService;
             _dataProtectionProvider = dataProtectionProvider;
@@ -48,29 +48,34 @@ namespace OrchardCore.Facebook.Drivers
                 return null;
             }
 
-            return Initialize<FacebookSettingsViewModel>("FacebookSettings_Edit", model =>
-            {
-                var protector = _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core);
+            return Initialize<FacebookSettingsViewModel>(
+                    "FacebookSettings_Edit",
+                    model =>
+                    {
+                        var protector = _dataProtectionProvider.CreateProtector(FacebookConstants.Features.Core);
 
-                model.AppId = settings.AppId;
-                model.FBInit = settings.FBInit;
-                model.FBInitParams = settings.FBInitParams;
-                model.Version = settings.Version;
-                model.SdkJs = settings.SdkJs;
-                if (!string.IsNullOrWhiteSpace(settings.AppSecret))
-                {
-                    try
-                    {
-                        model.AppSecret = protector.Unprotect(settings.AppSecret);
+                        model.AppId = settings.AppId;
+                        model.FBInit = settings.FBInit;
+                        model.FBInitParams = settings.FBInitParams;
+                        model.Version = settings.Version;
+                        model.SdkJs = settings.SdkJs;
+                        if (!string.IsNullOrWhiteSpace(settings.AppSecret))
+                        {
+                            try
+                            {
+                                model.AppSecret = protector.Unprotect(settings.AppSecret);
+                            }
+                            catch (CryptographicException)
+                            {
+                                _logger.LogError("The app secret could not be decrypted. It may have been encrypted using a different key.");
+                                model.AppSecret = string.Empty;
+                                model.HasDecryptionError = true;
+                            }
+                        }
                     }
-                    catch (CryptographicException)
-                    {
-                        _logger.LogError("The app secret could not be decrypted. It may have been encrypted using a different key.");
-                        model.AppSecret = string.Empty;
-                        model.HasDecryptionError = true;
-                    }
-                }
-            }).Location("Content:0").OnGroup(FacebookConstants.Features.Core);
+                )
+                .Location("Content:0")
+                .OnGroup(FacebookConstants.Features.Core);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(FacebookSettings settings, BuildEditorContext context)

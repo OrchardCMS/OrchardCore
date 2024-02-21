@@ -23,16 +23,14 @@ namespace OrchardCore.Data.Documents
 
         public FileDocumentStore(IOptions<ShellOptions> shellOptions, ShellSettings shellSettings)
         {
-            _tenantPath = Path.Combine(
-                shellOptions.Value.ShellsApplicationDataPath,
-                shellOptions.Value.ShellsContainerName,
-                shellSettings.Name) + "/";
+            _tenantPath = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, shellOptions.Value.ShellsContainerName, shellSettings.Name) + "/";
 
             Directory.CreateDirectory(_tenantPath);
         }
 
         /// <inheritdoc />
-        public async Task<T> GetOrCreateMutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new()
+        public async Task<T> GetOrCreateMutableAsync<T>(Func<Task<T>> factoryAsync = null)
+            where T : class, new()
         {
             var loaded = ShellScope.Get<T>(typeof(T));
             if (loaded != null)
@@ -40,9 +38,7 @@ namespace OrchardCore.Data.Documents
                 return loaded;
             }
 
-            var document = await GetDocumentAsync<T>()
-                ?? await (factoryAsync?.Invoke() ?? Task.FromResult((T)null))
-                ?? new T();
+            var document = await GetDocumentAsync<T>() ?? await (factoryAsync?.Invoke() ?? Task.FromResult((T)null)) ?? new T();
 
             ShellScope.Set(typeof(T), document);
 
@@ -50,7 +46,8 @@ namespace OrchardCore.Data.Documents
         }
 
         /// <inheritdoc />
-        public async Task<(bool, T)> GetOrCreateImmutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new()
+        public async Task<(bool, T)> GetOrCreateImmutableAsync<T>(Func<Task<T>> factoryAsync = null)
+            where T : class, new()
         {
             var loaded = ShellScope.Get<T>(typeof(T));
             if (loaded != null)
@@ -76,8 +73,11 @@ namespace OrchardCore.Data.Documents
         }
 
         public Task CancelAsync() => DocumentStore.CancelAsync();
+
         public void AfterCommitSuccess<T>(DocumentStoreCommitSuccessDelegate afterCommitSuccess) => DocumentStore.AfterCommitSuccess<T>(afterCommitSuccess);
+
         public void AfterCommitFailure<T>(DocumentStoreCommitFailureDelegate afterCommitFailure) => DocumentStore.AfterCommitFailure<T>(afterCommitFailure);
+
         public Task CommitAsync() => throw new NotImplementedException();
 
         private async Task<T> GetDocumentAsync<T>()

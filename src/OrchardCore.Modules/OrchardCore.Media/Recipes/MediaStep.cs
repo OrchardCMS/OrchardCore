@@ -23,11 +23,7 @@ namespace OrchardCore.Media.Recipes
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger _logger;
 
-        public MediaStep(
-            IMediaFileStore mediaFileStore,
-            IOptions<MediaOptions> options,
-            IHttpClientFactory httpClientFactory,
-            ILogger<MediaStep> logger)
+        public MediaStep(IMediaFileStore mediaFileStore, IOptions<MediaOptions> options, IHttpClientFactory httpClientFactory, ILogger<MediaStep> logger)
         {
             _mediaFileStore = mediaFileStore;
             _allowedFileExtensions = options.Value.AllowedFileExtensions;
@@ -105,7 +101,11 @@ namespace OrchardCore.Media.Recipes
             /// Path where the content will be written.
             /// Use inter-changeably with <see cref="TargetPath"/>.
             /// </summary>
-            public string Path { get => TargetPath; set => TargetPath = value; }
+            public string Path
+            {
+                get => TargetPath;
+                set => TargetPath = value;
+            }
 
             /// <summary>
             /// Path where the content will be written.

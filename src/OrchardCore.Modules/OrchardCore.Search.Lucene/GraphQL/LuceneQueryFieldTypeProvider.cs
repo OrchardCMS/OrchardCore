@@ -60,8 +60,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
                     var fieldTypeName = querySchema["fieldTypeName"]?.ToString() ?? query.Name;
 
-                    if (query.ReturnContentItems &&
-                        type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
+                    if (query.ReturnContentItems && type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
                     {
                         var contentType = type.Remove(0, 12);
                         fieldType = BuildContentTypeFieldType(schema, contentType, query, fieldTypeName);
@@ -85,16 +84,14 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
         private static FieldType BuildSchemaBasedFieldType(LuceneQuery query, JsonNode querySchema, string fieldTypeName)
         {
-            var properties = querySchema["properties"].AsObject(); ;
+            var properties = querySchema["properties"].AsObject();
+            ;
             if (properties == null)
             {
                 return null;
             }
 
-            var typetype = new ObjectGraphType<JsonObject>
-            {
-                Name = fieldTypeName
-            };
+            var typetype = new ObjectGraphType<JsonObject> { Name = fieldTypeName };
 
             foreach (var child in properties)
             {
@@ -140,9 +137,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
             var fieldType = new FieldType
             {
-                Arguments = new QueryArguments(
-                    new QueryArgument<StringGraphType> { Name = "parameters" }
-                ),
+                Arguments = new QueryArguments(new QueryArgument<StringGraphType> { Name = "parameters" }),
 
                 Name = fieldTypeName,
                 Description = "Represents the " + query.Source + " Query : " + query.Name,
@@ -158,9 +153,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
                 var parameters = context.GetArgument<string>("parameters");
 
-                var queryParameters = parameters != null ?
-                    JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                    : [];
+                var queryParameters = parameters != null ? JConvert.DeserializeObject<Dictionary<string, object>>(parameters) : [];
 
                 var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
 
@@ -181,9 +174,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
             var fieldType = new FieldType
             {
-                Arguments = new QueryArguments(
-                        new QueryArgument<StringGraphType> { Name = "parameters" }
-                    ),
+                Arguments = new QueryArguments(new QueryArgument<StringGraphType> { Name = "parameters" }),
 
                 Name = fieldTypeName,
                 Description = "Represents the " + query.Source + " Query : " + query.Name,
@@ -199,9 +190,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
 
                 var parameters = context.GetArgument<string>("parameters");
 
-                    var queryParameters = parameters != null ?
-                        JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                        : [];
+                var queryParameters = parameters != null ? JConvert.DeserializeObject<Dictionary<string, object>>(parameters) : [];
 
                 var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
 

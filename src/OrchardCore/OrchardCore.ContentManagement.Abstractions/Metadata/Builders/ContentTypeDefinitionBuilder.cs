@@ -18,9 +18,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
         public ContentTypeDefinition Current { get; }
 
         public ContentTypeDefinitionBuilder()
-            : this(new ContentTypeDefinition(null, null))
-        {
-        }
+            : this(new ContentTypeDefinition(null, null)) { }
 
         public ContentTypeDefinitionBuilder(ContentTypeDefinition existing)
         {
@@ -83,7 +81,8 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
-        public ContentTypeDefinitionBuilder MergeSettings<T>(Action<T> setting) where T : class, new()
+        public ContentTypeDefinitionBuilder MergeSettings<T>(Action<T> setting)
+            where T : class, new()
         {
             var existingJObject = _settings[typeof(T).Name] as JsonObject;
             // If existing settings do not exist, create.
@@ -119,14 +118,12 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
-        public ContentTypeDefinitionBuilder WithPart(string partName)
-            => WithPart(partName, configuration => { });
+        public ContentTypeDefinitionBuilder WithPart(string partName) => WithPart(partName, configuration => { });
 
-        public ContentTypeDefinitionBuilder WithPart(string name, string partName)
-            => WithPart(name, new ContentPartDefinition(partName), configuration => { });
+        public ContentTypeDefinitionBuilder WithPart(string name, string partName) => WithPart(name, new ContentPartDefinition(partName), configuration => { });
 
-        public ContentTypeDefinitionBuilder WithPart(string partName, Action<ContentTypePartDefinitionBuilder> configuration)
-            => WithPart(partName, new ContentPartDefinition(partName), configuration);
+        public ContentTypeDefinitionBuilder WithPart(string partName, Action<ContentTypePartDefinitionBuilder> configuration) =>
+            WithPart(partName, new ContentPartDefinition(partName), configuration);
 
         public ContentTypeDefinitionBuilder WithPart(string name, ContentPartDefinition partDefinition, Action<ContentTypePartDefinitionBuilder> configuration)
         {
@@ -137,10 +134,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
             else
             {
-                existingPart = new ContentTypePartDefinition(name, partDefinition, [])
-                {
-                    ContentTypeDefinition = Current,
-                };
+                existingPart = new ContentTypePartDefinition(name, partDefinition, []) { ContentTypeDefinition = Current, };
             }
 
             var configurer = new PartConfigurerImpl(existingPart);
@@ -149,25 +143,29 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
-        public ContentTypeDefinitionBuilder WithPart(string name, string partName, Action<ContentTypePartDefinitionBuilder> configuration)
-            => WithPart(name, new ContentPartDefinition(partName), configuration);
+        public ContentTypeDefinitionBuilder WithPart(string name, string partName, Action<ContentTypePartDefinitionBuilder> configuration) =>
+            WithPart(name, new ContentPartDefinition(partName), configuration);
 
-        public ContentTypeDefinitionBuilder WithPart<TPart>() where TPart : ContentPart
-            => WithPart(typeof(TPart).Name, configuration => { });
+        public ContentTypeDefinitionBuilder WithPart<TPart>()
+            where TPart : ContentPart => WithPart(typeof(TPart).Name, configuration => { });
 
-        public ContentTypeDefinitionBuilder WithPart<TPart>(string name) where TPart : ContentPart
-            => WithPart(name, new ContentPartDefinition(typeof(TPart).Name), configuration => { });
+        public ContentTypeDefinitionBuilder WithPart<TPart>(string name)
+            where TPart : ContentPart => WithPart(name, new ContentPartDefinition(typeof(TPart).Name), configuration => { });
 
-        public ContentTypeDefinitionBuilder WithPart<TPart>(string name, Action<ContentTypePartDefinitionBuilder> configuration) where TPart : ContentPart
-            => WithPart(name, new ContentPartDefinition(typeof(TPart).Name), configuration);
+        public ContentTypeDefinitionBuilder WithPart<TPart>(string name, Action<ContentTypePartDefinitionBuilder> configuration)
+            where TPart : ContentPart => WithPart(name, new ContentPartDefinition(typeof(TPart).Name), configuration);
 
-        public Task<ContentTypeDefinitionBuilder> WithPartAsync(string name, string partName, Func<ContentTypePartDefinitionBuilder, Task> configurationAsync)
-            => WithPartAsync(name, new ContentPartDefinition(partName), configurationAsync);
+        public Task<ContentTypeDefinitionBuilder> WithPartAsync(string name, string partName, Func<ContentTypePartDefinitionBuilder, Task> configurationAsync) =>
+            WithPartAsync(name, new ContentPartDefinition(partName), configurationAsync);
 
-        public Task<ContentTypeDefinitionBuilder> WithPartAsync(string partName, Func<ContentTypePartDefinitionBuilder, Task> configurationAsync)
-            => WithPartAsync(partName, new ContentPartDefinition(partName), configurationAsync);
+        public Task<ContentTypeDefinitionBuilder> WithPartAsync(string partName, Func<ContentTypePartDefinitionBuilder, Task> configurationAsync) =>
+            WithPartAsync(partName, new ContentPartDefinition(partName), configurationAsync);
 
-        public async Task<ContentTypeDefinitionBuilder> WithPartAsync(string name, ContentPartDefinition partDefinition, Func<ContentTypePartDefinitionBuilder, Task> configurationAsync)
+        public async Task<ContentTypeDefinitionBuilder> WithPartAsync(
+            string name,
+            ContentPartDefinition partDefinition,
+            Func<ContentTypePartDefinitionBuilder, Task> configurationAsync
+        )
         {
             var existingPart = _parts.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
 
@@ -177,10 +175,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             }
             else
             {
-                existingPart = new ContentTypePartDefinition(name, partDefinition, [])
-                {
-                    ContentTypeDefinition = Current,
-                };
+                existingPart = new ContentTypePartDefinition(name, partDefinition, []) { ContentTypeDefinition = Current, };
             }
 
             var configurer = new PartConfigurerImpl(existingPart);
@@ -215,10 +210,7 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
                     throw new ArgumentException("Content part name contains invalid characters", "name");
                 }
 
-                return new ContentTypePartDefinition(Current.Name, _partDefinition, _settings)
-                {
-                    ContentTypeDefinition = Current.ContentTypeDefinition,
-                };
+                return new ContentTypePartDefinition(Current.Name, _partDefinition, _settings) { ContentTypeDefinition = Current.ContentTypeDefinition, };
             }
         }
     }

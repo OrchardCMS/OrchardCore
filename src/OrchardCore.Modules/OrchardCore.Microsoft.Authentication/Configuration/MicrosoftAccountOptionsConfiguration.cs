@@ -8,9 +8,7 @@ using OrchardCore.Microsoft.Authentication.Settings;
 
 namespace OrchardCore.Microsoft.Authentication.Configuration
 {
-    public class MicrosoftAccountOptionsConfiguration :
-        IConfigureOptions<AuthenticationOptions>,
-        IConfigureNamedOptions<MicrosoftAccountOptions>
+    public class MicrosoftAccountOptionsConfiguration : IConfigureOptions<AuthenticationOptions>, IConfigureNamedOptions<MicrosoftAccountOptions>
     {
         private readonly MicrosoftAccountSettings _microsoftAccountSettings;
         private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -19,7 +17,8 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
         public MicrosoftAccountOptionsConfiguration(
             IOptions<MicrosoftAccountSettings> microsoftAccountSettings,
             IDataProtectionProvider dataProtectionProvider,
-            ILogger<MicrosoftAccountOptionsConfiguration> logger)
+            ILogger<MicrosoftAccountOptionsConfiguration> logger
+        )
         {
             _microsoftAccountSettings = microsoftAccountSettings.Value;
             _dataProtectionProvider = dataProtectionProvider;
@@ -33,8 +32,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(_microsoftAccountSettings.AppId) ||
-                string.IsNullOrWhiteSpace(_microsoftAccountSettings.AppSecret))
+            if (string.IsNullOrWhiteSpace(_microsoftAccountSettings.AppId) || string.IsNullOrWhiteSpace(_microsoftAccountSettings.AppSecret))
             {
                 _logger.LogWarning("The Microsoft login provider is enabled but not configured.");
 
@@ -42,11 +40,14 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             }
 
             // Register the OpenID Connect client handler in the authentication handlers collection.
-            options.AddScheme(MicrosoftAccountDefaults.AuthenticationScheme, builder =>
-            {
-                builder.DisplayName = "Microsoft Account";
-                builder.HandlerType = typeof(MicrosoftAccountHandler);
-            });
+            options.AddScheme(
+                MicrosoftAccountDefaults.AuthenticationScheme,
+                builder =>
+                {
+                    builder.DisplayName = "Microsoft Account";
+                    builder.HandlerType = typeof(MicrosoftAccountHandler);
+                }
+            );
         }
 
         public void Configure(string name, MicrosoftAccountOptions options)
@@ -66,7 +67,9 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
 
             try
             {
-                options.ClientSecret = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount).Unprotect(_microsoftAccountSettings.AppSecret);
+                options.ClientSecret = _dataProtectionProvider
+                    .CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount)
+                    .Unprotect(_microsoftAccountSettings.AppSecret);
             }
             catch
             {

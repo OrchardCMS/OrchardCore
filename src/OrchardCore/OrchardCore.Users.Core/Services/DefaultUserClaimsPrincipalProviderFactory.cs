@@ -22,7 +22,9 @@ namespace OrchardCore.Users.Services
             RoleManager<IRole> roleManager,
             IOptions<IdentityOptions> identityOptions,
             IEnumerable<IUserClaimsProvider> claimsProviders,
-            ILogger<DefaultUserClaimsPrincipalProviderFactory> logger) : base(userManager, roleManager, identityOptions)
+            ILogger<DefaultUserClaimsPrincipalProviderFactory> logger
+        )
+            : base(userManager, roleManager, identityOptions)
         {
             _claimsProviders = claimsProviders;
             _logger = logger;

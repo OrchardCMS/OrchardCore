@@ -22,7 +22,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 Mock.Of<IOpenIdScopeManager>(),
                 Mock.Of<IHtmlLocalizer<ApplicationController>>(),
                 Mock.Of<INotifier>(),
-                Mock.Of<ShellDescriptor>());
+                Mock.Of<ShellDescriptor>()
+            );
 
             var result = await controller.Create();
             Assert.IsType<ForbidResult>(result);
@@ -43,7 +44,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 mockOpenIdScopeManager.Object,
                 Mock.Of<IHtmlLocalizer<ApplicationController>>(),
                 Mock.Of<INotifier>(),
-                Mock.Of<ShellDescriptor>())
+                Mock.Of<ShellDescriptor>()
+            )
             {
                 ControllerContext = CreateControllerContext(),
             };
@@ -68,7 +70,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 Mock.Of<IOpenIdScopeManager>(),
                 Mock.Of<IHtmlLocalizer<ApplicationController>>(),
                 Mock.Of<INotifier>(),
-                Mock.Of<ShellDescriptor>())
+                Mock.Of<ShellDescriptor>()
+            )
             {
                 ControllerContext = CreateControllerContext(),
             };
@@ -109,7 +112,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 Mock.Of<IOpenIdScopeManager>(),
                 Mock.Of<IHtmlLocalizer<ApplicationController>>(),
                 Mock.Of<INotifier>(),
-                Mock.Of<ShellDescriptor>())
+                Mock.Of<ShellDescriptor>()
+            )
             {
                 ControllerContext = CreateControllerContext(),
             };
@@ -146,7 +150,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
         {
             var securityMock = new Mock<IAuthorizationService>(MockBehavior.Strict);
 
-            securityMock.Setup(x => x.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>())).Returns(Task.FromResult(AuthorizationResult.Success()));
+            securityMock
+                .Setup(x => x.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<IEnumerable<IAuthorizationRequirement>>()))
+                .Returns(Task.FromResult(AuthorizationResult.Success()));
             securityMock.Setup(x => x.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<string>())).Returns(Task.FromResult(AuthorizationResult.Success()));
             return securityMock;
         }
@@ -156,10 +162,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             var mockContext = new Mock<HttpContext>(MockBehavior.Loose);
             mockContext.SetupGet(hc => hc.User).Returns(new ClaimsPrincipal());
 
-            return new ControllerContext()
-            {
-                HttpContext = mockContext.Object,
-            };
+            return new ControllerContext() { HttpContext = mockContext.Object, };
         }
 
         public Mock<IStringLocalizer<ApplicationController>> MockStringLocalizer()

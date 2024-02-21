@@ -21,6 +21,5 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             return Completion.Normal;
         }
-
     }
 }

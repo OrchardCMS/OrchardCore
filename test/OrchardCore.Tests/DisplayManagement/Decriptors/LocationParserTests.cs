@@ -22,7 +22,12 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
         [InlineData("/Content:5@Group1#Tab1%Card1|Col1")]
         public void ZoneShouldBeParsed(string location)
         {
-            Assert.Equal("Content", new PlacementInfo { Location = location }.GetZones().FirstOrDefault());
+            Assert.Equal(
+                "Content",
+                new PlacementInfo { Location = location }
+                    .GetZones()
+                    .FirstOrDefault()
+            );
         }
 
         [Theory]

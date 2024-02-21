@@ -20,7 +20,8 @@ namespace OrchardCore.Environment.Shell.Builders
             ICompositionStrategy compositionStrategy,
             IShellContainerFactory shellContainerFactory,
             IEnumerable<ShellFeature> shellFeatures,
-            ILogger<ShellContextFactory> logger)
+            ILogger<ShellContextFactory> logger
+        )
         {
             _compositionStrategy = compositionStrategy;
             _shellContainerFactory = shellContainerFactory;
@@ -111,11 +112,7 @@ namespace OrchardCore.Environment.Shell.Builders
         {
             // Load default features from the list of registered ShellFeature instances in the DI
 
-            return new ShellDescriptor
-            {
-                SerialNumber = -1,
-                Features = new List<ShellFeature>(_shellFeatures)
-            };
+            return new ShellDescriptor { SerialNumber = -1, Features = new List<ShellFeature>(_shellFeatures) };
         }
     }
 }

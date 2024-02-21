@@ -6,7 +6,8 @@ namespace OrchardCore.Sitemaps.Builders
     /// <summary>
     /// Inherit to provide a sitemap source item builder.
     /// </summary>
-    public abstract class SitemapSourceBuilderBase<TSitemapSource> : ISitemapSourceBuilder where TSitemapSource : SitemapSource
+    public abstract class SitemapSourceBuilderBase<TSitemapSource> : ISitemapSourceBuilder
+        where TSitemapSource : SitemapSource
     {
         async Task ISitemapSourceBuilder.BuildAsync(SitemapSource source, SitemapBuilderContext context)
         {
@@ -15,7 +16,6 @@ namespace OrchardCore.Sitemaps.Builders
             {
                 await BuildSourceAsync(tSource, context);
             }
-
         }
 
         public abstract Task BuildSourceAsync(TSitemapSource source, SitemapBuilderContext context);

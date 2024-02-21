@@ -12,10 +12,12 @@ namespace OrchardCore.Taxonomies.Handlers
         {
             return context.ForAsync<ContainedContentItemsAspect>(aspect =>
             {
-                aspect.Accessors.Add((jsonObject) =>
-                {
-                    return jsonObject["TaxonomyPart"]["Terms"] as JsonArray;
-                });
+                aspect.Accessors.Add(
+                    (jsonObject) =>
+                    {
+                        return jsonObject["TaxonomyPart"]["Terms"] as JsonArray;
+                    }
+                );
 
                 return Task.CompletedTask;
             });

@@ -32,14 +32,11 @@ namespace OrchardCore.Lists.Services
                 if (viewModel.ShowListContentTypes)
                 {
                     var listableTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
-                        .Where(x =>
-                            x.Parts.Any(p =>
-                                p.PartDefinition.Name == nameof(ListPart)))
+                        .Where(x => x.Parts.Any(p => p.PartDefinition.Name == nameof(ListPart)))
                         .Select(x => x.Name);
 
                     query.With<ContentItemIndex>(x => x.ContentType.IsIn(listableTypes));
                 }
-
                 // Show contained elements for the specified list
                 else if (viewModel.ListContentItemId != null)
                 {

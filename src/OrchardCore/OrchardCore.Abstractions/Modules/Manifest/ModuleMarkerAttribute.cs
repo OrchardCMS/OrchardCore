@@ -13,10 +13,7 @@ namespace OrchardCore.Modules.Manifest
         /// </summary>
         /// <param name="id">The identifier for the Module.</param>
         /// <param name="type">Allows authors to specify a module specific Type.</param>
-        public ModuleMarkerAttribute(
-            string id,
-            string type
-        )
+        public ModuleMarkerAttribute(string id, string type)
         {
             Id = id;
             Type = type;

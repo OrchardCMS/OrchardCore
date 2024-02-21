@@ -29,12 +29,17 @@ namespace OrchardCore.AuditTrail.Drivers
                 return null;
             }
 
-            return Initialize<AuditTrailTrimmingSettingsViewModel>("AuditTrailTrimmingSettings_Edit", model =>
-            {
-                model.RetentionDays = section.RetentionDays;
-                model.LastRunUtc = section.LastRunUtc;
-                model.Disabled = section.Disabled;
-            }).Location("Content:10#Trimming;0").OnGroup(AuditTrailSettingsGroup.Id);
+            return Initialize<AuditTrailTrimmingSettingsViewModel>(
+                    "AuditTrailTrimmingSettings_Edit",
+                    model =>
+                    {
+                        model.RetentionDays = section.RetentionDays;
+                        model.LastRunUtc = section.LastRunUtc;
+                        model.Disabled = section.Disabled;
+                    }
+                )
+                .Location("Content:10#Trimming;0")
+                .OnGroup(AuditTrailSettingsGroup.Id);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(AuditTrailTrimmingSettings section, BuildEditorContext context)

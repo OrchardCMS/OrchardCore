@@ -25,15 +25,19 @@ namespace OrchardCore.ContentManagement
         private readonly Dictionary<string, ContentTypeDefinition> _scopedTypeDefinitions = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, ContentPartDefinition> _scopedPartDefinitions = new(StringComparer.OrdinalIgnoreCase);
 
-        public ContentDefinitionManager(
-            IContentDefinitionStore contentDefinitionStore,
-            IMemoryCache memoryCache)
+        public ContentDefinitionManager(IContentDefinitionStore contentDefinitionStore, IMemoryCache memoryCache)
         {
             _contentDefinitionStore = contentDefinitionStore;
             _memoryCache = memoryCache;
 
-            _cachedTypeDefinitions = _memoryCache.GetOrCreate("TypeDefinitions", entry => new ConcurrentDictionary<string, ContentTypeDefinition>(StringComparer.OrdinalIgnoreCase));
-            _cachedPartDefinitions = _memoryCache.GetOrCreate("PartDefinitions", entry => new ConcurrentDictionary<string, ContentPartDefinition>(StringComparer.OrdinalIgnoreCase));
+            _cachedTypeDefinitions = _memoryCache.GetOrCreate(
+                "TypeDefinitions",
+                entry => new ConcurrentDictionary<string, ContentTypeDefinition>(StringComparer.OrdinalIgnoreCase)
+            );
+            _cachedPartDefinitions = _memoryCache.GetOrCreate(
+                "PartDefinitions",
+                entry => new ConcurrentDictionary<string, ContentPartDefinition>(StringComparer.OrdinalIgnoreCase)
+            );
         }
 
         public async Task<IEnumerable<ContentTypeDefinition>> LoadTypeDefinitionsAsync()
@@ -141,12 +145,9 @@ namespace OrchardCore.ContentManagement
             var document = await _contentDefinitionStore.LoadContentDefinitionAsync();
 
             // Remove parts from current types.
-            var typeDefinitions = document.ContentTypeDefinitionRecords
-                .Select(type => LoadTypeDefinition(document, type.Name)).ToList();
+            var typeDefinitions = document.ContentTypeDefinitionRecords.Select(type => LoadTypeDefinition(document, type.Name)).ToList();
 
-            var typesWithPart = typeDefinitions
-                .Where(typeDefinition => typeDefinition.Parts
-                    .Any(part => part.PartDefinition.Name.EqualsOrdinalIgnoreCase(name)));
+            var typesWithPart = typeDefinitions.Where(typeDefinition => typeDefinition.Parts.Any(part => part.PartDefinition.Name.EqualsOrdinalIgnoreCase(name)));
 
             foreach (var typeDefinition in typesWithPart)
             {
@@ -184,40 +185,33 @@ namespace OrchardCore.ContentManagement
 
         private ContentTypeDefinition LoadTypeDefinition(ContentDefinitionRecord document, string name) =>
             !_scopedTypeDefinitions.TryGetValue(name, out var typeDefinition)
-            ? _scopedTypeDefinitions[name] = Build(
-                document.ContentTypeDefinitionRecords.FirstOrDefault(type => type.Name.EqualsOrdinalIgnoreCase(name)),
-                document.ContentPartDefinitionRecords)
-            : typeDefinition;
+                ? _scopedTypeDefinitions[name] = Build(
+                    document.ContentTypeDefinitionRecords.FirstOrDefault(type => type.Name.EqualsOrdinalIgnoreCase(name)),
+                    document.ContentPartDefinitionRecords
+                )
+                : typeDefinition;
 
         private ContentTypeDefinition GetTypeDefinition(ContentDefinitionRecord document, string name) =>
-            _cachedTypeDefinitions.GetOrAdd(name, name => Build(
-                document.ContentTypeDefinitionRecords.FirstOrDefault(type => type.Name.EqualsOrdinalIgnoreCase(name)),
-                document.ContentPartDefinitionRecords));
+            _cachedTypeDefinitions.GetOrAdd(
+                name,
+                name => Build(document.ContentTypeDefinitionRecords.FirstOrDefault(type => type.Name.EqualsOrdinalIgnoreCase(name)), document.ContentPartDefinitionRecords)
+            );
 
         private ContentPartDefinition LoadPartDefinition(ContentDefinitionRecord document, string name) =>
             !_scopedPartDefinitions.TryGetValue(name, out var partDefinition)
-            ? _scopedPartDefinitions[name] = Build(
-                document.ContentPartDefinitionRecords.FirstOrDefault(part => part.Name.EqualsOrdinalIgnoreCase(name)))
-            : partDefinition;
+                ? _scopedPartDefinitions[name] = Build(document.ContentPartDefinitionRecords.FirstOrDefault(part => part.Name.EqualsOrdinalIgnoreCase(name)))
+                : partDefinition;
 
         private ContentPartDefinition GetPartDefinition(ContentDefinitionRecord document, string name) =>
-            _cachedPartDefinitions.GetOrAdd(name, name => Build(
-                document.ContentPartDefinitionRecords.FirstOrDefault(record => record.Name.EqualsOrdinalIgnoreCase(name))));
+            _cachedPartDefinitions.GetOrAdd(name, name => Build(document.ContentPartDefinitionRecords.FirstOrDefault(record => record.Name.EqualsOrdinalIgnoreCase(name))));
 
-        private static ContentTypeDefinitionRecord Acquire(
-            ContentDefinitionRecord document,
-            ContentTypeDefinition contentTypeDefinition)
+        private static ContentTypeDefinitionRecord Acquire(ContentDefinitionRecord document, ContentTypeDefinition contentTypeDefinition)
         {
-            var result = document.ContentTypeDefinitionRecords
-                .FirstOrDefault(type => type.Name.EqualsOrdinalIgnoreCase(contentTypeDefinition.Name));
+            var result = document.ContentTypeDefinitionRecords.FirstOrDefault(type => type.Name.EqualsOrdinalIgnoreCase(contentTypeDefinition.Name));
 
             if (result is null)
             {
-                result = new ContentTypeDefinitionRecord
-                {
-                    Name = contentTypeDefinition.Name,
-                    DisplayName = contentTypeDefinition.DisplayName,
-                };
+                result = new ContentTypeDefinitionRecord { Name = contentTypeDefinition.Name, DisplayName = contentTypeDefinition.DisplayName, };
 
                 document.ContentTypeDefinitionRecords.Add(result);
             }
@@ -225,19 +219,13 @@ namespace OrchardCore.ContentManagement
             return result;
         }
 
-        private static ContentPartDefinitionRecord Acquire(
-            ContentDefinitionRecord document,
-            ContentPartDefinition contentPartDefinition)
+        private static ContentPartDefinitionRecord Acquire(ContentDefinitionRecord document, ContentPartDefinition contentPartDefinition)
         {
-            var result = document.ContentPartDefinitionRecords
-                .FirstOrDefault(part => part.Name.EqualsOrdinalIgnoreCase(contentPartDefinition.Name));
+            var result = document.ContentPartDefinitionRecords.FirstOrDefault(part => part.Name.EqualsOrdinalIgnoreCase(contentPartDefinition.Name));
 
             if (result is null)
             {
-                result = new ContentPartDefinitionRecord
-                {
-                    Name = contentPartDefinition.Name,
-                };
+                result = new ContentPartDefinitionRecord { Name = contentPartDefinition.Name, };
 
                 document.ContentPartDefinitionRecords.Add(result);
             }
@@ -250,9 +238,10 @@ namespace OrchardCore.ContentManagement
             record.DisplayName = model.DisplayName;
             record.Settings = model.Settings;
 
-            var toRemove = record.ContentTypePartDefinitionRecords
-                .Where(typePartDefinitionRecord => !model.Parts
-                    .Any(typePart => typePart.Name.EqualsOrdinalIgnoreCase(typePartDefinitionRecord.Name)))
+            var toRemove = record
+                .ContentTypePartDefinitionRecords.Where(typePartDefinitionRecord =>
+                    !model.Parts.Any(typePart => typePart.Name.EqualsOrdinalIgnoreCase(typePartDefinitionRecord.Name))
+                )
                 .ToList();
 
             foreach (var remove in toRemove)
@@ -262,8 +251,7 @@ namespace OrchardCore.ContentManagement
 
             foreach (var part in model.Parts)
             {
-                var typePartRecord = record.ContentTypePartDefinitionRecords
-                    .FirstOrDefault(typePart => typePart.Name.EqualsOrdinalIgnoreCase(part.Name));
+                var typePartRecord = record.ContentTypePartDefinitionRecords.FirstOrDefault(typePart => typePart.Name.EqualsOrdinalIgnoreCase(part.Name));
 
                 if (typePartRecord is null)
                 {
@@ -281,16 +269,16 @@ namespace OrchardCore.ContentManagement
             }
         }
 
-        private static void Apply(ContentTypePartDefinition model, ContentTypePartDefinitionRecord record)
-            => record.Settings = model.Settings;
+        private static void Apply(ContentTypePartDefinition model, ContentTypePartDefinitionRecord record) => record.Settings = model.Settings;
 
         private static void Apply(ContentPartDefinition model, ContentPartDefinitionRecord record)
         {
             record.Settings = model.Settings;
 
-            var toRemove = record.ContentPartFieldDefinitionRecords
-                .Where(partFieldDefinitionRecord => !model.Fields
-                    .Any(partField => partField.Name.EqualsOrdinalIgnoreCase(partFieldDefinitionRecord.Name)))
+            var toRemove = record
+                .ContentPartFieldDefinitionRecords.Where(partFieldDefinitionRecord =>
+                    !model.Fields.Any(partField => partField.Name.EqualsOrdinalIgnoreCase(partFieldDefinitionRecord.Name))
+                )
                 .ToList();
 
             foreach (var remove in toRemove)
@@ -300,23 +288,19 @@ namespace OrchardCore.ContentManagement
 
             foreach (var field in model.Fields)
             {
-                var partFieldRecord = record.ContentPartFieldDefinitionRecords
-                    .FirstOrDefault(partField => partField.Name.EqualsOrdinalIgnoreCase(field.Name));
+                var partFieldRecord = record.ContentPartFieldDefinitionRecords.FirstOrDefault(partField => partField.Name.EqualsOrdinalIgnoreCase(field.Name));
 
                 if (partFieldRecord is null)
                 {
                     if (field.FieldDefinition is null)
                     {
                         throw new InvalidOperationException(
-                            $"The '{field.Name}' field in '{model.Name}' part was defined without a specified type." +
-                            " Please review the migration and explicitly specify the field type.");
+                            $"The '{field.Name}' field in '{model.Name}' part was defined without a specified type."
+                                + " Please review the migration and explicitly specify the field type."
+                        );
                     }
 
-                    partFieldRecord = new ContentPartFieldDefinitionRecord
-                    {
-                        FieldName = field.FieldDefinition.Name,
-                        Name = field.Name,
-                    };
+                    partFieldRecord = new ContentPartFieldDefinitionRecord { FieldName = field.FieldDefinition.Name, Name = field.Name, };
 
                     record.ContentPartFieldDefinitionRecords.Add(partFieldRecord);
                 }
@@ -325,53 +309,32 @@ namespace OrchardCore.ContentManagement
             }
         }
 
-        private static void Apply(ContentPartFieldDefinition model, ContentPartFieldDefinitionRecord record)
-            => record.Settings = model.Settings;
+        private static void Apply(ContentPartFieldDefinition model, ContentPartFieldDefinitionRecord record) => record.Settings = model.Settings;
 
-        private static ContentTypeDefinition Build(
-            ContentTypeDefinitionRecord source,
-            IList<ContentPartDefinitionRecord> partDefinitionRecords) =>
+        private static ContentTypeDefinition Build(ContentTypeDefinitionRecord source, IList<ContentPartDefinitionRecord> partDefinitionRecords) =>
             source is not null
-            ? new ContentTypeDefinition(
-                source.Name,
-                source.DisplayName,
-                source.ContentTypePartDefinitionRecords.Select(typePart => Build(
-                    typePart,
-                    partDefinitionRecords.FirstOrDefault(part => part.Name.EqualsOrdinalIgnoreCase(typePart.PartName)))),
-                source.Settings)
-            : null;
+                ? new ContentTypeDefinition(
+                    source.Name,
+                    source.DisplayName,
+                    source.ContentTypePartDefinitionRecords.Select(typePart =>
+                        Build(typePart, partDefinitionRecords.FirstOrDefault(part => part.Name.EqualsOrdinalIgnoreCase(typePart.PartName)))
+                    ),
+                    source.Settings
+                )
+                : null;
 
-        private static ContentTypePartDefinition Build(
-            ContentTypePartDefinitionRecord source,
-            ContentPartDefinitionRecord partDefinitionRecord) =>
+        private static ContentTypePartDefinition Build(ContentTypePartDefinitionRecord source, ContentPartDefinitionRecord partDefinitionRecord) =>
             source is not null
-            ? new ContentTypePartDefinition(
-                source.Name,
-                Build(partDefinitionRecord) ?? new ContentPartDefinition(source.PartName, [], []),
-                source.Settings)
-            : null;
+                ? new ContentTypePartDefinition(source.Name, Build(partDefinitionRecord) ?? new ContentPartDefinition(source.PartName, [], []), source.Settings)
+                : null;
 
         private static ContentPartDefinition Build(ContentPartDefinitionRecord source) =>
-            source is not null
-            ? new ContentPartDefinition(
-                source.Name,
-                source.ContentPartFieldDefinitionRecords.Select(Build),
-                source.Settings)
-            : null;
+            source is not null ? new ContentPartDefinition(source.Name, source.ContentPartFieldDefinitionRecords.Select(Build), source.Settings) : null;
 
         private static ContentPartFieldDefinition Build(ContentPartFieldDefinitionRecord source) =>
-            source is not null
-            ? new ContentPartFieldDefinition(
-                Build(new ContentFieldDefinitionRecord
-                {
-                    Name = source.FieldName,
-                }),
-                source.Name,
-                source.Settings)
-            : null;
+            source is not null ? new ContentPartFieldDefinition(Build(new ContentFieldDefinitionRecord { Name = source.FieldName, }), source.Name, source.Settings) : null;
 
-        private static ContentFieldDefinition Build(ContentFieldDefinitionRecord source)
-            => source is null ? null : new ContentFieldDefinition(source.Name);
+        private static ContentFieldDefinition Build(ContentFieldDefinitionRecord source) => source is null ? null : new ContentFieldDefinition(source.Name);
 
         private async Task UpdateContentDefinitionRecordAsync(ContentDefinitionRecord document)
         {
@@ -389,10 +352,7 @@ namespace OrchardCore.ContentManagement
         {
             if (!_memoryCache.TryGetValue<Document>(CacheKey, out var cacheEntry) || cacheEntry.Identifier != document.Identifier)
             {
-                cacheEntry = new Document()
-                {
-                    Identifier = document.Identifier,
-                };
+                cacheEntry = new Document() { Identifier = document.Identifier, };
 
                 _cachedTypeDefinitions.Clear();
                 _cachedPartDefinitions.Clear();

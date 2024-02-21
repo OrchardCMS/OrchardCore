@@ -24,10 +24,7 @@ namespace OrchardCore.Taxonomies.Drivers
         private readonly PagerOptions _pagerOptions;
         private readonly IContentManager _contentManager;
 
-        public TermPartContentDriver(
-            ISession session,
-            IOptions<PagerOptions> pagerOptions,
-            IContentManager contentManager)
+        public TermPartContentDriver(ISession session, IOptions<PagerOptions> pagerOptions, IContentManager contentManager)
         {
             _session = session;
             _pagerOptions = pagerOptions.Value;
@@ -39,15 +36,20 @@ namespace OrchardCore.Taxonomies.Drivers
             var part = model.As<TermPart>();
             if (part != null)
             {
-                return Task.FromResult<IDisplayResult>(Initialize<TermPartViewModel>("TermPart", async m =>
-                {
-                    var pager = await GetPagerAsync(context.Updater, _pagerOptions.GetPageSize());
-                    m.TaxonomyContentItemId = part.TaxonomyContentItemId;
-                    m.ContentItem = part.ContentItem;
-                    m.ContentItems = (await QueryTermItemsAsync(part, pager)).ToArray();
-                    m.Pager = await context.New.PagerSlim(pager);
-                })
-                .Location("Detail", "Content:5"));
+                return Task.FromResult<IDisplayResult>(
+                    Initialize<TermPartViewModel>(
+                            "TermPart",
+                            async m =>
+                            {
+                                var pager = await GetPagerAsync(context.Updater, _pagerOptions.GetPageSize());
+                                m.TaxonomyContentItemId = part.TaxonomyContentItemId;
+                                m.ContentItem = part.ContentItem;
+                                m.ContentItems = (await QueryTermItemsAsync(part, pager)).ToArray();
+                                m.Pager = await context.New.PagerSlim(pager);
+                            }
+                        )
+                        .Location("Detail", "Content:5")
+                );
             }
 
             return Task.FromResult<IDisplayResult>(null);
@@ -58,7 +60,8 @@ namespace OrchardCore.Taxonomies.Drivers
             if (pager.Before != null)
             {
                 var beforeValue = new DateTime(long.Parse(pager.Before));
-                var query = _session.Query<ContentItem>()
+                var query = _session
+                    .Query<ContentItem>()
                     .With<TaxonomyIndex>(x => x.TermContentItemId == termPart.ContentItem.ContentItemId)
                     .With<ContentItemIndex>(CreateContentIndexFilter(beforeValue, null))
                     .OrderBy(x => x.CreatedUtc)
@@ -88,7 +91,8 @@ namespace OrchardCore.Taxonomies.Drivers
             else if (pager.After != null)
             {
                 var afterValue = new DateTime(long.Parse(pager.After));
-                var query = _session.Query<ContentItem>()
+                var query = _session
+                    .Query<ContentItem>()
                     .With<TaxonomyIndex>(x => x.TermContentItemId == termPart.ContentItem.ContentItemId)
                     .With<ContentItemIndex>(CreateContentIndexFilter(null, afterValue))
                     .OrderByDescending(x => x.CreatedUtc)
@@ -115,7 +119,8 @@ namespace OrchardCore.Taxonomies.Drivers
             }
             else
             {
-                var query = _session.Query<ContentItem>()
+                var query = _session
+                    .Query<ContentItem>()
                     .With<TaxonomyIndex>(x => x.TermContentItemId == termPart.ContentItem.ContentItemId)
                     .With<ContentItemIndex>(CreateContentIndexFilter(null, null))
                     .OrderByDescending(x => x.CreatedUtc)

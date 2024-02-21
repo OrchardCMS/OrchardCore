@@ -18,25 +18,18 @@ public class ArchiveLaterPartDisplayDriver : ContentPartDisplayDriver<ArchiveLat
     private readonly IAuthorizationService _authorizationService;
     private readonly ILocalClock _localClock;
 
-    public ArchiveLaterPartDisplayDriver(
-        IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService,
-        ILocalClock localClock)
+    public ArchiveLaterPartDisplayDriver(IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService, ILocalClock localClock)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _localClock = localClock;
     }
 
-    public override IDisplayResult Display(ArchiveLaterPart part, BuildPartDisplayContext context)
-        => Initialize<ArchiveLaterPartViewModel>(
-            $"{nameof(ArchiveLaterPart)}_SummaryAdmin",
-            model => PopulateViewModel(part, model)).Location("SummaryAdmin", "Meta:25");
+    public override IDisplayResult Display(ArchiveLaterPart part, BuildPartDisplayContext context) =>
+        Initialize<ArchiveLaterPartViewModel>($"{nameof(ArchiveLaterPart)}_SummaryAdmin", model => PopulateViewModel(part, model)).Location("SummaryAdmin", "Meta:25");
 
-    public override IDisplayResult Edit(ArchiveLaterPart part, BuildPartEditorContext context)
-        => Initialize<ArchiveLaterPartViewModel>(
-            GetEditorShapeType(context),
-            model => PopulateViewModel(part, model)).Location("Actions:10.5");
+    public override IDisplayResult Edit(ArchiveLaterPart part, BuildPartEditorContext context) =>
+        Initialize<ArchiveLaterPartViewModel>(GetEditorShapeType(context), model => PopulateViewModel(part, model)).Location("Actions:10.5");
 
     public override async Task<IDisplayResult> UpdateAsync(ArchiveLaterPart part, IUpdateModel updater, UpdatePartEditorContext context)
     {
@@ -65,8 +58,6 @@ public class ArchiveLaterPartDisplayDriver : ContentPartDisplayDriver<ArchiveLat
     {
         viewModel.ContentItem = part.ContentItem;
         viewModel.ScheduledArchiveUtc = part.ScheduledArchiveUtc;
-        viewModel.ScheduledArchiveLocalDateTime = part.ScheduledArchiveUtc.HasValue
-            ? (await _localClock.ConvertToLocalAsync(part.ScheduledArchiveUtc.Value)).DateTime
-            : null;
+        viewModel.ScheduledArchiveLocalDateTime = part.ScheduledArchiveUtc.HasValue ? (await _localClock.ConvertToLocalAsync(part.ScheduledArchiveUtc.Value)).DateTime : null;
     }
 }

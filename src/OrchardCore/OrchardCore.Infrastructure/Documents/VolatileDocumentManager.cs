@@ -29,7 +29,8 @@ namespace OrchardCore.Documents
             IDistributedLock distributedLock,
             IMemoryCache memoryCache,
             IOptionsMonitor<DocumentOptions> options,
-            ILogger<DocumentManager<TDocument>> logger)
+            ILogger<DocumentManager<TDocument>> logger
+        )
             : base(distributedCache, memoryCache, options, logger)
         {
             _isVolatile = true;
@@ -77,7 +78,8 @@ namespace OrchardCore.Documents
                 (var locker, var locked) = await _distributedLock.TryAcquireLockAsync(
                     _options.CacheKey + "_LOCK",
                     TimeSpan.FromMilliseconds(_options.LockTimeout),
-                    TimeSpan.FromMilliseconds(_options.LockExpiration));
+                    TimeSpan.FromMilliseconds(_options.LockExpiration)
+                );
 
                 if (!locked)
                 {

@@ -17,13 +17,10 @@ namespace OrchardCore.DynamicCache.TagHelpers
 
         private readonly ICacheScopeManager _cacheScopeManager;
 
-        public CacheDependencyTagHelper(
-            ICacheScopeManager cacheScopeManager)
-
+        public CacheDependencyTagHelper(ICacheScopeManager cacheScopeManager)
         {
             _cacheScopeManager = cacheScopeManager;
         }
-
 
         /// <inheritdoc />
         public override void Process(TagHelperContext context, TagHelperOutput output)

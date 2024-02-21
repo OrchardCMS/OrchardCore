@@ -26,21 +26,22 @@ namespace OrchardCore.Workflows.Indexes
     {
         public override void Describe(DescribeContext<WorkflowType> context)
         {
-            context.For<WorkflowTypeIndex>()
-                .Map(workflowType =>
-                        new WorkflowTypeIndex
-                        {
-                            WorkflowTypeId = workflowType.WorkflowTypeId,
-                            Name = workflowType.Name,
-                            IsEnabled = workflowType.IsEnabled,
-                            HasStart = workflowType.Activities.Any(x => x.IsStart)
-                        }
-                );
+            context
+                .For<WorkflowTypeIndex>()
+                .Map(workflowType => new WorkflowTypeIndex
+                {
+                    WorkflowTypeId = workflowType.WorkflowTypeId,
+                    Name = workflowType.Name,
+                    IsEnabled = workflowType.IsEnabled,
+                    HasStart = workflowType.Activities.Any(x => x.IsStart)
+                });
 
-            context.For<WorkflowTypeStartActivitiesIndex>()
+            context
+                .For<WorkflowTypeStartActivitiesIndex>()
                 .Map(workflowType =>
-                    workflowType.Activities.Where(x => x.IsStart).Select(x =>
-                        new WorkflowTypeStartActivitiesIndex
+                    workflowType
+                        .Activities.Where(x => x.IsStart)
+                        .Select(x => new WorkflowTypeStartActivitiesIndex
                         {
                             WorkflowTypeId = workflowType.WorkflowTypeId,
                             Name = workflowType.Name,

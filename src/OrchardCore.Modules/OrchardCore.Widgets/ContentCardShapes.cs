@@ -16,7 +16,8 @@ namespace OrchardCore.Widgets
 
         public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
         {
-            builder.Describe(ContentCardEdit)
+            builder
+                .Describe(ContentCardEdit)
                 .OnDisplaying(context =>
                 {
                     // Defines Edit Alternates for the Content Item being edited.
@@ -75,7 +76,8 @@ namespace OrchardCore.Widgets
                     }
                 });
 
-            builder.Describe(ContentCardFrame)
+            builder
+                .Describe(ContentCardFrame)
                 .OnDisplaying(context =>
                 {
                     // Alternates for Outer Frame of ContentCard
@@ -132,13 +134,14 @@ namespace OrchardCore.Widgets
                     }
                 });
 
-            builder.Describe(ContentCardFieldsEdit)
-               .OnDisplaying(context =>
-               {
-                   dynamic contentCardEditorFields = context.Shape;
-                   var collectionType = contentCardEditorFields.CardShape.CollectionShapeType as string;
-                   contentCardEditorFields.Metadata.Alternates.Add($"{collectionType}_Fields_Edit");
-               });
+            builder
+                .Describe(ContentCardFieldsEdit)
+                .OnDisplaying(context =>
+                {
+                    dynamic contentCardEditorFields = context.Shape;
+                    var collectionType = contentCardEditorFields.CardShape.CollectionShapeType as string;
+                    contentCardEditorFields.Metadata.Alternates.Add($"{collectionType}_Fields_Edit");
+                });
 
             return ValueTask.CompletedTask;
         }

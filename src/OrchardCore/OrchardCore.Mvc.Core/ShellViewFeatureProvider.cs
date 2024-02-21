@@ -84,8 +84,8 @@ namespace OrchardCore.Mvc
         private void PopulateFeatureInternal(ViewsFeature feature)
         {
             // Retrieve mvc views feature providers but not this one.
-            var mvcFeatureProviders = _applicationPartManager.FeatureProviders
-                .OfType<IApplicationFeatureProvider<ViewsFeature>>()
+            var mvcFeatureProviders = _applicationPartManager
+                .FeatureProviders.OfType<IApplicationFeatureProvider<ViewsFeature>>()
                 .Where(p => p.GetType() != typeof(ShellViewFeatureProvider));
 
             var modules = _applicationContext.Application.Modules;

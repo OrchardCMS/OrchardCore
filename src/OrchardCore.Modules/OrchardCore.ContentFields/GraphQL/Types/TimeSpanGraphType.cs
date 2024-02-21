@@ -21,9 +21,7 @@ namespace OrchardCore.ContentFields.GraphQL.Types
         public override object ParseValue(object value)
         {
             var timespan = value?.ToString().StripQuotes();
-            return string.IsNullOrWhiteSpace(timespan)
-                ? null
-                : (TimeSpan?)TimeSpan.Parse(timespan, CultureInfo.CurrentCulture);
+            return string.IsNullOrWhiteSpace(timespan) ? null : (TimeSpan?)TimeSpan.Parse(timespan, CultureInfo.CurrentCulture);
         }
 
         public override object ParseLiteral(GraphQLValue value)

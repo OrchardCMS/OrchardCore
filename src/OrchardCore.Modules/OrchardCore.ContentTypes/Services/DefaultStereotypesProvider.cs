@@ -7,6 +7,7 @@ namespace OrchardCore.ContentTypes.Services
     public class DefaultStereotypesProvider : IStereotypesProvider
     {
         private readonly IContentDefinitionService _contentDefinitionService;
+
         public DefaultStereotypesProvider(IContentDefinitionService contentDefinitionService)
         {
             _contentDefinitionService = contentDefinitionService;

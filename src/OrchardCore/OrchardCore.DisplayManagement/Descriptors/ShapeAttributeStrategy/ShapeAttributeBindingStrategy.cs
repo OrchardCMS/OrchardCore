@@ -21,9 +21,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly IEnumerable<IShapeAttributeProvider> _shapeProviders;
 
-        public ShapeAttributeBindingStrategy(
-            ITypeFeatureProvider typeFeatureProvider,
-            IEnumerable<IShapeAttributeProvider> shapeProviders)
+        public ShapeAttributeBindingStrategy(ITypeFeatureProvider typeFeatureProvider, IEnumerable<IShapeAttributeProvider> shapeProviders)
         {
             _typeFeatureProvider = typeFeatureProvider;
             _shapeProviders = shapeProviders;
@@ -51,11 +49,10 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
             {
                 var occurrence = iter;
                 var shapeType = occurrence.ShapeAttribute.ShapeType ?? occurrence.MethodInfo.Name;
-                builder.Describe(shapeType)
+                builder
+                    .Describe(shapeType)
                     .From(_typeFeatureProvider.GetFeatureForDependency(occurrence.ServiceType))
-                    .BoundAs(
-                        occurrence.MethodInfo.DeclaringType.FullName + "::" + occurrence.MethodInfo.Name,
-                        CreateDelegate(occurrence));
+                    .BoundAs(occurrence.MethodInfo.DeclaringType.FullName + "::" + occurrence.MethodInfo.Name, CreateDelegate(occurrence));
             }
 
             return ValueTask.CompletedTask;
@@ -132,7 +129,6 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
 
             var targetExp = Expression.Parameter(typeof(object), "target");
             var castTargetExp = Expression.Convert(targetExp, type);
-
 
             LambdaExpression lambdaExp;
 
@@ -232,14 +228,14 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
                 };
             }
 
-            // pre-calculate the default value 
+            // pre-calculate the default value
             var defaultValue = parameter.ParameterType.IsValueType ? Activator.CreateInstance(parameter.ParameterType) : null;
 
             var isDateTimeType =
-                parameter.ParameterType == typeof(DateTime) ||
-                parameter.ParameterType == typeof(DateTime?) ||
-                parameter.ParameterType == typeof(DateTimeOffset) ||
-                parameter.ParameterType == typeof(DateTimeOffset?);
+                parameter.ParameterType == typeof(DateTime)
+                || parameter.ParameterType == typeof(DateTime?)
+                || parameter.ParameterType == typeof(DateTimeOffset)
+                || parameter.ParameterType == typeof(DateTimeOffset?);
 
             return d =>
             {

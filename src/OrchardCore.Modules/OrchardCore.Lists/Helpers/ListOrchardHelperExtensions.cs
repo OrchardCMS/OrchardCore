@@ -34,7 +34,11 @@ public static class ListOrchardHelperExtensions
     /// <param name="listContentItemId">The list content item id.</param>
     /// <param name="itemPredicate">The optional predicate applied to each item. By defult published items only.</param>
     /// <returns>An enumerable of list items satisfying given predicate.</returns>
-    public static Task<IEnumerable<ContentItem>> QueryListItemsAsync(this IOrchardHelper orchardHelper, string listContentItemId, Expression<Func<ContentItemIndex, bool>> itemPredicate = null)
+    public static Task<IEnumerable<ContentItem>> QueryListItemsAsync(
+        this IOrchardHelper orchardHelper,
+        string listContentItemId,
+        Expression<Func<ContentItemIndex, bool>> itemPredicate = null
+    )
     {
         var session = orchardHelper.HttpContext.RequestServices.GetService<ISession>();
 

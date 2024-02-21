@@ -22,7 +22,7 @@ namespace OrchardCore.Sitemaps
 
         /// <summary>
         /// Route values used to create the link to the razor page.
-        /// Must include the area, or namespace of module, the razor page belongs to. 
+        /// Must include the area, or namespace of module, the razor page belongs to.
         /// </summary>
         public Func<ContentItem, object> RouteValues { get; set; }
     }

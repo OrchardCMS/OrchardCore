@@ -6,12 +6,10 @@ namespace OrchardCore.AdminDashboard.ViewModels
 {
     public class DashboardWrapper : ShapeViewModel
     {
-        public DashboardWrapper() : base("Dashboard_Wrapper")
-        {
-        }
+        public DashboardWrapper()
+            : base("Dashboard_Wrapper") { }
 
         public ContentItem Dashboard { get; set; }
         public IShape Content { get; set; }
     }
-
 }

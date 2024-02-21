@@ -21,14 +21,13 @@ public static class JArray
         Stream utf8Json,
         JsonNodeOptions? nodeOptions = null,
         JsonDocumentOptions documentOptions = default,
-        CancellationToken cancellationToken = default)
-        => (await JNode.LoadAsync(utf8Json, nodeOptions, documentOptions, cancellationToken))?.AsArray();
+        CancellationToken cancellationToken = default
+    ) => (await JNode.LoadAsync(utf8Json, nodeOptions, documentOptions, cancellationToken))?.AsArray();
 
     /// <summary>
     /// Loads a JSON array from the provided reader.
     /// </summary>
-    public static JsonArray? Load(ref Utf8JsonReader reader, JsonNodeOptions? nodeOptions = null)
-        => JNode.Load(ref reader, nodeOptions)?.AsArray();
+    public static JsonArray? Load(ref Utf8JsonReader reader, JsonNodeOptions? nodeOptions = null) => JNode.Load(ref reader, nodeOptions)?.AsArray();
 
     /// <summary>
     /// Parses text representing a single JSON array.
@@ -43,16 +42,15 @@ public static class JArray
     /// <summary>
     /// Parses text representing a single JSON array.
     /// </summary>
-    public static JsonArray? Parse(string json, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default)
-        => JNode.Parse(json, nodeOptions, documentOptions)?.AsArray();
+    public static JsonArray? Parse(string json, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default) =>
+        JNode.Parse(json, nodeOptions, documentOptions)?.AsArray();
 
     /// <summary>
     /// Tries to parse text representing a single JSON array.
     /// </summary>
     public static bool TryParse(string json, out JsonArray? jsonArray, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default)
     {
-        if (!JNode.TryParse(json, out var jsonNode, nodeOptions, documentOptions) ||
-            jsonNode is not JsonArray jArray)
+        if (!JNode.TryParse(json, out var jsonNode, nodeOptions, documentOptions) || jsonNode is not JsonArray jArray)
         {
             jsonArray = null;
             return false;
@@ -245,8 +243,7 @@ public static class JArray
 
                         if (existingItem is JsonValue || existingItem.GetValueKind() != item.GetValueKind())
                         {
-                            if (item.GetValueKind() != JsonValueKind.Null ||
-                                settings?.MergeNullValueHandling == MergeNullValueHandling.Merge)
+                            if (item.GetValueKind() != JsonValueKind.Null || settings?.MergeNullValueHandling == MergeNullValueHandling.Merge)
                             {
                                 jsonArray[i] = item.Clone();
                             }

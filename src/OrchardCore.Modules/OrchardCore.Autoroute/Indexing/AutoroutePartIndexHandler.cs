@@ -8,9 +8,7 @@ namespace OrchardCore.Autoroute.Indexing
     {
         public override Task BuildIndexAsync(AutoroutePart part, BuildPartIndexContext context)
         {
-            var options = context.Settings.ToOptions()
-                & ~DocumentIndexOptions.Sanitize
-                ;
+            var options = context.Settings.ToOptions() & ~DocumentIndexOptions.Sanitize;
 
             foreach (var key in context.Keys)
             {

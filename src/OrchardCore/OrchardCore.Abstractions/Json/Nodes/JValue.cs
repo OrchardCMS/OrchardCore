@@ -12,8 +12,8 @@ public static class JValue
     /// <summary>
     /// Parses text representing a single JSON value.
     /// </summary>
-    public static JsonValue? Parse(string json, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default)
-        => JNode.Parse(json, nodeOptions, documentOptions)?.AsValue();
+    public static JsonValue? Parse(string json, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default) =>
+        JNode.Parse(json, nodeOptions, documentOptions)?.AsValue();
 
     /// <summary>
     /// Creates a <see cref="JsonValue"/> from an object.

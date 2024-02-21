@@ -14,8 +14,8 @@ namespace OrchardCore.ContentManagement
         /// <param name="contentItem">The <see cref="ContentItem"/>.</param>
         /// <param name="part">The <see cref="ContentPart"/> if one existed.</param>
         /// <returns>true if a part found, otherwise false.</returns>
-        public static bool TryGet<TPart>(this ContentItem contentItem, out TPart part) where TPart : ContentPart
-            => contentItem.TryGet(typeof(TPart).Name, out part);
+        public static bool TryGet<TPart>(this ContentItem contentItem, out TPart part)
+            where TPart : ContentPart => contentItem.TryGet(typeof(TPart).Name, out part);
 
         /// <summary>
         /// Tries to get a content part by its type.
@@ -25,7 +25,8 @@ namespace OrchardCore.ContentManagement
         /// <param name="name">The name of the content part.</param>
         /// <param name="part">The <see cref="ContentPart"/> if one existed.</param>
         /// <returns>true if a part found, otherwise false.</returns>
-        public static bool TryGet<TPart>(this ContentItem contentItem, string name, out TPart part) where TPart : ContentPart
+        public static bool TryGet<TPart>(this ContentItem contentItem, string name, out TPart part)
+            where TPart : ContentPart
         {
             ArgumentException.ThrowIfNullOrEmpty(name);
 
@@ -69,8 +70,8 @@ namespace OrchardCore.ContentManagement
         /// <param name="contentItem">The <see cref="ContentItem"/>.</param>
         /// <typeparam name="TPart">The type of the content part.</typeparam>
         /// <returns>The content part or. <code>null</code> if it doesn't exist.</returns>
-        public static TPart As<TPart>(this ContentItem contentItem) where TPart : ContentPart
-            => contentItem.Get<TPart>(typeof(TPart).Name);
+        public static TPart As<TPart>(this ContentItem contentItem)
+            where TPart : ContentPart => contentItem.Get<TPart>(typeof(TPart).Name);
 
         /// <summary>
         /// Gets a content part by its type or create a new one.
@@ -78,16 +79,16 @@ namespace OrchardCore.ContentManagement
         /// <param name="contentItem">The <see cref="ContentItem"/>.</param>
         /// <typeparam name="TPart">The type of the content part.</typeparam>
         /// <returns>The content part instance or a new one if it doesn't exist.</returns>
-        public static TPart GetOrCreate<TPart>(this ContentItem contentItem) where TPart : ContentPart, new()
-            => contentItem.GetOrCreate<TPart>(typeof(TPart).Name);
+        public static TPart GetOrCreate<TPart>(this ContentItem contentItem)
+            where TPart : ContentPart, new() => contentItem.GetOrCreate<TPart>(typeof(TPart).Name);
 
         /// <summary>
         /// Removes a content part by its type.
         /// </summary>
         /// <param name="contentItem">The <see cref="ContentItem"/>.</param>
         /// <typeparam name="TPart">The type of the content part.</typeparam>
-        public static void Remove<TPart>(this ContentItem contentItem) where TPart : ContentPart, new()
-            => contentItem.Remove(typeof(TPart).Name);
+        public static void Remove<TPart>(this ContentItem contentItem)
+            where TPart : ContentPart, new() => contentItem.Remove(typeof(TPart).Name);
 
         /// <summary>
         /// Adds a content part by its type.
@@ -96,7 +97,8 @@ namespace OrchardCore.ContentManagement
         /// <param name="part">The content part to weld.</param>
         /// <typeparam name="TPart">The type of the content part.</typeparam>
         /// <returns>The current <see cref="ContentItem"/> instance.</returns>
-        public static ContentItem Weld<TPart>(this ContentItem contentItem, TPart part) where TPart : ContentPart
+        public static ContentItem Weld<TPart>(this ContentItem contentItem, TPart part)
+            where TPart : ContentPart
         {
             contentItem.Weld(typeof(TPart).Name, part);
 
@@ -110,7 +112,8 @@ namespace OrchardCore.ContentManagement
         /// <param name="part">The content part to update.</param>
         /// <typeparam name="TPart">The type of the content part.</typeparam>
         /// <returns>The current <see cref="ContentItem"/> instance.</returns>
-        public static ContentItem Apply<TPart>(this ContentItem contentItem, TPart part) where TPart : ContentPart
+        public static ContentItem Apply<TPart>(this ContentItem contentItem, TPart part)
+            where TPart : ContentPart
         {
             contentItem.Apply(typeof(TPart).Name, part);
 
@@ -124,7 +127,8 @@ namespace OrchardCore.ContentManagement
         /// <param name="action">An action to apply on the content part.</param>
         /// <typeparam name="TPart">The type of the content part.</typeparam>
         /// <returns>The current <see cref="ContentPart"/> instance.</returns>
-        public static ContentItem Alter<TPart>(this ContentItem contentItem, Action<TPart> action) where TPart : ContentPart, new()
+        public static ContentItem Alter<TPart>(this ContentItem contentItem, Action<TPart> action)
+            where TPart : ContentPart, new()
         {
             var part = contentItem.GetOrCreate<TPart>();
             action(part);
@@ -140,7 +144,8 @@ namespace OrchardCore.ContentManagement
         /// <param name="action">An action to apply on the content part.</param>
         /// <typeparam name="TPart">The type of the content part.</typeparam>
         /// <returns>The current <see cref="ContentItem"/> instance.</returns>
-        public static async Task<ContentItem> AlterAsync<TPart>(this ContentItem contentItem, Func<TPart, Task> action) where TPart : ContentPart, new()
+        public static async Task<ContentItem> AlterAsync<TPart>(this ContentItem contentItem, Func<TPart, Task> action)
+            where TPart : ContentPart, new()
         {
             var part = contentItem.GetOrCreate<TPart>();
             await action(part);

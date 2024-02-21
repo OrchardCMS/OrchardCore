@@ -5,7 +5,8 @@ using YesSql;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries
 {
-    public abstract class GraphQLFilter<TSourceType> : IGraphQLFilter<TSourceType> where TSourceType : class
+    public abstract class GraphQLFilter<TSourceType> : IGraphQLFilter<TSourceType>
+        where TSourceType : class
     {
         public virtual Task<IQuery<TSourceType>> PreQueryAsync(IQuery<TSourceType> query, IResolveFieldContext context)
         {

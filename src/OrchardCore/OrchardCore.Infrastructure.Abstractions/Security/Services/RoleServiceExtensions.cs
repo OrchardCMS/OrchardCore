@@ -16,7 +16,12 @@ namespace OrchardCore.Security.Services
             return roles.Select(r => r.RoleName);
         }
 
-        public static async Task<IEnumerable<IRole>> GetAccessibleRolesAsync(this IRoleService roleService, IAuthorizationService authorizationService, ClaimsPrincipal user, Permission permission)
+        public static async Task<IEnumerable<IRole>> GetAccessibleRolesAsync(
+            this IRoleService roleService,
+            IAuthorizationService authorizationService,
+            ClaimsPrincipal user,
+            Permission permission
+        )
         {
             var roles = await roleService.GetRolesAsync();
 
@@ -39,7 +44,12 @@ namespace OrchardCore.Security.Services
             return accessibleRoles;
         }
 
-        public static async Task<IEnumerable<string>> GetAccessibleRoleNamesAsync(this IRoleService roleService, IAuthorizationService authorizationService, ClaimsPrincipal user, Permission permission)
+        public static async Task<IEnumerable<string>> GetAccessibleRoleNamesAsync(
+            this IRoleService roleService,
+            IAuthorizationService authorizationService,
+            ClaimsPrincipal user,
+            Permission permission
+        )
         {
             var roles = await roleService.GetAccessibleRolesAsync(authorizationService, user, permission);
 

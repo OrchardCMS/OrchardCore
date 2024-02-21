@@ -17,7 +17,9 @@ namespace OrchardCore.Benchmark
     [MemoryDiagnoser]
     public class FluidShapeRenderBenchmark
     {
-        private static readonly FilterArguments _filterArguments = new FilterArguments().Add("utc", new DateTimeValue(DateTime.UtcNow)).Add("format", StringValue.Create("MMMM dd, yyyy"));
+        private static readonly FilterArguments _filterArguments = new FilterArguments()
+            .Add("utc", new DateTimeValue(DateTime.UtcNow))
+            .Add("format", StringValue.Create("MMMM dd, yyyy"));
         private static readonly FluidValue _input = ObjectValue.Create(HtmlString.Empty, new TemplateOptions());
         private static readonly LiquidFilterDelegateResolver<ShapeRenderFilter> _liquidFilterDelegateResolver;
         private static readonly IServiceProvider _serviceProvider;

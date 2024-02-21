@@ -29,15 +29,18 @@ namespace OrchardCore.Tenants
                 return Task.CompletedTask;
             }
 
-            builder
-                .Add(S["Multi-Tenancy"], tenancy => tenancy
-                    .AddClass("menu-multitenancy")
-                    .Add(S["Feature Profiles"], S["Feature Profiles"].PrefixPosition(), featureProfiles => featureProfiles
-                        .Action("Index", "FeatureProfiles", "OrchardCore.Tenants")
-                        .Permission(Permissions.ManageTenantFeatureProfiles)
-                        .LocalNav()
-                    )
-                );
+            builder.Add(
+                S["Multi-Tenancy"],
+                tenancy =>
+                    tenancy
+                        .AddClass("menu-multitenancy")
+                        .Add(
+                            S["Feature Profiles"],
+                            S["Feature Profiles"].PrefixPosition(),
+                            featureProfiles =>
+                                featureProfiles.Action("Index", "FeatureProfiles", "OrchardCore.Tenants").Permission(Permissions.ManageTenantFeatureProfiles).LocalNav()
+                        )
+            );
 
             return Task.CompletedTask;
         }

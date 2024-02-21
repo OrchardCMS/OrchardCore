@@ -36,7 +36,8 @@ namespace OrchardCore.Search.Lucene.QueryProviders
                     }
 
                     return termQuery;
-                default: throw new ArgumentException("Invalid term query");
+                default:
+                    throw new ArgumentException("Invalid term query");
             }
         }
     }

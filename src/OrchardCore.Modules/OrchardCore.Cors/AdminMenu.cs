@@ -20,18 +20,19 @@ namespace OrchardCore.Cors
                 return Task.CompletedTask;
             }
 
-            builder
-                .Add(S["Configuration"], configuration => configuration
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["CORS"], S["CORS"].PrefixPosition(), entry => entry
-                            .AddClass("cors")
-                            .Id("cors")
-                            .Action("Index", "Admin", "OrchardCore.Cors")
-                            .Permission(Permissions.ManageCorsSettings)
-                            .LocalNav()
-                        )
+            builder.Add(
+                S["Configuration"],
+                configuration =>
+                    configuration.Add(
+                        S["Settings"],
+                        settings =>
+                            settings.Add(
+                                S["CORS"],
+                                S["CORS"].PrefixPosition(),
+                                entry => entry.AddClass("cors").Id("cors").Action("Index", "Admin", "OrchardCore.Cors").Permission(Permissions.ManageCorsSettings).LocalNav()
+                            )
                     )
-                );
+            );
 
             return Task.CompletedTask;
         }

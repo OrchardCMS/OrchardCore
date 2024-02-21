@@ -46,7 +46,8 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
                 case JsonValueKind.Object:
                     throw new ArgumentException("The terms lookup query is not supported");
 
-                default: throw new ArgumentException("Invalid terms query");
+                default:
+                    throw new ArgumentException("Invalid terms query");
             }
 
             booleanQuery.Add(boolQuery, Occur.MUST);

@@ -38,16 +38,12 @@ namespace OrchardCore.Taxonomies.Services
                         if (viewModel.SelectedContentItemId.StartsWith("Taxonomy:", StringComparison.OrdinalIgnoreCase))
                         {
                             viewModel.SelectedContentItemId = viewModel.SelectedContentItemId[9..];
-                            query.All(
-                                x => query.With<TaxonomyIndex>(x => x.TaxonomyContentItemId == viewModel.SelectedContentItemId)
-                            );
+                            query.All(x => query.With<TaxonomyIndex>(x => x.TaxonomyContentItemId == viewModel.SelectedContentItemId));
                         }
                         else if (viewModel.SelectedContentItemId.StartsWith("Term:", StringComparison.OrdinalIgnoreCase))
                         {
                             viewModel.SelectedContentItemId = viewModel.SelectedContentItemId[5..];
-                            query.All(
-                                x => query.With<TaxonomyIndex>(x => x.TermContentItemId == viewModel.SelectedContentItemId)
-                            );
+                            query.All(x => query.With<TaxonomyIndex>(x => x.TermContentItemId == viewModel.SelectedContentItemId));
                         }
                     }
                 }

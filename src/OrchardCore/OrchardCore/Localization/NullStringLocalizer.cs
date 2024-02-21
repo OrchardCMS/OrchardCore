@@ -44,8 +44,7 @@ public class NullStringLocalizer : IStringLocalizer
     }
 
     /// <inheritdoc/>
-    public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
-        => Enumerable.Empty<LocalizedString>();
+    public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures) => Enumerable.Empty<LocalizedString>();
 
     /// <inheritdoc/>
     public LocalizedString GetString(string name) => this[name];

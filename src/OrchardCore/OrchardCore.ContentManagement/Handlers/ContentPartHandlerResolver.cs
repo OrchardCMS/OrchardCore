@@ -10,10 +10,7 @@ namespace OrchardCore.ContentManagement.Handlers
         private readonly IServiceProvider _serviceProvider;
         private readonly ContentOptions _contentOptions;
 
-        public ContentPartHandlerResolver(
-            IServiceProvider serviceProvider,
-            IOptions<ContentOptions> contentDisplayOptions
-            )
+        public ContentPartHandlerResolver(IServiceProvider serviceProvider, IOptions<ContentOptions> contentDisplayOptions)
         {
             _serviceProvider = serviceProvider;
             _contentOptions = contentDisplayOptions.Value;

@@ -19,19 +19,17 @@ using static OpenIddict.Abstractions.OpenIddictConstants;
 namespace OrchardCore.OpenId.Configuration
 {
     [Feature(OpenIdConstants.Features.Server)]
-    public class OpenIdServerConfiguration : IConfigureOptions<AuthenticationOptions>,
-        IConfigureOptions<OpenIddictServerOptions>,
-        IConfigureOptions<OpenIddictServerDataProtectionOptions>,
-        IConfigureNamedOptions<OpenIddictServerAspNetCoreOptions>
+    public class OpenIdServerConfiguration
+        : IConfigureOptions<AuthenticationOptions>,
+            IConfigureOptions<OpenIddictServerOptions>,
+            IConfigureOptions<OpenIddictServerDataProtectionOptions>,
+            IConfigureNamedOptions<OpenIddictServerAspNetCoreOptions>
     {
         private readonly IOpenIdServerService _serverService;
         private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
-        public OpenIdServerConfiguration(
-            IOpenIdServerService serverService,
-            ShellSettings shellSettings,
-            ILogger<OpenIdServerConfiguration> logger)
+        public OpenIdServerConfiguration(IOpenIdServerService serverService, ShellSettings shellSettings, ILogger<OpenIdServerConfiguration> logger)
         {
             _serverService = serverService;
             _shellSettings = shellSettings;
@@ -46,8 +44,7 @@ namespace OrchardCore.OpenId.Configuration
                 return;
             }
 
-            options.AddScheme<OpenIddictServerAspNetCoreHandler>(
-                OpenIddictServerAspNetCoreDefaults.AuthenticationScheme, displayName: null);
+            options.AddScheme<OpenIddictServerAspNetCoreHandler>(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme, displayName: null);
         }
 
         public void Configure(OpenIddictServerOptions options)
@@ -65,8 +62,7 @@ namespace OrchardCore.OpenId.Configuration
 
             foreach (var key in _serverService.GetEncryptionKeysAsync().GetAwaiter().GetResult())
             {
-                options.EncryptionCredentials.Add(new EncryptingCredentials(key,
-                    SecurityAlgorithms.RsaOAEP, SecurityAlgorithms.Aes256CbcHmacSha512));
+                options.EncryptionCredentials.Add(new EncryptingCredentials(key, SecurityAlgorithms.RsaOAEP, SecurityAlgorithms.Aes256CbcHmacSha512));
             }
 
             foreach (var key in _serverService.GetSigningKeysAsync().GetAwaiter().GetResult())
@@ -82,38 +78,32 @@ namespace OrchardCore.OpenId.Configuration
 
             if (settings.AuthorizationEndpointPath.HasValue)
             {
-                options.AuthorizationEndpointUris.Add(new Uri(
-                    settings.AuthorizationEndpointPath.ToUriComponent()[1..], UriKind.Relative));
+                options.AuthorizationEndpointUris.Add(new Uri(settings.AuthorizationEndpointPath.ToUriComponent()[1..], UriKind.Relative));
             }
 
             if (settings.LogoutEndpointPath.HasValue)
             {
-                options.LogoutEndpointUris.Add(new Uri(
-                    settings.LogoutEndpointPath.ToUriComponent()[1..], UriKind.Relative));
+                options.LogoutEndpointUris.Add(new Uri(settings.LogoutEndpointPath.ToUriComponent()[1..], UriKind.Relative));
             }
 
             if (settings.TokenEndpointPath.HasValue)
             {
-                options.TokenEndpointUris.Add(new Uri(
-                    settings.TokenEndpointPath.ToUriComponent()[1..], UriKind.Relative));
+                options.TokenEndpointUris.Add(new Uri(settings.TokenEndpointPath.ToUriComponent()[1..], UriKind.Relative));
             }
 
             if (settings.UserinfoEndpointPath.HasValue)
             {
-                options.UserinfoEndpointUris.Add(new Uri(
-                    settings.UserinfoEndpointPath.ToUriComponent()[1..], UriKind.Relative));
+                options.UserinfoEndpointUris.Add(new Uri(settings.UserinfoEndpointPath.ToUriComponent()[1..], UriKind.Relative));
             }
 
             if (settings.IntrospectionEndpointPath.HasValue)
             {
-                options.IntrospectionEndpointUris.Add(new Uri(
-                    settings.IntrospectionEndpointPath.ToUriComponent()[1..], UriKind.Relative));
+                options.IntrospectionEndpointUris.Add(new Uri(settings.IntrospectionEndpointPath.ToUriComponent()[1..], UriKind.Relative));
             }
 
             if (settings.RevocationEndpointPath.HasValue)
             {
-                options.RevocationEndpointUris.Add(new Uri(
-                    settings.RevocationEndpointPath.ToUriComponent()[1..], UriKind.Relative));
+                options.RevocationEndpointUris.Add(new Uri(settings.RevocationEndpointPath.ToUriComponent()[1..], UriKind.Relative));
             }
 
             // For now, response types and response modes are not directly
@@ -224,8 +214,7 @@ namespace OrchardCore.OpenId.Configuration
             options.DisableTransportSecurityRequirement = true;
         }
 
-        public void Configure(OpenIddictServerAspNetCoreOptions options)
-            => Debug.Fail("This infrastructure method shouldn't be called.");
+        public void Configure(OpenIddictServerAspNetCoreOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
 
         private async Task<OpenIdServerSettings> GetServerSettingsAsync()
         {

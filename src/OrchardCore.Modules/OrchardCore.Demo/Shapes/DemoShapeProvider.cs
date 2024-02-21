@@ -8,10 +8,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
     {
         public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
         {
-            builder.Describe("Foo")
-                .OnDisplaying(displaying =>
-                    displaying.ChildContent = new HtmlString("<h1>Hi</h1>")
-                );
+            builder.Describe("Foo").OnDisplaying(displaying => displaying.ChildContent = new HtmlString("<h1>Hi</h1>"));
 
             return ValueTask.CompletedTask;
         }

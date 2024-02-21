@@ -20,6 +20,5 @@ namespace OrchardCore.Users.ViewModels
 
         [BindNever]
         public bool IsNewRequest { get; set; }
-
     }
 }

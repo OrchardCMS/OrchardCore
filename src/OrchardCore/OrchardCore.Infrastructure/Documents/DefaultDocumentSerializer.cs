@@ -14,11 +14,10 @@ namespace OrchardCore.Documents
     {
         public static readonly DefaultDocumentSerializer Instance = new();
 
-        public DefaultDocumentSerializer()
-        {
-        }
+        public DefaultDocumentSerializer() { }
 
-        public Task<byte[]> SerializeAsync<TDocument>(TDocument document, int compressThreshold = int.MaxValue) where TDocument : class, IDocument, new()
+        public Task<byte[]> SerializeAsync<TDocument>(TDocument document, int compressThreshold = int.MaxValue)
+            where TDocument : class, IDocument, new()
         {
             var data = Encoding.UTF8.GetBytes(JConvert.SerializeObject(document));
             if (data.Length >= compressThreshold)
@@ -29,7 +28,8 @@ namespace OrchardCore.Documents
             return Task.FromResult(data);
         }
 
-        public Task<TDocument> DeserializeAsync<TDocument>(byte[] data) where TDocument : class, IDocument, new()
+        public Task<TDocument> DeserializeAsync<TDocument>(byte[] data)
+            where TDocument : class, IDocument, new()
         {
             if (IsCompressed(data))
             {

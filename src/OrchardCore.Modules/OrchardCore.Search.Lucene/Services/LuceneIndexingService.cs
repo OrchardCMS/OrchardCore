@@ -40,7 +40,8 @@ namespace OrchardCore.Search.Lucene
             LuceneIndexManager indexManager,
             IIndexingTaskManager indexingTaskManager,
             ISiteService siteService,
-            ILogger<LuceneIndexingService> logger)
+            ILogger<LuceneIndexingService> logger
+        )
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
@@ -104,138 +105,149 @@ namespace OrchardCore.Search.Lucene
                 // Create a scope for the content manager.
                 var shellScope = await _shellHost.GetScopeAsync(_shellSettings);
 
-                await shellScope.UsingAsync(async scope =>
-                {
-                    // Load the next batch of tasks.
-                    batch = (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, BatchSize)).ToArray();
-
-                    if (batch.Length == 0)
+                await shellScope.UsingAsync(
+                    async scope =>
                     {
-                        return;
-                    }
+                        // Load the next batch of tasks.
+                        batch = (await _indexingTaskManager.GetIndexingTasksAsync(lastTaskId, BatchSize)).ToArray();
 
-                    var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
-                    var indexHandlers = scope.ServiceProvider.GetServices<IContentItemIndexHandler>();
-
-                    // Pre-load all content items to prevent SELECT N+1.
-                    var updatedContentItemIds = batch
-                        .Where(x => x.Type == IndexingTaskTypes.Update)
-                        .Select(x => x.ContentItemId)
-                        .ToArray();
-
-                    var allPublished = new Dictionary<string, ContentItem>();
-                    var allLatest = new Dictionary<string, ContentItem>();
-
-                    var allPublishedContentItems = await contentManager.GetAsync(updatedContentItemIds);
-                    allPublished = allPublishedContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId, v => v);
-                    var allLatestContentItems = await contentManager.GetAsync(updatedContentItemIds, latest: true);
-                    allLatest = allLatestContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId, v => v);
-
-                    // Group all DocumentIndex by index to batch update them.
-                    var updatedDocumentsByIndex = new Dictionary<string, List<DocumentIndex>>();
-
-                    foreach (var index in allIndices)
-                    {
-                        updatedDocumentsByIndex[index.Key] = [];
-                    }
-
-                    if (indexName != null)
-                    {
-                        indexSettingsList = indexSettingsList.Where(x => x.IndexName == indexName);
-                    }
-
-                    var needLatest = indexSettingsList.FirstOrDefault(x => x.IndexLatest) != null;
-                    var needPublished = indexSettingsList.FirstOrDefault(x => !x.IndexLatest) != null;
-
-                    var settingsByIndex = indexSettingsList.ToDictionary(x => x.IndexName, x => x);
-
-                    foreach (var task in batch)
-                    {
-                        if (task.Type == IndexingTaskTypes.Update)
+                        if (batch.Length == 0)
                         {
-                            BuildIndexContext publishedIndexContext = null, latestIndexContext = null;
+                            return;
+                        }
 
-                            if (needPublished)
+                        var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
+                        var indexHandlers = scope.ServiceProvider.GetServices<IContentItemIndexHandler>();
+
+                        // Pre-load all content items to prevent SELECT N+1.
+                        var updatedContentItemIds = batch.Where(x => x.Type == IndexingTaskTypes.Update).Select(x => x.ContentItemId).ToArray();
+
+                        var allPublished = new Dictionary<string, ContentItem>();
+                        var allLatest = new Dictionary<string, ContentItem>();
+
+                        var allPublishedContentItems = await contentManager.GetAsync(updatedContentItemIds);
+                        allPublished = allPublishedContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId, v => v);
+                        var allLatestContentItems = await contentManager.GetAsync(updatedContentItemIds, latest: true);
+                        allLatest = allLatestContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId, v => v);
+
+                        // Group all DocumentIndex by index to batch update them.
+                        var updatedDocumentsByIndex = new Dictionary<string, List<DocumentIndex>>();
+
+                        foreach (var index in allIndices)
+                        {
+                            updatedDocumentsByIndex[index.Key] = [];
+                        }
+
+                        if (indexName != null)
+                        {
+                            indexSettingsList = indexSettingsList.Where(x => x.IndexName == indexName);
+                        }
+
+                        var needLatest = indexSettingsList.FirstOrDefault(x => x.IndexLatest) != null;
+                        var needPublished = indexSettingsList.FirstOrDefault(x => !x.IndexLatest) != null;
+
+                        var settingsByIndex = indexSettingsList.ToDictionary(x => x.IndexName, x => x);
+
+                        foreach (var task in batch)
+                        {
+                            if (task.Type == IndexingTaskTypes.Update)
                             {
-                                allPublished.TryGetValue(task.ContentItemId, out var contentItem);
+                                BuildIndexContext publishedIndexContext = null,
+                                    latestIndexContext = null;
 
-                                if (contentItem != null)
+                                if (needPublished)
                                 {
-                                    publishedIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId, contentItem.ContentItemVersionId), contentItem, new string[] { contentItem.ContentType }, new LuceneContentIndexSettings());
-                                    await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(publishedIndexContext), _logger);
-                                }
-                            }
+                                    allPublished.TryGetValue(task.ContentItemId, out var contentItem);
 
-                            if (needLatest)
-                            {
-                                allLatest.TryGetValue(task.ContentItemId, out var contentItem);
-
-                                if (contentItem != null)
-                                {
-                                    latestIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId, contentItem.ContentItemVersionId), contentItem, new string[] { contentItem.ContentType }, new LuceneContentIndexSettings());
-                                    await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(latestIndexContext), _logger);
-                                }
-                            }
-
-                            // Update the document from the index if its lastIndexId is smaller than the current task id.
-                            foreach (var index in allIndices)
-                            {
-                                if (index.Value >= task.Id || !settingsByIndex.TryGetValue(index.Key, out var settings))
-                                {
-                                    continue;
+                                    if (contentItem != null)
+                                    {
+                                        publishedIndexContext = new BuildIndexContext(
+                                            new DocumentIndex(task.ContentItemId, contentItem.ContentItemVersionId),
+                                            contentItem,
+                                            new string[] { contentItem.ContentType },
+                                            new LuceneContentIndexSettings()
+                                        );
+                                        await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(publishedIndexContext), _logger);
+                                    }
                                 }
 
-                                var context = !settings.IndexLatest ? publishedIndexContext : latestIndexContext;
-
-                                // We index only if we actually found a content item in the database.
-                                if (context == null)
+                                if (needLatest)
                                 {
-                                    // TODO purge these content items from IndexingTask table.
-                                    continue;
+                                    allLatest.TryGetValue(task.ContentItemId, out var contentItem);
+
+                                    if (contentItem != null)
+                                    {
+                                        latestIndexContext = new BuildIndexContext(
+                                            new DocumentIndex(task.ContentItemId, contentItem.ContentItemVersionId),
+                                            contentItem,
+                                            new string[] { contentItem.ContentType },
+                                            new LuceneContentIndexSettings()
+                                        );
+                                        await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(latestIndexContext), _logger);
+                                    }
                                 }
 
-                                var cultureAspect = await contentManager.PopulateAspectAsync<CultureAspect>(context.ContentItem);
-                                var culture = cultureAspect.HasCulture ? cultureAspect.Culture.Name : null;
-                                var ignoreIndexedCulture = settings.Culture != "any" && culture != settings.Culture;
-
-                                // Ignore if the content item content type or culture is not indexed in this index.
-                                if (!settings.IndexedContentTypes.Contains(context.ContentItem.ContentType) || ignoreIndexedCulture)
+                                // Update the document from the index if its lastIndexId is smaller than the current task id.
+                                foreach (var index in allIndices)
                                 {
-                                    continue;
-                                }
+                                    if (index.Value >= task.Id || !settingsByIndex.TryGetValue(index.Key, out var settings))
+                                    {
+                                        continue;
+                                    }
 
-                                updatedDocumentsByIndex[index.Key].Add(context.DocumentIndex);
+                                    var context = !settings.IndexLatest ? publishedIndexContext : latestIndexContext;
+
+                                    // We index only if we actually found a content item in the database.
+                                    if (context == null)
+                                    {
+                                        // TODO purge these content items from IndexingTask table.
+                                        continue;
+                                    }
+
+                                    var cultureAspect = await contentManager.PopulateAspectAsync<CultureAspect>(context.ContentItem);
+                                    var culture = cultureAspect.HasCulture ? cultureAspect.Culture.Name : null;
+                                    var ignoreIndexedCulture = settings.Culture != "any" && culture != settings.Culture;
+
+                                    // Ignore if the content item content type or culture is not indexed in this index.
+                                    if (!settings.IndexedContentTypes.Contains(context.ContentItem.ContentType) || ignoreIndexedCulture)
+                                    {
+                                        continue;
+                                    }
+
+                                    updatedDocumentsByIndex[index.Key].Add(context.DocumentIndex);
+                                }
                             }
                         }
-                    }
 
-                    // Delete all the existing documents.
-                    foreach (var index in updatedDocumentsByIndex)
-                    {
-                        var deletedDocuments = updatedDocumentsByIndex[index.Key].Select(x => x.ContentItemId);
-
-                        await _indexManager.DeleteDocumentsAsync(index.Key, deletedDocuments);
-                    }
-
-                    // Submits all the new documents to the index.
-                    foreach (var index in updatedDocumentsByIndex)
-                    {
-                        await _indexManager.StoreDocumentsAsync(index.Key, updatedDocumentsByIndex[index.Key]);
-                    }
-
-                    // Update task ids.
-                    lastTaskId = batch.Last().Id;
-
-                    foreach (var indexStatus in allIndices)
-                    {
-                        if (indexStatus.Value < lastTaskId)
+                        // Delete all the existing documents.
+                        foreach (var index in updatedDocumentsByIndex)
                         {
-                            _indexingState.SetLastTaskId(indexStatus.Key, lastTaskId);
-                        }
-                    }
+                            var deletedDocuments = updatedDocumentsByIndex[index.Key].Select(x => x.ContentItemId);
 
-                    _indexingState.Update();
-                }, activateShell: false);
+                            await _indexManager.DeleteDocumentsAsync(index.Key, deletedDocuments);
+                        }
+
+                        // Submits all the new documents to the index.
+                        foreach (var index in updatedDocumentsByIndex)
+                        {
+                            await _indexManager.StoreDocumentsAsync(index.Key, updatedDocumentsByIndex[index.Key]);
+                        }
+
+                        // Update task ids.
+                        lastTaskId = batch.Last().Id;
+
+                        foreach (var indexStatus in allIndices)
+                        {
+                            if (indexStatus.Value < lastTaskId)
+                            {
+                                _indexingState.SetLastTaskId(indexStatus.Key, lastTaskId);
+                            }
+                        }
+
+                        _indexingState.Update();
+                    },
+                    activateShell: false
+                );
             } while (batch.Length == BatchSize);
         }
 

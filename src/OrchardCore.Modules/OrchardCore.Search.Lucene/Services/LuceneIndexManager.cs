@@ -43,7 +43,7 @@ namespace OrchardCore.Search.Lucene
         private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
         private readonly SpatialContext _ctx;
         private readonly GeohashPrefixTree _grid;
-        private readonly static object _synLock = new();
+        private static readonly object _synLock = new();
 
         public LuceneIndexManager(
             IClock clock,
@@ -52,14 +52,11 @@ namespace OrchardCore.Search.Lucene
             ILogger<LuceneIndexManager> logger,
             LuceneAnalyzerManager luceneAnalyzerManager,
             LuceneIndexSettingsService luceneIndexSettingsService
-            )
+        )
         {
             _clock = clock;
             _logger = logger;
-            _rootPath = PathExtensions.Combine(
-                shellOptions.Value.ShellsApplicationDataPath,
-                shellOptions.Value.ShellsContainerName,
-                shellSettings.Name, "Lucene");
+            _rootPath = PathExtensions.Combine(shellOptions.Value.ShellsApplicationDataPath, shellOptions.Value.ShellsContainerName, shellSettings.Name, "Lucene");
             Directory.CreateDirectory(_rootPath);
             _luceneAnalyzerManager = luceneAnalyzerManager;
             _luceneIndexSettingsService = luceneIndexSettingsService;
@@ -82,18 +79,21 @@ namespace OrchardCore.Search.Lucene
 
         public async Task DeleteDocumentsAsync(string indexName, IEnumerable<string> contentItemIds)
         {
-            await WriteAsync(indexName, writer =>
-            {
-                writer.DeleteDocuments(contentItemIds.Select(x => new Term("ContentItemId", x)).ToArray());
-
-                writer.Commit();
-
-                if (_indexPools.TryRemove(indexName, out var pool))
+            await WriteAsync(
+                indexName,
+                writer =>
                 {
-                    pool.MakeDirty();
-                    pool.Release();
+                    writer.DeleteDocuments(contentItemIds.Select(x => new Term("ContentItemId", x)).ToArray());
+
+                    writer.Commit();
+
+                    if (_indexPools.TryRemove(indexName, out var pool))
+                    {
+                        pool.MakeDirty();
+                        pool.Release();
+                    }
                 }
-            });
+            );
         }
 
         public void DeleteIndex(string indexName)
@@ -142,21 +142,24 @@ namespace OrchardCore.Search.Lucene
         {
             var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync(indexName);
 
-            await WriteAsync(indexName, writer =>
-            {
-                foreach (var indexDocument in indexDocuments)
+            await WriteAsync(
+                indexName,
+                writer =>
                 {
-                    writer.AddDocument(CreateLuceneDocument(indexDocument, luceneIndexSettings));
-                }
+                    foreach (var indexDocument in indexDocuments)
+                    {
+                        writer.AddDocument(CreateLuceneDocument(indexDocument, luceneIndexSettings));
+                    }
 
-                writer.Commit();
+                    writer.Commit();
 
-                if (_indexPools.TryRemove(indexName, out var pool))
-                {
-                    pool.MakeDirty();
-                    pool.Release();
+                    if (_indexPools.TryRemove(indexName, out var pool))
+                    {
+                        pool.MakeDirty();
+                        pool.Release();
+                    }
                 }
-            });
+            );
         }
 
         public async Task SearchAsync(string indexName, Func<IndexSearcher, Task> searcher)
@@ -206,9 +209,7 @@ namespace OrchardCore.Search.Lucene
 
             foreach (var entry in documentIndex.Entries)
             {
-                var store = entry.Options.HasFlag(DocumentIndexOptions.Store)
-                            ? Field.Store.YES
-                            : Field.Store.NO;
+                var store = entry.Options.HasFlag(DocumentIndexOptions.Store) ? Field.Store.YES : Field.Store.NO;
 
                 switch (entry.Type)
                 {
@@ -238,11 +239,21 @@ namespace OrchardCore.Search.Lucene
                             {
                                 if (entry.Value is DateTimeOffset)
                                 {
-                                    doc.Add(new StoredField(IndexingConstants.SourceKey + entry.Name, DateTools.DateToString(((DateTimeOffset)entry.Value).UtcDateTime, DateResolution.SECOND)));
+                                    doc.Add(
+                                        new StoredField(
+                                            IndexingConstants.SourceKey + entry.Name,
+                                            DateTools.DateToString(((DateTimeOffset)entry.Value).UtcDateTime, DateResolution.SECOND)
+                                        )
+                                    );
                                 }
                                 else
                                 {
-                                    doc.Add(new StoredField(IndexingConstants.SourceKey + entry.Name, DateTools.DateToString(((DateTime)entry.Value).ToUniversalTime(), DateResolution.SECOND)));
+                                    doc.Add(
+                                        new StoredField(
+                                            IndexingConstants.SourceKey + entry.Name,
+                                            DateTools.DateToString(((DateTime)entry.Value).ToUniversalTime(), DateResolution.SECOND)
+                                        )
+                                    );
                                 }
                             }
                         }
@@ -417,12 +428,15 @@ namespace OrchardCore.Search.Lucene
 
         private IndexReaderPool.IndexReaderLease GetReader(string indexName)
         {
-            var pool = _indexPools.GetOrAdd(indexName, n =>
-            {
-                var path = new DirectoryInfo(PathExtensions.Combine(_rootPath, indexName));
-                var reader = DirectoryReader.Open(FSDirectory.Open(path));
-                return new IndexReaderPool(reader);
-            });
+            var pool = _indexPools.GetOrAdd(
+                indexName,
+                n =>
+                {
+                    var path = new DirectoryInfo(PathExtensions.Combine(_rootPath, indexName));
+                    var reader = DirectoryReader.Open(FSDirectory.Open(path));
+                    return new IndexReaderPool(reader);
+                }
+            );
 
             return pool.Acquire();
         }
@@ -522,7 +536,8 @@ namespace OrchardCore.Search.Lucene
 
     internal class IndexWriterWrapper : IndexWriter
     {
-        public IndexWriterWrapper(LDirectory directory, IndexWriterConfig config) : base(directory, config)
+        public IndexWriterWrapper(LDirectory directory, IndexWriterConfig config)
+            : base(directory, config)
         {
             IsClosing = false;
         }

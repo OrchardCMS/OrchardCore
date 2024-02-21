@@ -31,11 +31,7 @@ namespace OrchardCore.Shortcodes.Deployment
                 templateObjects[template.Key] = JObject.FromObject(template.Value);
             }
 
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "ShortcodeTemplates",
-                ["ShortcodeTemplates"] = templateObjects,
-            });
+            result.Steps.Add(new JsonObject { ["name"] = "ShortcodeTemplates", ["ShortcodeTemplates"] = templateObjects, });
         }
     }
 }

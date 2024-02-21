@@ -19,10 +19,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         private readonly IDeploymentManager _deploymentManager;
         private readonly IDataProtector _dataProtector;
 
-        public ImportRemoteInstanceController(
-            IDataProtectionProvider dataProtectionProvider,
-            RemoteClientService remoteClientService,
-            IDeploymentManager deploymentManager)
+        public ImportRemoteInstanceController(IDataProtectionProvider dataProtectionProvider, RemoteClientService remoteClientService, IDeploymentManager deploymentManager)
         {
             _deploymentManager = deploymentManager;
             _remoteClientService = remoteClientService;

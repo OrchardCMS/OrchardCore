@@ -15,9 +15,7 @@ namespace OrchardCore.Google.Analytics.Drivers
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public GoogleAnalyticsSettingsDisplayDriver(
-            IAuthorizationService authorizationService,
-            IHttpContextAccessor httpContextAccessor)
+        public GoogleAnalyticsSettingsDisplayDriver(IAuthorizationService authorizationService, IHttpContextAccessor httpContextAccessor)
         {
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
@@ -31,10 +29,15 @@ namespace OrchardCore.Google.Analytics.Drivers
                 return null;
             }
 
-            return Initialize<GoogleAnalyticsSettingsViewModel>("GoogleAnalyticsSettings_Edit", model =>
-            {
-                model.TrackingID = settings.TrackingID;
-            }).Location("Content:5").OnGroup(GoogleConstants.Features.GoogleAnalytics);
+            return Initialize<GoogleAnalyticsSettingsViewModel>(
+                    "GoogleAnalyticsSettings_Edit",
+                    model =>
+                    {
+                        model.TrackingID = settings.TrackingID;
+                    }
+                )
+                .Location("Content:5")
+                .OnGroup(GoogleConstants.Features.GoogleAnalytics);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(GoogleAnalyticsSettings settings, BuildEditorContext context)

@@ -15,7 +15,10 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public string Key { get { return "path"; } }
+        public string Key
+        {
+            get { return "path"; }
+        }
 
         public bool IsMatch(ShapePlacementContext context, object expression)
         {

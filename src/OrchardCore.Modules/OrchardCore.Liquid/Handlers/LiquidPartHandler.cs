@@ -27,14 +27,14 @@ namespace OrchardCore.Liquid.Handlers
             {
                 try
                 {
-                    var model = new LiquidPartViewModel()
-                    {
-                        LiquidPart = part,
-                        ContentItem = part.ContentItem,
-                    };
+                    var model = new LiquidPartViewModel() { LiquidPart = part, ContentItem = part.ContentItem, };
 
-                    var result = await _liquidTemplateManager.RenderHtmlContentAsync(part.Liquid, _htmlEncoder, model,
-                        new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
+                    var result = await _liquidTemplateManager.RenderHtmlContentAsync(
+                        part.Liquid,
+                        _htmlEncoder,
+                        model,
+                        new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) }
+                    );
 
                     bodyAspect.Body = result;
                 }

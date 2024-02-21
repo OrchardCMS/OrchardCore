@@ -49,11 +49,37 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             var orderByInput = new ContentItemOrderByInput(contentItemName);
 
             Arguments = new QueryArguments(
-                new QueryArgument<ContentItemWhereInput> { Name = "where", Description = "filters the content items", ResolvedType = whereInput },
-                new QueryArgument<ContentItemOrderByInput> { Name = "orderBy", Description = "sort order", ResolvedType = orderByInput },
-                new QueryArgument<IntGraphType> { Name = "first", Description = "the first n content items", ResolvedType = new IntGraphType() },
-                new QueryArgument<IntGraphType> { Name = "skip", Description = "the number of content items to skip", ResolvedType = new IntGraphType() },
-                new QueryArgument<PublicationStatusGraphType> { Name = "status", Description = "publication status of the content item", ResolvedType = new PublicationStatusGraphType(), DefaultValue = PublicationStatusEnum.Published }
+                new QueryArgument<ContentItemWhereInput>
+                {
+                    Name = "where",
+                    Description = "filters the content items",
+                    ResolvedType = whereInput
+                },
+                new QueryArgument<ContentItemOrderByInput>
+                {
+                    Name = "orderBy",
+                    Description = "sort order",
+                    ResolvedType = orderByInput
+                },
+                new QueryArgument<IntGraphType>
+                {
+                    Name = "first",
+                    Description = "the first n content items",
+                    ResolvedType = new IntGraphType()
+                },
+                new QueryArgument<IntGraphType>
+                {
+                    Name = "skip",
+                    Description = "the number of content items to skip",
+                    ResolvedType = new IntGraphType()
+                },
+                new QueryArgument<PublicationStatusGraphType>
+                {
+                    Name = "status",
+                    Description = "publication status of the content item",
+                    ResolvedType = new PublicationStatusGraphType(),
+                    DefaultValue = PublicationStatusEnum.Published
+                }
             );
 
             Resolver = new LockedAsyncFieldResolver<IEnumerable<ContentItem>>(Resolve);
@@ -66,7 +92,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
         }
 
         private async ValueTask<IEnumerable<ContentItem>> Resolve(IResolveFieldContext context)
-
         {
             var versionOption = VersionOptions.Published;
 
@@ -112,11 +137,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             return contentItems;
         }
 
-        private IQuery<ContentItem> FilterWhereArguments(
-            IQuery<ContentItem, ContentItemIndex> query,
-            JsonObject where,
-            IResolveFieldContext fieldContext,
-            ISession session)
+        private IQuery<ContentItem> FilterWhereArguments(IQuery<ContentItem, ContentItemIndex> query, JsonObject where, IResolveFieldContext fieldContext, ISession session)
         {
             if (where == null)
             {
@@ -127,7 +148,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             var predicateQuery = new PredicateQuery(
                 configuration: session.Store.Configuration,
-                propertyProviders: fieldContext.RequestServices.GetServices<IIndexPropertyProvider>());
+                propertyProviders: fieldContext.RequestServices.GetServices<IIndexPropertyProvider>()
+            );
 
             // Create the default table alias.
             predicateQuery.CreateAlias("", nameof(ContentItemIndex));
@@ -165,7 +187,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             }
 
             var whereSqlClause = expressions.ToSqlString(predicateQuery);
-
 
             query = query.Where(whereSqlClause);
 
@@ -255,7 +276,13 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             }
         }
 
-        private void BuildExpressionsInternal(JsonObject where, Junction expressions, string tableAlias, IResolveFieldContext fieldContext, IDictionary<string, string> indexAliases)
+        private void BuildExpressionsInternal(
+            JsonObject where,
+            Junction expressions,
+            string tableAlias,
+            IResolveFieldContext fieldContext,
+            IDictionary<string, string> indexAliases
+        )
         {
             foreach (var entry in where)
             {
@@ -284,8 +311,10 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                         foreach (var field in whereInput.Fields.Where(x => x.GetMetadata<string>("PartName") != null))
                         {
                             var partName = field.GetMetadata<string>("PartName");
-                            if ((tableAlias == null && field.GetMetadata<bool>("PartCollapsed") && field.Name.Equals(property, StringComparison.OrdinalIgnoreCase)) ||
-                                (tableAlias != null && partName.ToFieldName().Equals(tableAlias, StringComparison.OrdinalIgnoreCase)))
+                            if (
+                                (tableAlias == null && field.GetMetadata<bool>("PartCollapsed") && field.Name.Equals(property, StringComparison.OrdinalIgnoreCase))
+                                || (tableAlias != null && partName.ToFieldName().Equals(tableAlias, StringComparison.OrdinalIgnoreCase))
+                            )
                             {
                                 tableAlias = indexAliases.TryGetValue(partName, out var indexTableAlias) ? indexTableAlias : tableAlias;
                                 break;
@@ -359,8 +388,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             }
         }
 
-        private static IQuery<ContentItem, ContentItemIndex> OrderBy(IQuery<ContentItem, ContentItemIndex> query,
-            IResolveFieldContext context)
+        private static IQuery<ContentItem, ContentItemIndex> OrderBy(IQuery<ContentItem, ContentItemIndex> query, IResolveFieldContext context)
         {
             if (context.HasPopulatedArgument("orderBy"))
             {
@@ -378,33 +406,47 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
                         switch (property.Key)
                         {
-                            case "contentItemId": selector = x => x.ContentItemId; break;
-                            case "contentItemVersionId": selector = x => x.ContentItemVersionId; break;
-                            case "displayText": selector = x => x.DisplayText; break;
-                            case "published": selector = x => x.Published; break;
-                            case "latest": selector = x => x.Latest; break;
-                            case "createdUtc": selector = x => x.CreatedUtc; break;
-                            case "modifiedUtc": selector = x => x.ModifiedUtc; break;
-                            case "publishedUtc": selector = x => x.PublishedUtc; break;
-                            case "owner": selector = x => x.Owner; break;
-                            case "author": selector = x => x.Author; break;
+                            case "contentItemId":
+                                selector = x => x.ContentItemId;
+                                break;
+                            case "contentItemVersionId":
+                                selector = x => x.ContentItemVersionId;
+                                break;
+                            case "displayText":
+                                selector = x => x.DisplayText;
+                                break;
+                            case "published":
+                                selector = x => x.Published;
+                                break;
+                            case "latest":
+                                selector = x => x.Latest;
+                                break;
+                            case "createdUtc":
+                                selector = x => x.CreatedUtc;
+                                break;
+                            case "modifiedUtc":
+                                selector = x => x.ModifiedUtc;
+                                break;
+                            case "publishedUtc":
+                                selector = x => x.PublishedUtc;
+                                break;
+                            case "owner":
+                                selector = x => x.Owner;
+                                break;
+                            case "author":
+                                selector = x => x.Author;
+                                break;
                         }
 
                         if (selector != null)
                         {
                             if (!thenBy)
                             {
-                                query = direction == OrderByDirection.Ascending
-                                        ? query.OrderBy(selector)
-                                        : query.OrderByDescending(selector)
-                                    ;
+                                query = direction == OrderByDirection.Ascending ? query.OrderBy(selector) : query.OrderByDescending(selector);
                             }
                             else
                             {
-                                query = direction == OrderByDirection.Ascending
-                                        ? query.ThenBy(selector)
-                                        : query.ThenByDescending(selector)
-                                    ;
+                                query = direction == OrderByDirection.Ascending ? query.ThenBy(selector) : query.ThenByDescending(selector);
                             }
 
                             thenBy = true;

@@ -15,23 +15,22 @@ namespace OrchardCore.Users.Workflows.Drivers
 
         protected IUserService UserService { get; }
 
-        protected override void EditActivity(UserLoggedInEvent source, UserLoggedInEventViewModel target)
-        {
-        }
+        protected override void EditActivity(UserLoggedInEvent source, UserLoggedInEventViewModel target) { }
 
         public override IDisplayResult Display(UserLoggedInEvent activity)
         {
             return Combine(
                 Shape("UserLoggedInEvent_Fields_Thumbnail", new UserLoggedInEventViewModel(activity)).Location("Thumbnail", "Content"),
-                Factory("UserLoggedInEvent_Fields_Design", ctx =>
-                {
-                    var shape = new UserLoggedInEventViewModel
-                    {
-                        Activity = activity,
-                    };
+                Factory(
+                        "UserLoggedInEvent_Fields_Design",
+                        ctx =>
+                        {
+                            var shape = new UserLoggedInEventViewModel { Activity = activity, };
 
-                    return shape;
-                }).Location("Design", "Content")
+                            return shape;
+                        }
+                    )
+                    .Location("Design", "Content")
             );
         }
     }

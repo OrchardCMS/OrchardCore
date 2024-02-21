@@ -18,13 +18,19 @@ public class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewModel> : Ac
 
     public override IDisplayResult Edit(TActivity model)
     {
-        return Initialize(EditShapeType, (Func<TEditViewModel, ValueTask>)(viewModel =>
-        {
-            return EditActivityAsync(model, viewModel);
-        })).Location("Content");
+        return Initialize(
+                EditShapeType,
+                (Func<TEditViewModel, ValueTask>)(
+                    viewModel =>
+                    {
+                        return EditActivityAsync(model, viewModel);
+                    }
+                )
+            )
+            .Location("Content");
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(TActivity model, IUpdateModel updater)
+    public override async Task<IDisplayResult> UpdateAsync(TActivity model, IUpdateModel updater)
     {
         var viewModel = new TEditViewModel();
         if (await updater.TryUpdateModelAsync(viewModel, Prefix))
@@ -80,15 +86,11 @@ public class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewModel> : Ac
     public override IDisplayResult Display(TActivity activity)
     {
         return Combine(
-            Shape($"{typeof(TActivity).Name}_Fields_Thumbnail", new ActivityViewModel<TActivity>(activity))
-                .Location("Thumbnail", "Content"),
-            Shape($"{typeof(TActivity).Name}_Fields_Design", new ActivityViewModel<TActivity>(activity))
-                .Location("Design", "Content")
+            Shape($"{typeof(TActivity).Name}_Fields_Thumbnail", new ActivityViewModel<TActivity>(activity)).Location("Thumbnail", "Content"),
+            Shape($"{typeof(TActivity).Name}_Fields_Design", new ActivityViewModel<TActivity>(activity)).Location("Design", "Content")
         );
     }
 }
 
 public class NotifyUserTaskActivityDisplayDriver<TActivity> : NotifyUserTaskActivityDisplayDriver<TActivity, NotifyUserTaskActivityViewModel>
-        where TActivity : NotifyUserTaskActivity
-{
-}
+    where TActivity : NotifyUserTaskActivity { }

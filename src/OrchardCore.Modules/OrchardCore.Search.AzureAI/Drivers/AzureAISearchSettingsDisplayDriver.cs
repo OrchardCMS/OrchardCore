@@ -36,7 +36,7 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
         IShellHost shellHost,
         ShellSettings shellSettings,
         IStringLocalizer<AzureAISearchSettingsDisplayDriver> stringLocalizer
-        )
+    )
     {
         _indexSettingsService = indexSettingsService;
         _httpContextAccessor = httpContextAccessor;
@@ -46,17 +46,19 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
         S = stringLocalizer;
     }
 
-    public override IDisplayResult Edit(AzureAISearchSettings settings)
-        => Initialize<AzureAISearchSettingsViewModel>("AzureAISearchSettings_Edit", async model =>
-        {
-            model.SearchIndex = settings.SearchIndex;
-            model.SearchFields = string.Join(", ", settings.DefaultSearchFields ?? []);
-            model.SearchIndexes = (await _indexSettingsService.GetSettingsAsync())
-            .Select(x => new SelectListItem(x.IndexName, x.IndexName))
-            .ToList();
-        }).Location("Content:2#Azure AI Search;5")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
-        .OnGroup(SearchConstants.SearchSettingsGroupId);
+    public override IDisplayResult Edit(AzureAISearchSettings settings) =>
+        Initialize<AzureAISearchSettingsViewModel>(
+                "AzureAISearchSettings_Edit",
+                async model =>
+                {
+                    model.SearchIndex = settings.SearchIndex;
+                    model.SearchFields = string.Join(", ", settings.DefaultSearchFields ?? []);
+                    model.SearchIndexes = (await _indexSettingsService.GetSettingsAsync()).Select(x => new SelectListItem(x.IndexName, x.IndexName)).ToList();
+                }
+            )
+            .Location("Content:2#Azure AI Search;5")
+            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
+            .OnGroup(SearchConstants.SearchSettingsGroupId);
 
     public override async Task<IDisplayResult> UpdateAsync(AzureAISearchSettings section, BuildEditorContext context)
     {

@@ -15,7 +15,10 @@ namespace OrchardCore.Alias.Models
             {
                 if (part.Alias.Length > AliasPart.MaxAliasLength)
                 {
-                    yield return new ValidationResult(S["Your alias is too long. The alias can only be up to {0} characters. \"{1}\"", AliasPart.MaxAliasLength, part.Alias], new string[] { nameof(part.Alias) });
+                    yield return new ValidationResult(
+                        S["Your alias is too long. The alias can only be up to {0} characters. \"{1}\"", AliasPart.MaxAliasLength, part.Alias],
+                        new string[] { nameof(part.Alias) }
+                    );
                 }
 
                 if (!await IsAliasUniqueAsync(part, session, part.Alias))
@@ -29,6 +32,5 @@ namespace OrchardCore.Alias.Models
         {
             return (await session.QueryIndex<AliasPartIndex>(o => o.Alias == alias && o.ContentItemId != context.ContentItem.ContentItemId).CountAsync()) == 0;
         }
-
     }
 }

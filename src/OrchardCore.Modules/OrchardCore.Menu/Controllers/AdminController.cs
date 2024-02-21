@@ -37,7 +37,8 @@ namespace OrchardCore.Menu.Controllers
             IContentDefinitionManager contentDefinitionManager,
             INotifier notifier,
             IHtmlLocalizer<AdminController> localizer,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor
+        )
         {
             _contentManager = contentManager;
             _authorizationService = authorizationService;
@@ -130,10 +131,7 @@ namespace OrchardCore.Menu.Controllers
 
                 if (menuItems == null)
                 {
-                    parentMenuItem["MenuItemsListPart"] = new JsonObject
-                    {
-                        ["MenuItems"] = menuItems = [],
-                    };
+                    parentMenuItem["MenuItemsListPart"] = new JsonObject { ["MenuItems"] = menuItems = [], };
                 }
 
                 menuItems.Add(JObject.FromObject(contentItem));
@@ -230,11 +228,10 @@ namespace OrchardCore.Menu.Controllers
                 return View(model);
             }
 
-            menuItem.Merge((JsonObject)contentItem.Content, new JsonMergeSettings
-            {
-                MergeArrayHandling = MergeArrayHandling.Replace,
-                MergeNullValueHandling = MergeNullValueHandling.Merge
-            });
+            menuItem.Merge(
+                (JsonObject)contentItem.Content,
+                new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace, MergeNullValueHandling = MergeNullValueHandling.Merge }
+            );
 
             // Merge doesn't copy the properties.
             menuItem[nameof(ContentItem.DisplayText)] = contentItem.DisplayText;

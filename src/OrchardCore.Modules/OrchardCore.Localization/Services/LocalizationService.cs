@@ -41,8 +41,7 @@ namespace OrchardCore.Localization.Services
 
             return _localizationSettings.SupportedCultures == null || _localizationSettings.SupportedCultures.Length == 0
                 ? _supportedCultures
-                : _localizationSettings.SupportedCultures
-                ;
+                : _localizationSettings.SupportedCultures;
         }
 
         private async Task InitializeLocalizationSettingsAsync()

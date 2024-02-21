@@ -28,11 +28,7 @@ namespace OrchardCore.Localization.PortableObject
         /// <param name="localizationManager"></param>
         /// <param name="fallBackToParentCulture"></param>
         /// <param name="logger"></param>
-        public PortableObjectStringLocalizer(
-            string context,
-            ILocalizationManager localizationManager,
-            bool fallBackToParentCulture,
-            ILogger logger)
+        public PortableObjectStringLocalizer(string context, ILocalizationManager localizationManager, bool fallBackToParentCulture, ILogger logger)
         {
             _context = context;
             _localizationManager = localizationManager;
@@ -70,9 +66,7 @@ namespace OrchardCore.Localization.PortableObject
         {
             var culture = CultureInfo.CurrentUICulture;
 
-            return includeParentCultures
-                ? GetAllStringsFromCultureHierarchy(culture)
-                : GetAllStrings(culture);
+            return includeParentCultures ? GetAllStringsFromCultureHierarchy(culture) : GetAllStrings(culture);
         }
 
         /// <inheritdocs />
@@ -155,7 +149,11 @@ namespace OrchardCore.Localization.PortableObject
             {
                 if (_logger.IsEnabled(LogLevel.Warning))
                 {
-                    _logger.LogWarning("Plural form '{PluralForm}' doesn't exist in values provided by the 'IStringLocalizer.Plural' method. Provided values: {PluralForms}", pluralForm, string.Join(", ", pluralForms));
+                    _logger.LogWarning(
+                        "Plural form '{PluralForm}' doesn't exist in values provided by the 'IStringLocalizer.Plural' method. Provided values: {PluralForms}",
+                        pluralForm,
+                        string.Join(", ", pluralForms)
+                    );
                 }
 
                 // Use the latest available form.
@@ -180,8 +178,7 @@ namespace OrchardCore.Localization.PortableObject
                         }
 
                         culture = culture.Parent;
-                    }
-                    while (culture != CultureInfo.InvariantCulture);
+                    } while (culture != CultureInfo.InvariantCulture);
                 }
                 else
                 {

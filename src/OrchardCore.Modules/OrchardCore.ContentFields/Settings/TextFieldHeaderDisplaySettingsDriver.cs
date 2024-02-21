@@ -11,13 +11,16 @@ namespace OrchardCore.ContentFields.Settings
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<HeaderSettingsViewModel>("TextFieldHeaderDisplaySettings_Edit", model =>
-            {
-                var settings = partFieldDefinition.GetSettings<TextFieldHeaderDisplaySettings>();
+            return Initialize<HeaderSettingsViewModel>(
+                    "TextFieldHeaderDisplaySettings_Edit",
+                    model =>
+                    {
+                        var settings = partFieldDefinition.GetSettings<TextFieldHeaderDisplaySettings>();
 
-                model.Level = settings.Level;
-            })
-            .Location("DisplayMode");
+                        model.Level = settings.Level;
+                    }
+                )
+                .Location("DisplayMode");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

@@ -49,7 +49,8 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
                         fuzziness?.Value<int>() ?? LevenshteinAutomata.MAXIMUM_SUPPORTED_DISTANCE,
                         prefixLength?.Value<int>() ?? 0,
                         maxExpansions?.Value<int>() ?? 50,
-                        true);
+                        true
+                    );
 
                     if (obj.TryGetPropertyValue("boost", out var boost))
                     {
@@ -57,7 +58,8 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
                     }
 
                     break;
-                default: throw new ArgumentException("Invalid fuzzy query");
+                default:
+                    throw new ArgumentException("Invalid fuzzy query");
             }
 
             booleanQuery.Add(fuzzyQuery, Occur.MUST);

@@ -121,8 +121,7 @@ namespace OrchardCore.OpenId
                 descriptor.Permissions.Remove(OpenIddictConstants.Permissions.Endpoints.Authorization);
             }
 
-            if (model.AllowAuthorizationCodeFlow || model.AllowHybridFlow ||
-                model.AllowClientCredentialsFlow || model.AllowPasswordFlow || model.AllowRefreshTokenFlow)
+            if (model.AllowAuthorizationCodeFlow || model.AllowHybridFlow || model.AllowClientCredentialsFlow || model.AllowPasswordFlow || model.AllowRefreshTokenFlow)
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Token);
             }
@@ -225,17 +224,13 @@ namespace OrchardCore.OpenId
             }
 
             descriptor.PostLogoutRedirectUris.Clear();
-            foreach (var uri in
-                (from uri in model.PostLogoutRedirectUris?.Split(_separator, StringSplitOptions.RemoveEmptyEntries) ?? []
-                 select new Uri(uri, UriKind.Absolute)))
+            foreach (var uri in (from uri in model.PostLogoutRedirectUris?.Split(_separator, StringSplitOptions.RemoveEmptyEntries) ?? [] select new Uri(uri, UriKind.Absolute)))
             {
                 descriptor.PostLogoutRedirectUris.Add(uri);
             }
 
             descriptor.RedirectUris.Clear();
-            foreach (var uri in
-               (from uri in model.RedirectUris?.Split(_separator, StringSplitOptions.RemoveEmptyEntries) ?? []
-                select new Uri(uri, UriKind.Absolute)))
+            foreach (var uri in (from uri in model.RedirectUris?.Split(_separator, StringSplitOptions.RemoveEmptyEntries) ?? [] select new Uri(uri, UriKind.Absolute)))
             {
                 descriptor.RedirectUris.Add(uri);
             }
@@ -248,7 +243,6 @@ namespace OrchardCore.OpenId
             {
                 await _applicationManager.UpdateAsync(application, descriptor);
             }
-
         }
     }
 }

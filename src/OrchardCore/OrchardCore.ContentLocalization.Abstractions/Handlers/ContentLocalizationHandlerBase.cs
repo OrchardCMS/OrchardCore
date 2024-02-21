@@ -8,6 +8,7 @@ namespace OrchardCore.ContentLocalization.Handlers
         {
             return Task.CompletedTask;
         }
+
         public virtual Task LocalizingAsync(LocalizationContentContext context)
         {
             return Task.CompletedTask;

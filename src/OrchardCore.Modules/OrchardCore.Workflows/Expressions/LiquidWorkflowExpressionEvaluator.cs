@@ -45,7 +45,7 @@ namespace OrchardCore.Workflows.Expressions
                 expression.Expression,
                 encoder ?? NullEncoder.Default,
                 new Dictionary<string, FluidValue>() { ["Workflow"] = new ObjectValue(workflowContext) }
-                );
+            );
 
             return string.IsNullOrWhiteSpace(result) ? default : (T)Convert.ChangeType(result, typeof(T));
         }

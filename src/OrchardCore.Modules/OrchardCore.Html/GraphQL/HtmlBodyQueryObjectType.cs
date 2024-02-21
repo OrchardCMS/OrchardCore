@@ -25,9 +25,7 @@ namespace OrchardCore.Html.GraphQL
             Name = "HtmlBodyPart";
             Description = S["Content stored as HTML."];
 
-            Field<StringGraphType>("html")
-                .Description(S["the HTML content"])
-                .ResolveLockedAsync(RenderHtml);
+            Field<StringGraphType>("html").Description(S["the HTML content"]).ResolveLockedAsync(RenderHtml);
         }
 
         private static async ValueTask<object> RenderHtml(IResolveFieldContext<HtmlBodyPart> ctx)
@@ -52,15 +50,15 @@ namespace OrchardCore.Html.GraphQL
                 var liquidTemplateManager = ctx.RequestServices.GetRequiredService<ILiquidTemplateManager>();
                 var htmlEncoder = ctx.RequestServices.GetService<HtmlEncoder>();
 
-                html = await liquidTemplateManager.RenderStringAsync(html, htmlEncoder, model, new Dictionary<string, FluidValue> { ["ContentItem"] = new ObjectValue(model.ContentItem) });
+                html = await liquidTemplateManager.RenderStringAsync(
+                    html,
+                    htmlEncoder,
+                    model,
+                    new Dictionary<string, FluidValue> { ["ContentItem"] = new ObjectValue(model.ContentItem) }
+                );
             }
 
-            return await shortcodeService.ProcessAsync(html,
-                new Context
-                {
-                    ["ContentItem"] = ctx.Source.ContentItem,
-                    ["TypePartDefinition"] = contentTypePartDefinition
-                });
+            return await shortcodeService.ProcessAsync(html, new Context { ["ContentItem"] = ctx.Source.ContentItem, ["TypePartDefinition"] = contentTypePartDefinition });
         }
     }
 }

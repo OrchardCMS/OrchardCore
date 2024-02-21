@@ -24,11 +24,12 @@ namespace OrchardCore.Autoroute.Handlers
 
                 if (found && !string.IsNullOrEmpty(entry.ContainedContentItemId))
                 {
-                    metadata.DisplayRouteValues = new RouteValueDictionary {
+                    metadata.DisplayRouteValues = new RouteValueDictionary
+                    {
                         { "Area", "OrchardCore.Contents" },
                         { "Controller", "Item" },
                         { "Action", "Display" },
-                        { "ContentItemId", entry.ContentItemId},
+                        { "ContentItemId", entry.ContentItemId },
                         { "ContainedContentItemId", entry.ContainedContentItemId }
                     };
                 }

@@ -40,9 +40,8 @@ namespace OrchardCore.Modules.Manifest
         /// Constructor.
         /// </summary>
         /// <param name="outputHelper"></param>
-        public ModuleAttributeTests(ITestOutputHelper outputHelper) : base(outputHelper)
-        {
-        }
+        public ModuleAttributeTests(ITestOutputHelper outputHelper)
+            : base(outputHelper) { }
 
         /// <summary>
         /// Returns the <typeparamref name="TDetails"/> based on the given
@@ -52,8 +51,7 @@ namespace OrchardCore.Modules.Manifest
         /// <param name="assembly"></param>
         /// <param name="extract"></param>
         /// <returns></returns>
-        protected static TDetails GetAssemblyDetails<TDetails>(Assembly assembly, Func<Assembly, AssemblyName, TDetails> extract) =>
-            extract.Invoke(assembly, assembly.GetName());
+        protected static TDetails GetAssemblyDetails<TDetails>(Assembly assembly, Func<Assembly, AssemblyName, TDetails> extract) => extract.Invoke(assembly, assembly.GetName());
 
         protected override void VerifyDefault(TAttribute module)
         {

@@ -16,37 +16,42 @@ namespace OrchardCore.OpenId.Drivers
     {
         private readonly IShellHost _shellHost;
 
-        public OpenIdValidationSettingsDisplayDriver(IShellHost shellHost)
-            => _shellHost = shellHost;
+        public OpenIdValidationSettingsDisplayDriver(IShellHost shellHost) => _shellHost = shellHost;
 
-        public override Task<IDisplayResult> EditAsync(OpenIdValidationSettings settings, BuildEditorContext context)
-            => Task.FromResult<IDisplayResult>(Initialize<OpenIdValidationSettingsViewModel>("OpenIdValidationSettings_Edit", async model =>
-            {
-                model.Authority = settings.Authority?.AbsoluteUri;
-                model.MetadataAddress = settings.MetadataAddress?.AbsoluteUri;
-                model.Audience = settings.Audience;
-                model.DisableTokenTypeValidation = settings.DisableTokenTypeValidation;
-                model.Tenant = settings.Tenant;
-
-                var availableTenants = new List<string>();
-
-                foreach (var shellSettings in _shellHost.GetAllSettings().Where(s => s.IsRunning()))
-                {
-                    var shellScope = await _shellHost.GetScopeAsync(shellSettings);
-
-                    await shellScope.UsingAsync(scope =>
-                    {
-                        var descriptor = scope.ServiceProvider.GetRequiredService<ShellDescriptor>();
-                        if (descriptor.Features.Any(feature => feature.Id == OpenIdConstants.Features.Server))
+        public override Task<IDisplayResult> EditAsync(OpenIdValidationSettings settings, BuildEditorContext context) =>
+            Task.FromResult<IDisplayResult>(
+                Initialize<OpenIdValidationSettingsViewModel>(
+                        "OpenIdValidationSettings_Edit",
+                        async model =>
                         {
-                            availableTenants.Add(shellSettings.Name);
-                        }
-                        return Task.CompletedTask;
-                    });
-                }
+                            model.Authority = settings.Authority?.AbsoluteUri;
+                            model.MetadataAddress = settings.MetadataAddress?.AbsoluteUri;
+                            model.Audience = settings.Audience;
+                            model.DisableTokenTypeValidation = settings.DisableTokenTypeValidation;
+                            model.Tenant = settings.Tenant;
 
-                model.AvailableTenants = availableTenants;
-            }).Location("Content:2"));
+                            var availableTenants = new List<string>();
+
+                            foreach (var shellSettings in _shellHost.GetAllSettings().Where(s => s.IsRunning()))
+                            {
+                                var shellScope = await _shellHost.GetScopeAsync(shellSettings);
+
+                                await shellScope.UsingAsync(scope =>
+                                {
+                                    var descriptor = scope.ServiceProvider.GetRequiredService<ShellDescriptor>();
+                                    if (descriptor.Features.Any(feature => feature.Id == OpenIdConstants.Features.Server))
+                                    {
+                                        availableTenants.Add(shellSettings.Name);
+                                    }
+                                    return Task.CompletedTask;
+                                });
+                            }
+
+                            model.AvailableTenants = availableTenants;
+                        }
+                    )
+                    .Location("Content:2")
+            );
 
         public override async Task<IDisplayResult> UpdateAsync(OpenIdValidationSettings settings, UpdateEditorContext context)
         {

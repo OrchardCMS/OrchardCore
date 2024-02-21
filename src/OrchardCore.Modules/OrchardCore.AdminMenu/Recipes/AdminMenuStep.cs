@@ -25,10 +25,7 @@ namespace OrchardCore.AdminMenu.Recipes
             _adminMenuService = adminMenuService;
 
             // The recipe step contains polymorphic types (menu items) which need to be resolved
-            _serializationOptions = new()
-            {
-                TypeInfoResolver = new PolymorphicJsonTypeInfoResolver(derivedTypesOptions.Value)
-            };
+            _serializationOptions = new() { TypeInfoResolver = new PolymorphicJsonTypeInfoResolver(derivedTypesOptions.Value) };
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)

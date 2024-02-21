@@ -21,14 +21,13 @@ public static class JObject
         Stream utf8Json,
         JsonNodeOptions? nodeOptions = null,
         JsonDocumentOptions documentOptions = default,
-        CancellationToken cancellationToken = default)
-        => (await JNode.LoadAsync(utf8Json, nodeOptions, documentOptions, cancellationToken))?.AsObject();
+        CancellationToken cancellationToken = default
+    ) => (await JNode.LoadAsync(utf8Json, nodeOptions, documentOptions, cancellationToken))?.AsObject();
 
     /// <summary>
     /// Loads a JSON object from the provided reader.
     /// </summary>
-    public static JsonObject? Load(ref Utf8JsonReader reader, JsonNodeOptions? nodeOptions = null)
-        => JNode.Load(ref reader, nodeOptions)?.AsObject();
+    public static JsonObject? Load(ref Utf8JsonReader reader, JsonNodeOptions? nodeOptions = null) => JNode.Load(ref reader, nodeOptions)?.AsObject();
 
     /// <summary>
     /// Parses text representing a single JSON object.
@@ -43,16 +42,15 @@ public static class JObject
     /// <summary>
     /// Parses text representing a single JSON object.
     /// </summary>
-    public static JsonObject? Parse(string json, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default)
-        => JNode.Parse(json, nodeOptions, documentOptions)?.AsObject();
+    public static JsonObject? Parse(string json, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default) =>
+        JNode.Parse(json, nodeOptions, documentOptions)?.AsObject();
 
     /// <summary>
     /// Tries to parse text representing a single JSON object.
     /// </summary>
     public static bool TryParse(string json, out JsonObject? jsonObject, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default)
     {
-        if (!JNode.TryParse(json, out var jsonNode, nodeOptions, documentOptions) ||
-            jsonNode is not JsonObject jObject)
+        if (!JNode.TryParse(json, out var jsonNode, nodeOptions, documentOptions) || jsonNode is not JsonObject jObject)
         {
             jsonObject = null;
             return false;
@@ -176,8 +174,7 @@ public static class JObject
 
             if (existingProperty is JsonValue || existingProperty.GetValueKind() != item.Value.GetValueKind())
             {
-                if (item.Value.GetValueKind() != JsonValueKind.Null ||
-                    settings?.MergeNullValueHandling == MergeNullValueHandling.Merge)
+                if (item.Value.GetValueKind() != JsonValueKind.Null || settings?.MergeNullValueHandling == MergeNullValueHandling.Merge)
                 {
                     jsonObject[item.Key] = item.Value.Clone();
                 }

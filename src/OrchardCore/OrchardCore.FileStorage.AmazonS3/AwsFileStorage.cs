@@ -39,11 +39,9 @@ public class AwsFileStore : IFileStore
     {
         try
         {
-            var objectMetadata = await _amazonS3Client.GetObjectMetadataAsync(new GetObjectMetadataRequest
-            {
-                BucketName = _options.BucketName,
-                Key = this.Combine(_basePrefix, path)
-            });
+            var objectMetadata = await _amazonS3Client.GetObjectMetadataAsync(
+                new GetObjectMetadataRequest { BucketName = _options.BucketName, Key = this.Combine(_basePrefix, path) }
+            );
 
             return new AwsFile(path, objectMetadata.ContentLength, objectMetadata.LastModified);
         }
@@ -61,27 +59,30 @@ public class AwsFileStore : IFileStore
             return new AwsDirectory(path, _clock.UtcNow);
         }
 
-        var awsDirectory = await _amazonS3Client.ListObjectsV2Async(new ListObjectsV2Request
-        {
-            BucketName = _options.BucketName,
-            Prefix = NormalizePrefix(this.Combine(_basePrefix, path)),
-            MaxKeys = 1,
-            FetchOwner = false
-        });
+        var awsDirectory = await _amazonS3Client.ListObjectsV2Async(
+            new ListObjectsV2Request
+            {
+                BucketName = _options.BucketName,
+                Prefix = NormalizePrefix(this.Combine(_basePrefix, path)),
+                MaxKeys = 1,
+                FetchOwner = false
+            }
+        );
 
         return awsDirectory.S3Objects.Count > 0 ? new AwsDirectory(path, _clock.UtcNow) : null;
     }
 
-    public async IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentAsync(string path = null,
-        bool includeSubDirectories = false)
+    public async IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentAsync(string path = null, bool includeSubDirectories = false)
     {
-        var listObjectsResponse = await _amazonS3Client.ListObjectsV2Async(new ListObjectsV2Request
-        {
-            BucketName = _options.BucketName,
-            Delimiter = "/",
-            Prefix = NormalizePrefix(this.Combine(_basePrefix, path)),
-            FetchOwner = false,
-        });
+        var listObjectsResponse = await _amazonS3Client.ListObjectsV2Async(
+            new ListObjectsV2Request
+            {
+                BucketName = _options.BucketName,
+                Delimiter = "/",
+                Prefix = NormalizePrefix(this.Combine(_basePrefix, path)),
+                FetchOwner = false,
+            }
+        );
 
         foreach (var file in listObjectsResponse.S3Objects)
         {
@@ -115,11 +116,7 @@ public class AwsFileStore : IFileStore
     {
         try
         {
-            var response = await _amazonS3Client.PutObjectAsync(new PutObjectRequest
-            {
-                BucketName = _options.BucketName,
-                Key = NormalizePrefix(this.Combine(_basePrefix, path))
-            });
+            var response = await _amazonS3Client.PutObjectAsync(new PutObjectRequest { BucketName = _options.BucketName, Key = NormalizePrefix(this.Combine(_basePrefix, path)) });
 
             return response.IsSuccessful();
         }
@@ -133,11 +130,7 @@ public class AwsFileStore : IFileStore
     {
         try
         {
-            var response = await _amazonS3Client.DeleteObjectAsync(new DeleteObjectRequest
-            {
-                BucketName = _options.BucketName,
-                Key = this.Combine(_basePrefix, path)
-            });
+            var response = await _amazonS3Client.DeleteObjectAsync(new DeleteObjectRequest { BucketName = _options.BucketName, Key = this.Combine(_basePrefix, path) });
 
             return response.IsDeleteSuccessful();
         }
@@ -154,19 +147,16 @@ public class AwsFileStore : IFileStore
             throw new FileStoreException("Cannot delete root directory.");
         }
 
-        var listObjectsResponse = await _amazonS3Client.ListObjectsV2Async(new ListObjectsV2Request
-        {
-            BucketName = _options.BucketName,
-            Prefix = NormalizePrefix(this.Combine(_basePrefix, path))
-        });
+        var listObjectsResponse = await _amazonS3Client.ListObjectsV2Async(
+            new ListObjectsV2Request { BucketName = _options.BucketName, Prefix = NormalizePrefix(this.Combine(_basePrefix, path)) }
+        );
 
         if (listObjectsResponse.S3Objects.Count > 0)
         {
             var deleteObjectsRequest = new DeleteObjectsRequest
             {
                 BucketName = _options.BucketName,
-                Objects = listObjectsResponse.S3Objects
-                    .Select(metadata => new KeyVersion { Key = metadata.Key }).ToList()
+                Objects = listObjectsResponse.S3Objects.Select(metadata => new KeyVersion { Key = metadata.Key }).ToList()
             };
 
             var response = await _amazonS3Client.DeleteObjectsAsync(deleteObjectsRequest);
@@ -191,11 +181,7 @@ public class AwsFileStore : IFileStore
 
         try
         {
-            await _amazonS3Client.GetObjectMetadataAsync(new GetObjectMetadataRequest
-            {
-                BucketName = _options.BucketName,
-                Key = this.Combine(_basePrefix, srcPath)
-            });
+            await _amazonS3Client.GetObjectMetadataAsync(new GetObjectMetadataRequest { BucketName = _options.BucketName, Key = this.Combine(_basePrefix, srcPath) });
         }
         catch (AmazonS3Exception)
         {
@@ -204,30 +190,27 @@ public class AwsFileStore : IFileStore
 
         try
         {
-            var listObjects = await _amazonS3Client.ListObjectsV2Async(new ListObjectsV2Request
-            {
-                BucketName = _options.BucketName,
-                Prefix = this.Combine(_basePrefix, dstPath)
-            });
+            var listObjects = await _amazonS3Client.ListObjectsV2Async(new ListObjectsV2Request { BucketName = _options.BucketName, Prefix = this.Combine(_basePrefix, dstPath) });
 
             if (listObjects.S3Objects.Count > 0)
             {
                 throw new FileStoreException($"Cannot copy file '{srcPath}' because a file already exists in the new path '{dstPath}'.");
             }
 
-            var copyObjectResponse = await _amazonS3Client.CopyObjectAsync(new CopyObjectRequest
-            {
-                SourceBucket = _options.BucketName,
-                SourceKey = this.Combine(_basePrefix, srcPath),
-                DestinationBucket = _options.BucketName,
-                DestinationKey = this.Combine(_basePrefix, dstPath)
-            });
+            var copyObjectResponse = await _amazonS3Client.CopyObjectAsync(
+                new CopyObjectRequest
+                {
+                    SourceBucket = _options.BucketName,
+                    SourceKey = this.Combine(_basePrefix, srcPath),
+                    DestinationBucket = _options.BucketName,
+                    DestinationKey = this.Combine(_basePrefix, dstPath)
+                }
+            );
 
             if (!copyObjectResponse.IsSuccessful())
             {
                 throw new FileStoreException($"Error while copying file '{srcPath}'");
             }
-
         }
         catch (AmazonS3Exception)
         {
@@ -259,11 +242,7 @@ public class AwsFileStore : IFileStore
         {
             if (!overwrite)
             {
-                var listObjects = await _amazonS3Client.ListObjectsV2Async(new ListObjectsV2Request
-                {
-                    BucketName = _options.BucketName,
-                    Prefix = this.Combine(_basePrefix, path)
-                });
+                var listObjects = await _amazonS3Client.ListObjectsV2Async(new ListObjectsV2Request { BucketName = _options.BucketName, Prefix = this.Combine(_basePrefix, path) });
 
                 if (listObjects.S3Objects.Count > 0)
                 {
@@ -271,12 +250,14 @@ public class AwsFileStore : IFileStore
                 }
             }
 
-            var response = await _amazonS3Client.PutObjectAsync(new PutObjectRequest
-            {
-                BucketName = _options.BucketName,
-                Key = this.Combine(_basePrefix, path),
-                InputStream = inputStream
-            });
+            var response = await _amazonS3Client.PutObjectAsync(
+                new PutObjectRequest
+                {
+                    BucketName = _options.BucketName,
+                    Key = this.Combine(_basePrefix, path),
+                    InputStream = inputStream
+                }
+            );
 
             if (!response.IsSuccessful())
             {

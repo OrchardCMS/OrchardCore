@@ -28,10 +28,22 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
         [InlineData("", @"foo [image width=""100"" height=""50"" mode=""stretch""]bar[/image] baz", @"foo <img src=""/media/bar?width=100&amp;height=50&amp;rmode=stretch""> baz")]
         [InlineData("", @"foo [image class=""className""]bar[/image] baz", @"foo <img class=""className"" src=""/media/bar""> baz")]
         [InlineData("", @"foo [image alt=""text""]bar[/image] baz", @"foo <img alt=""text"" src=""/media/bar""> baz")]
-        [InlineData("", @"foo [image width=""100"" height=""50"" mode=""stretch"" alt=""text"" class=""className""]bar[/image] baz", @"foo <img alt=""text"" class=""className"" src=""/media/bar?width=100&amp;height=50&amp;rmode=stretch""> baz")]
+        [InlineData(
+            "",
+            @"foo [image width=""100"" height=""50"" mode=""stretch"" alt=""text"" class=""className""]bar[/image] baz",
+            @"foo <img alt=""text"" class=""className"" src=""/media/bar?width=100&amp;height=50&amp;rmode=stretch""> baz"
+        )]
         [InlineData("", "foo [image]bar[/image] baz foo [image]bar[/image] baz", @"foo <img src=""/media/bar""> baz foo <img src=""/media/bar""> baz")]
-        [InlineData("", "foo [image]bar[/image] baz foo [image]bar[/image] baz foo [image]bar[/image] baz", @"foo <img src=""/media/bar""> baz foo <img src=""/media/bar""> baz foo <img src=""/media/bar""> baz")]
-        [InlineData("", "foo [image]bar.png[/image] baz foo-extended [image]bar-extended.png[/image] baz-extended", @"foo <img src=""/media/bar.png""> baz foo-extended <img src=""/media/bar-extended.png""> baz-extended")]
+        [InlineData(
+            "",
+            "foo [image]bar[/image] baz foo [image]bar[/image] baz foo [image]bar[/image] baz",
+            @"foo <img src=""/media/bar""> baz foo <img src=""/media/bar""> baz foo <img src=""/media/bar""> baz"
+        )]
+        [InlineData(
+            "",
+            "foo [image]bar.png[/image] baz foo-extended [image]bar-extended.png[/image] baz-extended",
+            @"foo <img src=""/media/bar.png""> baz foo-extended <img src=""/media/bar-extended.png""> baz-extended"
+        )]
         [InlineData("", "foo [media]bar[/media] baz foo [image]bar[/image] baz", @"foo <img src=""/media/bar""> baz foo <img src=""/media/bar""> baz")]
         [InlineData("", "foo [image]bàr.jpeg?width=100[/image] baz", @"foo <img src=""/media/bàr.jpeg?width=100""> baz")]
         [InlineData("", "foo [image]bàr.jpeg?width=100 onload=\"javascript: alert('XSS')\"[/image] baz", @"foo <img src=""/media/bàr.jpeg?width=100 onload=""> baz")]
@@ -40,13 +52,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
             var sanitizerOptions = new HtmlSanitizerOptions();
             sanitizerOptions.Configure.Add(opt => opt.AllowedAttributes.Add("class"));
 
-            var fileStore = new DefaultMediaFileStore(
-                Mock.Of<IFileStore>(),
-                "/media",
-                cdnBaseUrl,
-                [],
-                [],
-                Mock.Of<ILogger<DefaultMediaFileStore>>());
+            var fileStore = new DefaultMediaFileStore(Mock.Of<IFileStore>(), "/media", cdnBaseUrl, [], [], Mock.Of<ILogger<DefaultMediaFileStore>>());
 
             var fileVersionProvider = Mock.Of<IFileVersionProvider>();
 

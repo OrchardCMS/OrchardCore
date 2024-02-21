@@ -25,7 +25,8 @@ public class LinkFieldHandler : ContentFieldHandler<LinkField>
         IActionContextAccessor actionContextAccessor,
         IStringLocalizer<LinkFieldHandler> localizer,
         IHtmlSanitizerService htmlSanitizerService,
-        HtmlEncoder htmlencoder)
+        HtmlEncoder htmlencoder
+    )
     {
         _urlHelperFactory = urlHelperFactory;
         _actionContextAccessor = actionContextAccessor;

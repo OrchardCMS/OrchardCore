@@ -11,7 +11,10 @@ namespace OrchardCore.Localization.DataAnnotations
         private readonly IStringLocalizer S = null;
 #pragma warning restore IDE1006 // Naming Styles
 
-        public string AssociatedMetadataTypeTypeDescriptorMetadataTypeContainsUnknownProperties => S["The associated metadata type for type '{0}' contains the following unknown properties or fields: {1}. Please make sure that the names of these members match the names of the properties on the main type."];
+        public string AssociatedMetadataTypeTypeDescriptorMetadataTypeContainsUnknownProperties =>
+            S[
+                "The associated metadata type for type '{0}' contains the following unknown properties or fields: {1}. Please make sure that the names of these members match the names of the properties on the main type."
+            ];
 
         public string AttributeStoreUnknownProperty => S["The type '{0}' does not contain a public property named '{1}'."];
 
@@ -23,13 +26,19 @@ namespace OrchardCore.Localization.DataAnnotations
 
         public string CreditCardAttributeInvalid => S["The {0} field is not a valid credit card number."];
 
-        public string CustomValidationAttributeMethodMustReturnValidationResult => S["The CustomValidationAttribute method '{0}' in type '{1}' must return System.ComponentModel.DataAnnotations.ValidationResult.  Use System.ComponentModel.DataAnnotations.ValidationResult.Success to represent success."];
+        public string CustomValidationAttributeMethodMustReturnValidationResult =>
+            S[
+                "The CustomValidationAttribute method '{0}' in type '{1}' must return System.ComponentModel.DataAnnotations.ValidationResult.  Use System.ComponentModel.DataAnnotations.ValidationResult.Success to represent success."
+            ];
 
         public string CustomValidationAttributeMethodNotFound => S["The CustomValidationAttribute method '{0}' does not exist in type '{1}' or is not public and static."];
 
         public string CustomValidationAttributeMethodRequired => S["The CustomValidationAttribute.Method was not specified."];
 
-        public string CustomValidationAttributeMethodSignature => S["The CustomValidationAttribute method '{0}' in type '{1}' must match the expected signature: public static ValidationResult {0}(object value, ValidationContext context). The value can be strongly typed. The ValidationContext parameter is optional."];
+        public string CustomValidationAttributeMethodSignature =>
+            S[
+                "The CustomValidationAttribute method '{0}' in type '{1}' must match the expected signature: public static ValidationResult {0}(object value, ValidationContext context). The value can be strongly typed. The ValidationContext parameter is optional."
+            ];
 
         public string CustomValidationAttributeTypeConversionFailed => S["Could not convert the value of type '{0}' to '{1}' as expected by method {2}.{3}."];
 
@@ -51,9 +60,13 @@ namespace OrchardCore.Localization.DataAnnotations
 
         public string FileExtensionsAttributeInvalid => S["The {0} field only accepts files with the following extensions: {1}."];
 
-        public string LocalizableStringLocalizationFailed => S["Cannot retrieve property '{0}' because localization failed.  Type '{1}' is not public or does not contain a public static string property with the name '{2}'."];
+        public string LocalizableStringLocalizationFailed =>
+            S["Cannot retrieve property '{0}' because localization failed.  Type '{1}' is not public or does not contain a public static string property with the name '{2}'."];
 
-        public string MaxLengthAttributeInvalidMaxLength => S["MaxLengthAttribute must have a Length value that is greater than zero. Use MaxLength() without parameters to indicate that the string or array can have the maximum allowable length."];
+        public string MaxLengthAttributeInvalidMaxLength =>
+            S[
+                "MaxLengthAttribute must have a Length value that is greater than zero. Use MaxLength() without parameters to indicate that the string or array can have the maximum allowable length."
+            ];
 
         public string MaxLengthAttributeValidationError => S["The field {0} must be a string or array type with a maximum length of '{1}'."];
 
@@ -89,7 +102,8 @@ namespace OrchardCore.Localization.DataAnnotations
 
         public string StringLengthAttributeValidationErrorIncludingMinimum => S["The field {0} must be a string with a minimum length of {2} and a maximum length of {1}."];
 
-        public string UIHintImplementationControlParameterKeyIsNotAString => S["The key parameter at position {0} with value '{1}' is not a string. Every key control parameter must be a string."];
+        public string UIHintImplementationControlParameterKeyIsNotAString =>
+            S["The key parameter at position {0} with value '{1}' is not a string. Every key control parameter must be a string."];
 
         public string UIHintImplementationControlParameterKeyIsNull => S["The key parameter at position {0} is null. Every key control parameter must be a string."];
 
@@ -101,7 +115,10 @@ namespace OrchardCore.Localization.DataAnnotations
 
         public string ValidationAttributeCannotSetErrorMessageAndResource => S["Either ErrorMessageString or ErrorMessageResourceName must be set, but not both."];
 
-        public string ValidationAttributeIsValidNotImplemented => S["IsValid(object value) has not been implemented by this class. The preferred entry point is GetValidationResult() and classes should override IsValid(object value, ValidationContext context)."];
+        public string ValidationAttributeIsValidNotImplemented =>
+            S[
+                "IsValid(object value) has not been implemented by this class. The preferred entry point is GetValidationResult() and classes should override IsValid(object value, ValidationContext context)."
+            ];
 
         public string ValidationAttributeNeedBothResourceTypeAndResourceName => S["Both ErrorMessageResourceType and ErrorMessageResourceName need to be set on this attribute."];
 

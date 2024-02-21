@@ -22,20 +22,15 @@ namespace OrchardCore.Search.Elasticsearch.Core.Handlers
         private readonly List<ContentContextBase> _contexts = [];
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
-        public override Task PublishedAsync(PublishContentContext context)
-            => AddContextAsync(context);
+        public override Task PublishedAsync(PublishContentContext context) => AddContextAsync(context);
 
-        public override Task CreatedAsync(CreateContentContext context)
-            => AddContextAsync(context);
+        public override Task CreatedAsync(CreateContentContext context) => AddContextAsync(context);
 
-        public override Task UpdatedAsync(UpdateContentContext context)
-            => AddContextAsync(context);
+        public override Task UpdatedAsync(UpdateContentContext context) => AddContextAsync(context);
 
-        public override Task RemovedAsync(RemoveContentContext context)
-            => AddContextAsync(context);
+        public override Task RemovedAsync(RemoveContentContext context) => AddContextAsync(context);
 
-        public override Task UnpublishedAsync(PublishContentContext context)
-            => AddContextAsync(context);
+        public override Task UnpublishedAsync(PublishContentContext context) => AddContextAsync(context);
 
         private Task AddContextAsync(ContentContextBase context)
         {
@@ -82,8 +77,10 @@ namespace OrchardCore.Search.Elasticsearch.Core.Handlers
                 // Only process the last context.
                 var context = ContextsById.Last();
 
-                ContentItem published = null, latest = null;
-                bool publishedLoaded = false, latestLoaded = false;
+                ContentItem published = null,
+                    latest = null;
+                bool publishedLoaded = false,
+                    latestLoaded = false;
 
                 foreach (var indexSettings in await elasticIndexSettingsService.GetSettingsAsync())
                 {
@@ -113,7 +110,12 @@ namespace OrchardCore.Search.Elasticsearch.Core.Handlers
                         }
                         else
                         {
-                            var buildIndexContext = new BuildIndexContext(new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId), contentItem, [contentItem.ContentType], new ElasticContentIndexSettings());
+                            var buildIndexContext = new BuildIndexContext(
+                                new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId),
+                                contentItem,
+                                [contentItem.ContentType],
+                                new ElasticContentIndexSettings()
+                            );
                             await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), logger);
 
                             await elasticIndexManager.DeleteDocumentsAsync(indexSettings.IndexName, [contentItem.ContentItemId]);

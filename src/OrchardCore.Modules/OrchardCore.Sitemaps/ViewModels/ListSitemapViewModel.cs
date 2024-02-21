@@ -36,5 +36,4 @@ namespace OrchardCore.Sitemaps.ViewModels
         None,
         Remove
     }
-
 }

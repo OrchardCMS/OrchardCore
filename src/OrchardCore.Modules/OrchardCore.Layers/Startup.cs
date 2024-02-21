@@ -34,10 +34,12 @@ namespace OrchardCore.Layers
                 o.MemberAccessStrategy.Register<WidgetWrapper>();
             });
 
-            services.Configure<MvcOptions>((options) =>
-            {
-                options.Filters.Add(typeof(LayerFilter));
-            });
+            services.Configure<MvcOptions>(
+                (options) =>
+                {
+                    options.Filters.Add(typeof(LayerFilter));
+                }
+            );
 
             services.AddScoped<IDisplayDriver<ISite>, LayerSiteSettingsDisplayDriver>();
             services.AddContentPart<LayerMetadata>();

@@ -13,7 +13,6 @@ namespace OrchardCore.Rules.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public override ValueTask<bool> EvaluateAsync(IsAnonymousCondition condition)
-            => _httpContextAccessor.HttpContext.User?.Identity.IsAuthenticated != true ? True : False;
+        public override ValueTask<bool> EvaluateAsync(IsAnonymousCondition condition) => _httpContextAccessor.HttpContext.User?.Identity.IsAuthenticated != true ? True : False;
     }
 }

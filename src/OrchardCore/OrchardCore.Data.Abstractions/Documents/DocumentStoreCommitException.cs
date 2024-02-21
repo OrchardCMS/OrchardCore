@@ -12,9 +12,8 @@ namespace OrchardCore.Data.Documents
         /// exception message.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public DocumentStoreCommitException(string message) : base(message)
-        {
-        }
+        public DocumentStoreCommitException(string message)
+            : base(message) { }
 
         /// <summary>
         /// Creates a new instance of <see cref="DocumentStoreCommitException"/> with the specified
@@ -22,8 +21,7 @@ namespace OrchardCore.Data.Documents
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
         /// <param name="innerException">The inner <see cref="Exception"/>.</param>
-        public DocumentStoreCommitException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
+        public DocumentStoreCommitException(string message, Exception innerException)
+            : base(message, innerException) { }
     }
 }

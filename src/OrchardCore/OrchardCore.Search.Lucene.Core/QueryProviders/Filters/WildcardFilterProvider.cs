@@ -48,7 +48,8 @@ namespace OrchardCore.Search.Lucene.QueryProviders.Filters
                     }
 
                     break;
-                default: throw new ArgumentException("Invalid wildcard query");
+                default:
+                    throw new ArgumentException("Invalid wildcard query");
             }
 
             booleanQuery.Add(wildcardQuery, Occur.MUST);

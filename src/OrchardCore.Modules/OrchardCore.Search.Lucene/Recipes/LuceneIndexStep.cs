@@ -17,10 +17,7 @@ namespace OrchardCore.Search.Lucene.Recipes
         private readonly LuceneIndexingService _luceneIndexingService;
         private readonly LuceneIndexManager _luceneIndexManager;
 
-        public LuceneIndexStep(
-            LuceneIndexingService luceneIndexingService,
-            LuceneIndexManager luceneIndexManager
-            )
+        public LuceneIndexStep(LuceneIndexingService luceneIndexingService, LuceneIndexManager luceneIndexManager)
         {
             _luceneIndexManager = luceneIndexManager;
             _luceneIndexingService = luceneIndexingService;

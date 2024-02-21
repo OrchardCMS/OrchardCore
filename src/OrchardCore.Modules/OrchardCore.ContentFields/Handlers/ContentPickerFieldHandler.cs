@@ -33,4 +33,3 @@ public class ContentPickerFieldHandler : ContentFieldHandler<ContentPickerField>
         return Task.CompletedTask;
     }
 }
-

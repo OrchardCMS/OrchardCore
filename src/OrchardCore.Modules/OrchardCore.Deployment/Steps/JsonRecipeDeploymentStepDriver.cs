@@ -15,7 +15,8 @@ namespace OrchardCore.Deployment.Steps
         /// <summary>
         /// A limited schema for recipe steps. Does not include any step data.
         /// </summary>
-        public const string Schema = @"
+        public const string Schema =
+            @"
 {
   ""$schema"": ""http://json-schema.org/draft-04/schema#"",
   ""type"": ""object"",
@@ -40,20 +41,23 @@ namespace OrchardCore.Deployment.Steps
 
         public override IDisplayResult Display(JsonRecipeDeploymentStep step)
         {
-            return
-                Combine(
-                    View("JsonRecipeDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                    View("JsonRecipeDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-                );
+            return Combine(
+                View("JsonRecipeDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("JsonRecipeDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+            );
         }
 
         public override IDisplayResult Edit(JsonRecipeDeploymentStep step)
         {
-            return Initialize<JsonRecipeDeploymentStepViewModel>("JsonRecipeDeploymentStep_Fields_Edit", model =>
-            {
-                model.Json = step.Json;
-                model.Schema = Schema;
-            }).Location("Content");
+            return Initialize<JsonRecipeDeploymentStepViewModel>(
+                    "JsonRecipeDeploymentStep_Fields_Edit",
+                    model =>
+                    {
+                        model.Json = step.Json;
+                        model.Schema = Schema;
+                    }
+                )
+                .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(JsonRecipeDeploymentStep step, IUpdateModel updater)
@@ -67,15 +71,12 @@ namespace OrchardCore.Deployment.Steps
                     var jObject = JObject.Parse(model.Json);
                     if (!jObject.ContainsKey("name"))
                     {
-
                         updater.ModelState.AddModelError(Prefix, nameof(JsonRecipeDeploymentStepViewModel.Json), S["The recipe must have a name property"]);
                     }
-
                 }
                 catch (Exception)
                 {
                     updater.ModelState.AddModelError(Prefix, nameof(JsonRecipeDeploymentStepViewModel.Json), S["Invalid JSON supplied"]);
-
                 }
                 step.Json = model.Json;
             }

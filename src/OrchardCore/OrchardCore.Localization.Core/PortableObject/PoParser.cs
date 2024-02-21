@@ -11,12 +11,13 @@ namespace OrchardCore.Localization.PortableObject
     /// </summary>
     public class PoParser
     {
-        private static readonly Dictionary<char, char> _escapeTranslations = new()
-        {
-            { 'n', '\n' },
-            { 'r', '\r' },
-            { 't', '\t' },
-        };
+        private static readonly Dictionary<char, char> _escapeTranslations =
+            new()
+            {
+                { 'n', '\n' },
+                { 'r', '\r' },
+                { 't', '\t' },
+            };
 
         /// <summary>
         /// Parses a .po file.
@@ -162,20 +163,26 @@ namespace OrchardCore.Localization.PortableObject
                 switch (context)
                 {
                     case PoContext.MessageId:
+                    {
+                        // If the MessageId has been set to an empty string and now gets set again
+                        // before flushing the values should be reset.
+                        if (string.IsNullOrEmpty(MessageId))
                         {
-                            // If the MessageId has been set to an empty string and now gets set again
-                            // before flushing the values should be reset.
-                            if (string.IsNullOrEmpty(MessageId))
-                            {
-                                _values.Clear();
-                            }
-
-                            MessageId = text;
-                            break;
+                            _values.Clear();
                         }
-                    case PoContext.MessageContext: MessageContext = text; break;
-                    case PoContext.Translation: _values.Add(text); break;
-                    case PoContext.Text: AppendText(text); return; // We don't want to set context to Text.
+
+                        MessageId = text;
+                        break;
+                    }
+                    case PoContext.MessageContext:
+                        MessageContext = text;
+                        break;
+                    case PoContext.Translation:
+                        _values.Add(text);
+                        break;
+                    case PoContext.Text:
+                        AppendText(text);
+                        return; // We don't want to set context to Text.
                 }
 
                 _context = context;
@@ -185,8 +192,12 @@ namespace OrchardCore.Localization.PortableObject
             {
                 switch (_context)
                 {
-                    case PoContext.MessageId: MessageId += text; break;
-                    case PoContext.MessageContext: MessageContext += text; break;
+                    case PoContext.MessageId:
+                        MessageId += text;
+                        break;
+                    case PoContext.MessageContext:
+                        MessageContext += text;
+                        break;
                     case PoContext.Translation:
                         if (_values.Count > 0)
                         {

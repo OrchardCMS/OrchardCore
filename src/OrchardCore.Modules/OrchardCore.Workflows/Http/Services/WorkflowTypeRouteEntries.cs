@@ -13,7 +13,8 @@ namespace OrchardCore.Workflows.Http.Services
 {
     internal class WorkflowTypeRouteEntries : WorkflowRouteEntries<WorkflowTypeRouteDocument>, IWorkflowTypeRouteEntries
     {
-        public WorkflowTypeRouteEntries(IVolatileDocumentManager<WorkflowTypeRouteDocument> documentManager) : base(documentManager) { }
+        public WorkflowTypeRouteEntries(IVolatileDocumentManager<WorkflowTypeRouteDocument> documentManager)
+            : base(documentManager) { }
 
         protected override async Task<WorkflowTypeRouteDocument> CreateDocumentAsync()
         {
@@ -32,19 +33,21 @@ namespace OrchardCore.Workflows.Http.Services
 
         internal static IEnumerable<WorkflowRoutesEntry> GetWorkflowTypeRoutesEntries(WorkflowType workflowType, IActivityLibrary activityLibrary)
         {
-            return workflowType.Activities.Where(x => x.IsStart && x.Name == HttpRequestFilterEvent.EventName).Select(x =>
-            {
-                var activity = activityLibrary.InstantiateActivity<HttpRequestFilterEvent>(x);
-                var entry = new WorkflowRoutesEntry
+            return workflowType
+                .Activities.Where(x => x.IsStart && x.Name == HttpRequestFilterEvent.EventName)
+                .Select(x =>
                 {
-                    WorkflowId = workflowType.Id.ToString(),
-                    ActivityId = x.ActivityId,
-                    HttpMethod = activity.HttpMethod,
-                    RouteValues = activity.RouteValues
-                };
+                    var activity = activityLibrary.InstantiateActivity<HttpRequestFilterEvent>(x);
+                    var entry = new WorkflowRoutesEntry
+                    {
+                        WorkflowId = workflowType.Id.ToString(),
+                        ActivityId = x.ActivityId,
+                        HttpMethod = activity.HttpMethod,
+                        RouteValues = activity.RouteValues
+                    };
 
-                return entry;
-            });
+                    return entry;
+                });
         }
     }
 }

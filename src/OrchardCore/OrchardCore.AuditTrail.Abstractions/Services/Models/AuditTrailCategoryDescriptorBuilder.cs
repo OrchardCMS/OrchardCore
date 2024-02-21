@@ -4,14 +4,11 @@ using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.AuditTrail.Services.Models
 {
-    public class AuditTrailCategoryDescriptorBuilder<TLocalizer> : AuditTrailCategoryDescriptorBuilder where TLocalizer : class
+    public class AuditTrailCategoryDescriptorBuilder<TLocalizer> : AuditTrailCategoryDescriptorBuilder
+        where TLocalizer : class
     {
-        public AuditTrailCategoryDescriptorBuilder(
-            string categoryName,
-            Func<IStringLocalizer, LocalizedString> localizedName
-            ) : base(categoryName, typeof(IStringLocalizer<>).MakeGenericType(typeof(TLocalizer)), localizedName)
-        {
-        }
+        public AuditTrailCategoryDescriptorBuilder(string categoryName, Func<IStringLocalizer, LocalizedString> localizedName)
+            : base(categoryName, typeof(IStringLocalizer<>).MakeGenericType(typeof(TLocalizer)), localizedName) { }
     }
 
     public class AuditTrailCategoryDescriptorBuilder
@@ -34,7 +31,8 @@ namespace OrchardCore.AuditTrail.Services.Models
             Func<IStringLocalizer, LocalizedString> localizedName,
             Func<IStringLocalizer, LocalizedString> description,
             bool enableByDefault = false,
-            bool isMandatory = false)
+            bool isMandatory = false
+        )
         {
             _events[name] = new AuditTrailEventDescriptor(
                 name,

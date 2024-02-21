@@ -5,7 +5,12 @@ namespace OrchardCore.ContentManagement.Display.Models
 {
     public class BuildFieldEditorContext : BuildEditorContext
     {
-        public BuildFieldEditorContext(ContentPart contentPart, ContentTypePartDefinition typePartDefinition, ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
+        public BuildFieldEditorContext(
+            ContentPart contentPart,
+            ContentTypePartDefinition typePartDefinition,
+            ContentPartFieldDefinition partFieldDefinition,
+            BuildEditorContext context
+        )
             : base(context.Shape, context.GroupId, context.IsNew, "", context.ShapeFactory, context.Layout, context.Updater)
         {
             ContentPart = contentPart;

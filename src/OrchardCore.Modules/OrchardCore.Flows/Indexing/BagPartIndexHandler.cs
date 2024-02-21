@@ -33,10 +33,7 @@ namespace OrchardCore.Flows.Indexing
                 {
                     foreach (var contentItem in bagPart.ContentItems)
                     {
-                        var keys = new List<string>
-                        {
-                            contentItem.ContentType,
-                        };
+                        var keys = new List<string> { contentItem.ContentType, };
 
                         foreach (var key in context.Keys)
                         {

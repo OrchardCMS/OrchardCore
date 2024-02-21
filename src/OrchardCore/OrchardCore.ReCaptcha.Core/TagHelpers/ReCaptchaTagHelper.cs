@@ -32,7 +32,8 @@ namespace OrchardCore.ReCaptcha.TagHelpers
             IResourceManager resourceManager,
             ILocalizationService localizationService,
             IHttpContextAccessor httpContextAccessor,
-            ILogger<ReCaptchaTagHelper> logger)
+            ILogger<ReCaptchaTagHelper> logger
+        )
         {
             _resourceManager = resourceManager;
             _httpContextAccessor = httpContextAccessor;
@@ -102,10 +103,7 @@ namespace OrchardCore.ReCaptcha.TagHelpers
                 query = query.Add("onload", OnLoad);
             }
 
-            var settingsUrl = new UriBuilder(_settings.ReCaptchaScriptUri)
-            {
-                Query = query.ToString()
-            };
+            var settingsUrl = new UriBuilder(_settings.ReCaptchaScriptUri) { Query = query.ToString() };
 
             return settingsUrl.ToString();
         }

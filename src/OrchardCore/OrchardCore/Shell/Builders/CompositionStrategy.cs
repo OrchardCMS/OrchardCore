@@ -16,9 +16,7 @@ namespace OrchardCore.Environment.Shell.Builders
         private readonly IExtensionManager _extensionManager;
         private readonly ILogger _logger;
 
-        public CompositionStrategy(
-            IExtensionManager extensionManager,
-            ILogger<CompositionStrategy> logger)
+        public CompositionStrategy(IExtensionManager extensionManager, ILogger<CompositionStrategy> logger)
         {
             _extensionManager = extensionManager;
             _logger = logger;

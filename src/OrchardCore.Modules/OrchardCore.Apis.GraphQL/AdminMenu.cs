@@ -20,14 +20,15 @@ namespace OrchardCore.Apis.GraphQL
                 return Task.CompletedTask;
             }
 
-            builder
-                .Add(S["Configuration"], configuration => configuration
-                    .Add(S["GraphiQL"], S["GraphiQL"].PrefixPosition(), graphiQL => graphiQL
-                        .Action("Index", "Admin", "OrchardCore.Apis.GraphQL")
-                        .Permission(Permissions.ExecuteGraphQL)
-                        .LocalNav()
+            builder.Add(
+                S["Configuration"],
+                configuration =>
+                    configuration.Add(
+                        S["GraphiQL"],
+                        S["GraphiQL"].PrefixPosition(),
+                        graphiQL => graphiQL.Action("Index", "Admin", "OrchardCore.Apis.GraphQL").Permission(Permissions.ExecuteGraphQL).LocalNav()
                     )
-                );
+            );
 
             return Task.CompletedTask;
         }

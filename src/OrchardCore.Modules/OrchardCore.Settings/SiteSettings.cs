@@ -27,7 +27,8 @@ namespace OrchardCore.Settings
         public bool AppendVersion { get; set; } = true;
         public CacheMode CacheMode { get; set; }
 
-        public T As<T>() where T : new()
+        public T As<T>()
+            where T : new()
         {
             var name = typeof(T).Name;
             if (!IsReadOnly)

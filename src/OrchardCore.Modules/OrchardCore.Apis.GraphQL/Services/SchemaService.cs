@@ -94,7 +94,6 @@ namespace OrchardCore.Apis.GraphQL.Services
                     await builder.BuildAsync(schema);
                 }
 
-
                 // Clean Query, Mutation and Subscription if they have no fields
                 // to prevent GraphQL configuration errors.
 

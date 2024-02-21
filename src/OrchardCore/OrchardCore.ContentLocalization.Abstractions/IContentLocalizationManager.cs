@@ -47,6 +47,7 @@ namespace OrchardCore.ContentLocalization
         /// - OR First ContentItemId found in the set.
         /// </returns>
         Task<IDictionary<string, string>> GetFirstItemIdForSetsAsync(IEnumerable<string> localizationSets);
+
         /// <summary>
         /// Get the ContenItems that match the culture and localizationSet.
         /// A single ContentItem is returned per set if it exists.

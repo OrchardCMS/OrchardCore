@@ -13,10 +13,7 @@ namespace OrchardCore.Apis.GraphQL
         {
             ArgumentNullException.ThrowIfNull(message);
 
-            var errorResult = new ExecutionResult
-            {
-                Errors = []
-            };
+            var errorResult = new ExecutionResult { Errors = [] };
 
             if (e == null)
             {

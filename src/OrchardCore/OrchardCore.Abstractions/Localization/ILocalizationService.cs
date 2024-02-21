@@ -9,11 +9,7 @@ namespace OrchardCore.Localization
     /// </summary>
     public interface ILocalizationService
     {
-        private static readonly CultureInfo[] _cultureAliases =
-        [
-            CultureInfo.GetCultureInfo("zh-CN"),
-            CultureInfo.GetCultureInfo("zh-TW")
-        ];
+        private static readonly CultureInfo[] _cultureAliases = [CultureInfo.GetCultureInfo("zh-CN"), CultureInfo.GetCultureInfo("zh-TW")];
 
         /// <summary>
         /// Returns the default culture of the site.
@@ -30,9 +26,7 @@ namespace OrchardCore.Localization
         /// </summary>
         static CultureInfo[] GetAllCulturesAndAliases()
         {
-            var cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
-                .Union(_cultureAliases)
-                .OrderBy(c => c.Name);
+            var cultures = CultureInfo.GetCultures(CultureTypes.AllCultures).Union(_cultureAliases).OrderBy(c => c.Name);
 
             return cultures.ToArray();
         }

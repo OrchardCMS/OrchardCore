@@ -31,7 +31,5 @@ public class AdminCookieCultureProvider : CookieRequestCultureProvider
 
     public static string MakeCookieName(ShellSettings shellSettings) => CookieNamePrefix + shellSettings.VersionId;
 
-    public static string MakeCookiePath(HttpContext httpContext) => httpContext.Request.PathBase.HasValue
-        ? httpContext.Request.PathBase.ToString()
-        : "/";
+    public static string MakeCookiePath(HttpContext httpContext) => httpContext.Request.PathBase.HasValue ? httpContext.Request.PathBase.ToString() : "/";
 }

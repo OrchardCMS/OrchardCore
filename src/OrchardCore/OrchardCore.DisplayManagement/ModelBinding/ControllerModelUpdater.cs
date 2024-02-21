@@ -17,17 +17,20 @@ namespace OrchardCore.DisplayManagement.ModelBinding
 
         public ModelStateDictionary ModelState => _controller.ModelState;
 
-        public Task<bool> TryUpdateModelAsync<TModel>(TModel model) where TModel : class
+        public Task<bool> TryUpdateModelAsync<TModel>(TModel model)
+            where TModel : class
         {
             return _controller.TryUpdateModelAsync<TModel>(model);
         }
 
-        public Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix) where TModel : class
+        public Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix)
+            where TModel : class
         {
             return _controller.TryUpdateModelAsync<TModel>(model, prefix);
         }
 
-        public Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix, params Expression<Func<TModel, object>>[] includeExpressions) where TModel : class
+        public Task<bool> TryUpdateModelAsync<TModel>(TModel model, string prefix, params Expression<Func<TModel, object>>[] includeExpressions)
+            where TModel : class
         {
             return _controller.TryUpdateModelAsync<TModel>(model, prefix, includeExpressions);
         }

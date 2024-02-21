@@ -22,9 +22,7 @@ namespace OrchardCore.Media.GraphQL
                 });
 
             Field(file => file.Length).Description("The length of the file.");
-            Field<DateTimeGraphType>("lastModifiedUtc")
-                .Description("The date and time in UTC when the asset was last modified.")
-                .Resolve(file => file.Source.LastModifiedUtc);
+            Field<DateTimeGraphType>("lastModifiedUtc").Description("The date and time in UTC when the asset was last modified.").Resolve(file => file.Source.LastModifiedUtc);
         }
     }
 }

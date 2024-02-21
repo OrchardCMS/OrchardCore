@@ -8,9 +8,7 @@ using OrchardCore.Search.AzureAI.Models;
 
 namespace OrchardCore.Search.AzureAI;
 
-public class AdminMenu(
-    IStringLocalizer<AdminMenu> stringLocalizer,
-    IOptions<AzureAISearchDefaultOptions> azureAISearchSettings) : INavigationProvider
+public class AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer, IOptions<AzureAISearchDefaultOptions> azureAISearchSettings) : INavigationProvider
 {
     protected readonly IStringLocalizer S = stringLocalizer;
     private readonly AzureAISearchDefaultOptions _azureAISearchSettings = azureAISearchSettings.Value;
@@ -22,33 +20,50 @@ public class AdminMenu(
             return Task.CompletedTask;
         }
 
-        builder
-            .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
-                .AddClass("azure-ai-service")
-                .Id("azureaiservice")
-                .Add(S["Indexing"], S["Indexing"].PrefixPosition(), indexing => indexing
-                    .Add(S["Azure AI Indices"], S["Azure AI Indices"].PrefixPosition(), indexes => indexes
-                        .Action("Index", "Admin", "OrchardCore.Search.AzureAI")
-                        .Permission(AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes)
-                        .LocalNav()
+        builder.Add(
+            S["Search"],
+            NavigationConstants.AdminMenuSearchPosition,
+            search =>
+                search
+                    .AddClass("azure-ai-service")
+                    .Id("azureaiservice")
+                    .Add(
+                        S["Indexing"],
+                        S["Indexing"].PrefixPosition(),
+                        indexing =>
+                            indexing.Add(
+                                S["Azure AI Indices"],
+                                S["Azure AI Indices"].PrefixPosition(),
+                                indexes =>
+                                    indexes
+                                        .Action("Index", "Admin", "OrchardCore.Search.AzureAI")
+                                        .Permission(AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes)
+                                        .LocalNav()
+                            )
                     )
-                )
-            );
+        );
 
         if (!_azureAISearchSettings.DisableUIConfiguration)
         {
-            builder
-                .Add(S["Configuration"], configuration => configuration
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["Azure AI Search"], S["Azure AI Search"].PrefixPosition(), azureAISearch => azureAISearch
-                        .AddClass("azure-ai-search")
-                            .Id("azureaisearch")
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = AzureAISearchDefaultSettingsDisplayDriver.GroupId })
-                            .Permission(AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes)
-                            .LocalNav()
-                        )
+            builder.Add(
+                S["Configuration"],
+                configuration =>
+                    configuration.Add(
+                        S["Settings"],
+                        settings =>
+                            settings.Add(
+                                S["Azure AI Search"],
+                                S["Azure AI Search"].PrefixPosition(),
+                                azureAISearch =>
+                                    azureAISearch
+                                        .AddClass("azure-ai-search")
+                                        .Id("azureaisearch")
+                                        .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = AzureAISearchDefaultSettingsDisplayDriver.GroupId })
+                                        .Permission(AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes)
+                                        .LocalNav()
+                            )
                     )
-                );
+            );
         }
 
         return Task.CompletedTask;

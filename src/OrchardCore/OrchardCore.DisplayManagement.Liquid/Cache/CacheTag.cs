@@ -18,7 +18,13 @@ namespace OrchardCore.DynamicCache.Liquid
     {
         private static readonly char[] _splitChars = [',', ' '];
 
-        public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> arguments, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public static async ValueTask<Completion> WriteToAsync(
+            List<FilterArgument> arguments,
+            IReadOnlyList<Statement> statements,
+            TextWriter writer,
+            TextEncoder encoder,
+            TemplateContext context
+        )
         {
             var services = ((LiquidTemplateContext)context).Services;
 
@@ -30,9 +36,11 @@ namespace OrchardCore.DynamicCache.Liquid
 
             if (dynamicCache == null || cacheScopeManager == null)
             {
-                logger.LogInformation(@"Liquid cache block entered without an available IDynamicCacheService or ICacheScopeManager.
+                logger.LogInformation(
+                    @"Liquid cache block entered without an available IDynamicCacheService or ICacheScopeManager.
                                         The contents of the cache block will not be cached.
-                                        To enable caching, make sure that a feature that contains an implementation of IDynamicCacheService and ICacheScopeManager is enabled (for example, 'Dynamic Cache').");
+                                        To enable caching, make sure that a feature that contains an implementation of IDynamicCacheService and ICacheScopeManager is enabled (for example, 'Dynamic Cache')."
+                );
 
                 if (statements != null && statements.Count > 0)
                 {

@@ -85,7 +85,7 @@ namespace OrchardCore.Autoroute.Core.Indexes
             var part = context.ContentItem.As<AutoroutePart>();
 
             // Validate that the content definition contains this part, this prevents indexing parts
-            // that have been removed from the type definition, but are still present in the elements.            
+            // that have been removed from the type definition, but are still present in the elements.
             if (part != null)
             {
                 // Lazy initialization because of ISession cyclic dependency.
@@ -106,12 +106,15 @@ namespace OrchardCore.Autoroute.Core.Indexes
         }
 
         public string CollectionName { get; set; }
+
         public Type ForType() => typeof(ContentItem);
+
         public void Describe(IDescriptor context) => Describe((DescribeContext<ContentItem>)context);
 
         public void Describe(DescribeContext<ContentItem> context)
         {
-            context.For<AutoroutePartIndex>()
+            context
+                .For<AutoroutePartIndex>()
                 .When(contentItem => contentItem.Has<AutoroutePart>() || _partRemoved.Contains(contentItem.ContentItemId))
                 .Map(async contentItem =>
                 {
@@ -134,7 +137,8 @@ namespace OrchardCore.Autoroute.Core.Indexes
                     var results = new List<AutoroutePartIndex>
                     {
                         // If the part is disabled or was removed, a record is still added but with a null path.
-                        new() {
+                        new()
+                        {
                             ContentItemId = contentItem.ContentItemId,
                             Path = !partRemoved && !part.Disabled ? part.Path : null,
                             Published = contentItem.Published,
@@ -157,7 +161,13 @@ namespace OrchardCore.Autoroute.Core.Indexes
                 });
         }
 
-        private async Task PopulateContainedContentItemIndexesAsync(List<AutoroutePartIndex> results, ContentItem containerContentItem, ContainedContentItemsAspect containedContentItemsAspect, JsonObject content, string basePath)
+        private async Task PopulateContainedContentItemIndexesAsync(
+            List<AutoroutePartIndex> results,
+            ContentItem containerContentItem,
+            ContainedContentItemsAspect containedContentItemsAspect,
+            JsonObject content,
+            string basePath
+        )
         {
             foreach (var accessor in containedContentItemsAspect.Accessors)
             {
@@ -176,15 +186,17 @@ namespace OrchardCore.Autoroute.Core.Indexes
                             path = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path.TrimStart('/');
                         }
 
-                        results.Add(new AutoroutePartIndex
-                        {
-                            ContentItemId = containerContentItem.ContentItemId,
-                            Path = path,
-                            Published = containerContentItem.Published,
-                            Latest = containerContentItem.Latest,
-                            ContainedContentItemId = contentItem.ContentItemId,
-                            JsonPath = jItem.GetNormalizedPath(),
-                        });
+                        results.Add(
+                            new AutoroutePartIndex
+                            {
+                                ContentItemId = containerContentItem.ContentItemId,
+                                Path = path,
+                                Published = containerContentItem.Published,
+                                Latest = containerContentItem.Latest,
+                                ContainedContentItemId = contentItem.ContentItemId,
+                                JsonPath = jItem.GetNormalizedPath(),
+                            }
+                        );
                     }
 
                     var itemBasePath = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path.TrimStart('/');

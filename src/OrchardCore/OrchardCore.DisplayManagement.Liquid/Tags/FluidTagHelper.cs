@@ -22,12 +22,25 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             return WriteToAsync(null, arguments, [], writer, encoder, context);
         }
 
-        public static ValueTask<Completion> WriteArgumentsBlockHelperAsync(List<FilterArgument> arguments, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public static ValueTask<Completion> WriteArgumentsBlockHelperAsync(
+            List<FilterArgument> arguments,
+            IReadOnlyList<Statement> statements,
+            TextWriter writer,
+            TextEncoder encoder,
+            TemplateContext context
+        )
         {
             return WriteToAsync(null, arguments, statements, writer, encoder, context);
         }
 
-        public static async ValueTask<Completion> WriteToAsync(string identifier, List<FilterArgument> arguments, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public static async ValueTask<Completion> WriteToAsync(
+            string identifier,
+            List<FilterArgument> arguments,
+            IReadOnlyList<Statement> statements,
+            TextWriter writer,
+            TextEncoder encoder,
+            TemplateContext context
+        )
         {
             var services = ((LiquidTemplateContext)context).Services;
 
@@ -61,8 +74,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 return Completion.Normal;
             }
 
-            var tagHelper = factory.CreateTagHelper(activator, viewContext,
-                filterArguments, out var contextAttributes, out var outputAttributes);
+            var tagHelper = factory.CreateTagHelper(activator, viewContext, filterArguments, out var contextAttributes, out var outputAttributes);
 
             ViewBufferTextWriterContent content = null;
 
@@ -87,18 +99,12 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             if (content != null)
             {
-                tagHelperOutput = new TagHelperOutput(
-                    identifier,
-                    outputAttributes, (_, e) => Task.FromResult(new DefaultTagHelperContent().AppendHtml(content))
-                );
+                tagHelperOutput = new TagHelperOutput(identifier, outputAttributes, (_, e) => Task.FromResult(new DefaultTagHelperContent().AppendHtml(content)));
                 tagHelperOutput.Content.AppendHtml(content);
             }
             else
             {
-                tagHelperOutput = new TagHelperOutput(
-                    identifier,
-                    outputAttributes, (_, e) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
-                );
+                tagHelperOutput = new TagHelperOutput(identifier, outputAttributes, (_, e) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent()));
             }
 
             await tagHelper.ProcessAsync(tagHelperContext, tagHelperOutput);

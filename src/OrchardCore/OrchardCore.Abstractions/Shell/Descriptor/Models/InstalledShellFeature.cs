@@ -2,9 +2,7 @@ namespace OrchardCore.Environment.Shell.Descriptor.Models;
 
 public class InstalledShellFeature : ShellFeature
 {
-    public InstalledShellFeature()
-    {
-    }
+    public InstalledShellFeature() { }
 
     public InstalledShellFeature(ShellFeature feature)
     {

@@ -14,10 +14,7 @@ public class HttpRedirectToFormLocationTask : TaskActivity<HttpRedirectToFormLoc
     private readonly IHttpContextAccessor _httpContextAccessor;
     protected readonly IStringLocalizer S;
 
-    public HttpRedirectToFormLocationTask(
-        IHttpContextAccessor httpContextAccessor,
-        IStringLocalizer<HttpRedirectToFormLocationTask> stringLocalizer
-    )
+    public HttpRedirectToFormLocationTask(IHttpContextAccessor httpContextAccessor, IStringLocalizer<HttpRedirectToFormLocationTask> stringLocalizer)
     {
         _httpContextAccessor = httpContextAccessor;
         S = stringLocalizer;
@@ -27,8 +24,7 @@ public class HttpRedirectToFormLocationTask : TaskActivity<HttpRedirectToFormLoc
 
     public override LocalizedString Category => S["HTTP"];
 
-    public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        => Outcomes(S["Done"], S["Failed"]);
+    public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext) => Outcomes(S["Done"], S["Failed"]);
 
     public string FormLocationKey
     {
@@ -38,8 +34,7 @@ public class HttpRedirectToFormLocationTask : TaskActivity<HttpRedirectToFormLoc
 
     public override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
-        if (workflowContext.Output.TryGetValue(WorkflowConstants.HttpFormLocationOutputKeyName, out var obj)
-            && obj is Dictionary<string, string> formLocations)
+        if (workflowContext.Output.TryGetValue(WorkflowConstants.HttpFormLocationOutputKeyName, out var obj) && obj is Dictionary<string, string> formLocations)
         {
             if (formLocations.TryGetValue(FormLocationKey, out var path))
             {

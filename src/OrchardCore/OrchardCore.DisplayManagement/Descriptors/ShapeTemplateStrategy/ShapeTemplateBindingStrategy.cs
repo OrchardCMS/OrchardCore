@@ -28,7 +28,8 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
             IShellFeaturesManager shellFeaturesManager,
             IEnumerable<IShapeTemplateViewEngine> shapeTemplateViewEngines,
             IShapeTemplateFileProviderAccessor fileProviderAccessor,
-            ILogger<ShapeTemplateBindingStrategy> logger)
+            ILogger<ShapeTemplateBindingStrategy> logger
+        )
         {
             _harvesters = harvesters;
             _shellFeaturesManager = shellFeaturesManager;
@@ -43,21 +44,13 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
         {
             _logger.LogInformation("Start discovering shapes");
 
-            var harvesterInfos = _harvesters
-                .Select(harvester => new
-                {
-                    harvester,
-                    subPaths = harvester.SubPaths()
-                })
-                .ToList();
+            var harvesterInfos = _harvesters.Select(harvester => new { harvester, subPaths = harvester.SubPaths() }).ToList();
 
             var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
             var enabledFeatureIds = enabledFeatures.Select(f => f.Id).ToList();
 
             // Excludes the extensions whose templates are already associated to an excluded feature that is still enabled.
-            var activeExtensions = Once(enabledFeatures)
-                .Where(e => !e.Features.Any(f => builder.ExcludedFeatureIds.Contains(f.Id) && enabledFeatureIds.Contains(f.Id)))
-                .ToArray();
+            var activeExtensions = Once(enabledFeatures).Where(e => !e.Features.Any(f => builder.ExcludedFeatureIds.Contains(f.Id) && enabledFeatureIds.Contains(f.Id))).ToArray();
 
             if (_viewEnginesByExtension.Count == 0)
             {
@@ -73,49 +66,69 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 }
             }
 
-            var hits = activeExtensions.Select(extensionDescriptor =>
-            {
-                _logger.LogInformation("Start discovering candidate views filenames");
-
-                var pathContexts = harvesterInfos.SelectMany(harvesterInfo => harvesterInfo.subPaths.Select(subPath =>
+            var hits = activeExtensions
+                .Select(extensionDescriptor =>
                 {
-                    var filePaths = _fileProviderAccessor.FileProvider.GetViewFilePaths(
-                        PathExtensions.Combine(extensionDescriptor.SubPath, subPath),
-                        _viewEnginesByExtension.Keys.ToArray(),
-                        inViewsFolder: true, inDepth: false).ToArray();
+                    _logger.LogInformation("Start discovering candidate views filenames");
 
-                    return new { harvesterInfo.harvester, subPath, filePaths };
-                }))
-                .ToList();
+                    var pathContexts = harvesterInfos
+                        .SelectMany(harvesterInfo =>
+                            harvesterInfo.subPaths.Select(subPath =>
+                            {
+                                var filePaths = _fileProviderAccessor
+                                    .FileProvider.GetViewFilePaths(
+                                        PathExtensions.Combine(extensionDescriptor.SubPath, subPath),
+                                        _viewEnginesByExtension.Keys.ToArray(),
+                                        inViewsFolder: true,
+                                        inDepth: false
+                                    )
+                                    .ToArray();
 
-                _logger.LogInformation("Done discovering candidate views filenames");
+                                return new
+                                {
+                                    harvesterInfo.harvester,
+                                    subPath,
+                                    filePaths
+                                };
+                            })
+                        )
+                        .ToList();
 
-                var fileContexts = pathContexts.SelectMany(pathContext => _shapeTemplateViewEngines.SelectMany(ve =>
-                {
-                    return pathContext.filePaths.Select(
-                        filePath => new
+                    _logger.LogInformation("Done discovering candidate views filenames");
+
+                    var fileContexts = pathContexts.SelectMany(pathContext =>
+                        _shapeTemplateViewEngines.SelectMany(ve =>
                         {
-                            fileName = Path.GetFileNameWithoutExtension(filePath),
-                            relativePath = filePath,
-                            pathContext
-                        });
-                }));
+                            return pathContext.filePaths.Select(filePath => new
+                            {
+                                fileName = Path.GetFileNameWithoutExtension(filePath),
+                                relativePath = filePath,
+                                pathContext
+                            });
+                        })
+                    );
 
-                var shapeContexts = fileContexts.SelectMany(fileContext =>
-                {
-                    var harvestShapeInfo = new HarvestShapeInfo
+                    var shapeContexts = fileContexts.SelectMany(fileContext =>
                     {
-                        SubPath = fileContext.pathContext.subPath,
-                        FileName = fileContext.fileName,
-                        RelativePath = fileContext.relativePath,
-                        Extension = Path.GetExtension(fileContext.relativePath)
-                    };
-                    var harvestShapeHits = fileContext.pathContext.harvester.HarvestShape(harvestShapeInfo);
-                    return harvestShapeHits.Select(harvestShapeHit => new { harvestShapeInfo, harvestShapeHit, fileContext });
-                });
+                        var harvestShapeInfo = new HarvestShapeInfo
+                        {
+                            SubPath = fileContext.pathContext.subPath,
+                            FileName = fileContext.fileName,
+                            RelativePath = fileContext.relativePath,
+                            Extension = Path.GetExtension(fileContext.relativePath)
+                        };
+                        var harvestShapeHits = fileContext.pathContext.harvester.HarvestShape(harvestShapeInfo);
+                        return harvestShapeHits.Select(harvestShapeHit => new
+                        {
+                            harvestShapeInfo,
+                            harvestShapeHit,
+                            fileContext
+                        });
+                    });
 
-                return shapeContexts.Select(shapeContext => new { extensionDescriptor, shapeContext }).ToList();
-            }).SelectMany(hits2 => hits2);
+                    return shapeContexts.Select(shapeContext => new { extensionDescriptor, shapeContext }).ToList();
+                })
+                .SelectMany(hits2 => hits2);
 
             foreach (var iter in hits)
             {
@@ -126,25 +139,28 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
 
                 if (_logger.IsEnabled(LogLevel.Debug))
                 {
-                    _logger.LogDebug("Binding '{TemplatePath}' as shape '{ShapeType}' for feature '{FeatureName}'",
+                    _logger.LogDebug(
+                        "Binding '{TemplatePath}' as shape '{ShapeType}' for feature '{FeatureName}'",
                         hit.shapeContext.harvestShapeInfo.RelativePath,
                         iter.shapeContext.harvestShapeHit.ShapeType,
-                        feature.Id);
+                        feature.Id
+                    );
                 }
 
                 var viewEngineType = _viewEnginesByExtension[iter.shapeContext.harvestShapeInfo.Extension].GetType();
 
-                builder.Describe(iter.shapeContext.harvestShapeHit.ShapeType)
+                builder
+                    .Describe(iter.shapeContext.harvestShapeHit.ShapeType)
                     .From(feature)
                     .BoundAs(
-                        hit.shapeContext.harvestShapeInfo.RelativePath, displayContext =>
+                        hit.shapeContext.harvestShapeInfo.RelativePath,
+                        displayContext =>
                         {
-                            var viewEngine = displayContext.ServiceProvider
-                                .GetServices<IShapeTemplateViewEngine>()
-                                .FirstOrDefault(e => e.GetType() == viewEngineType);
+                            var viewEngine = displayContext.ServiceProvider.GetServices<IShapeTemplateViewEngine>().FirstOrDefault(e => e.GetType() == viewEngineType);
 
                             return viewEngine.RenderAsync(hit.shapeContext.harvestShapeInfo.RelativePath, displayContext);
-                        });
+                        }
+                    );
             }
 
             _logger.LogInformation("Done discovering shapes");

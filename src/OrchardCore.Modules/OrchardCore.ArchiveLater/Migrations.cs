@@ -20,25 +20,17 @@ public class Migrations : DataMigration
 
     public async Task<int> CreateAsync()
     {
-        await _contentDefinitionManager.AlterPartDefinitionAsync(nameof(ArchiveLaterPart), builder => builder
-            .Attachable()
-            .WithDescription("Adds the ability to schedule content items to be archived at a given future date and time."));
-
-        await SchemaBuilder.CreateMapIndexTableAsync<ArchiveLaterPartIndex>(table => table
-            .Column<string>("ContentItemId")
-            .Column<DateTime>("ScheduledArchiveDateTimeUtc")
-            .Column<bool>("Published")
-            .Column<bool>("Latest")
+        await _contentDefinitionManager.AlterPartDefinitionAsync(
+            nameof(ArchiveLaterPart),
+            builder => builder.Attachable().WithDescription("Adds the ability to schedule content items to be archived at a given future date and time.")
         );
 
-        await SchemaBuilder.AlterIndexTableAsync<ArchiveLaterPartIndex>(table => table
-            .CreateIndex("IDX_ArchiveLaterPartIndex_DocumentId",
-                "Id",
-                "DocumentId",
-                "ContentItemId",
-                "ScheduledArchiveDateTimeUtc",
-                "Published",
-                "Latest")
+        await SchemaBuilder.CreateMapIndexTableAsync<ArchiveLaterPartIndex>(table =>
+            table.Column<string>("ContentItemId").Column<DateTime>("ScheduledArchiveDateTimeUtc").Column<bool>("Published").Column<bool>("Latest")
+        );
+
+        await SchemaBuilder.AlterIndexTableAsync<ArchiveLaterPartIndex>(table =>
+            table.CreateIndex("IDX_ArchiveLaterPartIndex_DocumentId", "Id", "DocumentId", "ContentItemId", "ScheduledArchiveDateTimeUtc", "Published", "Latest")
         );
 
         return 1;

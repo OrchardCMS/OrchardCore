@@ -12,6 +12,5 @@ namespace OrchardCore.Sitemaps.ViewModels
 
         [BindNever]
         public SitemapSource SitemapSource { get; set; }
-
     }
 }

@@ -38,37 +38,42 @@ namespace OrchardCore.Search.Lucene.Services
 
             var results = new List<ContentPickerResult>();
 
-            await _luceneIndexManager.SearchAsync(indexName, searcher =>
-            {
-                Query query = null;
-
-                if (string.IsNullOrWhiteSpace(searchContext.Query))
+            await _luceneIndexManager.SearchAsync(
+                indexName,
+                searcher =>
                 {
-                    query = new MatchAllDocsQuery();
-                }
-                else
-                {
-                    query = new WildcardQuery(new Term("Content.ContentItem.DisplayText.Normalized", searchContext.Query.ToLowerInvariant() + "*"));
-                }
+                    Query query = null;
 
-                var filter = new FieldCacheTermsFilter("Content.ContentItem.ContentType", searchContext.ContentTypes.ToArray());
-
-                var docs = searcher.Search(query, filter, 50, Sort.RELEVANCE);
-
-                foreach (var hit in docs.ScoreDocs)
-                {
-                    var doc = searcher.Doc(hit.Doc);
-
-                    results.Add(new ContentPickerResult
+                    if (string.IsNullOrWhiteSpace(searchContext.Query))
                     {
-                        ContentItemId = doc.GetField("ContentItemId").GetStringValue(),
-                        DisplayText = doc.GetField("Content.ContentItem.DisplayText.keyword").GetStringValue(),
-                        HasPublished = doc.GetField("Content.ContentItem.Published").GetStringValue().Equals("true", StringComparison.OrdinalIgnoreCase),
-                    });
-                }
+                        query = new MatchAllDocsQuery();
+                    }
+                    else
+                    {
+                        query = new WildcardQuery(new Term("Content.ContentItem.DisplayText.Normalized", searchContext.Query.ToLowerInvariant() + "*"));
+                    }
 
-                return Task.CompletedTask;
-            });
+                    var filter = new FieldCacheTermsFilter("Content.ContentItem.ContentType", searchContext.ContentTypes.ToArray());
+
+                    var docs = searcher.Search(query, filter, 50, Sort.RELEVANCE);
+
+                    foreach (var hit in docs.ScoreDocs)
+                    {
+                        var doc = searcher.Doc(hit.Doc);
+
+                        results.Add(
+                            new ContentPickerResult
+                            {
+                                ContentItemId = doc.GetField("ContentItemId").GetStringValue(),
+                                DisplayText = doc.GetField("Content.ContentItem.DisplayText.keyword").GetStringValue(),
+                                HasPublished = doc.GetField("Content.ContentItem.Published").GetStringValue().Equals("true", StringComparison.OrdinalIgnoreCase),
+                            }
+                        );
+                    }
+
+                    return Task.CompletedTask;
+                }
+            );
 
             return results.OrderBy(x => x.DisplayText);
         }

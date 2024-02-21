@@ -34,8 +34,7 @@ namespace OrchardCore.ReverseProxy
 
             services.AddSingleton<ReverseProxyService>();
 
-            services.TryAddEnumerable(ServiceDescriptor
-                .Transient<IConfigureOptions<ForwardedHeadersOptions>, ForwardedHeadersOptionsConfiguration>());
+            services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<ForwardedHeadersOptions>, ForwardedHeadersOptionsConfiguration>());
         }
     }
 
@@ -44,7 +43,10 @@ namespace OrchardCore.ReverseProxy
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSiteSettingsPropertyDeploymentStep<ReverseProxySettings, DeploymentStartup>(S => S["Reverse Proxy settings"], S => S["Exports the Reverse Proxy settings."]);
+            services.AddSiteSettingsPropertyDeploymentStep<ReverseProxySettings, DeploymentStartup>(
+                S => S["Reverse Proxy settings"],
+                S => S["Exports the Reverse Proxy settings."]
+            );
         }
     }
 }

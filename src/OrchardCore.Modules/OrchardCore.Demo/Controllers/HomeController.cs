@@ -30,7 +30,8 @@ namespace OrchardCore.Demo.Controllers
             ISession session,
             ILogger<HomeController> logger,
             ITagCache tagCache,
-            IContentItemDisplayManager contentDisplay)
+            IContentItemDisplayManager contentDisplay
+        )
         {
             _session = session;
             _testDependency = testDependency;
@@ -104,9 +105,7 @@ namespace OrchardCore.Demo.Controllers
                 return NotFound();
             }
 
-            var shape = Shape
-                .Foo()
-                .Line(contentItem.As<TestContentPartA>().Line);
+            var shape = Shape.Foo().Line(contentItem.As<TestContentPartA>().Line);
 
             return View(shape);
         }

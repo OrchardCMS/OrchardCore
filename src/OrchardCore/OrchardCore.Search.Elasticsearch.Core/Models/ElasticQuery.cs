@@ -5,7 +5,8 @@ namespace OrchardCore.Search.Elasticsearch.Core.Models
 {
     public class ElasticQuery : Query
     {
-        public ElasticQuery() : base("Elasticsearch") { }
+        public ElasticQuery()
+            : base("Elasticsearch") { }
 
         public string Index { get; set; }
 

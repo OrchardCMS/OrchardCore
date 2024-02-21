@@ -18,7 +18,8 @@ namespace OrchardCore.Environment.Shell
             IExtensionManager extensionManager,
             ShellDescriptor shellDescriptor,
             IShellDescriptorFeaturesManager shellDescriptorFeaturesManager,
-            IEnumerable<IFeatureValidationProvider> featureValidators)
+            IEnumerable<IFeatureValidationProvider> featureValidators
+        )
         {
             _extensionManager = extensionManager;
             _shellDescriptor = shellDescriptor;
@@ -67,7 +68,11 @@ namespace OrchardCore.Environment.Shell
             return Task.FromResult(_extensionManager.GetFeatures().Where(f => _shellDescriptor.Features.All(sf => sf.Id != f.Id)));
         }
 
-        public Task<(IEnumerable<IFeatureInfo>, IEnumerable<IFeatureInfo>)> UpdateFeaturesAsync(IEnumerable<IFeatureInfo> featuresToDisable, IEnumerable<IFeatureInfo> featuresToEnable, bool force)
+        public Task<(IEnumerable<IFeatureInfo>, IEnumerable<IFeatureInfo>)> UpdateFeaturesAsync(
+            IEnumerable<IFeatureInfo> featuresToDisable,
+            IEnumerable<IFeatureInfo> featuresToEnable,
+            bool force
+        )
         {
             return _shellDescriptorFeaturesManager.UpdateFeaturesAsync(_shellDescriptor, featuresToDisable, featuresToEnable, force);
         }
@@ -75,8 +80,7 @@ namespace OrchardCore.Environment.Shell
         public Task<IEnumerable<IExtensionInfo>> GetEnabledExtensionsAsync()
         {
             // enabled extensions are those which have at least one enabled feature.
-            var enabledIds = _extensionManager.GetFeatures().Where(f => _shellDescriptor
-                .Features.Any(sf => sf.Id == f.Id)).Select(f => f.Extension.Id).Distinct().ToArray();
+            var enabledIds = _extensionManager.GetFeatures().Where(f => _shellDescriptor.Features.Any(sf => sf.Id == f.Id)).Select(f => f.Extension.Id).Distinct().ToArray();
 
             // Extensions are still ordered according to the weight of their first features.
             return Task.FromResult(_extensionManager.GetExtensions().Where(e => enabledIds.Contains(e.Id)));

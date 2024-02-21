@@ -33,8 +33,7 @@ namespace OrchardCore.Modules
             {
                 Assembly = Assembly.Load(new AssemblyName(assemblyName));
 
-                Assets = Assembly.GetCustomAttributes<ModuleAssetAttribute>()
-                    .Select(a => new Asset(a.Asset)).ToArray();
+                Assets = Assembly.GetCustomAttributes<ModuleAssetAttribute>().Select(a => new Asset(a.Asset)).ToArray();
 
                 AssetPaths = Assets.Select(a => a.ModuleAssetPath).ToArray();
 
@@ -47,8 +46,7 @@ namespace OrchardCore.Modules
                     // This is better use the default parameterless ctor and assign the property.
                     ?? new ModuleAttribute() { Name = assemblyName };
 
-                var features = Assembly.GetCustomAttributes<Manifest.FeatureAttribute>()
-                    .Where(f => f is not ModuleAttribute).ToList();
+                var features = Assembly.GetCustomAttributes<Manifest.FeatureAttribute>().Where(f => f is not ModuleAttribute).ToList();
 
                 if (isApplication)
                 {
@@ -59,30 +57,36 @@ namespace OrchardCore.Modules
                     ModuleInfo.DefaultTenantOnly = true;
 
                     // Adds the application primary feature.
-                    features.Insert(0, new Manifest.FeatureAttribute(
-                        assemblyName,
-                        Application.ModuleName,
-                        Application.ModuleCategory,
-                        Application.ModulePriority,
-                        Application.ModuleDescription,
-                        null,
-                        true,
-                        default,
-                        default
-                    ));
+                    features.Insert(
+                        0,
+                        new Manifest.FeatureAttribute(
+                            assemblyName,
+                            Application.ModuleName,
+                            Application.ModuleCategory,
+                            Application.ModulePriority,
+                            Application.ModuleDescription,
+                            null,
+                            true,
+                            default,
+                            default
+                        )
+                    );
 
                     // Adds the application default feature.
-                    features.Insert(1, new Manifest.FeatureAttribute(
-                        Application.DefaultFeatureId,
-                        Application.DefaultFeatureName,
-                        Application.ModuleCategory,
-                        Application.ModulePriority,
-                        Application.DefaultFeatureDescription,
-                        null,
-                        true,
-                        default,
-                        default
-                    ));
+                    features.Insert(
+                        1,
+                        new Manifest.FeatureAttribute(
+                            Application.DefaultFeatureId,
+                            Application.DefaultFeatureName,
+                            Application.ModuleCategory,
+                            Application.ModulePriority,
+                            Application.DefaultFeatureDescription,
+                            null,
+                            true,
+                            default,
+                            default
+                        )
+                    );
                 }
 
                 ModuleInfo.Features.AddRange(features);
@@ -113,12 +117,8 @@ namespace OrchardCore.Modules
                 {
                     _lastModified = File.GetLastWriteTimeUtc(Assembly.Location);
                 }
-                catch (PathTooLongException)
-                {
-                }
-                catch (UnauthorizedAccessException)
-                {
-                }
+                catch (PathTooLongException) { }
+                catch (UnauthorizedAccessException) { }
             }
         }
 
@@ -151,8 +151,7 @@ namespace OrchardCore.Modules
                             return new NotFoundFileInfo(fileName);
                         }
 
-                        _fileInfos[subpath] = fileInfo = new EmbeddedResourceFileInfo(
-                            Assembly, resourcePath, fileName, _lastModified);
+                        _fileInfos[subpath] = fileInfo = new EmbeddedResourceFileInfo(Assembly, resourcePath, fileName, _lastModified);
                     }
                 }
             }

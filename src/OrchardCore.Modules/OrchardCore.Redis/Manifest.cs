@@ -1,18 +1,8 @@
 using OrchardCore.Modules.Manifest;
 
-[assembly: Module(
-    Name = "Redis",
-    Author = ManifestConstants.OrchardCoreTeam,
-    Website = ManifestConstants.OrchardCoreWebsite,
-    Version = ManifestConstants.OrchardCoreVersion
-)]
+[assembly: Module(Name = "Redis", Author = ManifestConstants.OrchardCoreTeam, Website = ManifestConstants.OrchardCoreWebsite, Version = ManifestConstants.OrchardCoreVersion)]
 
-[assembly: Feature(
-    Id = "OrchardCore.Redis",
-    Name = "Redis",
-    Description = "Redis configuration support.",
-    Category = "Distributed"
-)]
+[assembly: Feature(Id = "OrchardCore.Redis", Name = "Redis", Description = "Redis configuration support.", Category = "Distributed")]
 
 [assembly: Feature(
     Id = "OrchardCore.Redis.Cache",

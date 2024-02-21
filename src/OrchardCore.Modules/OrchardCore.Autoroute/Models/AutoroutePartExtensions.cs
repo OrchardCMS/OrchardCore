@@ -18,12 +18,21 @@ namespace OrchardCore.Autoroute.Models
             if (HasInvalidCharacters(autoroute.Path))
             {
                 var invalidCharactersForMessage = string.Join(", ", AutoroutePart.InvalidCharactersForPath.Select(c => $"\"{c}\""));
-                yield return new ValidationResult(S["Please do not use any of the following characters in your permalink: {0}. No spaces, or consecutive slashes, are allowed (please use dashes or underscores instead).", invalidCharactersForMessage], new[] { nameof(autoroute.Path) });
+                yield return new ValidationResult(
+                    S[
+                        "Please do not use any of the following characters in your permalink: {0}. No spaces, or consecutive slashes, are allowed (please use dashes or underscores instead).",
+                        invalidCharactersForMessage
+                    ],
+                    new[] { nameof(autoroute.Path) }
+                );
             }
 
             if (autoroute.Path?.Length > AutoroutePart.MaxPathLength)
             {
-                yield return new ValidationResult(S["Your permalink is too long. The permalink can only be up to {0} characters.", AutoroutePart.MaxPathLength], new[] { nameof(autoroute.Path) });
+                yield return new ValidationResult(
+                    S["Your permalink is too long. The permalink can only be up to {0} characters.", AutoroutePart.MaxPathLength],
+                    new[] { nameof(autoroute.Path) }
+                );
             }
         }
 

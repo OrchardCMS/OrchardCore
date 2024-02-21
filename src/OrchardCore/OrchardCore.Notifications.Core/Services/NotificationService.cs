@@ -14,11 +14,13 @@ public class NotificationService : INotificationService
     private readonly ISession _session;
     private readonly IClock _clock;
 
-    public NotificationService(INotificationMethodProviderAccessor notificationMethodProviderAccessor,
+    public NotificationService(
+        INotificationMethodProviderAccessor notificationMethodProviderAccessor,
         IEnumerable<INotificationEvents> notificationEvents,
         ILogger<NotificationService> logger,
         ISession session,
-        IClock clock)
+        IClock clock
+    )
     {
         _notificationMethodProviderAccessor = notificationMethodProviderAccessor;
         _notificationEvents = notificationEvents;

@@ -49,19 +49,13 @@ public static class ShellSettingsExtensions
     /// Whether or not the tenant has the provided url prefix.
     /// </summary>
     public static bool HasUrlPrefix(this ShellSettings settings, string urlPrefix) =>
-        settings is not null &&
-        string.Equals(
-            settings.RequestUrlPrefix ?? string.Empty,
-            urlPrefix?.Trim(' ', '/') ?? string.Empty,
-            StringComparison.OrdinalIgnoreCase);
+        settings is not null && string.Equals(settings.RequestUrlPrefix ?? string.Empty, urlPrefix?.Trim(' ', '/') ?? string.Empty, StringComparison.OrdinalIgnoreCase);
 
     /// <summary>
     /// Whether or not the tenant has one of the url host(s) defined by the provided string.
     /// </summary>
     public static bool HasUrlHost(this ShellSettings settings, string urlHost) =>
-        settings.HasUrlHost(urlHost
-            ?.Split(ShellSettings.HostSeparators, StringSplitOptions.RemoveEmptyEntries)
-            ?? []);
+        settings.HasUrlHost(urlHost?.Split(ShellSettings.HostSeparators, StringSplitOptions.RemoveEmptyEntries) ?? []);
 
     /// <summary>
     /// Whether or not the tenant has one of the provided url hosts.

@@ -21,11 +21,7 @@ public class UserTimeZoneService
     private readonly IDistributedCache _distributedCache;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public UserTimeZoneService(
-        IClock clock,
-        IDistributedCache distributedCache,
-        IHttpContextAccessor httpContextAccessor
-    )
+    public UserTimeZoneService(IClock clock, IDistributedCache distributedCache, IHttpContextAccessor httpContextAccessor)
     {
         _clock = clock;
         _distributedCache = distributedCache;
@@ -83,11 +79,7 @@ public class UserTimeZoneService
                 timeZoneId = EmptyTimeZone;
             }
 
-            await _distributedCache.SetStringAsync(
-                key,
-                timeZoneId,
-                _slidingExpiration
-            );
+            await _distributedCache.SetStringAsync(key, timeZoneId, _slidingExpiration);
         }
 
         // Do we know this user doesn't have a configured value?

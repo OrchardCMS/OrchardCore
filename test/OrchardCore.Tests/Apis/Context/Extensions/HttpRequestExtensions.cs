@@ -27,16 +27,9 @@ namespace OrchardCore.Tests.Apis.Context
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public static Task<HttpResponseMessage> PatchAsJsonAsync<T>(
-            this HttpClient client,
-            string requestUri,
-            T value,
-            JsonSerializerOptions options = null)
+        public static Task<HttpResponseMessage> PatchAsJsonAsync<T>(this HttpClient client, string requestUri, T value, JsonSerializerOptions options = null)
         {
-            var content = new StringContent(
-                JConvert.SerializeObject(value, options),
-                Encoding.UTF8,
-                "application/json");
+            var content = new StringContent(JConvert.SerializeObject(value, options), Encoding.UTF8, "application/json");
 
             return PatchAsync(client, requestUri, content);
         }
@@ -56,10 +49,7 @@ namespace OrchardCore.Tests.Apis.Context
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public static Task<HttpResponseMessage> PatchAsync(
-            this HttpClient client,
-            string requestUri,
-            HttpContent content)
+        public static Task<HttpResponseMessage> PatchAsync(this HttpClient client, string requestUri, HttpContent content)
         {
             var request = new HttpRequestMessage
             {
@@ -92,16 +82,9 @@ namespace OrchardCore.Tests.Apis.Context
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public static Task<HttpResponseMessage> PutAsJsonAsync<T>(
-            this HttpClient client,
-            string requestUri,
-            T value,
-            JsonSerializerOptions options = null)
+        public static Task<HttpResponseMessage> PutAsJsonAsync<T>(this HttpClient client, string requestUri, T value, JsonSerializerOptions options = null)
         {
-            var content = new StringContent(
-                JConvert.SerializeObject(value, options),
-                Encoding.UTF8,
-                "application/json");
+            var content = new StringContent(JConvert.SerializeObject(value, options), Encoding.UTF8, "application/json");
 
             return client.PutAsync(requestUri, content);
         }
@@ -126,69 +109,35 @@ namespace OrchardCore.Tests.Apis.Context
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        public static Task<HttpResponseMessage> PostAsJsonAsync<T>(
-            this HttpClient client,
-            string requestUri,
-            T value,
-            JsonSerializerOptions options = null)
+        public static Task<HttpResponseMessage> PostAsJsonAsync<T>(this HttpClient client, string requestUri, T value, JsonSerializerOptions options = null)
         {
-            var content = new StringContent(
-                JConvert.SerializeObject(value, options),
-                Encoding.UTF8,
-                "application/json");
+            var content = new StringContent(JConvert.SerializeObject(value, options), Encoding.UTF8, "application/json");
 
-            var request = new HttpRequestMessage(HttpMethod.Post, requestUri)
-            {
-                Content = content,
-            };
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUri) { Content = content, };
 
-            request.Headers
-                .Accept
-                .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             return client.SendAsync(request);
         }
 
-        public static Task<HttpResponseMessage> PostJsonAsync(
-            this HttpClient client,
-            string requestUri,
-            string json)
+        public static Task<HttpResponseMessage> PostJsonAsync(this HttpClient client, string requestUri, string json)
         {
-            var content = new StringContent(
-                json,
-                Encoding.UTF8,
-                "application/json");
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var request = new HttpRequestMessage(HttpMethod.Post, requestUri)
-            {
-                Content = content,
-            };
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUri) { Content = content, };
 
-            request.Headers
-                .Accept
-                .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             return client.SendAsync(request);
         }
 
-        public static Task<HttpResponseMessage> PostJsonApiAsync(
-            this HttpClient client,
-            string requestUri,
-            string json)
+        public static Task<HttpResponseMessage> PostJsonApiAsync(this HttpClient client, string requestUri, string json)
         {
-            var content = new StringContent(
-                json,
-                Encoding.UTF8,
-                "application/vnd.api+json");
+            var content = new StringContent(json, Encoding.UTF8, "application/vnd.api+json");
 
-            var request = new HttpRequestMessage(HttpMethod.Post, requestUri)
-            {
-                Content = content,
-            };
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUri) { Content = content, };
 
-            request.Headers
-                .Accept
-                .Add(new MediaTypeWithQualityHeaderValue("application/vnd.api+json"));
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.api+json"));
 
             return client.SendAsync(request);
         }

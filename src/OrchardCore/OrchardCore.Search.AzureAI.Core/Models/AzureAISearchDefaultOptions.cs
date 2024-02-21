@@ -7,7 +7,7 @@ public class AzureAISearchDefaultOptions
 {
     public const string DefaultAnalyzer = LexicalAnalyzerName.Values.StandardLucene;
 
-    public readonly static string[] DefaultAnalyzers =
+    public static readonly string[] DefaultAnalyzers =
     [
         LexicalAnalyzerName.Values.ArMicrosoft,
         LexicalAnalyzerName.Values.ArLucene,
@@ -120,17 +120,13 @@ public class AzureAISearchDefaultOptions
 
     private bool _configurationExists;
 
-    public void SetConfigurationExists(bool configurationExists)
-        => _configurationExists = configurationExists;
+    public void SetConfigurationExists(bool configurationExists) => _configurationExists = configurationExists;
 
-    public bool ConfigurationExists()
-        => _configurationExists;
+    public bool ConfigurationExists() => _configurationExists;
 
     private bool _fileConfigurationExists;
 
-    public void SetFileConfigurationExists(bool fileConfigurationExists)
-        => _fileConfigurationExists = fileConfigurationExists;
+    public void SetFileConfigurationExists(bool fileConfigurationExists) => _fileConfigurationExists = fileConfigurationExists;
 
-    public bool FileConfigurationExists()
-        => _fileConfigurationExists;
+    public bool FileConfigurationExists() => _fileConfigurationExists;
 }

@@ -12,22 +12,19 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             ArgumentNullException.ThrowIfNull(services);
 
-            var builder = services.AddOrchardCore()
-
+            var builder = services
+                .AddOrchardCore()
                 .AddCommands()
-
                 .AddSecurity()
                 .AddMvc()
                 .AddIdGeneration()
                 .AddEmailAddressValidator()
                 .AddHtmlSanitizer()
                 .AddSetupFeatures("OrchardCore.Setup")
-
                 .AddDataAccess()
                 .AddDataStorage()
                 .AddBackgroundService()
                 .AddScripting()
-
                 .AddTheming()
                 .AddLiquidViews()
                 .AddCaching();

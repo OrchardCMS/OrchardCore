@@ -11,12 +11,10 @@ namespace OrchardCore.AuditTrail.Services.Models
 
         private FrozenDictionary<string, AuditTrailAdminListOption> _sortOptions;
 
-        public IReadOnlyDictionary<string, AuditTrailAdminListOption> SortOptions
-            => _sortOptions ??= BuildSortOptions();
+        public IReadOnlyDictionary<string, AuditTrailAdminListOption> SortOptions => _sortOptions ??= BuildSortOptions();
 
         private AuditTrailAdminListOption _defaultSortOption;
-        public AuditTrailAdminListOption DefaultSortOption
-            => _defaultSortOption ??= SortOptions.Values.FirstOrDefault(x => x.IsDefault);
+        public AuditTrailAdminListOption DefaultSortOption => _defaultSortOption ??= SortOptions.Values.FirstOrDefault(x => x.IsDefault);
 
         private FrozenDictionary<string, AuditTrailAdminListOption> BuildSortOptions()
         {
@@ -42,7 +40,6 @@ namespace OrchardCore.AuditTrail.Services.Models
             return options;
         }
 
-        public static bool RemoveSort(this AuditTrailAdminListOptions options, string value)
-            => options.SortOptionBuilders.Remove(value);
+        public static bool RemoveSort(this AuditTrailAdminListOptions options, string value) => options.SortOptionBuilders.Remove(value);
     }
 }

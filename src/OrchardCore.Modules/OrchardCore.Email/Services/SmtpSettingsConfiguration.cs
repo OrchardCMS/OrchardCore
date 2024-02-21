@@ -11,10 +11,7 @@ namespace OrchardCore.Email.Services
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly ILogger _logger;
 
-        public SmtpSettingsConfiguration(
-            ISiteService site,
-            IDataProtectionProvider dataProtectionProvider,
-            ILogger<SmtpSettingsConfiguration> logger)
+        public SmtpSettingsConfiguration(ISiteService site, IDataProtectionProvider dataProtectionProvider, ILogger<SmtpSettingsConfiguration> logger)
         {
             _site = site;
             _dataProtectionProvider = dataProtectionProvider;
@@ -23,9 +20,7 @@ namespace OrchardCore.Email.Services
 
         public void Configure(SmtpSettings options)
         {
-            var settings = _site.GetSiteSettingsAsync()
-                .GetAwaiter().GetResult()
-                .As<SmtpSettings>();
+            var settings = _site.GetSiteSettingsAsync().GetAwaiter().GetResult().As<SmtpSettings>();
 
             options.DefaultSender = settings.DefaultSender;
             options.DeliveryMethod = settings.DeliveryMethod;

@@ -17,7 +17,6 @@ namespace OrchardCore.PublishLater
 {
     public class Startup : StartupBase
     {
-
         public override void ConfigureServices(IServiceCollection services)
         {
             services.Configure<TemplateOptions>(o =>
@@ -25,9 +24,7 @@ namespace OrchardCore.PublishLater
                 o.MemberAccessStrategy.Register<PublishLaterPartViewModel>();
             });
 
-            services
-                .AddContentPart<PublishLaterPart>()
-                .UseDisplayDriver<PublishLaterPartDisplayDriver>();
+            services.AddContentPart<PublishLaterPart>().UseDisplayDriver<PublishLaterPartDisplayDriver>();
 
             services.AddDataMigration<Migrations>();
 

@@ -23,7 +23,7 @@ namespace OrchardCore.Media.Azure
             ShellSettings shellSettings,
             IStringLocalizer<MediaBlobContainerTenantEvents> localizer,
             ILogger<MediaBlobContainerTenantEvents> logger
-            )
+        )
         {
             _options = options.Value;
             _shellSettings = shellSettings;
@@ -34,11 +34,7 @@ namespace OrchardCore.Media.Azure
         public override async Task ActivatingAsync()
         {
             // Only create container if options are valid.
-            if (_shellSettings.IsUninitialized() ||
-                string.IsNullOrEmpty(_options.ConnectionString) ||
-                string.IsNullOrEmpty(_options.ContainerName) ||
-                !_options.CreateContainer
-                )
+            if (_shellSettings.IsUninitialized() || string.IsNullOrEmpty(_options.ConnectionString) || string.IsNullOrEmpty(_options.ContainerName) || !_options.CreateContainer)
             {
                 return;
             }
@@ -61,9 +57,7 @@ namespace OrchardCore.Media.Azure
         public override async Task RemovingAsync(ShellRemovingContext context)
         {
             // Only remove container if options are valid.
-            if (!_options.RemoveContainer ||
-                string.IsNullOrEmpty(_options.ConnectionString) ||
-                string.IsNullOrEmpty(_options.ContainerName))
+            if (!_options.RemoveContainer || string.IsNullOrEmpty(_options.ConnectionString) || string.IsNullOrEmpty(_options.ContainerName))
             {
                 return;
             }

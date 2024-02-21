@@ -21,8 +21,7 @@ namespace OrchardCore.Search.Lucene
 
         public Task<LuceneTopDocs> SearchAsync(LuceneQueryContext context, JsonObject queryObj)
         {
-            var queryProp = queryObj["query"].AsObject()
-                ?? throw new ArgumentException("Query DSL requires a [query] property");
+            var queryProp = queryObj["query"].AsObject() ?? throw new ArgumentException("Query DSL requires a [query] property");
 
             var query = CreateQueryFragment(context, queryProp);
 
@@ -84,11 +83,7 @@ namespace OrchardCore.Search.Lucene
 
             if (size > 0)
             {
-                TopDocs topDocs = context.IndexSearcher.Search(
-                    query,
-                    size + from,
-                    sortField == null ? Sort.RELEVANCE : new Sort(sortFields.ToArray())
-                );
+                TopDocs topDocs = context.IndexSearcher.Search(query, size + from, sortField == null ? Sort.RELEVANCE : new Sort(sortFields.ToArray()));
 
                 if (from > 0)
                 {

@@ -16,13 +16,16 @@ public class FormElementValidationPartDisplayDriver : ContentPartDisplayDriver<F
 
     public override IDisplayResult Edit(FormElementValidationPart part)
     {
-        return Initialize<FormElementValidationPartViewModel>("FormElementValidationPart_Fields_Edit", m =>
-        {
-            m.ValidationOption = part.Option;
-        });
+        return Initialize<FormElementValidationPartViewModel>(
+            "FormElementValidationPart_Fields_Edit",
+            m =>
+            {
+                m.ValidationOption = part.Option;
+            }
+        );
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(FormElementValidationPart part, IUpdateModel updater)
+    public override async Task<IDisplayResult> UpdateAsync(FormElementValidationPart part, IUpdateModel updater)
     {
         var viewModel = new FormElementValidationPartViewModel();
 

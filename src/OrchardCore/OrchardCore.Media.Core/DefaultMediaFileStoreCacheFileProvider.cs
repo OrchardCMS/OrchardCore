@@ -23,13 +23,15 @@ namespace OrchardCore.Media.Core
 
         private readonly ILogger _logger;
 
-        public DefaultMediaFileStoreCacheFileProvider(ILogger<DefaultMediaFileStoreCacheFileProvider> logger, PathString virtualPathBase, string root) : base(root)
+        public DefaultMediaFileStoreCacheFileProvider(ILogger<DefaultMediaFileStoreCacheFileProvider> logger, PathString virtualPathBase, string root)
+            : base(root)
         {
             _logger = logger;
             VirtualPathBase = virtualPathBase;
         }
 
-        public DefaultMediaFileStoreCacheFileProvider(ILogger<DefaultMediaFileStoreCacheFileProvider> logger, PathString virtualPathBase, string root, ExclusionFilters filters) : base(root, filters)
+        public DefaultMediaFileStoreCacheFileProvider(ILogger<DefaultMediaFileStoreCacheFileProvider> logger, PathString virtualPathBase, string root, ExclusionFilters filters)
+            : base(root, filters)
         {
             _logger = logger;
             VirtualPathBase = virtualPathBase;

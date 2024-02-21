@@ -16,9 +16,7 @@ namespace OrchardCore.Environment.Commands
 
         private static IEnumerable<CommandDescriptor> CollectMethods(Type type)
         {
-            var methods = type
-                .GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly)
-                .Where(m => !m.IsSpecialName);
+            var methods = type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly).Where(m => !m.IsSpecialName);
 
             foreach (var methodInfo in methods)
             {
@@ -38,7 +36,10 @@ namespace OrchardCore.Environment.Commands
 
         private static string GetCommandHelpText(MethodInfo methodInfo)
         {
-            var attributes = methodInfo.GetCustomAttributes(typeof(CommandHelpAttribute), false/*inherit*/);
+            var attributes = methodInfo.GetCustomAttributes(
+                typeof(CommandHelpAttribute),
+                false /*inherit*/
+            );
             if (attributes != null && attributes.Length > 0)
             {
                 return attributes.Cast<CommandHelpAttribute>().Single().HelpText;
@@ -48,7 +49,10 @@ namespace OrchardCore.Environment.Commands
 
         private static string[] GetCommandNames(MethodInfo methodInfo)
         {
-            var attributes = methodInfo.GetCustomAttributes(typeof(CommandNameAttribute), false/*inherit*/);
+            var attributes = methodInfo.GetCustomAttributes(
+                typeof(CommandNameAttribute),
+                false /*inherit*/
+            );
             if (attributes != null && attributes.Length > 0)
             {
                 return attributes.Cast<CommandNameAttribute>().Single().Commands;

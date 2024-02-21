@@ -63,7 +63,10 @@ namespace OrchardCore.Themes.Models
         /// <summary>
         /// The theme's name.
         /// </summary>
-        public string Name { get { return Extension.Manifest.Name; } }
+        public string Name
+        {
+            get { return Extension.Manifest.Name; }
+        }
 
         /// <summary>
         /// Boolean value indicating whether this is an admin theme.

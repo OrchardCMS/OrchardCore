@@ -12,7 +12,10 @@ namespace OrchardCore.Environment.Shell
         Task<IEnumerable<IFeatureInfo>> GetAlwaysEnabledFeaturesAsync();
         Task<IEnumerable<IFeatureInfo>> GetDisabledFeaturesAsync();
         Task<(IEnumerable<IFeatureInfo>, IEnumerable<IFeatureInfo>)> UpdateFeaturesAsync(
-            IEnumerable<IFeatureInfo> featuresToDisable, IEnumerable<IFeatureInfo> featuresToEnable, bool force);
+            IEnumerable<IFeatureInfo> featuresToDisable,
+            IEnumerable<IFeatureInfo> featuresToEnable,
+            bool force
+        );
         Task<IEnumerable<IExtensionInfo>> GetEnabledExtensionsAsync();
     }
 }

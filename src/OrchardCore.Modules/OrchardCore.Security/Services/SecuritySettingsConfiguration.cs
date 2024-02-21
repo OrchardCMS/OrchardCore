@@ -7,13 +7,11 @@ namespace OrchardCore.Security.Services
     {
         private readonly ISecurityService _securityService;
 
-        public SecuritySettingsConfiguration(ISecurityService securityService)
-            => _securityService = securityService;
+        public SecuritySettingsConfiguration(ISecurityService securityService) => _securityService = securityService;
 
         public void Configure(SecuritySettings options)
         {
-            var securitySettings = _securityService.GetSettingsAsync()
-                .GetAwaiter().GetResult();
+            var securitySettings = _securityService.GetSettingsAsync().GetAwaiter().GetResult();
 
             options.ContentSecurityPolicy = securitySettings.ContentSecurityPolicy;
             options.ContentTypeOptions = securitySettings.ContentTypeOptions;

@@ -61,8 +61,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
 
                     var fieldTypeName = querySchema["fieldTypeName"]?.ToString() ?? query.Name;
 
-                    if (query.ReturnContentItems &&
-                        type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
+                    if (query.ReturnContentItems && type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
                     {
                         var contentType = type.Remove(0, 12);
                         fieldType = BuildContentTypeFieldType(schema, contentType, query, fieldTypeName);
@@ -93,10 +92,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
                 return null;
             }
 
-            var typetype = new ObjectGraphType<JsonObject>
-            {
-                Name = fieldTypeName
-            };
+            var typetype = new ObjectGraphType<JsonObject> { Name = fieldTypeName };
 
             foreach (var child in properties)
             {
@@ -142,9 +138,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
 
             var fieldType = new FieldType
             {
-                Arguments = new QueryArguments(
-                    new QueryArgument<StringGraphType> { Name = "parameters" }
-                ),
+                Arguments = new QueryArguments(new QueryArgument<StringGraphType> { Name = "parameters" }),
 
                 Name = fieldTypeName,
                 Description = "Represents the " + query.Source + " Query : " + query.Name,
@@ -160,9 +154,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
 
                 var parameters = context.GetArgument<string>("parameters");
 
-                    var queryParameters = parameters != null ?
-                        JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                        : [];
+                var queryParameters = parameters != null ? JConvert.DeserializeObject<Dictionary<string, object>>(parameters) : [];
 
                 var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
 
@@ -183,9 +175,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
 
             var fieldType = new FieldType
             {
-                Arguments = new QueryArguments(
-                        new QueryArgument<StringGraphType> { Name = "parameters" }
-                    ),
+                Arguments = new QueryArguments(new QueryArgument<StringGraphType> { Name = "parameters" }),
 
                 Name = fieldTypeName,
                 Description = "Represents the " + query.Source + " Query : " + query.Name,
@@ -201,9 +191,7 @@ namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries
 
                 var parameters = context.GetArgument<string>("parameters");
 
-                    var queryParameters = parameters != null ?
-                        JConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                        : [];
+                var queryParameters = parameters != null ? JConvert.DeserializeObject<Dictionary<string, object>>(parameters) : [];
 
                 var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
 

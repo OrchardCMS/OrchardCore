@@ -23,7 +23,8 @@ namespace OrchardCore.Templates.Services
             ILiquidTemplateManager liquidTemplateManager,
             PreviewTemplatesProvider previewTemplatesProvider,
             IHttpContextAccessor httpContextAccessor,
-            HtmlEncoder htmlEncoder)
+            HtmlEncoder htmlEncoder
+        )
         {
             _templatesManager = templatesManager;
             _liquidTemplateManager = liquidTemplateManager;

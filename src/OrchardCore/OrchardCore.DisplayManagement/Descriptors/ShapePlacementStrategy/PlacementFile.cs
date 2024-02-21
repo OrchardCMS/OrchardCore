@@ -3,9 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 {
-    public class PlacementFile : Dictionary<string, PlacementNode[]>
-    {
-    }
+    public class PlacementFile : Dictionary<string, PlacementNode[]> { }
 
     public class PlacementNode
     {

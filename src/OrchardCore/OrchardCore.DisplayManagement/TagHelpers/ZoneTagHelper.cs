@@ -47,10 +47,10 @@ namespace OrchardCore.DisplayManagement.TagHelpers
             else
             {
                 _logger.LogWarning(
-                    "Unable to add shape to the zone using the <zone> tag helper because the zone's type is " +
-                    "\"{ActualType}\" instead of the expected {ExpectedType}",
+                    "Unable to add shape to the zone using the <zone> tag helper because the zone's type is " + "\"{ActualType}\" instead of the expected {ExpectedType}",
                     zone.GetType().FullName,
-                    nameof(Shape));
+                    nameof(Shape)
+                );
             }
 
             // Don't render the zone tag or the inner content

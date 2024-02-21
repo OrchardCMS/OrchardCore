@@ -16,9 +16,7 @@ namespace OrchardCore.ContentLocalization.Drivers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
-        public ContentRequestCultureProviderSettingsDriver(
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+        public ContentRequestCultureProviderSettingsDriver(IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService)
         {
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
@@ -33,10 +31,15 @@ namespace OrchardCore.ContentLocalization.Drivers
                 return null;
             }
 
-            return Initialize<ContentRequestCultureProviderSettings>("ContentRequestCultureProviderSettings_Edit", model =>
-            {
-                model.SetCookie = settings.SetCookie;
-            }).Location("Content:5").OnGroup(GroupId);
+            return Initialize<ContentRequestCultureProviderSettings>(
+                    "ContentRequestCultureProviderSettings_Edit",
+                    model =>
+                    {
+                        model.SetCookie = settings.SetCookie;
+                    }
+                )
+                .Location("Content:5")
+                .OnGroup(GroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentRequestCultureProviderSettings section, BuildEditorContext context)

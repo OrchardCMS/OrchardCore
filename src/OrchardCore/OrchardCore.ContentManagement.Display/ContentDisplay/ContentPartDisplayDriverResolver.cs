@@ -9,10 +9,8 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ContentDisplayOptions _contentDisplayOptions;
-        public ContentPartDisplayDriverResolver(
-            IServiceProvider serviceProvider,
-            IOptions<ContentDisplayOptions> contentDisplayOptions
-            )
+
+        public ContentPartDisplayDriverResolver(IServiceProvider serviceProvider, IOptions<ContentDisplayOptions> contentDisplayOptions)
         {
             _serviceProvider = serviceProvider;
             _contentDisplayOptions = contentDisplayOptions.Value;

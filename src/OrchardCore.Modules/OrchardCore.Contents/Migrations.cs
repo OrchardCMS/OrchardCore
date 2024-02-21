@@ -16,9 +16,10 @@ namespace OrchardCore.Contents
 
         public async Task<int> CreateAsync()
         {
-            await _contentDefinitionManager.AlterPartDefinitionAsync("CommonPart", builder => builder
-                .Attachable()
-                .WithDescription("Provides an editor for the common properties of a content item."));
+            await _contentDefinitionManager.AlterPartDefinitionAsync(
+                "CommonPart",
+                builder => builder.Attachable().WithDescription("Provides an editor for the common properties of a content item.")
+            );
 
             return 1;
         }

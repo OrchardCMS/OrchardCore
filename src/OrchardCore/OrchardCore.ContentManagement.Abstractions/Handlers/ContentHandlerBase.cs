@@ -28,6 +28,7 @@ namespace OrchardCore.ContentManagement.Handlers
         {
             return Task.CompletedTask;
         }
+
         public virtual Task CreatedAsync(CreateContentContext context)
         {
             return Task.CompletedTask;
@@ -137,6 +138,7 @@ namespace OrchardCore.ContentManagement.Handlers
         {
             return Task.CompletedTask;
         }
+
         public virtual Task ClonedAsync(CloneContentContext context)
         {
             return Task.CompletedTask;

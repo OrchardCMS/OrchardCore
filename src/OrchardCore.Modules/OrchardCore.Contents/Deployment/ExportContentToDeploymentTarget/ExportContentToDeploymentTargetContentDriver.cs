@@ -12,9 +12,7 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
         private readonly IDeploymentPlanService _deploymentPlanService;
         private readonly ISiteService _siteService;
 
-        public ExportContentToDeploymentTargetContentDriver(
-            IDeploymentPlanService deploymentPlanService,
-            ISiteService siteService)
+        public ExportContentToDeploymentTargetContentDriver(IDeploymentPlanService deploymentPlanService, ISiteService siteService)
         {
             _deploymentPlanService = deploymentPlanService;
             _siteService = siteService;
@@ -55,7 +53,7 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 
                         return false;
                     })
-                );
+            );
         }
     }
 }

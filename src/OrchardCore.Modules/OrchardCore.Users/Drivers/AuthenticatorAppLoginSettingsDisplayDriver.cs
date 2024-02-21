@@ -15,28 +15,33 @@ public class AuthenticatorAppLoginSettingsDisplayDriver : SectionDisplayDriver<I
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
-    public AuthenticatorAppLoginSettingsDisplayDriver(
-        IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+    public AuthenticatorAppLoginSettingsDisplayDriver(IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
     }
+
     public override IDisplayResult Edit(AuthenticatorAppLoginSettings settings)
     {
-        return Initialize<AuthenticatorAppLoginSettings>("AuthenticatorAppLoginSettings_Edit", model =>
-        {
-            model.UseEmailAsAuthenticatorDisplayName = settings.UseEmailAsAuthenticatorDisplayName;
-            model.TokenLength = settings.TokenLength;
-        }).Location("Content:12#Two-Factor Authentication")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
-        .OnGroup(LoginSettingsDisplayDriver.GroupId);
+        return Initialize<AuthenticatorAppLoginSettings>(
+                "AuthenticatorAppLoginSettings_Edit",
+                model =>
+                {
+                    model.UseEmailAsAuthenticatorDisplayName = settings.UseEmailAsAuthenticatorDisplayName;
+                    model.TokenLength = settings.TokenLength;
+                }
+            )
+            .Location("Content:12#Two-Factor Authentication")
+            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
+            .OnGroup(LoginSettingsDisplayDriver.GroupId);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(AuthenticatorAppLoginSettings section, BuildEditorContext context)
     {
-        if (!context.GroupId.Equals(LoginSettingsDisplayDriver.GroupId, StringComparison.OrdinalIgnoreCase)
-            || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
+        if (
+            !context.GroupId.Equals(LoginSettingsDisplayDriver.GroupId, StringComparison.OrdinalIgnoreCase)
+            || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers)
+        )
         {
             return null;
         }

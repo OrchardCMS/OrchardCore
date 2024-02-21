@@ -48,7 +48,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Localize data annotations attributes from portable object files.  
+        /// Localize data annotations attributes from portable object files.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         public static IServiceCollection AddDataAnnotationsPortableObjectLocalization(this IServiceCollection services)

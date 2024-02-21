@@ -8,6 +8,7 @@ namespace OrchardCore.XmlRpc.Models
         {
             Data = [];
         }
+
         public IList<XRpcData> Data { get; set; }
 
         public object this[int index]

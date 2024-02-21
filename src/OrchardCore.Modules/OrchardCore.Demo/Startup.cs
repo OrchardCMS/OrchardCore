@@ -41,12 +41,7 @@ namespace OrchardCore.Demo
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaControllerRoute(
-                name: "Demo.Home.Index",
-                areaName: "OrchardCore.Demo",
-                pattern: "Home/Index",
-                defaults: new { controller = "Home", action = "Index" }
-            );
+            routes.MapAreaControllerRoute(name: "Demo.Home.Index", areaName: "OrchardCore.Demo", pattern: "Home/Index", defaults: new { controller = "Home", action = "Index" });
 
             routes.MapAreaControllerRoute(
                 name: "Demo.Home.Display",

@@ -10,6 +10,7 @@ namespace OrchardCore.Demo.Services
     public class ClassFoo : ITestDependency
     {
         private readonly ShellSettings _shellSettings;
+
         public ClassFoo(ShellSettings shellSettings)
         {
             _shellSettings = shellSettings;

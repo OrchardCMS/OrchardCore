@@ -37,7 +37,8 @@ namespace OrchardCore.Sitemaps.Controllers
             IUpdateModelAccessor updateModelAccessor,
             INotifier notifier,
             IStringLocalizer<SourceController> stringLocalizer,
-            IHtmlLocalizer<SourceController> htmlLocalizer)
+            IHtmlLocalizer<SourceController> htmlLocalizer
+        )
         {
             _displayManager = displayManager;
             _factories = factories;

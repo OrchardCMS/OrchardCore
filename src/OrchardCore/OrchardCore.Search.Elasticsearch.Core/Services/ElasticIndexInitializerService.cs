@@ -29,7 +29,8 @@ namespace OrchardCore.Search.Elasticsearch
             ElasticIndexManager elasticIndexManager,
             ElasticIndexSettingsService elasticIndexSettingsService,
             IStringLocalizer<ElasticIndexInitializerService> localizer,
-            ILogger<ElasticIndexInitializerService> logger)
+            ILogger<ElasticIndexInitializerService> logger
+        )
         {
             _shellSettings = shellSettings;
             _elasticIndexManager = elasticIndexManager;
@@ -45,29 +46,32 @@ namespace OrchardCore.Search.Elasticsearch
                 return;
             }
 
-            await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("elastic-initialize", async scope =>
-            {
-                var elasticIndexSettingsService = scope.ServiceProvider.GetRequiredService<ElasticIndexSettingsService>();
-                var elasticIndexingService = scope.ServiceProvider.GetRequiredService<ElasticIndexingService>();
-                var indexManager = scope.ServiceProvider.GetRequiredService<ElasticIndexManager>();
-
-                var elasticIndexSettings = await elasticIndexSettingsService.GetSettingsAsync();
-                var createdIndexes = new List<string>();
-
-                foreach (var settings in elasticIndexSettings)
+            await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync(
+                "elastic-initialize",
+                async scope =>
                 {
-                    if (!await indexManager.ExistsAsync(settings.IndexName))
+                    var elasticIndexSettingsService = scope.ServiceProvider.GetRequiredService<ElasticIndexSettingsService>();
+                    var elasticIndexingService = scope.ServiceProvider.GetRequiredService<ElasticIndexingService>();
+                    var indexManager = scope.ServiceProvider.GetRequiredService<ElasticIndexManager>();
+
+                    var elasticIndexSettings = await elasticIndexSettingsService.GetSettingsAsync();
+                    var createdIndexes = new List<string>();
+
+                    foreach (var settings in elasticIndexSettings)
                     {
-                        await elasticIndexingService.CreateIndexAsync(settings);
-                        createdIndexes.Add(settings.IndexName);
+                        if (!await indexManager.ExistsAsync(settings.IndexName))
+                        {
+                            await elasticIndexingService.CreateIndexAsync(settings);
+                            createdIndexes.Add(settings.IndexName);
+                        }
+                    }
+
+                    if (createdIndexes.Count > 0)
+                    {
+                        await elasticIndexingService.ProcessContentItemsAsync(createdIndexes.ToArray());
                     }
                 }
-
-                if (createdIndexes.Count > 0)
-                {
-                    await elasticIndexingService.ProcessContentItemsAsync(createdIndexes.ToArray());
-                }
-            });
+            );
         }
 
         public override async Task RemovingAsync(ShellRemovingContext context)

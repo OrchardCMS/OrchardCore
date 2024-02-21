@@ -18,10 +18,7 @@ namespace OrchardCore.Sitemaps.Builders
 
         public override async Task BuildSitemapTypeAsync(Sitemap sitemap, SitemapBuilderContext context)
         {
-            context.Response = new SitemapResponse
-            {
-                ResponseElement = new XElement(_namespace + "urlset")
-            };
+            context.Response = new SitemapResponse { ResponseElement = new XElement(_namespace + "urlset") };
 
             foreach (var source in sitemap.SitemapSources)
             {

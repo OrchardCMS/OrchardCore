@@ -14,9 +14,7 @@ public class UsersStep : IRecipeStepHandler
     private readonly UserManager<IUser> _userManager;
     private readonly ISession _session;
 
-    public UsersStep(
-        UserManager<IUser> userManager,
-        ISession session)
+    public UsersStep(UserManager<IUser> userManager, ISession session)
     {
         _userManager = userManager;
         _session = session;

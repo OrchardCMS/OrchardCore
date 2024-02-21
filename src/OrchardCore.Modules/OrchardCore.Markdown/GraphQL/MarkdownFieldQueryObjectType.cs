@@ -29,11 +29,8 @@ namespace OrchardCore.Markdown.GraphQL
             Name = nameof(MarkdownField);
             Description = S["Content stored as Markdown. You can also query the HTML interpreted version of Markdown."];
 
-            Field("markdown", x => x.Markdown, nullable: true)
-                .Description(S["the markdown value"]);
-            Field<StringGraphType>("html")
-                .Description(S["the HTML representation of the markdown content"])
-                .ResolveLockedAsync(ToHtml);
+            Field("markdown", x => x.Markdown, nullable: true).Description(S["the markdown value"]);
+            Field<StringGraphType>("html").Description(S["the HTML representation of the markdown content"]).ResolveLockedAsync(ToHtml);
         }
 
         private static async ValueTask<object> ToHtml(IResolveFieldContext<MarkdownField> ctx)
@@ -80,16 +77,15 @@ namespace OrchardCore.Markdown.GraphQL
                     PartFieldDefinition = contentPartFieldDefinition
                 };
 
-                html = await liquidTemplateManager.RenderStringAsync(html, htmlEncoder, model,
-                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(ctx.Source.ContentItem) });
+                html = await liquidTemplateManager.RenderStringAsync(
+                    html,
+                    htmlEncoder,
+                    model,
+                    new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(ctx.Source.ContentItem) }
+                );
             }
 
-            html = await shortcodeService.ProcessAsync(html,
-                new Context
-                {
-                    ["ContentItem"] = ctx.Source.ContentItem,
-                    ["PartFieldDefinition"] = contentPartFieldDefinition
-                });
+            html = await shortcodeService.ProcessAsync(html, new Context { ["ContentItem"] = ctx.Source.ContentItem, ["PartFieldDefinition"] = contentPartFieldDefinition });
 
             if (settings.SanitizeHtml)
             {

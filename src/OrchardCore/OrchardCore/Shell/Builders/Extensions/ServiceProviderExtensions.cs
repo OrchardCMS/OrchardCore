@@ -22,10 +22,7 @@ namespace OrchardCore.Environment.Shell.Builders
             foreach (var services in servicesByType)
             {
                 // Prevent hosting 'IStartupFilter' to re-add middleware to the tenant pipeline.
-                if (services.Key.ServiceType == typeof(IStartupFilter))
-                {
-                }
-
+                if (services.Key.ServiceType == typeof(IStartupFilter)) { }
                 // A generic type definition is rather used to create other constructed generic types.
                 else if (services.Key.ServiceType.IsGenericTypeDefinition)
                 {
@@ -35,7 +32,6 @@ namespace OrchardCore.Environment.Shell.Builders
                         clonedCollection.Add(service);
                     }
                 }
-
                 // If only one service of a given type.
                 else if (services.Count() == 1)
                 {
@@ -44,8 +40,7 @@ namespace OrchardCore.Environment.Shell.Builders
                     {
                         // An host singleton is shared across tenant containers but only registered instances are not disposed
                         // by the DI, so we check if it is disposable or if it uses a factory which may return a different type.
-                        if (typeof(IDisposable).IsAssignableFrom(service.GetImplementationType()) ||
-                            service.GetImplementationFactory() is not null)
+                        if (typeof(IDisposable).IsAssignableFrom(service.GetImplementationType()) || service.GetImplementationFactory() is not null)
                         {
                             // If disposable, register an instance that we resolve immediately from the main container.
                             var instance = service.IsKeyedService
@@ -57,16 +52,14 @@ namespace OrchardCore.Environment.Shell.Builders
                         else if (!service.IsKeyedService)
                         {
                             // If not disposable, the singleton can be resolved through a factory when first requested.
-                            clonedCollection.CloneSingleton(service, sp =>
-                                serviceProvider.GetRequiredService(service.ServiceType));
+                            clonedCollection.CloneSingleton(service, sp => serviceProvider.GetRequiredService(service.ServiceType));
 
                             // Note: Most of the time a singleton of a given type is unique and not disposable. So,
                             // most of the time it will be resolved when first requested through a tenant container.
                         }
                         else
                         {
-                            clonedCollection.CloneSingleton(service, (sp, key) =>
-                                serviceProvider.GetRequiredKeyedService(service.ServiceType, key));
+                            clonedCollection.CloneSingleton(service, (sp, key) => serviceProvider.GetRequiredKeyedService(service.ServiceType, key));
                         }
                     }
                     else
@@ -74,7 +67,6 @@ namespace OrchardCore.Environment.Shell.Builders
                         clonedCollection.Add(service);
                     }
                 }
-
                 // If all services of the same type are not singletons.
                 else if (services.All(s => s.Lifetime != ServiceLifetime.Singleton))
                 {
@@ -84,7 +76,6 @@ namespace OrchardCore.Environment.Shell.Builders
                         clonedCollection.Add(service);
                     }
                 }
-
                 // If all services of the same type are singletons.
                 else if (services.All(s => s.Lifetime == ServiceLifetime.Singleton))
                 {
@@ -104,7 +95,6 @@ namespace OrchardCore.Environment.Shell.Builders
                         clonedCollection.CloneSingleton(services.ElementAt(i), instance);
                     }
                 }
-
                 // If singletons and scoped services are mixed.
                 else
                 {

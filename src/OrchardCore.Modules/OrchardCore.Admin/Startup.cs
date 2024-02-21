@@ -38,14 +38,16 @@ namespace OrchardCore.Admin
         {
             services.AddNavigation();
 
-            services.Configure<MvcOptions>((options) =>
-            {
-                options.Filters.Add(typeof(AdminFilter));
-                options.Filters.Add(typeof(AdminMenuFilter));
+            services.Configure<MvcOptions>(
+                (options) =>
+                {
+                    options.Filters.Add(typeof(AdminFilter));
+                    options.Filters.Add(typeof(AdminMenuFilter));
 
-                // Ordered to be called before any global filter.
-                options.Filters.Add(typeof(AdminZoneFilter), -1000);
-            });
+                    // Ordered to be called before any global filter.
+                    options.Filters.Add(typeof(AdminZoneFilter), -1000);
+                }
+            );
 
             services.AddTransient<IAreaControllerRouteMapper, AdminAreaControllerRouteMapper>();
             services.AddScoped<IPermissionProvider, Permissions>();
@@ -77,11 +79,13 @@ namespace OrchardCore.Admin
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<RazorPagesOptions>((options) =>
-            {
-                var adminOptions = ShellScope.Services.GetRequiredService<IOptions<AdminOptions>>().Value;
-                options.Conventions.Add(new AdminPageRouteModelConvention(adminOptions.AdminUrlPrefix));
-            });
+            services.Configure<RazorPagesOptions>(
+                (options) =>
+                {
+                    var adminOptions = ShellScope.Services.GetRequiredService<IOptions<AdminOptions>>().Value;
+                    options.Conventions.Add(new AdminPageRouteModelConvention(adminOptions.AdminUrlPrefix));
+                }
+            );
         }
     }
 

@@ -23,27 +23,52 @@ namespace OrchardCore.XmlRpc.Services
         public XmlRpcReader()
         {
             _dispatch = new Dictionary<string, Func<XElement, XRpcData>>
+            {
                 {
-                    { "i4", x => new XRpcData<int> { Value = (int)x } },
-                    { "int", x => new XRpcData<int> { Value = (int)x } },
-                    { "boolean", x => new XRpcData<bool> { Value = (string)x == "1" } },
-                    { "string", x => new XRpcData<string> { Value = (string)x } },
-                    { "double", x => new XRpcData<double> { Value = (double)x } },
-                    { "dateTime.iso8601", x => {
-                            DateTime parsedDateTime;
+                    "i4",
+                    x => new XRpcData<int> { Value = (int)x }
+                },
+                {
+                    "int",
+                    x => new XRpcData<int> { Value = (int)x }
+                },
+                {
+                    "boolean",
+                    x => new XRpcData<bool> { Value = (string)x == "1" }
+                },
+                {
+                    "string",
+                    x => new XRpcData<string> { Value = (string)x }
+                },
+                {
+                    "double",
+                    x => new XRpcData<double> { Value = (double)x }
+                },
+                {
+                    "dateTime.iso8601",
+                    x =>
+                    {
+                        DateTime parsedDateTime;
 
-                            // try parsing a "normal" datetime string then try what live writer gives us
-                            if (!DateTime.TryParse(x.Value, out parsedDateTime)
-                                && !DateTime.TryParseExact(x.Value, "yyyyMMddTHH:mm:ss", DateTimeFormatInfo.CurrentInfo, DateTimeStyles.None, out parsedDateTime)) {
-                                parsedDateTime = DateTime.Now;
-                            }
+                        // try parsing a "normal" datetime string then try what live writer gives us
+                        if (
+                            !DateTime.TryParse(x.Value, out parsedDateTime)
+                            && !DateTime.TryParseExact(x.Value, "yyyyMMddTHH:mm:ss", DateTimeFormatInfo.CurrentInfo, DateTimeStyles.None, out parsedDateTime)
+                        )
+                        {
+                            parsedDateTime = DateTime.Now;
+                        }
 
-                            return new XRpcData<DateTime> { Value = parsedDateTime };
-                        } },
-                    { "base64", x => new XRpcData<byte[]> { Value = Convert.FromBase64String((string)x) } },
-                    { "struct", x => XRpcData.For(MapToStruct(x)) },
-                    { "array", x => XRpcData.For(MapToArray(x)) },
-                };
+                        return new XRpcData<DateTime> { Value = parsedDateTime };
+                    }
+                },
+                {
+                    "base64",
+                    x => new XRpcData<byte[]> { Value = Convert.FromBase64String((string)x) }
+                },
+                { "struct", x => XRpcData.For(MapToStruct(x)) },
+                { "array", x => XRpcData.For(MapToArray(x)) },
+            };
         }
 
         /// <summary>
@@ -53,11 +78,7 @@ namespace OrchardCore.XmlRpc.Services
         /// <returns>The rpc method call.</returns>
         public XRpcMethodCall MapToMethodCall(XElement source)
         {
-            return new XRpcMethodCall
-            {
-                MethodName = (string)source.Element("methodName"),
-                Params = source.Elements("params").Elements("param").Select(MapToData).ToList()
-            };
+            return new XRpcMethodCall { MethodName = (string)source.Element("methodName"), Params = source.Elements("params").Elements("param").Select(MapToData).ToList() };
         }
 
         /// <summary>
@@ -94,9 +115,7 @@ namespace OrchardCore.XmlRpc.Services
             var result = new XRpcStruct();
             foreach (var member in source.Elements("member"))
             {
-                result.Members.Add(
-                    (string)member.Element("name"),
-                    MapValue(member.Element("value")));
+                result.Members.Add((string)member.Element("name"), MapValue(member.Element("value")));
             }
 
             return result;

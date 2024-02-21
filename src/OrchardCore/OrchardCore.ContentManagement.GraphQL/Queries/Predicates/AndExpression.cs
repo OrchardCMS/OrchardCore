@@ -12,9 +12,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         /// </summary>
         /// <param name="left">The left hand side <see cref="IPredicate" />.</param>
         /// <param name="right">The right hand side <see cref="IPredicate" />.</param>
-        public AndExpression(IPredicate left, IPredicate right) : base(left, right)
-        {
-        }
+        public AndExpression(IPredicate left, IPredicate right)
+            : base(left, right) { }
 
         /// <inheritdoc />
         /// <value>Returns "<c>and</c>".</value>

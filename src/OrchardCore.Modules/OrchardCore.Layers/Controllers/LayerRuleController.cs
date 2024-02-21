@@ -37,7 +37,8 @@ namespace OrchardCore.Layers.Controllers
             IConditionIdGenerator conditionIdGenerator,
             IHtmlLocalizer<LayerRuleController> htmlLocalizer,
             INotifier notifier,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor
+        )
         {
             _displayManager = displayManager;
             _factories = factories;

@@ -9,8 +9,6 @@ public class TwoFactorMethodLoginSmsDisplayDriver : DisplayDriver<TwoFactorMetho
 {
     public override IDisplayResult Edit(TwoFactorMethod model)
     {
-        return View("SmsAuthenticatorValidation", model)
-        .Location("Content")
-        .OnGroup(TokenOptions.DefaultPhoneProvider);
+        return View("SmsAuthenticatorValidation", model).Location("Content").OnGroup(TokenOptions.DefaultPhoneProvider);
     }
 }

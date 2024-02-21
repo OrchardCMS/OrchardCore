@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,8 +19,6 @@ using OrchardCore.Setup;
 using OrchardCore.Tenants.Deployment;
 using OrchardCore.Tenants.Recipes;
 using OrchardCore.Tenants.Services;
-using System;
-using System.IO;
 
 namespace OrchardCore.Tenants
 {
@@ -80,18 +80,21 @@ namespace OrchardCore.Tenants
         {
             var tenantFileProvider = serviceProvider.GetRequiredService<ITenantFileProvider>();
 
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                FileProvider = tenantFileProvider,
-                DefaultContentType = "application/octet-stream",
-                ServeUnknownFileTypes = true,
-
-                // Cache the tenant static files for 30 days.
-                OnPrepareResponse = ctx =>
+            app.UseStaticFiles(
+                new StaticFileOptions
                 {
-                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = $"public, max-age={TimeSpan.FromDays(30).TotalSeconds}, s-max-age={TimeSpan.FromDays(365.25).TotalSeconds}";
+                    FileProvider = tenantFileProvider,
+                    DefaultContentType = "application/octet-stream",
+                    ServeUnknownFileTypes = true,
+
+                    // Cache the tenant static files for 30 days.
+                    OnPrepareResponse = ctx =>
+                    {
+                        ctx.Context.Response.Headers[HeaderNames.CacheControl] =
+                            $"public, max-age={TimeSpan.FromDays(30).TotalSeconds}, s-max-age={TimeSpan.FromDays(365.25).TotalSeconds}";
+                    }
                 }
-            });
+            );
         }
 
         private static string GetContentRoot(ShellOptions shellOptions, ShellSettings shellSettings) =>

@@ -7,10 +7,8 @@ namespace OrchardCore.Apis.GraphQL.Resolvers
 {
     public class LockedAsyncFieldResolver<TReturnType> : FuncFieldResolver<TReturnType>
     {
-        public LockedAsyncFieldResolver(Func<IResolveFieldContext, ValueTask<TReturnType>> resolver) : base(resolver)
-        {
-
-        }
+        public LockedAsyncFieldResolver(Func<IResolveFieldContext, ValueTask<TReturnType>> resolver)
+            : base(resolver) { }
 
         public new async ValueTask<object> ResolveAsync(IResolveFieldContext context)
         {
@@ -30,9 +28,8 @@ namespace OrchardCore.Apis.GraphQL.Resolvers
 
     public class LockedAsyncFieldResolver<TSourceType, TReturnType> : FuncFieldResolver<TSourceType, TReturnType>
     {
-        public LockedAsyncFieldResolver(Func<IResolveFieldContext<TSourceType>, ValueTask<TReturnType>> resolver) : base(resolver)
-        {
-        }
+        public LockedAsyncFieldResolver(Func<IResolveFieldContext<TSourceType>, ValueTask<TReturnType>> resolver)
+            : base(resolver) { }
 
         public new async Task<object> ResolveAsync(IResolveFieldContext context)
         {
