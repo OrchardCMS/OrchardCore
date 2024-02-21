@@ -502,11 +502,11 @@ namespace OrchardCore.Mvc.Utilities
         /// <summary>
         /// Tests if a string is valid json.
         /// </summary>
-        public static bool IsJson(this string json, JsonNodeOptions? jsonNodeOptions = null, JsonDocumentOptions jsonDocumentOptions = default)
+        public static bool IsJson(this string json, JsonDocumentOptions jsonDocumentOptions = default)
         {
             try
             {
-                JsonNode.Parse(json, jsonNodeOptions, jsonDocumentOptions);
+                JsonNode.Parse(json, null, jsonDocumentOptions);
                 return true;
             }
             catch
