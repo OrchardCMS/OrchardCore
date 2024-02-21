@@ -14,11 +14,11 @@ public class ContentElement : IContent
     private Dictionary<string, ContentElement> _elements;
     private JsonDynamicObject _dynamicObject;
 
-    internal ContentElement() : this([])
+    protected ContentElement() : this([])
     {
     }
 
-    internal ContentElement(JsonObject data) => Data = data;
+    protected ContentElement(JsonObject data) => Data = data;
 
     [JsonIgnore]
     protected internal Dictionary<string, ContentElement> Elements => _elements ??= [];
