@@ -3,12 +3,11 @@
   <Import Project="Dependencies.props" />
 
   <PropertyGroup>
-    <!-- When changing LangVersion, also update in the root Directory.Build.props. -->
     <LangVersion>12.0</LangVersion>
     <VersionPrefix>1.9.0</VersionPrefix>
     <VersionSuffix>preview</VersionSuffix>
     <VersionSuffix Condition="'$(VersionSuffix)'!='' AND '$(BuildNumber)' != ''">$(VersionSuffix)-$(BuildNumber)</VersionSuffix>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsNotAsErrors>612,618</WarningsNotAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
@@ -18,7 +17,7 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
 
-    <!-- Common NuGet properties. -->
+    <!-- Common NuGet properties-->
     <OCFrameworkDescription>Orchard Core Framework is an application framework for building modular, multi-tenant applications on ASP.NET Core.</OCFrameworkDescription>
     <OCCMSDescription>Orchard Core CMS is a Web Content Management System (CMS) built on top of the Orchard Core Framework.</OCCMSDescription>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
@@ -27,11 +26,11 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <PackageIcon>icon.png</PackageIcon>
 
-    <!-- This is used to generate symbol package for Source Link. -->
+    <!--This is used to generate symbol package for Source Link-->
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 
-    <!-- This is used by GitHub Repository to find which repository should contain the package when uploaded. -->
+    <!-- This is used by GitHub Repository to find which repository should contain the package when updloaded -->
     <RepositoryUrl>https://github.com/OrchardCMS/OrchardCore</RepositoryUrl>
     <PackageProjectUrl>https://www.orchardcore.net/</PackageProjectUrl>
     <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
@@ -43,7 +42,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- This is used for Source Link. -->
+    <!--This is used for Source Link -->
     <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All"/>
     <None Include="$(MSBuildThisFileDirectory)/nuget-icon.png">
       <Pack>True</Pack>
@@ -52,7 +51,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Lombiq.Analyzers.OrchardCore" PrivateAssets="all" />
+    <PackageReference Include="StyleCop.Analyzers" PrivateAssets="all" />
   </ItemGroup>
 
 </Project>
