@@ -1,8 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\OrchardCore.Build\OrchardCore.Commons.props" />
   <ItemGroup>
-    <PackageReference Remove="@(AnalyzerPackage)" />
     <PackageReference Remove="Microsoft.SourceLink.GitHub" />
+  </ItemGroup>
+  <!-- Analyzer packages. -->
+  <ItemGroup>
+    <PackageReference Remove="AsyncFixer" />
+    <PackageReference Remove="DotNetAnalyzers.DocumentationAnalyzers" />
+    <PackageReference Remove="Meziantou.Analyzer" />
+    <PackageReference Remove="Microsoft.CodeAnalysis.CSharp.CodeStyle" />
+    <PackageReference Remove="Microsoft.CodeAnalysis.NetAnalyzers" />
+    <PackageReference Remove="Microsoft.VisualStudio.Threading.Analyzers" />
+    <PackageReference Remove="SecurityCodeScan.VS2019" />
+    <PackageReference Remove="SonarAnalyzer.CSharp" />
+    <PackageReference Remove="StyleCop.Analyzers" />
   </ItemGroup>
   <PropertyGroup>
     <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
