@@ -81,7 +81,7 @@ var corsApp = new Vue({
           return p.isDefaultPolicy = false;
         });
       }
-      if (policy.OriginalName) {
+      if (policy.originalName) {
         var policyIndex = this.policies.findIndex(function (oldPolicy) {
           return oldPolicy.name === policy.originalName;
         });
