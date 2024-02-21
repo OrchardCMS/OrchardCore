@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Services;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 
 namespace OrchardCore.ContentLocalization

@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement.Descriptors
@@ -22,15 +21,16 @@ namespace OrchardCore.DisplayManagement.Descriptors
             }
             else if (second != null)
             {
-                var combined = new PlacementInfo();
+                var combined = new PlacementInfo
+                {
+                    Alternates = first.Alternates.Combine(second.Alternates),
+                    Wrappers = first.Wrappers.Combine(second.Wrappers),
 
-                combined.Alternates = first.Alternates.Combine(second.Alternates);
-                combined.Wrappers = first.Wrappers.Combine(second.Wrappers);
-
-                combined.ShapeType = string.IsNullOrEmpty(second.ShapeType) ? first.ShapeType : second.ShapeType;
-                combined.Location = string.IsNullOrEmpty(second.Location) ? first.Location : second.Location;
-                combined.DefaultPosition = string.IsNullOrEmpty(second.DefaultPosition) ? first.DefaultPosition : second.DefaultPosition;
-                combined.Source = $"{first.Source},{second.Source}";
+                    ShapeType = string.IsNullOrEmpty(second.ShapeType) ? first.ShapeType : second.ShapeType,
+                    Location = string.IsNullOrEmpty(second.Location) ? first.Location : second.Location,
+                    DefaultPosition = string.IsNullOrEmpty(second.DefaultPosition) ? first.DefaultPosition : second.DefaultPosition,
+                    Source = $"{first.Source},{second.Source}"
+                };
 
                 return combined;
             }

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Sms.ViewModels;
 
@@ -40,6 +41,7 @@ public class AdminController : Controller
         S = stringLocalizer;
     }
 
+    [Admin("sms/test", "SmsProviderTest")]
     public async Task<IActionResult> Test()
     {
         if (!await _authorizationService.AuthorizeAsync(User, SmsPermissions.ManageSmsSettings))

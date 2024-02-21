@@ -70,7 +70,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                 New = this,
                 ShapeFactory = this,
                 ShapeType = shapeType,
-                OnCreated = new List<Func<ShapeCreatedContext, Task>>(),
+                OnCreated = [],
                 CreateAsync = shapeFactory
             };
 

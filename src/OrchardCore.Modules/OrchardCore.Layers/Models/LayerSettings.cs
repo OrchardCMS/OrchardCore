@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Layers.Models
 {
     public class LayerSettings

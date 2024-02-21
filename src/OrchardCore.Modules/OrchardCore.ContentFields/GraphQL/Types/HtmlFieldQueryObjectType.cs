@@ -27,13 +27,12 @@ namespace OrchardCore.ContentFields.GraphQL
             Name = nameof(HtmlField);
             Description = S["Content stored as HTML."];
 
-            Field<StringGraphType>()
-                .Name("html")
+            Field<StringGraphType>("html")
                 .Description(S["the HTML content"])
                 .ResolveLockedAsync(RenderHtml);
         }
 
-        private static async Task<object> RenderHtml(IResolveFieldContext<HtmlField> ctx)
+        private static async ValueTask<object> RenderHtml(IResolveFieldContext<HtmlField> ctx)
         {
             var serviceProvider = ctx.RequestServices;
             var shortcodeService = serviceProvider.GetRequiredService<IShortcodeService>();

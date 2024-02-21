@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Nodes;
@@ -31,7 +30,7 @@ namespace OrchardCore.Deployment
         }
 
         public JsonObject Recipe { get; }
-        public IList<JsonObject> Steps { get; init; } = new List<JsonObject>();
+        public IList<JsonObject> Steps { get; init; } = [];
         public IFileBuilder FileBuilder { get; }
         public async Task FinalizeAsync()
         {

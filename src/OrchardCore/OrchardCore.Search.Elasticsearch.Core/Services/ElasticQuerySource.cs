@@ -57,7 +57,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services
             if (elasticQuery.ReturnContentItems)
             {
                 // We always return an empty collection if the bottom lines queries have no results.
-                elasticQueryResults.Items = new List<ContentItem>();
+                elasticQueryResults.Items = [];
 
                 // Load corresponding content item versions
                 var topDocs = docs.TopDocs.Where(x => x != null).ToList();
