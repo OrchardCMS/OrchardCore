@@ -22,6 +22,7 @@ namespace OrchardCore.OpenId.Services
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _shellHost;
         private readonly ISiteService _siteService;
+
         protected readonly IStringLocalizer S;
 
         public OpenIdValidationService(

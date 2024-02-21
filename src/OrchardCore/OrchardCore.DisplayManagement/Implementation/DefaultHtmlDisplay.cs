@@ -47,6 +47,12 @@ namespace OrchardCore.DisplayManagement.Implementation
                 return HtmlString.Empty;
             }
 
+            // Check if the shape is Position Wrapper
+            if(shape is PositionWrapper wrapper)
+            {
+                return PositionWrapper.UnWrap(wrapper);
+            }
+
             // Check if the shape is pre-rendered.
             if (shape is IHtmlContent htmlContent)
             {

@@ -27,7 +27,7 @@ namespace OrchardCore.DisplayManagement.Theming
                 await ThemeLayout.Zones["Content"].AddAsync(body);
 
                 // Pre-render all shapes and replace the zone content with it.
-                ThemeLayout.Zones["Content"] = new PositionWrapper(await DisplayAsync(ThemeLayout.Zones["Content"]), "");
+                ThemeLayout.Zones["Content"] = PositionWrapper.TryWrap(await DisplayAsync(ThemeLayout.Zones["Content"]), "") as IShape;
 
                 // Render each layout zone.
                 foreach (var zone in ThemeLayout.Properties.ToArray())
@@ -46,7 +46,7 @@ namespace OrchardCore.DisplayManagement.Theming
                             continue;
                         }
 
-                        ThemeLayout.Zones[zone.Key] = new PositionWrapper(await DisplayAsync(shape), "");
+                        ThemeLayout.Zones[zone.Key] = PositionWrapper.TryWrap(await DisplayAsync(shape), "") as IShape;
                     }
                 }
 

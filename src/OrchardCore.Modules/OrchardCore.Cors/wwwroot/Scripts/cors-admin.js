@@ -93,7 +93,7 @@ var corsApp = new Vue({
       this.back();
     },
     save: function save() {
-      document.getElementById('CorsSettings').value = JSON.stringify(this.policies);
+      document.getElementById('corsSettings').value = JSON.stringify(this.policies);
       document.getElementById('corsForm').submit();
     },
     back: function back() {

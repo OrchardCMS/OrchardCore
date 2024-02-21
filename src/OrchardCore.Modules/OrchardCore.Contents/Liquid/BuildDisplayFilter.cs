@@ -19,7 +19,8 @@ namespace OrchardCore.Contents.Liquid
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
-        public BuildDisplayFilter(IContentItemRecursionHelper<BuildDisplayFilter> buildDisplayRecursionHelper,
+        public BuildDisplayFilter(
+            IContentItemRecursionHelper<BuildDisplayFilter> buildDisplayRecursionHelper,
             IContentItemDisplayManager contentItemDisplayManager,
             IUpdateModelAccessor updateModelAccessor)
         {

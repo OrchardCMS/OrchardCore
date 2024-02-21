@@ -1,3 +1,4 @@
+using System;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Execution;
@@ -14,7 +15,6 @@ using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
-using System;
 
 namespace OrchardCore.Apis.GraphQL
 {
