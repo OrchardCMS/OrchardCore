@@ -57,7 +57,8 @@ namespace OrchardCore.DisplayManagement
             if (value is PositionWrapper wrapper)
             {
                 // Update the new Position
-                wrapper.Position = position;
+                if (position != null)
+                    wrapper.Position = position;
                 return wrapper;
             }
             else if (value is IHtmlContent content)
@@ -65,7 +66,7 @@ namespace OrchardCore.DisplayManagement
             else if (value is string stringContent)
                 return new PositionWrapper(stringContent, position);
             else
-                throw new System.NotSupportedException($"Type of {nameof(value)} must be either {nameof(String)}, {nameof(IHtmlContent)} or {nameof(PositionWrapper)}.");
+                return null;
         }
 
         public static IHtmlContent UnWrap(PositionWrapper wrapper)

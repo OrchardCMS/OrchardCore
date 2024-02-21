@@ -65,27 +65,9 @@ namespace OrchardCore.DisplayManagement.Shapes
 
             _items ??= [];
 
-            if (item is IHtmlContent htmlContent)
-            {
-                _items.Add(PositionWrapper.TryWrap(htmlContent, position));
-            }
-            else if (item is string stringContent)
-            {
-                _items.Add(PositionWrapper.TryWrap(stringContent, position));
-            }
-            else
-            {
-                var shape = item as IPositioned;
-                if (shape != null)
-                {
-                    if (position != null)
-                    {
-                        shape.Position = position;
-                    }
-
-                    _items.Add(shape);
-                }
-            }
+            var wrapped = PositionWrapper.TryWrap(item, position);
+            if (wrapped is not null)
+                _items.Add(wrapped);
 
             return new ValueTask<IShape>(this);
         }

@@ -81,27 +81,9 @@ namespace OrchardCore.DisplayManagement.Views
             _sorted = false;
             _items ??= [];
 
-            if (item is IHtmlContent htmlContent)
-            {
-                _items.Add(PositionWrapper.TryWrap(htmlContent, position));
-            }
-            else if (item is string stringContent)
-            {
-                _items.Add(PositionWrapper.TryWrap(stringContent, position));
-            }
-            else
-            {
-                if (item is IPositioned shape)
-                {
-                    if (position != null)
-                    {
-                        shape.Position = position;
-                    }
-
-                    _items.Add(shape);
-                }
-            }
-
+            var wrapped = PositionWrapper.TryWrap(item, position);
+            if (wrapped is not null)
+                _items.Add(wrapped);
             return new ValueTask<IShape>(this);
         }
     }
