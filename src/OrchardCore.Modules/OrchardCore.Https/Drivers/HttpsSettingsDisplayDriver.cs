@@ -10,6 +10,7 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Https.Settings;
 using OrchardCore.Https.ViewModels;
+using OrchardCore.Modules;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Https.Drivers
@@ -42,7 +43,7 @@ namespace OrchardCore.Https.Drivers
 
         public override async Task<IDisplayResult> EditAsync(HttpsSettings settings, BuildEditorContext context)
         {
-            if (!context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
+            if (!context.GroupId.EqualsOrdinalIgnoreCase(GroupId))
             {
                 return null;
             }

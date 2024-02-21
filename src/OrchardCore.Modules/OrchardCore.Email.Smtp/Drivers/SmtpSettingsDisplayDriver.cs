@@ -13,6 +13,7 @@ using OrchardCore.Email.Smtp.Services;
 using OrchardCore.Email.Smtp.ViewModels;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
 
@@ -55,7 +56,7 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
 
     public override async Task<IDisplayResult> EditAsync(SmtpSettings settings, BuildEditorContext context)
     {
-        if (!IsEmailGroup(context))
+        if (!context.GroupId.EqualsOrdinalIgnoreCase(EmailSettings.GroupId))
         {
             return null;
         }
@@ -90,7 +91,7 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, SmtpSettings settings, IUpdateModel updater, BuildEditorContext context)
     {
-        if (!IsEmailGroup(context))
+        if (!context.GroupId.EqualsOrdinalIgnoreCase(EmailSettings.GroupId))
         {
             return null;
         }
@@ -206,6 +207,4 @@ public class SmtpSettingsDisplayDriver : SectionDisplayDriver<ISite, SmtpSetting
 
         return await EditAsync(settings, context);
     }
-    private static bool IsEmailGroup(BuildEditorContext context)
-        => context.GroupId.Equals(EmailSettings.GroupId, StringComparison.OrdinalIgnoreCase);
 }

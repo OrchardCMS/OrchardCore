@@ -7,6 +7,7 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Modules;
 using OrchardCore.ReverseProxy.Settings;
 using OrchardCore.ReverseProxy.ViewModels;
 using OrchardCore.Settings;
@@ -68,7 +69,7 @@ namespace OrchardCore.ReverseProxy.Drivers
                 return null;
             }
 
-            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
+            if (context.GroupId.EqualsOrdinalIgnoreCase(GroupId))
             {
                 var model = new ReverseProxySettingsViewModel();
 

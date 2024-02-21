@@ -27,7 +27,10 @@ public class Startup
 
         services.Configure<DefaultSmtpOptions>(options =>
         {
+            // To ensure backward compatibility, we will try to associate SMTP settings from multiple sections.
+            // The 'OrchardCore_Email' section will be phased out in upcoming releases.
             _shellConfiguration.GetSection("OrchardCore_Email").Bind(options);
+            _shellConfiguration.GetSection("OrchardCore_Email_Smtp").Bind(options);
 
             options.IsEnabled = options.ConfigurationExists();
         });

@@ -12,6 +12,7 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Modules;
 using OrchardCore.OpenId.Configuration;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
@@ -53,7 +54,7 @@ namespace OrchardCore.OpenId.Drivers
 
         public override async Task<IDisplayResult> EditAsync(OpenIdClientSettings settings, BuildEditorContext context)
         {
-            if (!context.GroupId.Equals(SettingsGroupId, StringComparison.OrdinalIgnoreCase))
+            if (!context.GroupId.EqualsOrdinalIgnoreCase(SettingsGroupId))
             {
                 return null;
             }

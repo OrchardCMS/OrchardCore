@@ -32,9 +32,9 @@ Here are the available SMTP settings
 You may configure the Default SMTP provider by the configuration provider using the following settings:
 
 ```json
-"OrchardCore_Email": {
+"OrchardCore_Email_Smtp": {
     "DefaultSender": "",
-    "DefaultSender": "Network",
+    "DeliveryMethod": "Network",
     "PickupDirectoryLocation": "",
     "Host": "localhost",
     "Port": 25,

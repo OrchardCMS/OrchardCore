@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using OrchardCore.Email.Core.Services;
+using OrchardCore.Email.Services;
 
 namespace OrchardCore.Email;
 
@@ -12,7 +12,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IEmailProviderResolver, DefaultEmailProviderResolver>();
         services.AddScoped<IEmailServiceEvents, EmailMessageValidator>();
 
-        services.AddTransient<IConfigureOptions<EmailSettings>, EmailSettingsConfiguration>();
+        services.AddTransient<IConfigureOptions<EmailOptions>, EmailOptionsConfiguration>();
 
         return services;
     }

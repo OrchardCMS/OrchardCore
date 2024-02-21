@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 
-namespace OrchardCore.Email.Core.Services;
+namespace OrchardCore.Email.Services;
 
 public class EmailServiceEventsBase : IEmailServiceEvents
 {

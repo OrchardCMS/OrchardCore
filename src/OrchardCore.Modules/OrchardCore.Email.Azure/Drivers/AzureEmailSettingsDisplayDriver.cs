@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -16,6 +15,7 @@ using OrchardCore.Email.Azure.ViewModels;
 using OrchardCore.Email.Services;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
 
@@ -52,7 +52,7 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
 
     public override async Task<IDisplayResult> EditAsync(AzureEmailSettings settings, BuildEditorContext context)
     {
-        if (!IsEmailGroup(context))
+        if (!context.GroupId.EqualsOrdinalIgnoreCase(EmailSettings.GroupId))
         {
             return null;
         }
@@ -73,7 +73,7 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, AzureEmailSettings settings, IUpdateModel updater, BuildEditorContext context)
     {
-        if (!IsEmailGroup(context))
+        if (!context.GroupId.EqualsOrdinalIgnoreCase(EmailSettings.GroupId))
         {
             return null;
         }
@@ -159,7 +159,4 @@ public class AzureEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, Azure
 
         return await EditAsync(settings, context);
     }
-
-    private static bool IsEmailGroup(BuildEditorContext context)
-        => context.GroupId.Equals(EmailSettings.GroupId, StringComparison.OrdinalIgnoreCase);
 }

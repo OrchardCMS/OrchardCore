@@ -4,7 +4,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Email.Core.Services;
+namespace OrchardCore.Email.Services;
 
 public class DefaultEmailService : IEmailService
 {

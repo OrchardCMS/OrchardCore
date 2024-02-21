@@ -7,6 +7,7 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Modules;
 using OrchardCore.Security.Options;
 using OrchardCore.Security.Settings;
 using OrchardCore.Security.ViewModels;
@@ -85,7 +86,7 @@ namespace OrchardCore.Security.Drivers
                 return null;
             }
 
-            if (context.GroupId.Equals(SettingsGroupId, StringComparison.OrdinalIgnoreCase))
+            if (context.GroupId.EqualsOrdinalIgnoreCase(SettingsGroupId))
             {
                 var model = new SecuritySettingsViewModel();
 

@@ -14,6 +14,7 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Localization.Models;
 using OrchardCore.Localization.ViewModels;
+using OrchardCore.Modules;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Localization.Drivers
@@ -42,8 +43,8 @@ namespace OrchardCore.Localization.Drivers
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
             IOptions<CultureOptions> cultureOptions,
-            IHtmlLocalizer<LocalizationSettingsDisplayDriver> h,
-            IStringLocalizer<LocalizationSettingsDisplayDriver> s
+            IHtmlLocalizer<LocalizationSettingsDisplayDriver> htmlLocalizer,
+            IStringLocalizer<LocalizationSettingsDisplayDriver> stringLocalizer
         )
         {
             _notifier = notifier;
@@ -52,14 +53,14 @@ namespace OrchardCore.Localization.Drivers
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
             _cultureOptions = cultureOptions.Value;
-            H = h;
-            S = s;
+            H = htmlLocalizer;
+            S = stringLocalizer;
         }
 
         /// <inheritdocs />
         public override async Task<IDisplayResult> EditAsync(LocalizationSettings settings, BuildEditorContext context)
         {
-            if (!context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
+            if (!context.GroupId.EqualsOrdinalIgnoreCase(GroupId))
             {
                 return null;
             }

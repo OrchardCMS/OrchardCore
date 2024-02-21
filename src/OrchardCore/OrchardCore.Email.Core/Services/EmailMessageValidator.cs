@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 
-namespace OrchardCore.Email.Core.Services;
+namespace OrchardCore.Email.Services;
 
 public class EmailMessageValidator : EmailServiceEventsBase
 {

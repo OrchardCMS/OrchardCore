@@ -10,9 +10,8 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Email.Core.Services;
+using OrchardCore.Email.Services;
 using OrchardCore.Email.ViewModels;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Controllers;
 
@@ -20,10 +19,11 @@ public class AdminController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
+    private readonly EmailOptions _emailOptions;
     private readonly EmailProviderOptions _providerOptions;
     private readonly IEmailService _emailService;
     private readonly IEmailProviderResolver _emailProviderResolver;
-    private readonly ISiteService _siteService;
+
     protected readonly IHtmlLocalizer H;
     protected readonly IStringLocalizer S;
 
@@ -31,18 +31,18 @@ public class AdminController : Controller
         IAuthorizationService authorizationService,
         INotifier notifier,
         IOptions<EmailProviderOptions> providerOptions,
+        IOptions<EmailOptions> emailOptions,
         IEmailService emailService,
         IEmailProviderResolver emailProviderResolver,
-        ISiteService siteService,
         IHtmlLocalizer<AdminController> htmlLocalizer,
         IStringLocalizer<AdminController> stringLocalizer)
     {
         _authorizationService = authorizationService;
         _notifier = notifier;
+        _emailOptions = emailOptions.Value;
         _providerOptions = providerOptions.Value;
         _emailService = emailService;
         _emailProviderResolver = emailProviderResolver;
-        _siteService = siteService;
         H = htmlLocalizer;
         S = stringLocalizer;
     }
@@ -55,11 +55,9 @@ public class AdminController : Controller
             return Forbid();
         }
 
-        var site = await _siteService.GetSiteSettingsAsync();
-
         var model = new EmailTestViewModel()
         {
-            Provider = site.As<EmailSettings>().DefaultProviderName,
+            Provider = _emailOptions.DefaultProviderName,
         };
 
         PopulateModel(model);
