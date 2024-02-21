@@ -4,6 +4,14 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Deployment.Core.Services
 {
+    public sealed class MemoryFileBuilder : IFileBuilder
+    {
+        public Task SetFileAsync(string subpath, Stream stream)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public sealed class TemporaryFileBuilder : IFileBuilder, IDisposable
     {
         private readonly bool _deleteOnDispose;

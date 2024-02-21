@@ -23,6 +23,7 @@ namespace OrchardCore.Deployment
             services.AddScoped<IPermissionProvider, Permissions>();
 
             services.AddSingleton<IDeploymentTargetProvider, FileDownloadDeploymentTargetProvider>();
+            services.AddSingleton<IDeploymentTargetProvider, JsonFileDownloadDeploymentTargetProvider>();
 
             // Custom File deployment step
             services.AddDeployment<CustomFileDeploymentSource, CustomFileDeploymentStep, CustomFileDeploymentStepDriver>();
