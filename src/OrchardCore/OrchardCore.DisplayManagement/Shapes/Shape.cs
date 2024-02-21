@@ -67,7 +67,9 @@ namespace OrchardCore.DisplayManagement.Shapes
 
             var wrapped = PositionWrapper.TryWrap(item, position);
             if (wrapped is not null)
+            {
                 _items.Add(wrapped);
+            }
 
             return new ValueTask<IShape>(this);
         }
