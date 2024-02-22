@@ -22,5 +22,19 @@ namespace OrchardCore.ContentFields.Settings
 
         [JsonPropertyName("value")]
         public string Value { get; set; }
+
+        public ListValueOption()
+        {
+        }
+
+        public ListValueOption(string name) : this(name, name)
+        {
+        }
+
+        public ListValueOption(string name, string value)
+        {
+            Name = name;
+            Value = value;
+        }
     }
 }

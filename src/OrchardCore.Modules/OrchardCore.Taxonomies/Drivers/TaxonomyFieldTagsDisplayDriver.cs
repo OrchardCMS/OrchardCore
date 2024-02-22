@@ -21,14 +21,15 @@ namespace OrchardCore.Taxonomies.Drivers
     public class TaxonomyFieldTagsDisplayDriver : ContentFieldDisplayDriver<TaxonomyField>
     {
         private readonly IContentManager _contentManager;
+
         protected readonly IStringLocalizer S;
 
         public TaxonomyFieldTagsDisplayDriver(
             IContentManager contentManager,
-            IStringLocalizer<TaxonomyFieldTagsDisplayDriver> s)
+            IStringLocalizer<TaxonomyFieldTagsDisplayDriver> stringLocalizer)
         {
             _contentManager = contentManager;
-            S = s;
+            S = stringLocalizer;
         }
 
         public override IDisplayResult Display(TaxonomyField field, BuildFieldDisplayContext context)

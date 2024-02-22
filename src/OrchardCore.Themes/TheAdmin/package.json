@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "dependencies": {
     "@popperjs/core": "2.11.8",
-    "bootstrap": "5.3.2",
+    "bootstrap": "5.3.3",
     "bootstrap-select": "1.14.0-beta3",
     "nouislider": "15.7.0"
   }

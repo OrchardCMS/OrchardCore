@@ -28,6 +28,7 @@ namespace OrchardCore.Taxonomies.Drivers
         private readonly ISiteService _siteService;
         private readonly IContentManager _contentManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
+
         protected readonly IStringLocalizer S;
 
         public TaxonomyContentsAdminListDisplayDriver(

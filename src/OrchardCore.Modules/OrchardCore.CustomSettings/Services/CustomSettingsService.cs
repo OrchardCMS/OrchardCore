@@ -33,7 +33,7 @@ namespace OrchardCore.CustomSettings.Services
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
             _contentDefinitionManager = contentDefinitionManager;
-            _settingsTypes = new Lazy<Task<IDictionary<string, ContentTypeDefinition>>>(async () => await GetContentTypeAsync());
+            _settingsTypes = new Lazy<Task<IDictionary<string, ContentTypeDefinition>>>(GetContentTypeAsync());
         }
 
         public async Task<IEnumerable<string>> GetAllSettingsTypeNamesAsync()
