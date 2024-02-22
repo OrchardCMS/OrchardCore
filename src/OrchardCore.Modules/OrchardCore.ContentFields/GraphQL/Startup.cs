@@ -8,7 +8,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.ContentFields.GraphQL
 {
-    [RequireFeatures("OrchardCore.Apis.GraphQL")]
+    [RequireFeatures("OrchardCore.Apis.GraphQL","OrchardCore.Users")]
     public class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
@@ -19,6 +19,7 @@ namespace OrchardCore.ContentFields.GraphQL
             services.AddObjectGraphType<LinkField, LinkFieldQueryObjectType>();
             services.AddObjectGraphType<HtmlField, HtmlFieldQueryObjectType>();
             services.AddObjectGraphType<ContentPickerField, ContentPickerFieldQueryObjectType>();
+            services.AddObjectGraphType<UserPickerField, UserPickerFieldQueryObjectType>();
         }
     }
 }
