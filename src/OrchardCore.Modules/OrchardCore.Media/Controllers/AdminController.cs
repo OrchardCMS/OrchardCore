@@ -126,9 +126,9 @@ namespace OrchardCore.Media.Controllers
 
             var allowed = _mediaFileStore.GetDirectoryContentAsync(path)
                 .WhereAwait(async e =>
-                    !e.IsDirectory &&
-                    (allowedExtensions.Count == 0 || allowedExtensions.Contains(Path.GetExtension(e.Path))) &&
-                    await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)e.Path))
+                    !e.IsDirectory
+                    && (allowedExtensions.Count == 0 || allowedExtensions.Contains(Path.GetExtension(e.Path)))
+                    && await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)e.Path))
                 .Select(e => CreateFileResult(e));
 
             return Ok(await allowed.ToListAsync());
