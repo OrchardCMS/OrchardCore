@@ -529,8 +529,7 @@ namespace OrchardCore.Media.Controllers
 
             if (stream == null)
             {
-                localStream = await _mediaFileStore.GetFileStreamAsync(mediaFile);
-                stream = localStream;
+                stream = localStream = await _mediaFileStore.GetFileStreamAsync(mediaFile);
             }
 
             try
